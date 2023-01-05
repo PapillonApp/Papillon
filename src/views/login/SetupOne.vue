@@ -32,7 +32,7 @@
             <a class="terms" href="https://pronote.plus/assets/terms_privacy_23112022_rev0.pdf" v-wave>Termes & conditions</a>
         </div>
 
-        <h1>Bienvenue dans Pronote+ 👋</h1>
+        <h1>Bienvenue dans Papillon 👋</h1>
         <p class="desc">Sélectionnez une méthode de connexion à votre compte Pronote.</p>
 
         <div class="list group">

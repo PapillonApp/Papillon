@@ -39,11 +39,11 @@
 </script>
 
 <template>
-    <TabName name="À propos de Pronote+" logged />
+    <TabName name="À propos de Papillon" logged />
     <div id="content">
         
         <div class="generique">
-            <img src="/logo_shaded.svg" class="logo" alt="Logo Pronote+">
+            <img src="/logo_shaded.svg" class="logo" alt="Logo Papillon">
             <small>Papillon v{{ version }} / Papillon-Python v{{ api_version }}</small>
         </div>
 
@@ -57,7 +57,7 @@
                 <h3>Vince Linise</h3>
                 <small>@ecnivtwelve</small>
 
-                <p>Créateur et développeur principal de l'application et du serveur Pronote+</p>
+                <p>Créateur et développeur principal de l'application et du serveur Papillon</p>
             </template>
         </MainItem>
 
@@ -93,7 +93,7 @@
                 <h3>Tryon</h3>
                 <small>@tryon-dev</small>
 
-                <p>Maintainer principal de l'architecture serveur du projet Pronote+</p>
+                <p>Maintainer principal de l'architecture serveur du projet Papillon</p>
             </template>
         </MainItem>
 

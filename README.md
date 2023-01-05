@@ -17,12 +17,12 @@
 Parce qu'il me fallait une alternative à l'app officielle qui commence vraiment à se faire vieille...
 
 ## Screenshots
-
+<!-- Logo à changer -->
 ![image](https://user-images.githubusercontent.com/32978709/205466858-7a17fb9f-feb1-46d0-a4a7-d8aec94e1cd0.png)
 
 ## Fonctionnalités
 
-* **Fonctionnalités de Pronote**
+* **Fonctionnalités de Papillon**
     - 📆 Emploi du temps
         + Organisation intuitive du temps
         + Ajout au calendrier
@@ -55,7 +55,7 @@ Parce qu'il me fallait une alternative à l'app officielle qui commence vraiment
 - [Tryon](https://github.com/tryon-dev)
 - [Astrow25](https://github.com/Astrow25)
 
-## Alternatives à Pronote+
+## Alternatives à Papillon
 Effectivement on a des concurrents, et c'est important de les soutenir vu qu'on connait la galère de faire un client Pronote.
 
 - [⭐️ Pornote](https://github.com/Vexcited/pornote)

@@ -4,9 +4,9 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "Pronote+",
-    "description": "L'app de vie scolaire intelligente",
-    "short_name": "Pronote+",
+    "name": "Papillon",
+    "description": "Votre vie scolaire",
+    "short_name": "Papillon",
     "icons": [
         {
             "src": "img/icons/icon-192x192.png",

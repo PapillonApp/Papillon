@@ -167,7 +167,7 @@
         <div class="setting">
             <div class="settingName">
                 <h3>Couleur de l'interface</h3>
-                <p class="settingDescription">Choisissez la couleur de l'interface de Pronote+</p>
+                <p class="settingDescription">Choisissez la couleur de l'interface de Papillon</p>
             </div>
             <div class="settingValue">
                 <input type="color" id="brand-color" />
@@ -177,7 +177,7 @@
         <div class="setting">
             <div class="settingName">
                 <h3>Police de l'interface</h3>
-                <p class="settingDescription">Choisissez la police d'écriture de l'interface de Pronote+</p>
+                <p class="settingDescription">Choisissez la police d'écriture de l'interface de Papillon</p>
             </div>
             <div class="settingValue">
                 <select id="brandFont">
@@ -226,7 +226,7 @@
             </template>
             <template #content>
                 <h3>Réinitialiser les paramètres</h3>
-                <p>Rétablit les paramètres par défaut sans vous déconnecter de Pronote +</p>
+                <p>Rétablit les paramètres par défaut sans vous déconnecter de Papillon</p>
             </template>
         </MainItem>
 
@@ -246,7 +246,7 @@
                 <LogOut />
             </template>
             <template #content>
-                <h3>Se déconnecter de Pronote+</h3>
+                <h3>Se déconnecter de Papillon</h3>
                 <p>Éfface toutes vos données Pronote de l'application</p>
             </template>
         </MainItem>
@@ -278,8 +278,8 @@
                 <Bug />
             </template>
             <template #content>
-                <h3>A propos de Pronote+</h3>
-                <p>Vous utilisez une version expérimentale de Pronote+ (version {{version}})</p>
+                <h3>A propos de Papillon</h3>
+                <p>Vous utilisez une version expérimentale de Papillon (version {{version}})</p>
             </template>
         </MainItem>
 
