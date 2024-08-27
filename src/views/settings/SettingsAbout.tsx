@@ -114,7 +114,6 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             />}
           >
             <NativeText variant="title">{contributor.login}</NativeText>
-            <NativeText variant="subtitle">{`${contributor.contributions} contributions`}</NativeText>
           </NativeItem>
         ))}
       </NativeList>

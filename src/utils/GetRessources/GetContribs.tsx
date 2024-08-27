@@ -5,7 +5,6 @@ interface Contributor {
   login: string;
   avatar_url: string;
   html_url: string;
-  contributions: number;
 }
 
 export async function getContributors(): Promise<Contributor[]> {
@@ -25,8 +24,8 @@ export async function getContributors(): Promise<Contributor[]> {
       !teamGithubUrls.has(contributor.html_url.toLowerCase())
     );
 
-    // Trier les contributeurs par nombre de contributions (du plus grand au plus petit)
-    return filteredContributors.sort((a, b) => b.contributions - a.contributions);
+    // Retourner les contributeurs sans trier par nombre de contributions
+    return filteredContributors;
   } catch (error) {
     console.error('Erreur lors de la récupération des contributeurs:', error);
     return [];
