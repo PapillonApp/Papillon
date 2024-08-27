@@ -5,14 +5,16 @@ import { useTheme } from "@react-navigation/native";
 import { ChevronLeft, Code, MegaphoneOff } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { useFlagsStore } from "@/stores/flags";
 
+const SettingsFlags: Screen<"SettingsFlags"> = () => {
+  const flags = useFlagsStore(state => state.flags);
+  const remove = useFlagsStore(state => state.remove);
+  const set = useFlagsStore(state => state.set);
 
-const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-
-  const [enabledFlags, setEnabledFlags] = React.useState<string[]>([]);
   const textInputRef = React.useRef<TextInput>(null);
 
   return (
@@ -35,19 +37,19 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
               placeholder="Ajouter un flag"
               ref={textInputRef}
               onSubmitEditing={(e) => {
-                setEnabledFlags([...enabledFlags, e.nativeEvent.text]);
+                set(e.nativeEvent.text);
                 textInputRef.current?.clear();
               }}
             />
           </NativeItem>
         </NativeList>
 
-        {enabledFlags.length > 0 && (
+        {flags.length > 0 && (
           <View>
             <NativeListHeader label="Flags activés" />
 
             <NativeList>
-              {enabledFlags.map((flag) => (
+              {flags.map((flag) => (
                 <NativeItem
                   key={flag}
                   icon={<Code />}
@@ -61,7 +63,7 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
                         },
                         {
                           text: "Supprimer",
-                          onPress: () => setEnabledFlags(enabledFlags.filter((f) => f !== flag)),
+                          onPress: () => remove(flag),
                           style: "destructive"
                         }
                       ]

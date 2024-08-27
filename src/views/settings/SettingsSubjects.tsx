@@ -12,6 +12,7 @@ import { Trash2 } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
+import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -29,6 +30,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [currentCourseTitle, setCurrentCourseTitle] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<Item | null>(null);
   const [opened, setOpened] = useState(false);
+
+  const emojiInput = React.useRef<TextInput>(null);
 
   useEffect(() => {
     void async function () {
@@ -115,7 +118,14 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
         {subjects.length > 0 && selectedSubject && (
           <BottomSheet
             opened={opened}
-            setOpened={setOpened}
+            setOpened={(bool: boolean) => {
+              if (subjects.find((subject) => subject[0] === selectedSubject[0])?.[1].emoji != "") {
+                setOpened(bool);
+              } else {
+                Alert.alert("Aucun émoji défini", "Vous devez définir un émoji pour cette matière avant de pouvoir quitter cette page.");
+                emojiInput.current?.focus();
+              }
+            }}
             contentContainerStyle={{
               paddingHorizontal: 16,
             }}
@@ -180,35 +190,55 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     alignItems: "center",
                     justifyContent: "center",
                     height: 64,
+                    width: 42,
                   }}
                 >
                   <TextInput
+                    ref={emojiInput}
                     style={{
                       fontFamily: "medium",
                       fontSize: 26,
                       color: colors.text,
                       textAlign: "center",
                       textAlignVertical: "center",
+                      padding: 0,
+                      height: 46,
+                      width: 42,
                     }}
                     value={subjects.find((subject) => subject[0] === selectedSubject[0])?.[1].emoji}
                     onChangeText={(text) => {
-                      var regexp = /((\ud83c[\udde6-\uddff]){2}|([\#\*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
-
-                      const emojiMatch = text.match(regexp);
-
-                      if (emojiMatch) {
-                        const lastEmoji = emojiMatch[emojiMatch.length - 1];
+                      if (text.length < 1) {
                         setOnSubjects(
                           subjects.map((subject) => {
                             if (subject[0] === selectedSubject[0]) {
                               return [selectedSubject[0], {
                                 ...subject[1],
-                                emoji: lastEmoji,
+                                emoji: "",
                               }];
                             }
                             return subject;
                           })
                         );
+                        return;
+                      } else {
+                        var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
+
+                        const emojiMatch = text.match(regexp);
+
+                        if (emojiMatch) {
+                          const lastEmoji = emojiMatch[emojiMatch.length - 1];
+                          setOnSubjects(
+                            subjects.map((subject) => {
+                              if (subject[0] === selectedSubject[0]) {
+                                return [selectedSubject[0], {
+                                  ...subject[1],
+                                  emoji: lastEmoji,
+                                }];
+                              }
+                              return subject;
+                            })
+                          );
+                        }
                       }
                     }}
                   />
@@ -305,22 +335,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
           </BottomSheet>
         )}
 
-        <MemoizedNativeList>
-          <View
-            style={{
-              height: 120,
-              backgroundColor: colors.primary + "22",
-            }}
-          />
-          <MemoizedNativeItem>
-            <MemoizedNativeText variant="title">
-              Personnalisez vos matières
-            </MemoizedNativeText>
-            <MemoizedNativeText variant="subtitle">
-              Personnalisez le nom, l'émoji et la couleur des matières de votre emploi du temps
-            </MemoizedNativeText>
-          </MemoizedNativeItem>
-        </MemoizedNativeList>
+        <SubjectContainerCard theme={{ colors }} />
 
         {subjects.length > 0 && (
           <MemoizedNativeList
