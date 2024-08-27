@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, ScrollView, View, TouchableOpacity, StyleSheet, Image, Switch } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
@@ -14,6 +14,7 @@ import AboutContainerCard from "@/components/Settings/AboutContainerCard";
 import * as Linking from "expo-linking";
 import teams from "@/utils/data/teams.json";
 import Constants from "expo-constants";
+import { getContributors } from '@/utils/GetRessources/GetContribs';
 
 const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const theme = useTheme();
@@ -21,13 +22,20 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
 
   const [clickedOnVersion, setClickedOnVersion] = React.useState<number>(0);
+  const [contributors, setContributors] = useState([]);
 
   useEffect(() => {
     if (clickedOnVersion == 7) {
       navigation.navigate("SettingsFlags");
       setClickedOnVersion(0);
     }
-  }, [clickedOnVersion]);
+    fetchContributors();
+  }, []);
+
+  const fetchContributors = async () => {
+    const fetchedContributors = await getContributors();
+    setContributors(fetchedContributors);
+  };
 
   return (
     <ScrollView
@@ -83,6 +91,30 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           >
             <NativeText variant="title">{team.name}</NativeText>
             <NativeText variant="subtitle">{team.description}</NativeText>
+          </NativeItem>
+        ))}
+      </NativeList>
+
+      <NativeListHeader
+        label="Contributeurs GitHub"
+      />
+      <NativeList>
+        {contributors.map((contributor, index) => (
+          <NativeItem
+            onPress={() => Linking.openURL(contributor.html_url)}
+            chevron={true}
+            key={index}
+            leading={<Image
+              source={{ uri: contributor.avatar_url }}
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 10,
+              }}
+            />}
+          >
+            <NativeText variant="title">{contributor.login}</NativeText>
+            <NativeText variant="subtitle">{`${contributor.contributions} contributions`}</NativeText>
           </NativeItem>
         ))}
       </NativeList>
