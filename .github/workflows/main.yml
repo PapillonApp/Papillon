@@ -1,0 +1,68 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean environment
+        run: |
+          rm -rf node_modules
+          rm -rf android/app/build/
+          rm -rf $HOME/.gradle/caches/
+        
+  build_android:
+    needs: clean
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Build Android app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          # Decode keystore
+          echo $KEYSTORE_BASE64 | base64 --decode > android/app/release.keystore
+          
+          # Build APK
+          cd android
+          ./gradlew assembleRelease
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./android/app/build/outputs/apk/release/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
