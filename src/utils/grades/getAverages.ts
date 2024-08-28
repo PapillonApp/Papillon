@@ -32,6 +32,7 @@ const getPronoteAverage = (grades: Grade[], target: Target = "student"): number 
   const validAverages = subjectAverages.filter(avg => avg !== -1);
   if (validAverages.length === 0) return 0;
 
+  // Calcul de la moyenne générale : somme des moyennes par matière divisée par le nombre de matières
   return validAverages.reduce((sum, avg) => sum + avg, 0) / validAverages.length;
 };
 
@@ -43,14 +44,40 @@ const getSubjectAverage = (grades: Grade[], target: Target = "student"): number 
 
   if (validGrades.length === 0) return -1;
 
-  const sum = validGrades.reduce((acc, grade) => {
+  let totalWeightedGrade = 0;
+  let totalWeight = 0;
+
+  validGrades.forEach(grade => {
     const targetGrade = grade[target];
     const value = targetGrade.value!;
     const outOf = grade.outOf.value!;
-    return acc + (value / outOf) * 20;
-  }, 0);
+    const coefficient = grade.coefficient || 1;
 
-  return sum / validGrades.length;
+    if (grade.isBonus) {
+      // Note bonus : ajoutée directement à la somme sans affecter le poids total
+      // Formule : (valeur / total) * 20 * coefficient
+      totalWeightedGrade += (value / outOf) * 20 * coefficient;
+    } else if (grade.isOptional) {
+      // Note optionnelle : ajoutée seulement si elle améliore la moyenne
+      const gradeValue = (value / outOf) * 20;
+      if (gradeValue > (totalWeightedGrade / totalWeight) || totalWeight === 0) {
+        totalWeightedGrade += gradeValue * coefficient;
+        totalWeight += coefficient;
+      }
+    } else if (grade.isOutOf20) {
+      // Note sur 20 : ajoutée directement
+      totalWeightedGrade += value * coefficient;
+      totalWeight += coefficient;
+    } else {
+      // Note standard : normalisée sur 20 et pondérée
+      // Formule : (valeur / total) * 20 * coefficient
+      totalWeightedGrade += (value / outOf) * 20 * coefficient;
+      totalWeight += coefficient;
+    }
+  });
+
+  // Calcul de la moyenne : somme des notes pondérées divisée par la somme des coefficients
+  return totalWeight > 0 ? totalWeightedGrade / totalWeight : 0;
 };
 
 const getAverageDiffGrade = (grades: Grade[], list: Grade[], target: Target = "student"): AverageDiffGrade => {
@@ -61,6 +88,7 @@ const getAverageDiffGrade = (grades: Grade[], list: Grade[], target: Target = "s
   const baseAverage = getSubjectAverage(baseList, target);
   const baseWithoutGradeAverage = getSubjectAverage(baseListWithoutGrade, target);
 
+  // Calcul de la différence entre la moyenne sans les notes et la moyenne avec les notes
   return {
     difference: baseWithoutGradeAverage - baseAverage,
     with: baseAverage,
@@ -69,11 +97,13 @@ const getAverageDiffGrade = (grades: Grade[], list: Grade[], target: Target = "s
 };
 
 const getAveragesHistory = (grades: Grade[], target: Target = "student", final?: number): GradeHistory[] => {
+  // Calcul de l'historique des moyennes en ajoutant progressivement chaque note
   const history = grades.map((_, index) => ({
     value: getPronoteAverage(grades.slice(0, index + 1), target),
     date: new Date(grades[index].timestamp).toISOString(),
   }));
 
+  // Ajout de la moyenne finale ou de la moyenne actuelle
   history.push({
     value: final !== undefined ? final : getPronoteAverage(grades, target),
     date: new Date().toISOString(),

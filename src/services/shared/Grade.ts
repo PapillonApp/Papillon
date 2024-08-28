@@ -29,6 +29,7 @@ export interface GradeValue {
 };
 
 export interface Grade {
+  isOutOf20: any;
   id: string;
   subjectName: string;
   description: string;
