@@ -20,7 +20,9 @@
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
-      "associatedDomains": ["applinks:getpapillon.xyz"],
+      "associatedDomains": [
+        "applinks:getpapillon.xyz"
+      ],
       "splash": {
         "backgroundColor": "#32AB8E",
         "image": "./assets/launch/splash.png",
@@ -57,7 +59,9 @@
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.FOREGROUND_SERVICE"
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -92,6 +96,12 @@
           "photosPermission": "Papillon utilise tes photos pour ton profil, ta gestion des cours et bien plus."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_PROJECT_ID_HERE" // Replace with your actual Expo project ID
+      }
+    },
+    "owner": "THE_OWNER_HERE"
   }
 }
