@@ -51,7 +51,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
   useEffect(() => {
     setClipboardFound(false);
   }, [instanceURL]);
-  
+
   const checkForDemoInstance = async <ScreenName extends keyof RouteParameters>(
     instanceURL: string,
     navigation: NativeStackNavigationProp<RouteParameters, ScreenName>,
@@ -66,7 +66,14 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           title: "Continuer",
           primary: false,
           icon: <TriangleAlert />,
-          onPress: () => determinateAuthenticationView(instanceURL, navigation, showAlert)
+          onPress: () => navigation.navigate("PronoteCredentials", {
+            instanceURL: instanceURL,
+            information: { name: "Demo Instance" },
+            demoCredentials: {
+              username: "demonstration",
+              password: "pronotevs"
+            }
+          })
         },
         {
           title: "Annuler",

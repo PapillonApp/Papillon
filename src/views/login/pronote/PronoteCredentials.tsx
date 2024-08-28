@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { Screen } from "@/router/helpers/types";
 import { StyleSheet } from "react-native";
 
@@ -12,6 +12,16 @@ import LoginView from "@/components/Templates/LoginView";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
 
 const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation }) => {
+  const [username, setUsername] = useState(route.params?.demoCredentials?.username || "");
+  const [password, setPassword] = useState(route.params?.demoCredentials?.password || "");
+
+  useEffect(() => {
+    if (route.params?.demoCredentials) {
+      // Soumettre automatiquement le formulaire avec les identifiants de démonstration
+      handleLogin(username, password);
+    }
+  }, []);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
