@@ -3,7 +3,7 @@ import type { Grade } from "@/services/shared/Grade";
 export interface GradeHistory {
   value: number;
   date: string;
-};
+}
 
 type Target = "student" | "average" | "min" | "max";
 
@@ -13,98 +13,54 @@ export type AverageDiffGrade = {
   without: number;
 };
 
-// Get average as Pronote calculates it
 const getPronoteAverage = (grades: Grade[], target: Target = "student"): number => {
-  // If no grades, return -1
   if (!grades || grades.length === 0) return -1;
 
-  // Group grades by subject name
   const groupedBySubject = grades.reduce((acc: Record<string, Grade[]>, grade) => {
-    // If the subject doesn't exist in acc, create it
-    if (!acc[grade.subjectName]) {
-      acc[grade.subjectName] = [];
+    const subject = grade.subjectName.split(">")[0].trim();
+    if (!acc[subject]) {
+      acc[subject] = [];
     }
-
-    // Push the grade into the corresponding subject array
-    acc[grade.subjectName].push(grade);
+    acc[subject].push(grade);
     return acc;
   }, {});
 
-  // Get average for each subject
-  const allAverages = Object.keys(groupedBySubject).map((subject) => {
-    const res = getSubjectAverage(groupedBySubject[subject], target);
-    return res;
-  });
+  const subjectAverages = Object.values(groupedBySubject).map(subjectGrades =>
+    getSubjectAverage(subjectGrades, target)
+  );
 
-  const addAverage = allAverages.reduce((acc, average) => acc + average, 0);
-  const addAverageLength = allAverages.length;
+  const validAverages = subjectAverages.filter(avg => avg !== -1);
+  if (validAverages.length === 0) return 0;
 
-  // Return the average of all subject averages
-  return addAverage / addAverageLength;
+  return validAverages.reduce((sum, avg) => sum + avg, 0) / validAverages.length;
 };
 
-// Get subject average as Pronote calculates it
-const getSubjectAverage = (subject: Grade[], target: Target = "student"): number => {
-  // Arrays of grades and outOf to be divided
-  const calcGradesList: number[] = [];
-  const calcOutOfList: number[] = [];
-
-  // For each grade, calculate the grade and outOf
-  subject.forEach((grade) => {
+const getSubjectAverage = (grades: Grade[], target: Target = "student"): number => {
+  const validGrades = grades.filter(grade => {
     const targetGrade = grade[target];
-
-    // If targetGrade is undefined or disabled, skip
-    if (!targetGrade || targetGrade.disabled || targetGrade.value === null) return;
-
-    // If coefficient is 0, skip
-    if (grade.coefficient === 0) return;
-
-    if (targetGrade.value > 20 || grade.coefficient < 1) {
-      // If grade is over 20, reajust the grade to be on 20
-      // (grade [/20] / outOf) / (20 * coefficient)
-
-      // Calculate the grade on 20 (grade / outOf * 20)
-      let gradeOn20 = (targetGrade.value / grade.outOf.value!) * 20;
-
-      // Push the grade and outOf
-      calcGradesList.push(gradeOn20 * grade.coefficient);
-      calcOutOfList.push(20 * grade.coefficient);
-    } else {
-      // Else, push the grade and outOf
-      // (grade / outOf) * (outOf * coefficient)
-      calcGradesList.push(targetGrade.value * grade.coefficient);
-      calcOutOfList.push(grade.outOf.value! * grade.coefficient);
-    }
+    return targetGrade && !targetGrade.disabled && targetGrade.value !== null;
   });
 
-  // If no valid grades, return 0
-  if (calcGradesList.length === 0) return 0;
+  if (validGrades.length === 0) return -1;
 
-  // Sum all grades
-  const calcGradesAvg = calcGradesList.reduce((acc, grade) => acc + grade, 0);
+  const sum = validGrades.reduce((acc, grade) => {
+    const targetGrade = grade[target];
+    const value = targetGrade.value!;
+    const outOf = grade.outOf.value!;
+    return acc + (value / outOf) * 20;
+  }, 0);
 
-  // Sum all outOf
-  const calcOutOfAvg = calcOutOfList.reduce((acc, outOf) => acc + outOf, 0);
-
-  // Return the average
-  return (calcGradesAvg / calcOutOfAvg) * 20;
+  return sum / validGrades.length;
 };
 
-// Get the average difference of a grade in a list
 const getAverageDiffGrade = (grades: Grade[], list: Grade[], target: Target = "student"): AverageDiffGrade => {
-  // Get grades list
   const baseList = list;
-  // remove each grade from the list
   const gradesToRemove = grades;
+  const baseListWithoutGrade = baseList.filter(grade => !gradesToRemove.includes(grade));
 
-  // Get the list without the grade
-  const baseListWithoutGrade = baseList.filter((grade) => !gradesToRemove.includes(grade));
-
-  // Get the average of both lists
   const baseAverage = getSubjectAverage(baseList, target);
   const baseWithoutGradeAverage = getSubjectAverage(baseListWithoutGrade, target);
 
-  // Return the difference
   return {
     difference: baseWithoutGradeAverage - baseAverage,
     with: baseAverage,
@@ -112,25 +68,18 @@ const getAverageDiffGrade = (grades: Grade[], list: Grade[], target: Target = "s
   };
 };
 
-// Get the history of averages for a list of grades
 const getAveragesHistory = (grades: Grade[], target: Target = "student", final?: number): GradeHistory[] => {
-  // Get a list of averages from empty to full
-  const history = grades.map((_, index) => {
-    return {
-      value: getPronoteAverage(grades.slice(0, index + 1), target),
-      date: new Date(grades[index].timestamp).toISOString(),
-    };
-  });
+  const history = grades.map((_, index) => ({
+    value: getPronoteAverage(grades.slice(0, index + 1), target),
+    date: new Date(grades[index].timestamp).toISOString(),
+  }));
 
   history.push({
-    value: final || getPronoteAverage(grades, target),
+    value: final !== undefined ? final : getPronoteAverage(grades, target),
     date: new Date().toISOString(),
   });
 
-  // Sort the history by date
-  history.sort((a, b) => a.date.localeCompare(b.date));
-
-  return history;
+  return history.sort((a, b) => a.date.localeCompare(b.date));
 };
 
 export {
