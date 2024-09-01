@@ -1,7 +1,12 @@
-name: Build and Deploy to Beta Channels
+name: Build Android App
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        default: 'main'
 
 jobs:
   clean:
@@ -10,126 +15,16 @@ jobs:
       - name: Clean environment (just for your comprehension but it do nothing)
         run: |
           rm -rf node_modules
-          rm -rf ios/build
-          rm -rf ~/Library/Developer/Xcode/DerivedData
           rm -rf android/app/build/
           rm -rf $HOME/.gradle/caches/
         
-  build_ios:
-    needs: clean
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Cocoapods
-        run: sudo gem install cocoapods
-
-      - name: Install Pods and update Hermes Engine
-        run: |
-          cd ios
-          rm -rf Pods Podfile.lock
-          pod install
-          pod update hermes-engine --no-repo-update
-
-      - name: Install Apple Certificate
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # Checking environment variables
-          if [ -z "$BUILD_CERTIFICATE_BASE64" ]; then
-            echo "ERROR: BUILD_CERTIFICATE_BASE64 is empty"
-            exit 1
-          fi
-          if [ -z "$P12_PASSWORD" ]; then
-            echo "ERROR: P12_PASSWORD is empty"
-            exit 1
-          fi
-          if [ -z "$KEYCHAIN_PASSWORD" ]; then
-            echo "ERROR: KEYCHAIN_PASSWORD is empty"
-            exit 1
-          fi
-
-          # Create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain
-
-          # Import certificate from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode > $CERTIFICATE_PATH
-
-          # Create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Add keychain to search list
-          security list-keychains -d user -s $KEYCHAIN_PATH $(security list-keychains -d user | sed s/\"//g)
-
-          # Import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-
-          # Allow codesign to access the keychain
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # Clean up
-          rm $CERTIFICATE_PATH
-
-      - name: Install Provisioning Profile
-        env:
-          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-        run: |
-          # Decode the provisioning profile
-          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode > $RUNNER_TEMP/profile.mobileprovision
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $RUNNER_TEMP/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-      - name: Build iOS app
-        env:
-          KEYCHAIN_PATH: $RUNNER_TEMP/app-signing.keychain
-        run: |
-          cd ios
-          xcodebuild -workspace Papillon.xcworkspace \
-                     -scheme Papillon \
-                     -configuration Release \
-                     -archivePath build/Papillon.xcarchive \
-                     -allowProvisioningUpdates \
-                     -destination generic/platform=iOS \
-                     IPHONEOS_DEPLOYMENT_TARGET=13.4 \
-                     CODE_SIGN_STYLE=Manual \
-                     PROVISIONING_PROFILE_SPECIFIER="Papillon" \
-                     CODE_SIGN_IDENTITY="iPhone Distribution" \
-                     OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_PATH" \
-                     clean archive
-          xcodebuild -exportArchive -archivePath build/Papillon.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build
-          
-          if [ -f "./build/Papillon.ipa" ]; then
-            echo "IPA file generated successfully"
-          else
-            echo "Error: IPA file not found"
-            exit 1
-          fi
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v3
-        with:
-          name: ios-app
-          path: ios/build/Papillon.ipa
-          if-no-files-found: error
-
   build_android:
     needs: clean
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -171,57 +66,12 @@ jobs:
           name: android-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
 
-  deploy_to_beta_channels:
-    needs: [build_ios, build_android]
-    runs-on: macos-latest
+  notify_completion:
+    needs: [build_android]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Download iOS artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ios-app
-          path: ios-app
-
-      - name: Download Android AAB artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: android-aab
-          path: android-aab
-
-      - name: Prepare artifacts
+      - name: Notify successful build
         run: |
-          mv ios-app/Papillon.ipa ./Papillon.ipa
-          mv android-aab/app-release.aab ./Papillon.aab
-
-      - name: Upload to TestFlight
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-        run: |
-          echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > appstore_connect_api_key.p8
-          
-          xcrun notarytool submit Papillon.ipa --key appstore_connect_api_key.p8 \
-            --key-id "$APP_STORE_CONNECT_API_KEY_ID" \
-            --issuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
-            --wait
-          
-          echo "iOS build uploaded to TestFlight for beta testing"
-
-      - name: Upload Android Release to Play Store Beta
-        uses: r0adkll/upload-google-play@v1.1.3
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
-          packageName: xyz.getpapillon.app
-          releaseFiles: Papillon.aab
-          track: beta
-          status: completed
-          changesNotSentForReview: false
-
-      - name: Notify successful beta deployment
-        run: |
-          echo "Both iOS and Android builds have been successfully uploaded to their respective beta channels (TestFlight and Play Store Beta)."
-          echo "To release to production:"
-          echo "- For iOS: Go to App Store Connect, test the build in TestFlight, then submit for App Store review when ready (Vince will do this)."
-          echo "- For Android: Go to the Google Play Console, test the build in the beta track, then promote to production when ready (Vince will do this)."
+          echo "Android build has been successfully completed."
+          echo "The APK and AAB files are available as artifacts of this workflow run."
+          echo "To release to production, download the AAB file and upload it to the Google Play Console manually."
