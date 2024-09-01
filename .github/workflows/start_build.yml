@@ -2,11 +2,6 @@ name: Build Android App
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to checkout'
-        required: true
-        default: 'main'
 
 jobs:
   clean:
@@ -23,8 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.branch }}
       
       - name: Setup Node.js
         uses: actions/setup-node@v3
