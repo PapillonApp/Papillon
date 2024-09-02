@@ -14,12 +14,15 @@ const SettingsDonorsList = () => {
     Name: string
     DiscordUsername: string
   }>>([]);
+  const [totalDonations, setTotalDonations] = React.useState(0);
 
   useEffect(() => {
     fetch(datasets["kofi-supporters"])
       .then((response) => response.json())
       .then((data) => {
         setDonors(data.sort((a: any, b: any) => parseInt(b.Total) - parseInt(a.Total)));
+        const total = data.reduce((acc: number, donor: any) => acc + parseFloat(donor.Total), 0);
+        setTotalDonations(total);
         setLoading(false);
       });
   }, []);
@@ -58,24 +61,47 @@ const SettingsDonorsList = () => {
         </NativeItem>
       </NativeList>
 
-      {loading && (
-        <NativeList
-          inline animated
+      {!loading && (
+        <NativeList inline animated
           entering={FadeIn}
           exiting={FadeOut}
         >
           <NativeItem
-            animated
-            leading={<ActivityIndicator />}
+            endPadding={16}
+            leading={
+              <Text
+                style={{
+                  fontSize: 24,
+                }}
+              >
+                💰
+              </Text>
+            }
+            trailing={
+              <NativeText
+                variant="body"
+                style={{
+                  color: "#2ecc71",
+                  fontFamily: "semibold",
+                  fontSize: 22,
+                  lineHeight: 28,  // Ajout de cette ligne
+                }}
+              >
+                {totalDonations.toFixed(2)} €
+              </NativeText>
+            }
           >
-            <NativeText>
-              Obtention des donateurs...
+            <NativeText variant="title">
+              Total des dons
+            </NativeText>
+            <NativeText variant="subtitle">
+              Votre soutien fait la différence !
             </NativeText>
           </NativeItem>
         </NativeList>
       )}
 
-      {donors.length > 0 && (
+      {!loading && donors.length > 0 && (
         <NativeList inline animated
           entering={FadeIn}
           exiting={FadeOut}
