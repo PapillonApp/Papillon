@@ -91,13 +91,23 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
           onPress={() => openUrl("https://support.getpapillon.xyz/")}
         />
       </View>
-
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
-        onPress={() => openUrl(PRIVACY_POLICY_URL)}
       >
-        En continuant, vous acceptez les conditions d'utilisation
-        et la politique de confidentialité.
+        En continuant, vous acceptez les&nbsp;
+        <Text
+          style={{ textDecorationLine: "underline" }}
+          onPress={() => openUrl("https://safety.getpapillon.xyz/documents/terms-of-service")}
+        >
+          conditions d'utilisation
+        </Text>
+        &nbsp;et la&nbsp;
+        <Text
+          style={{ textDecorationLine: "underline" }}
+          onPress={() => openUrl("https://safety.getpapillon.xyz/documents/privacy-policy")}
+        >
+          politique de confidentialité
+        </Text>.
       </Text>
     </SafeAreaView>
   );
