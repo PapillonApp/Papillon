@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, ScrollView, View, StyleSheet, Switch } from "react-native";
+import { Text, ScrollView, View, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,6 +8,7 @@ import MagicContainerCard from "@/components/Settings/MagicContainerCard";
 import { NativeIcon, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { ArrowUpNarrowWide } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
+import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 
 const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
   const theme = useTheme();
@@ -27,9 +28,9 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
       <NativeList>
         <NativeItem
           trailing={
-            <Switch
-              value={account?.personalization?.magicEnabled ?? false}
-              onValueChange={(value) => mutateProperty("personalization", { magicEnabled: value })}
+            <PapillonCheckbox
+              checked={account?.personalization?.magicEnabled ?? false}
+              onPress={() => mutateProperty("personalization", { magicEnabled: !account?.personalization?.magicEnabled })}
             />
           }
           leading={
@@ -50,7 +51,5 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
     </ScrollView>
   );
 };
-
-
 
 export default SettingsMagic;
