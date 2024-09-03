@@ -6,7 +6,7 @@ import { getBackgroundColorAsync } from "expo-navigation-bar";
 import LottieView from "lottie-react-native";
 import { AlertTriangle, Captions, Equal, SendToBack } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Platform, Switch, View } from "react-native";
+import { Platform, View } from "react-native";
 import { NestableDraggableFlatList, NestableScrollContainer, ShadowDecorator } from "react-native-draggable-flatlist";
 import { PressableScale } from "react-native-pressable-scale";
 import Reanimated, { FadeIn, FadeOut, FadeOutRight, LinearTransition, ZoomIn, ZoomOut, ZoomOutRight } from "react-native-reanimated";
@@ -420,13 +420,12 @@ const SettingsTabs = () => {
 
           <NativeList>
             <NativeItem
-
               separator
               icon={<Captions />}
               trailing={
-                <Switch
-                  value={!hideTabTitles}
-                  onValueChange={() => setHideTabTitles(!hideTabTitles)}
+                <PapillonCheckbox
+                  checked={!hideTabTitles}
+                  onPress={() => setHideTabTitles(!hideTabTitles)}
                 />
               }
             >
@@ -441,10 +440,9 @@ const SettingsTabs = () => {
             <NativeItem
               icon={<SendToBack />}
               trailing={
-                <Switch
-                  value={showTabBackground}
-                  onValueChange={() => setShowTabBackground(!showTabBackground)}
-
+                <PapillonCheckbox
+                  checked={showTabBackground}
+                  onPress={() => setShowTabBackground(!showTabBackground)}
                 />
               }
             >
