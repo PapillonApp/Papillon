@@ -39,6 +39,7 @@ import {get_settings_widgets} from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AddonPlacementManifest} from "@/addons/types";
 import { useFlagsStore } from "@/stores/flags";
+import { useAlert } from "@/providers/AlertProvider"; // Add this import
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -79,6 +80,8 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
     return unsubscribe;
   }, []);
+
+  const { showAlert } = useAlert(); // Add this line
 
   const tabs = [
     {
@@ -192,23 +195,28 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#CF0029",
           label: "Se déconnecter",
           onPress: () => {
-            Alert.alert("Se déconnecter", "Êtes-vous sûr de vouloir vous déconnecter ?", [
-              {
-                text: "Annuler",
-                style: "cancel",
-              },
-              {
-                text: "Se déconnecter",
-                style: "destructive",
-                onPress: () => {
-                  removeAccount(account.localID);
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: "AccountSelector" }],
-                  });
+            showAlert({
+              title: "Se déconnecter",
+              message: "Êtes-vous sûr de vouloir vous déconnecter ?",
+              actions: [
+                {
+                  title: "Annuler",
+                  onPress: () => {},
                 },
-              },
-            ]);
+                {
+                  title: "Se déconnecter",
+                  onPress: () => {
+                    removeAccount(account.localID);
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "AccountSelector" }],
+                    });
+                  },
+                  primary: true,
+                  backgroundColor: "#CF0029",
+                },
+              ],
+            });
           },
         },
       ]
