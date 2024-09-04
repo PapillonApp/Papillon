@@ -5,8 +5,9 @@ import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();
@@ -188,9 +189,9 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             chevron={false}
             icon={<WholeWord />}
             trailing={
-              <Switch
-                value={!hideNameOnHomeScreen}
-                onValueChange={() => setHideNameOnHomeScreen(!hideNameOnHomeScreen)}
+              <PapillonCheckbox
+                checked={!hideNameOnHomeScreen}
+                onPress={() => setHideNameOnHomeScreen(!hideNameOnHomeScreen)}
               />
             }
           >
@@ -207,9 +208,9 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             chevron={false}
             icon={<UserCircle2 />}
             trailing={
-              <Switch
-                value={!hideProfilePicOnHomeScreen}
-                onValueChange={() => setHideProfilePicOnHomeScreen(!hideProfilePicOnHomeScreen)}
+              <PapillonCheckbox
+                checked={!hideProfilePicOnHomeScreen}
+                onPress={() => setHideProfilePicOnHomeScreen(!hideProfilePicOnHomeScreen)}
               />
             }
           >

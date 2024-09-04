@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, DimensionValue, Switch } from "react-native";
+import { View, Text, StyleSheet, DimensionValue } from "react-native";
 import LottieView from "lottie-react-native";
 import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 
 type NotificationContainerCardProps = {
   theme: any;
@@ -96,9 +97,9 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
       </View>
       <NativeItem
         trailing={
-          <Switch
-            value={isEnable}
-            onValueChange={setEnabled}
+          <PapillonCheckbox
+            checked={isEnable}
+            onPress={() => setEnabled?.(!isEnable)}
           />
         }
       >
