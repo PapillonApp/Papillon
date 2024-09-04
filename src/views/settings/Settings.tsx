@@ -4,6 +4,7 @@ import { Alert, Image, Platform, Text, View } from "react-native";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppJSON from "../../../app.json";
+import * as Linking from "expo-linking";
 
 import Reanimated, {
   FadeIn,
@@ -174,8 +175,9 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           icon: <HandCoins />,
           color: "#CBA024",
           label: "Soutenir Papillon",
-          onPress: () => {},
-          disabled: true,
+          onPress: () => {
+            Linking.openURL("https://ko-fi.com/thepapillonapp");
+          },
         },
         {
           icon: <Info />,
