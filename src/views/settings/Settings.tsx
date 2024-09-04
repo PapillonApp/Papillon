@@ -198,6 +198,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
             showAlert({
               title: "Se déconnecter",
               message: "Êtes-vous sûr de vouloir vous déconnecter ?",
+              icon: <LogOut color="#CF0029" />,
               actions: [
                 {
                   title: "Annuler",
@@ -214,6 +215,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
                   },
                   primary: true,
                   backgroundColor: "#CF0029",
+                  icon: <LogOut color="#FFFFFF" />,
                 },
               ],
             });
