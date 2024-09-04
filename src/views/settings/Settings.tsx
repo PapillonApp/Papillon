@@ -28,7 +28,8 @@ import {
   Settings as SettingsLucide,
   Sparkles,
   SwatchBook,
-  WandSparkles
+  WandSparkles,
+  X
 } from "lucide-react-native";
 
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
@@ -203,6 +204,10 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
                 {
                   title: "Annuler",
                   onPress: () => {},
+                  secondary: true,
+                  backgroundColor: colors.card,
+                  textColor: colors.text,
+                  icon: <X color={colors.text} />,
                 },
                 {
                   title: "Se déconnecter",
