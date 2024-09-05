@@ -8,6 +8,8 @@ export const useGradesStore = create<GradesStore>()(
     (set) => ({
       defaultPeriod: "",
       periods: [],
+      currentPeriod: "",
+
 
       lastUpdated: 0,
       averages: {},
@@ -35,7 +37,8 @@ export const useGradesStore = create<GradesStore>()(
             averages: {
               ...state.averages,
               [periodName]: averages
-            }
+            },
+            currentPeriod: periodName,
           };
         });
       },

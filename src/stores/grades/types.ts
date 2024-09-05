@@ -6,6 +6,7 @@ export interface GradesStore {
   lastUpdated: number
   defaultPeriod: string
   periods: Period[]
+  currentPeriod: string
 
   grades: { [periodName: string]: Grade[] }
   averages: { [periodName: string]: AverageOverview }
