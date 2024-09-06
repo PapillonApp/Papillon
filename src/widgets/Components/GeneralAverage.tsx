@@ -72,6 +72,7 @@ const GeneralAverageWidget = forwardRef(
             width: "100%",
             gap: 7,
             opacity: 0.5,
+            marginBottom: 8, // Ajoute de l'espace entre Mes Notes et Période actuelle
           }}
         >
           <PieChart size={20} color={colors.text} />
@@ -90,7 +91,6 @@ const GeneralAverageWidget = forwardRef(
         <Reanimated.Text
           style={{
             color: colors.text,
-            marginTop: 17,
             fontFamily: "medium",
             fontSize: 15,
             marginVertical: 4,
@@ -98,7 +98,10 @@ const GeneralAverageWidget = forwardRef(
           }}
           layout={LinearTransition}
         >
-          Période actuelle: {currentPeriod || "Indisponible"} {/* Utilise la période actuelle dynamique */}
+          Période actuelle: {"\n"} {/* Saut de ligne avant la période */}
+          <Text style={{ fontWeight: "bold", }}>
+            {currentPeriod || "Indisponible"}
+          </Text>
         </Reanimated.Text>
 
         {/* Section Moyenne Générale */}
