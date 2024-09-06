@@ -83,6 +83,8 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
     </View>
   );
 
+  const hasNews = importantMessages.length > 0 || sortedMessages.length > 0;
+
   return (
     <Reanimated.ScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -125,7 +127,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         </Reanimated.View>
       )}
 
-      {sortedMessages.length > 0 ? (
+      {sortedMessages.length > 0 && (
         <Reanimated.View
           entering={animPapillon(FadeInUp)}
           exiting={animPapillon(FadeOut)}
@@ -139,9 +141,9 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
             />
           </NativeList>
         </Reanimated.View>
-      ) : (
-        !isLoading && <NoNewsMessage />
       )}
+
+      {!isLoading && !hasNews && <NoNewsMessage />}
     </Reanimated.ScrollView>
   );
 };

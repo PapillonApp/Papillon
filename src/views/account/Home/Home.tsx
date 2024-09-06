@@ -1,10 +1,19 @@
-import { protectScreenComponent } from "@/router/helpers/protected-screen";
-import type { Screen } from "@/router/helpers/types";
-import { useCurrentAccount } from "@/stores/account";
+import {protectScreenComponent} from "@/router/helpers/protected-screen";
+import type {Screen} from "@/router/helpers/types";
+import {useCurrentAccount} from "@/stores/account";
 import getCorners from "@/utils/ui/corner-radius";
-import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, Platform, Pressable, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import {useTheme} from "@react-navigation/native";
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from "react-native";
 import Reanimated, {
   FadeIn,
   FadeInUp,
@@ -17,22 +26,30 @@ import Reanimated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 import AccountSwitcher from "@/components/Home/AccountSwitcher";
 import ContextMenu from "@/components/Home/AccountSwitcherContextMenu";
 import Header from "@/components/Home/Header";
 import HomeOnboard from "@/components/Home/HomeOnboard";
-import { accountSwitcherAnim, backdropStyleAnim, cardStyleAnim, cornerStyleAnim, overHeaderAnimAnim, paddingTopItemStyleAnim, stylezAnim } from "./Animations/HomeAnimations";
+import {
+  accountSwitcherAnim,
+  backdropStyleAnim,
+  cardStyleAnim,
+  cornerStyleAnim,
+  overHeaderAnimAnim,
+  paddingTopItemStyleAnim,
+  stylezAnim
+} from "./Animations/HomeAnimations";
 
-import MissingItem from "@/components/Global/MissingItem";
-import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
-import { WifiOff } from "lucide-react-native";
+import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
+import {WifiOff} from "lucide-react-native";
 
 import NetInfo from "@react-native-community/netinfo";
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
-import { Elements } from "./ElementIndex";
-import { animPapillon } from "@/utils/ui/animations";
+import {getErrorTitle} from "@/utils/format/get_papillon_error_title";
+import {Elements} from "./ElementIndex";
+import {animPapillon} from "@/utils/ui/animations";
+import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 
 let headerHeight = Dimensions.get("window").height / 2.8;
 if (headerHeight < 275) {
@@ -43,6 +60,7 @@ const overHeaderHeight = Platform.OS === "ios" ? 46 : 52;
 const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const tabBarHeight = useBottomTabBarHeight();
 
   const errorTitle = useMemo(() => getErrorTitle(), []);
 
@@ -114,13 +132,11 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
   }, [scrolled, canDisableOnboard]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
+    return navigation.addListener("focus", () => {
       if (!onboard) {
         setShowCardContent(true);
       }
     });
-
-    return unsubscribe;
   }, [navigation, onboard]);
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
@@ -148,29 +164,23 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
+    return navigation.addListener("focus", () => {
       setIsFocused(true);
     });
-
-    return unsubscribe;
   }, [navigation]);
 
   useLayoutEffect(() => {
-    const unsubscribe = navigation.addListener("blur", () => {
+    return navigation.addListener("blur", () => {
       setIsFocused(false);
     });
-
-    return unsubscribe;
   }, [navigation]);
 
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
+    return NetInfo.addEventListener(state => {
       setIsOnline(state.isConnected ?? false);
     });
-
-    return unsubscribe;
   }, []);
 
   return (
@@ -296,8 +306,10 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
       <Reanimated.ScrollView
         ref={scrollRef}
         onLayout={LayoutScrollView}
-        style={{ flex: 1, backgroundColor: colors.primary }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{flex: 1, backgroundColor: colors.primary }}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
         onScroll={scrollHandler}
         scrollEventThrottle={Platform.OS == "ios" ? 8 : 32}
         snapToOffsets={[0, headerHeight]}
@@ -309,7 +321,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
         }
         snapToEnd={false}
         showsVerticalScrollIndicator={scrolled}
-        scrollIndicatorInsets={{ top: (0 - headerHeight / 2) + insets.top }}
+        scrollIndicatorInsets={{top: (0 - headerHeight / 2) + insets.top }}
       >
 
         <Reanimated.View
@@ -356,9 +368,9 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
               backgroundColor: colors.background,
               minHeight:
                 Platform.OS === "ios" ?
-                  Dimensions.get("window").height
+                  Dimensions.get("window").height - tabBarHeight - 13
                   :
-                  Dimensions.get("window").height + headerHeight
+                  Dimensions.get("window").height + headerHeight  - tabBarHeight - 13
               ,
               overflow: "hidden",
             },

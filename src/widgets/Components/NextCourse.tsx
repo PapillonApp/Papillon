@@ -23,7 +23,7 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
   const today = todayDate.getTime();
 
   useImperativeHandle(ref, () => ({
-    handlePress: () => null
+    handlePress: () => "Lessons"
   }));
 
   useEffect(() => {
