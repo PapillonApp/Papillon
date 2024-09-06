@@ -1,4 +1,3 @@
-
 import { useTheme } from "@react-navigation/native";
 import { PieChart } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
@@ -130,6 +129,7 @@ const GeneralAverageWidget = forwardRef(
               alignItems: "flex-end",
               gap: 4,
             }}
+            layout={LinearTransition}
           >
             <AnimatedNumber
               value={average?.toFixed(2) ?? ""}
