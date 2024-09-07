@@ -2,6 +2,7 @@ name: Build and Deploy to Beta Channels
 
 on:
   workflow_dispatch:
+  pull_request:
 
 jobs:
   clean:
@@ -173,6 +174,7 @@ jobs:
 
   deploy_to_beta_channels:
     needs: [build_ios, build_android]
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -225,3 +227,13 @@ jobs:
           echo "To release to production:"
           echo "- For iOS: Go to App Store Connect, test the build in TestFlight, then submit for App Store review when ready (Vince will do this)."
           echo "- For Android: Go to the Google Play Console, test the build in the beta track, then promote to production when ready (Vince will do this)."
+
+  notify_pr_build:
+    needs: [build_ios, build_android]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify successful build
+        run: |
+          echo "iOS and Android builds have been successfully completed for this pull request."
+          echo "The builds are available as artifacts but have not been deployed to beta channels."
