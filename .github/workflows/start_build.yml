@@ -3,6 +3,7 @@ name: Build and Deploy to Beta Channels
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, reopened]
 
 jobs:
   clean:
