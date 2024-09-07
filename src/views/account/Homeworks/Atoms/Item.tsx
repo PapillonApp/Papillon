@@ -73,9 +73,6 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
         style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
       >
         <View style={{ flex: 1 }}>
-          <NativeText variant="overtitle" style={{ color: subjectData.color }} numberOfLines={1}>
-            {subjectData.pretty}
-          </NativeText>
           <NativeText
             variant="default"
             numberOfLines={expanded ? undefined : 3}
@@ -96,6 +93,6 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
       </TouchableOpacity>
     </NativeItem>
   );
-}, (prevProps, nextProps) => prevProps.index === nextProps.index);
+}, (prevProps, nextProps) => prevProps.index === nextProps.index && prevProps.homework.done === nextProps.homework.done);
 
 export default HomeworkItem;

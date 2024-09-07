@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useRef, useCallback, useLayoutEffect, useMemo, useState } from "react";
-import { View, ScrollView,Text } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import { useHomeworkStore } from "@/stores/homework";
@@ -16,10 +16,11 @@ import { Account, AccountService } from "@/stores/account/types";
 import { debounce } from "lodash";
 import { dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
 import InfinitePager from "react-native-infinite-pager";
+import { getSubjectData } from "@/services/shared/Subject";
 
 // Types pour les props du composant HomeworkList
 type HomeworkListProps = {
-  groupedHomework: Record<string, Homework[]>;
+  groupedHomework: Record<string, Record<string, Homework[]>>;
   loading: boolean;
   onDonePressHandler: (homework: Homework) => void;
 };
@@ -38,18 +39,31 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
 
   return (
     <>
-      {Object.keys(groupedHomework).map((day, index) => (
-        <View key={index}>
+      {Object.entries(groupedHomework).map(([day, subjects]) => (
+        <View key={day}>
           <NativeListHeader label={day} />
           <NativeList>
-            {groupedHomework[day].map((homework, idx) => (
-              <HomeworkItem
-                key={homework.id}
-                index={idx}
-                total={groupedHomework[day].length}
-                homework={homework}
-                onDonePressHandler={async () => onDonePressHandler(homework)}
-              />
+            {Object.entries(subjects).map(([subject, homeworks]) => (
+              <View key={subject}>
+                <Text style={{
+                  color: getSubjectData(subject).color,
+                  marginLeft: 16,
+                  marginTop: 8,
+                  fontWeight: "bold",
+                  fontSize: 14
+                }}>
+                  {getSubjectData(subject).pretty}
+                </Text>
+                {homeworks.map((homework, idx) => (
+                  <HomeworkItem
+                    key={homework.id}
+                    index={idx}
+                    total={homeworks.length}
+                    homework={homework}
+                    onDonePressHandler={async () => onDonePressHandler(homework)}
+                  />
+                ))}
+              </View>
             ))}
           </NativeList>
         </View>
@@ -92,21 +106,35 @@ const HomeworksPage: React.FC<HomeworksPageProps> = React.memo(({ index, isActiv
   );
 
   const groupedHomework = useMemo(
-    () =>
-      sortedHomework.reduce((acc, curr) => {
+    () => {
+      const grouped = sortedHomework.reduce((acc, curr) => {
         const dayName = getDayName(curr.due);
         const formattedDate = formatDate(curr.due);
         const day = `${dayName} ${formattedDate}`;
 
         if (!acc[day]) {
-          acc[day] = [curr];
-        } else {
-          acc[day].push(curr);
+          acc[day] = {};
         }
 
+        if (!acc[day][curr.subject]) {
+          acc[day][curr.subject] = [];
+        }
+
+        acc[day][curr.subject].push(curr);
+
         return acc;
-      }, {} as Record<string, Homework[]>),
-    [sortedHomework]
+      }, {} as Record<string, Record<string, Homework[]>>);
+
+      // Sort subjects by the number of homework items
+      Object.keys(grouped).forEach(day => {
+        grouped[day] = Object.fromEntries(
+          Object.entries(grouped[day]).sort(([, a], [, b]) => b.length - a.length)
+        );
+      });
+
+      return grouped;
+    },
+    [sortedHomework, getDayName]
   );
 
   const handleDonePress = useCallback(
