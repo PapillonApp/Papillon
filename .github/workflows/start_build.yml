@@ -120,6 +120,7 @@ jobs:
           fi
 
       - name: Upload IPA
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ios-app
@@ -161,12 +162,14 @@ jobs:
           ./gradlew bundleRelease
 
       - name: Upload APK
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk/release/app-release.apk
 
       - name: Upload AAB
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: android-aab
@@ -236,4 +239,4 @@ jobs:
       - name: Notify successful build
         run: |
           echo "iOS and Android builds have been successfully completed for this pull request."
-          echo "The builds are available as artifacts but have not been deployed to beta channels."
+          echo "The builds were not uploaded as artifacts for pull requests."
