@@ -17,6 +17,7 @@ import { debounce } from "lodash";
 import { dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
 import InfinitePager from "react-native-infinite-pager";
 import { getSubjectData } from "@/services/shared/Subject";
+import { ChevronDown } from "react-native-vector-icons/Ionicons";
 
 // Types pour les props du composant HomeworkList
 type HomeworkListProps = {
@@ -25,14 +26,17 @@ type HomeworkListProps = {
   onDonePressHandler: (homework: Homework) => void;
 };
 
-const formatDate = (date: string | number | Date): string => {
-  return new Date(date).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long"
-  });
-};
-
 const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework, loading, onDonePressHandler }) => {
+  const [expandedSubjects, setExpandedSubjects] = useState<Record<string, boolean>>({});
+  const theme = useTheme();
+
+  const toggleSubject = useCallback((day: string, subject: string) => {
+    setExpandedSubjects(prev => ({
+      ...prev,
+      [`${day}-${subject}`]: !prev[`${day}-${subject}`]
+    }));
+  }, []);
+
   if (!loading && Object.keys(groupedHomework).length === 0) {
     return <HomeworksNoHomeworksItem />;
   }
@@ -45,16 +49,31 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
           <NativeList>
             {Object.entries(subjects).map(([subject, homeworks]) => (
               <View key={subject}>
-                <Text style={{
-                  color: getSubjectData(subject).color,
-                  marginLeft: 16,
-                  marginTop: 8,
-                  fontWeight: "bold",
-                  fontSize: 14
-                }}>
-                  {getSubjectData(subject).pretty}
-                </Text>
-                {homeworks.map((homework, idx) => (
+                <TouchableOpacity
+                  onPress={() => toggleSubject(day, subject)}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginLeft: 16,
+                    marginTop: 8,
+                    marginRight: 16,
+                  }}
+                >
+                  <Text style={{
+                    color: getSubjectData(subject).color,
+                    fontWeight: "bold",
+                    fontSize: 14
+                  }}>
+                    {getSubjectData(subject).pretty}
+                  </Text>
+                  <Animated.View style={{
+                    transform: [{ rotate: expandedSubjects[`${day}-${subject}`] ? "180deg" : "0deg" }]
+                  }}>
+                    <ChevronDown size={20} color={theme.colors.text} />
+                  </Animated.View>
+                </TouchableOpacity>
+                {expandedSubjects[`${day}-${subject}`] && homeworks.map((homework, idx) => (
                   <HomeworkItem
                     key={homework.id}
                     index={idx}
