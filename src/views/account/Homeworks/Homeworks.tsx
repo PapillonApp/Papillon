@@ -78,7 +78,7 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
                     <Text style={{
                       color: getSubjectData(subject).color,
                       fontWeight: "bold",
-                      fontSize: 14
+                      fontSize: 16
                     }}>
                       {getSubjectData(subject).pretty}
                     </Text>
