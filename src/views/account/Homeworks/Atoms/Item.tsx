@@ -69,14 +69,12 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
     return url.length > 30 ? `${url.slice(0, 27)}...` : url;
   };
 
-  console.log("Homework : ", homework);
-
   const urls = (homework.content);
   const contentWithoutUrls = useMemo(() => homework.content.replace(/https?:\/\/[^\s]+/g, ""), [homework.content]);
   parsedContent = useMemo(() => parse_homeworks(contentWithoutUrls), [contentWithoutUrls]);
   const [needsExpansion, setNeedsExpansion] = useState(false);
 
-  const onTextLayout = useCallback(e => {
+  const onTextLayout = useCallback((e:any) => {
     const linesNumber = e.nativeEvent.lines.length;
     setNeedsExpansion(linesNumber + urls.length > 3);
   }, []);
