@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Check, ChevronDown, ChevronUp } from "lucide-react-native";
+import { Check, ChevronDown, ChevronUp, Link2Icon } from "lucide-react-native";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import { getSubjectData } from "@/services/shared/Subject";
 import { useTheme } from "@react-navigation/native";
@@ -46,7 +46,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
     setMainLoaded(true);
   }, [homework.done]);
 
-  const parsedContent = useMemo(() => parse_homeworks(homework.content), [homework.content]);
+  var parsedContent = useMemo(() => parse_homeworks(homework.content), [homework.content]);
 
   const [expanded, setExpanded] = useState(false);
 
@@ -55,18 +55,28 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
       transform: [{ rotate: withTiming(expanded ? "180deg" : "0deg") }],
     };
   });
+  const extractUrls = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    let urls :any= text.match(urlRegex);
+    if (urls) {
+      urls = urls.map((url:any) => url.replace(/<br>/g, "").replace(/<\/?div>/g, ""));
+    }
+    return urls || [];
+  };
 
-  const urls = useMemo(() => {
-    const regex = parsedContent.match(/https?:\/\/[^\s]+/g) || [];
-    parsedContent.replace(/https?:\/\/[^\s]+/g, "");
-    return regex.map(url => url.replace(/[\n\r]/g, ""));
-  }, [parsedContent]);
+  const shortenUrl = (url: string) => {
+    return url.length > 30 ? `${url.slice(0, 27)}...` : url;
+  };
 
+  const urls = useMemo(() => extractUrls(homework.content), [homework.content]);
+  console.log(urls);
+  const contentWithoutUrls = useMemo(() => homework.content.replace(/https?:\/\/[^\s]+/g, ""), [homework.content]);
+  parsedContent = useMemo(() => parse_homeworks(contentWithoutUrls), [contentWithoutUrls]);
   const [needsExpansion, setNeedsExpansion] = useState(false);
 
   const onTextLayout = useCallback(e => {
     const linesNumber = e.nativeEvent.lines.length;
-    setNeedsExpansion(linesNumber > 3);
+    setNeedsExpansion(linesNumber + urls.length > 3);
   }, []);
 
   return (
@@ -98,17 +108,20 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
           >
             {parsedContent}
           </NativeText>
-          {urls.map((url, i) => (
-            <TouchableOpacity
-              key={i}
-              onPress={() => openUrl(url)}
-              style={{ marginTop: 4 }}
-            >
-              <NativeText variant="default" style={{ color: theme.colors.primary }}>
-                {url}
-              </NativeText>
-            </TouchableOpacity>
-          ))}
+          {urls.length > 0 && expanded && (
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {urls.map((url, i) => (
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => openUrl(url)}
+                  style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}
+                >
+                  <Link2Icon size={15} color={colors.primary} />
+                  <Text style={{ color: colors.primary, marginLeft: 5 }}>{shortenUrl(url)}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
         {needsExpansion && (
           <Animated.View style={[{ marginLeft: 8 }, rotateStyle]}>
