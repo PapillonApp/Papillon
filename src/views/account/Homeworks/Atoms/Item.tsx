@@ -58,6 +58,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
   const extractUrls = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     let urls :any= text.match(urlRegex);
+    console.log(typeof urls);
     if (urls) {
       urls = urls.map((url:any) => url.replace(/<br>/g, "").replace(/<\/?div>/g, ""));
     }
@@ -68,8 +69,9 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
     return url.length > 30 ? `${url.slice(0, 27)}...` : url;
   };
 
-  const urls = useMemo(() => extractUrls(homework.content), [homework.content]);
-  console.log(urls);
+  console.log("Homework : ", homework);
+
+  const urls = (homework.content);
   const contentWithoutUrls = useMemo(() => homework.content.replace(/https?:\/\/[^\s]+/g, ""), [homework.content]);
   parsedContent = useMemo(() => parse_homeworks(contentWithoutUrls), [contentWithoutUrls]);
   const [needsExpansion, setNeedsExpansion] = useState(false);
