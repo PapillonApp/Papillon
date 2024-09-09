@@ -1,155 +1,147 @@
-import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Button, View } from "react-native";
 
 import { Screen } from "@/router/helpers/types";
-import { updateTimetableForWeekInCache } from "@/services/timetable";
+import { NativeText } from "@/components/Global/NativeComponents";
+import InfiniteDatePager from "@/components/Global/InfiniteDatePager";
+import HorizontalDatePicker from "./Atoms/LessonsDatePicker";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
-import { Page } from "./Atoms/Page";
-
-import InfinitePager from "react-native-infinite-pager";
-import { HeaderCalendar, LessonsDateModal } from "./LessonsHeader";
-import type { Timetable as TTimetable } from "@/services/shared/Timetable";
-import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { AccountService } from "@/stores/account/types";
+import { updateTimetableForWeekInCache } from "@/services/timetable";
+import { Page } from "./Atoms/Page";
+import { LessonsDateModal } from "./LessonsHeader";
+import { set } from "lodash";
+import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 
-const RenderPage = ({ index, timetables, getWeekFromIndex, loadTimetableWeek, currentPageIndex } : {
-  index: number
-  timetables: Record<number, TTimetable>
-  getWeekFromIndex: (index: number) => {
-    epochWeekNumber: number;
-    dayNumber: number;
-  }
-  loadTimetableWeek: (epochWeekNumber: number) => Promise<void>
-  currentPageIndex: number
-}) => (
-  <View>
-    <Page
-      index={index}
-      timetables={timetables}
-      getWeekFromIndex={getWeekFromIndex}
-      loadTimetableWeek={loadTimetableWeek}
-      current={Platform.OS === "ios" ? currentPageIndex === index : true}
-    />
-  </View>
-);
-
-const Timetable: Screen<"Lessons"> = ({ navigation }) => {
-  const { colors } = useTheme();
+const Lessons: Screen<"Lessons"> = () => {
   const account = useCurrentAccount(store => store.account!);
   const timetables = useTimetableStore(store => store.timetables);
-
-  const [currentPageIndex, setCurrentPageIndex] = useState(1);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   let loadedWeeks = useRef<Set<number>>(new Set());
   let currentlyLoadingWeeks = useRef<Set<number>>(new Set());
   let lastAccountID = useRef<string | null>(null);
 
-  // Too hard to type, please send help :D
-  const PagerRef = useRef<any>(null);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const today = useMemo(() => new Date(), []);
-  const defaultDate = useMemo(() => new Date(today), [today]);
+  const [pickerDate, setPickerDate] = React.useState(new Date(today));
+  const [selectedDate, setSelectedDate] = React.useState(new Date(today));
 
-  const getDateFromIndex = useCallback((index: number) => {
-    const date = new Date();
-    date.setDate(date.getDate() + index);
-    return date;
-  }, []);
-
-  const getWeekFromIndex = (index: number) => {
-    const date = getDateFromIndex(index);
+  const getWeekFromDate = (date: Date) => {
     const epochWeekNumber = dateToEpochWeekNumber(date);
-    const dayNumber = date.getDay();
-    return { epochWeekNumber, dayNumber };
+    return epochWeekNumber;
   };
 
-  const loadTimetableWeek = async (epochWeekNumber: number, force = false) => {
-    if (currentlyLoadingWeeks.current.has(epochWeekNumber)) return;
-    if (loadedWeeks.current.has(epochWeekNumber) && !force) return;
-    currentlyLoadingWeeks.current.add(epochWeekNumber);
+  const [updatedWeeks, setUpdatedWeeks] = React.useState(new Set<number>());
+
+  useEffect(() => {
+    void (async () => {
+      const weekNumber = getWeekFromDate(pickerDate);
+      await loadTimetableWeek(weekNumber, false);
+    })();
+  }, [pickerDate, account.instance]);
+
+  const [loadingWeeks, setLoadingWeeks] = useState([]);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const loadTimetableWeek = async (weekNumber: number, force = false) => {
+    if ((currentlyLoadingWeeks.current.has(weekNumber) || loadedWeeks.current.has(weekNumber)) && !force) {
+      return;
+    }
+
+    if (force) {
+      setLoadingWeeks([...loadingWeeks, weekNumber]);
+    }
 
     try {
-      if (account.instance) {
-        await updateTimetableForWeekInCache(account, epochWeekNumber);
-        loadedWeeks.current.add(epochWeekNumber);
-      }
-      else if (epochWeekNumber in timetables) {
-        loadedWeeks.current.add(epochWeekNumber);
-      }
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      currentlyLoadingWeeks.current.delete(epochWeekNumber);
+      await updateTimetableForWeekInCache(account, weekNumber, force);
+      currentlyLoadingWeeks.current.add(weekNumber);
+    }
+    finally {
+      currentlyLoadingWeeks.current.delete(weekNumber);
+      loadedWeeks.current.add(weekNumber);
+      setUpdatedWeeks(new Set(updatedWeeks).add(weekNumber));
+      setLoadingWeeks(loadingWeeks.filter((w) => w !== weekNumber));
     }
   };
 
-  useEffect(() => {
-    for (const key of Object.keys(timetables)) {
-      loadedWeeks.current.add(Number(key));
-    }
-  }, [timetables]);
+  const getAllLessonsForDay = (date: Date) => {
+    const week = getWeekFromDate(date);
+    const timetable = timetables[week] || [];
 
-  useEffect(() => {
-    if (lastAccountID.current === null) {
-      lastAccountID.current = account.localID;
-    }
-    else {
-      // On reload les semaines si on change de compte.
-      if (lastAccountID.current !== account.localID) {
-        lastAccountID.current = account.localID;
-        loadedWeeks.current = new Set();
-        currentlyLoadingWeeks.current = new Set();
-      }
-    }
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
 
-    const { epochWeekNumber } = getWeekFromIndex(currentPageIndex);
-    loadTimetableWeek(epochWeekNumber);
-  }, [currentPageIndex, account?.instance, account.localID]);
+    const day = timetable.filter((lesson) => {
+      const lessonDate = new Date(lesson.startTimestamp);
+      lessonDate.setHours(0, 0, 0, 0);
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <HeaderCalendar
-          index={currentPageIndex}
-          changeIndex={(index) => PagerRef.current?.setPage(index)}
-          getDateFromIndex={getDateFromIndex}
-          showPicker={() => setShowDatePicker(true)}
-        />
-      ),
+      return lessonDate.getTime() === newDate.getTime();
     });
-  }, [navigation, currentPageIndex]);
+
+    return day;
+  };
 
   return (
-    <View style={{ backgroundColor: colors.background }}>
-      {showDatePicker && (
-        <LessonsDateModal
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-          currentPageIndex={currentPageIndex}
-          defaultDate={new Date()}
-          PagerRef={PagerRef}
-          getDateFromIndex={getDateFromIndex}
-        />
-      )}
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
+      <HorizontalDatePicker
+        onDateSelect={(date) => {
+          const newDate = new Date(date);
+          newDate.setHours(0, 0, 0, 0);
 
-      <InfinitePager
-        onPageChange={setCurrentPageIndex}
-        ref={PagerRef}
-        renderPage={({ index }) => <RenderPage
-          index={index}
-          timetables={timetables}
-          getWeekFromIndex={getWeekFromIndex}
-          loadTimetableWeek={loadTimetableWeek}
-          currentPageIndex={currentPageIndex}
-        />}
-        style={{ height: "100%" }}
+          if (pickerDate.getTime() !== date.getTime()) {
+            setSelectedDate(newDate);
+          }
+        }}
+        onCurrentDatePress={() => {
+          setShowDatePicker(true);
+        }}
+        initialDate={pickerDate}
+      />
+
+      <InfiniteDatePager
+        initialDate={selectedDate}
+        onDateChange={(date) => {
+          const newDate = new Date(date);
+          newDate.setHours(0, 0, 0, 0);
+
+          if (pickerDate.getTime() !== date.getTime()) {
+            setPickerDate(newDate);
+          }
+        }}
+        renderDate={(date) => (
+          <Page
+            current={date.getDay() == pickerDate.getDay()}
+            date={date}
+            day={getAllLessonsForDay(date)}
+            weekExists={timetables[getWeekFromDate(date)] && timetables[getWeekFromDate(date)].length > 0}
+            refreshAction={() => {
+              loadTimetableWeek(getWeekFromDate(date), true);
+            }}
+            loading={loadingWeeks.includes(getWeekFromDate(date))}
+          />
+        )}
+      />
+
+      <LessonsDateModal
+        showDatePicker={showDatePicker}
+        setShowDatePicker={setShowDatePicker}
+        currentDate={pickerDate}
+        onDateSelect={(date) => {
+          const newDate = new Date(date);
+          newDate.setHours(0, 0, 0, 0);
+          // setPickerDate(newDate);
+          setSelectedDate(newDate);
+        }}
       />
     </View>
   );
 };
 
-export default Timetable;
+export default Lessons;

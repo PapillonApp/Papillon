@@ -55,17 +55,17 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      if (selectedPeriod === "") return;
-      if (!account.instance) return;
+    if (selectedPeriod === "") return;
+    if (!account.instance) return;
 
-      void async function () {
-        setIsLoading(true);
+    void (async function () {
+      setIsLoading(true);
+      setTimeout(async () => {
         await updateData();
         setIsRefreshing(false);
         setIsLoading(false);
-      }();
-    }, 1);
+      }, 100);
+    })();
   }, [selectedPeriod, account.instance, isRefreshing]);
 
   useEffect(() => {

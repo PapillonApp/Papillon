@@ -1,4 +1,4 @@
-import Reanimated, { AnimatedStyle, FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import Reanimated, { AnimatedStyle, EntryExitTransition, FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { type StyleProp, Text, type ViewStyle } from "react-native";
 import { NativeText } from "./NativeComponents";
 
@@ -7,13 +7,17 @@ interface MissingItemProps {
   emoji: string;
   title: string;
   description: string;
+  entering?: EntryExitTransition;
+  exiting?: EntryExitTransition;
 }
 
 const MissingItem: React.FC<MissingItemProps> = ({
   style,
   emoji,
   title,
-  description
+  description,
+  entering,
+  exiting,
 }) => {
   return (
     <Reanimated.View
@@ -22,9 +26,10 @@ const MissingItem: React.FC<MissingItemProps> = ({
         justifyContent: "center",
         alignItems: "center",
         gap: 4,
+        paddingHorizontal: 40,
       }, style]}
-      entering={FadeInUp}
-      exiting={FadeOutDown}
+      entering={entering ? entering : FadeInUp}
+      exiting={exiting ? exiting : FadeOutDown}
     >
       <Text style={{ fontSize: 32 }}>
         {emoji}

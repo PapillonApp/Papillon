@@ -107,7 +107,7 @@ const SettingsTabs = () => {
 
   const playFailAnimation = () => {
     setFailAnimation(true);
-    setTimeout(() => setFailAnimation(false), 300);
+    setTimeout(() => setFailAnimation(false), 900);
   };
 
   const [previewIndex, setPreviewIndex] = useState(0);

@@ -1,22 +1,29 @@
+import { NativeText } from "@/components/Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
-import { Image, Platform, RefreshControl as RNRefreshControl, Text, View } from "react-native";
-import { createNativeWrapper, ScrollView } from "react-native-gesture-handler";
+import { ActivityIndicator, Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
+import { TimetableItem } from "./Item";
+import { createNativeWrapper } from "react-native-gesture-handler";
 
 import Reanimated, {
   FadeInDown,
-  FadeOut
+  FadeOut,
+  FadeOutUp
 } from "react-native-reanimated";
 
-import { Sofa, Utensils } from "lucide-react-native";
-import { TimetableItem } from "./Item";
+import { Activity, Sofa, Utensils } from "lucide-react-native";
 import LessonsNoCourseItem from "./NoCourse";
 import { Timetable } from "@/services/shared/Timetable";
+import { animPapillon } from "@/utils/ui/animations";
+import LessonsLoading from "./Loading";
+import MissingItem from "@/components/Global/MissingItem";
 
 const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
   shouldCancelWhenOutside: false,
 });
+
+const lz = (num: number) => (num < 10 ? `0${num}` : num);
 
 const getDuration = (minutes: number): string => {
   const durationHours = Math.floor(minutes / 60);
@@ -24,84 +31,80 @@ const getDuration = (minutes: number): string => {
   return `${durationHours} h ${lz(durationRemainingMinutes)} min`;
 };
 
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
-interface Props {
-  index: number
-  timetables: Record<number, Timetable>
-  loadTimetableWeek: (epochWeekNumber: number, force?: boolean) => Promise<void>
-  getWeekFromIndex: (index: number) => {
-    epochWeekNumber: number;
-    dayNumber: number;
-  }
-  current: boolean
-}
-
-export const Page: React.FC<Props> = ({
-  index,
-  timetables,
-  loadTimetableWeek,
-  current,
-  getWeekFromIndex,
-}) => {
-  const { colors } = useTheme();
-  const { epochWeekNumber, dayNumber } = useMemo(() => getWeekFromIndex(index), [index, getWeekFromIndex]);
-
-  const currentDayTimetable: Timetable = (!(epochWeekNumber in timetables)) ? []
-    : timetables[epochWeekNumber]
-      .filter(c => new Date(c.startTimestamp).getDay() === dayNumber)
-      .sort((a, b) => a.startTimestamp - b.startTimestamp);
-
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await loadTimetableWeek(epochWeekNumber, true);
-    setIsRefreshing(false);
-  };
-
+export const Page = ({ day, date, current, refreshAction, loading, weekExists }) => {
   return (
-    <Reanimated.View style={{ height: "100%" }}>
-      <ScrollView
-        style={{ flex: 1, height: "100%" }}
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            colors={[colors.primary]}
-          />
-        }
-      >
-        {currentDayTimetable.length > 0 ? (
-          current && (
-            <View style={{ paddingHorizontal: 10, paddingVertical: 10, gap: 10 }}>
-              {currentDayTimetable.map((item, i) => (
-                <View key={item.startTimestamp} style={{ gap: 10 }}>
-                  <TimetableItem key={item.startTimestamp} item={item} index={i} />
+    <ScrollView
+      style={{
+        flex: 1,
+        width: "100%",
+        height: "100%"
+      }}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={refreshAction}
+        />
+      }
+    >
+      {current &&
+        <View
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 10,
+            gap: 10,
+            width: "100%"
+          }}
+        >
+          {day && day.map((item, i) => (
+            <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
+              <TimetableItem key={item.startTimestamp} item={item} index={i} />
 
-                  {currentDayTimetable[i + 1] &&
-                    currentDayTimetable[i + 1].startTimestamp - item.endTimestamp > 1740000 && (
-                    <SeparatorCourse
-                      i={i}
-                      start={currentDayTimetable[i + 1].startTimestamp}
-                      end={item.endTimestamp}
-                    />
-                  )}
-                </View>
-              ))}
+              {day[i + 1] &&
+                day[i + 1].startTimestamp - item.endTimestamp > 1740000 && (
+                <SeparatorCourse
+                  i={i}
+                  start={day[i + 1].startTimestamp}
+                  end={item.endTimestamp}
+                />
+              )}
             </View>
-          )
+          ))}
+        </View>
+      }
+
+      {loading && day.length == 0 && (
+        <Reanimated.View
+          style={{
+            padding: 26,
+          }}
+          entering={animPapillon(FadeInDown)}
+          exiting={animPapillon(FadeOutUp).delay(100)}
+        >
+          <LessonsLoading />
+        </Reanimated.View>
+      )}
+
+      {day && day.length === 0 && current && !loading && (
+        weekExists && (new Date(date).getDay() == 6 || new Date(date).getDay() == 0) ? (
+          <MissingItem
+            emoji="🌴"
+            title="C'est le week-end !"
+            description="Profitez de votre week-end, il n'y a pas de cours aujourd'hui."
+            entering={animPapillon(FadeInDown)}
+            exiting={animPapillon(FadeOut)}
+          />
         ) : (
-          current && (
-            <View style={{ flex: 1, paddingTop: 50 }}>
-              <LessonsNoCourseItem />
-            </View>
-          )
-        )}
-      </ScrollView>
-    </Reanimated.View>
+          <MissingItem
+            emoji="📆"
+            title="Pas de cours aujourd'hui"
+            description="Aucun cours n'est prévu pour aujourd'hui."
+            entering={animPapillon(FadeInDown)}
+            exiting={animPapillon(FadeOut)}
+          />
+        )
+      )}
+    </ScrollView>
   );
 };
 
@@ -155,10 +158,10 @@ const SeparatorCourse: React.FC<{
           tintColor={colors.text}
           style={{
             position: "absolute",
-            top: "-20%",
+            top: "-15%",
             left: "-20%",
             width: "200%",
-            height: "200%",
+            height: "300%",
             opacity: 0.05,
           }}
         />

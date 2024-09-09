@@ -51,7 +51,7 @@ import {Elements} from "./ElementIndex";
 import {animPapillon} from "@/utils/ui/animations";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 
-let headerHeight = Dimensions.get("window").height / 2.8;
+let headerHeight = Dimensions.get("window").height / 2.75;
 if (headerHeight < 275) {
   headerHeight = 275;
 }
