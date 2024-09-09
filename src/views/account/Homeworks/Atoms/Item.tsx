@@ -8,6 +8,7 @@ import type { Homework } from "@/services/shared/Homework";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import * as WebBrowser from "expo-web-browser";
 
 const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }: {
   homework: Homework,
@@ -16,7 +17,15 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
   total: number
 }) => {
   const theme = useTheme();
+  const { colors } = theme;
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
+
+  const openUrl = async (url: string) => {
+    await WebBrowser.openBrowserAsync(url, {
+      controlsColor: colors.primary,
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+    });
+  };
 
   useEffect(() => {
     const data = getSubjectData(homework.subject);
@@ -46,6 +55,12 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
       transform: [{ rotate: withTiming(expanded ? "180deg" : "0deg") }],
     };
   });
+
+  const urls = useMemo(() => {
+    const regex = parsedContent.match(/https?:\/\/[^\s]+/g) || [];
+    parsedContent.replace(/https?:\/\/[^\s]+/g, "");
+    return regex.map(url => url.replace(/[\n\r]/g, ""));
+  }, [parsedContent]);
 
   const [needsExpansion, setNeedsExpansion] = useState(false);
 
@@ -83,6 +98,17 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
           >
             {parsedContent}
           </NativeText>
+          {urls.map((url, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => openUrl(url)}
+              style={{ marginTop: 4 }}
+            >
+              <NativeText variant="default" style={{ color: theme.colors.primary }}>
+                {url}
+              </NativeText>
+            </TouchableOpacity>
+          ))}
         </View>
         {needsExpansion && (
           <Animated.View style={[{ marginLeft: 8 }, rotateStyle]}>
