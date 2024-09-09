@@ -75,13 +75,18 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
                       paddingVertical: 8,
                     }}
                   >
-                    <Text style={{
-                      color: getSubjectData(subject).color,
-                      fontWeight: "bold",
-                      fontSize: 16
-                    }}>
-                      {getSubjectData(subject).pretty}
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                      <Text style={{ marginRight: 8, fontSize: 16 }}>
+                        {getSubjectData(subject).emoji}
+                      </Text>
+                      <Text style={{
+                        color: getSubjectData(subject).color,
+                        fontWeight: "bold",
+                        fontSize: 16
+                      }}>
+                        {getSubjectData(subject).pretty}
+                      </Text>
+                    </View>
                     <Animated.View style={rotateStyle}>
                       <ChevronDown size={20} color={theme.colors.text} />
                     </Animated.View>
