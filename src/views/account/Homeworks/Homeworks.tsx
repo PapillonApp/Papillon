@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useRef, useCallback, useLayoutEffect, useMemo, useState } from "react";
-import { View, ScrollView, Text } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity } from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import { useHomeworkStore } from "@/stores/homework";
