@@ -77,6 +77,8 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
   return (
     <NativeItem
       separator={index !== total - 1}
+      onPress={() => setExpanded(!expanded)}
+      chevron={false}
       leading={
         <PapillonCheckbox
           checked={homework.done}
