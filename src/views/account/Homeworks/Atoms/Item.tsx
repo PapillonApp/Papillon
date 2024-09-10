@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Clipboard } from "react-native";
 import { Check, ChevronDown, ChevronUp, Link2Icon } from "lucide-react-native";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import { getSubjectData } from "@/services/shared/Subject";
@@ -113,7 +113,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
                 <TouchableOpacity
                   key={i}
                   onPress={() => openUrl(url)}
-                  onLongPress={() => undefined}
+                  onLongPress={() => Clipboard.setString(url)}
                   style={{
                     flexDirection: "row",
                     width: "95%",
