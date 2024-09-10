@@ -57,26 +57,22 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
   });
   const extractUrls = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    let urls :any= text.match(urlRegex);
-    console.log(typeof urls);
+    let urls: any = text.match(urlRegex);
     if (urls) {
-      urls = urls.map((url:any) => url.replace(/<br>/g, "").replace(/<\/?div>/g, ""));
+      urls = urls.map((url:string) => url.replace(/<br>/g, "").replace(/<\/?div>/g, ""));
     }
     return urls || [];
   };
 
-  const shortenUrl = (url: string) => {
-    return url.length > 30 ? `${url.slice(0, 27)}...` : url;
-  };
-
-  const urls = (homework.content);
+  const urls: string[] = extractUrls(homework.content);
+  console.log(urls);
   const contentWithoutUrls = useMemo(() => homework.content.replace(/https?:\/\/[^\s]+/g, ""), [homework.content]);
   parsedContent = useMemo(() => parse_homeworks(contentWithoutUrls), [contentWithoutUrls]);
   const [needsExpansion, setNeedsExpansion] = useState(false);
 
   const onTextLayout = useCallback((e:any) => {
     const linesNumber = e.nativeEvent.lines.length;
-    setNeedsExpansion(linesNumber + urls.length > 3);
+    setNeedsExpansion(linesNumber > 3 || urls.length > 0);
   }, []);
 
   return (
@@ -105,6 +101,9 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
             variant="default"
             numberOfLines={expanded ? undefined : 3}
             onTextLayout={onTextLayout}
+            style={{
+              textAlign: expanded ? "justify" : "left",
+            }}
           >
             {parsedContent}
           </NativeText>
@@ -114,10 +113,25 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
                 <TouchableOpacity
                   key={i}
                   onPress={() => openUrl(url)}
-                  style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}
+                  onLongPress={() => undefined}
+                  style={{
+                    flexDirection: "row",
+                    width: "95%",
+                    alignItems: "center",
+                    marginRight: 8,
+                  }}
                 >
                   <Link2Icon size={15} color={colors.primary} />
-                  <Text style={{ color: colors.primary, marginLeft: 5 }}>{shortenUrl(url)}</Text>
+                  <Text
+                    style={{
+                      color: colors.primary,
+                      marginLeft: 5,
+                      width: "100%",
+                    }}
+                    numberOfLines={1}
+                  >
+                    {url}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
