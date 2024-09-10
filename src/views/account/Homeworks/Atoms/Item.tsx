@@ -52,7 +52,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
 
   const rotateStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: withTiming(expanded ? "180deg" : "0deg") }],
+      transform: [{ rotate: withTiming(expanded ? "0deg" : "180deg") }],
     };
   });
   const extractUrls = (text: string) => {
@@ -65,7 +65,6 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
   };
 
   const urls: string[] = extractUrls(homework.content);
-  console.log(urls);
   const contentWithoutUrls = useMemo(() => homework.content.replace(/https?:\/\/[^\s]+/g, ""), [homework.content]);
   parsedContent = useMemo(() => parse_homeworks(contentWithoutUrls), [contentWithoutUrls]);
   const [needsExpansion, setNeedsExpansion] = useState(false);
@@ -139,11 +138,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
         </View>
         {needsExpansion && (
           <Animated.View style={[{ marginLeft: 8 }, rotateStyle]}>
-            {expanded ? (
-              <ChevronUp size={20} color={theme.colors.text} />
-            ) : (
-              <ChevronDown size={20} color={theme.colors.text} />
-            )}
+            <ChevronUp size={20} color={theme.colors.text} />
           </Animated.View>
         )}
       </TouchableOpacity>
