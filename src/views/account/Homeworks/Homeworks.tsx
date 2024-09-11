@@ -51,12 +51,13 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
 
   return (
     <>
-      {Object.entries(groupedHomework).map(([day, subjects]) => (
+      {Object.entries(groupedHomework).map(([day, subjects], subjectIndex, subjectsArray) => (
         <View key={day}>
           <NativeListHeader label={day} />
           <NativeList>
-            {Object.entries(subjects).map(([subject, homeworks]) => {
+            {Object.entries(subjects).map(([subject, homeworks], subjectIndex, subjectsArray) => {
               const isCollapsed = collapsedSubjects[subject];
+              const isLastSubject = subjectIndex === subjectsArray.length - 1;
               const rotateStyle = useAnimatedStyle(() => {
                 return {
                   transform: [{ rotate: withTiming(isCollapsed ? "0deg" : "180deg") }],
@@ -72,23 +73,43 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
                       justifyContent: "space-between",
                       alignItems: "center",
                       paddingHorizontal: 16,
-                      paddingVertical: 8,
+                      paddingVertical: 12,
+                      borderBottomWidth: isLastSubject ? 0 : 1,
+                      borderBottomColor: theme.colors.border,
+                      backgroundColor: theme.colors.card,
                     }}
                   >
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
-                      <Text style={{
-                        color: getSubjectData(subject).color,
-                        fontWeight: "bold",
-                        fontSize: 16
+                      <View style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        backgroundColor: getSubjectData(subject).color,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginRight: 12,
                       }}>
-                        {getSubjectData(subject).pretty}
-                      </Text>
-                      <Text style={{ marginLeft: 8, fontSize: 16 }}>
-                        {getSubjectData(subject).emoji}
-                      </Text>
+                        <Text style={{ fontSize: 20 }}>{getSubjectData(subject).emoji}</Text>
+                      </View>
+                      <View>
+                        <Text style={{
+                          color: theme.colors.text,
+                          fontWeight: "bold",
+                          fontSize: 16,
+                        }}>
+                          {getSubjectData(subject).pretty}
+                        </Text>
+                        <Text style={{
+                          color: theme.colors.text,
+                          fontSize: 14,
+                          opacity: 0.7,
+                        }}>
+                          {homeworks.length} devoir{homeworks.length > 1 ? "s" : ""}
+                        </Text>
+                      </View>
                     </View>
                     <Animated.View style={rotateStyle}>
-                      <ChevronDown size={20} color={theme.colors.text} />
+                      <ChevronDown size={24} color={theme.colors.text} />
                     </Animated.View>
                   </TouchableOpacity>
                   {!isCollapsed && homeworks.map((homework, idx) => (

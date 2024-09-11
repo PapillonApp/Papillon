@@ -54,6 +54,12 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
     setNeedsExpansion(linesNumber > 3);
   }, []);
 
+  const toggleExpanded = useCallback(() => {
+    if (needsExpansion) {
+      setExpanded(!expanded);
+    }
+  }, [needsExpansion, expanded]);
+
   return (
     <NativeItem
       separator={index !== total - 1}
@@ -69,8 +75,8 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
       }
     >
       <TouchableOpacity
-        onPress={() => needsExpansion && setExpanded(!expanded)}
-        style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+        onPress={toggleExpanded}
+        style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}
       >
         <View style={{ flex: 1 }}>
           <NativeText
