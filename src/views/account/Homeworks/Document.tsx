@@ -47,6 +47,7 @@ const HomeworksDocument = ({ route, navigation }) => {
       style={{
         padding: 16,
         paddingTop: 0,
+        backgroundColor: theme.colors.background,
       }}
     >
       <NativeList inset>
@@ -68,7 +69,8 @@ const HomeworksDocument = ({ route, navigation }) => {
                   lineHeight: 42,
                   textAlign: "center",
                   width: "100%",
-                  marginLeft: 2
+                  marginLeft: 2,
+                  color: theme.colors.text,
                 }}
               >
                 {subjectData.emoji}
@@ -76,10 +78,10 @@ const HomeworksDocument = ({ route, navigation }) => {
             </View>
           }
         >
-          <NativeText variant="title">
+          <NativeText variant="title" style={{ color: theme.colors.text }}>
             {subjectData.pretty}
           </NativeText>
-          <NativeText variant="subtitle">
+          <NativeText variant="subtitle" style={{ color: theme.colors.text }}>
             {formatDistance(
               new Date(homework.due),
               new Date(),
@@ -96,6 +98,7 @@ const HomeworksDocument = ({ route, navigation }) => {
               fontSize: 16,
               lineHeight: 22,
               fontFamily: "medium",
+              color: theme.colors.text
             }}
             parse={
               [
@@ -125,7 +128,7 @@ const HomeworksDocument = ({ route, navigation }) => {
 
       {homework.attachments.length > 0 && (
         <View>
-          <NativeListHeader label="Pièces jointes" icon={<Paperclip />} />
+          <NativeListHeader label="Pièces jointes" icon={<Paperclip color={theme.colors.text} />} />
 
           <NativeList>
             {homework.attachments.map((attachment, index) => (
@@ -134,15 +137,15 @@ const HomeworksDocument = ({ route, navigation }) => {
                 onPress={() => openUrl(attachment.url)}
                 icon={
                   attachment.type === "file" ?
-                    <FileText />
+                    <FileText color={theme.colors.text} />
                     :
-                    <Link />
+                    <Link color={theme.colors.text} />
                 }
               >
-                <NativeText variant="title"  numberOfLines={2}>
+                <NativeText variant="title" numberOfLines={2} style={{ color: theme.colors.text }}>
                   {attachment.name}
                 </NativeText>
-                <NativeText variant="subtitle" numberOfLines={1}>
+                <NativeText variant="subtitle" numberOfLines={1} style={{ color: theme.colors.text }}>
                   {attachment.url}
                 </NativeText>
               </NativeItem>
