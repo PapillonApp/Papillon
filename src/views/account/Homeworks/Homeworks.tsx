@@ -11,7 +11,7 @@ import HomeworksNoHomeworksItem from "./Atoms/NoHomeworks";
 import HomeworkItem from "./Atoms/Item";
 import { PressableScale } from "react-native-pressable-scale";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X } from "lucide-react-native";
+import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
@@ -23,6 +23,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
+import { getSubjectData } from "@/services/shared/Subject";
 
 type HomeworksPageProps = {
   index: number;
@@ -142,7 +143,9 @@ const WeekView = ({ route, navigation }) => {
 
   const [searchTerms, setSearchTerms] = useState("");
 
-  const renderWeek = ({ item }) => {
+  const [collapsedSubjects, setCollapsedSubjects] = useState<Record<string, boolean>>({});
+
+  const renderWeek = useCallback(({ item }) => {
     const homeworksInWeek = homeworks[item] ?? [];
 
     const sortedHomework = homeworksInWeek.sort((a, b) => new Date(a.due).getTime() - new Date(b.due).getTime());
@@ -153,14 +156,18 @@ const WeekView = ({ route, navigation }) => {
       const day = `${dayName} ${formattedDate}`;
 
       if (!acc[day]) {
-        acc[day] = [curr];
-      } else {
-        acc[day].push(curr);
+        acc[day] = {};
       }
+
+      if (!acc[day][curr.subject]) {
+        acc[day][curr.subject] = [];
+      }
+
+      acc[day][curr.subject].push(curr);
 
       // filter homeworks by search terms
       if (searchTerms.length > 0) {
-        acc[day] = acc[day].filter(homework => {
+        acc[day][curr.subject] = acc[day][curr.subject].filter(homework => {
           const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           return content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
         });
@@ -168,16 +175,28 @@ const WeekView = ({ route, navigation }) => {
 
       // if hideDone is enabled, filter out the done homeworks
       if (hideDone) {
-        acc[day] = acc[day].filter(homework => !homework.done);
+        acc[day][curr.subject] = acc[day][curr.subject].filter(homework => !homework.done);
+      }
+
+      // remove all empty subjects
+      if (acc[day][curr.subject].length === 0) {
+        delete acc[day][curr.subject];
       }
 
       // remove all empty days
-      if (acc[day].length === 0) {
+      if (Object.keys(acc[day]).length === 0) {
         delete acc[day];
       }
 
       return acc;
-    }, {} as Record<string, Homework[]>);
+    }, {} as Record<string, Record<string, Homework[]>>);
+
+    const toggleSubject = (day: string, subject: string) => {
+      setCollapsedSubjects(prev => ({
+        ...prev,
+        [`${day}-${subject}`]: !prev[`${day}-${subject}`]
+      }));
+    };
 
     return (
       <ScrollView
@@ -195,7 +214,7 @@ const WeekView = ({ route, navigation }) => {
           />
         }
       >
-        {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
+        {groupedHomework && Object.entries(groupedHomework).map(([day, subjects]) => (
           <Reanimated.View
             key={day}
             entering={animPapillon(FadeInUp)}
@@ -203,20 +222,67 @@ const WeekView = ({ route, navigation }) => {
             layout={animPapillon(LinearTransition)}
           >
             <NativeListHeader animated label={day} />
-
             <NativeList animated>
-              {groupedHomework[day].map((homework, idx) => (
-                <HomeworkItem
-                  key={homework.id}
-                  index={idx}
-                  navigation={navigation}
-                  total={groupedHomework[day].length}
-                  homework={homework}
-                  onDonePressHandler={async () => {
-                    await toggleHomeworkState(account, homework);
-                    await updateHomeworks(true, false, homework.done);
-                  }}
-                />
+              {Object.entries(subjects).map(([subject, homeworks]) => (
+                <Reanimated.View key={`${day}-${subject}`} layout={animPapillon(LinearTransition)}>
+                  <TouchableOpacity onPress={() => toggleSubject(day, subject)}>
+                    <View style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: 10,
+                      backgroundColor: theme.colors.card,
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
+                      borderBottomLeftRadius: collapsedSubjects[`${day}-${subject}`] ? 8 : 0,
+                      borderBottomRightRadius: collapsedSubjects[`${day}-${subject}`] ? 8 : 0,
+                    }}>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <View
+                          style={{
+                            backgroundColor: getSubjectData(subject).color + "22",
+                            borderRadius: 50,
+                            width: 36,
+                            height: 36,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginRight: 10,
+                          }}
+                        >
+                          <Text style={{ fontSize: 18 }}>{getSubjectData(subject).emoji}</Text>
+                        </View>
+                        <Text style={{ fontWeight: "bold", color: theme.colors.text }}>{subject}</Text>
+                      </View>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Text style={{ marginRight: 8, color: theme.colors.text, opacity: 0.7 }}>
+                          {homeworks.length}
+                        </Text>
+                        {collapsedSubjects[`${day}-${subject}`] ?
+                          <ChevronDown size={20} color={theme.colors.text} /> :
+                          <ChevronUp size={20} color={theme.colors.text} />
+                        }
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+
+                  {!collapsedSubjects[`${day}-${subject}`] && (
+                    <>
+                      {homeworks.map((homework, idx) => (
+                        <HomeworkItem
+                          key={homework.id}
+                          index={idx}
+                          navigation={navigation}
+                          total={homeworks.length}
+                          homework={homework}
+                          onDonePressHandler={async () => {
+                            await toggleHomeworkState(account, homework);
+                            await updateHomeworks(true, false, homework.done);
+                          }}
+                        />
+                      ))}
+                    </>
+                  )}
+                </Reanimated.View>
               ))}
             </NativeList>
           </Reanimated.View>
@@ -254,7 +320,7 @@ const WeekView = ({ route, navigation }) => {
         }
       </ScrollView>
     );
-  };
+  }, [homeworks, collapsedSubjects, searchTerms, hideDone, theme, account, updateHomeworks]);
 
   const onEndReached = () => {
     const lastWeek = data[data.length - 1];
