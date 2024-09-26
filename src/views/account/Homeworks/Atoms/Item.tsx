@@ -11,7 +11,7 @@ import RenderHTML from "react-native-render-html";
 import {View} from "react-native";
 import { HomeworkReturnType } from "@/services/shared/Homework";
 
-const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }) => {
+const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, showSubjectName }) => {
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
 
@@ -65,6 +65,11 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
       >
         <Reanimated.View style={{ flex: 1, gap: 4 }} layout={animPapillon(LinearTransition)}>
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+            {showSubjectName && (
+              <NativeText variant="overtitle" style={{ color: subjectData.color, flex: 1 }} numberOfLines={1}>
+                {homework.subject}
+              </NativeText>
+            )}
             {
               homework.returnType && (
                 <View
