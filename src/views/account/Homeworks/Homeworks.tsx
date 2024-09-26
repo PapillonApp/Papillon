@@ -66,7 +66,6 @@ const WeekView = ({ route, navigation }) => {
   }
   const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
-  // Function to get the current week number since epoch
   const getCurrentWeekNumber = () => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -128,7 +127,6 @@ const WeekView = ({ route, navigation }) => {
       });
   }, [account, selectedWeek, loadedWeeks]);
 
-  // on page change, load the homeworks
   useEffect(() => {
     if (selectedWeek > oldSelectedWeek) {
       setDirection("right");
@@ -143,15 +141,6 @@ const WeekView = ({ route, navigation }) => {
   }, [selectedWeek]);
 
   const [searchTerms, setSearchTerms] = useState("");
-
-  const [collapsedSubjects, setCollapsedSubjects] = useState<Record<string, boolean>>({});
-
-  const toggleSubject = (subject: string) => {
-    setCollapsedSubjects(prev => ({
-      ...prev,
-      [subject]: !prev[subject],
-    }));
-  };
 
   const renderWeek = useCallback(({ item }) => {
     const homeworksInWeek = homeworks[item] ?? [];
@@ -212,82 +201,22 @@ const WeekView = ({ route, navigation }) => {
             exiting={animPapillon(FadeOutDown)}
             layout={animPapillon(LinearTransition)}
           >
-            <NativeListHeader animated label={groupBySubject ? key : key} />
+            <NativeListHeader animated label={key} />
             <NativeList animated>
-              {groupBySubject ? (
-                <Reanimated.View layout={animPapillon(LinearTransition)}>
-                  <TouchableOpacity onPress={() => toggleSubject(key)}>
-                    <View style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: 10,
-                      backgroundColor: theme.colors.card,
-                      borderRadius: 8,
-                    }}>
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <View
-                          style={{
-                            backgroundColor: getSubjectData(key).color + "22",
-                            borderRadius: 50,
-                            width: 36,
-                            height: 36,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginRight: 10,
-                          }}
-                        >
-                          <Text style={{ fontSize: 18 }}>{getSubjectData(key).emoji}</Text>
-                        </View>
-                        <Text style={{ fontWeight: "bold", color: theme.colors.text }}>{key}</Text>
-                      </View>
-                      <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Text style={{ marginRight: 8, color: theme.colors.text, opacity: 0.7 }}>
-                          {homeworks.length}
-                        </Text>
-                        {collapsedSubjects[key] ?
-                          <ChevronDown size={20} color={theme.colors.text} /> :
-                          <ChevronUp size={20} color={theme.colors.text} />
-                        }
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-
-                  {!collapsedSubjects[key] && (
-                    <>
-                      {homeworks.map((homework, idx) => (
-                        <HomeworkItem
-                          key={homework.id}
-                          index={idx}
-                          navigation={navigation}
-                          total={homeworks.length}
-                          homework={homework}
-                          showSubjectName={false}
-                          onDonePressHandler={async () => {
-                            await toggleHomeworkState(account, homework);
-                            await updateHomeworks(true, false, homework.done);
-                          }}
-                        />
-                      ))}
-                    </>
-                  )}
-                </Reanimated.View>
-              ) : (
-                homeworks.map((homework, idx) => (
-                  <HomeworkItem
-                    key={homework.id}
-                    index={idx}
-                    navigation={navigation}
-                    total={homeworks.length}
-                    homework={homework}
-                    showSubjectName={true}
-                    onDonePressHandler={async () => {
-                      await toggleHomeworkState(account, homework);
-                      await updateHomeworks(true, false, homework.done);
-                    }}
-                  />
-                ))
-              )}
+              {homeworks.map((homework, idx) => (
+                <HomeworkItem
+                  key={homework.id}
+                  index={idx}
+                  navigation={navigation}
+                  total={homeworks.length}
+                  homework={homework}
+                  showSubjectName={!groupBySubject}
+                  onDonePressHandler={async () => {
+                    await toggleHomeworkState(account, homework);
+                    await updateHomeworks(true, false, homework.done);
+                  }}
+                />
+              ))}
             </NativeList>
           </Reanimated.View>
         ))}
@@ -324,7 +253,7 @@ const WeekView = ({ route, navigation }) => {
         }
       </ScrollView>
     );
-  }, [homeworks, collapsedSubjects, searchTerms, hideDone, groupBySubject, theme, account, updateHomeworks]);
+  }, [homeworks, searchTerms, hideDone, groupBySubject, theme, account, updateHomeworks]);
 
   const onEndReached = () => {
     const lastWeek = data[data.length - 1];
@@ -344,7 +273,6 @@ const WeekView = ({ route, navigation }) => {
       onStartReached();
     }
 
-    // Update selected week based on scroll position
     const index = Math.round(nativeEvent.contentOffset.x / finalWidth);
     setSelectedWeek(data[index]);
   }, [finalWidth, data]);
@@ -359,16 +287,14 @@ const WeekView = ({ route, navigation }) => {
     if (index !== -1) {
       const currentIndex = Math.round(flatListRef.current?.contentOffset?.x / finalWidth) || 0;
       const distance = Math.abs(index - currentIndex);
-      const animated = distance <= 10; // Animate if the distance is 10 weeks or less
+      const animated = distance <= 10;
 
       flatListRef.current?.scrollToIndex({ index, animated });
       setSelectedWeek(weekNumber);
     } else {
-      // If the week is not in the current data, update the data and scroll
       const newData = Array.from({ length: 100 }, (_, i) => weekNumber - 50 + i);
       setData(newData);
 
-      // Use a timeout to ensure the FlatList has updated before scrolling
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({ index: 50, animated: false });
         setSelectedWeek(weekNumber);
@@ -639,7 +565,6 @@ const WeekView = ({ route, navigation }) => {
               setShowPickerButtons(false);
 
               setTimeout(() => {
-                // #TODO : change timeout method or duration
                 SearchRef.current?.focus();
               }, 20);
             }}
