@@ -146,6 +146,13 @@ const WeekView = ({ route, navigation }) => {
 
   const [collapsedSubjects, setCollapsedSubjects] = useState<Record<string, boolean>>({});
 
+  const toggleSubject = (subject: string) => {
+    setCollapsedSubjects(prev => ({
+      ...prev,
+      [subject]: !prev[subject],
+    }));
+  };
+
   const renderWeek = useCallback(({ item }) => {
     const homeworksInWeek = homeworks[item] ?? [];
 
