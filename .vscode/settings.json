@@ -6,5 +6,6 @@
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
