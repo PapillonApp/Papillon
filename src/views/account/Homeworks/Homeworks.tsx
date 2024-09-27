@@ -1,4 +1,4 @@
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { useTheme } from "@react-navigation/native";
@@ -203,7 +203,27 @@ const WeekView = ({ route, navigation }) => {
           >
             <NativeListHeader
               animated
-              label={groupBySubject ? `${key} (${homeworks.length})` : key}
+              label={groupBySubject ? key : key}
+              trailing={groupBySubject && (
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: getSubjectData(key).color + "20",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}>
+                  <NativeText
+                    variant="caption"
+                    style={{
+                      color: getSubjectData(key).color,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {homeworks.length}
+                  </NativeText>
+                </View>
+              )}
             />
             <NativeList animated>
               {homeworks.map((homework, idx) => (
