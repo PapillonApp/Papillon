@@ -45,7 +45,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
     if (daysRemaining === 0) return "Aujourd'hui";
     if (daysRemaining === 1) return "Demain";
     if (daysRemaining < 0) return "En retard";
-    return `Dans ${daysRemaining} jours`;
+    return `${daysRemaining}j`;
   };
 
   return (
@@ -110,31 +110,50 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                 )
               }
             </View>
-            {!showSubjectName && (
-              <NativeText variant="caption" style={{ color: theme.colors.text + "99" }}>
-                {getDaysRemainingText()}
-              </NativeText>
-            )}
           </View>
           <Reanimated.View
             layout={animPapillon(LinearTransition)}
             key={homework.content}
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200).delay(50)}
+            style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
           >
-            <RenderHTML
-              source={{ html: homework.content }}
-              defaultTextProps={{
-                style: {
-                  color: theme.colors.text,
-                  fontFamily: "medium",
-                  fontSize: 16,
-                  lineHeight: 22,
-                },
-                numberOfLines: 3,
-              }}
-              contentWidth={300}
-            />
+            <View style={{ flex: 1 }}>
+              <RenderHTML
+                source={{ html: homework.content }}
+                defaultTextProps={{
+                  style: {
+                    color: theme.colors.text,
+                    fontFamily: "medium",
+                    fontSize: 16,
+                    lineHeight: 22,
+                  },
+                  numberOfLines: 3,
+                }}
+                contentWidth={300}
+              />
+            </View>
+            {!showSubjectName && (
+              <View style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: subjectData.color + "20",
+                justifyContent: "center",
+                alignItems: "center",
+                marginLeft: 8,
+              }}>
+                <NativeText
+                  variant="caption"
+                  style={{
+                    color: subjectData.color,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {getDaysRemainingText()}
+                </NativeText>
+              </View>
+            )}
           </Reanimated.View>
           {homework.attachments.length > 0 && (
             <Reanimated.View
