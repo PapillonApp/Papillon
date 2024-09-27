@@ -142,7 +142,7 @@ const WeekView = ({ route, navigation }) => {
 
   const [searchTerms, setSearchTerms] = useState("");
 
-  const renderWeek = useCallback(({ item }) => {
+  const renderWeek = useCallback(({ item }: { item: number }) => {
     const homeworksInWeek = homeworks[item] ?? [];
 
     const sortedHomework = homeworksInWeek.sort((a, b) => new Date(a.due).getTime() - new Date(b.due).getTime());
