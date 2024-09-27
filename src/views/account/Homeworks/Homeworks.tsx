@@ -201,7 +201,10 @@ const WeekView = ({ route, navigation }) => {
             exiting={animPapillon(FadeOutDown)}
             layout={animPapillon(LinearTransition)}
           >
-            <NativeListHeader animated label={key} />
+            <NativeListHeader
+              animated
+              label={groupBySubject ? `${key} (${homeworks.length})` : key}
+            />
             <NativeList animated>
               {homeworks.map((homework, idx) => (
                 <HomeworkItem
