@@ -44,7 +44,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
   const getDaysRemainingText = () => {
     if (daysRemaining === 0) return "Ajd";
     if (daysRemaining === 1) return "Dem";
-    if (daysRemaining < 0) return "Avt";
+    if (daysRemaining < 0) return `-${Math.abs(daysRemaining)}`;
     return `${daysRemaining}j`;
   };
 
@@ -144,7 +144,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                   style={{
                     color: subjectData.color,
                     fontWeight: "bold",
-                    fontSize: 14,
+                    fontSize: 15,
                   }}
                 >
                   {getDaysRemainingText()}
