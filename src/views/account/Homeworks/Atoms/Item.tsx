@@ -12,7 +12,7 @@ import {View} from "react-native";
 import { HomeworkReturnType } from "@/services/shared/Homework";
 import { differenceInDays } from "date-fns";
 
-const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, showSubjectName, showDaysRemaining }) => {
+const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, showSubjectName, groupBySubject }) => {
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
 
@@ -78,39 +78,35 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
         style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
       >
         <Reanimated.View style={{ flex: 1, gap: 4 }} layout={animPapillon(LinearTransition)}>
-          <View style={{ flexDirection: "row", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
-            <View style={{ flexDirection: "row", gap: 10, alignItems: "center", flex: 1 }}>
-              {showSubjectName && (
-                <NativeText variant="overtitle" style={{ color: subjectData.color, flex: 1 }} numberOfLines={1}>
-                  {homework.subject}
-                </NativeText>
+          {showSubjectName && (
+            <View style={{ flexDirection: "row", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
+              <NativeText variant="overtitle" style={{ color: subjectData.color, flex: 1 }} numberOfLines={1}>
+                {homework.subject}
+              </NativeText>
+              {homework.returnType && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                    backgroundColor: theme.colors.text + "11",
+                    paddingVertical: 3,
+                    marginVertical: -1,
+                    paddingHorizontal: 8,
+                    borderRadius: 8,
+                  }}
+                >
+                  <NativeText variant="subtitle" style={{ opacity: 0.8 }} numberOfLines={1}>
+                    {homework.returnType === HomeworkReturnType.FileUpload
+                      ? "À rendre sur l'ENT"
+                      : homework.returnType === HomeworkReturnType.Paper
+                        ? "À rendre en classe"
+                        : null}
+                  </NativeText>
+                </View>
               )}
-              {
-                homework.returnType && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 4,
-                      backgroundColor: theme.colors.text + "11",
-                      paddingVertical: 3,
-                      marginVertical: -1,
-                      paddingHorizontal: 8,
-                      borderRadius: 8,
-                    }}
-                  >
-                    <NativeText variant="subtitle" style={{ opacity: 0.8 }} numberOfLines={1}>
-                      {homework.returnType === HomeworkReturnType.FileUpload
-                        ? "À rendre sur l'ENT"
-                        : homework.returnType === HomeworkReturnType.Paper
-                          ? "À rendre en classe"
-                          : null}
-                    </NativeText>
-                  </View>
-                )
-              }
             </View>
-          </View>
+          )}
           <Reanimated.View
             layout={animPapillon(LinearTransition)}
             key={homework.content}
@@ -133,7 +129,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                 contentWidth={300}
               />
             </View>
-            {!showSubjectName && (
+            {groupBySubject && (
               <View style={{
                 width: 32,
                 height: 32,

@@ -234,6 +234,7 @@ const WeekView = ({ route, navigation }) => {
                   total={homeworks.length}
                   homework={homework}
                   showSubjectName={!groupBySubject}
+                  groupBySubject={groupBySubject}
                   onDonePressHandler={async () => {
                     await toggleHomeworkState(account, homework);
                     await updateHomeworks(true, false, homework.done);

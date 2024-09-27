@@ -59,6 +59,8 @@ const HomeworksElement = ({ navigation }) => {
             onDonePressHandler={() => {
               handleDonePress(hw);
             }}
+            showSubjectName={true}
+            groupBySubject={true}
           />
         ))}
         {new Date().getDay() >= 2 && homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime).map((hw, index) => (
@@ -71,6 +73,8 @@ const HomeworksElement = ({ navigation }) => {
             onDonePressHandler={() => {
               handleDonePress(hw);
             }}
+            showSubjectName={true}
+            groupBySubject={true}
           />
         ))}
       </NativeList>
