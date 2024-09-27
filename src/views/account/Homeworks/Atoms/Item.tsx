@@ -103,7 +103,7 @@ const HomeworkItem = React.memo(({ homework, onDonePressHandler, index, total }:
             numberOfLines={expanded ? undefined : 3}
             onTextLayout={onTextLayout}
             style={{
-              textAlign: expanded ? "justify" : "left",
+              textAlign: "left",
             }}
           >
             {parsedContent}
