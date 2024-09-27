@@ -42,9 +42,9 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
   }, [homework.due]);
 
   const getDaysRemainingText = () => {
-    if (daysRemaining === 0) return "Aujourd'hui";
-    if (daysRemaining === 1) return "Demain";
-    if (daysRemaining < 0) return "En retard";
+    if (daysRemaining === 0) return "Ajd";
+    if (daysRemaining === 1) return "Dem";
+    if (daysRemaining < 0) return "Avt";
     return `${daysRemaining}j`;
   };
 
@@ -144,6 +144,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                   style={{
                     color: subjectData.color,
                     fontWeight: "bold",
+                    fontSize: 14,
                   }}
                 >
                   {getDaysRemainingText()}
