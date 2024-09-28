@@ -206,9 +206,9 @@ const WeekView = ({ route, navigation }) => {
               label={groupBySubject ? key : key}
               trailing={groupBySubject && (
                 <View style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
+                  width: 26,
+                  height: 26,
+                  borderRadius: 13,
                   backgroundColor: getSubjectData(key).color + "20",
                   justifyContent: "center",
                   alignItems: "center",
@@ -218,6 +218,7 @@ const WeekView = ({ route, navigation }) => {
                     style={{
                       color: getSubjectData(key).color,
                       fontWeight: "bold",
+                      fontSize: 12,
                     }}
                   >
                     {homeworks.length}
