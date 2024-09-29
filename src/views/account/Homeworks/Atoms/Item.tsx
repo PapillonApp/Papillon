@@ -11,6 +11,9 @@ import RenderHTML from "react-native-render-html";
 import {View} from "react-native";
 import { HomeworkReturnType } from "@/services/shared/Homework";
 import { differenceInDays } from "date-fns";
+import { formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
+import { differenceInMinutes } from 'date-fns';
 
 const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, showSubjectName, groupBySubject }) => {
   const theme = useTheme();
@@ -35,17 +38,21 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
     setMainLoaded(true);
   }, [homework.done]);
 
-  const daysRemaining = useMemo(() => {
-    const today = new Date();
+  const formattedDueDate = useMemo(() => {
+    const now = new Date();
     const dueDate = new Date(homework.due);
-    return differenceInDays(dueDate, today);
-  }, [homework.due]);
+    const diffInMinutes = differenceInMinutes(dueDate, now);
+    const sign = diffInMinutes < 0 ? '-' : '';
+    const absDiff = Math.abs(diffInMinutes);
 
-  const getDaysRemainingText = () => {
-    if (daysRemaining === 0) return "Ajd";
-    if (daysRemaining < 0) return `-${Math.abs(daysRemaining)}j`;
-    return `${daysRemaining}j`;
-  };
+    if (absDiff >= 1440) { // 24 heures
+      return `${sign}${Math.floor(absDiff / 1440)}j`;
+    } else if (absDiff >= 60) {
+      return `${sign}${Math.floor(absDiff / 60)}h`;
+    } else {
+      return `${sign}${absDiff}m`;
+    }
+  }, [homework.due]);
 
   return (
     <NativeItem
@@ -146,7 +153,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                     fontSize: 15,
                   }}
                 >
-                  {getDaysRemainingText()}
+                  {formattedDueDate}
                 </NativeText>
               </View>
             )}
