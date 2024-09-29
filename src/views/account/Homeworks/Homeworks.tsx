@@ -24,6 +24,7 @@ import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { getSubjectData } from "@/services/shared/Subject";
+import { isYesterday, isToday, isTomorrow } from 'date-fns';
 
 type HomeworksPageProps = {
   index: number;
@@ -36,11 +37,20 @@ type HomeworksPageProps = {
   getDayName: (date: string | number | Date) => string;
 };
 
+const getRelativeDay = (date: Date): string | null => {
+  if (isYesterday(date)) return 'hier';
+  if (isToday(date)) return 'aujourd\'hui';
+  if (isTomorrow(date)) return 'demain';
+  return null;
+};
+
 const formatDate = (date: string | number | Date): string => {
-  return new Date(date).toLocaleDateString("fr-FR", {
+  const formattedDate = new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long"
   });
+  const relativeDay = getRelativeDay(new Date(date));
+  return relativeDay ? `${formattedDate} (${relativeDay})` : formattedDate;
 };
 
 const WeekView = ({ route, navigation }) => {
