@@ -44,13 +44,13 @@ const getRelativeDay = (date: Date): string | null => {
   return null;
 };
 
-const formatDate = (date: string | number | Date): string => {
+const formatDate = (date: string | number | Date): { main: string, relative: string | null } => {
   const formattedDate = new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long"
   });
   const relativeDay = getRelativeDay(new Date(date));
-  return relativeDay ? `${formattedDate} (${relativeDay})` : formattedDate;
+  return { main: formattedDate, relative: relativeDay };
 };
 
 const WeekView = ({ route, navigation }) => {
@@ -165,26 +165,37 @@ const WeekView = ({ route, navigation }) => {
         acc[curr.subject].push(curr);
       } else {
         const dayName = getDayName(curr.due);
-        const formattedDate = formatDate(curr.due);
+        const { main: formattedDate, relative: relativeDate } = formatDate(curr.due);
         const day = `${dayName} ${formattedDate}`;
 
         if (!acc[day]) {
-          acc[day] = [];
+          acc[day] = { homeworks: [], relativeDate };
         }
-        acc[day].push(curr);
+        acc[day].homeworks.push(curr);
       }
 
       return acc;
-    }, groupBySubject ? {} as Record<string, Homework[]> : {} as Record<string, Homework[]>);
+    }, groupBySubject ? {} as Record<string, Homework[]> : {} as Record<string, { homeworks: Homework[], relativeDate: string | null }>);
 
     Object.keys(groupedHomework).forEach(key => {
-      groupedHomework[key] = groupedHomework[key].filter(homework => {
-        const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const matchesSearch = searchTerms.length === 0 || content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-        return matchesSearch && (!hideDone || !homework.done);
-      });
-      if (groupedHomework[key].length === 0) {
-        delete groupedHomework[key];
+      if (groupBySubject) {
+        groupedHomework[key] = groupedHomework[key].filter(homework => {
+          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const matchesSearch = searchTerms.length === 0 || content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+          return matchesSearch && (!hideDone || !homework.done);
+        });
+        if (groupedHomework[key].length === 0) {
+          delete groupedHomework[key];
+        }
+      } else {
+        groupedHomework[key].homeworks = groupedHomework[key].homeworks.filter(homework => {
+          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const matchesSearch = searchTerms.length === 0 || content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+          return matchesSearch && (!hideDone || !homework.done);
+        });
+        if (groupedHomework[key].homeworks.length === 0) {
+          delete groupedHomework[key];
+        }
       }
     });
 
@@ -204,7 +215,7 @@ const WeekView = ({ route, navigation }) => {
           />
         }
       >
-        {groupedHomework && Object.entries(groupedHomework).map(([key, homeworks]) => (
+        {groupedHomework && Object.entries(groupedHomework).map(([key, value]) => (
           <Reanimated.View
             key={key}
             entering={animPapillon(FadeInUp)}
@@ -214,7 +225,7 @@ const WeekView = ({ route, navigation }) => {
             <NativeListHeader
               animated
               label={groupBySubject ? key : key}
-              trailing={groupBySubject && (
+              trailing={groupBySubject ? (
                 <View style={{
                   width: 26,
                   height: 26,
@@ -231,18 +242,40 @@ const WeekView = ({ route, navigation }) => {
                       fontSize: 12,
                     }}
                   >
-                    {homeworks.length}
+                    {value.length}
                   </NativeText>
                 </View>
-              )}
+              ) : value.relativeDate ? (
+                <View
+                  style={{
+                    backgroundColor: theme.colors.primary + "20",
+                    borderRadius: 100,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                  }}
+                >
+                  <NativeText
+                    variant="caption"
+                    style={{
+                      color: theme.colors.primary,
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {value.relativeDate}
+                  </NativeText>
+                </View>
+              ) : null}
             />
             <NativeList animated>
-              {homeworks.map((homework, idx) => (
+              {(groupBySubject ? value : value.homeworks).map((homework, idx) => (
                 <HomeworkItem
                   key={homework.id}
                   index={idx}
                   navigation={navigation}
-                  total={homeworks.length}
+                  total={groupBySubject ? value.length : value.homeworks.length}
                   homework={homework}
                   showSubjectName={!groupBySubject}
                   groupBySubject={groupBySubject}
