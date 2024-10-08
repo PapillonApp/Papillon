@@ -4,7 +4,7 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import PapillonHeader from "@/components/Global/PapillonHeader";
 import { PapillonHeaderSelector, PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import { Screen } from "@/router/helpers/types";
+import type { Screen } from "@/router/helpers/types";
 import { updateGradesAndAveragesInCache, updateGradesPeriodsInCache } from "@/services/grades";
 import type { GradesPerSubject } from "@/services/shared/Grade";
 import { useCurrentAccount } from "@/stores/account";
@@ -12,6 +12,7 @@ import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
+import React from "react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, RefreshControl, ScrollView, View } from "react-native";
 import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
@@ -62,7 +63,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
     if (selectedPeriod === "") return;
     if (!account.instance) return;
 
-    void (async function () {
+    void (() => {
       setIsLoading(true);
       setTimeout(async () => {
         await updateData();
@@ -119,7 +120,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
               <Reanimated.Text
                 style={{ color: theme.colors.text, maxWidth: 100, fontFamily: "medium", fontSize: 16 }}
                 numberOfLines={1}
-                key={selectedPeriod + "sel"}
+                key={`${selectedPeriod}sel`}
                 entering={animPapillon(FadeInUp)}
                 exiting={animPapillon(FadeOutDown)}
               >

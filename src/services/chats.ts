@@ -1,6 +1,6 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import type { Chat, ChatMessage } from "./shared/Chat";
-import { Recipient } from "./shared/Recipient";
+import type { Recipient } from "./shared/Recipient";
 
 export const getChats = async <T extends Account> (account: T): Promise<Array<Chat>> => {
   switch (account.service) {
@@ -8,21 +8,25 @@ export const getChats = async <T extends Account> (account: T): Promise<Array<Ch
       const { getChats } = await import("./pronote/chats");
       return getChats(account);
     }
+    case AccountService.EcoleDirecte: {
+      const {getChats} = await import("./ecoledirecte/chats");
+      return await getChats(account);
+    }
     default:
       console.info(`[getChats]: returning empty since ${account.service} not implemented.`);
       return [];
   }
 };
 
-export const getChatMessages = async <T extends Account> (account: T, chat: Chat): Promise<Array<ChatMessage>> => {
+export const getChatMessages = async <T extends Account> (account: T, chat: Chat): Promise<ChatMessage> => {
   switch (account.service) {
-    case AccountService.Pronote: {
-      const { getChatMessages } = await import("./pronote/chats");
-      return getChatMessages(account, chat);
+    case AccountService.EcoleDirecte: {
+      const { getChatMessages } = await import("./ecoledirecte/chats");
+      return await getChatMessages(account, chat);
     }
     default:
       console.info(`[getChatMessages]: returning empty since ${account.service} not implemented.`);
-      return [];
+      return {};
   }
 };
 

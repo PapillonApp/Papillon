@@ -214,7 +214,7 @@ const WeekView = ({ route, navigation }) => {
                   homework={homework}
                   onDonePressHandler={async () => {
                     await toggleHomeworkState(account, homework);
-                    await updateHomeworks(true, false, homework.done);
+                    await updateHomeworks(true, false, false);
                   }}
                 />
               ))}

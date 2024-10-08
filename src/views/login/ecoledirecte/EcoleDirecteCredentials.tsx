@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
 import { View, ActivityIndicator, ScrollView, Dimensions } from "react-native";
 
-import { type DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, type Session, checkDoubleAuth } from "pawdirecte";
+import {
+  type DoubleAuthChallenge,
+  DoubleAuthRequired,
+  initDoubleAuth,
+  login,
+  type Session,
+  checkDoubleAuth,
+  setAccessToken
+} from "pawdirecte";
 import uuid from "@/utils/uuid-v4";
 
 import { useAccounts, useCurrentAccount } from "@/stores/account";
@@ -52,8 +60,9 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
       const accounts = await login(currentSession, password ? password : cachedPassword);
       const account = accounts[0]; // NOTE: We only support single accounts for now. //TODO: Support multiple accounts in ED
 
+      setAccessToken(currentSession, account);
       const local_account: EcoleDirecteAccount = {
-        instance: undefined,
+        instance: {},
 
         localID: currentSession.device_uuid,
         service: AccountService.EcoleDirecte,
@@ -61,13 +70,13 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         isExternal: false,
         linkedExternalLocalIDs: [],
 
-        name: account.last_name + " " + account.first_name,
+        name: `${account.lastName} ${account.firstName}`,
         studentName: {
-          first: account.first_name,
-          last: account.last_name,
+          first: account.firstName,
+          last: account.lastName,
         },
-        className: "", // TODO ?
-        schoolName: account.school_name,
+        className: account.class.short,
+        schoolName: account.schoolName,
 
         authentication: {
           session: currentSession,
@@ -75,6 +84,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         },
         personalization: await defaultPersonalization(account)
       };
+
 
       createStoredAccount(local_account);
       setLoading(false);

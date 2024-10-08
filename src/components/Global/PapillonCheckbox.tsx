@@ -80,7 +80,7 @@ const PapillonCheckbox: React.FC<CheckboxProps> = ({
           }}
         />
 
-        {loading && !checked && (
+        {loading && (
           <Reanimated.View
             entering={ZoomIn.springify().mass(1).damping(20).stiffness(300).delay(100)}
             exiting={ZoomOut.duration(100)}
@@ -89,7 +89,7 @@ const PapillonCheckbox: React.FC<CheckboxProps> = ({
           </Reanimated.View>
         )}
 
-        {checked && (
+        {checked && !loading &&(
           <Reanimated.View
             style={{
               width: "100%",

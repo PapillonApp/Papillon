@@ -1,6 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import {
+  Dimensions,
   View,
 } from "react-native";
 import {
@@ -11,8 +12,9 @@ import parse_news_resume from "@/utils/format/format_pronote_news";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import formatDate from "@/utils/format/format_date_complets";
 import InitialIndicator from "@/components/News/InitialIndicator";
+import RenderHTML from "react-native-render-html";
 
-const NewsListItem = ({ index, message, navigation, parentMessages }) => {
+const NewsListItem = ({ index, message, navigation, parentMessages, isED }) => {
   const theme = useTheme();
 
   return (
@@ -21,6 +23,7 @@ const NewsListItem = ({ index, message, navigation, parentMessages }) => {
         navigation.navigate("NewsItem", {
           message: JSON.stringify(message),
           important: message.important !== undefined,
+          isED
         });
       }}
       chevron={false}
@@ -44,7 +47,7 @@ const NewsListItem = ({ index, message, navigation, parentMessages }) => {
           {message.author}
         </NativeText>
 
-        {!message.read && (
+        {!message.read && isED && (
           <View style={{
             width: 8,
             height: 8,
@@ -53,12 +56,13 @@ const NewsListItem = ({ index, message, navigation, parentMessages }) => {
           }} />
         )}
       </View>
-      <NativeText
+      {message.title !== "" && <NativeText
         numberOfLines={1}
         variant="title"
       >
         {message.title}
-      </NativeText>
+      </NativeText>}
+
       <NativeText
         numberOfLines={2}
         variant="default"
@@ -67,7 +71,18 @@ const NewsListItem = ({ index, message, navigation, parentMessages }) => {
           opacity: 0.8,
         }}
       >
-        {parse_news_resume(message.content)}
+        <RenderHTML
+          contentWidth={Dimensions.get("window").width - (16 * 3)}
+          source={{
+            html: message.content,
+          }}
+          ignoredStyles={["fontFamily", "fontSize"]}
+          baseStyle={{
+            fontFamily: "regular",
+            fontSize: 16,
+            color: theme.colors.text,
+          }}
+        />
       </NativeText>
       <NativeText
         numberOfLines={1}

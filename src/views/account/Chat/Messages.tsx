@@ -17,6 +17,7 @@ import { Chat } from "@/services/shared/Chat";
 import { getChats } from "@/services/chats";
 import InitialIndicator from "@/components/News/InitialIndicator";
 import parse_initials from "@/utils/format/format_pronote_initials";
+import { AccountService } from "@/stores/account/types";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -36,7 +37,7 @@ const Messages: Screen<"Messages"> = ({
 
   const account = useCurrentAccount(state => state.account!);
   const [chats, setChats] = useState<Chat[] | null>(null);
-
+  const [showNewMessage, setShowNewMessage] = useState(true);
   useLayoutEffect(() => {
     navigation.setOptions({
       ...TabAnimatedTitle({ theme, route, navigation }),
@@ -50,19 +51,25 @@ const Messages: Screen<"Messages"> = ({
     }();
   }, [account?.instance]);
 
+  useEffect(() => {
+    if (account.service  === AccountService.EcoleDirecte) setShowNewMessage(false);
+  }, [account.service]);
+
   return (
     <ScrollView
       contentContainerStyle={{
         padding: 20,
+        paddingTop: 0
       }}
     >
-      <TouchableOpacity
+      {showNewMessage && <TouchableOpacity
         onPress={() => navigation.navigate("ChatCreate")}
       >
         <NativeText>
           Nouvelle discussion
         </NativeText>
-      </TouchableOpacity>
+      </TouchableOpacity>}
+
       <NativeList>
         {!chats ? (
           <NativeItem>
@@ -88,7 +95,7 @@ const Messages: Screen<"Messages"> = ({
 
           >
             <NativeText>
-              {chat.recipient}
+              {chat.creator}
             </NativeText>
             <NativeText>
               {chat.subject}

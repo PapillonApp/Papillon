@@ -19,8 +19,8 @@ export default async function defaultPersonalization (account: Account): Promise
   return {
     color: colors[0],
     magicEnabled: true,
-    profilePictureB64: account.profile_picture_url
-      ? await downloadAsBase64(account.profile_picture_url, {
+    profilePictureB64: account.profilePictureURL
+      ? await downloadAsBase64(account.profilePictureURL, {
         Referer: ".ecoledirecte.com/",
         Pragma: "no-cache"
       })

@@ -30,6 +30,12 @@ export async function updateNewsInCache <T extends Account> (account: T): Promis
       useNewsStore.getState().updateInformations(informations);
       break;
     }
+    case AccountService.EcoleDirecte: {
+      const { getNews } = await import("./ecoledirecte/news");
+      const informations = await getNews(account);
+      useNewsStore.getState().updateInformations(informations);
+      break;
+    }
     default: {
       throw new Error("Service not implemented.");
     }
@@ -48,6 +54,7 @@ export async function setNewsRead <T extends Account> (account: T, message: Info
     case AccountService.Local: {
       break;
     }
+    case AccountService.EcoleDirecte: { break; }
     default: {
       throw new Error("Service not implemented.");
     }

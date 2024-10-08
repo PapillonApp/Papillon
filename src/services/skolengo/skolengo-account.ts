@@ -11,13 +11,15 @@ import { useCurrentAccount } from "@/stores/account";
 import defaultSkolengoPersonalization from "./default-personalization";
 import { User } from "scolengo-api/types/models/Common";
 
-const getSkolengoAxiosInstance = ()=>{
+const getSkolengoAxiosInstance = () => {
   const axioss = axios.create({
     baseURL: BASE_URL
   });
 
+
   axioss.interceptors.response.use(r=>r, (error)=>{
     if(error.response?.data?.errors?.find((e:any)=>e.title.includes("PRONOTE_RESOURCES"))) return Promise.resolve(error);
+
     if(__DEV__) {
       console.warn(
         "[SKOLENGO] ERR - ",
@@ -44,13 +46,13 @@ export const refreshSkolengoToken = async (refreshToken: string, discovery: Disc
 
   if(!discovery.tokenEndpoint) throw new Error("[SKOLENGO] ERR - No token endpoint in discovery document");
 
-  return fetch(discovery.tokenEndpoint, {
+  return await fetch(discovery.tokenEndpoint, {
     method: "POST",
     headers: {
-      Authorization: "Basic "+b64encode(OID_CLIENT_ID+":"+OID_CLIENT_SECRET),
+      Authorization: "Basic "+b64encode(OID_CLIENT_ID + ":" + OID_CLIENT_SECRET),
     },
     body: formData
-  }).then((response) => response.json()).then(d=>authTokenToSkolengoTokenSet(d));
+  }).then((response) => response.json()).then(d => authTokenToSkolengoTokenSet(d));
 };
 
 const getJWTClaims = (token: string): SkolengoJWT => {

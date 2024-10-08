@@ -81,6 +81,19 @@ export const weekNumberToDateRange = (epochWeekNumber: number, numberOfWeeksBefo
   return { start, end };
 };
 
+
+export const weekNumberToDaysList = (epochWeekNumber: number): Date[] => {
+  const weekdays = [];
+  for (let i = 0; i < 7; i++) {
+    weekdays.push(new Date(
+      epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek + (i/7)
+        * EPOCH_WN_CONFIG.numberOfMsInAWeek
+        - EPOCH_WN_CONFIG.adjustEpochInitialDate
+    ));
+  }
+  return weekdays;
+};
+
 export const weekNumberToMiddleDate = (epochWeekNumber: number): Date => {
   const date = new Date(
     epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek
