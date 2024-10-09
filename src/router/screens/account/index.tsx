@@ -49,7 +49,7 @@ export const screens = [
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
   }),
-  createScreen("Menu", PlaceholderScreen, {
+  createScreen("Menu", Menu, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),

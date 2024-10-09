@@ -1,7 +1,7 @@
 import type pronote from "pawnote";
 import type { Account as PawdirecteAccount, Session as PawdirecteSession } from "pawdirecte";
-import type { Session as TSSession, Authentication as TSAuthentication } from "turbawself";
-import type { Client as ARDClient } from "pawrd";
+import type { Client as ARDClient, Client as PawrdClient } from "pawrd";
+import { Client as TurboselfClient } from "turboself-api";
 import type ScolengoAPI from "scolengo-api";
 import { SkolengoAuthConfig } from "@/services/skolengo/skolengo-types";
 import { User as ScolengoAPIUser } from "scolengo-api/types/models/Common";
@@ -143,8 +143,9 @@ export interface TurboselfAccount extends BaseExternalAccount {
   service: AccountService.Turboself
   instance: undefined
   authentication: {
-    auth: TSAuthentication
-    session: TSSession
+    session: TurboselfClient
+    username: string
+    password: string
   }
 }
 

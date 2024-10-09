@@ -11,5 +11,8 @@ export const reservationHistoryFromExternal = async (account: ExternalAccount): 
       const { history: getHistory } = await import("./ard/history");
       return getHistory(account);
     }
+    default: {
+      return [];
+    }
   }
 };

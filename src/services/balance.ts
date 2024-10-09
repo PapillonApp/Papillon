@@ -6,11 +6,14 @@ export const balanceFromExternal = async (account: ExternalAccount): Promise<Bal
     case AccountService.Turboself: {
       const { getBalance } = await import("./turboself/balance");
       const balance = await getBalance(account);
-      return [balance];
+      return balance;
     }
     case AccountService.ARD: {
       const { balance } = await import("./ard/balance");
       return balance(account);
+    }
+    default: {
+      return [];
     }
   }
 };

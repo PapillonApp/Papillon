@@ -25,7 +25,7 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
       const { reload } = await import("./turboself/reload");
       const auth = await reload(account);
       // keep instance the same
-      return { instance: undefined, authentication: { auth, session: account.authentication.session } };
+      return { instance: undefined, authentication: { session: auth } };
     }
     case AccountService.ARD: {
       const { reload } = await import("./ard/reload");
