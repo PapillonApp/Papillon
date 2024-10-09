@@ -10,8 +10,14 @@ import { debounce } from "lodash";
 import { PapillonNavigation } from "@/router/refs";
 import RedirectButton from "@/components/Home/RedirectButton";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import {RouteParameters} from "@/router/helpers/types";
 
-const HomeworksElement = ({ navigation }) => {
+interface HomeworksElementProps {
+  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>
+}
+
+const HomeworksElement = ({ navigation }: HomeworksElementProps) => {
   const account = useCurrentAccount(store => store.account!);
   const homeworks = useHomeworkStore(store => store.homeworks);
 

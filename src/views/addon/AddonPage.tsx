@@ -3,9 +3,10 @@ import {Alert, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import React from "react";
 import {AddonPlacementManifest} from "@/addons/types";
+import {Screen} from "@/router/helpers/types";
 
-function AddonPage ({navigation, route}): Screen<"AddonPage"> {
-  const addon: AddonPlacementManifest = route.params.addon;
+const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
+  const addon: AddonPlacementManifest = route.params?.addon;
   let from = route.params.from;
   let data = route.params.data;
   const insets = useSafeAreaInsets();
@@ -20,7 +21,11 @@ function AddonPage ({navigation, route}): Screen<"AddonPage"> {
     <View style={{flex: 1}}>
       <AddonsWebview
         navigation={navigation}
-        addon={addon}
+        addon={{
+          url: addon.manifest.placement[addon.index].main,
+          name: addon.manifest.name,
+          icon: addon.manifest.icon
+        }}
         url={addon.manifest.placement[addon.index].main}
         scrollEnabled={true}
         inset={insets}
@@ -40,13 +45,14 @@ function AddonPage ({navigation, route}): Screen<"AddonPage"> {
             return;
           } else {
             let newAddon: AddonPlacementManifest = {manifest: addon.manifest, index: index};
-            navigation.push("Addon" + from + "Page", {addon: newAddon, from: from, data: data.data});
+            // @ts-ignore "Very hard to type, need to think about"
+            navigation.push("Addon" + from + "Page", { addon: newAddon, from: from, data: data.data });
           }
         }}
       />
     </View>
 
   );
-}
+};
 
 export default AddonPage;

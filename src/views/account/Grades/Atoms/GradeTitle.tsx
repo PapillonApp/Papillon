@@ -4,8 +4,18 @@ import { getCourseSpeciality } from "@/utils/format/format_cours_name";
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
+import {Grade} from "@/services/shared/Grade";
 
-export const GradeTitle = ({ grade, subjectData }) => {
+interface GradeTitleProps {
+  grade: Grade
+  subjectData: {
+    color: string
+    pretty: string
+    emoji: string
+  }
+}
+
+export const GradeTitle = ({ grade, subjectData }: GradeTitleProps) => {
   const theme = useTheme();
 
   return (
@@ -89,11 +99,11 @@ export const GradeTitle = ({ grade, subjectData }) => {
           <NativeText
             numberOfLines={2}
             variant={!grade.description ? "subtitle" : "default"}
-            style={grade.description && {
+            style={grade.description ? {
               lineHeight: 20,
               fontSize: 16,
               textAlignVertical: "center",
-            }}
+            }: undefined}
           >
             {grade.description || `Note rendue le ${new Date(grade.timestamp).toLocaleDateString("fr-FR", {
               weekday: "long",
@@ -118,7 +128,7 @@ export const GradeTitle = ({ grade, subjectData }) => {
               fontFamily: "semibold",
             }}
           >
-            {!grade.student.disabled && parseFloat(grade.student.value).toFixed(2) || "N. not"}
+            {!grade.student.disabled ? parseFloat(grade.student.value?.toString() || "0").toFixed(2): "N. not"}
           </NativeText>
 
           <NativeText
@@ -129,7 +139,7 @@ export const GradeTitle = ({ grade, subjectData }) => {
               marginBottom: 1,
             }}
           >
-            /{parseFloat(grade.outOf.value).toFixed(0)}
+            /{parseFloat(grade.outOf.value?.toString() || "20").toFixed(0)}
           </NativeText>
         </View>
       </View>

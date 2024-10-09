@@ -12,7 +12,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect } from "react";
-import {View, Dimensions, Linking, TouchableOpacity} from "react-native";
+import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import RenderHtml from "react-native-render-html";
@@ -21,9 +21,11 @@ import {LinearGradient} from "expo-linear-gradient";
 import {setNewsRead} from "@/services/news";
 import {useCurrentAccount} from "@/stores/account";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import {Screen} from "@/router/helpers/types";
+import {AttachmentType} from "@/services/shared/Attachment";
 
-const NewsItem = ({route, navigation}) => {
-  let message = route.params.message && JSON.parse(route.params.message) as Information;
+const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
+  let message = JSON.parse(route.params.message) as Information;
   const important = route.params.important;
   const account = useCurrentAccount((store) => store.account!);
 
@@ -50,7 +52,7 @@ const NewsItem = ({route, navigation}) => {
     },
   };
 
-  function onPress (event, href) {
+  function onPress (event: GestureResponderEvent, href: string) {
     Linking.openURL(href);
   }
 
@@ -155,7 +157,7 @@ const NewsItem = ({route, navigation}) => {
             borderColor: theme.colors.border,
             marginTop: 16,
           }}>
-            <NativeText>{formatDate(message.date)}</NativeText>
+            <NativeText>{formatDate(message.date.toDateString())}</NativeText>
           </View>
         </ScrollView>
 
@@ -169,7 +171,7 @@ const NewsItem = ({route, navigation}) => {
                   chevron={false}
                   onPress={() => Linking.openURL(attachment.url)}
                   icon={
-                    typeof attachment.type === "file" ? (
+                    attachment.type === AttachmentType.File ? (
                       <FileIcon />
                     ) : (
                       <Link />

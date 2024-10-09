@@ -13,7 +13,7 @@ import Reanimated, {
 
 import { Activity, Sofa, Utensils } from "lucide-react-native";
 import LessonsNoCourseItem from "./NoCourse";
-import { Timetable } from "@/services/shared/Timetable";
+import { Timetable, TimetableClass } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
@@ -31,7 +31,17 @@ const getDuration = (minutes: number): string => {
   return `${durationHours} h ${lz(durationRemainingMinutes)} min`;
 };
 
-export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists }) => {
+interface PageProps {
+  current: boolean
+  date: Date
+  day: TimetableClass[]
+  loading: boolean
+  paddingTop: number
+  refreshAction: () => unknown
+  weekExists: boolean
+}
+
+export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists }: PageProps) => {
   return (
     <ScrollView
       style={{

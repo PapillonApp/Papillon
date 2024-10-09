@@ -1,21 +1,14 @@
+import { Information } from "@/services/shared/Information";
 import important_json from "@/utils/magic/regex/important.json";
 
-// Define the structure of a message
-interface Message {
-  title?: string;
-  content: string;
-  read: boolean;
-  [key: string]: any; // Allow for any additional properties
-}
-
 interface CategorizedMessages {
-  importantMessages: (Message & { matchCount: number; matchingWords: string[] })[];
-  normalMessages: Message[];
+  importantMessages: (Information & { matchCount: number; matchingWords: string[], important: true })[];
+  normalMessages: Information[];
 }
 
-export const categorizeMessages = (messages: Message[]): CategorizedMessages => {
-  const importantMessages: (Message & { matchCount: number; matchingWords: string[] })[] = [];
-  const normalMessages: Message[] = [];
+export const categorizeMessages = (messages: Information[]): CategorizedMessages => {
+  const importantMessages: CategorizedMessages["importantMessages"] = [];
+  const normalMessages: CategorizedMessages["normalMessages"] = [];
 
   messages.forEach((message) => {
     const { title, content, read } = message;

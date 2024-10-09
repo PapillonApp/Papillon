@@ -17,7 +17,9 @@ const decodeTimetableClass = (c: pronote.TimetableClassLesson | pronote.Timetabl
   if (c.is === "lesson") {
     return {
       type: "lesson",
+      id: c.id,
       title: c.subject!.name,
+      subject: c.subject!.name,
       room: c.classrooms.join(", ") || void 0,
       teacher: c.teacherNames?.join(", ") ?? void 0,
       status: c.status === "Cours annulé" || c.status === "Prof. absent" || c.status === "Classe absente" || c.status === "Prof./pers. absent" || c.status === "Sortie pédagogique" ? TimetableClassStatus.CANCELED : void 0,
@@ -28,6 +30,8 @@ const decodeTimetableClass = (c: pronote.TimetableClassLesson | pronote.Timetabl
   else if (c.is === "activity") {
     return {
       type: "activity",
+      id: c.id,
+      subject: "Activité",
       title: c.title,
       ...base
     } satisfies TimetableClass;
@@ -35,6 +39,8 @@ const decodeTimetableClass = (c: pronote.TimetableClassLesson | pronote.Timetabl
   else if (c.is === "detention") {
     return {
       type: "detention",
+      id: c.id,
+      subject: "",
       title: c.title ?? "Sans titre",
       room: c.classrooms.join(", ") || void 0,
       ...base

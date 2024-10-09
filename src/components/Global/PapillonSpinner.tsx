@@ -7,14 +7,15 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { Svg, Circle, G } from "react-native-svg";
 import { animPapillon } from "@/utils/ui/animations";
+import {ComplexAnimationBuilder} from "react-native-reanimated/src/reanimated2/layoutReanimation/animationBuilder";
 
 interface PapillonSpinnerProps {
   size?: number;
   color?: string;
   strokeWidth?: number;
   style?: StyleProp<ViewStyle>;
-  entering?: EntryExitAnimationFunction;
-  exiting?: EntryExitAnimationFunction;
+  entering?: EntryExitAnimationFunction | ComplexAnimationBuilder;
+  exiting?: EntryExitAnimationFunction | ComplexAnimationBuilder;
   animated?: boolean;
 }
 

@@ -4,11 +4,21 @@ import screens from ".";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { useCurrentAccount } from "@/stores/account";
 import PapillonTabNavigator from "@/router/helpers/PapillonTabNavigator";
-import { Screen } from "@/router/helpers/types";
+import {RouteParameters, Screen} from "@/router/helpers/types";
 
 import * as SplashScreen from "expo-splash-screen";
 import * as Linking from "expo-linking";
 import { PapillonNavigation } from "@/router/refs";
+
+interface TabData {
+  name: keyof RouteParameters
+  component: Screen<keyof RouteParameters>
+  options: NativeStackNavigationOptions & {
+    tabBarLabel?: string
+    tabBarLottie?: any
+    tabEnabled?: boolean
+  }
+}
 
 export const AccountStack = PapillonTabNavigator();
 const screenOptions: NativeStackNavigationOptions = {
@@ -41,7 +51,7 @@ const AccountStackScreen: Screen<"AccountStack"> = () => {
 
   useEffect(() => {
     if (params) {
-      if (params.queryParams.method == "importIcal") {
+      if (params.queryParams?.method == "importIcal") {
         const ical = params.queryParams.ical;
         const title = params.queryParams.title;
         const autoAdd = params.queryParams.autoAdd;
@@ -66,15 +76,13 @@ const AccountStackScreen: Screen<"AccountStack"> = () => {
       newTabs = newTabs.filter(tab => tab.enabled);
     }
 
-    newAccountScreens = newTabs.map(tab => {
-      const tabData = screens.find(t => t.name === tab.name);
-      if(tabData) {
-        tabData.options = {
-          ...tabData.options,
-          tabEnabled: tab.enabled,
-        };
-        return tabData;
-      }
+    newAccountScreens = newTabs.filter(t => screens.some(s => s.name == t.name)).map(tab => {
+      const tabData = screens.find(t => t.name === tab.name) as TabData;
+      tabData.options = {
+        ...tabData.options,
+        tabEnabled: tab.enabled,
+      };
+      return tabData;
     });
   }
 
@@ -99,7 +107,6 @@ const AccountStackScreen: Screen<"AccountStack"> = () => {
   return (
     <AccountStack.Navigator screenOptions={screenOptions} tabBar={TabBarContainer}>
       {finalScreens.map((screen) => (
-        // @ts-expect-error : type not compatible, but it works fine.
         <AccountStack.Screen
           key={screen.name}
           {...screen}

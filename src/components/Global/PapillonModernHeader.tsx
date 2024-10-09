@@ -4,13 +4,10 @@ import { Button, StyleSheet, View } from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { NativeText } from "@/components/Global/NativeComponents";
 import InfiniteDatePager from "@/components/Global/InfiniteDatePager";
-import HorizontalDatePicker from "./Atoms/LessonsDatePicker";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { AccountService } from "@/stores/account/types";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
-import { Page } from "./Atoms/Page";
-import { LessonsDateModal } from "./LessonsHeader";
 import { set } from "lodash";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 

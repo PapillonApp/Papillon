@@ -23,7 +23,7 @@ interface AddonsWebviewProps {
   setTitle?: (message: string) => unknown,
   addon: AddonHomePageInfo
   url: string
-  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen">
+  navigation: NativeStackNavigationProp<RouteParameters, "AddonPage" | "HomeScreen">
   scrollEnabled?: boolean
   inset?: Record<"top" | "left"| "bottom" | "right", number>
   requestNavigate?: (to: string, params: unknown) => unknown

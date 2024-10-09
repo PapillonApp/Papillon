@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from "react-native";
+import {View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform, FlatList, ListRenderItem} from "react-native";
 import { format, addDays, isSameDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTheme } from "@react-navigation/native";
@@ -11,9 +11,12 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
-  runOnJS,
+  runOnJS, SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {Theme} from "@react-navigation/native/src/types";
+import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
+import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ITEM_WIDTH = 104;
@@ -23,11 +26,21 @@ const DATE_RANGE = 30;
 const SCROLL_THRESHOLD = 7;
 const SCROLL_VELOCITY = 100;
 
-const generateDateRange = (centerDate) => {
+const generateDateRange = (centerDate: Date) => {
   return Array.from({ length: DATE_RANGE }, (_, i) => addDays(centerDate, i - Math.floor(DATE_RANGE / 2)));
 };
 
-const DateItem = React.memo(({ date, index, scrollX, isSelected, isToday, onPress, colors }) => {
+interface DateItemProps {
+  date: Date
+  index: number
+  isSelected: boolean
+  isToday: boolean
+  onPress: (date: Date) => unknown
+  scrollX: SharedValue<number>
+  colors: Theme["colors"]
+}
+
+const DateItem = React.memo(({ date, index, scrollX, isSelected, isToday, onPress, colors }: DateItemProps) => {
   const animatedStyle = useAnimatedStyle(() => {
     const inputRange = [
       (index - 1) * ITEM_TOTAL_WIDTH,
@@ -82,12 +95,18 @@ const DateItem = React.memo(({ date, index, scrollX, isSelected, isToday, onPres
   );
 });
 
-const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = new Date() }) => {
+interface HorizontalDatePickerProps {
+  onDateSelect: (date: Date) => unknown
+  onCurrentDatePress: () => unknown
+  initialDate: Date
+}
+
+const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = new Date() }: HorizontalDatePickerProps) => {
   const [dates, setDates] = useState(() => generateDateRange(initialDate));
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [centerIndex, setCenterIndex] = useState(Math.floor(DATE_RANGE / 2));
   const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(false);
-  const flatListRef = useRef(null);
+  const flatListRef = useRef<FlatList | null>(null);
   const scrollX = useSharedValue(0);
   const lastItemIndex = useSharedValue(0);
 
@@ -103,7 +122,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
         flatListRef.current?.scrollToIndex({
           index: dateIndex,
           animated: true,
-          velocity: SCROLL_VELOCITY
+          // velocity: SCROLL_VELOCITY
         });
         setSelectedDate(initialDate);
       } else {
@@ -124,12 +143,12 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
       flatListRef.current?.scrollToIndex({
         index: centerIndex,
         animated: false,
-        velocity: SCROLL_VELOCITY
+        // velocity: SCROLL_VELOCITY
       });
     }
   }, [dates, centerIndex]);
 
-  const handleDatePress = useCallback((date) => {
+  const handleDatePress = useCallback((date: Date) => {
     setSelectedDate(date);
     onDateSelect(date);
     if (isSameDay(date, selectedDate) && isSameDay(selectedDate, initialDate)) {
@@ -137,7 +156,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
     }
   }, [onDateSelect, onCurrentDatePress, initialDate, selectedDate]);
 
-  const getItemLayout = useCallback((_, index) => ({
+  const getItemLayout = useCallback((_: any, index: number) => ({
     length: ITEM_TOTAL_WIDTH,
     offset: ITEM_TOTAL_WIDTH * index,
     index,
@@ -161,7 +180,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
     },
   });
 
-  const handleMomentumScrollEnd = useCallback((event) => {
+  const handleMomentumScrollEnd: ScrollViewProps["onMomentumScrollEnd"] = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / ITEM_TOTAL_WIDTH);
     const newSelectedDate = dates[index];
     if (newSelectedDate && !isSameDay(newSelectedDate, selectedDate)) {
@@ -171,7 +190,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
     setIsProgrammaticScroll(false);
   }, [dates, selectedDate, onDateSelect]);
 
-  const renderDateItem = useCallback(({ item, index }) => (
+  const renderDateItem: ListRenderItem<Date> = useCallback(({ item, index }) => (
     <DateItem
       date={item}
       index={index}

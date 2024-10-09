@@ -14,14 +14,15 @@ import * as Sharing from "expo-sharing";
 import { useCurrentAccount } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
+import {Screen} from "@/router/helpers/types";
 
-const NoteReaction = ({ navigation }) => {
+const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
   const inset = useSafeAreaInsets();
   const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const cameraRef = useRef(null);
+  const cameraRef = useRef<CameraView | null>(null);
   const composerRef = useRef(null);
-  const [capturedImage, setCapturedImage] = useState(null);
+  const [capturedImage, setCapturedImage] = useState<string | undefined>(undefined);
   const account = useCurrentAccount(store => store.account);
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const NoteReaction = ({ navigation }) => {
         quality: 0.5,
         skipProcessing: true,
       });
-      setCapturedImage(photo.uri);
+      setCapturedImage(photo?.uri);
     } catch (error) {
       console.error("Failed to take picture:", error);
       Alert.alert("Error", "Failed to capture image");

@@ -45,7 +45,7 @@ const Menu: Screen<"Menu"> = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      ...TabAnimatedTitle({ theme, route, navigation }),
+      ...TabAnimatedTitle({ route, navigation }),
     });
   }, [navigation, route.params, theme.colors.text]);
 
@@ -68,7 +68,6 @@ const Menu: Screen<"Menu"> = ({
       {balances ? balances.map((balance, index) => (
         <RestaurantCard
           key={index}
-          theme={theme}
           solde={balance.amount}
           repas={balance.remaining}
         />

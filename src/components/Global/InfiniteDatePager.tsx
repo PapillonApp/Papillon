@@ -1,24 +1,31 @@
 import React, { useRef, useCallback, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import InfinitePager from "react-native-infinite-pager";
+import {InfinitePagerImperativeApi, InfinitePagerPageComponent} from "react-native-infinite-pager/src";
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const InfiniteDatePager = ({ renderDate, initialDate = new Date(), onDateChange }) => {
-  const pagerRef = useRef(null);
+interface InfiniteDatePagerProps {
+  initialDate: Date
+  renderDate: (date: Date) => string
+  onDateChange: (date: Date) => unknown
+}
+
+const InfiniteDatePager = ({ renderDate, initialDate = new Date(), onDateChange }: InfiniteDatePagerProps) => {
+  const pagerRef = useRef<InfinitePagerImperativeApi>(null);
   const baseDate = useRef(new Date()).current;
   baseDate.setHours(0, 0, 0, 0);
   const lastChangeTime = useRef(0);
 
-  const getDateFromIndex = useCallback((index) => {
+  const getDateFromIndex = useCallback((index: number) => {
     return new Date(baseDate.getTime() + index * MILLISECONDS_PER_DAY);
   }, []);
 
-  const getIndexFromDate = useCallback((date) => {
+  const getIndexFromDate = useCallback((date: Date) => {
     return Math.round((date.getTime() - baseDate.getTime()) / MILLISECONDS_PER_DAY);
   }, []);
 
-  const renderPage = useCallback(({ index }) => {
+  const renderPage: InfinitePagerPageComponent = useCallback(({ index }) => {
     const date = getDateFromIndex(index);
     return (
       <View style={styles.pageContainer}>
@@ -31,7 +38,7 @@ const InfiniteDatePager = ({ renderDate, initialDate = new Date(), onDateChange 
     );
   }, [getDateFromIndex, renderDate]);
 
-  const handlePageChange = useCallback((index) => {
+  const handlePageChange = useCallback((index: number) => {
     const now = Date.now();
     if (now - lastChangeTime.current > 200) { // 200ms throttle
       lastChangeTime.current = now;
@@ -42,7 +49,7 @@ const InfiniteDatePager = ({ renderDate, initialDate = new Date(), onDateChange 
 
   useEffect(() => {
     const index = getIndexFromDate(initialDate);
-    pagerRef.current?.setPage(index, false);
+    pagerRef.current?.setPage(index, { animated: false });
   }, [initialDate]);
 
   return (

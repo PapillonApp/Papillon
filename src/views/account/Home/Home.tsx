@@ -404,7 +404,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
         >
           <Header
             scrolled={false}
-            openAccountSwitcher={openAccSwitcher}
+            // openAccountSwitcher={openAccSwitcher}
             navigation={navigation}
           />
         </Reanimated.View>
