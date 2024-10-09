@@ -113,7 +113,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
           icon: <School />,
           title: "Moyenne de la classe",
           value: classDiff.difference === undefined ? "???" :
-            (classDiff.difference > 0 ? "+ " : "- ") +
+            (classDiff.difference > 0 ? "- " : "+ ") +
             classDiff.difference.toFixed(2).replace("-", "") + " pts",
         }
       ]
