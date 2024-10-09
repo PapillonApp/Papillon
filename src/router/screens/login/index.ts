@@ -10,7 +10,9 @@ export default [
   createScreen("ServiceSelector", ServiceSelector, {
     headerTitle: "",
     headerTransparent: true,
-    headerBackVisible: true
+    headerBackVisible: true,
+    animation: "slide_from_bottom",
+    animationDuration: 250
   }),
 
   ...pronote,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
@@ -29,28 +29,13 @@ const DuoListPressable: React.FC<{
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
-  const [buttonPressAudio, setButtonPressAudio] = useState<Audio.Sound | null>(null);
-
-  useEffect(() => {
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("@/../assets/sound/click_003.wav")
-      );
-      setButtonPressAudio(sound);
-    };
-
-    loadSound();
-
-    return () => {
-      if (buttonPressAudio) {
-        buttonPressAudio.unloadAsync();
-      }
-    };
+  const playSound = useCallback(async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("@/../assets/sound/click_003.wav")
+    );
+    await sound.setPositionAsync(0);
+    await sound.playAsync();
   }, []);
-
-  const playSound = async () => {
-    await buttonPressAudio?.replayAsync();
-  };
 
   useEffect(() => {
     if (pressed) {
@@ -64,6 +49,7 @@ const DuoListPressable: React.FC<{
       scale.value = withTiming(1, { duration: 100, easing: Easing.linear });
       opacity.value = withTiming(1, { duration: 100, easing: Easing.linear });
     }
+
   }, [pressed]);
 
   return (
@@ -87,7 +73,11 @@ const DuoListPressable: React.FC<{
         ]}
         onPress={onPress}
         onPressIn={() => setPressed(true)}
-        onPressOut={() => setPressed(false)}
+        onPressOut={() => {
+          setTimeout(() => {
+            setPressed(false);
+          }, 50);
+        }}
       >
         {leading && (
           <View>
