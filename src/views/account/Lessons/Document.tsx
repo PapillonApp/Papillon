@@ -97,8 +97,8 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         {
           icon: <Info />,
           text: "Statut",
-          value: lesson.status,
-          enabled: lesson.status != null,
+          value: lesson.statusText,
+          enabled: Boolean(lesson.statusText) || Boolean(lesson.status),
         },
       ]
     }

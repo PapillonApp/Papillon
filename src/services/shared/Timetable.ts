@@ -19,4 +19,5 @@ export type Timetable = Array<TimetableClass>;
 
 export enum TimetableClassStatus {
   CANCELED = "canceled",
+  TEST = "ds",
 }
