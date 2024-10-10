@@ -57,7 +57,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         {
           icon: <Asterisk />,
           title: "Coefficient",
-          description: "Coefficient de la matière",
+          description: "Coefficient de la note",
           value: "x" + grade.coefficient.toFixed(2),
         },
         grade.outOf.value !== 20 && !grade.student.disabled && {
@@ -72,7 +72,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
       ],
     },
     {
-      title: "Moyennes",
+      title: "Ma classe",
       items: [
         {
           icon: <Users />,
@@ -112,6 +112,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         !grade.average.disabled && {
           icon: <School />,
           title: "Moyenne de la classe",
+          description: "Impact de la note sur la moyenne de la classe",
           value: classDiff.difference === undefined ? "???" :
             (classDiff.difference > 0 ? "+ " : "- ") +
             classDiff.difference.toFixed(2).replace("-", "") + " pts",

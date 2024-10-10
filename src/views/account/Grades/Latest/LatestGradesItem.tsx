@@ -94,7 +94,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
               lineHeight: 20,
             }}
           >
-            {grade.description || `Note rendue le ${new Date(grade.timestamp).toLocaleDateString("fr-FR", {
+            {grade.description || `Note renseignée le ${new Date(grade.timestamp).toLocaleDateString("fr-FR", {
               weekday: "long",
               month: "long",
               day: "numeric",
