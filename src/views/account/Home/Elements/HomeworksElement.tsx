@@ -48,7 +48,8 @@ const HomeworksElement = ({ navigation }) => {
   const startTime = Date.now() / 1000; // Convertir en millisecondes
   const endTime = startTime + 7 * 24 * 60 * 60 * 1000; // Ajouter 7 jours en millisecondes
 
-  const hwFinalList = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime);
+  const hwFinalList = homeworks[(new Date().getDay() === 6 || new Date().getDay() === 0) ? dateToEpochWeekNumber(actualDay) + 1 : dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime);
+  const hwFinalList2 = homeworks[(new Date().getDay() === 6 || new Date().getDay() === 0) ? dateToEpochWeekNumber(actualDay) + 2 : dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime);
 
   if(hwFinalList.length === 0) {
     return null;
@@ -74,7 +75,7 @@ const HomeworksElement = ({ navigation }) => {
             }}
           />
         ))}
-        {new Date().getDay() >= 2 && homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime).map((hw, index) => (
+        {new Date().getDay() >= 2 && hwFinalList2.length > 0 && hwFinalList2.map((hw, index) => (
           <HomeworkItem
             homework={hw}
             key={index}
