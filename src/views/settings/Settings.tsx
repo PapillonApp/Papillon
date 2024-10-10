@@ -11,7 +11,9 @@ import Reanimated, {
   FadeOut,
   runOnJS,
   useAnimatedScrollHandler,
-  useSharedValue
+  useSharedValue,
+  ZoomIn,
+  ZoomOut
 } from "react-native-reanimated";
 
 import {
@@ -42,6 +44,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AddonPlacementManifest} from "@/addons/types";
 import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { animPapillon } from "@/utils/ui/animations";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -51,6 +55,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const [ addons, setAddons ] = useState<Array<AddonPlacementManifest>>([]);
   const [devModeEnabled, setDevModeEnabled] = useState(false);
   const defined = useFlagsStore(state => state.defined);
+  const [click, setClick] = useState<true | false>(false);
 
   const removeAccount = useAccounts((store) => store.remove);
 
@@ -152,15 +157,24 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       label: "Avancé",
       tabs: [
         {
-          icon: <Route />,
+          icon: click ? (
+            <PapillonSpinner
+              size={18}
+              color="white"
+              strokeWidth={2.8}
+              entering={animPapillon(ZoomIn)}
+              exiting={animPapillon(ZoomOut)}
+            />) : <Route />,
           color: "#7E1174",
           label: "Onglets & Navigation",
           onPress: async () => {
-            if (Platform.OS === "ios") {
-              navigation.goBack();
-            }
+            setClick(true);
             setTimeout(() => {
+              if (Platform.OS === "ios") {
+                navigation.goBack();
+              }
               navigation.navigate("SettingsTabs");
+              setClick(false);
             }, 10);
           },
         },
@@ -186,12 +200,6 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       label: "Projet Papillon",
       tabs: [
         {
-          icon: <HandCoins />,
-          color: "#CBA024",
-          label: "Soutenir Papillon",
-          onPress: () => {
-            Platform.OS === "android" ? openUrl("https://papillon.bzh/donate") : undefined;
-          },
           icon: <Scroll />,
           color: "#c75110",
           label: "Quoi de neuf ?",
@@ -202,6 +210,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#888888",
           label: "À propos de Papillon",
           onPress: () => navigation.navigate("SettingsAbout"),
+        },
+        Platform.OS === "android" && {
+          icon: <HandCoins />,
+          color: "#CBA024",
+          label: "Soutenir Papillon",
+          onPress: () => openUrl("https://papillon.bzh/donate")
         },
       ],
     },

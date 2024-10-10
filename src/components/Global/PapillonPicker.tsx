@@ -36,10 +36,6 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
   const [contentHeight, setContentHeight] = useState(0);
   const [opened, setOpened] = useState(false);
 
-  useEffect(() => {
-    Haptics.selectionAsync();
-  }, [opened]);
-
   const handleSelectionChange = (item: string) => {
     if (onSelectionChange) {
       setTimeout(() => {
