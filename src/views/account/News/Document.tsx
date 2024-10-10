@@ -11,19 +11,21 @@ import {
   Link,
   MoreHorizontal,
 } from "lucide-react-native";
-import React, { useEffect, useLayoutEffect } from "react";
-import {View, Dimensions, Linking, TouchableOpacity} from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { View, Dimensions, Linking, Text, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import RenderHtml from "react-native-render-html";
-import { PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
-import {LinearGradient} from "expo-linear-gradient";
-import {setNewsRead} from "@/services/news";
-import {useCurrentAccount} from "@/stores/account";
+import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
+import { LinearGradient } from "expo-linear-gradient";
+import { setNewsRead } from "@/services/news";
+import { useCurrentAccount } from "@/stores/account";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
+import { newsInformationAcknowledge } from "pawnote";
 
-const NewsItem = ({route, navigation}) => {
-  let message = route.params.message && JSON.parse(route.params.message) as Information;
+const NewsItem = ({ route, navigation }) => {
+  const [message, setMessage] = useState<Information>(route.params.message && JSON.parse(route.params.message) as Information);
   const important = route.params.important;
   const account = useCurrentAccount((store) => store.account!);
 
@@ -37,7 +39,10 @@ const NewsItem = ({route, navigation}) => {
 
   useEffect(() => {
     setNewsRead(account, message, true);
-    message.read = true;
+    setMessage((prev) => ({
+      ...prev,
+      read: true,
+    }));
   }, [account.instance]);
 
   const tagsStyles = {
@@ -61,14 +66,14 @@ const NewsItem = ({route, navigation}) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <PapillonModernHeader outsideNav={true}>
-        <View style={{flexDirection: "row", gap: 10, alignItems: "center"}}>
+        <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
           <InitialIndicator
             initial={message.author}
             color={theme.colors.primary}
           />
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <NativeText variant="title" numberOfLines={1}>{message.title}</NativeText>
             <NativeText variant="subtitle" numberOfLines={1}>{message.author}</NativeText>
           </View>
@@ -79,10 +84,13 @@ const NewsItem = ({route, navigation}) => {
             data={[
               {
                 icon: message.read ? <EyeOff /> : <Eye />,
-                label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
+                label: message.read ? "Marquer comme non lu" : "Marquer comme lu",
                 onPress: () => {
                   setNewsRead(account, message, !message.read);
-                  message.read = !message.read;
+                  setMessage((prev) => ({
+                    ...prev,
+                    read: !prev.read,
+                  }));
                 }
               }
             ]}
@@ -115,11 +123,48 @@ const NewsItem = ({route, navigation}) => {
           flex: 1,
         }}
         contentContainerStyle={{
-          paddingBottom: 16,
-          paddingTop: 96,
+          paddingBottom: !message.ref.needToAcknowledge ? 16 : 0,
+          paddingTop: !message.ref.needToAcknowledge ? 96 : 0,
         }}
       >
-        <View style={{paddingHorizontal: 16}}>
+        <View style={{ paddingHorizontal: 16, marginTop: message.ref.needToAcknowledge ? 100 : 0 }}>
+          {message.ref.needToAcknowledge && (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 25
+              }}
+            >
+              <PapillonCheckbox
+                checked={message.acknowledged}
+                onPress={async () => {
+                  if (!message.acknowledged) {
+                    await newsInformationAcknowledge(
+                      account.instance!,
+                      message.ref
+                    );
+
+                    setMessage((prev) => ({
+                      ...prev,
+                      read: true,
+                      acknowledged: true,
+                    }));
+                  }
+                }}
+                style={{ marginLeft: 25 }}
+                color="green"
+              />
+              <Text
+                style={{
+                  color: message.acknowledged ? "grey" : theme.dark ? "white" : "dark",
+                }}
+              >
+                J'ai lu et pris connaissance
+              </Text>
+            </View>
+          )}
           <RenderHtml
             contentWidth={Dimensions.get("window").width - (16 * 2)}
             source={{
@@ -136,7 +181,7 @@ const NewsItem = ({route, navigation}) => {
           />
         </View>
 
-        <ScrollView horizontal={true} contentContainerStyle={{gap: 5, paddingHorizontal: 16}}>
+        <ScrollView horizontal={true} contentContainerStyle={{ gap: 5, paddingHorizontal: 16 }}>
           <View style={{
             padding: 4,
             paddingHorizontal: 12,
@@ -160,7 +205,7 @@ const NewsItem = ({route, navigation}) => {
         </ScrollView>
 
         {message.attachments.length > 0 && (
-          <View style={{paddingHorizontal: 16}}>
+          <View style={{ paddingHorizontal: 16 }}>
             <NativeListHeader label="Pièces jointes" />
             <NativeList>
               {message.attachments.map((attachment, index) => (
