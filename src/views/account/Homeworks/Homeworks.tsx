@@ -179,9 +179,20 @@ const WeekView = ({ route, navigation }) => {
       return acc;
     }, {} as Record<string, Homework[]>);
 
+    // Moved completed homework to the bottom of the day
+    const sortedGroupedHomework = Object.keys(groupedHomework).reduce((acc, day) => {
+      acc[day] = groupedHomework[day].sort((a, b) => {
+        if (a.done === b.done) {
+          return 0; // Keep the current order if both are either completed or not completed
+        }
+        return a.done ? 1 : -1; // Unfinished at the top, finished at the bottom
+      });
+      return acc;
+    }, {} as Record<string, Homework[]>);
+
     return (
       <ScrollView
-        style={{ width: finalWidth, height: "100%"}}
+        style={{ width: finalWidth, height: "100%" }}
         contentContainerStyle={{
           padding: 16,
           paddingTop: outsideNav ? 72 : insets.top + 56,
