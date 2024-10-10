@@ -26,7 +26,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const account = useCurrentAccount((store) => store.account!);
   const informations = useNewsStore((store) => store.informations);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
 
@@ -36,26 +36,33 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
     });
   }, [navigation, route.params, theme.colors.text]);
 
-  const fetchData = useCallback(async (hidden: boolean = false) => {
-    if (!hidden) setIsLoading(true);
-    await updateNewsInCache(account);
-    setIsLoading(false);
+  const fetchData = useCallback((_hidden: boolean = false) => {
+    setIsLoading(true);
+    setTimeout(async () => {
+      await updateNewsInCache(account);
+      setIsLoading(false);
+    }, 100);
   }, [account]);
 
   useEffect(() => {
-    navigation.addListener("focus", () => fetchData(true));
-    fetchData();
-  }, [account.instance]);
+    if (sortedMessages.length === 0) {
+      navigation.addListener("focus", () => fetchData(true));
+      fetchData();
+    }
+  }, [sortedMessages, account.instance]);
 
   useEffect(() => {
     if (informations) {
       if (account.personalization?.magicEnabled) {
         const { importantMessages, normalMessages } = categorizeMessages(informations);
-        setImportantMessages(importantMessages.map(message => ({ ...message, date: message.date.toString() })));
-        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString() })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const element1 = importantMessages.map(message => ({ ...message, date: message.date.toString() }));
+        const element2 = normalMessages.map(message => ({ ...message, date: message.date.toString() })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setImportantMessages(element1);
+        setSortedMessages(element2);
       } else {
+        const element3 = informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "" })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setImportantMessages([]);
-        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "" })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(element3);
       }
     }
   }, [informations, account.personalization?.magicEnabled]);
@@ -93,58 +100,64 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         <RefreshControl refreshing={isLoading} onRefresh={fetchData} />
       }
     >
-      {importantMessages.length > 0 && (
-        <Reanimated.View
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOut)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <NativeListHeader
-            label="Peut-être Important"
-            animated
-            leading={
-              <Image
-                source={require("@/../assets/images/magic/icon_magic.png")}
-                style={styles.magicIcon}
-                resizeMode="contain"
-              />
+      {!isLoading && (
+        !hasNews ? <NoNewsMessage /> : (
+          <>
+            {
+              importantMessages.length > 0 && (
+                <Reanimated.View
+                  entering={animPapillon(FadeInUp)}
+                  exiting={animPapillon(FadeOut)}
+                  layout={animPapillon(LinearTransition)}
+                >
+                  <NativeListHeader
+                    label="Peut-être Important"
+                    animated
+                    leading={
+                      <Image
+                        source={require("@/../assets/images/magic/icon_magic.png")}
+                        style={styles.magicIcon}
+                        resizeMode="contain"
+                      />
+                    }
+                    trailing={<BetaIndicator />}
+                  />
+
+                  <NativeList animated>
+                    <LinearGradient
+                      colors={!theme.dark ? [theme.colors.card, "#BFF6EF"] : [theme.colors.card, "#2C2C2C"]}
+                      start={[0, 0]}
+                      end={[2, 0]}
+                    >
+                      <FlatList
+                        data={importantMessages}
+                        renderItem={renderItem}
+                        keyExtractor={(_, index) => `important-${index}`}
+                      />
+                    </LinearGradient>
+                  </NativeList>
+                </Reanimated.View>
+              )
             }
-            trailing={<BetaIndicator />}
-          />
 
-          <NativeList animated>
-            <LinearGradient
-              colors={!theme.dark ? [theme.colors.card, "#BFF6EF"] : [theme.colors.card, "#2C2C2C"]}
-              start={[0, 0]}
-              end={[2, 0]}
-            >
-              <FlatList
-                data={importantMessages}
-                renderItem={renderItem}
-                keyExtractor={(_, index) => `important-${index}`}
-              />
-            </LinearGradient>
-          </NativeList>
-        </Reanimated.View>
+            {sortedMessages.length > 0 && (
+              <Reanimated.View
+                entering={animPapillon(FadeInUp)}
+                exiting={animPapillon(FadeOut)}
+                layout={animPapillon(LinearTransition)}
+              >
+                <NativeList animated inline>
+                  <FlatList
+                    data={sortedMessages}
+                    renderItem={renderItem}
+                    keyExtractor={(_, index) => `sorted-${index}`}
+                  />
+                </NativeList>
+              </Reanimated.View>
+            )}
+          </>
+        )
       )}
-
-      {sortedMessages.length > 0 && (
-        <Reanimated.View
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOut)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <NativeList animated inline>
-            <FlatList
-              data={sortedMessages}
-              renderItem={renderItem}
-              keyExtractor={(_, index) => `sorted-${index}`}
-            />
-          </NativeList>
-        </Reanimated.View>
-      )}
-
-      {!isLoading && !hasNews && <NoNewsMessage />}
     </Reanimated.ScrollView>
   );
 };
