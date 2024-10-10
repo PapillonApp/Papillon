@@ -377,7 +377,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           </View>
         ))}
 
-        {devModeEnabled == true && (
+        {devModeEnabled && (
           <View>
             <NativeListHeader label={"Développeur"}/>
             <NativeList>
