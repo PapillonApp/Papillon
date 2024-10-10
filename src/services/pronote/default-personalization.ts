@@ -1,6 +1,7 @@
 import type { Personalization } from "@/stores/account/types";
 import downloadAsBase64 from "@/utils/external/download-as-base64";
 import { defaultTabs } from "@/consts/DefaultTabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type pronote from "pawnote";
 
 import colors from "@/utils/data/colors.json";
@@ -18,6 +19,10 @@ const defaultPronoteTabs = [
 
 const defaultPersonalization = async (instance: pronote.SessionHandle): Promise<Partial<Personalization>> => {
   const user = instance.user.resources[0];
+
+  // Store the profile picture in the async storage
+  AsyncStorage.setItem("defaultProfilePictureB64", await downloadAsBase64(user.profilePicture ? user.profilePicture.url : ""));
+
   return {
     color: colors[0],
     magicEnabled: true,

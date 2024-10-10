@@ -3,13 +3,17 @@ import { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Plus, TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
+import { Camera, TextCursorInput, Trash2, User2, UserCircle2, WholeWord, X } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, ScrollView, Switch, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
+import { useAlert } from "@/providers/AlertProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();
+  const { colors } = theme;
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
@@ -22,6 +26,8 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
 
   const [firstName, setFirstName] = useState(account.studentName?.first ?? "");
   const [lastName, setLastName] = useState(account.studentName?.last ?? "");
+
+  const { showAlert } = useAlert();
 
   // on name change, update the account name
   useEffect(() => {
@@ -101,6 +107,47 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
           <NativeItem
             chevron={true}
             onPress={() => updateProfilePic()}
+            onLongPress={() => {
+              if (Platform.OS === "android") {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                showAlert({
+                  title: "Supprimer la photo de profil",
+                  message: "Voulez-vous supprimer ou réinitialiser votre photo de profil ?",
+                  actions: [
+                    {
+                      title: "Supprimer",
+                      onPress: () => {
+                        setProfilePic(undefined);
+                        mutateProperty("personalization", {
+                          ...account.personalization,
+                          profilePictureB64: undefined,
+                        });
+                      },
+                      primary: true,
+                      icon: <Trash2 />,
+                      backgroundColor: "#CF0029",
+                    },
+                    {
+                      title: "Réinitialiser",
+                      onPress: () => {
+                        AsyncStorage.getItem("defaultProfilePictureB64").then((defaultProfilePictureB64) => {
+                          if (defaultProfilePictureB64) {
+                            setProfilePic(defaultProfilePictureB64);
+                            mutateProperty("personalization", {
+                              ...account.personalization,
+                              profilePictureB64: defaultProfilePictureB64,
+                            });
+                          }
+                        });
+                      },
+                      primary: true,
+                      icon: <Camera />,
+                      backgroundColor: colors.primary,
+                    }
+                  ],
+                });
+              }
+            }}
             leading={profilePic &&
               <Image
                 source={{ uri: profilePic }}
@@ -149,7 +196,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
                 fontFamily: "semibold",
                 color: theme.colors.text,
               }}
-              placeholder="Théo"
+              placeholder={oldFirstName}
               placeholderTextColor={theme.colors.text + "80"}
               value={firstName}
               onChangeText={setFirstName}
@@ -171,7 +218,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
                 fontFamily: "semibold",
                 color: theme.colors.text,
               }}
-              placeholder="Dubois"
+              placeholder={oldLastName}
               placeholderTextColor={theme.colors.text + "80"}
               value={lastName}
               onChangeText={setLastName}

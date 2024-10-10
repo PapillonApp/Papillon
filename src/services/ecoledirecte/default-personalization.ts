@@ -2,6 +2,7 @@ import type { Personalization } from "@/stores/account/types";
 import downloadAsBase64 from "@/utils/external/download-as-base64";
 import { defaultTabs } from "@/consts/DefaultTabs";
 import type { Account } from "pawdirecte";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import colors from "@/utils/data/colors.json";
 
@@ -16,6 +17,10 @@ const defaultEDTabs = [
 ] as typeof defaultTabs[number]["tab"][];
 
 export default async function defaultPersonalization (account: Account): Promise<Partial<Personalization>> {
+
+  // Store the profile picture in the async storage
+  AsyncStorage.setItem("defaultProfilePictureB64", await downloadAsBase64(account.profile_picture_url ?? ""));
+
   return {
     color: colors[0],
     magicEnabled: true,
