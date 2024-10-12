@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback } from "react";
+import React, {useCallback} from "react";
 import { KeyboardAvoidingView, Modal, Pressable, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
@@ -14,7 +14,15 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const BottomSheet = ({ children, opened, setOpened, ...props }) => {
+interface BottomSheetProps {
+  opened: boolean
+  children: React.ReactNode
+  setOpened: (value: boolean) => unknown
+  // Additional properties
+  [key: string]: any
+}
+
+const BottomSheet = ({ children, opened, setOpened, ...props }: BottomSheetProps) => {
   const colors = useTheme().colors;
   const translateY = useSharedValue(0);
   const insets = useSafeAreaInsets();
@@ -86,7 +94,7 @@ const BottomSheet = ({ children, opened, setOpened, ...props }) => {
                 animatedStyle,
                 props.contentContainerStyle,
               ]}
-              entering={SlideInDown.easing(Easing.bezier(0.5, 0, 0, 1)).duration(300)}
+              entering={SlideInDown.easing(Easing.bezier(0.5, 0, 0, 1).factory()).duration(300)}
               exiting={SlideOutDown}
             >
               {children}

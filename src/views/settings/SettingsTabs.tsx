@@ -131,10 +131,7 @@ const SettingsTabs = () => {
             };
           });
 
-        const newTabsFound = defaultTabs.filter(
-          (defaultTab) =>
-            !storedTabs.some((storedTab) => storedTab.name === defaultTab.tab)
-        );
+        const newTabsFound: Tab[] = defaultTabs.filter((defaultTab) => !storedTabs.some((storedTab) => storedTab.name === defaultTab.tab)).map((tab) => ({ ...tab, installed: true }));
 
         setTabs(updatedTabs);
         setNewTabs(newTabsFound);
@@ -266,8 +263,8 @@ const SettingsTabs = () => {
                         }}
                         onPress={() => {
                           setPreviewIndex(index);
-                          lottieRefs.current[index].current?.reset();
-                          lottieRefs.current[index].current?.play();
+                          lottieRefs.current[index]?.current?.reset();
+                          lottieRefs.current[index]?.current?.play();
                         }}
                       >
                         <Reanimated.View

@@ -157,7 +157,7 @@ const ContextMenu: React.FC<{
                       }}
                     >
                       <Image
-                        source={account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+                        source={account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, account.identityProvider?.name || "")}
                         style={{
                           width: "100%",
                           height: "100%",

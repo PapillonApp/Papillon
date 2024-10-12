@@ -15,6 +15,7 @@ import Reanimated, {
 
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {animPapillon} from "@/utils/ui/animations";
 
 interface HeaderCalendarProps {
   index: number,
@@ -23,19 +24,15 @@ interface HeaderCalendarProps {
   showPicker: () => void
 }
 
-const HeaderCalendar: React.FC<HeaderCalendarProps> = ({
-  index,
-  changeIndex,
-  getDateFromIndex,
-  showPicker
-}) => {
+const HeaderCalendar: React.FC<HeaderCalendarProps> = () => {
   const dims = Dimensions.get("window");
   const tablet = dims.width > 600;
 
   return (
     <Reanimated.View
-      style={[styles.header, {
-        top: outsideNav ? 24 : insets.top,
+      style={[{
+        // Commented line bc returns error and idk what styles it should be. Nvm for the moment bc this component is not used.
+        // top: outsideNav ? 24 : insets.top,
         zIndex: 100,
         flexDirection: "row",
         justifyContent: "space-between",
@@ -51,11 +48,13 @@ const HeaderCalendar: React.FC<HeaderCalendarProps> = ({
 interface LessonsDateModalProps {
   showDatePicker: boolean,
   setShowDatePicker: (show: boolean) => unknown,
-  currentPageIndex: number,
-  defaultDate: Date,
+  onDateSelect: (date: Date | undefined) => unknown,
+  currentPageIndex?: number,
+  defaultDate?: Date,
+  currentDate: Date,
   // NOTE: PagerRef is hard to type, may need help on this ?
-  PagerRef: React.RefObject<any>,
-  getDateFromIndex: (index: number) => Date
+  PagerRef?: React.RefObject<any>,
+  getDateFromIndex?: (index: number) => Date
 }
 
 const LessonsDateModal: React.FC<LessonsDateModalProps> = ({

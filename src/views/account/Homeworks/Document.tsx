@@ -13,15 +13,17 @@ import { useTheme } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
+import {Screen} from "@/router/helpers/types";
+import {WebBrowserPresentationStyle} from "expo-web-browser/src/WebBrowser.types";
 
-const HomeworksDocument = ({ route }) => {
+const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
 
   const homework: Homework = route.params.homework || {};
 
-  const openUrl = (url) => {
+  const openUrl = (url: string) => {
     WebBrowser.openBrowserAsync(url, {
-      presentationStyle: "formSheet",
+      presentationStyle: WebBrowserPresentationStyle.FORM_SHEET,
       controlsColor: theme.colors.primary
     });
   };

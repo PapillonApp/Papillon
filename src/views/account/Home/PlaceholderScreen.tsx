@@ -7,13 +7,14 @@ import LottieView from "lottie-react-native";
 import { X } from "lucide-react-native";
 import MissingItem from "@/components/Global/MissingItem";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
+import {Screen} from "@/router/helpers/types";
 
-const PlaceholderScreen = ({ route, navigation }) => {
+const PlaceholderScreen: Screen<"Messages" | "Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      ...TabAnimatedTitle({ theme, route, navigation }),
+      ...TabAnimatedTitle({ route, navigation }),
     });
   }, [navigation, route.params, theme.colors.text]);
 

@@ -10,7 +10,11 @@ import Svg, {
   ClipPath,
 } from "react-native-svg";
 
-const ScanIcon = ({ color }) => {
+interface ScanIconProps {
+  color: string
+}
+
+const ScanIcon = ({ color }: ScanIconProps) => {
   return (
     <View>
       <Svg width="73" height="73" viewBox="0 0 73 73" fill="none">

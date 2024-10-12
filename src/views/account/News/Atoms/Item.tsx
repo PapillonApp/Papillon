@@ -11,8 +11,20 @@ import parse_news_resume from "@/utils/format/format_pronote_news";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import formatDate from "@/utils/format/format_date_complets";
 import InitialIndicator from "@/components/News/InitialIndicator";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {RouteParameters} from "@/router/helpers/types";
+import {Information} from "@/services/shared/Information";
 
-const NewsListItem = ({ index, message, navigation, parentMessages }) => {
+type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
+
+interface NewsListItemProps {
+  index: number
+  message: NewsItem
+  navigation: NativeStackNavigationProp<RouteParameters, "News", undefined>
+  parentMessages: NewsItem[]
+}
+
+const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation, parentMessages }) => {
   const theme = useTheme();
 
   return (
@@ -20,7 +32,7 @@ const NewsListItem = ({ index, message, navigation, parentMessages }) => {
       onPress={() => {
         navigation.navigate("NewsItem", {
           message: JSON.stringify(message),
-          important: message.important !== undefined,
+          important: message.important,
         });
       }}
       chevron={false}

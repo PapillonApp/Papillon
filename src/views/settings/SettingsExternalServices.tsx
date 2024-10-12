@@ -23,6 +23,7 @@ const serviceConfig = {
   [AccountService.ARD]: { icon: Utensils, name: "ARD" },
   [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
   [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
+  [AccountService.Local]: { icon: GraduationCap, name: "Local" }
 };
 
 const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({

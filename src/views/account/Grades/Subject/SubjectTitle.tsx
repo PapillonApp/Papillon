@@ -5,8 +5,22 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import {type RouteParameters, Screen} from "@/router/helpers/types";
+import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import type {Grade, GradesPerSubject} from "@/services/shared/Grade";
 
-const SubjectTitle = ({ navigation, subject, subjectData, allGrades }) => {
+type SubjectTitleParameters = {
+  navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
+  subject: GradesPerSubject
+  allGrades: Grade[]
+  subjectData: {
+    color: string
+    pretty: string
+    emoji: string
+  }
+};
+
+const SubjectTitle = ({ navigation, subject, subjectData, allGrades }: SubjectTitleParameters) => {
   const theme = useTheme();
 
   return (
@@ -77,7 +91,7 @@ const SubjectTitle = ({ navigation, subject, subjectData, allGrades }) => {
         }}
       >
         <AnimatedNumber
-          value={typeof subject.average.average.value === "number" ? subject.average.average.value.toFixed(2) : "N. not"}
+          value={typeof subject.average.average?.value === "number" ? subject.average.average.value.toFixed(2) : "N. not"}
           style={{
             fontSize: 18,
             lineHeight: 20,
@@ -92,7 +106,7 @@ const SubjectTitle = ({ navigation, subject, subjectData, allGrades }) => {
             opacity: 0.6,
           }}
         >
-          /{subject.average.outOf.value}
+          /{subject.average.outOf?.value}
         </NativeText>
       </View>
     </TouchableOpacity>

@@ -14,8 +14,8 @@ const LessonsNoCourseItem = () => {
 
   return (
     <Reanimated.View
-      entering={Platform.OS === "ios" && FadeIn.springify().mass(1).damping(20).stiffness(300)}
-      exiting={Platform.OS === "ios" && FadeOut.springify().mass(1).damping(20).stiffness(300)}
+      entering={Platform.OS === "ios" ? FadeIn.springify().mass(1).damping(20).stiffness(300): undefined}
+      exiting={Platform.OS === "ios" ? FadeOut.springify().mass(1).damping(20).stiffness(300): undefined}
       style={{
         justifyContent: "center",
         alignItems: "center",

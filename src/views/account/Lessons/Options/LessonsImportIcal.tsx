@@ -15,10 +15,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
+import {Screen} from "@/router/helpers/types";
 
 const ical = require("cal-parser");
 
-const LessonsImportIcal = ({ route, navigation }) => {
+const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -44,7 +45,7 @@ const LessonsImportIcal = ({ route, navigation }) => {
   useEffect(() => {
     if (!account.instance) return;
     if (defaultIcal && autoAdd) {
-      if(account.personalization.icalURLs.filter(u => u.url === defaultIcal).length === 0) {
+      if(account.personalization.icalURLs?.filter(u => u.url === defaultIcal).length === 0) {
         saveIcal().then(() => {
           if (autoAdd) {
             navigation.goBack();
@@ -204,14 +205,14 @@ const LessonsImportIcal = ({ route, navigation }) => {
 
       <ButtonCta
         value="Importer"
-        icon={loading &&
+        icon={loading ?
           <View>
             <PapillonSpinner
               strokeWidth={3}
               size={22}
               color={theme.colors.text}
             />
-          </View>
+          </View>: undefined
         }
         primary={!loading}
         style={{

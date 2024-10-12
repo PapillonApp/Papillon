@@ -11,9 +11,11 @@ import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Check } from "lucide-react-native";
 
+type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown }[];
+
 interface PapillonPickerProps {
   children: React.ReactNode
-  data: string[] | { label: string, icon?: React.ReactNode, onPress: () => unknown }[]
+  data: PickerData
   selected?: string
   contentContainerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
   delay?: number,
@@ -99,7 +101,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               const isNotString = typeof item !== "string";
 
               const label = isNotString ? item.label : item;
-              const icon = isNotString ? item.icon && item.icon : null;
+              const icon: null | React.ReactNode = isNotString ? (item.icon ? item.icon: null) : null;
 
               const onPressItem = isNotString ? item.onPress : null;
 
@@ -118,7 +120,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
                       onPressItem();
                     } : () => {
                       setOpened(false);
-                      handleSelectionChange(item);
+                      handleSelectionChange(item as string);
                     }}
                     style={[
                       styles.item

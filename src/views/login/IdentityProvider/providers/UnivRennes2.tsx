@@ -3,7 +3,7 @@ import { Image, View, StyleSheet, Text } from "react-native";
 
 import { WebView } from "react-native-webview";
 
-function extractStudentDataFromHTML (htmlString) {
+function extractStudentDataFromHTML (htmlString: string) {
   const data = {
     title: "",
     identity: {},
@@ -19,7 +19,7 @@ function extractStudentDataFromHTML (htmlString) {
     }
 
     // Helper function to extract section data
-    function extractSectionData (sectionName, dataObject) {
+    function extractSectionData (sectionName: string, dataObject: any) {
       const sectionRegex = new RegExp(`<h3 class="section-h3">${sectionName}[\\s\\S]*?<dl class="well">[\\s\\S]*?<\/dl>`);
       const sectionMatch = htmlString.match(sectionRegex);
       if (sectionMatch) {

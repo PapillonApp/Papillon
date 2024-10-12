@@ -39,7 +39,7 @@ const Messages: Screen<"Messages"> = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      ...TabAnimatedTitle({ theme, route, navigation }),
+      ...TabAnimatedTitle({ route, navigation }),
     });
   }, [navigation, route.params, theme.colors.text]);
 

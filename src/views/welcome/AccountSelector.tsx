@@ -38,6 +38,14 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import {PressableScale} from "react-native-pressable-scale";
 
 import datasets from "@/consts/datasets.json";
+import Animated from "react-native-reanimated";
+
+
+// https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json
+type Illustration = {
+  name: string
+  image: string
+};
 
 const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -51,13 +59,13 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
 
   const accounts = useAccounts((store) => store.accounts);
 
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState<string | null>(null);
 
   const [downloadedIllustrations, setDownloadedIllustrations] = useState(false);
-  const [illustration, setIllustration] = useState(null);
+  const [illustration, setIllustration] = useState<undefined | Illustration>(undefined);
   const [illustrationLoaded, setIllustrationLoaded] = useState(false);
 
-  const scrollRef = useAnimatedRef();
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const headerRatioHeight = 250;
   let headerAnimatedStyle = useAnimatedStyle(() => ({
@@ -350,11 +358,11 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                     key={index}
                     leading={
                       <PapillonAvatar
-                        source={account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+                        source={account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, account.identityProvider?.name || "")}
                         badgeOffset={4}
                         badge={
                           <Image
-                            source={defaultProfilePicture(account.service, account.identityProvider && account.identityProvider.name)}
+                            source={defaultProfilePicture(account.service, account.identityProvider?.name || "")}
                             style={{
                               width: 22,
                               height: 22,

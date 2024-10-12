@@ -90,9 +90,9 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
           <NativeText
             numberOfLines={2}
             variant={!grade.description ? "subtitle" : "default"}
-            style={grade.description && {
+            style={grade.description ? {
               lineHeight: 20,
-            }}
+            }: undefined}
           >
             {grade.description || `Note rendue le ${new Date(grade.timestamp).toLocaleDateString("fr-FR", {
               weekday: "long",
@@ -124,7 +124,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
                 fontFamily: "semibold",
               }}
             >
-              {!grade.student.disabled ? parseFloat(grade.student.value).toFixed(2) : "N.not"}
+              {!grade.student.disabled ? parseFloat(grade.student.value?.toString() || "0").toFixed(2) : "N.not"}
             </NativeText>
             <NativeText
               style={{
@@ -135,7 +135,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
                 marginBottom: -6,
               }}
             >
-              /{parseFloat(grade.outOf.value).toFixed(0)}
+              /{parseFloat(grade.outOf.value?.toString() || "20").toFixed(0)}
             </NativeText>
           </View>
         </View>
