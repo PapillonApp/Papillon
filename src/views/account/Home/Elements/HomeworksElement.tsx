@@ -73,6 +73,8 @@ const HomeworksElement = ({ navigation }) => {
             onDonePressHandler={() => {
               handleDonePress(hw);
             }}
+            showSubjectName={true}
+            groupBySubject={true}
           />
         ))}
         {new Date().getDay() >= 2 && hwFinalList2.length > 0 && hwFinalList2.map((hw, index) => (
@@ -85,6 +87,8 @@ const HomeworksElement = ({ navigation }) => {
             onDonePressHandler={() => {
               handleDonePress(hw);
             }}
+            showSubjectName={true}
+            groupBySubject={true}
           />
         ))}
       </NativeList>

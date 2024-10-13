@@ -1,4 +1,4 @@
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { useTheme } from "@react-navigation/native";
@@ -11,7 +11,7 @@ import HomeworksNoHomeworksItem from "./Atoms/NoHomeworks";
 import HomeworkItem from "./Atoms/Item";
 import { PressableScale } from "react-native-pressable-scale";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X } from "lucide-react-native";
+import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
@@ -23,6 +23,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
+import { getSubjectData } from "@/services/shared/Subject";
+import { isYesterday, isToday, isTomorrow } from "date-fns";
 
 type HomeworksPageProps = {
   index: number;
@@ -35,11 +37,20 @@ type HomeworksPageProps = {
   getDayName: (date: string | number | Date) => string;
 };
 
-const formatDate = (date: string | number | Date): string => {
-  return new Date(date).toLocaleDateString("fr-FR", {
+const getRelativeDay = (date: Date): string | null => {
+  if (isYesterday(date)) return "Hier";
+  if (isToday(date)) return "Aujourd'hui";
+  if (isTomorrow(date)) return "Demain";
+  return null;
+};
+
+const formatDate = (date: string | number | Date): { main: string, relative: string | null } => {
+  const formattedDate = new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long"
   });
+  const relativeDay = getRelativeDay(new Date(date));
+  return { main: formattedDate, relative: relativeDay };
 };
 
 const WeekView = ({ route, navigation }) => {
@@ -65,7 +76,6 @@ const WeekView = ({ route, navigation }) => {
   }
   const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
-  // Function to get the current week number since epoch
   const getCurrentWeekNumber = () => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -84,6 +94,7 @@ const WeekView = ({ route, navigation }) => {
   const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
+  const [groupBySubject, setGroupBySubject] = useState(false);
 
   const getItemLayout = useCallback((_, index) => ({
     length: finalWidth,
@@ -126,7 +137,6 @@ const WeekView = ({ route, navigation }) => {
       });
   }, [account, selectedWeek, loadedWeeks]);
 
-  // on page change, load the homeworks
   useEffect(() => {
     if (selectedWeek > oldSelectedWeek) {
       setDirection("right");
@@ -142,42 +152,52 @@ const WeekView = ({ route, navigation }) => {
 
   const [searchTerms, setSearchTerms] = useState("");
 
-  const renderWeek = ({ item }) => {
+  const renderWeek = useCallback(({ item }: { item: number }) => {
     const homeworksInWeek = homeworks[item] ?? [];
 
     const sortedHomework = homeworksInWeek.sort((a, b) => new Date(a.due).getTime() - new Date(b.due).getTime());
 
     const groupedHomework = sortedHomework.reduce((acc, curr) => {
-      const dayName = getDayName(curr.due);
-      const formattedDate = formatDate(curr.due);
-      const day = `${dayName} ${formattedDate}`;
-
-      if (!acc[day]) {
-        acc[day] = [curr];
+      if (groupBySubject) {
+        if (!acc[curr.subject]) {
+          acc[curr.subject] = [];
+        }
+        acc[curr.subject].push(curr);
       } else {
-        acc[day].push(curr);
-      }
+        const dayName = getDayName(curr.due);
+        const { main: formattedDate, relative: relativeDate } = formatDate(curr.due);
+        const day = `${dayName} ${formattedDate}`;
 
-      // filter homeworks by search terms
-      if (searchTerms.length > 0) {
-        acc[day] = acc[day].filter(homework => {
-          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          return content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-        });
-      }
-
-      // if hideDone is enabled, filter out the done homeworks
-      if (hideDone) {
-        acc[day] = acc[day].filter(homework => !homework.done);
-      }
-
-      // remove all empty days
-      if (acc[day].length === 0) {
-        delete acc[day];
+        if (!acc[day]) {
+          acc[day] = { homeworks: [], relativeDate };
+        }
+        acc[day].homeworks.push(curr);
       }
 
       return acc;
-    }, {} as Record<string, Homework[]>);
+    }, groupBySubject ? {} as Record<string, Homework[]> : {} as Record<string, { homeworks: Homework[], relativeDate: string | null }>);
+
+    Object.keys(groupedHomework).forEach(key => {
+      if (groupBySubject) {
+        groupedHomework[key] = groupedHomework[key].filter(homework => {
+          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const matchesSearch = searchTerms.length === 0 || content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+          return matchesSearch && (!hideDone || !homework.done);
+        });
+        if (groupedHomework[key].length === 0) {
+          delete groupedHomework[key];
+        }
+      } else {
+        groupedHomework[key].homeworks = groupedHomework[key].homeworks.filter(homework => {
+          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const matchesSearch = searchTerms.length === 0 || content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+          return matchesSearch && (!hideDone || !homework.done);
+        });
+        if (groupedHomework[key].homeworks.length === 0) {
+          delete groupedHomework[key];
+        }
+      }
+    });
 
     // Moved completed homework to the bottom of the day
     const sortedGroupedHomework = Object.keys(groupedHomework).reduce((acc, day) => {
@@ -206,23 +226,70 @@ const WeekView = ({ route, navigation }) => {
           />
         }
       >
-        {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
+        {groupedHomework && Object.entries(groupedHomework).map(([key, value]) => (
           <Reanimated.View
-            key={day}
+            key={key}
             entering={animPapillon(FadeInUp)}
             exiting={animPapillon(FadeOutDown)}
             layout={animPapillon(LinearTransition)}
           >
-            <NativeListHeader animated label={day} />
-
+            <NativeListHeader
+              animated
+              label={groupBySubject ? key : key}
+              trailing={groupBySubject ? (
+                <View style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: 13,
+                  backgroundColor: getSubjectData(key).color + "20",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}>
+                  <NativeText
+                    variant="caption"
+                    style={{
+                      color: getSubjectData(key).color,
+                      fontWeight: "bold",
+                      fontSize: 12,
+                    }}
+                  >
+                    {value.length}
+                  </NativeText>
+                </View>
+              ) : value.relativeDate ? (
+                <View
+                  style={{
+                    backgroundColor: theme.colors.primary + "20",
+                    borderRadius: 100,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                  }}
+                >
+                  <NativeText
+                    variant="caption"
+                    style={{
+                      color: theme.colors.primary,
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {value.relativeDate}
+                  </NativeText>
+                </View>
+              ) : null}
+            />
             <NativeList animated>
-              {groupedHomework[day].map((homework, idx) => (
+              {(groupBySubject ? value : value.homeworks).map((homework, idx) => (
                 <HomeworkItem
                   key={homework.id}
                   index={idx}
                   navigation={navigation}
-                  total={groupedHomework[day].length}
+                  total={groupBySubject ? value.length : value.homeworks.length}
                   homework={homework}
+                  showSubjectName={!groupBySubject}
+                  groupBySubject={groupBySubject}
                   onDonePressHandler={async () => {
                     await toggleHomeworkState(account, homework);
                     await updateHomeworks(true, false, false);
@@ -265,7 +332,7 @@ const WeekView = ({ route, navigation }) => {
         }
       </ScrollView>
     );
-  };
+  }, [homeworks, searchTerms, hideDone, groupBySubject, theme, account, updateHomeworks]);
 
   const onEndReached = () => {
     const lastWeek = data[data.length - 1];
@@ -285,7 +352,6 @@ const WeekView = ({ route, navigation }) => {
       onStartReached();
     }
 
-    // Update selected week based on scroll position
     const index = Math.round(nativeEvent.contentOffset.x / finalWidth);
     setSelectedWeek(data[index]);
   }, [finalWidth, data]);
@@ -300,16 +366,14 @@ const WeekView = ({ route, navigation }) => {
     if (index !== -1) {
       const currentIndex = Math.round(flatListRef.current?.contentOffset?.x / finalWidth) || 0;
       const distance = Math.abs(index - currentIndex);
-      const animated = distance <= 10; // Animate if the distance is 10 weeks or less
+      const animated = distance <= 10;
 
       flatListRef.current?.scrollToIndex({ index, animated });
       setSelectedWeek(weekNumber);
     } else {
-      // If the week is not in the current data, update the data and scroll
       const newData = Array.from({ length: 100 }, (_, i) => weekNumber - 50 + i);
       setData(newData);
 
-      // Use a timeout to ensure the FlatList has updated before scrolling
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({ index: 50, animated: false });
         setSelectedWeek(weekNumber);
@@ -497,34 +561,55 @@ const WeekView = ({ route, navigation }) => {
           entering={animPapillon(FadeInLeft).delay(100)}
           exiting={animPapillon(FadeOutLeft)}
           style={{
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: hideDone ? theme.colors.primary : theme.colors.background + "ff",
+            backgroundColor: theme.colors.background + "ff",
             borderColor: theme.colors.border + "dd",
             borderWidth: 1,
             borderRadius: 800,
             height: 40,
-            width: showPickerButtons ? 40 : null,
-            minWidth: showPickerButtons ? 40 : null,
-            maxWidth: showPickerButtons ? 40 : null,
             gap: 4,
             shadowColor: "#00000022",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.6,
             shadowRadius: 4,
+            paddingHorizontal: 8,
           }}
         >
           <TouchableOpacity
             onPress={() => {
               setHideDone(!hideDone);
             }}
+            style={{ marginRight: 8 }}
           >
             <CheckSquare
               size={20}
-              color={hideDone ? "#fff" : theme.colors.text}
+              color={hideDone ? theme.colors.primary : theme.colors.text}
               strokeWidth={2.5}
               opacity={hideDone ? 1 : 0.7}
             />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              setGroupBySubject(!groupBySubject);
+            }}
+          >
+            {groupBySubject ? (
+              <Book
+                size={20}
+                color={theme.colors.primary}
+                strokeWidth={2.5}
+              />
+            ) : (
+              <CircleDashed
+                size={20}
+                color={theme.colors.text}
+                strokeWidth={2.5}
+                opacity={0.7}
+              />
+            )}
           </TouchableOpacity>
         </Reanimated.View>
         }
@@ -559,7 +644,6 @@ const WeekView = ({ route, navigation }) => {
               setShowPickerButtons(false);
 
               setTimeout(() => {
-                // #TODO : change timeout method or duration
                 SearchRef.current?.focus();
               }, 20);
             }}
