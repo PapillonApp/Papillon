@@ -7,6 +7,16 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { Info } from "lucide-react-native";
 
 const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigation }) => {
+  const universityProviders = [
+    {
+      name: "univ_uphf",
+      title: "Université Polytechnique Hauts-de-France",
+      description: "Utilisez votre compte UPHF pour vous connecter",
+      image: require("@/../assets/images/service_uphf.png"),
+      navigate: () => navigation.navigate("UnivUphf_Login"),
+    },
+  ];
+
   const identityProviders = [
     {
       name: "univ_rennes1",
@@ -43,6 +53,23 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       style={{ flex: 1 }}
       contentContainerStyle={{ padding: 16, paddingTop: 0 }}
     >
+      <NativeListHeader label="Service universitaire disponible" />
+
+      <NativeList>
+        {universityProviders.map((identityProvider) => (
+          <NativeItem
+            key={identityProvider.name}
+            onPress={() => identityProvider.navigate()}
+            leading={<Image source={identityProvider.image} style={{ width: 40, height: 40, borderRadius: 300 }} />}
+          >
+            <NativeText variant="title">{identityProvider.title}</NativeText>
+            <NativeText variant="subtitle">
+              {identityProvider.description}
+            </NativeText>
+          </NativeItem>
+        ))}
+      </NativeList>
+
       <NativeListHeader label="Fournisseurs disponibles" />
 
       <NativeList>

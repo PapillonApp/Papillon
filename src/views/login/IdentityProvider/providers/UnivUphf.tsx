@@ -43,7 +43,7 @@ const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
         authentication: {
           refreshAuthToken: account.userData.refreshAuthToken,
         },
-        personalization: await defaultPersonalization()
+        personalization: await defaultPersonalization(account),
       };
 
       createStoredAccount(local_account);
