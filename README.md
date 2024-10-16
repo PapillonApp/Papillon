@@ -11,7 +11,7 @@
 
 > **Papillon est une application mobile qui vise à simplifier la vie scolaire des étudiants en France.**
 
-Voici un aperçu de ce que nous avons accompli jusqu'à présent et de ce qui reste à faire :
+Voici un aperçu de ce que nous avons accompli jusqu'à présent et de ce qu'il reste à faire :
 
 - 🏗️ Structure
   - 🗺️ Routage & Navigation (React Navigation)
@@ -21,7 +21,7 @@ Voici un aperçu de ce que nous avons accompli jusqu'à présent et de ce qui re
 - 🎓 Connexion à un service scolaire
   - 🏫 Interface de choix du service scolaire
     - [x] 🟢 Pronote
-    - [ ] 🔵 EcoleDirecte
+    - [x] 🔵 EcoleDirecte
     - [x] 🟡 Skolengo
     - [x] 🏫 Universités
       - Limoges
@@ -52,6 +52,7 @@ Voici un aperçu de ce que nous avons accompli jusqu'à présent et de ce qui re
   - 📰 Actualités
   - 💬 Conversations
   - 🎒 Vie scolaire
+  - 📩 Messagerie
  
 #
  

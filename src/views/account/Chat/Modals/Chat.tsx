@@ -1,11 +1,12 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Alert,
+  ActivityIndicator,
+  Platform,
   ScrollView,
-  TouchableOpacity,
   View,
+  Text,
 } from "react-native";
-import { Link, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 
 import type { Screen } from "@/router/helpers/types";
 import {
@@ -15,104 +16,184 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
-import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import type { ChatMessage } from "@/services/shared/Chat";
-import { getChatMessages } from "@/services/chats";
-import RenderHTML from "react-native-render-html";
-import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import { HomeworkReturnType } from "@/services/shared/Homework";
-import { formatDistance } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Paperclip, FileText } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import InitialIndicator from "@/components/News/InitialIndicator";
+import { FileText, Link, Paperclip } from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
+import InitialIndicator from "@/components/News/InitialIndicator";
+import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import RenderHTML from "react-native-render-html";
+import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { AccountService } from "@/stores/account/types";
+import * as WebBrowser from "expo-web-browser";
+import getAndOpenFile from "@/utils/files/getAndOpenFile";
+import { getProfileColorByName } from "@/services/local/default-personalization";
+import { getChatMessages } from "@/services/chats";
 
-const Chat: Screen<"Chat"> = ({
-  navigation,
-  route,
-}) => {
+const Chat: Screen<"Chat"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const account = useCurrentAccount(state => state.account!);
-  const [messages, setMessages] = useState<ChatMessage | null>(null);
+  const account = useCurrentAccount((state) => state.account!);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const openUrl = (url: string) => {
+    if (
+      account.service === AccountService.EcoleDirecte &&
+			Platform.OS === "ios"
+    ) {
+      navigation.goBack();
+      getAndOpenFile(account, url);
+    } else {
+      WebBrowser.openBrowserAsync(url, {
+        presentationStyle: "formSheet",
+        controlsColor: theme.colors.primary,
+      });
+    }
+  };
 
   useEffect(() => {
-    void async function () {
+    void (async () => {
       const messages = await getChatMessages(account, route.params.handle);
       setMessages(messages);
-    }();
+    })();
   }, [route.params.handle]);
 
   return (
-    <View style={{flex: 1}}>
-      {messages && <>
-        <PapillonModernHeader outsideNav={true} startLocation={0.6} height={110}>
-          <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
-            <View style={{backgroundColor: theme.colors.background, borderRadius: 100}}>
+    <View style={{ flex: 1 }}>
+      {messages[0] ? (
+        <>
+          <PapillonModernHeader outsideNav={true}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
               <View
                 style={{
+                  backgroundColor: theme.colors.background,
                   borderRadius: 100,
-                  width: 42,
-                  height: 42,
-                  justifyContent: "center",
-                  alignItems: "center",
                 }}
               >
-                <InitialIndicator
-                  initial={parse_initials(messages?.author)}
-                  color={theme.colors.primary}
-                />
+                <View
+                  style={{
+                    borderRadius: 100,
+                    width: 42,
+                    height: 42,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <InitialIndicator
+                    initial={parse_initials(messages[0].author)}
+                    color={getProfileColorByName(messages[0].author).bright}
+                    textColor={getProfileColorByName(messages[0].author).dark}
+                  />
+                </View>
               </View>
+              <View style={{ flex: 1 }}>
+                <NativeText variant="title" numberOfLines={1}>
+                  {messages[0]?.subject}
+                </NativeText>
+                <NativeText variant="subtitle" numberOfLines={1}>
+                  {messages[0].author}
+                </NativeText>
+              </View>
+              <View></View>
             </View>
-            <View style={{flex: 1}}>
-              <NativeText variant="title" numberOfLines={1}>
-                {messages?.subject}
-              </NativeText>
-              <NativeText variant="subtitle" numberOfLines={1}>
-                {messages.author}
-              </NativeText>
-            </View>
-            <View>
+          </PapillonModernHeader>
 
-            </View>
-          </View>
-        </PapillonModernHeader>
+          <ScrollView
+            contentContainerStyle={{
+              padding: 16,
+              paddingTop: 70 + 16,
+              paddingBottom: useSafeAreaInsets().bottom + 16,
+            }}
+            style={{ flex: 1 }}
+          >
+            <NativeList>
+              <NativeItem>
+                <RenderHTML
+                  source={{
+                    html: messages[0].content.replaceAll(/<\/?font[^>]*>/g, ""),
+                  }}
+                  defaultTextProps={{
+                    style: {
+                      color: theme.colors.text,
+                      fontFamily: "medium",
+                      fontSize: 16,
+                      lineHeight: 22,
+                    },
+                  }}
+                  contentWidth={300}
+                />
+              </NativeItem>
+            </NativeList>
+            {messages[0].attachments.length > 0 && (
+              <View>
+                <NativeListHeader label="Pièces jointes" icon={<Paperclip />} />
 
-        <ScrollView
-          contentContainerStyle={{
-            padding: 16,
-            paddingTop: 70 + 16,
-            paddingBottom: useSafeAreaInsets().bottom + 16,
+                <NativeList>
+                  {messages[0].attachments.map((attachment, index) => (
+                    <NativeItem
+                      key={index}
+                      onPress={() => openUrl(attachment.url)}
+                      icon={
+                        attachment.type === "file" ? <FileText /> : <Link />
+                      }
+                    >
+                      <NativeText variant="title" numberOfLines={2}>
+                        {attachment.name}
+                      </NativeText>
+                    </NativeItem>
+                  ))}
+                </NativeList>
+              </View>
+            )}
+          </ScrollView>
+        </>
+      ) : (
+        <Reanimated.View
+          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
+          exiting={
+            Platform.OS === "ios"
+              ? FadeOut.springify().mass(1).damping(20).stiffness(300)
+              : undefined
+          }
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 26,
           }}
-          style={{flex: 1}}
         >
-          <NativeList>
-            <NativeItem>
-              <RenderHTML
-                source={{ html: messages.content.replaceAll(/<\/?font[^>]*>/g, "") }}
-                defaultTextProps={{
-                  style: {
-                    color: theme.colors.text,
-                    fontFamily: "medium",
-                    fontSize: 16,
-                    lineHeight: 22,
-                  },
-                }}
-                contentWidth={300}
-              />
-            </NativeItem>
+          <ActivityIndicator size={"large"} />
 
-          </NativeList>
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: 18,
+              textAlign: "center",
+              fontFamily: "semibold",
+              marginTop: 10,
+            }}
+          >
+            Chargement des discussions...
+          </Text>
 
-        </ScrollView></>}
-
+          <Text
+            style={{
+              color: colors.text,
+              fontSize: 16,
+              textAlign: "center",
+              fontFamily: "medium",
+              marginTop: 4,
+              opacity: 0.5,
+            }}
+          >
+            Vos conversations arrivent...
+          </Text>
+        </Reanimated.View>
+      )}
     </View>
-
-
   );
 };
-
 
 export default Chat;

@@ -29,3 +29,29 @@ export default async function defaultPersonalization (customDefaults?: Partial<P
     ...customDefaults
   };
 }
+
+export function getProfileColorByName (name: string): { bright: string, dark: string } {
+  const colors = [
+    {
+      bright: "#ED99BD",
+      dark: "#91003F"
+    },
+    {
+      bright: "#99D6ED",
+      dark: "#006A91"
+    },
+    {
+      bright: "#C6E4B1",
+      dark: "#3C9100"
+    },
+    {
+      bright: "#F6E4AF",
+      dark: "#BF8F00"
+    },
+    {
+      bright: "#D0BDE9",
+      dark: "#5814AB"
+    }
+  ];
+  return colors[name.length % colors.length];
+}

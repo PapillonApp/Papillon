@@ -6,6 +6,7 @@ import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
 import { dateToEpochWeekNumber, epochWNToPronoteWN } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
+import { useClassSubjectStore } from "@/stores/classSubject";
 
 /**
  * Updates the state and cache for the homework of given week number.
@@ -34,7 +35,9 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
       case AccountService.EcoleDirecte: {
         const { getHomeworkForWeek } = await import("./ecoledirecte/homework");
         const weekNumber = dateToEpochWeekNumber(date);
-        homeworks = await getHomeworkForWeek(account, weekNumber);
+        let response = await getHomeworkForWeek(account, weekNumber);
+        homeworks = response.homework;
+        useClassSubjectStore.getState().pushSubjects(response.subjects);
         break;
       }
       case AccountService.Local: {

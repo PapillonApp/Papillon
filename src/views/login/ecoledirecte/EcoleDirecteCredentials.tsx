@@ -112,8 +112,9 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         setSession(currentSession);
         return;
       }
-      else if (error instanceof Error) {
-        setError(error.message);
+      if (error instanceof Error) {
+        if (error.message === "Bad credentials, no token found in response") setError("Nom d'utilisateur ou mot de passe incorrect!");
+        else setError(error.message);
       }
       else {
         setError("Erreur inconnue");

@@ -16,4 +16,5 @@ export interface Homework {
   due: number
   done: boolean
   returnType?: HomeworkReturnType
+  exam?: boolean
 }
