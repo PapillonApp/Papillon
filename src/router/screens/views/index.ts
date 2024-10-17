@@ -38,6 +38,7 @@ export default [
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom"
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",
@@ -55,11 +56,13 @@ export default [
     headerTitle: "Cours",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom"
   }),
   createScreen("HomeworksDocument", HomeworksDocument, {
     headerTitle: "Devoir",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom"
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",

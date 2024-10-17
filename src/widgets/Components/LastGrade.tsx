@@ -108,9 +108,17 @@ const LastGradeWidget = forwardRef(({
             backgroundColor: subjectColor + "22",
             borderRadius: 50,
             padding: 6,
+            aspectRatio: 1
           }}
         >
-          <Text style={{ fontSize: 18 }}>{subjectEmoji}</Text>
+          <Text style={{
+            width: "100%",
+            height: "100%",
+            fontSize: 18,
+            textAlign: "center",
+            textAlignVertical: "center",
+            includeFontPadding: false,
+          }}>{subjectEmoji}</Text>
         </View>
 
         <NativeText
@@ -150,7 +158,7 @@ const LastGradeWidget = forwardRef(({
             <Text
               style={{
                 color: colors.text + "50",
-                fontFamily: "semiBold",
+                fontFamily: "semibold",
                 fontSize: 15,
               }}
             >

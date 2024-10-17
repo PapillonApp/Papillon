@@ -1,7 +1,4 @@
-import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import MissingItem from "@/components/Global/MissingItem";
-import { NativeText } from "@/components/Global/NativeComponents";
-import PapillonHeader from "@/components/Global/PapillonHeader";
 import { PapillonHeaderSelector, PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import type { Screen } from "@/router/helpers/types";
@@ -15,7 +12,7 @@ import { ChevronDown } from "lucide-react-native";
 import React from "react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, RefreshControl, ScrollView, View } from "react-native";
-import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
@@ -104,9 +101,8 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
   }, [selectedPeriod, grades]);
 
   return (
-    <>
+    <View style={{marginTop: outsideNav ? insets.top : undefined, flex: 1}}>
       <PapillonModernHeader outsideNav={outsideNav}>
-
         <PapillonPicker
           delay={0}
           data={periods.map(period => period.name)}
@@ -183,7 +179,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
           </View>
         </Suspense>
       </ScrollView>
-    </>
+    </View>
   );
 };
 

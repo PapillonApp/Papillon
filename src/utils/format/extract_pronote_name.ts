@@ -1,5 +1,9 @@
 function upperFirst (str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  let result = str.split(/[-\s]/);
+  result.forEach((value: string, index: number) => {
+    result[index] = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  })
+  return result.join(' ');
 }
 
 function upperName (name: string): string {
@@ -7,7 +11,7 @@ function upperName (name: string): string {
 }
 
 export default function extract_pronote_name (fullName: string) {
-  const regex = /^([\p{L} \-]+) ([\p{L}\-]+.*)$/u;
+  const regex = /^([\p{L} -]+) ([\p{L}-]+.*)$/u;
   const match = fullName.match(regex);
 
   if (match) {

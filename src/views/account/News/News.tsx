@@ -16,6 +16,7 @@ import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
+import { AccountService } from "@/stores/account/types";
 
 type NewsItem = {
   date: string;
@@ -29,6 +30,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
+  const [isED, setIsED] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -44,8 +46,12 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener("focus", () => fetchData(true));
-    fetchData();
-  }, [account.instance]);
+    if (account.service === AccountService.EcoleDirecte) setIsED(true);
+    if (sortedMessages.length === 0) {
+      navigation.addListener("focus", () => fetchData(true));
+      fetchData();
+    }
+  }, [sortedMessages, account.instance]);
 
   useEffect(() => {
     if (informations) {
@@ -67,6 +73,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       message={item}
       navigation={navigation}
       parentMessages={sortedMessages}
+      isED={isED}
     />
   ), [navigation, sortedMessages]);
 
