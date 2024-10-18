@@ -4,6 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import Reanimated, {
   LinearTransition,
   EntryExitAnimationFunction,
+  ComplexAnimationBuilder
 } from "react-native-reanimated";
 import { Svg, Circle, G } from "react-native-svg";
 import { animPapillon } from "@/utils/ui/animations";
@@ -13,8 +14,8 @@ interface PapillonSpinnerProps {
   color?: string;
   strokeWidth?: number;
   style?: StyleProp<ViewStyle>;
-  entering?: EntryExitAnimationFunction;
-  exiting?: EntryExitAnimationFunction;
+  entering?: EntryExitAnimationFunction | ComplexAnimationBuilder;
+  exiting?: EntryExitAnimationFunction | ComplexAnimationBuilder;
   animated?: boolean;
 }
 

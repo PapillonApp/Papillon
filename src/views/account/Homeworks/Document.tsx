@@ -13,17 +13,19 @@ import { useTheme } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
+import { Screen } from "@/router/helpers/types";
+import { WebBrowserPresentationStyle } from "expo-web-browser/src/WebBrowser.types";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
 
-const HomeworksDocument = ({ route }) => {
+const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
 
   const homework: Homework = route.params.homework || {};
   const account = useCurrentAccount(store => store.account!);
 
-  const openUrl = (url) => {
+  const openUrl = (url: string) => {
     if (account.service === AccountService.EcoleDirecte && Platform.OS === "ios") {
       getAndOpenFile(account, url);
     } else {
@@ -32,7 +34,6 @@ const HomeworksDocument = ({ route }) => {
         controlsColor: theme.colors.primary
       });
     }
-
   };
 
   const [subjectData, setSubjectData] = useState({

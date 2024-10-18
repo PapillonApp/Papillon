@@ -1,11 +1,13 @@
-function extractNames (text) {
+import {TimetableClass} from "@/services/shared/Timetable";
+
+function extractNames (text: string) {
   const pattern = /\b([A-Z]+)\s+([A-Z][a-z]+)\b/g;
   const matches = [...text.matchAll(pattern)];
   return matches.map(match => `${match[1]} ${match[2]}`);
 }
 
-export const reduceIcalToCourse = (course, identityProvider, url) => {
-  let returnCourse = {
+export const reduceIcalToCourse = (course: any, identityProvider: any, url: string): TimetableClass => {
+  let returnCourse: TimetableClass = {
     subject: course.summary?.value || "",
     id: course.uid?.value || "",
     type: "lesson",
@@ -14,27 +16,27 @@ export const reduceIcalToCourse = (course, identityProvider, url) => {
     endTimestamp: course.dtend && new Date(course.dtend?.value).getTime() || null,
     room: course.location?.value || null,
     teacher: course.organizer?.value || null,
-    backgroundColor: null,
-    itemType: null,
-    status: null,
+    backgroundColor: undefined,
+    itemType: undefined,
+    status: undefined,
     source: "ical://"+url,
   };
 
   switch (identityProvider.identifier) {
     case "univ-rennes1":
-      const teacher = extractNames(course.description?.value) || null;
+      const teacher = extractNames(course.description?.value).join(", ") || undefined;
 
       // get ressource
       const ressourceRegex = /(R\d{3})\s?-/;
       const ressource = course.summary?.value.match(ressourceRegex);
 
       // Get if CM, TD, TP
-      const courseType = course.summary?.value.match(/(CM|TD|TP|DS)/);
+      const courseType: ("CM" | "TD" | "TP" | "DS")[] = course.summary?.value.match(/(CM|TD|TP|DS)/);
       const courseTypes = {
         CM: "CM (Cours magistral)",
         TD: "TD (Travaux dirigés)",
         TP: "TP (Travaux pratiques)",
-        DS: "DS -(Devoir surveillé)",
+        DS: "DS -(Devoir surveillé)"
       };
 
       const itemType = (ressource ? ressource[0].replace("-","") + " - " : "") + (courseType ? courseTypes[courseType[0]] : "");
@@ -73,7 +75,7 @@ export const reduceIcalToCourse = (course, identityProvider, url) => {
         title: title,
         subject: title,
         itemType: itemType,
-        teacher,
+        teacher
       };
   }
 

@@ -52,9 +52,13 @@ export async function updateNewsInCache <T extends Account> (account: T): Promis
 /**
  * Sets news read
  */
-export async function setNewsRead <T extends Account> (account: T, message: Information, read: Boolean = false): Promise<void> {
+export async function setNewsRead <T extends Account> (account: T, message: Information, read: boolean = false): Promise<void> {
   switch (account.service) {
     case AccountService.Pronote: {
+      if (!account.instance) {
+        error("[setNewsRead]: Instance is undefined.", "pronote");
+        break;
+      }
       await newsRead(account.instance, message.ref, read);
       break;
     }

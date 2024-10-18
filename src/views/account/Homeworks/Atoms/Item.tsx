@@ -8,13 +8,24 @@ import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import RenderHTML from "react-native-render-html";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteParameters } from "@/router/helpers/types";
 import { View } from "react-native";
-import { HomeworkReturnType } from "@/services/shared/Homework";
+import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCurrentAccount } from "@/stores/account";
 
-const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }) => {
+interface HomeworkItemProps {
+  key: number | string
+  index: number
+  total: number
+  homework: Homework
+  onDonePressHandler: () => unknown
+  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen" | "Homeworks", undefined>
+}
+
+const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }: HomeworkItemProps) => {
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
   const [category, setCategory] = useState<string | null>(null);

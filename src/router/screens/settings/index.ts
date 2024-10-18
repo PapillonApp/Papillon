@@ -62,7 +62,7 @@ const settingsScreens = [
   createScreen("SettingsAddons", SettingsAddons, {
     headerTitle: "Extensions",
   }),
-  createScreen("AddonSettingsPage", AddonPage, {
+  createScreen("AddonPage", AddonPage, {
     headerTitle: "Extension",
   }),
 
