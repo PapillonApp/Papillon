@@ -39,9 +39,9 @@ import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { useTheme } from "@react-navigation/native";
-import {get_settings_widgets} from "@/addons/addons";
+import { get_settings_widgets } from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {AddonPlacementManifest} from "@/addons/types";
+import { AddonPlacementManifest } from "@/addons/types";
 import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
@@ -270,6 +270,15 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       ]
     }
   ];
+
+  if (Platform.OS === "android") {
+    tabs[3].tabs.unshift({
+      icon: <HandCoins />,
+      color: "#F4B400",
+      label: "Donnations",
+      onPress: () => openUrl("https://papillon.bzh/donate"),
+    })
+  }
 
   const translationY = useSharedValue(0);
   const [scrolled, setScrolled] = useState(false);
