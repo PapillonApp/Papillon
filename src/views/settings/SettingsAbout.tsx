@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Image, StyleSheet } from "react-native";
+import { ScrollView, Image, StyleSheet, Platform } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { Euro, MessageCircle } from "lucide-react-native";
+import { Code, MessageCircle, Euro, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader } from "@/components/Global/NativeComponents";
 import { NativeIcon } from "@/components/Global/NativeComponents";
@@ -14,13 +14,30 @@ import * as Linking from "expo-linking";
 import teams from "@/utils/data/teams.json";
 import Constants from "expo-constants";
 import { getContributors, Contributor } from "@/utils/GetRessources/GetContribs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const theme = useTheme();
+  const { colors } = theme;
+  const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
 
   const [clickedOnVersion, setClickedOnVersion] = useState<number>(0);
+  const [clickedOnDependencies, setClickedOnDependencies] = useState<number>(0);
   const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [devMode, setDevMode] = useState(false);
+
+  useEffect(() => {
+    const fetchDevMode = async () => {
+      const devMode = await AsyncStorage.getItem("devmode");
+      if (devMode) {
+        setDevMode(JSON.parse(devMode).enabled);
+      }
+    };
+
+    fetchDevMode();
+  }, []);
 
   const fetchContributors = async () => {
     const fetchedContributors = await getContributors();
@@ -41,6 +58,37 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
       setClickedOnVersion(0);
     }
   }, [clickedOnVersion, navigation]);
+
+  useEffect(() => {
+    if (clickedOnDependencies >= 7) {
+      showAlert({
+        title: "Mode développeur",
+        message: "Souhaitez-vous activer le mode développeur ?",
+        actions: [
+          {
+            title: "Annuler",
+            onPress: () => {},
+            backgroundColor: colors.card,
+            icon: <X color={colors.text} />,
+          },
+          {
+            title: devMode ? "Désactiver" : "Activer",
+            onPress: async () => {
+              await AsyncStorage.setItem("devmode", JSON.stringify({ enabled: !devMode }));
+              setDevMode(!devMode);
+              alert("Pour appliquer les changements, redémarrez l'application.");
+            },
+            primary: true,
+            backgroundColor: devMode ? "#CF0029" : colors.primary,
+            icon: <Code color={colors.text} />,
+          },
+
+        ]
+      });
+      setClickedOnDependencies(0);
+    }
+  }, [clickedOnDependencies, navigation]);
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -139,7 +187,9 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           </NativeText>
         </NativeItem>
         <NativeItem
-          onPress={() => navigation.navigate("SettingsDevLogs")}
+          onPress={
+            () => Platform.OS === "android" ? setClickedOnDependencies(clickedOnDependencies + 1) : navigation.navigate("SettingsDevLogs")
+          }
           chevron={false}
         >
           <NativeText variant="title">
