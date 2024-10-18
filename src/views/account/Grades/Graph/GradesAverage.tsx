@@ -1,5 +1,13 @@
-import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
-import { getAveragesHistory, getPronoteAverage, GradeHistory } from "@/utils/grades/getAverages";
+import {
+  NativeItem,
+  NativeList,
+  NativeText,
+} from "@/components/Global/NativeComponents";
+import {
+  getAveragesHistory,
+  getPronoteAverage,
+  GradeHistory,
+} from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import { View, StyleSheet, Platform } from "react-native";
@@ -16,19 +24,24 @@ import { animPapillon } from "@/utils/ui/animations";
 import * as Haptics from "expo-haptics";
 import { PressableScale } from "react-native-pressable-scale";
 
-import ReanimatedGraph, { ReanimatedGraphPublicMethods } from "@birdwingo/react-native-reanimated-graph";
+import ReanimatedGraph, {
+  ReanimatedGraphPublicMethods,
+} from "@birdwingo/react-native-reanimated-graph";
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
 
 interface GradesAverageGraphProps {
-  grades: Grade[]
-  overall: number | null
+  grades: Grade[];
+  overall: number | null;
 }
 
-const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall }) => {
+const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
+  grades,
+  overall,
+}) => {
   const theme = useTheme();
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
 
   const [gradesHistory, setGradesHistory] = useState<GradeHistory[]>([]);
   const [hLength, setHLength] = useState(0);
@@ -48,12 +61,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
 
   useEffect(() => {
     if (currentAvg !== originalCurrentAvg) {
-      // repeat 3 times
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }, 100 + (i * 80));
-      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   }, [currentAvg]);
 
@@ -61,7 +69,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
   useEffect(() => {
     setSelectedDate(null);
   }, [grades]);
-
 
   useEffect(() => {
     let hst = getAveragesHistory(grades, "student", overall ?? void 0);
@@ -88,18 +95,21 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
     setMinAvg(minAvg);
 
     graphRef.current?.updateData({
-      xAxis: hst.map((p, i) => (new Date(p.date).getTime())),
-      yAxis: hst.map((p) => (p.value)),
+      xAxis: hst.map((p, i) => new Date(p.date).getTime()),
+      yAxis: hst.map((p) => p.value),
     });
   }, [grades, account.instance]);
 
-  const updateTo = useCallback((index: number) => {
-    if (index < 0 || index > gradesHistoryRef.current.length - 1) return;
-    if (!gradesHistoryRef.current[index]?.value) return;
+  const updateTo = useCallback(
+    (index: number) => {
+      if (index < 0 || index > gradesHistoryRef.current.length - 1) return;
+      if (!gradesHistoryRef.current[index]?.value) return;
 
-    setSelectedDate(gradesHistoryRef.current[index].date);
-    setCurrentAvg(gradesHistoryRef.current[index].value);
-  }, [gradesHistoryRef]);
+      setSelectedDate(gradesHistoryRef.current[index].date);
+      setCurrentAvg(gradesHistoryRef.current[index].value);
+    },
+    [gradesHistoryRef]
+  );
 
   const resetToOriginal = useCallback(() => {
     setSelectedDate(null);
@@ -133,8 +143,10 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                 }}
               >
                 <ReanimatedGraph
-                  xAxis={gradesHistory.map((p, i) => (new Date(p.date).getTime()))}
-                  yAxis={gradesHistory.map((p) => (p.value))}
+                  xAxis={gradesHistory.map((p, i) =>
+                    new Date(p.date).getTime()
+                  )}
+                  yAxis={gradesHistory.map((p) => p.value)}
                   color={theme.colors.primary}
                   showXAxisLegend={false}
                   showYAxisLegend={false}
@@ -155,16 +167,17 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                     resetToOriginal();
                   }}
                 />
-
               </Reanimated.View>
-            ) : <View />}
+            ) : (
+              <View />
+            )}
 
             <Reanimated.View
               style={[
                 styles.gradeBoth,
                 Platform.OS === "android" && {
                   marginTop: 0,
-                }
+                },
               ]}
               layout={animPapillon(LinearTransition)}
             >
@@ -175,8 +188,16 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                     entering={animPapillon(FadeInDown)}
                     exiting={animPapillon(FadeOutUp)}
                   >
-                    <NativeText style={{ color: theme.colors.primary }} numberOfLines={1}>
-                      au {new Date(selectedDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                    <NativeText
+                      style={{ color: theme.colors.primary }}
+                      numberOfLines={1}
+                    >
+                      au{" "}
+                      {new Date(selectedDate).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </NativeText>
                   </Reanimated.View>
                 ) : (
@@ -185,9 +206,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                     entering={animPapillon(FadeInDown)}
                     exiting={animPapillon(FadeOutUp)}
                   >
-                    <NativeText numberOfLines={1}>
-                      Moyenne gén.
-                    </NativeText>
+                    <NativeText numberOfLines={1}>Moyenne gén.</NativeText>
                   </Reanimated.View>
                 )}
 
@@ -195,21 +214,19 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                   style={[styles.gradeValue]}
                   layout={animPapillon(LinearTransition)}
                 >
-                  <AnimatedNumber value={currentAvg.toFixed(2)} style={styles.gradeNumber} contentContainerStyle={{ marginLeft: -2 }} />
+                  <AnimatedNumber
+                    value={currentAvg.toFixed(2)}
+                    style={styles.gradeNumber}
+                    contentContainerStyle={{ marginLeft: -2 }}
+                  />
 
-                  <Reanimated.View
-                    layout={animPapillon(LinearTransition)}
-                  >
-                    <NativeText style={[styles.gradeOutOf]}>
-                      /20
-                    </NativeText>
+                  <Reanimated.View layout={animPapillon(LinearTransition)}>
+                    <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
                   </Reanimated.View>
                 </Reanimated.View>
               </View>
               <View style={[styles.gradeInfo, styles.gradeRight]}>
-                <NativeText numberOfLines={1}>
-                  Moyenne classe
-                </NativeText>
+                <NativeText numberOfLines={1}>Moyenne classe</NativeText>
                 <Reanimated.View
                   style={[styles.gradeValue]}
                   layout={animPapillon(LinearTransition)}
@@ -219,9 +236,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
                     style={styles.gradeNumberClass}
                   />
                   <Reanimated.View layout={animPapillon(LinearTransition)}>
-                    <NativeText style={[styles.gradeOutOf]}>
-                      /20
-                    </NativeText>
+                    <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
                   </Reanimated.View>
                 </Reanimated.View>
               </View>
@@ -243,41 +258,45 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({ grades, overall
               >
                 <NativeItem
                   trailing={
-                    <View style={{ flexDirection: "row", gap: 2, alignItems: "flex-end" }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 2,
+                        alignItems: "flex-end",
+                      }}
+                    >
                       <NativeText variant="titleLarge">
                         {maxAvg.toFixed(2)}
                       </NativeText>
-                      <NativeText variant="subtitle">
-                        /20
-                      </NativeText>
+                      <NativeText variant="subtitle">/20</NativeText>
                     </View>
                   }
                   separator
                 >
-                  <NativeText variant="subtitle">
-                    Moyenne max.
-                  </NativeText>
-
+                  <NativeText variant="subtitle">Moyenne max.</NativeText>
                 </NativeItem>
                 <NativeItem
                   trailing={
-                    <View style={{ flexDirection: "row", gap: 2, alignItems: "flex-end" }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 2,
+                        alignItems: "flex-end",
+                      }}
+                    >
                       <NativeText variant="titleLarge">
                         {minAvg.toFixed(2)}
                       </NativeText>
-                      <NativeText variant="subtitle">
-                        /20
-                      </NativeText>
+                      <NativeText variant="subtitle">/20</NativeText>
                     </View>
                   }
                 >
-                  <NativeText variant="subtitle">
-                    Moyenne min.
-                  </NativeText>
-
+                  <NativeText variant="subtitle">Moyenne min.</NativeText>
                 </NativeItem>
               </Reanimated.View>
-            ) : <View />}
+            ) : (
+              <View />
+            )}
           </Reanimated.View>
         </NativeList>
       )}
