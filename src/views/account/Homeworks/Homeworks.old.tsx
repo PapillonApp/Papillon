@@ -36,6 +36,7 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
     return <HomeworksNoHomeworksItem />;
   }
 
+  // @ts-ignore
   return (
     <>
       {Object.keys(groupedHomework).map((day, index) => (
@@ -43,6 +44,7 @@ const HomeworkList: React.FC<HomeworkListProps> = React.memo(({ groupedHomework,
           <NativeListHeader label={day} />
           <NativeList>
             {groupedHomework[day].map((homework, idx) => (
+              // @ts-ignore : this is an old file, so it doesn't match with new types... This file is not supposed to be used.
               <HomeworkItem
                 key={homework.id}
                 index={idx}

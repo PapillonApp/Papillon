@@ -17,6 +17,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { PressableScale } from "react-native-pressable-scale";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Screen} from "@/router/helpers/types";
 
 interface Feature {
   title: string;
@@ -40,7 +41,7 @@ interface Version {
 const currentVersion = PackageJSON.version;
 const changelogURL = datasets.changelog.replace("[version]", currentVersion);
 
-const ChangelogScreen = ({ route, navigation }) => {
+const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -114,7 +115,6 @@ const ChangelogScreen = ({ route, navigation }) => {
           animated
           entering={animPapillon(FadeInUp)}
           exiting={animPapillon(FadeOutUp)}
-          layout={animPapillon(LinearTransition)}
         >
           <NativeItem
             leading={<PapillonSpinner color={theme.colors.primary} size={24} strokeWidth={3.5} />}
@@ -135,7 +135,6 @@ const ChangelogScreen = ({ route, navigation }) => {
           animated
           entering={animPapillon(FadeInUp)}
           exiting={animPapillon(FadeOutUp)}
-          layout={animPapillon(LinearTransition)}
         >
           <NativeItem
             icon={<AlertTriangle />}
@@ -319,7 +318,7 @@ const ChangelogFeature: React.FC<{ feature: Feature, navigation: any, theme: any
               }
               catch {}
             }
-          } : null}
+          } : undefined}
         >
           <NativeText
             variant="default"

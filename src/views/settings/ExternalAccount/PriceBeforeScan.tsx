@@ -6,26 +6,27 @@ import QRCode from "react-native-qrcode-svg";
 import Barcode from "react-native-barcode-svg";
 import { useAccounts } from "@/stores/account";
 import { Screen } from "@/router/helpers/types";
+import { ExternalAccount, PrimaryAccount } from "@/stores/account/types";
 
 const PriceBeforeScan: Screen<"PriceBeforeScan"> = ({ navigation, route }) => {
   const { colors } = useTheme();
   const accounts = useAccounts((state) => state.accounts);
   const { accountID } = route.params;
 
-  const account = useMemo(() => {
-    const mainAccount = accounts.find(acc => acc.localID === accountID && !acc.isExternal);
-    const externalAccount = accounts.find(acc => acc.localID === accountID || acc.linkedExternalLocalIDs?.includes(accountID));
-    return mainAccount || externalAccount;
+  const { mainAccount, externalAccount } = useMemo(() => {
+    const mainAccount = accounts.find(acc => acc.localID === accountID && !acc.isExternal) as PrimaryAccount;
+    const externalAccount = accounts.find(acc => acc.localID === accountID || acc.linkedExternalLocalIDs?.includes(accountID)) as ExternalAccount;
+    return { mainAccount, externalAccount };
   }, [accounts, accountID]);
 
   const accountName = useMemo(() => {
-    if (account?.studentName) {
-      return `${account.studentName?.first} ${account.studentName?.last}`;
-    } else if (account?.name) {
-      return account.name;
+    if (mainAccount?.studentName) {
+      return `${mainAccount.studentName?.first} ${mainAccount.studentName?.last}`;
+    } else if (mainAccount?.name) {
+      return mainAccount.name;
     }
     return "";
-  }, [account]);
+  }, [mainAccount]);
 
   const getBarcodeFormat = useCallback((type: string): string => {
     switch(type) {
@@ -39,8 +40,8 @@ const PriceBeforeScan: Screen<"PriceBeforeScan"> = ({ navigation, route }) => {
   }, []);
 
   const renderCode = useMemo(() => {
-    const qrcodedata = account?.data?.qrcodedata || (account as any)?.qrcodedata;
-    const qrcodetype = account?.data?.qrcodetype || (account as any)?.qrcodetype;
+    const qrcodedata = externalAccount?.data?.qrcodedata || (externalAccount as any)?.qrcodedata;
+    const qrcodetype = externalAccount?.data?.qrcodetype || (externalAccount as any)?.qrcodetype;
     if (qrcodedata) {
       if (qrcodetype === "org.iso.QR-Code") {
         return <QRCode value={qrcodedata} size={200} />;
@@ -50,13 +51,13 @@ const PriceBeforeScan: Screen<"PriceBeforeScan"> = ({ navigation, route }) => {
             value={qrcodedata}
             format={getBarcodeFormat(qrcodetype)}
             height={80}
-            width={2}
+            maxWidth={2}
           />
         );
       }
     }
     return null;
-  }, [account, getBarcodeFormat]);
+  }, [externalAccount, getBarcodeFormat]);
 
   const handleScanComplete = useCallback(() => {
     navigation.navigate("PriceAfterScan", { accountID });

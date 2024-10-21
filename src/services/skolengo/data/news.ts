@@ -16,7 +16,8 @@ const decodeNews = (n: SchoolInfo): Information => ({
   category: _skoUcFist(n.school?.name || n.level || "Autre"),
   // skolengo dont provide this information
   acknowledged: true,
-  read: true
+  read: true,
+  ref: undefined
 });
 
 export const getNews = async (account: SkolengoAccount): Promise<Information[]> => {

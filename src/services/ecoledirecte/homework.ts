@@ -20,7 +20,7 @@ export const getHomeworkForWeek = async (
   for (const date of weekdays) {
     const formattedDate = formatDate(date);
 
-    const {homeworks, subjects} = await ecoledirecte.studentHomeworks(
+    const { homeworks, subjects } = await ecoledirecte.studentHomeworks(
       account.authentication.session,
       account.authentication.account,
       formattedDate,

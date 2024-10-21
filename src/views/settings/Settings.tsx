@@ -200,6 +200,14 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       label: "Projet Papillon",
       tabs: [
         {
+          icon: <HandCoins/>,
+          color: "#CBA024",
+          label: "Soutenir Papillon",
+          onPress: () => {
+            Platform.OS === "android" ? openUrl("https://papillon.bzh/donate") : undefined;
+          },
+        },
+        {
           icon: <Scroll />,
           color: "#c75110",
           label: "Quoi de neuf ?",

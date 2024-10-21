@@ -18,6 +18,7 @@ export const getChats = async (account: PronoteAccount): Promise<Array<Chat>> =>
   return chats.items.map((chat) => {
     return {
       id: chat.participantsMessageID,
+      read: true,
       subject: chat.subject,
       creator: chat.creator ?? studentName,
       recipient: chat.recipientName ?? studentName,
@@ -38,6 +39,7 @@ export const getChatMessages = async (account: PronoteAccount, chat: Chat): Prom
   return messages.sents.map((message) => {
     return {
       id: message.id,
+      subject: "",
       content: message.content,
       author: message.author?.name ?? studentName,
       date: message.creationDate,

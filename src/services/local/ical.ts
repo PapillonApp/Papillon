@@ -3,13 +3,23 @@ import { Timetable } from "../shared/Timetable";
 import { useTimetableStore } from "@/stores/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { reduceIcalToCourse } from "./utils/reduceIcalToCourse";
+import {error} from "@/utils/logger/logger";
 const icalParser = require("cal-parser");
 
 const MERGE_THRESHOLD = 20 * 60 * 1000; // 20 minutes in milliseconds
 
-export const fetchIcalData = async (account: Account, force = false): Promise<Timetable> => {
+interface CoursesByEpochWeekNumber {
+  epochWeekNumber: number
+  courses: Timetable
+}
+
+export const fetchIcalData = async (account: Account, force = false): Promise<CoursesByEpochWeekNumber[]> => {
+  if (account.isExternal) {
+    error(`Cannot fetch iCals for account type ${account.service}`, "fetchIcalData");
+    return [];
+  }
   const identityProvider = account.identityProvider || "";
-  const courses: Timetable[] = [];
+  const courses: Timetable = [];
 
   const icalURLs = account.personalization.icalURLs || [];
 
@@ -22,10 +32,11 @@ export const fetchIcalData = async (account: Account, force = false): Promise<Ti
     });
   }
 
-  const coursesByEpochWeekNumber = courses.reduce((acc, course) => {
+  const coursesByEpochWeekNumber: CoursesByEpochWeekNumber[] = courses.reduce((acc: CoursesByEpochWeekNumber[], course) => {
     const epochWeekNumber = dateToEpochWeekNumber(new Date(course.startTimestamp));
-    if (acc.find((c) => c.epochWeekNumber === epochWeekNumber)) {
-      acc.find((c) => c.epochWeekNumber === epochWeekNumber).courses.push(course);
+    const item = acc.find((c) => c.epochWeekNumber === epochWeekNumber);
+    if (item) {
+      item.courses.push(course);
     }
     else {
       acc.push({ epochWeekNumber, courses: [course] });
@@ -37,7 +48,7 @@ export const fetchIcalData = async (account: Account, force = false): Promise<Ti
   for (const { courses } of coursesByEpochWeekNumber) {
     courses.sort((a, b) => a.startTimestamp - b.startTimestamp);
 
-    const mergedCourses = courses.reduce((acc, course) => {
+    const mergedCourses: Timetable = courses.reduce((acc: Timetable, course) => {
       const lastCourse = acc[acc.length - 1];
       if (lastCourse &&
           lastCourse.subject === course.subject &&

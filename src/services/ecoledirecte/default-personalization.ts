@@ -20,8 +20,8 @@ export default async function defaultPersonalization (account: Account): Promise
     color: colors[0],
     MagicHomeworks: true,
     MagicNews: true,
-    profilePictureB64: account.profile_picture_url
-      ? await downloadAsBase64(account.profile_picture_url, {
+    profilePictureB64: account.profilePictureURL
+      ? await downloadAsBase64(account.profilePictureURL, {
         Referer: ".ecoledirecte.com/",
         Pragma: "no-cache"
       })

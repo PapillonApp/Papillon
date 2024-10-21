@@ -1,34 +1,24 @@
-import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  ScrollView,
-  View,
-  Text,
-} from "react-native";
-import { useTheme } from "@react-navigation/native";
+import React, {useEffect, useState} from "react";
+import {ActivityIndicator, Platform, ScrollView, Text, View,} from "react-native";
+import {useTheme} from "@react-navigation/native";
 
-import type { Screen } from "@/router/helpers/types";
-import {
-  NativeItem,
-  NativeList,
-  NativeListHeader,
-  NativeText,
-} from "@/components/Global/NativeComponents";
-import { useCurrentAccount } from "@/stores/account";
-import type { ChatMessage } from "@/services/shared/Chat";
-import { FileText, Link, Paperclip } from "lucide-react-native";
+import type {Screen} from "@/router/helpers/types";
+import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";
+import {useCurrentAccount} from "@/stores/account";
+import type {ChatMessage} from "@/services/shared/Chat";
+import {FileText, Link, Paperclip} from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import InitialIndicator from "@/components/News/InitialIndicator";
-import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import RenderHTML from "react-native-render-html";
-import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { AccountService } from "@/stores/account/types";
+import Reanimated, {FadeIn, FadeOut} from "react-native-reanimated";
+import {AccountService} from "@/stores/account/types";
 import * as WebBrowser from "expo-web-browser";
+import {WebBrowserPresentationStyle} from "expo-web-browser";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
-import { getProfileColorByName } from "@/services/local/default-personalization";
-import { getChatMessages } from "@/services/chats";
+import {getProfileColorByName} from "@/services/local/default-personalization";
+import {getChatMessages} from "@/services/chats";
 
 const Chat: Screen<"Chat"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -46,7 +36,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
       getAndOpenFile(account, url);
     } else {
       WebBrowser.openBrowserAsync(url, {
-        presentationStyle: "formSheet",
+        presentationStyle: WebBrowserPresentationStyle.FORM_SHEET,
         controlsColor: theme.colors.primary,
       });
     }

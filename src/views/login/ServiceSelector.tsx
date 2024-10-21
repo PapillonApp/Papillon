@@ -3,7 +3,7 @@ import { Image, View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
-import type { Screen } from "@/router/helpers/types";
+import {RouteParameters, Screen} from "@/router/helpers/types";
 
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
@@ -35,7 +35,13 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       const v6Data = await GetV6Data();
       setV6Data(v6Data);
       if (v6Data.restore && !v6Data.imported) {
-        navigation.navigate("PronoteV6Import", { data: v6Data.data });
+        const data: RouteParameters["PronoteV6Import"]["data"] = {
+          username: v6Data.data.username || "",
+          deviceUUID: v6Data.data.deviceUUID || "",
+          instanceUrl: v6Data.data.instanceUrl || "",
+          nextTimeToken: v6Data.data.nextTimeToken || ""
+        };
+        navigation.navigate("PronoteV6Import", { data });
       }
     }, 1);
   }, []);

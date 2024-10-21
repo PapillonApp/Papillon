@@ -99,7 +99,7 @@ const AccountContainerCard = ({ account, onPress }: {
           }}
         >
           <Image
-            source={account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+            source={!(account.isExternal) && account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64} : defaultProfilePicture(account.service, !(account.isExternal) && account.identityProvider?.name || "")}
             style={{
               width: 42,
               height: 42,
@@ -133,8 +133,8 @@ const AccountContainerCard = ({ account, onPress }: {
                   fontSize: 18,
                   fontFamily: "semibold",
                   maxWidth: "85%",
-                }}>{account.studentName?.first} {account.studentName?.last}</Text>
-              {account.className && <View
+                }}>{!(account.isExternal) ? account.studentName.first : undefined} {!(account.isExternal) ? account.studentName?.last : undefined}</Text>
+              {!(account.isExternal) && account.className && <View
                 style={{
                   backgroundColor: theme.dark ? colors.primary + "60" : colors.primary + "40",
                   borderRadius: 8,
@@ -154,7 +154,7 @@ const AccountContainerCard = ({ account, onPress }: {
                 >{account.className}</Text>
               </View>}
             </View>
-            {account.schoolName && (
+            {!(account.isExternal) && account.schoolName && (
               <Text
                 style={{
                   color: colors.text + "70",

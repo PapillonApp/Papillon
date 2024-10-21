@@ -7,7 +7,12 @@ const requestNotificationPermission = async () => {
   }, true);
 };
 
-const papillonNotify = async (props) => {
+interface papillonNotifyProps {
+  title: string
+  [key: string]: any
+}
+
+const papillonNotify = async (props: papillonNotifyProps) => {
   expoGoWrapper(async () => {
     const notifee = (await import("@notifee/react-native")).default;
     await notifee.displayNotification({

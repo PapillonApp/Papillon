@@ -39,6 +39,8 @@ export interface Personalization {
   showTabBackground: boolean,
   transparentTabBar: boolean,
   hideTabBar: boolean,
+  popupRestauration?: boolean,
+  magicEnabled?: boolean,
   MagicNews?: boolean,
   MagicHomeworks?: boolean,
   icalURLs: PapillonIcalURL[],
@@ -100,6 +102,7 @@ interface BaseExternalAccount {
   localID: string
   isExternal: true
   username: string
+  linkedExternalLocalIDs?: string[]
   data: Record<string, unknown>
 }
 
@@ -110,6 +113,7 @@ export interface PronoteAccount extends BaseAccount {
   authentication: pronote.RefreshInformation & {
     deviceUUID: string
   }
+  identityProvider?: undefined
 }
 
 export interface EcoleDirecteAccount extends BaseAccount {
@@ -118,7 +122,8 @@ export interface EcoleDirecteAccount extends BaseAccount {
   authentication: {
     session: PawdirecteSession
     account: PawdirecteAccount
-  },
+  }
+  identityProvider?: undefined
 }
 
 export interface SkolengoAccount extends BaseAccount {
@@ -126,6 +131,7 @@ export interface SkolengoAccount extends BaseAccount {
   instance?: ScolengoAPI.Skolengo
   authentication: SkolengoAuthConfig
   userInfo: ScolengoAPIUser
+  identityProvider?: undefined
 }
 
 export interface UphfAccount extends BaseAccount {
@@ -134,14 +140,15 @@ export interface UphfAccount extends BaseAccount {
   authentication: {
     refreshAuthToken: string
   }
+  identityProvider?: undefined
 }
 
 export interface LocalAccount extends BaseAccount {
   service: AccountService.Local
 
   // Both are useless for local accounts.
-  instance: undefined
-  authentication: undefined
+  instance: undefined | Record<string, unknown>
+  authentication: undefined | boolean
 
   identityProvider: {
     identifier: string

@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import {RouteProp, useTheme} from "@react-navigation/native";
 import React from "react";
 import {
   Dimensions,
@@ -12,12 +12,24 @@ import parse_news_resume from "@/utils/format/format_pronote_news";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import formatDate from "@/utils/format/format_date_complets";
 import InitialIndicator from "@/components/News/InitialIndicator";
-import RenderHTML from "react-native-render-html";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {RouteParameters} from "@/router/helpers/types";
+import {Information} from "@/services/shared/Information";
 import { selectColorSeed } from "@/utils/format/select_color_seed";
+import RenderHTML from "react-native-render-html";
 
-const NewsListItem = ({ index, message, navigation, parentMessages, isED }) => {
+type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
+
+interface NewsListItemProps {
+  index: number
+  message: NewsItem
+  navigation: NativeStackNavigationProp<RouteParameters, "News", undefined>
+  isED: boolean
+  parentMessages: NewsItem[]
+}
+
+const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation, parentMessages, isED }) => {
   const theme = useTheme();
-
   return (
     <NativeItem
       onPress={() => {

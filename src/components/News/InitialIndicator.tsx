@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { NativeText } from "../Global/NativeComponents";
 import { UsersRound } from "lucide-react-native";
 
-const InitialIndicator = ({ initial, color, textColor = "#FFF", size = 42 }: { initial: string, color: string, textColor: string, size?: number }) => {
+const InitialIndicator = ({ initial, color, textColor = "#FFF", size = 42 }: { initial: string, color: string, textColor?: string, size?: number }) => {
   return (
     <View style={{
       width: size,

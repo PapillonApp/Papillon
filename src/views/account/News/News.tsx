@@ -16,10 +16,10 @@ import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
+import {Information} from "@/services/shared/Information";
+import {AccountService} from "@/stores/account/types";
 
-type NewsItem = {
-  date: string;
-};
+type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
 const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -32,7 +32,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      ...TabAnimatedTitle({ theme, route, navigation }),
+      ...TabAnimatedTitle({ route, navigation }),
     });
   }, [navigation, route.params, theme.colors.text]);
 
@@ -52,10 +52,10 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       if (account.personalization?.magicEnabled) {
         const { importantMessages, normalMessages } = categorizeMessages(informations);
         setImportantMessages(importantMessages.map(message => ({ ...message, date: message.date.toString() })));
-        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString() })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString(), important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       } else {
         setImportantMessages([]);
-        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "" })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "", important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       }
     }
   }, [informations, account.personalization?.magicEnabled]);
@@ -67,6 +67,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       message={item}
       navigation={navigation}
       parentMessages={sortedMessages}
+      isED={account.service == AccountService.EcoleDirecte}
     />
   ), [navigation, sortedMessages]);
 

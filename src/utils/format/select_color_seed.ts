@@ -36,7 +36,7 @@ const colors = [
   "#D35400"
 ];
 
-function seedRandom (seed) {
+function seedRandom (seed: string) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) {
     h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
@@ -47,13 +47,13 @@ function seedRandom (seed) {
   };
 }
 
-function getRandomItemFromList (list, seed) {
+function getRandomItemFromList (list: Array<string>, seed: string) {
   if (list.length === 0) return null;
   const random = seedRandom(seed);
   const randomIndex = Math.floor(random() * list.length);
   return list[randomIndex];
 }
 
-export const selectColorSeed = subject => {
-  return getRandomItemFromList(colors, subject);
+export const selectColorSeed = (subject: string) => {
+  return getRandomItemFromList(colors, subject) as string;
 };
