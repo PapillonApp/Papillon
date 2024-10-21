@@ -1,56 +1,56 @@
 {
   "Orientation": [
-      "\\b(?:orientation|conseil d'orientation|recommandation|plan de carrière|parcours|voeux)\\b"
+      "\\b(?:orientation|conseil d'orientation|recommandation|plan de carrière|parcours|voeux|choix d'études|filière|spécialité|métier|profession|débouchés|réorientation|bilan de compétences|guidance|conseil en orientation)\\b"
   ],
   "Punitions": [
-      "\\b(?:punition|sanction|avertissement|exclusion|réprimande|retenue|blâme)\\b"
+      "\\b(?:punition|sanction|avertissement|exclusion|réprimande|retenue|blâme|pénalité|mesure disciplinaire|suspension|renvoi|travail supplémentaire|convocation|conseil de discipline|punition collective|punition individuelle)\\b"
   ],
   "Devoirs": [
-      "\\b(?:devoirs?|exercice(s)?|rendu|échéance|deadline|remise|travail)\\b"
+      "\\b(?:devoirs?|exercice(s)?|rendu|échéance|deadline|remise|travail|tâche|projet|dissertation|exposé|présentation|rapport|mémoire|recherche|devoir maison|DM|devoir surveillé|devoir noté)\\b"
   ],
   "Erreurs": [
-      "\\b(?:erreur(s)?|problème|faute|correction|inexactitude|omission)\\b"
+      "\\b(?:erreur(s)?|problème|faute|correction|inexactitude|omission|malentendu|méprise|bévue|imprécision|rectification|révision|ajustement|clarification|erreur de calcul|erreur de jugement)\\b"
   ],
   "Absences": [
-      "\\b(?:absence|justification|non-présence|excuse|absentéisme|absence injustifiée)\\b"
+      "\\b(?:absence|justification|non-présence|excuse|absentéisme|absence injustifiée|retard|dispense|congé|autorisation d'absence|certificat médical|billet d'absence|absence prolongée|absence répétée)\\b"
   ],
   "Notes et Évaluations": [
-      "\\b(?:note(s)?|résultat(s)?|évaluation|performance|score|moyenne)\\b"
+      "\\b(?:note(s)?|résultat(s)?|évaluation|performance|score|moyenne|bulletin|relevé de notes|appréciation|commentaire|contrôle|examen|test|quiz|classement|notation|évaluation continue)\\b"
   ],
   "Réunions et Événements": [
-      "\\b(?:réunion|réunion d'information|événement|activité|séance|rencontre|conférence|portes ouvertes|)\\b"
+      "\\b(?:réunion|réunion d'information|événement|activité|séance|rencontre|conférence|portes ouvertes|assemblée|cérémonie|forum|atelier|séminaire|colloque|journée thématique|fête de l'école|réunion parents-professeurs|réunion de rentrée)\\b"
   ],
   "Documents et Ressources": [
-      "\\b(?:document|ressource|fichier|lecture|manuel|guide|support)\\b"
+      "\\b(?:document|ressource|fichier|lecture|manuel|guide|support|livre|polycopié|cours en ligne|vidéo éducative|bibliographie|article|revue|base de données|plateforme d'apprentissage|document pédagogique|ressource numérique)\\b"
   ],
   "Rappels": [
-      "\\b(?:rappel|alerte|notification|précision|mise à jour|annonce)\\b"
+      "\\b(?:rappel|alerte|notification|précision|mise à jour|annonce|mémo|avis|information importante|communiqué|message urgent|circulaire|note de service|rappel de consigne|rappel de sécurité)\\b"
   ],
   "Santé et Bien-être": [
-      "\\b(?:santé|bien-être|conseil médical|suivi médical|incapacité|maladie)\\b"
+      "\\b(?:santé|bien-être|conseil médical|suivi médical|incapacité|maladie|vaccination|dépistage|prévention|stress|fatigue|sommeil|nutrition|activité physique|soutien psychologique|hygiène|santé mentale)\\b"
   ],
   "Trimestre": [
-      "\\b(?:trimestre|période|semestre)\\b"
+      "\\b(?:trimestre|période|semestre|année scolaire|session|cycle|terme|bimestre|quadrimestre|période scolaire|fin de trimestre)\\b"
   ],
   "Parents": [
-      "\\b(?:parents?|famille|tuteurs)\\b"
+      "\\b(?:parents?|famille|tuteurs|responsables légaux|représentants légaux|adultes référents|foyer|domicile|parents d'élèves|parents adoptifs)\\b"
   ],
   "Professeurs": [
-      "\\b(?:professeur|prof|enseignant|éducateur|maître)\\b"
+      "\\b(?:professeur|prof|enseignant|éducateur|maître|intervenant|formateur|tuteur|chargé de cours|responsable de matière|directeur d'études|professeur principal|professeur remplaçant)\\b"
   ],
   "Cantine et Cafétéria": [
-      "\\b(?:cantine|restaurant scolaire|repas|menu|restaurant|alimentation)\\b"
+      "\\b(?:cantine|restaurant scolaire|repas|menu|restaurant|alimentation|self-service|cafétéria|pause déjeuner|collation|goûter|régime alimentaire|allergies alimentaires|cantine scolaire|repas équilibré)\\b"
   ],
   "Grèves et Manifestations": [
-      "\\b(?:grève|manifestation|protestation|mobilisation|désobéissance|conflit social|suspension|cgt|force ouvrière|se-unsa|sgen-cfdt|snalc|sud education|fep-cfdt|spelc|snec-cftc)\\b"
+      "\\b(?:grève|manifestation|protestation|mobilisation|désobéissance|conflit social|suspension|cgt|force ouvrière|se-unsa|sgen-cfdt|snalc|sud education|fep-cfdt|spelc|snec-cftc|mouvement social|revendication|préavis de grève|piquet de grève|perturbation|grève générale|grève partielle)\\b"
   ],
   "Argent": [
-      "\\b(?:argent|paye|paiement|frais|coût|contribution|versement|cotisation)\\b"
+      "\\b(?:argent|paye|paiement|frais|coût|contribution|versement|cotisation|bourse|aide financière|subvention|remboursement|facture|devis|échéancier|tarif|réduction|aide sociale|bourse d'étude)\\b"
   ],
   "Sorties Scolaires": [
-      "\\b(?:sortie scolaire|excursion|voyage scolaire|activité extérieure|autorisation de sortie|sortie éducative|cinéma|théâtre|musée|concert|spectacle|exposition)\\b"
+      "\\b(?:sortie scolaire|excursion|voyage scolaire|activité extérieure|autorisation de sortie|sortie éducative|cinéma|théâtre|musée|concert|spectacle|exposition|visite guidée|journée découverte|classe verte|classe de neige|échange scolaire|sortie pédagogique|sortie culturelle)\\b"
   ],
   "Stages et Conventions": [
-      "\\b(?:stage|convention de stage|stage en entreprise|stage professionnel)\\b"
+      "\\b(?:stage|convention de stage|stage en entreprise|stage professionnel|stage d'observation|stage de découverte|alternance|apprentissage|formation en milieu professionnel|immersion|tutorat|maître de stage|stage pratique|stage rémunéré)\\b"
   ]
 }
