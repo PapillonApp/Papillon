@@ -8,7 +8,7 @@ import type { CurrentPosition } from "@/utils/native/location";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type pronote from "pawnote";
 import type React from "react";
-import type { School as SkolengoSchool} from "scolengo-api/types/models/School";
+import type { School as SkolengoSchool } from "scolengo-api/types/models/School";
 
 export type RouteParameters = {
   // welcome.index
@@ -78,7 +78,11 @@ export type RouteParameters = {
   HomeworksDocument: { homework: Homework };
 
   News?: { outsideNav?: boolean };
-  NewsItem: undefined;
+  NewsItem: {
+    message: string,
+    important: boolean,
+    isED: boolean
+  };
 
   Grades?: { outsideNav?: boolean };
   GradeSubject: undefined;

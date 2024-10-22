@@ -5,14 +5,8 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from "react-native";
+
+import { View, ScrollView, Text, TouchableOpacity, Alert, Platform } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import { getSubjectData } from "@/services/shared/Subject";
 
@@ -31,6 +25,7 @@ import getAndOpenFile from "@/utils/files/getAndOpenFile";
 
 const HomeworksDocument = ({ route }) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const homework: Homework = route.params.homework || {};
   const account = useCurrentAccount((store) => store.account!);
@@ -65,24 +60,37 @@ const HomeworksDocument = ({ route }) => {
   }, [homework.subject]);
 
   return (
-    <View style={{ flex: 1 }}>
-      <PapillonModernHeader native outsideNav={true}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <View
-            style={{
-              marginRight: 4,
-            }}
-          >
-            <Text
+    <View style={{
+      flex: 1,
+      marginTop: insets.top,
+    }}>
+      <PapillonModernHeader outsideNav={true} startLocation={0.6} height={110}>
+        <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
+          <View style={{backgroundColor: theme.colors.background, borderRadius: 100}}>
+            <View
               style={{
-                fontSize: 28,
-                textAlign: "center",
-                width: "100%",
-                marginLeft: 2,
+                backgroundColor: subjectData.color + "23",
+                borderRadius: 100,
+                width: 42,
+                height: 42,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              {subjectData.emoji}
-            </Text>
+              <Text
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  fontSize: 25,
+                  lineHeight: 42,
+                  textAlign: "center",
+                  textAlignVertical: "center",
+                  includeFontPadding: false,
+                }}
+              >
+                {subjectData.emoji}
+              </Text>
+            </View>
           </View>
           <View style={{ flex: 1, gap: 3 }}>
             <NativeText variant="title" numberOfLines={1}>
@@ -144,7 +152,7 @@ const HomeworksDocument = ({ route }) => {
         contentContainerStyle={{
           padding: 16,
           paddingTop: 70 + 16,
-          paddingBottom: useSafeAreaInsets().bottom + 16,
+          paddingBottom: insets.bottom + 16,
         }}
         style={{ flex: 1 }}
       >

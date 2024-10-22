@@ -5,30 +5,16 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Text,
-  Platform,
-} from "react-native";
-import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
+import { View, ScrollView, Text, Platform } from "react-native";
+
 import { getSubjectData } from "@/services/shared/Subject";
 import { Screen } from "@/router/helpers/types";
 
 import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  Clock,
-  DoorOpen,
-  FileText,
-  Hourglass,
-  Info,
-  PersonStanding,
-} from "lucide-react-native";
+import { Clock, DoorOpen, FileText, Hourglass, Info, PersonStanding } from "lucide-react-native";
 
-import * as WebBrowser from "expo-web-browser";
 import { useTheme } from "@react-navigation/native";
-import RenderHTML from "react-native-render-html";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { TimetableClass } from "@/services/shared/Timetable";
@@ -48,6 +34,7 @@ const getDuration = (minutes: number): string => {
 
 const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const lesson = route.params.lesson as unknown as TimetableClass;
   const subjects = useClassSubjectStore();
@@ -140,7 +127,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         {
           icon: <DoorOpen />,
           text: "Salle de classe",
-          value: lesson.room,
+          value: lesson.room?.split(', ').join('\n'),
           enabled: lesson.room != null,
         },
         {
@@ -165,29 +152,36 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   ];
 
   return (
-    <>
-      <PapillonModernHeader
-        native
-        outsideNav={true}
-        startLocation={0.6}
-        height={110}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <View
-            style={{
-              marginRight: 4,
-            }}
-          >
-            <Text
+    <View style={{
+      height: "100%",
+      marginTop: insets.top
+    }}>
+      <PapillonModernHeader outsideNav={true} startLocation={0.6} height={110}>
+        <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
+          <View style={{backgroundColor: theme.colors.background, borderRadius: 100}}>
+            <View
               style={{
-                fontSize: 28,
-                textAlign: "center",
-                width: "100%",
-                marginLeft: 2,
+                backgroundColor: subjectData.color + "23",
+                borderRadius: 100,
+                width: 42,
+                height: 42,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              {subjectData.emoji}
-            </Text>
+              <Text
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  fontSize: 25,
+                  textAlign: "center",
+                  textAlignVertical: "center",
+                  includeFontPadding: false,
+                }}
+              >
+                {subjectData.emoji}
+              </Text>
+            </View>
           </View>
           <View style={{ flex: 1, gap: 3 }}>
             <NativeText variant="title" numberOfLines={1}>
@@ -206,7 +200,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         contentContainerStyle={{
           padding: 16,
           paddingTop: 70 + 16,
-          paddingBottom: useSafeAreaInsets().bottom + 16,
+          paddingBottom: insets.bottom + 16,
         }}
         style={{ flex: 1 }}
       >
@@ -279,7 +273,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
           </View>
         )}
       </ScrollView>
-    </>
+    </View>
   );
 };
 

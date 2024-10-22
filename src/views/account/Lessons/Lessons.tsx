@@ -10,23 +10,14 @@ import { Page } from "./Atoms/Page";
 import { LessonsDateModal } from "./LessonsHeader";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 
-import Reanimated, {
-  FadeIn,
-  FadeOut,
-  LinearTransition,
-  ZoomIn,
-} from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { CalendarPlus, MoreVertical } from "lucide-react-native";
-import {
-  PapillonHeaderAction,
-  PapillonHeaderSelector,
-  PapillonHeaderSeparator,
-  PapillonModernHeader,
-} from "@/components/Global/PapillonModernHeader";
+
+import { PapillonHeaderAction, PapillonHeaderSelector, PapillonHeaderSeparator, PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 
 const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
@@ -180,7 +171,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{marginTop: outsideNav ? insets.top : undefined, flex: 1}}>
       <PapillonModernHeader outsideNav={outsideNav}>
         <PapillonHeaderSelector
           loading={loading}

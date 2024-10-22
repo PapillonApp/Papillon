@@ -12,24 +12,28 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect } from "react";
-import {View, Dimensions, Linking, TouchableOpacity} from "react-native";
+import { View, Dimensions, Linking, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import RenderHtml from "react-native-render-html";
-import { PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
-import {LinearGradient} from "expo-linear-gradient";
-import {setNewsRead} from "@/services/news";
-import {useCurrentAccount} from "@/stores/account";
+import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
+import { LinearGradient } from "expo-linear-gradient";
+import { setNewsRead } from "@/services/news";
+import { useCurrentAccount } from "@/stores/account";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import { selectColorSeed } from "@/utils/format/select_color_seed";
+import { Screen } from "@/router/helpers/types";
 
-const NewsItem = ({route, navigation, isED}) => {
-  let message = route.params.message && JSON.parse(route.params.message) as Information;
+const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
+  let message = JSON.parse(route.params.message) as Information;
   const important = route.params.important;
+  const isED = route.params.isED;
   const account = useCurrentAccount((store) => store.account!);
 
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -63,9 +67,12 @@ const NewsItem = ({route, navigation, isED}) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{
+      flex: 1,
+      marginTop: insets.top
+    }}>
       <PapillonModernHeader native height={110} outsideNav={true}>
-        <View style={{flexDirection: "row", gap: 12, alignItems: "center"}}>
+        <View style={{flexDirection: "row", gap: 10, alignItems: "center"}}>
           <InitialIndicator
             initial={parse_initials(message.author)}
             color={selectColorSeed(message.author)}
@@ -171,7 +178,7 @@ const NewsItem = ({route, navigation, isED}) => {
                   chevron={false}
                   onPress={() => Linking.openURL(attachment.url)}
                   icon={
-                    typeof attachment.type === "file" ? (
+                    attachment.type === "file" ? (
                       <FileIcon />
                     ) : (
                       <Link />

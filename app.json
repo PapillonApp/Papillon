@@ -60,7 +60,18 @@
       ]
     },
     "plugins": [
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/FixelText-Bold.ttf",
+            "assets/fonts/FixelText-Light.ttf",
+            "assets/fonts/FixelText-Medium.ttf",
+            "assets/fonts/FixelText-Regular.ttf",
+            "assets/fonts/FixelText-SemiBold.ttf"
+          ]
+        }
+      ],
       "expo-barcode-scanner",
       [
         "expo-location",

@@ -146,12 +146,12 @@ const NextCourseLesson: React.FC<{
       nextMinute.setMilliseconds(0);
       nextMinute.setMinutes(nextMinute.getMinutes() + 1);
       const delay = nextMinute.getTime() - now;
-      setTimeout(updateRemainingTime, delay);
+      return setTimeout(updateRemainingTime, delay);
     };
 
-    updateRemainingTime();
+    let timeout = updateRemainingTime();
 
-    return () => clearTimeout(updateRemainingTime);
+    return () => clearTimeout(timeout);
   }, [nextCourse, setWidgetTitle]);
 
   return (
@@ -170,7 +170,7 @@ const NextCourseLesson: React.FC<{
           alignSelf: "flex-start",
         }}>
           <Text numberOfLines={1} style={{ color: subjectData.color, fontSize: 15, fontFamily: "semibold" }}>
-            {nextCourse.room}
+            {nextCourse.room ?? "Salle inconnue"}
           </Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, opacity: 0.5 }}>
