@@ -14,12 +14,20 @@ type GradeLatestItemProps = {
   allGrades: Grade[];
 };
 
-const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation, allGrades }) => {
+const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
+  grade,
+  i,
+  navigation,
+  allGrades,
+}) => {
   const [subjectData, setSubjectData] = useState({
-    color: "#888888", pretty: "Matière inconnue", emoji: "❓", });
+    color: "#888888",
+    pretty: "Matière inconnue",
+    emoji: "❓",
+  });
 
-  const fetchSubjectData = async () => {
-    const data = await getSubjectData(grade.subjectName);
+  const fetchSubjectData = () => {
+    const data = getSubjectData(grade.subjectName);
     setSubjectData(data);
   };
 
@@ -34,7 +42,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
       <NativeList
         animated
         key={grade.id}
-        entering={animPapillon(FadeInRight).delay(((100 * i) + 100))}
+        entering={animPapillon(FadeInRight).delay(100 * i + 100)}
         exiting={animPapillon(FadeOutLeft).delay(100 * i)}
         style={{
           width: 230,
@@ -69,10 +77,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
             {subjectData.pretty}
           </NativeText>
 
-          <NativeText
-            numberOfLines={1}
-            variant="subtitle"
-          >
+          <NativeText numberOfLines={1} variant="subtitle">
             {new Date(grade.timestamp).toLocaleDateString("fr-FR", {
               month: "short",
               day: "numeric",
@@ -90,16 +95,23 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
           <NativeText
             numberOfLines={2}
             variant={!grade.description ? "subtitle" : "default"}
-            style={grade.description && {
-              lineHeight: 20,
-            }}
+            style={
+              grade.description
+                ? {
+                  lineHeight: 20,
+                }
+                : {}
+            }
           >
-            {grade.description || `Note renseignée le ${new Date(grade.timestamp).toLocaleDateString("fr-FR", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}`}
+            {grade.description ||
+							`Note renseignée le ${new Date(
+							  grade.timestamp
+							).toLocaleDateString("fr-FR", {
+							  weekday: "long",
+							  month: "long",
+							  day: "numeric",
+							  year: "numeric",
+							})}`}
           </NativeText>
         </View>
 
@@ -124,7 +136,9 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
                 fontFamily: "semibold",
               }}
             >
-              {!grade.student.disabled ? parseFloat(grade.student.value).toFixed(2) : "N.not"}
+              {!grade.student.disabled
+                ? parseFloat(grade.student.value).toFixed(2)
+                : "N.not"}
             </NativeText>
             <NativeText
               style={{
@@ -139,7 +153,6 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({ grade, i, navigation
             </NativeText>
           </View>
         </View>
-
       </NativeList>
     </PressableScale>
   );

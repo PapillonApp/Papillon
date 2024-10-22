@@ -1,17 +1,25 @@
-import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
-import { icones } from "@/utils/data/icones";
 import { getCourseSpeciality } from "@/utils/format/format_cours_name";
 import { getAverageDiffGrade } from "@/utils/grades/getAverages";
+import { useTheme } from "@react-navigation/native";
 import { User, UserMinus, UserPlus, Users } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 
-const GradeSubjectScreen = ({ route, navigation }) => {
+const GradeSubjectScreen = ({ route }) => {
   const { subject, allGrades } = route.params;
+  const theme = useTheme();
 
   const [subjectData, setSubjectData] = useState({
-    color: "#888888", pretty: "Matière inconnue", emoji: "❓",
+    color: "#888888",
+    pretty: "Matière inconnue",
+    emoji: "❓",
   });
 
   const fetchSubjectData = async () => {
@@ -42,7 +50,11 @@ const GradeSubjectScreen = ({ route, navigation }) => {
     {
       icon: <UserMinus />,
       label: "Moy. la plus basse",
-      value: parseFloat(subject.average.min.value || -1).toFixed(2),
+      value:
+				subject.average.min.value.toFixed(2) &&
+				subject.average.min.value.toFixed(2) !== "-1.00"
+				  ? subject.average.min.value?.toFixed(2)
+				  : "??",
     },
   ];
 
@@ -102,9 +114,7 @@ const GradeSubjectScreen = ({ route, navigation }) => {
                 flex: 1,
               }}
             >
-              <NativeText variant="overtitle">
-                {subjectData.pretty}
-              </NativeText>
+              <NativeText variant="overtitle">{subjectData.pretty}</NativeText>
 
               {getCourseSpeciality(subject.average.subjectName) && (
                 <NativeText variant="subtitle">
@@ -157,9 +167,7 @@ const GradeSubjectScreen = ({ route, navigation }) => {
                 </View>
               }
             >
-              <NativeText variant="subtitle">
-                {average.label}
-              </NativeText>
+              <NativeText variant="subtitle">{average.label}</NativeText>
             </NativeItem>
           );
         })}
@@ -175,18 +183,26 @@ const GradeSubjectScreen = ({ route, navigation }) => {
                 fontSize: 16,
                 lineHeight: 18,
                 fontFamily: "semibold",
-                color: averageDiff.difference < 0 ? "#4CAF50" : "#F44336",
+                color:
+									averageDiff.difference < 0
+									  ? "#4CAF50"
+									  : averageDiff.difference === 0
+									    ? theme.colors.text
+									    : "#F44336",
                 marginLeft: 12,
                 marginRight: 6,
               }}
             >
-              {averageDiff.difference > 0 ? "- " : "+ "}{averageDiff.difference.toFixed(2).replace("-", "")} pts
+              {averageDiff.difference > 0
+                ? "- "
+                : averageDiff.difference === 0
+                  ? "+/- "
+                  : "+ "}
+              {averageDiff.difference.toFixed(2).replace("-", "")} pts
             </NativeText>
           }
         >
-          <NativeText variant="overtitle">
-            Impact sur la moyenne
-          </NativeText>
+          <NativeText variant="overtitle">Impact sur la moyenne</NativeText>
           <NativeText variant="subtitle">
             Indique le poids de {subjectData.pretty} sur votre moyenne générale
           </NativeText>

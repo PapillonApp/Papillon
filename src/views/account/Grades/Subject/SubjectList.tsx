@@ -1,31 +1,41 @@
-import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeItem,
+  NativeList,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import { animPapillon } from "@/utils/ui/animations";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import Reanimated, { FadeInDown, FadeInUp, FadeOutUp } from "react-native-reanimated";
+import Reanimated, {
+  FadeInDown,
+  FadeInUp,
+  FadeOutUp,
+} from "react-native-reanimated";
 import SubjectTitle from "./SubjectTitle";
-import { GradeInformation, type Grade, type GradesPerSubject } from "@/services/shared/Grade";
+import { type Grade, type GradesPerSubject } from "@/services/shared/Grade";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
 
 interface SubjectItemProps {
-  subject: GradesPerSubject
-  allGrades: Grade[]
-  navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
+  subject: GradesPerSubject;
+  allGrades: Grade[];
+  navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>;
 }
 
 const SubjectItem: React.FC<SubjectItemProps> = ({
   subject,
   allGrades,
-  navigation
+  navigation,
 }) => {
   const [subjectData, setSubjectData] = useState({
-    color: "#888888", pretty: "Matière inconnue", emoji: "❓",
+    color: "#888888",
+    pretty: "Matière inconnue",
+    emoji: "❓",
   });
 
-  const fetchSubjectData = async () => {
-    const data = await getSubjectData(subject.average.subjectName);
+  const fetchSubjectData = () => {
+    const data = getSubjectData(subject.average.subjectName);
     setSubjectData(data);
   };
 
@@ -39,7 +49,12 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
       entering={animPapillon(FadeInUp)}
       exiting={animPapillon(FadeOutUp)}
     >
-      <SubjectTitle navigation={navigation} subject={subject} subjectData={subjectData} allGrades={allGrades} />
+      <SubjectTitle
+        navigation={navigation}
+        subject={subject}
+        subjectData={subjectData}
+        allGrades={allGrades}
+      />
 
       {subject.grades.map((grade: Grade, index: number) => (
         <Reanimated.View
@@ -50,7 +65,9 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
           <NativeItem
             separator={index < subject.grades.length - 1}
             chevron={false}
-            onPress={() => navigation.navigate("GradeDocument", { grade, allGrades })}
+            onPress={() =>
+              navigation.navigate("GradeDocument", { grade, allGrades })
+            }
           >
             <View
               style={{
@@ -92,8 +109,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
                 >
                   {typeof grade.student.value === "number"
                     ? grade.student.value.toFixed(2)
-                    : "N. not"
-                  }
+                    : "N. not"}
                 </NativeText>
                 <NativeText
                   style={{
