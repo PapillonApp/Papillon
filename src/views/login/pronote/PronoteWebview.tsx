@@ -5,7 +5,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Text,
+  Alert,
 } from "react-native";
 
 import { WebView } from "react-native-webview";
@@ -14,7 +14,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 
-import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import Reanimated, {
+  FadeIn,
+  FadeInUp,
+  FadeOut,
+  FadeOutDown,
+  LinearTransition,
+} from "react-native-reanimated";
 
 import pronote from "pawnote";
 
@@ -27,16 +33,18 @@ import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
+import { useAlert } from "@/providers/AlertProvider";
 
 const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const { showAlert } = useAlert();
 
-  const [loading, setLoading] = useState(true);
-  const [loadProgress, setLoadProgress] = useState(0);
+  const [, setLoading] = useState(true);
+  const [, setLoadProgress] = useState(0);
   const [showWebView, setShowWebView] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
 
-  const [currentURL, setCurrentURL] = useState("");
+  const [, setCurrentURL] = useState("");
 
   const [deviceUUID] = useState(uuid());
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -46,11 +54,12 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
 
   const instanceURL = route.params.instanceURL.toLowerCase();
 
-  const infoMobileURL = instanceURL + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
+  const infoMobileURL =
+    instanceURL + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 
   let webViewRef = createRef<WebView>();
   let currentLoginStateIntervalRef = useRef<ReturnType<
-        typeof setInterval
+    typeof setInterval
   > | null>(null);
 
   const createStoredAccount = useAccounts((store) => store.create);
@@ -123,9 +132,9 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   `.trim();
 
   /**
-     * Creates the hook inside the webview when logging in.
-     * Also hides the "Download PRONOTE app" button.
-     */
+   * Creates the hook inside the webview when logging in.
+   * Also hides the "Download PRONOTE app" button.
+   */
   const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
     (function () {
       window.hookAccesDepuisAppli = function() {
@@ -176,7 +185,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
             Platform.OS === "android" && {
               overflow: "hidden",
               elevation: 4,
-            }
+            },
           ]}
         >
           {!showWebView && (
@@ -291,26 +300,30 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                   clearInterval(currentLoginStateIntervalRef.current);
 
                 const session = pronote.createSessionHandle();
-                const refresh = await pronote.loginToken(session,
-                  {
+                const refresh = await pronote
+                  .loginToken(session, {
                     url: instanceURL,
                     kind: pronote.AccountKind.STUDENT,
                     username: message.data.login,
                     token: message.data.mdp,
-                    deviceUUID
-                  }
-                ).catch((error) => {
-                  if (error instanceof pronote.SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-                    navigation.navigate("Pronote2FA_Auth", {
-                      session,
-                      error,
-                      accountID: deviceUUID
-                    });
-                  } else {
-                    throw error;
-                  }
-                });
-          
+                    deviceUUID,
+                  })
+                  .catch((error) => {
+                    if (
+                      error instanceof pronote.SecurityError &&
+                      !error.handle.shouldCustomPassword &&
+                      !error.handle.shouldCustomDoubleAuth
+                    ) {
+                      navigation.navigate("Pronote2FA_Auth", {
+                        session,
+                        error,
+                        accountID: deviceUUID,
+                      });
+                    } else {
+                      throw error;
+                    }
+                  });
+
                 if (!refresh) throw pronote.AuthenticateError;
 
                 const user = session.user.resources[0];
@@ -330,11 +343,11 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                   schoolName: user.establishmentName,
                   studentName: {
                     first: extract_pronote_name(name).givenName,
-                    last: extract_pronote_name(name).familyName
+                    last: extract_pronote_name(name).familyName,
                   },
 
                   authentication: { ...refresh, deviceUUID },
-                  personalization: await defaultPersonalization(session)
+                  personalization: await defaultPersonalization(session),
                 };
 
                 pronote.startPresenceInterval(session);
@@ -367,20 +380,44 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                   "InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4"
                 )
               ) {
-                webViewRef.current?.injectJavaScript(
-                  INJECT_PRONOTE_JSON
-                );
+                webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
               } else {
                 setLoading(false);
-                if (url.includes("mobile.eleve.html")) {
-
-
-                  webViewRef.current?.injectJavaScript(
-                    INJECT_PRONOTE_INITIAL_LOGIN_HOOK
-                  );
-                  webViewRef.current?.injectJavaScript(
-                    INJECT_PRONOTE_CURRENT_LOGIN_STATE
-                  );
+                if (url.includes("pronote/mobile.eleve.html")) {
+                  if (!url.includes("identifiant")) {
+                    if (Platform.OS === "ios") {
+                      Alert.alert(
+                        "Attention",
+                        "Désolé, seules les comptes élèves sont compatibles pour le moment.",
+                        [
+                          {
+                            text: "OK",
+                            onPress: () => navigation.goBack(),
+                          },
+                        ]
+                      );
+                    } else {
+                      showAlert({
+                        title: "Attention",
+                        message:
+                          "Désolé, seules les comptes élèves sont compatibles pour le moment.",
+                        actions: [
+                          {
+                            title: "OK",
+                            onPress: () => navigation.goBack(),
+                            backgroundColor: theme.colors.card,
+                          },
+                        ],
+                      });
+                    }
+                  } else {
+                    webViewRef.current?.injectJavaScript(
+                      INJECT_PRONOTE_INITIAL_LOGIN_HOOK
+                    );
+                    webViewRef.current?.injectJavaScript(
+                      INJECT_PRONOTE_CURRENT_LOGIN_STATE
+                    );
+                  }
                 }
 
                 if (url.split("?")[0].includes("mobile.eleve.html") == false) {
