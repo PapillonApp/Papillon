@@ -38,6 +38,7 @@ export default [
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_right",
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",
@@ -75,6 +76,6 @@ export default [
   }),
   createScreen("Chat", Chat, {
     presentation: "modal",
-    headerShown: false
+    headerShown: false,
   }),
 ] as const;
