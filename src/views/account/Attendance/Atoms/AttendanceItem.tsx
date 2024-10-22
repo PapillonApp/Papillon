@@ -8,6 +8,7 @@ import { FadeIn, FadeInUp, FadeOut, FadeOutDown } from "react-native-reanimated"
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { leadingZero } from "@/utils/format/attendance_time";
 import { animPapillon } from "@/utils/ui/animations";
+import { useTheme } from "@react-navigation/native";
 
 interface AttendanceItemProps {
   title: string
@@ -24,6 +25,7 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
   attendances,
   missed
 }) => {
+  const theme = useTheme();
   const [showMore, setShowMore] = useState(false);
 
   const sorted = attendances.sort((a, b) => {
@@ -57,7 +59,7 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
               <NativeText
                 variant="subtitle"
               >
-                {missed.hours > 0 && missed.hours + " h"} {leadingZero(missed.minutes)} min
+                {missed.hours + " h"} {leadingZero(missed.minutes)} min
               </NativeText>
             )}
           </View>
@@ -92,7 +94,7 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
             trailing={
               <NativeText
                 style={{
-                  color: not_justified ? "#D10000" : void 0,
+                  color: not_justified ? "#D10000" : theme.colors.text,
                   fontSize: 16,
                 }}
               >
