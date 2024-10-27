@@ -60,6 +60,7 @@ export default [
     headerTitle: "Devoir",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_right",
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",
