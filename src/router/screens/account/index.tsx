@@ -43,16 +43,19 @@ export const screens = [
     headerShown: false,
     tabBarLabel: "Vie sco.",
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Messages", PlaceholderScreen, {
     headerTitle: "Messages",
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Menu", PlaceholderScreen, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),
+    animation: "slide_from_bottom",
   }),
 ] as Array<ReturnType<typeof createScreen>>;
 
