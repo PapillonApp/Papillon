@@ -14,7 +14,7 @@ import { useCurrentAccount } from "@/stores/account";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
 import { useTheme } from "@react-navigation/native";
-import { ChevronDown } from "lucide-react-native";
+import { ChevronDown, WifiOff } from "lucide-react-native";
 import React from "react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -28,9 +28,18 @@ import Reanimated, {
   FadeInUp,
   FadeOut,
   FadeOutDown,
+  FadeOutUp,
+  FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import NetInfo from "@react-native-community/netinfo";
+import {
+  NativeList,
+  NativeItem,
+  NativeText,
+} from "@/components/Global/NativeComponents";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -61,8 +70,18 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
   );
   const latestGradesRef = useRef<any[]>([]);
 
+  const errorTitle = useMemo(() => getErrorTitle(), []);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      return NetInfo.addEventListener((state) => {
+        setIsOnline(state.isConnected ?? false);
+      });
+    }, 100); // Par rapport au bon rendu du graphique
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -170,15 +189,21 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
           </PapillonHeaderSelector>
         </PapillonPicker>
       </PapillonModernHeader>
-
-      {!isLoading && (
+      {console.log(isOnline && !isLoading)}
+      {((isOnline && !isLoading) || !isOnline) && (
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => setIsRefreshing(true)}
-              colors={Platform.OS === "android" ? [theme.colors.primary] : void 0}
+              onRefresh={() => {
+                if (isOnline) {
+                  setIsRefreshing(true);
+                }
+              }}
+              colors={
+                Platform.OS === "android" ? [theme.colors.primary] : void 0
+              }
               progressViewOffset={outsideNav ? 72 : insets.top + 56}
             />
           }
@@ -196,9 +221,37 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 paddingBottom: 16 + insets.bottom,
               }}
             >
-              {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
-							!isLoading &&
-							!isRefreshing && (
+              {!isOnline && (
+                <Reanimated.View
+                  entering={FlipInXDown.springify()
+                    .mass(1)
+                    .damping(20)
+                    .stiffness(300)}
+                  exiting={FadeOutUp.springify()
+                    .mass(1)
+                    .damping(20)
+                    .stiffness(300)}
+                  layout={animPapillon(LinearTransition)}
+                >
+                  <NativeList inline>
+                    <NativeItem icon={<WifiOff />}>
+                      <NativeText
+                        variant="title"
+                        style={{ paddingVertical: 2, marginBottom: -4 }}
+                      >
+                        {errorTitle.label} {errorTitle.emoji}
+                      </NativeText>
+                      <NativeText variant="subtitle">
+                        Vous êtes hors ligne. Les données affichées peuvent être
+                        obsolètes.
+                      </NativeText>
+                    </NativeItem>
+                  </NativeList>
+                </Reanimated.View>
+              )}
+
+              {(!grades[selectedPeriod] ||
+                grades[selectedPeriod].length === 0) && (
                 <MissingItem
                   style={{ marginTop: 24, marginHorizontal: 16 }}
                   emoji="📚"
@@ -207,9 +260,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 />
               )}
 
-              {!isLoading &&
-							grades[selectedPeriod] &&
-							grades[selectedPeriod].length > 1 && (
+              {grades[selectedPeriod] && grades[selectedPeriod].length > 1 && (
                 <Reanimated.View
                   layout={animPapillon(LinearTransition)}
                   entering={FadeInUp.duration(200)}
