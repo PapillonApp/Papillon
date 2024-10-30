@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useHomeworkStore } from "@/stores/homework";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import HomeworkItem from "../../Homeworks/Atoms/Item";
-import { Homework } from "@/services/shared/Homework";
+import type { Homework } from "@/services/shared/Homework";
 import {debounce} from "lodash";
 import { PapillonNavigation } from "@/router/refs";
 import RedirectButton from "@/components/Home/RedirectButton";
@@ -17,12 +17,14 @@ const HomeworksElement = ({ navigation, onImportance }) => {
   const actualDay = useMemo(()=>new Date(), []);
 
   const ImportanceHandler = () => {
-    var score = 0;
-    let hw = (homeworks[dateToEpochWeekNumber(actualDay)])
+    if (!homeworks[dateToEpochWeekNumber(actualDay)]) return;
+
+    let score = 0;
+    const hw = homeworks[dateToEpochWeekNumber(actualDay)]
       .filter(hw => hw.due / 1000 >= Date.now() / 1000 && hw.due / 1000 <= Date.now() / 1000 + 7 * 24 * 60 * 60)
       .filter(hw => !hw.done);
 
-    let date = new Date();
+    const date = new Date();
     if (date.getHours() >= 17 && date.getHours() < 22)
       score += 4;
     if (hw.length > 0)

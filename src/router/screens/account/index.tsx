@@ -45,7 +45,7 @@ export const screens = [
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
     animation: "slide_from_bottom",
   }),
-  createScreen("Messages", PlaceholderScreen, {
+  createScreen("Messages", Messages, {
     headerTitle: "Messages",
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
