@@ -1,7 +1,7 @@
 import type {EcoleDirecteAccount} from "@/stores/account/types";
 import {Timetable, TimetableClass, TimetableClassStatus} from "../shared/Timetable";
 import {ErrorServiceUnauthenticated} from "../shared/errors";
-import ecoledirecte, {TimetableItemKind} from "pawdirecte";
+import ecoledirecte, { TimetableItemKind } from "pawdirecte";
 
 const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => {
   const base = {
@@ -10,7 +10,6 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
     additionalNotes: c.notes,
     backgroundColor: c.color
   };
-
   switch (c.kind) {
     case TimetableItemKind.COURS:
       return {
@@ -50,6 +49,15 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         id: c.id,
         title: "Congés",
         room: void 0,
+        ...base
+      };
+    case TimetableItemKind.SANCTION:
+      return {
+        type: "detention",
+        subject: "",
+        id: c.id,
+        title: "Sanction",
+        room: "PERMANENCE",
         ...base
       };
     default:
