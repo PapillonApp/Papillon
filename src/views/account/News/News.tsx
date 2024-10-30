@@ -1,34 +1,76 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { Image, StyleSheet, FlatList, ListRenderItem, View } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  Image,
+  StyleSheet,
+  FlatList,
+  ListRenderItem,
+  View,
+} from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { updateNewsInCache } from "@/services/news";
 import { useNewsStore } from "@/stores/news";
 import { useCurrentAccount } from "@/stores/account";
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import {
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import { RefreshControl } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import BetaIndicator from "@/components/News/Beta";
 import NewsListItem from "./Atoms/Item";
-import Reanimated, { FadeInUp, FadeOut, LinearTransition } from "react-native-reanimated";
+import Reanimated, {
+  FadeInUp,
+  FadeOut,
+  FadeOutUp,
+  FlipInXDown,
+  LinearTransition,
+} from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import { animPapillon } from "@/utils/ui/animations";
 import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
-import {Information} from "@/services/shared/Information";
-import {AccountService} from "@/stores/account/types";
+import { Information } from "@/services/shared/Information";
+import { AccountService } from "@/stores/account/types";
+import NetInfo from "@react-native-community/netinfo";
+import { WifiOff } from "lucide-react-native";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
-type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
+type NewsItem = Omit<Information, "date"> & {
+  date: string;
+  important: boolean;
+};
 
 const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
   const informations = useNewsStore((store) => store.informations);
-
+  const errorTitle = useMemo(() => getErrorTitle(), []);
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isOnline && isLoading) {
+      setIsLoading(false);
+    }
+  }, [isOnline, isLoading]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,11 +78,14 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
     });
   }, [navigation, route.params, theme.colors.text]);
 
-  const fetchData = useCallback(async (hidden: boolean = false) => {
-    if (!hidden) setIsLoading(true);
-    await updateNewsInCache(account);
-    setIsLoading(false);
-  }, [account]);
+  const fetchData = useCallback(
+    async (hidden: boolean = false) => {
+      if (!hidden) setIsLoading(true);
+      await updateNewsInCache(account);
+      setIsLoading(false);
+    },
+    [account]
+  );
 
   useEffect(() => {
     navigation.addListener("focus", () => fetchData(true));
@@ -50,26 +95,56 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   useEffect(() => {
     if (informations) {
       if (account.personalization?.magicEnabled) {
-        const { importantMessages, normalMessages } = categorizeMessages(informations);
-        setImportantMessages(importantMessages.map(message => ({ ...message, date: message.date.toString() })));
-        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString(), important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const { importantMessages, normalMessages } =
+          categorizeMessages(informations);
+        setImportantMessages(
+          importantMessages.map((message) => ({
+            ...message,
+            date: message.date.toString(),
+          }))
+        );
+        setSortedMessages(
+          normalMessages
+            .map((message) => ({
+              ...message,
+              date: message.date.toString(),
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       } else {
         setImportantMessages([]);
-        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "", important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(
+          informations
+            .map((info) => ({
+              ...info,
+              date: info.date.toString(),
+              title: info.title || "",
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       }
     }
   }, [informations, account.personalization?.magicEnabled]);
 
-  const renderItem: ListRenderItem<NewsItem> = useCallback(({ item, index }) => (
-    <NewsListItem
-      key={index}
-      index={index}
-      message={item}
-      navigation={navigation}
-      parentMessages={sortedMessages}
-      isED={account.service == AccountService.EcoleDirecte}
-    />
-  ), [navigation, sortedMessages]);
+  const renderItem: ListRenderItem<NewsItem> = useCallback(
+    ({ item, index }) => (
+      <NewsListItem
+        key={index}
+        index={index}
+        message={item}
+        navigation={navigation}
+        parentMessages={sortedMessages}
+        isED={account.service == AccountService.EcoleDirecte}
+      />
+    ),
+    [navigation, sortedMessages]
+  );
 
   const NoNewsMessage = () => (
     <View
@@ -80,7 +155,9 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       <MissingItem
         emoji={"🥱"}
         title={"Aucune actualité disponible"}
-        description={"Malheureusement, il n'y a aucune actualité à afficher pour le moment."}
+        description={
+          "Malheureusement, il n'y a aucune actualité à afficher pour le moment."
+        }
       />
     </View>
   );
@@ -94,6 +171,25 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         <RefreshControl refreshing={isLoading} onRefresh={fetchData} />
       }
     >
+      {!isOnline &&
+        <Reanimated.View
+          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+          layout={animPapillon(LinearTransition)}
+        >
+          <NativeList inline>
+            <NativeItem icon={<WifiOff />}>
+              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                {errorTitle.label} {errorTitle.emoji}
+              </NativeText>
+              <NativeText variant="subtitle">
+                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </Reanimated.View>
+      }
+
       {importantMessages.length > 0 && (
         <Reanimated.View
           entering={animPapillon(FadeInUp)}
@@ -115,7 +211,11 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
 
           <NativeList animated>
             <LinearGradient
-              colors={!theme.dark ? [theme.colors.card, "#BFF6EF"] : [theme.colors.card, "#2C2C2C"]}
+              colors={
+                !theme.dark
+                  ? [theme.colors.card, "#BFF6EF"]
+                  : [theme.colors.card, "#2C2C2C"]
+              }
               start={[0, 0]}
               end={[2, 0]}
             >
@@ -158,7 +258,7 @@ const styles = StyleSheet.create({
   magicIcon: {
     width: 26,
     height: 26,
-    marginRight: 4
+    marginRight: 4,
   },
   noNewsText: {
     textAlign: "center",
@@ -168,3 +268,4 @@ const styles = StyleSheet.create({
 });
 
 export default protectScreenComponent(NewsScreen);
+
