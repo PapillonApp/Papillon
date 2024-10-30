@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { ChevronDown } from "lucide-react-native";
+import { ChevronDown, WifiOff } from "lucide-react-native";
 
 import Reanimated, {
   interpolateColor,
@@ -16,6 +16,7 @@ import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import Animated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import NetInfo from "@react-native-community/netinfo";
 
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
@@ -33,6 +34,14 @@ const AccountSwitcher: React.FC<{
 
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
+
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const borderAnimatedStyle = useAnimatedStyle(() => ({
     borderWidth: 1,
@@ -159,7 +168,9 @@ const AccountSwitcher: React.FC<{
               ) : "Mon compte"}
             </Reanimated.Text>
 
-            {loading && (
+            {!isOnline ? (
+              <WifiOff size={20} color="red" />
+            ) : loading && (
               <PapillonSpinner
                 size={20}
                 strokeWidth={3}

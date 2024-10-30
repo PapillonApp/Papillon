@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, RefAttributes, useRef, useState } from "react";
+import React, { type FunctionComponent, RefAttributes, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
@@ -15,6 +15,8 @@ import { PressableScale } from "react-native-pressable-scale";
 import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
+import NetInfo from "@react-native-community/netinfo";
+import { WifiOff } from "lucide-react-native";
 
 interface WidgetContainerProps {
   widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
@@ -35,6 +37,13 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
 
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const handlePress = () => {
     const location = (widgetRef.current as any)?.handlePress();
@@ -47,7 +56,7 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
     <Reanimated.View
       layout={LinearTransition}
       style={{
-        opacity: loading ? 0.5 : 1,
+        opacity: isOnline && loading ? 0.5 : 1,
         display: hidden ? "none" : "flex",
       }}
       entering={animPapillon(ZoomIn).withInitialValues({ transform: [{ scale: 0.7 }], opacity: 0 })}
@@ -70,7 +79,7 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
             }
           ]}
         >
-          {loading && (
+          {isOnline && loading && (
             <Reanimated.View
               style={{
                 ...StyleSheet.absoluteFillObject,
@@ -108,6 +117,15 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
               setHidden={setHidden}
               hidden={hidden}
             />
+            {!isOnline && (
+              <Reanimated.View style={{
+                position: "absolute",
+                left: 165,
+                top: 10,
+              }}>
+                <WifiOff size={20} color="red" />
+              </Reanimated.View>
+            )}
           </Reanimated.View>
 
         </Reanimated.View>

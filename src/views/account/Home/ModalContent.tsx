@@ -30,7 +30,7 @@ const ModalContent = ({ navigation, refresh, endRefresh }) => {
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const defined = useFlagsStore(state => state.defined);
 
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const errorTitle = useMemo(() => getErrorTitle(), []);
 
   const [elements, setElements] = useState([]);
@@ -170,24 +170,22 @@ const ModalContent = ({ navigation, refresh, endRefresh }) => {
       )}
 
       {!isOnline &&
-  <Reanimated.View
-    entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-    exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-    layout={animPapillon(LinearTransition)}
-  >
-    <NativeList inline>
-      <NativeItem
-        icon={<WifiOff />}
-      >
-        <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-          {errorTitle.label} {errorTitle.emoji}
-        </NativeText>
-        <NativeText variant="subtitle">
-          Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-        </NativeText>
-      </NativeItem>
-    </NativeList>
-  </Reanimated.View>
+        <Reanimated.View
+          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+          layout={animPapillon(LinearTransition)}
+        >
+          <NativeList inline>
+            <NativeItem icon={<WifiOff />}>
+              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                {errorTitle.label} {errorTitle.emoji}
+              </NativeText>
+              <NativeText variant="subtitle">
+                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </Reanimated.View>
       }
 
       <Reanimated.View
