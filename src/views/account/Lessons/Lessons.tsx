@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, View, Dimensions, ViewToken } from "react-native";
-import { Button, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
@@ -49,14 +49,14 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [pickerDate, setPickerDate] = React.useState(new Date(today));
+  const [pickerDate, setPickerDate] = useState(new Date(today));
 
   const getWeekFromDate = (date: Date) => {
     const epochWeekNumber = dateToEpochWeekNumber(date);
     return epochWeekNumber;
   };
 
-  const [updatedWeeks, setUpdatedWeeks] = React.useState(new Set<number>());
+  const [updatedWeeks, setUpdatedWeeks] = useState(new Set<number>());
 
   useEffect(() => {
     void (async () => {
@@ -124,6 +124,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     return Array.from({ length: 100 }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() - 50 + i);
+      date.setHours(0, 0, 0, 0);
       return date;
     });
   });
