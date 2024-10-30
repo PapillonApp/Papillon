@@ -4,8 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { ChevronDown, WifiOff } from "lucide-react-native";
 
 import Reanimated, {
-  interpolateColor,
-  LinearTransition, useAnimatedStyle,
+  LinearTransition,
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
@@ -21,72 +20,41 @@ import NetInfo from "@react-native-community/netinfo";
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
 const AccountSwitcher: React.FC<{
-  small?: boolean,
-  opened?: boolean,
-  modalOpen?: boolean,
-  translationY?: Reanimated.SharedValue<number>,
-  loading?: boolean,
+  small?: boolean;
+  opened?: boolean;
+  modalOpen?: boolean;
+  translationY?: Reanimated.SharedValue<number>;
+  loading?: boolean;
 }> = ({ small, opened, modalOpen, translationY, loading }) => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
 
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
-  const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
+  const shouldHidePicture =
+    account.personalization.hideProfilePicOnHomeScreen || false;
 
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    return NetInfo.addEventListener(state => {
+    return NetInfo.addEventListener((state) => {
       setIsOnline(state.isConnected ?? false);
     });
   }, []);
 
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY.value,
-      [200, 251],
-      ["#ffffff50", colors.border],
-    ),
-    backgroundColor: interpolateColor(
-      translationY.value,
-      [200, 251],
-      ["#ffffff30", "transparent"],
-    ),
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY.value,
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    fontSize: 16,
-    fontFamily: "semibold",
-    maxWidth: 140,
-  }));
-
-
   const AnimatedChevronDown = Animated.createAnimatedComponent(ChevronDown);
-  const iconAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY.value,
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    marginLeft: -6,
-  }));
 
   return (
     <Reanimated.View
       style={{
-        backgroundColor:
-          opened ?
-            theme.dark && !modalOpen ? "#00000044" : "#FFFFFF22"
-            : modalOpen ? colors.text + "10" : "#FFFFFF12",
+        backgroundColor: opened
+          ? theme.dark && !modalOpen
+            ? "#00000044"
+            : "#FFFFFF22"
+          : modalOpen
+            ? colors.text + "10"
+            : "#FFFFFF12",
         borderRadius: 12,
         borderCurve: "continuous",
         overflow: "hidden",
@@ -118,7 +86,7 @@ const AccountSwitcher: React.FC<{
               borderRadius: 0,
               paddingVertical: 0,
               backgroundColor: "transparent",
-            }
+            },
           ]}
         >
           <Reanimated.View
@@ -133,7 +101,12 @@ const AccountSwitcher: React.FC<{
           >
             {!shouldHidePicture ? (
               <Image
-                source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+                source={
+                  account.personalization.profilePictureB64 &&
+                  account.personalization.profilePictureB64.trim() !== ""
+                    ? { uri: account.personalization.profilePictureB64 }
+                    : defaultProfilePicture(account.service)
+                }
                 style={[
                   styles.avatar,
                   {
@@ -141,16 +114,18 @@ const AccountSwitcher: React.FC<{
                     height: small ? 30 : 28,
                     width: small ? 30 : 28,
                     borderColor: modalOpen ? colors.text + "20" : "#FFFFFF32",
-                  }
+                  },
                 ]}
               />
             ) : (
-              <View style={[
-                {
-                  marginLeft: -8,
-                  height: small ? 30 : 28,
-                }
-              ]} />
+              <View
+                style={[
+                  {
+                    marginLeft: -8,
+                    height: small ? 30 : 28,
+                  },
+                ]}
+              />
             )}
 
             <Reanimated.Text
@@ -163,27 +138,28 @@ const AccountSwitcher: React.FC<{
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {account.studentName ? (
-                account.studentName?.first + (shouldHideName ? "" : " " + account.studentName.last)
-              ) : "Mon compte"}
+              {account.studentName
+                ? account.studentName?.first +
+                  (shouldHideName ? "" : " " + account.studentName.last)
+                : "Mon compte"}
             </Reanimated.Text>
 
             {!isOnline ? (
               <WifiOff size={20} color="red" />
-            ) : loading && (
-              <PapillonSpinner
-                size={20}
-                strokeWidth={3}
-                color={modalOpen && !opened ? colors.text : "#FFF"}
-                animated
-                entering={animPapillon(ZoomIn)}
-                exiting={animPapillon(ZoomOut)}
-              />
+            ) : (
+              loading && (
+                <PapillonSpinner
+                  size={20}
+                  strokeWidth={3}
+                  color={modalOpen && !opened ? colors.text : "#FFF"}
+                  animated
+                  entering={animPapillon(ZoomIn)}
+                  exiting={animPapillon(ZoomOut)}
+                />
+              )
             )}
 
-            <Reanimated.View
-              layout={animPapillon(LinearTransition)}
-            >
+            <Reanimated.View layout={animPapillon(LinearTransition)}>
               <AnimatedChevronDown
                 size={24}
                 strokeWidth={2.3}
@@ -223,9 +199,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  accountSwitcherText: {
-
-  },
+  accountSwitcherText: {},
 });
 
 export default AccountSwitcher;

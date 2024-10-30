@@ -1,4 +1,10 @@
-import React, { type FunctionComponent, RefAttributes, useEffect, useRef, useState } from "react";
+import React, {
+  type FunctionComponent,
+  RefAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
@@ -7,7 +13,7 @@ import Reanimated, {
   FadeIn,
   FadeOut,
   LinearTransition,
-  ZoomIn
+  ZoomIn,
 } from "react-native-reanimated";
 
 import { animPapillon } from "@/utils/ui/animations";
@@ -19,8 +25,11 @@ import NetInfo from "@react-native-community/netinfo";
 import { WifiOff } from "lucide-react-native";
 
 interface WidgetContainerProps {
-  widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
-  navigation?: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
+  widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>;
+  navigation?: NativeStackNavigationProp<
+    RouteParameters,
+    keyof RouteParameters
+  >;
 }
 
 export interface WidgetProps {
@@ -30,7 +39,10 @@ export interface WidgetProps {
   hidden: boolean;
 }
 
-const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigation }) => {
+const Widget: React.FC<WidgetContainerProps> = ({
+  widget: DynamicWidget,
+  navigation,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
   const widgetRef = useRef<FunctionComponent<WidgetProps> | null>(null);
@@ -40,7 +52,7 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    return NetInfo.addEventListener(state => {
+    return NetInfo.addEventListener((state) => {
       setIsOnline(state.isConnected ?? false);
     });
   }, []);
@@ -59,24 +71,21 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
         opacity: isOnline && loading ? 0.5 : 1,
         display: hidden ? "none" : "flex",
       }}
-      entering={animPapillon(ZoomIn).withInitialValues({ transform: [{ scale: 0.7 }], opacity: 0 })}
+      entering={animPapillon(ZoomIn).withInitialValues({
+        transform: [{ scale: 0.7 }],
+        opacity: 0,
+      })}
       exiting={FadeOut.duration(150)}
     >
-      <PressableScale
-        onPress={() => handlePress()}
-      >
+      <PressableScale onPress={() => handlePress()}>
         <Reanimated.View
-          entering={
-            FadeIn.springify().mass(1).damping(20).stiffness(300)
-          }
-          exiting={
-            FadeOut
-          }
+          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOut}
           style={[
             styles.widget,
             {
               backgroundColor: colors.card,
-            }
+            },
           ]}
         >
           {isOnline && loading && (
@@ -95,9 +104,7 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
               exiting={FadeOut.duration(150)}
             >
               <ActivityIndicator />
-              <NativeText variant="subtitle">
-                Chargement...
-              </NativeText>
+              <NativeText variant="subtitle">Chargement...</NativeText>
             </Reanimated.View>
           )}
 
@@ -105,9 +112,11 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
             style={[
               styles.widgetContent,
               {
-                backgroundColor: theme.dark ? colors.primary + "09" : colors.primary + "11",
+                backgroundColor: theme.dark
+                  ? colors.primary + "09"
+                  : colors.primary + "11",
                 overflow: "hidden",
-              }
+              },
             ]}
           >
             <DynamicWidget
@@ -118,16 +127,17 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
               hidden={hidden}
             />
             {!isOnline && (
-              <Reanimated.View style={{
-                position: "absolute",
-                left: 165,
-                top: 10,
-              }}>
+              <Reanimated.View
+                style={{
+                  position: "absolute",
+                  left: 165,
+                  top: 10,
+                }}
+              >
                 <WifiOff size={20} color="red" />
               </Reanimated.View>
             )}
           </Reanimated.View>
-
         </Reanimated.View>
       </PressableScale>
     </Reanimated.View>
