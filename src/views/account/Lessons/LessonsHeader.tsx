@@ -2,15 +2,12 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { Dimensions, Modal, Platform, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-import { Calendar, X } from "lucide-react-native";
+import { X } from "lucide-react-native";
 
 import Reanimated, {
-  Easing,
   FadeInDown,
   FadeOutDown,
   LinearTransition,
-  ZoomIn,
-  ZoomOut
 } from "react-native-reanimated";
 
 import RNDateTimePicker from "@react-native-community/datetimepicker";
@@ -25,9 +22,6 @@ interface HeaderCalendarProps {
 }
 
 const HeaderCalendar: React.FC<HeaderCalendarProps> = () => {
-  const dims = Dimensions.get("window");
-  const tablet = dims.width > 600;
-
   return (
     <Reanimated.View
       style={[{
@@ -67,24 +61,25 @@ const LessonsDateModal: React.FC<LessonsDateModalProps> = ({
   const insets = useSafeAreaInsets();
 
   if (Platform.OS === "android") {
-    return (showDatePicker &&
-      <RNDateTimePicker
-        style={{
-          marginHorizontal: 8,
-          marginTop: -5,
-          marginBottom: 10,
-        }}
-        value={new Date(currentDate)}
-        display={"calendar"}
-        mode="date"
-        onChange={(event, selectedDate) => {
-          onDateSelect(selectedDate);
-          setShowDatePicker(false);
-        }}
-        onError={() => {
-          setShowDatePicker(false);
-        }}
-      />
+    return (
+      showDatePicker &&
+        <RNDateTimePicker
+          style={{
+            marginHorizontal: 8,
+            marginTop: -5,
+            marginBottom: 10,
+          }}
+          value={new Date(currentDate)}
+          display={"calendar"}
+          mode="date"
+          onChange={(_event, selectedDate) => {
+            onDateSelect(selectedDate);
+            setShowDatePicker(false);
+          }}
+          onError={() => {
+            setShowDatePicker(false);
+          }}
+        />
     );
   }
 
@@ -178,16 +173,15 @@ const LessonsDateModal: React.FC<LessonsDateModalProps> = ({
                 marginBottom: 10,
               }}
               value={new Date(currentDate)}
-              display={"inline"}
+              display="inline"
               mode="date"
               locale="fr-FR"
               accentColor={colors.primary}
-              onChange={(event, selectedDate) => {
+              onChange={(_event, selectedDate) => {
                 const newSelectedDate = selectedDate || currentDate;
                 // set hours to 0
                 newSelectedDate.setHours(0, 0, 0, 0);
                 onDateSelect(newSelectedDate);
-                // setShowDatePicker(false);
               }}
             />
           </Reanimated.View>
