@@ -25,6 +25,8 @@ Voici un aperçu de ce que nous avons accompli jusqu'à présent et de ce qu'il 
     - [x] 🟡 Skolengo
     - [x] 🏫 Universités
       - Limoges
+      - Lorraine
+      - Nîmes
       - Polytechnique Hauts-de-France (UPHF)
       - Rennes 1
       - Rennes 2
