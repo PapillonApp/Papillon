@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
 
-import { authWithCredentials } from "uphf-api";
+import { authWithCredentials } from "esup-multi.js";
 import uuid from "@/utils/uuid-v4";
 
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { AccountService, type UphfAccount } from "@/stores/account/types";
-import defaultPersonalization from "@/services/uphf/default-personalization";
+import { AccountService, type MultiAccount } from "@/stores/account/types";
+import defaultPersonalization from "@/services/multi/default-personalization";
 import LoginView from "@/components/Templates/LoginView";
 
-const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
+const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,13 +21,13 @@ const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
       setLoading(true);
       setError(null);
 
-      const account = await authWithCredentials({ username, password });
+      const account = await authWithCredentials(route.params.instanceURL, { username, password });
 
-      const local_account: UphfAccount = {
+      const local_account: MultiAccount = {
         instance: undefined,
 
         localID: uuid(),
-        service: AccountService.UPHF,
+        service: AccountService.Multi,
 
         isExternal: false,
         linkedExternalLocalIDs: [],
@@ -38,10 +38,11 @@ const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
           first: account.userData.firstname
         },
         className: "", // TODO ?
-        schoolName: "Université Polytechnique Hauts-de-France",
+        schoolName: route.params.title,
 
         authentication: {
-          refreshAuthToken: account.userData.refreshAuthToken,
+          instanceURL: route.params.instanceURL,
+          refreshAuthToken: account.userData.refreshAuthToken || "",
         },
         personalization: await defaultPersonalization(account),
       };
@@ -76,8 +77,8 @@ const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
   return (
     <>
       <LoginView
-        serviceIcon={require("@/../assets/images/service_uphf.png")}
-        serviceName="Université Polytechnique Hauts-de-France"
+        serviceIcon={route.params.image}
+        serviceName={route.params.title}
         loading={loading}
         error={error}
         onLogin={(username, password) => handleLogin(username, password)}
@@ -86,4 +87,4 @@ const UnivUphf_Login: Screen<"UnivUphf_Login"> = ({ navigation }) => {
   );
 };
 
-export default UnivUphf_Login;
+export default Muli_Login;

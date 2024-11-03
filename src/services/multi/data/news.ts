@@ -1,7 +1,8 @@
-import { UphfAccount } from "@/stores/account/types";
+import { MultiAccount } from "@/stores/account/types";
 import { Information } from "../../shared/Information";
-import { type ActualitiesResponse, UPHF } from "uphf-api";
 import { AttachmentType } from "@/services/shared/Attachment";
+import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
+import { ActualitiesResponse } from "esup-multi.js";
 
 const parseInformation = (i: ActualitiesResponse): Information => ({
   id: i.pubDate,
@@ -10,13 +11,16 @@ const parseInformation = (i: ActualitiesResponse): Information => ({
   acknowledged: false,
   attachments: [{"name": i.title,"type":"link" as AttachmentType, "url": i.link}],
   content: i.content,
-  author: "UPHF Actualités",
+  author: "Actualités",
   category: "Actualités",
   read: false,
   ref: i,
 });
 
-export const getNews = async (account: UphfAccount): Promise<Information[]> => {
-  const news = await UPHF.getActualities();
+export const getNews = async (account: MultiAccount): Promise<Information[]> => {
+  if (!account.instance)
+    throw new ErrorServiceUnauthenticated("Multi");
+
+  const news = await account.instance.getActualities();
   return news.map(parseInformation);
 };
