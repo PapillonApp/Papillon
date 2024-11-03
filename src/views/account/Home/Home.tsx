@@ -11,7 +11,7 @@
 // |  ne contiendra pas grand-chose qui puisse t'intéresser.  |
 // |                                                          |
 // |        Heureusement pour toi, je suis magicien !         |
-// |                  ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ                  |
+// |                  ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ                    |
 // |                                                          |
 // |          Si tu souhaites modifier les widgets :          |
 // |                      ~/src/widgets                       |
@@ -91,25 +91,9 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   const widgetAnimatedStyle = useAnimatedStyle(() => ({
     paddingTop: insets.top,
-    opacity: interpolate(
-      scrollOffset.value,
-      [0, 265 + insets.top],
-      [1, 0],
-      Extrapolation.CLAMP
-    ),
-    transform: [
-      { translateY: scrollOffset.value },
-      { scale: interpolate(
-        scrollOffset.value,
-        [0, 265],
-        [1, 0.9],
-        Extrapolation.CLAMP
-      )},
-    ]
   }));
 
   const modalAnimatedStyle = useAnimatedStyle(() => ({
-    borderCurve: "continuous",
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
       [0, 100, 265 + insets.top - 1, 265 + insets.top],
@@ -122,80 +106,21 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
       [12, 12, corners, 0],
       Extrapolation.CLAMP
     ),
-
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 4,
-
     flex: 1,
     minHeight: windowHeight - tabbarHeight - 8,
     backgroundColor: colors.card,
     overflow: "hidden",
-    transform: [
-      {scale: interpolate(
-        scrollOffset.value,
-        [0, 100, 200, 260 + insets.top],
-        [1, 0.95, 0.95, 1],
-        Extrapolation.CLAMP
-      )},
-      {translateY: interpolate(
-        scrollOffset.value,
-        [-1000, 0, 125, 265 ],
-        [-1000, 0, 105, 0],
-        Extrapolation.CLAMP
-      )}
-    ],
-  }));
-
-  const navigationBarAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: scrollOffset.value - 270 - insets.top,
-    left: 0,
-    right: 0,
-    height: interpolate(
-      scrollOffset.value,
-      [125, 265],
-      [0, insets.top + 60],
-      Extrapolation.CLAMP
-    ),
-    zIndex: 100,
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderBottomWidth: 0.5,
   }));
 
   const modalContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingHorizontal: 16,
     paddingBottom: 16 + insets.top + 56,
-    transform: [
-      {
-        translateY: interpolate(
-          scrollOffset.value,
-          [-1000, 0, 125, 265 + insets.top],
-          [1000, 0, 0, insets.top + 56],
-          Extrapolation.CLAMP
-        )
-      }
-    ]
   }));
 
   const modalIndicatorAnimatedStyle = useAnimatedStyle(() => ({
     position: "absolute",
     top: 10,
     left: "50%",
-    transform: [
-      {translateX: interpolate(
-        scrollOffset.value,
-        [125, 200],
-        [-25, -2],
-        Extrapolation.CLAMP
-      )}
-    ],
     width: interpolate(
       scrollOffset.value,
       [125, 200],
@@ -206,12 +131,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     backgroundColor: colors.text + "20",
     zIndex: 100,
     borderRadius: 5,
-    opacity: interpolate(
-      scrollOffset.value,
-      [125, 180, 200],
-      [1, 0.5, 0],
-      Extrapolation.CLAMP
-    ),
   }));
 
   const scrollViewAnimatedStyle = useAnimatedStyle(() => ({
@@ -280,7 +199,15 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           />
         </Animated.View>
 
-        <Animated.View style={modalAnimatedStyle}>
+        <Animated.View style={
+          [modalAnimatedStyle, {
+            borderCurve: "continuous",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+          }]}
+        >
           <Animated.View
             style={modalIndicatorAnimatedStyle}
           />

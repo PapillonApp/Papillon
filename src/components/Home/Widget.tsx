@@ -47,7 +47,6 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
     <Reanimated.View
       layout={LinearTransition}
       style={{
-        opacity: loading ? 0.5 : 1,
         display: hidden ? "none" : "flex",
       }}
       entering={animPapillon(ZoomIn).withInitialValues({ transform: [{ scale: 0.7 }], opacity: 0 })}

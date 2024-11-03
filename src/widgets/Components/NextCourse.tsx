@@ -174,7 +174,11 @@ const NextCourseLesson: React.FC<{
             {nextCourse.room ?? "Salle inconnue"}
           </Text>
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, opacity: 0.5 }}>
+        <View style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        }}>
           <Clock size={20} color={colors.text} />
           <Text numberOfLines={1} style={{ color: colors.text, fontSize: 15, fontFamily: "medium" }}>
             {prettyTime}

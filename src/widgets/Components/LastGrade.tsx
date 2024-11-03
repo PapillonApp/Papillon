@@ -77,7 +77,6 @@ const LastGradeWidget = forwardRef(({
           flexDirection: "row",
           width: "100%",
           gap: 7,
-          opacity: 0.5,
         }}
       >
         <CheckSquare size={20} color={colors.text} />
