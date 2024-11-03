@@ -7,12 +7,15 @@ export interface TimetableClass {
   startTimestamp: number
   endTimestamp: number
   additionalNotes?: string
+  building?: string
   room?: string
   teacher?: string
+  group?: string
   backgroundColor?: string,
   status?: TimetableClassStatus,
   statusText?: string,
   source?: string
+  url?: string
 }
 
 export type Timetable = Array<TimetableClass>;
@@ -20,5 +23,6 @@ export type Timetable = Array<TimetableClass>;
 export enum TimetableClassStatus {
   CANCELED = "Annulé",
   MODIFIED = "Modifié",
+  ONLINE = "En ligne",
   TEST = "ds",
 }

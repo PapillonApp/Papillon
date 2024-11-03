@@ -1,5 +1,5 @@
 import type { MultiAccount } from "@/stores/account/types";
-import type { Timetable, TimetableClass} from "../../shared/Timetable";
+import { TimetableClassStatus, type Timetable, type TimetableClass} from "../../shared/Timetable";
 import { weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import type { EventResponse } from "esup-multi.js";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
@@ -11,10 +11,15 @@ const decodeTimetableClass = (c: EventResponse): TimetableClass => ({
   title: c.course.label,
   startTimestamp: new Date(c.startDateTime).getTime(),
   endTimestamp: new Date(c.endDateTime).getTime(),
-  room: c.course.online ? "En ligne" : c.rooms.map((room: any) => room.label).join(", "),
-  teacher: c.teachers.map((teacher: any) => teacher.displayname).join(", "),
+  room: c.rooms.map((room: any) => room.label).join(", ") || void 0,
+  building: c.rooms.map((room: any) => room.building).filter((building: any) => building).join(", ") || void 0,
+  teacher: c.teachers.map((teacher: any) => teacher.displayname).join(", ") || void 0,
+  group: c.groups.map((group: any) => group.label).join(", ") || void 0,
   backgroundColor: c.course.color,
+  status: c.course.online ? TimetableClassStatus.ONLINE : void 0,
+  statusText: c.course.online ? TimetableClassStatus.ONLINE : void 0,
   source: "UPHF",
+  url: c.course.url,
 });
 
 export const getTimetableForWeek = async (account: MultiAccount, weekNumber: number): Promise<Timetable> => {
@@ -30,9 +35,9 @@ export const getTimetableForWeek = async (account: MultiAccount, weekNumber: num
       course: event.course,
       rooms: event.rooms,
       teachers: event.teachers,
-      groups: event.groups
+      groups: event.groups,
     }))
   );
 
-  return await eventsList.map(decodeTimetableClass); // TODO for Papillon team: add the group to the timetable
+  return await eventsList.map(decodeTimetableClass);
 };
