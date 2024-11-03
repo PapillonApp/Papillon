@@ -37,8 +37,8 @@ export async function updateTimetableForWeekInCache <T extends Account> (account
       useTimetableStore.getState().updateClasses(epochWeekNumber, timetable);
       break;
     }
-    case AccountService.UPHF: {
-      const { getTimetableForWeek } = await import("./uphf/data/timetable");
+    case AccountService.Multi: {
+      const { getTimetableForWeek } = await import("./multi/data/timetable");
       const timetable = await getTimetableForWeek(account, epochWeekNumber);
       useTimetableStore.getState().updateClasses(epochWeekNumber, timetable);
       break;
