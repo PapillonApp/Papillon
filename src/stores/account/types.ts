@@ -3,7 +3,7 @@ import type { Account as PawdirecteAccount, Session as PawdirecteSession } from 
 import type { Session as TSSession, Authentication as TSAuthentication } from "turbawself";
 import type { Client as ARDClient } from "pawrd";
 import type ScolengoAPI from "scolengo-api";
-import type UphfAPI from "uphf-api";
+import type MultiAPI from "esup-multi.js";
 import { SkolengoAuthConfig } from "@/services/skolengo/skolengo-types";
 import { User as ScolengoAPIUser } from "scolengo-api/types/models/Common";
 
@@ -75,7 +75,7 @@ export enum AccountService {
   ARD,
   Parcoursup,
   Onisep,
-  UPHF
+  Multi
 }
 
 /**
@@ -134,10 +134,11 @@ export interface SkolengoAccount extends BaseAccount {
   identityProvider?: undefined
 }
 
-export interface UphfAccount extends BaseAccount {
-  service: AccountService.UPHF
-  instance?: UphfAPI.UPHF
+export interface MultiAccount extends BaseAccount {
+  service: AccountService.Multi
+  instance?: MultiAPI.Multi
   authentication: {
+    instanceURL: string
     refreshAuthToken: string
   }
   identityProvider?: undefined
@@ -181,7 +182,7 @@ export type PrimaryAccount = (
   | PronoteAccount
   | EcoleDirecteAccount
   | SkolengoAccount
-  | UphfAccount
+  | MultiAccount
   | LocalAccount
 );
 export type ExternalAccount = (

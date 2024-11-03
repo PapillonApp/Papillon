@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { Image, View, StyleSheet, Text, ImageSourcePropType } from "react-native";
 
 import type { Screen } from "@/router/helpers/types";
 import { ScrollView } from "react-native-gesture-handler";
@@ -9,11 +9,28 @@ import { Info } from "lucide-react-native";
 const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigation }) => {
   const universityProviders = [
     {
+      name: "univ_lorraine",
+      title: "Université de Lorraine",
+      description: "Utilisez votre compte Sésame pour vous connecter",
+      image: require("@/../assets/images/service_ulorraine.png"),
+      instanceURL: "https://mobile-back.univ-lorraine.fr",
+      navigate: (instanceURL: string, title: string, image: ImageSourcePropType) => navigation.navigate("Multi_Login", { instanceURL, title, image }),
+    },
+    {
+      name: "univ_unimes",
+      title: "Université de Nîmes",
+      description: "Utilisez votre compte Sésame pour vous connecter",
+      image: require("@/../assets/images/service_unimes.png"),
+      instanceURL: "https://mobile-back.unimes.fr",
+      navigate: (instanceURL: string, title: string, image: ImageSourcePropType) => navigation.navigate("Multi_Login", { instanceURL, title, image }),
+    },
+    {
       name: "univ_uphf",
       title: "Université Polytechnique Hauts-de-France",
       description: "Utilisez votre compte UPHF pour vous connecter",
       image: require("@/../assets/images/service_uphf.png"),
-      navigate: () => navigation.navigate("UnivUphf_Login"),
+      instanceURL: "https://appmob.uphf.fr/backend",
+      navigate: (instanceURL: string, title: string, image: ImageSourcePropType) => navigation.navigate("Multi_Login", { instanceURL, title, image }),
     },
   ];
 
@@ -59,7 +76,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
         {universityProviders.map((identityProvider) => (
           <NativeItem
             key={identityProvider.name}
-            onPress={() => identityProvider.navigate()}
+            onPress={() => identityProvider.navigate(identityProvider.instanceURL, identityProvider.title, identityProvider.image)}
             leading={<Image source={identityProvider.image} style={{ width: 40, height: 40, borderRadius: 10 }} />}
           >
             <NativeText variant="title">{identityProvider.title}</NativeText>
