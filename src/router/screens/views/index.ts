@@ -33,6 +33,7 @@ export default [
   }),
   createScreen("SettingsTabs", SettingsTabs, {
     headerTitle: "Onglets et navigation",
+    animation: "slide_from_right",
   }),
   createScreen("NewsItem", NewsItem, {
     headerTitle: "Item",

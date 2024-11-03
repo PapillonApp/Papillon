@@ -2,7 +2,6 @@ import createScreen from "@/router/helpers/create-screen";
 import Lessons from "@/views/account/Lessons/Lessons";
 import Homeworks from "@/views/account/Homeworks/Homeworks";
 import HomeStackScreen from "./home";
-import Menu from "@/views/account/Restaurant/Menu";
 import NewsScreen from "@/views/account/News/News";
 import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
@@ -43,16 +42,19 @@ export const screens = [
     headerShown: false,
     tabBarLabel: "Vie sco.",
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Messages", Messages, {
     headerTitle: "Messages",
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Menu", PlaceholderScreen, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),
+    animation: "slide_from_bottom",
   }),
 ] as Array<ReturnType<typeof createScreen>>;
 
