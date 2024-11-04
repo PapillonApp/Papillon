@@ -2,6 +2,7 @@ import { AddonLogs as AddonLog, AddonPlacementManifest } from "@/addons/types";
 import type { Chat } from "@/services/shared/Chat";
 import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { Homework } from "@/services/shared/Homework";
+import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import type { AccountService } from "@/stores/account/types";
 import type { CurrentPosition } from "@/utils/native/location";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -121,8 +122,12 @@ export type RouteParameters = {
   SettingsDonorsList: undefined;
 
   Menu?: undefined;
-  RestaurantQrCode: undefined;
-  RestaurantHistory: undefined;
+  RestaurantQrCode: {
+    QrCodes: number[]
+  };
+  RestaurantHistory: {
+    histories: ReservationHistory[]
+  };
 
   Messages: undefined;
   ChatCreate: undefined;

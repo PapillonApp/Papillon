@@ -93,11 +93,12 @@
     "reanimated-color-picker": "^3.0.4",
     "scolengo-api": "^3.0.5",
     "text-encoding": "^0.7.0",
-    "turbawself": "^1.1.1",
+    "turboself-api": "^2.0.2",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@babel/plugin-transform-class-static-block": "^7.25.8",
     "@stylistic/eslint-plugin": "^2.9.0",
     "@types/base-64": "^1.0.2",
     "@types/html-to-text": "^9.0.4",

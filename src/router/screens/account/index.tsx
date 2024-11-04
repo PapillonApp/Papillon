@@ -50,7 +50,7 @@ export const screens = [
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
     animation: "slide_from_bottom",
   }),
-  createScreen("Menu", PlaceholderScreen, {
+  createScreen("Menu", Menu, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),

@@ -45,7 +45,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
             fontSize: 30,
           }}
         >
-          {solde} €
+          {solde.toFixed(2)} €
         </Text>
       </View>
 
@@ -71,7 +71,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
             fontSize: 30,
           }}
         >
-          {repas} €
+          {repas}
         </Text>
       </View>
     </View>

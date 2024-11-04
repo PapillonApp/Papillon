@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login, type Authentication } from "turbawself";
+import { authenticateWithCredentials } from "turboself-api";
 import { AccountService, TurboselfAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
@@ -14,22 +14,17 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (username: string, password: string): Promise<void> => {
-    const auth: Authentication = {
-      username,
-      password,
-    };
-
     setLoading(true);
 
     try {
-      const session = await login(auth);
+      const session = await authenticateWithCredentials(username, password);
 
       const new_account: TurboselfAccount = {
         instance: undefined,
         service: AccountService.Turboself,
         username,
         authentication: {
-          auth, session
+          session, username, password
         },
         isExternal: true,
         localID: uuid(),
