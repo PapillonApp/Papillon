@@ -6,7 +6,7 @@ import {
 } from "@/components/Global/NativeComponents";
 import React, { useEffect, useState } from "react";
 
-import { View, ScrollView, Text, TouchableOpacity, Alert, Platform } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity, Alert, Platform, StyleSheet } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import { getSubjectData } from "@/services/shared/Subject";
 
@@ -16,7 +16,6 @@ import { FileText, Link, Paperclip, CircleAlert } from "lucide-react-native";
 
 import * as WebBrowser from "expo-web-browser";
 import { useTheme } from "@react-navigation/native";
-import RenderHTML from "react-native-render-html";
 import { Screen } from "@/router/helpers/types";
 import { WebBrowserPresentationStyle } from "expo-web-browser/src/WebBrowser.types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,10 +23,20 @@ import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
+import HTMLView from "react-native-htmlview";
 
 const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  const stylesText = StyleSheet.create({
+    body: {
+      color: theme.colors.text,
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22,
+    }
+  });
 
   const homework: Homework = route.params.homework || {};
   const account = useCurrentAccount((store) => store.account!);
@@ -159,28 +168,13 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
         style={{ flex: 1 }}
       >
         <NativeList>
-          {homework.exam ? (
+          {homework.exam && (
             <NativeItem icon={<CircleAlert />}>
-              <NativeText variant="default">{"Évaluation"}</NativeText>
+              <NativeText variant="default">Évaluation</NativeText>
             </NativeItem>
-          ) : (
-            <></>
           )}
 
-          <NativeItem>
-            <RenderHTML
-              source={{ html: homework.content }}
-              defaultTextProps={{
-                style: {
-                  color: theme.colors.text,
-                  fontFamily: "medium",
-                  fontSize: 16,
-                  lineHeight: 22,
-                },
-              }}
-              contentWidth={300}
-            />
-          </NativeItem>
+          <HTMLView value={`<body>${homework.content}</body>`} stylesheet={stylesText} />
         </NativeList>
 
         {homework.attachments.length > 0 && (

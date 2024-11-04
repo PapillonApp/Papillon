@@ -12,9 +12,8 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect } from "react";
-import { View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent } from "react-native";
+import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import RenderHtml from "react-native-render-html";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { setNewsRead } from "@/services/news";
@@ -25,6 +24,7 @@ import { AttachmentType } from "@/services/shared/Attachment";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import { selectColorSeed } from "@/utils/format/select_color_seed";
 import { Screen } from "@/router/helpers/types";
+import HTMLView from "react-native-htmlview";
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   let message = JSON.parse(route.params.message) as Information;
@@ -34,6 +34,14 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  const stylesText = StyleSheet.create({
+    body: {
+      fontFamily: "regular",
+      fontSize: 16,
+      color: theme.colors.text,
+    }
+  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -59,12 +67,6 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   function onPress (event: GestureResponderEvent, href: string) {
     Linking.openURL(href);
   }
-
-  const renderersProps = {
-    a: {
-      onPress: onPress
-    }
-  };
 
   return (
     <View style={{
@@ -129,20 +131,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
         }}
       >
         <View style={{paddingHorizontal: 16}}>
-          <RenderHtml
-            contentWidth={Dimensions.get("window").width - (16 * 2)}
-            source={{
-              html: message.content,
-            }}
-            tagsStyles={tagsStyles}
-            renderersProps={renderersProps}
-            ignoredStyles={["fontFamily", "fontSize"]}
-            baseStyle={{
-              fontFamily: "regular",
-              fontSize: 16,
-              color: theme.colors.text,
-            }}
-          />
+          <HTMLView value={`<body>${message.content}</body`} stylesheet={stylesText} />
         </View>
 
         {isED && <ScrollView horizontal={true} contentContainerStyle={{gap: 5, paddingHorizontal: 16}}>
