@@ -34,6 +34,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [opened, setOpened] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
   const [currentColor, setCurrentColor] = useState("");
+  const [currentEmoji, setCurrentEmoji] = useState("");
 
   const emojiInput = React.useRef<TextInput>(null);
 
@@ -49,6 +50,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     if (selectedSubject) {
       setCurrentTitle(selectedSubject[1].pretty);
       setCurrentColor(selectedSubject[1].color || "#000000");
+      setCurrentEmoji(selectedSubject[1].emoji);
     }
   }, [selectedSubject]);
 
@@ -92,6 +94,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
         emoji = emojiMatch[emojiMatch.length - 1];
       }
     }
+    setCurrentEmoji(emoji);
     setLocalSubjects(prevSubjects =>
       prevSubjects.map(subject =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], emoji }] : subject
@@ -276,7 +279,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           height: 46,
                           width: 42,
                         }}
-                        value={selectedSubject[1].emoji}
+                        value={currentEmoji}
                         onChangeText={(newEmoji) => handleSubjectEmojiChange(selectedSubject[0], newEmoji)}
                       />
                     </MemoizedNativeItem>
