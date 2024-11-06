@@ -33,6 +33,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [selectedSubject, setSelectedSubject] = useState<Item | null>(null);
   const [opened, setOpened] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
+  const [currentColor, setCurrentColor] = useState("");
 
   const emojiInput = React.useRef<TextInput>(null);
 
@@ -47,6 +48,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   useEffect(() => {
     if (selectedSubject) {
       setCurrentTitle(selectedSubject[1].pretty);
+      setCurrentColor(selectedSubject[1].color || "#000000");
     }
   }, [selectedSubject]);
 
@@ -99,6 +101,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [debouncedUpdateSubject]);
 
   const handleSubjectColorChange = useCallback((subjectKey: string, newColor: string) => {
+    setCurrentColor(newColor);
     setLocalSubjects(prevSubjects =>
       prevSubjects.map(subject =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], color: newColor }] : subject
@@ -223,7 +226,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       gap: 14,
                     }}
                   >
-                    <ColorIndicator style={{ flex: 0 }} color={selectedSubject[1].color} />
+                    <ColorIndicator style={{ flex: 0 }} color={currentColor} />
                     <View style={{ flex: 1, gap: 4 }}>
                       <MemoizedNativeText variant="title" numberOfLines={2}>
                         {currentTitle}
@@ -231,8 +234,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       <MemoizedNativeText
                         variant="subtitle"
                         style={{
-                          backgroundColor: selectedSubject[1].color + "22",
-                          color: selectedSubject[1].color,
+                          backgroundColor: currentColor + "22",
+                          color: currentColor,
                           alignSelf: "flex-start",
                           paddingHorizontal: 8,
                           paddingVertical: 2,
@@ -330,7 +333,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                               justifyContent: "center",
                             }}
                           >
-                            {selectedSubject[1].color === item && (
+                            {currentColor === item && (
                               <Reanimated.View
                                 style={{
                                   width: 26,
