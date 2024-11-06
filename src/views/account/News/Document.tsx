@@ -11,7 +11,7 @@ import {
   Link,
   MoreHorizontal,
 } from "lucide-react-native";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -27,7 +27,7 @@ import { Screen } from "@/router/helpers/types";
 import HTMLView from "react-native-htmlview";
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
-  let message = JSON.parse(route.params.message) as Information;
+  const [message, setMessage] = useState<Information>(JSON.parse(route.params.message) as Information);
   const important = route.params.important;
   const isED = route.params.isED;
   const account = useCurrentAccount((store) => store.account!);
@@ -51,7 +51,10 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
 
   useEffect(() => {
     setNewsRead(account, message, true);
-    message.read = true;
+    setMessage((prev) => ({
+      ...prev,
+      read: true,
+    }));
   }, [account.instance]);
 
   const tagsStyles = {
@@ -94,7 +97,10 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                   label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
                   onPress: () => {
                     setNewsRead(account, message, !message.read);
-                    message.read = !message.read;
+                    setMessage((prev) => ({
+                      ...prev,
+                      read: !prev.read,
+                    }));
                   }
                 }
               ]}
