@@ -83,25 +83,27 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             <NativeText variant="title" numberOfLines={1}>{message.title === "" ? message.author : message.title}</NativeText>
             <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toDateString()) : message.author}</NativeText>
           </View>
-          {isED && <PapillonPicker
-            animated
-            direction="right"
-            delay={0}
-            data={[
-              {
-                icon: message.read ? <EyeOff /> : <Eye />,
-                label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
-                onPress: () => {
-                  setNewsRead(account, message, !message.read);
-                  message.read = !message.read;
+          {!isED && (
+            <PapillonPicker
+              animated
+              direction="right"
+              delay={0}
+              data={[
+                {
+                  icon: message.read ? <EyeOff /> : <Eye />,
+                  label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
+                  onPress: () => {
+                    setNewsRead(account, message, !message.read);
+                    message.read = !message.read;
+                  }
                 }
-              }
-            ]}
-          >
-            <TouchableOpacity>
-              <MoreHorizontal size={24} color={theme.colors.text} />
-            </TouchableOpacity>
-          </PapillonPicker>}
+              ]}
+            >
+              <TouchableOpacity>
+                <MoreHorizontal size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </PapillonPicker>
+          )}
         </View>
       </PapillonModernHeader>
       {important && (
