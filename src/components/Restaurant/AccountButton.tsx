@@ -1,3 +1,4 @@
+import { Balance } from "@/services/shared/Balance";
 import { Coffee, Utensils } from "lucide-react-native";
 import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
@@ -12,7 +13,21 @@ import Reanimated, {
 const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
-const AccountButton = ({ account, isSelected, onPress, colors }) => {
+interface LESvariebles {
+  account: Balance,
+  isSelected: boolean,
+  onPress: () => void;
+  colors: {
+    primary: string;
+    background: string;
+    card: string;
+    text: string;
+    border: string;
+    notification: string;
+  },
+}
+
+const AccountButton = ({ account, isSelected, onPress, colors }: LESvariebles) => {
   const COLLAPSED_WIDTH = 47;
   const [textMeasurement, setTextMeasurement] = React.useState(0);
   const EXPANDED_WIDTH = React.useMemo(() => COLLAPSED_WIDTH + textMeasurement + 16, [textMeasurement]); // 16 pour le gap

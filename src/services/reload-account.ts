@@ -1,4 +1,4 @@
-import {type Account, AccountService} from "@/stores/account/types";
+import {type Account, AccountService, TurboselfAccount} from "@/stores/account/types";
 import { Skolengo } from "scolengo-api";
 
 export interface Reconnected<T extends Account> {
@@ -12,7 +12,7 @@ export interface Reconnected<T extends Account> {
  *
  * Once the instance has been reloaded, we give the new values for further authentications.
  */
-export async function reload <T extends Account> (account: T): Promise<Reconnected<T>> {
+export async function reload <T extends Account> (account: T): Promise<Reconnected<T> | TurboselfAccount> {
   switch (account.service) {
     case AccountService.Pronote: {
       const { reloadInstance } = await import("./pronote/reload-instance");
@@ -25,7 +25,7 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
       const { reload } = await import("./turboself/reload");
       const auth = await reload(account);
       // keep instance the same
-      return { instance: undefined, authentication: { session: auth } };
+      return { instance: undefined, authentication: { session: auth, username: account.username, password: "" } };
     }
     case AccountService.ARD: {
       const { reload } = await import("./ard/reload");

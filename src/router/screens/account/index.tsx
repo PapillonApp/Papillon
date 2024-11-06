@@ -7,6 +7,7 @@ import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
 import Messages from "@/views/account/Chat/Messages";
 import PlaceholderScreen from "@/views/account/Home/PlaceholderScreen";
+import Menu from "@/views/account/Restaurant/Menu";
 
 export const screens = [
   createScreen("Home", () => <HomeStackScreen accountScreens={screens} />, {

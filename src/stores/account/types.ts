@@ -75,7 +75,8 @@ export enum AccountService {
   ARD,
   Parcoursup,
   Onisep,
-  Multi
+  Multi,
+  UPHF
 }
 
 /**
