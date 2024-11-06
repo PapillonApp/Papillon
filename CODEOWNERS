@@ -1,6 +1,7 @@
 src/components/* @ecnivtwelve
-src/views/account/* @ecnivtwelve
 src/views/welcome/* @ecnivtwelve
+src/utils/grades/* @ecnivtwelve
+src/utils/format/* @ecnivtwelve
 
 src/views/account/Restaurant/* @tryon-dev
 src/utils/magic/* @tryon-dev
@@ -10,5 +11,7 @@ src/stores/* @Vexcited
 src/services/* @Vexcited
 
 src/addons/* @godetremy
+src/views/account/Home/* @godetremy
+src/utils/files/* @godetremy
 
 .github/* @yannouuuu
