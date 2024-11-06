@@ -77,14 +77,18 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     start.setHours(0, 0, 0, 0);
     const diff = now.getTime() - start.getTime();
     const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    return Math.floor(diff / oneWeek) + 1;
+    const cqfreturn = Math.floor(diff / oneWeek);
+    if (new Date().getDay() === 0 || new Date().getDay() >= 5) {
+      return cqfreturn + 1;
+    } else {
+      return cqfreturn;
+    }
   };
 
   const currentWeek = getCurrentWeekNumber();
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [direction, setDirection] = useState<"left" | "right">("right");
   const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
@@ -132,16 +136,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
   // on page change, load the homeworks
   useEffect(() => {
-    if (selectedWeek > oldSelectedWeek) {
-      setDirection("right");
-    } else if (selectedWeek < oldSelectedWeek) {
-      setDirection("left");
-    }
-
-    setTimeout(() => {
-      setOldSelectedWeek(selectedWeek);
-      updateHomeworks(false, false);
-    }, 0);
+    setOldSelectedWeek(selectedWeek);
+    updateHomeworks(false, false);
   }, [selectedWeek]);
 
   const [searchTerms, setSearchTerms] = useState("");
