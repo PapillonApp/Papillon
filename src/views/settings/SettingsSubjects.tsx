@@ -367,6 +367,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
               maxToRenderPerBatch={10}
               windowSize={5}
               removeClippedSubviews={true}
+              scrollEnabled={false}
             />
           </NativeList>
         ) : (

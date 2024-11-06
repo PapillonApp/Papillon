@@ -127,6 +127,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
                 data={importantMessages}
                 renderItem={renderItem}
                 keyExtractor={(_, index) => `important-${index}`}
+                scrollEnabled={false}
               />
             </LinearGradient>
           </NativeList>
@@ -144,6 +145,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
               data={sortedMessages}
               renderItem={renderItem}
               keyExtractor={(_, index) => `sorted-${index}`}
+              scrollEnabled={false}
             />
           </NativeList>
         </Reanimated.View>
