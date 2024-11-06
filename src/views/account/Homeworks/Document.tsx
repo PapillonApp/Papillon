@@ -167,7 +167,9 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
         }}
         style={{ flex: 1 }}
       >
-        <NativeList>
+        <NativeList style={{
+          padding: 15
+        }}>
           {homework.exam && (
             <NativeItem icon={<CircleAlert />}>
               <NativeText variant="default">Évaluation</NativeText>
