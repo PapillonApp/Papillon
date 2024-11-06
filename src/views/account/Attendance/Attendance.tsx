@@ -1,13 +1,13 @@
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useMemo, useState } from "react";
-import { View, ActivityIndicator, Platform } from "react-native";
+import { View, ActivityIndicator, Platform, RefreshControl } from "react-native";
 
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useAttendanceStore } from "@/stores/attendance";
 import { updateAttendanceInCache, updateAttendancePeriodsInCache } from "@/services/attendance";
 import { NativeText } from "@/components/Global/NativeComponents";
-import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import { ChevronDown, Eye, Scale, Timer, UserX } from "lucide-react-native";
 import PapillonHeader from "@/components/Global/PapillonHeader";
@@ -19,6 +19,7 @@ import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
+import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -28,9 +29,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const periods = useAttendanceStore(store => store.periods);
   const attendances = useAttendanceStore(store => store.attendances);
 
-
-
-  const [isRefreshing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
@@ -46,9 +45,12 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
       setLoading(true);
       await updateAttendanceInCache(account, selectedPeriod);
-      setLoading(false);
+      setTimeout(() => {
+        setIsRefreshing(false);
+        setLoading(false);
+      }, 100);
     }();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, isRefreshing]);
 
   const attendances_observations_details = useMemo(() => {
     if (!attendances[selectedPeriod]) return {};
@@ -179,6 +181,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             alignItems: "center",
             justifyContent: "center",
             gap: 16,
+            marginRight: 10
           }}
         >
           <Reanimated.View
@@ -191,25 +194,35 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
               onSelectionChange={setUserSelectedPeriod}
               direction="right"
             >
-              <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
-                <NativeText style={{ color: theme.colors.primary, maxWidth: 100 }} numberOfLines={1}>
-                  {userSelectedPeriod ?? selectedPeriod}
-                </NativeText>
-                <ChevronDown color={theme.colors.primary} size={24} />
-              </View>
+              <PapillonHeaderSelector loading={isLoading}>
+                <View
+                  style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+                >
+                  <Reanimated.Text
+                    style={{
+                      color: theme.colors.text,
+                      maxWidth: 100,
+                      fontFamily: "medium",
+                      fontSize: 16,
+                    }}
+                    numberOfLines={1}
+                    key={`${selectedPeriod}sel`}
+                    entering={animPapillon(FadeInUp)}
+                    exiting={animPapillon(FadeOutDown)}
+                  >
+                    {userSelectedPeriod ?? selectedPeriod}
+                  </Reanimated.Text>
+
+                  <ChevronDown
+                    color={theme.colors.text}
+                    size={22}
+                    strokeWidth={2.5}
+                    style={{ marginRight: -4 }}
+                  />
+                </View>
+              </PapillonHeaderSelector>
             </PapillonPicker>
           </Reanimated.View>
-
-          {isLoading && !isRefreshing &&
-            <Reanimated.View
-              entering={FadeIn}
-              exiting={FadeOut.duration(1000)}
-              layout={LinearTransition}
-              style={{ marginRight: 6 }}
-            >
-              <ActivityIndicator color={Platform.OS === "android" ? theme.colors.primary : void 0} />
-            </Reanimated.View>
-          }
         </Reanimated.View>
       </PapillonHeader>
 
@@ -221,6 +234,13 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           padding: 16,
           paddingTop: 0,
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => setIsRefreshing(true)}
+            colors={Platform.OS === "android" ? [theme.colors.primary] : void 0}
+          />
+        }
       >
         {attendances[selectedPeriod] && attendances[selectedPeriod].absences.length === 0 && attendances[selectedPeriod].delays.length === 0 && attendances[selectedPeriod].punishments.length === 0 && Object.keys(attendances_observations_details).length === 0 &&(
           <MissingItem
