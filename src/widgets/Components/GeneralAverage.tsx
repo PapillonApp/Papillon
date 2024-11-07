@@ -61,92 +61,88 @@ const GeneralAverageWidget = forwardRef(
     }, [defaultPeriod]);
 
     useEffect(() => {
-      setHidden(
-        typeof average !== "number" || average < 0 || average + "" === "NaN"
-      );
+      setHidden(!average || average < 0 || isNaN(average));
     }, [average]);
 
-    if (isNaN(average ?? 0)) {
-      setHidden(true);
-    }
-
-    return (
-      <>
-        <View
-          style={{
-            justifyContent: "flex-start",
-            alignItems: "center",
-            flexDirection: "row",
-            width: "100%",
-            gap: 7,
-            opacity: 0.5,
-          }}
-        >
-          <PieChart size={20} color={colors.text} />
-          <Text
+    if (average) {
+      return (
+        <>
+          <View
             style={{
-              color: colors.text,
-              fontFamily: "semibold",
-              fontSize: 16,
+              justifyContent: "flex-start",
+              alignItems: "center",
+              flexDirection: "row",
+              width: "100%",
+              gap: 7,
+              opacity: 0.5,
             }}
           >
-            Notes
-          </Text>
-        </View>
-
-        <Reanimated.View
-          style={{
-            alignItems: "flex-start",
-            flexDirection: "column",
-            width: "100%",
-            marginTop: "auto",
-            gap: 4,
-          }}
-          layout={LinearTransition}
-        >
-          <Reanimated.Text
-            style={{
-              color: colors.text + "50",
-              fontFamily: "medium",
-              fontSize: 16,
-            }}
-            layout={LinearTransition}
-          >
-            Moyenne générale
-          </Reanimated.Text>
+            <PieChart size={20} color={colors.text} />
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: "semibold",
+                fontSize: 16,
+              }}
+            >
+              Notes
+            </Text>
+          </View>
 
           <Reanimated.View
             style={{
-              flexDirection: "row",
-              alignItems: "flex-end",
+              alignItems: "flex-start",
+              flexDirection: "column",
+              width: "100%",
+              marginTop: "auto",
               gap: 4,
             }}
+            layout={LinearTransition}
           >
-            <AnimatedNumber
-              value={average?.toFixed(2) ?? ""}
-              style={{
-                color: colors.text,
-                fontSize: 24,
-                lineHeight: 24,
-                fontFamily: "semibold",
-              }}
-              contentContainerStyle={{
-                paddingLeft: 6,
-              }}
-            />
-            <Text
+            <Reanimated.Text
               style={{
                 color: colors.text + "50",
                 fontFamily: "medium",
                 fontSize: 16,
               }}
+              layout={LinearTransition}
             >
-              /20
-            </Text>
+              Moyenne générale
+            </Reanimated.Text>
+
+            <Reanimated.View
+              style={{
+                flexDirection: "row",
+                alignItems: "flex-end",
+                gap: 4,
+              }}
+            >
+              <AnimatedNumber
+                value={average.toFixed(2)}
+                style={{
+                  color: colors.text,
+                  fontSize: 24,
+                  lineHeight: 24,
+                  fontFamily: "semibold",
+                }}
+                contentContainerStyle={{
+                  paddingLeft: 6,
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.text + "50",
+                  fontFamily: "medium",
+                  fontSize: 16,
+                }}
+              >
+                /20
+              </Text>
+            </Reanimated.View>
           </Reanimated.View>
-        </Reanimated.View>
-      </>
-    );
+        </>
+      );
+    }
   }
 );
 
