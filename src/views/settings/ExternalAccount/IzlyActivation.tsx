@@ -38,6 +38,7 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
         instance: identification,
         authentication: {
           secret: secret,
+          identification: identification,
           configuration: configuration
         },
         isExternal: true,

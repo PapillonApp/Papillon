@@ -192,6 +192,7 @@ export interface IzlyAccount extends BaseExternalAccount {
   instance?: Identification
   authentication: {
     secret: string
+    identification: Identification
     configuration: Configuration
   }
 }

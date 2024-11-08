@@ -5,7 +5,7 @@ import {
   StatusBar,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  ScrollView, Platform,
 } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -57,11 +57,19 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
   }, [navigation]);
 
   useEffect(() => {
-    Brightness.setBrightnessAsync(1);
-    return () => {
-      Brightness.setBrightnessAsync(0.5);
-    };
-  }, []);
+    (async () => {
+      if (Platform.OS === 'android') {
+        const { status } = await Brightness.requestPermissionsAsync();
+        if (status !== 'granted') {
+          navigation.goBack();
+          return;
+        }
+      }
+      try { await Brightness.setBrightnessAsync(1); } catch (e) { console.warn("Brightness error:", e); }
+    })();
+    return () => { Brightness.setBrightnessAsync(0.5); };
+  }, [navigation]);
+
 
   useEffect(() => {
     const subscription = DeviceMotion.addListener(({ rotation }) => {
