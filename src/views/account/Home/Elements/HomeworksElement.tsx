@@ -53,13 +53,16 @@ const HomeworksElement:React.FC<{
   const afficheMtn = Date.now() / 1000;
   const afficheMax = afficheMtn + 7 * 24 * 60 * 60 * 1000;
 
-  const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax);
-  const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax);
+  const hwSemaineActuelle =
+    homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
+      (hw) => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax
+    ) || [];
+  const hwSemaineProchaine =
+    homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
+      (hw) => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax
+    ) || [];
 
-  if (
-    (!hwSemaineActuelle && !hwSemaineProchaine) ||
-    (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0)
-  ) {
+  if (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0) {
     return null;
   }
 
