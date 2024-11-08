@@ -42,12 +42,6 @@ const HomeworksElement:React.FC<{
     ImportanceHandler();
   }, [account, actualDay]);
 
-  const debouncedUpdateHomeworks = useMemo(() => debounce(updateHomeworks, 500), [updateHomeworks]);
-
-  useEffect(() => {
-    debouncedUpdateHomeworks();
-  }, [account.instance, actualDay]);
-
   const handleDonePress = useCallback(
     async (homework: Homework) => {
       await toggleHomeworkState(account, homework);
@@ -56,22 +50,16 @@ const HomeworksElement:React.FC<{
     [account, updateHomeworks]
   );
 
+  const afficheMtn = Date.now() / 1000;
+  const afficheMax = afficheMtn + 7 * 24 * 60 * 60 * 1000;
+
+  const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax);
+  const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= afficheMtn && hw.due / 1000 <= afficheMax);
+
   if (
-    !homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
-      (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-    ) &&
-    !homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
-      (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-    )
+    (!hwSemaineActuelle && !hwSemaineProchaine) ||
+    (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0)
   ) {
-    return null;
-  }
-  const startTime = Date.now() / 1000; // Convertir en millisecondes
-  const endTime = startTime + 7 * 24 * 60 * 60 * 1000; // Ajouter 7 jours en millisecondes
-
-  const hwFinalList = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime);
-
-  if(hwFinalList.length === 0) {
     return null;
   }
 
@@ -83,7 +71,7 @@ const HomeworksElement:React.FC<{
         )}
       />
       <NativeList>
-        {hwFinalList.map((hw, index) => (
+        {hwSemaineActuelle.map((hw, index) => (
           <HomeworkItem
             navigation={navigation}
             homework={hw}
@@ -95,7 +83,7 @@ const HomeworksElement:React.FC<{
             }}
           />
         ))}
-        {new Date().getDay() >= 2 && homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime).map((hw, index) => (
+        {new Date().getDay() >= 2 && hwSemaineProchaine.map((hw, index) => (
           <HomeworkItem
             homework={hw}
             key={index}

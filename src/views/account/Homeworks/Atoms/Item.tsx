@@ -137,14 +137,16 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
           layout={animPapillon(LinearTransition)}
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <PapillonCheckbox
-            checked={homework.done}
-            loading={isLoading}
-            onPress={handlePress}
-            style={{ marginRight: 1 }}
-            color={subjectData.color}
-            loaded={mainLoaded}
-          />
+          {navigation.getState().routes[0].name !== "HomeScreen" && (
+            <PapillonCheckbox
+              checked={homework.done}
+              loading={isLoading}
+              onPress={handlePress}
+              style={{ marginRight: 1 }}
+              color={subjectData.color}
+              loaded={mainLoaded}
+            />
+          )}
         </Reanimated.View>
       }
     >
