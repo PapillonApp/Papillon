@@ -23,6 +23,8 @@ import QrcodeScanner from "@/views/settings/ExternalAccount/QrcodeScanner";
 import PriceDetectionOnboarding from "@/views/settings/ExternalAccount/PriceDetectionOnboarding";
 import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
 import SettingsFlagsInfos from "@/views/settings/SettingsFlagsInfos";
+import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
+import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
 
 const settingsScreens = [
   createScreen("Settings", Settings, {
@@ -95,6 +97,13 @@ const settingsScreens = [
   }),
   createScreen("ExternalArdLogin", ExternalArdLogin, {
     headerTitle: "Connexion à ARD GEC",
+  }),
+  createScreen("ExternalIzlyLogin", ExternalIzlyLogin, {
+    headerTitle: "Connexion à Izly",
+  }),
+
+  createScreen("IzlyActivation", IzlyActivation, {
+    headerTitle: "Configuration de la cantine",
   }),
 
   createScreen("SettingsDevLogs", SettingsDevLogs, {

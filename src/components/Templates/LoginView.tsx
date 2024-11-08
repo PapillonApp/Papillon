@@ -105,7 +105,7 @@ const LoginView: React.FC<{
             style={{
               width: 42,
               height: 42,
-              borderRadius: 80,
+              borderRadius: 12,
             }}
           />
           <View

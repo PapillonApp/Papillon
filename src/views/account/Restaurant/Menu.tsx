@@ -3,12 +3,9 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Dimensions,
   Switch,
   Alert,
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import {
@@ -54,7 +51,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
   const [allBalances, setAllBalances] = useState<Balance[] | null>(null);
   const [allHistories, setAllHistories] = useState<ReservationHistory[] | null>(null);
-  const [allQRCodes, setAllQRCodes] = useState<number[] | null>(null);
+  const [allQRCodes, setAllQRCodes] = useState<string[] | null>(null);
   const [allBookings, setAllBookings] = useState<BookingTerminal[] | null>(null);
   const [currentMenu, setCurrentMenu] = useState<PawnoteMenu | null>(null);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
@@ -132,7 +129,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
       try {
         const newBalances: Balance[] = [];
         const newHistories: ReservationHistory[] = [];
-        const newQRCodes: number[] = [];
+        const newQRCodes: string[] = [];
         const newBookings: BookingTerminal[] = [];
 
         const dailyMenu = account ? await getMenu(account, pickerDate) : null;
@@ -149,7 +146,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               }),
               qrcodeFromExternal(account).catch(err => {
                 console.warn(`Error fetching QR code for account ${account}:`, err);
-                return 0;
+                return "0";
               }),
               getBookingsAvailableFromExternal(account, getWeekNumber(new Date())).catch(err => {
                 console.warn(`Error fetching bookings for account ${account}:`, err);
@@ -160,7 +157,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             newBalances.push(...balance);
             newHistories.push(...history);
             newBookings.push(...booking);
-            if (cardnumber !== 0) newQRCodes.push(cardnumber);
+            if (cardnumber) newQRCodes.push(cardnumber);
 
           } catch (error) {
             console.warn(`An error occurred with account ${account}:`, error);

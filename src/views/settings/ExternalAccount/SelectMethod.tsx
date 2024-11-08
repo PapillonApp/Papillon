@@ -64,6 +64,9 @@ const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ na
             case AccountService.ARD:
               navigation.navigate("ExternalArdLogin");
               break;
+            case AccountService.Izly:
+              navigation.navigate("ExternalIzlyLogin");
+              break;
           }
         }}>
           <NativeText>

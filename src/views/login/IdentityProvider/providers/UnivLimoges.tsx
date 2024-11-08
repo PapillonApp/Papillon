@@ -89,10 +89,15 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
         startInLoadingState={true}
         incognito={true}
         onLoadEnd={(e) => {
-          if (e.nativeEvent.url === "https://biome.unilim.fr/") {
+          if (e.nativeEvent.url.includes("biome.unilim.fr")) {
             webViewRef.current?.injectJavaScript(`
-              const tokens = sessionStorage.getItem("oidc.default:https://biome.unilim.fr/authentication/callback");
-              window.ReactNativeWebView.postMessage(tokens);
+              let interval = setInterval(() => {
+                const tokens = sessionStorage.getItem("oidc.default:https://biome.unilim.fr/authentication/callback");
+                if (tokens) {
+                  window.ReactNativeWebView.postMessage(tokens);
+                  clearInterval(interval);
+                }
+              }, 100);
             `);
           }
         }}

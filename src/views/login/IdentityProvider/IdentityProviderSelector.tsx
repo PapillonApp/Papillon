@@ -32,6 +32,13 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       instanceURL: "https://appmob.uphf.fr/backend",
       navigate: (instanceURL: string, title: string, image: ImageSourcePropType) => navigation.navigate("Multi_Login", { instanceURL, title, image }),
     },
+    {
+      name: "iut_lannion",
+      title: "IUT de Lannion",
+      description: "Utilisez votre compte Université Rennes 1 pour vous connecter",
+      image: require("@/../assets/images/service_iutlan.png"),
+      navigate: () => navigation.navigate("UnivIUTLannion_Login"),
+    },
   ];
 
   const identityProviders = [

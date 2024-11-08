@@ -11,6 +11,10 @@ export const reservationHistoryFromExternal = async (account: ExternalAccount): 
       const { history: getHistory } = await import("./ard/history");
       return getHistory(account);
     }
+    case AccountService.Izly: {
+      const { history: getHistory } = await import("./izly/history");
+      return getHistory(account);
+    }
     default: {
       return [];
     }

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import { ScrollView, TextInput, Alert, KeyboardAvoidingView, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
@@ -7,10 +7,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useFlagsStore } from "@/stores/flags";
 import { useCurrentAccount } from "@/stores/account";
+import { AccountService } from "@/stores/account/types";
 
 const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const { flags, remove, set } = useFlagsStore();
   const account = useCurrentAccount(store => store.account!);
+  const externals = useCurrentAccount(store => store.linkedAccounts);
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const textInputRef = useRef<TextInput>(null);
@@ -111,6 +113,16 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
         {renderAccountSection("Personnalisation", account.personalization)}
 
         {renderAccountSection("Informations de l'instance", account?.instance)}
+
+        {externals.length > 0 && externals.map((external, index) => (
+          <Fragment key={index}>
+            {renderAccountSection(`Compte externe #${index + 1}: ${AccountService[external.service]}`, {
+              username: external.username,
+              instance: external.instance,
+              authentication: external.authentication,
+            })}
+          </Fragment>
+        ))}
       </ScrollView>
     </KeyboardAvoidingView>
   );
