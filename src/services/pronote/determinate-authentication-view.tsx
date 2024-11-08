@@ -46,7 +46,7 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
 
   const goToLoginNoENT = () => navigation.navigate("PronoteCredentials", {
     instanceURL: pronoteURL,
-    information: instance
+    information: instance!
   });
 
   const goToLoginENT = () => navigation.navigate("PronoteWebview", {

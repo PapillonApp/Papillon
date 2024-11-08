@@ -8,13 +8,14 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { Alert, Button, View } from "react-native";
 import { WebView } from "react-native-webview";
+import type { Screen } from "@/router/helpers/types";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const BackgroundIUTLannion = ({ route, navigation }) => {
+const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigation }) => {
   const params = route.params;
   let username = params?.username || null;
   let password = params?.password || null;
@@ -25,8 +26,8 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
   const firstLogin = params?.firstLogin || false;
   const theme = useTheme();
 
-  if(!firstLogin) {
-    if(account.credentials) {
+  if (!firstLogin) {
+    if (account && account.credentials) {
       username = account.credentials.username;
       password = account.credentials.password;
     }
@@ -39,7 +40,7 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
   const switchTo = useCurrentAccount(store => store.switchTo);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
-  const useData = async (data) => {
+  const useData = async (data: any) => {
     if(firstLogin) {
       await actionFirstLogin(data);
     }
@@ -54,7 +55,7 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
     }
   };
 
-  const actionFirstLogin = async (data) => {
+  const actionFirstLogin = async (data: any) => {
     console.log("First login");
     console.log(data);
 
@@ -123,7 +124,7 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
     const newRedirCount = redirectCount + 1;
     setRedirectCount(newRedirCount);
 
-    wbref.current.injectJavaScript(`
+    wbref.current?.injectJavaScript(`
             // fill input id=username
             document.getElementById("username").value = "${username}";
             // fill input id=password
@@ -135,7 +136,7 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
   };
 
   const redirectToData = () => {
-    wbref.current.injectJavaScript(`
+    wbref.current?.injectJavaScript(`
               window.location.href = "https://notes9.iutlan.univ-rennes1.fr/services/data.php?q=dataPremièreConnexion";
             `);
   };
@@ -188,7 +189,7 @@ const BackgroundIUTLannion = ({ route, navigation }) => {
           }
 
           if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/services/data.php")) {
-            wbref.current.injectJavaScript(`
+            wbref.current?.injectJavaScript(`
                 window.ReactNativeWebView.postMessage(document.body.innerText);
               `);
           }

@@ -92,9 +92,10 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
         if (account.identityProvider.identifier == "iut-lannion") {
           const { saveIUTLanGrades } = await import("./iutlan/grades");
           const data = await saveIUTLanGrades(account);
-
-          grades = data.grades;
-          averages = data.averages;
+          if (data) {
+            grades = data.grades;
+            averages = data.averages;
+          }
         }
         else {
           grades = [];

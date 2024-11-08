@@ -83,7 +83,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
         {universityProviders.map((identityProvider) => (
           <NativeItem
             key={identityProvider.name}
-            onPress={() => identityProvider.navigate(identityProvider.instanceURL, identityProvider.title, identityProvider.image)}
+            onPress={() => identityProvider.navigate(identityProvider.instanceURL || "", identityProvider.title, identityProvider.image)}
             leading={<Image source={identityProvider.image} style={{ width: 40, height: 40, borderRadius: 10 }} />}
           >
             <NativeText variant="title">{identityProvider.title}</NativeText>

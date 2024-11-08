@@ -79,7 +79,11 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
       await updateData();
 
       if(isRefreshing) {
-        navigation.navigate("BackgroundIUTLannion");
+        navigation.navigate("BackgroundIUTLannion", {
+          url: account.identityProvider?.identifier || "",
+          username: account.name,
+          password: ""
+        });
       }
 
       setTimeout(() => {

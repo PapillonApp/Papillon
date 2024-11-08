@@ -92,7 +92,11 @@ const UnivRennes2_Login: Screen<"UnivRennes2_Login"> = ({ navigation }) => {
         className: "UR2", // TODO ?
         schoolName: data?.formation["Formation"] + " - Université de Rennes 2",
 
-        personalization: await defaultPersonalization()
+        personalization: await defaultPersonalization(),
+        credentials: {
+          username: "",
+          password: ""
+        }
       };
 
       createStoredAccount(local_account);

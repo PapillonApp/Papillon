@@ -27,7 +27,7 @@ export const bookDayFromExternal = async (account: ExternalAccount, id: string, 
       const bookedDay = await bookDay(account, id, date, booked);
       return bookedDay;
     }
-    case AccountService.ARD: {
+    default: {
       return null;
     }
   }

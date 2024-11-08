@@ -51,7 +51,11 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
 
         personalization: await defaultPersonalization({
           profilePictureB64: user.avatar
-        })
+        }),
+        credentials: {
+          username: "",
+          password: ""
+        }
       };
 
       createStoredAccount(local_account);
