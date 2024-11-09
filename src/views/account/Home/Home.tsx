@@ -120,13 +120,8 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const modalIndicatorAnimatedStyle = useAnimatedStyle(() => ({
     position: "absolute",
     top: 10,
-    left: "50%",
-    width: interpolate(
-      scrollOffset.value,
-      [125, 200],
-      [50, 4],
-      Extrapolation.CLAMP
-    ),
+    left: "45%",
+    width: 50,
     height: 4,
     backgroundColor: colors.text + "20",
     zIndex: 100,
