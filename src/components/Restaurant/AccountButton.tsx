@@ -27,7 +27,7 @@ interface LESvariables {
   },
 }
 
-const AccountButton = ({ account, isSelected, onPress, colors }: LESvariebles) => {
+const AccountButton = ({ account, isSelected, onPress, colors }: LESvariables) => {
   const COLLAPSED_WIDTH = 47;
   const [textMeasurement, setTextMeasurement] = React.useState(0);
   const EXPANDED_WIDTH = React.useMemo(() => COLLAPSED_WIDTH + textMeasurement + 16, [textMeasurement]); // 16 pour le gap
