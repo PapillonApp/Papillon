@@ -14,6 +14,8 @@ import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { animPapillon } from "@/utils/ui/animations";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -32,6 +34,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [localSubjects, setLocalSubjects] = useState<Array<Item>>([]);
   const [selectedSubject, setSelectedSubject] = useState<Item | null>(null);
   const [opened, setOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
   const [currentColor, setCurrentColor] = useState("");
   const [currentEmoji, setCurrentEmoji] = useState("");
@@ -43,6 +46,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
       const initialSubjects = Object.entries(account.personalization.subjects);
       setSubjects(initialSubjects);
       setLocalSubjects(initialSubjects);
+      setIsLoading(false);
     }
   }, []);
 
@@ -55,6 +59,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [selectedSubject]);
 
   const updateSubject = useCallback((subjectKey: string, updates: Partial<Item[1]>) => {
+    setIsLoading(true);
     setSubjects(prevSubjects =>
       prevSubjects.map(subject =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], ...updates }] : subject
@@ -66,16 +71,19 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     () => debounce((subjectKey: string, updates: Partial<Item[1]>) => {
       updateSubject(subjectKey, updates);
       setOnSubjects(localSubjects);
+      setIsLoading(false);
     }, 1000),
     [updateSubject, localSubjects]
   );
 
   const handleSubjectTitleChange = useCallback((newTitle: string) => {
+    setIsLoading(true);
     setCurrentTitle(newTitle);
   }, []);
 
   const handleSubjectTitleBlur = useCallback(() => {
     if (selectedSubject && currentTitle.trim() !== "") {
+      setIsLoading(true);
       setLocalSubjects(prevSubjects =>
         prevSubjects.map(subject =>
           subject[0] === selectedSubject[0] ? [subject[0], { ...subject[1], pretty: currentTitle }] : subject
@@ -86,6 +94,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [selectedSubject, currentTitle, debouncedUpdateSubject]);
 
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
+    setIsLoading(true);
     let emoji = "";
     if(newEmoji.length >= 1) {
       var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
@@ -104,6 +113,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [debouncedUpdateSubject]);
 
   const handleSubjectColorChange = useCallback((subjectKey: string, newColor: string) => {
+    setIsLoading(true);
     setCurrentColor(newColor);
     setLocalSubjects(prevSubjects =>
       prevSubjects.map(subject =>
@@ -204,20 +214,44 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
           <BottomSheet
             opened={opened}
             setOpened={(bool: boolean) => {
-              if (localSubjects.find((subject) => subject[0] === selectedSubject[0])?.[1].emoji != "") {
-                setOpened(bool);
-                if (!bool) {
-                  handleSubjectTitleBlur(); // Update subject title when closing the bottom sheet
+              if (!isLoading) {
+                if (localSubjects.find((subject) => subject[0] === selectedSubject[0])?.[1].emoji != "") {
+                  setOpened(bool);
+                  if (!bool) {
+                    handleSubjectTitleBlur(); // Update subject title when closing the bottom sheet
+                  }
+                } else {
+                  Alert.alert("Aucun émoji défini", "Vous devez définir un émoji pour cette matière avant de pouvoir quitter cette page.");
+                  emojiInput.current?.focus();
                 }
-              } else {
-                Alert.alert("Aucun émoji défini", "Vous devez définir un émoji pour cette matière avant de pouvoir quitter cette page.");
-                emojiInput.current?.focus();
               }
             }}
             contentContainerStyle={{ paddingHorizontal: 16 }}
           >
             {selectedSubject && (
               <>
+                {isLoading && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-end",
+                      paddingTop: 12,
+                      paddingHorizontal: 12,
+                      gap: 14,
+                    }}
+                  >
+                    <PapillonSpinner
+                      size={20}
+                      strokeWidth={3}
+                      color={currentColor}
+                      animated
+                      entering={animPapillon(ZoomIn)}
+                      exiting={animPapillon(ZoomOut)}
+                    />
+                    <Text>Sauvegarde des modifications...</Text>
+                  </View>
+                )}
                 <MemoizedNativeList>
                   <View
                     style={{
