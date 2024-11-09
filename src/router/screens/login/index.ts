@@ -12,7 +12,6 @@ export default [
     headerTransparent: true,
     headerBackVisible: true,
     animation: "slide_from_bottom",
-    animationDuration: 250
   }),
 
   ...pronote,

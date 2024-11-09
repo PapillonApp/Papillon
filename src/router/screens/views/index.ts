@@ -23,16 +23,19 @@ export default [
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("RestaurantQrCode", RestaurantQrCode, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "fullScreenModal",
+    animation: "slide_from_bottom",
   }),
   createScreen("RestaurantHistory", RestaurantHistory, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("SettingsTabs", SettingsTabs, {
     headerTitle: "Onglets et navigation",
@@ -47,14 +50,17 @@ export default [
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
   createScreen("AddonPage", AddonPage, {
     headerTitle: "Extension",
+    animation: "slide_from_right",
   }),
   createScreen("LessonsImportIcal", LessonsImportIcal, {
     headerTitle: "Importer un iCal",
     presentation: "modal",
     headerLargeTitle: true,
+    animation: "slide_from_bottom",
   }),
   createScreen("LessonDocument", LessonDocument, {
     headerTitle: "Cours",
@@ -71,21 +77,26 @@ export default [
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
   createScreen("GradeDocument", GradeDocument, {
     headerTitle: "Détail de la note",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
   createScreen("ChatCreate", ChatCreate, {
     headerTitle: "Nouvelle discussion",
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("Chat", Chat, {
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom",
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
 ] as const;
