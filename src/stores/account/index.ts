@@ -86,7 +86,7 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       log("instance undefined, reloading...", "[switchTo]");
       // Automatically reconnect the main instance.
       const { instance, authentication } = await reload(account);
-      if (instance !== undefined) {
+      if (instance) {
         get().mutateProperty("authentication", authentication);
         get().mutateProperty("instance", instance);
         log("instance reload done !", "[switchTo]");
