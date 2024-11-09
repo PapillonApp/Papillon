@@ -54,12 +54,39 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   useEffect(() => {
     if (informations) {
       if (account.personalization.MagicNews) {
-        const { importantMessages, normalMessages } = categorizeMessages(informations);
-        setImportantMessages(importantMessages.map(message => ({ ...message, date: message.date.toString() })));
-        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString(), important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const { importantMessages, normalMessages } =
+          categorizeMessages(informations);
+        setImportantMessages(
+          importantMessages.map((message) => ({
+            ...message,
+            date: message.date.toString(),
+          }))
+        );
+        setSortedMessages(
+          normalMessages
+            .map((message) => ({
+              ...message,
+              date: message.date.toString(),
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       } else {
         setImportantMessages([]);
-        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "", important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(
+          informations
+            .map((info) => ({
+              ...info,
+              date: info.date.toString(),
+              title: info.title || "",
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       }
     }
   }, [informations, account.personalization.MagicNews]);
