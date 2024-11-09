@@ -13,7 +13,7 @@ import Reanimated, {
 const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
-interface LESvariebles {
+interface LESvariables {
   account: Balance,
   isSelected: boolean,
   onPress: () => void;
