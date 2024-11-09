@@ -45,7 +45,7 @@ const getCorners = (): number => {
   let modelName = Device.modelName;
 
   if (!modelName || modelName.toLowerCase().includes("simulator")) {
-    modelName = Device.deviceName ? Device.deviceName.toLowerCase() : null;
+    modelName = Device.deviceName?.toLowerCase() ?? null;
   }
 
   if (!modelName) return defaultRadius;
