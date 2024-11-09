@@ -15,7 +15,7 @@ const GradesElement: React.FC<{onImportance: (input: number) => void}> = ({onImp
   const grades = useGradesStore((store) => store.grades);
 
   const ImportanceHandler = () => {
-    if (grades?.[defaultPeriod] && grades[defaultPeriod].length > 0) {
+    if (grades?.[defaultPeriod]?.length > 0) {
       let score = 0;
       let date = new Date();
       let lastGradeDate = new Date(grades[defaultPeriod][0].timestamp);
