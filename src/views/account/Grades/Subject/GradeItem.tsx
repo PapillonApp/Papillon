@@ -49,6 +49,7 @@ const GradeItem: React.FC<GradeItemProps> = ({
       leading={
         <View style={{ backgroundColor: subjectData.color + "22", borderRadius: 100, height: 40, width: 40, justifyContent: "center", alignItems: "center" }}>
           <Text style={{
+            fontSize: 15.5,
             fontFamily: "medium",
             textAlign: "center",
             textAlignVertical: "center",
