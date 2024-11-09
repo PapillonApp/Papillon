@@ -82,18 +82,15 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
               style={{
                 backgroundColor: subjectData.color + "23",
                 borderRadius: 100,
-                width: 42,
-                height: 42,
+                width: 40,
+                height: 40,
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
               <Text
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  fontSize: 25,
-                  lineHeight: 42,
+                  fontSize: 20,
                   textAlign: "center",
                   textAlignVertical: "center",
                   includeFontPadding: false,
