@@ -162,7 +162,7 @@ const ModalContent = ({ navigation, refresh, endRefresh }) => {
         </Reanimated.View>
       )}
 
-      {(defined("force_changelog") || updatedRecently) && (
+      {(defined("force_changelog") || updatedRecently) && isOnline && (
         <NativeList
           animated
           entering={animPapillon(FadeInUp)}
