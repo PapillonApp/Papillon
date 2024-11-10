@@ -10,11 +10,13 @@ import { animPapillon } from "@/utils/ui/animations";
 import RenderHTML from "react-native-render-html";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import { View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCurrentAccount } from "@/stores/account";
+import NetInfo from "@react-native-community/netinfo";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface HomeworkItemProps {
   key: number | string
@@ -31,6 +33,15 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [category, setCategory] = useState<string | null>(null);
   const account = useCurrentAccount((store) => store.account!);
 
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
+
+  const { showAlert } = useAlert();
+
   useEffect(() => {
     if (account.personalization?.MagicHomeworks) {
       const data = getSubjectData(homework.subject);
@@ -45,9 +56,31 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePress = useCallback(() => {
-    setIsLoading(true);
-    onDonePressHandler();
-  }, [onDonePressHandler]);
+    if (isOnline) {
+      setIsLoading(true);
+      onDonePressHandler();
+    } else {
+      if (Platform.OS === "ios") {
+        Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
+          {
+            text: "OK",
+          },
+        ]);
+      } else {
+        showAlert({
+          title: "Information",
+          message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
+          actions: [
+            {
+              title: "OK",
+              onPress: () => {},
+              backgroundColor: theme.colors.card,
+            },
+          ],
+        });
+      }
+    }
+  }, [onDonePressHandler, isOnline]);
 
   const [mainLoaded, setMainLoaded] = useState(false);
 

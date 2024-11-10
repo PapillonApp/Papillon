@@ -23,7 +23,7 @@ import HomeworksNoHomeworksItem from "./Atoms/NoHomeworks";
 import HomeworkItem from "./Atoms/Item";
 import { PressableScale } from "react-native-pressable-scale";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X } from "lucide-react-native";
+import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, WifiOff, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
@@ -41,6 +41,7 @@ import {Screen} from "@/router/helpers/types";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
 import {SearchBar} from "react-native-screens";
+import NetInfo from "@react-native-community/netinfo";
 
 type HomeworksPageProps = {
   index: number;
@@ -121,6 +122,13 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
+
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const updateHomeworks = useCallback(async (force = false, showRefreshing = true, showLoading = true) => {
     if(!account) return;
@@ -460,18 +468,32 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   />
                 </Reanimated.View>
 
-                {loading &&
-                  <PapillonSpinner
-                    size={18}
-                    color={showPickerButtons ? theme.colors.primary : theme.colors.text}
-                    strokeWidth={2.8}
-                    entering={animPapillon(ZoomIn)}
-                    exiting={animPapillon(ZoomOut)}
+                {!isOnline ? (
+                  <WifiOff
+                    size={20}
+                    color="red"
                     style={{
-                      marginLeft: 5,
+                      marginLeft: 5
                     }}
                   />
-                }
+                ) : (
+                  loading && (
+                    <PapillonSpinner
+                      size={18}
+                      color={
+                        showPickerButtons
+                          ? theme.colors.primary
+                          : theme.colors.text
+                      }
+                      strokeWidth={2.8}
+                      entering={animPapillon(ZoomIn)}
+                      exiting={animPapillon(ZoomOut)}
+                      style={{
+                        marginLeft: 5,
+                      }}
+                    />
+                  )
+                )}
               </BlurView>
             </Reanimated.View>
           </PressableScale>
