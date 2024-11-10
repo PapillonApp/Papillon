@@ -667,32 +667,28 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       </PapillonModernHeader>
 
       {!isOnline &&
-        <Reanimated.ScrollView
+        <Reanimated.View
+          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
           layout={animPapillon(LinearTransition)}
           style={{
             backgroundColor: theme.colors.background,
             padding: 16,
-            paddingTop: 80,
+            paddingTop: "20%",
             zIndex: 1
           }}
         >
-          <Reanimated.View
-            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-            layout={animPapillon(LinearTransition)}
-          >
-            <NativeList inline>
-              <NativeItem icon={<WifiOff />}>
-                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                  {errorTitle.label} {errorTitle.emoji}
-                </NativeText>
-                <NativeText variant="subtitle">
-                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-                </NativeText>
-              </NativeItem>
-            </NativeList>
-          </Reanimated.View>
-        </Reanimated.ScrollView>
+          <NativeList inline>
+            <NativeItem icon={<WifiOff />}>
+              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                {errorTitle.label} {errorTitle.emoji}
+              </NativeText>
+              <NativeText variant="subtitle">
+                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </Reanimated.View>
       }
 
       <FlatList
@@ -714,8 +710,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         scrollEventThrottle={16}
         initialScrollIndex={50}
         style={!isOnline ?{
-          height: "80%",
-          marginTop: -90
+          height: "90%",
+          marginTop: -100
         } : {
           height: "100%"
         }}
