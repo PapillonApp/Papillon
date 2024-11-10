@@ -80,7 +80,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   return (
     <View style={{
       flex: 1,
-      marginTop: Platform.OS === "android" && insets.top
+      marginTop: Platform.OS === "android" ? insets.top : 0
     }}>
       <PapillonModernHeader native height={110} outsideNav={true}>
         <View style={{flexDirection: "row", gap: 10, alignItems: "center"}}>
