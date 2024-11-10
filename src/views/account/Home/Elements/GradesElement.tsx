@@ -87,7 +87,6 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
             key={index}
             subject={item.subject}
             grade={item.grade}
-            allGrades={grades[defaultPeriod]}
             navigation={PapillonNavigation.current}
             index={index}
             totalItems={lastThreeGrades.length}
