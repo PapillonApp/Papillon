@@ -263,7 +263,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
         </PapillonPicker>
       </PapillonModernHeader>
 
-      {isOnline &&
+      {!isOnline &&
         <Reanimated.ScrollView
           layout={animPapillon(LinearTransition)}
           style={{
@@ -315,7 +315,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           setData((prevData) => [...prevData, ...newDates]);
         }}
         onEndReachedThreshold={0.5}
-        style={isOnline ? {
+        style={!isOnline ? {
           height: "80%",
           marginTop: -90,
         } : {}}
