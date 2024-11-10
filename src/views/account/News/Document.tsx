@@ -102,7 +102,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                     message.read = !message.read;
                   } else {
                     if (Platform.OS === "ios") {
-                      Alert.alert("Information", "Vous êtes en mode hors connexion ! Vérifiez votre connexion Internet et réessayez", [
+                      Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
                         {
                           text: "OK",
                         },
@@ -110,7 +110,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                     } else {
                       showAlert({
                         title: "Information",
-                        message: "Vous êtes en mode hors connexion ! Vérifiez votre connexion Internet et réessayez",
+                        message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
                         actions: [
                           {
                             title: "OK",
