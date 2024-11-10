@@ -112,7 +112,7 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
                 {errorTitle.label} {errorTitle.emoji}
               </NativeText>
               <NativeText variant="subtitle">
-                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+                Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez
               </NativeText>
             </NativeItem>
           </NativeList>
