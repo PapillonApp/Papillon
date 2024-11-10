@@ -96,7 +96,7 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 20,
+        padding: 16,
         paddingTop: 0,
       }}
     >
