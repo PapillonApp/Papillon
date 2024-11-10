@@ -1,4 +1,4 @@
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { useTheme } from "@react-navigation/native";
@@ -27,7 +27,7 @@ import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, Chevr
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
-import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, FadeOutRight, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, FadeOutRight, FadeOutUp, FlipInXDown, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
@@ -42,6 +42,7 @@ import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes"
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
 import {SearchBar} from "react-native-screens";
 import NetInfo from "@react-native-community/netinfo";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
 type HomeworksPageProps = {
   index: number;
@@ -118,6 +119,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     return days[new Date(date).getDay()];
   };
 
+  const errorTitle = useMemo(() => getErrorTitle(), []);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -664,6 +666,34 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         </Reanimated.View>
       </PapillonModernHeader>
 
+      {!isOnline &&
+        <Reanimated.ScrollView
+          layout={animPapillon(LinearTransition)}
+          style={{
+            backgroundColor: theme.colors.background,
+            padding: 16,
+            paddingTop: 80
+          }}
+        >
+          <Reanimated.View
+            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+            layout={animPapillon(LinearTransition)}
+          >
+            <NativeList inline>
+              <NativeItem icon={<WifiOff />}>
+                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                  {errorTitle.label} {errorTitle.emoji}
+                </NativeText>
+                <NativeText variant="subtitle">
+                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+                </NativeText>
+              </NativeItem>
+            </NativeList>
+          </Reanimated.View>
+        </Reanimated.ScrollView>
+      }
+
       <FlatList
         ref={flatListRef}
         data={data}
@@ -682,8 +712,11 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         onMomentumScrollEnd={onMomentumScrollEnd}
         scrollEventThrottle={16}
         initialScrollIndex={50}
-        style={{
-          height: "100%",
+        style={!isOnline ?{
+          height: "80%",
+          marginTop: -100
+        } : {
+          height: "100%"
         }}
       />
     </View>
