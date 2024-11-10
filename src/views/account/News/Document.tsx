@@ -37,10 +37,16 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
 
   const stylesText = StyleSheet.create({
     body: {
-      fontFamily: "regular",
+      fontFamily: "medium",
       fontSize: 16,
+      lineHeight: 22,
       color: theme.colors.text,
-    }
+    },
+    a: {
+      color: theme.colors.primary,
+      textDecorationColor: theme.colors.primary,
+      textDecorationLine: "underline",
+    },
   });
 
   useLayoutEffect(() => {
@@ -139,7 +145,10 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
         }}
       >
         <View style={{paddingHorizontal: 16}}>
-          <HTMLView value={`<body>${message.content}</body`} stylesheet={stylesText} />
+          <HTMLView
+            value={`<body>${message.content}</body`}
+            stylesheet={stylesText}
+          />
         </View>
 
         {isED && <ScrollView horizontal={true} contentContainerStyle={{gap: 5, paddingHorizontal: 16}}>
