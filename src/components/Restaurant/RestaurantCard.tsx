@@ -5,13 +5,12 @@ import { useTheme } from "@react-navigation/native";
 
 interface RestaurantCardProps {
   solde: number
-  repas: number
+  repas: number | null
 }
 
 const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
   const theme = useTheme();
   const { colors } = theme;
-
   return (
     <View style={{
       height: 80,
@@ -45,35 +44,36 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
             fontSize: 30,
           }}
         >
-          {solde} €
+          {solde.toFixed(2)} €
         </Text>
       </View>
-
-      <View
-        style={{
-          flex: 1,
-          padding: 15,
-        }}
-      >
-        <NativeText
+      {repas !== null && (
+        <View
           style={{
-            textAlign: "right",
-            color: colors.text + "50",
+            flex: 1,
+            padding: 15,
           }}
         >
-          Repas restants
-        </NativeText>
-        <Text
-          style={{
-            textAlign: "right",
-            fontFamily: "semibold",
-            color: colors.text + "50",
-            fontSize: 30,
-          }}
-        >
-          {repas} €
-        </Text>
-      </View>
+          <NativeText
+            style={{
+              textAlign: "right",
+              color: colors.text + "50",
+            }}
+          >
+            Repas restants
+          </NativeText>
+          <Text
+            style={{
+              textAlign: "right",
+              fontFamily: "semibold",
+              color: colors.text + "50",
+              fontSize: 30,
+            }}
+          >
+            {repas}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

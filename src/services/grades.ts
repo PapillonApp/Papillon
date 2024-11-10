@@ -89,12 +89,21 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
         break;
       }
       case AccountService.Local: {
-        grades = [];
-        averages = {
-          subjects: [],
-          overall: { value: 0, disabled: true },
-          classOverall: { value: 0, disabled: true }
-        };
+        if (account.identityProvider.identifier == "iut-lannion") {
+          const { saveIUTLanGrades } = await import("./iutlan/grades");
+          const data = await saveIUTLanGrades(account);
+
+          grades = data.grades;
+          averages = data.averages;
+        }
+        else {
+          grades = [];
+          averages = {
+            subjects: [],
+            overall: { value: 0, disabled: true },
+            classOverall: { value: 0, disabled: true }
+          };
+        }
 
         break;
       }

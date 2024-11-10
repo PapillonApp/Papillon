@@ -21,6 +21,7 @@ const serviceConfig = {
   [AccountService.WebResto]: { icon: Utensils, name: "Web Resto" },
   [AccountService.Turboself]: { icon: Utensils, name: "Turboself" },
   [AccountService.ARD]: { icon: Utensils, name: "ARD" },
+  [AccountService.Izly]: { icon: Utensils, name: "Izly" },
   [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
   [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
   [AccountService.Local]: { icon: GraduationCap, name: "Local" },

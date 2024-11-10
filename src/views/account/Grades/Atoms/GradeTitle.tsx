@@ -139,7 +139,7 @@ export const GradeTitle = ({ grade, subjectData }: GradeTitleProps) => {
               marginBottom: 1,
             }}
           >
-            /{parseFloat(grade.outOf.value?.toString() || "20").toFixed(0)}
+            /{parseFloat(grade.outOf.value?.toString() || "20")}
           </NativeText>
         </View>
       </View>

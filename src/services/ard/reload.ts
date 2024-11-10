@@ -3,5 +3,6 @@ import { Authenticator, Client } from "pawrd";
 
 export const reload = async (account: ARDAccount): Promise<Client> => {
   const authenticator = new Authenticator();
-  return authenticator.fromCredentials(account.authentication.schoolID, account.authentication.username, account.authentication.password);
+  const client = await authenticator.fromCredentials(account.authentication.schoolID, account.authentication.username, account.authentication.password);
+  return client;
 };

@@ -5,6 +5,7 @@ import {
   StatusBar,
   TouchableOpacity,
   StyleSheet,
+  ScrollView, Platform,
 } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,7 +26,7 @@ const BETA_THRESHOLD_LOW = -0.2;
 const BETA_THRESHOLD_HIGH = -0.15;
 const ANIMATION_DURATION = 500;
 
-const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ navigation }) => {
+const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => {
   const [currentState, setCurrentState] = useState<
     "neutral" | "tiltedUp" | "tiltedDown"
   >("neutral");
@@ -33,6 +34,14 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ navigation }) => {
   const rotate = useSharedValue(0);
   const theme = useTheme();
   const { colors } = theme;
+
+  const qrcodes = route.params.QrCodes;
+  const [activeIndex, setActiveIndex] = useState(0);
+  const handleScroll = (event: { nativeEvent: { contentOffset: { x: any; }; }; }) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.floor(contentOffsetX / (100));
+    setActiveIndex(Math.max(0, Math.min(index, qrcodes ? qrcodes.length - 1 : 0)));
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -48,15 +57,27 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    Brightness.setBrightnessAsync(1);
-    return () => {
-      Brightness.setBrightnessAsync(0.5);
-    };
-  }, []);
+    (async () => {
+      if (Platform.OS === 'android') {
+        const { status } = await Brightness.requestPermissionsAsync();
+        if (status !== 'granted') {
+          navigation.goBack();
+          return;
+        }
+      }
+      try { await Brightness.setBrightnessAsync(1); } catch (e) { console.warn("Brightness error:", e); }
+    })();
+    return () => { Brightness.setBrightnessAsync(0.5); };
+  }, [navigation]);
+
 
   useEffect(() => {
     const subscription = DeviceMotion.addListener(({ rotation }) => {
       let newState: "neutral" | "tiltedUp" | "tiltedDown" = "neutral";
+
+      if (!rotation || typeof rotation.beta === "undefined") {
+        return;
+      }
 
       if (rotation.beta < BETA_THRESHOLD_LOW) {
         newState = "tiltedDown";
@@ -99,15 +120,39 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle={"dark-content"} />
       <View style={styles.qrCodeContainer}>
-        <View style={styles.qrCodeInnerContainer}>
-          <QRCode
-            value="6485903894359088983725987349"
-            size={170}
-            color="#000000"
-            backgroundColor="#FFFFFF"
-          />
-        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={200}
+          decelerationRate="fast"
+          scrollEnabled={qrcodes?.length > 1}
+          onScroll={handleScroll}
+        >
+          { qrcodes && qrcodes?.map((code, index) => (
+            <View key={index} style={styles.qrCodeInnerContainer}>
+              <QRCode
+                value={code.toString()}
+                size={170}
+                color="#000000"
+                backgroundColor="#FFFFFF"
+              />
+            </View>
+          ))}
+        </ScrollView>
       </View>
+      { qrcodes && qrcodes.length > 1 && (
+        <View style={styles.dotsContainer}>
+          {qrcodes.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                index === activeIndex ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
+        </View>
+      )}
       <Animated.View style={[styles.instructionContainer, animatedStyle]}>
         <ScanIcon color={colors.primary} />
         <Text style={styles.instructionText}>
@@ -141,6 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    width: 200,
   },
   instructionContainer: {
     marginTop: 60,
@@ -153,6 +199,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     maxWidth: 200,
+  },
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 5,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: "#ffffff",
+  },
+  inactiveDot: {
+    backgroundColor: "#ffffff25",
   },
 });
 

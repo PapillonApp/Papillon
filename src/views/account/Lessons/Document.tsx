@@ -10,6 +10,7 @@ import {
   ScrollView,
   Text,
   Platform,
+  Linking,
 } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import { getSubjectData } from "@/services/shared/Subject";
@@ -18,16 +19,19 @@ import { Screen } from "@/router/helpers/types";
 import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
+  Building,
   Clock,
   DoorOpen,
   FileText,
   Hourglass,
   Info,
+  LinkIcon,
   PersonStanding,
+  Users,
 } from "lucide-react-native";
 
 import * as WebBrowser from "expo-web-browser";
-import { useTheme } from "@react-navigation/native";
+import { Link, useTheme } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -135,19 +139,42 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
       ],
     },
     {
+      title: "Cours en ligne",
+      informations: [
+        {
+          icon: <LinkIcon />,
+          text: "URL du cours",
+          value: lesson.url,
+          enabled: lesson.url != null,
+        },
+      ]
+    },
+    {
       title: "Contexte",
       informations: [
         {
+          icon: <Building />,
+          text: lesson.building?.includes(",") ? "Bâtiments" : "Bâtiment",
+          value: lesson.building,
+          enabled: lesson.building != null,
+        },
+        {
           icon: <DoorOpen />,
-          text: "Salle de classe",
+          text: lesson.room?.includes(",") ? "Salles de classe" : "Salle de classe",
           value: lesson.room,
           enabled: lesson.room != null,
         },
         {
           icon: <PersonStanding />,
-          text: "Professeur",
+          text: lesson.teacher?.includes(",") ? "Professeurs" : "Professeur",
           value: lesson.teacher,
           enabled: lesson.teacher != null,
+        },
+        {
+          icon: <Users />,
+          text: lesson.group?.includes(",") ? "Groupes" : "Groupe",
+          value: lesson.group,
+          enabled: lesson.group != null
         },
       ],
     },
@@ -226,7 +253,11 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                   }
 
                   return (
-                    <NativeItem key={index} icon={item.icon}>
+                    <NativeItem
+                      key={index}
+                      icon={item.icon}
+                      onPress={item.value && item.value.startsWith("http") ? () => Linking.openURL(item.value!) : void 0}
+                    >
                       <NativeText variant="subtitle">{item.text}</NativeText>
                       <NativeText variant="default">{item.value}</NativeText>
                     </NativeItem>

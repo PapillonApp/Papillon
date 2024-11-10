@@ -20,7 +20,8 @@ export type AverageDiffGrade = {
 // Fonction pour calculer la moyenne des notes globales par matière, en fonction de la cible (par défaut, "student")
 const getPronoteAverage = (
   grades: Grade[],
-  target: Target = "student"
+  target: Target = "student",
+  useMath: boolean = false
 ): number => {
   // Si aucune note n'est fournie ou que la liste est vide, on retourne -1
   if (!grades || grades.length === 0) return -1;
@@ -37,7 +38,7 @@ const getPronoteAverage = (
   // Calculer la moyenne totale de toutes les matières
   const totalAverage = Object.values(groupedBySubject).reduce(
     (acc, subjectGrades) => {
-      return acc + getSubjectAverage(subjectGrades, target); // Additionner les moyennes de chaque matière
+      return acc + getSubjectAverage(subjectGrades, target, useMath); // Additionner les moyennes de chaque matière
     },
     0
   );
@@ -49,7 +50,8 @@ const getPronoteAverage = (
 // Fonction pour calculer la moyenne d'une matière spécifique, selon la cible choisie
 export const getSubjectAverage = (
   subject: Grade[],
-  target: Target = "student"
+  target: Target = "student",
+  useMath: boolean = false
 ): number => {
   let calcGradesSum = 0; // Somme cumulée des notes pondérées
   let calcOutOfSum = 0; // Somme cumulée des coefficients pondérés
@@ -80,6 +82,8 @@ export const getSubjectAverage = (
 
       calcGradesSum += newGradeValue; // Ajouter la note ajustée à la somme
       calcOutOfSum += 1; // Incrémenter la somme de pondération (compte comme 1 ici)
+    } else if(useMath) {
+      calcGradesSum += targetGrade.value;
     } else if (targetGrade.value > 20 || coefficient < 1) {
       // Si la note est supérieure à 20 ou si le coefficient est inférieur à 1, ajuster pour une base sur 20
       const gradeOn20 = (targetGrade.value / outOfValue) * 20; // Ajuster la note pour une base sur 20
@@ -90,6 +94,10 @@ export const getSubjectAverage = (
       calcGradesSum += targetGrade.value * coefficient; // Ajouter la note pondérée à la somme
       calcOutOfSum += outOfValue * coefficient; // Ajouter le coefficient pondéré à la somme
     }
+  }
+
+  if(useMath) {
+    return calcGradesSum / subject.length;
   }
 
   // Si aucune somme de pondération n'est calculée, retourner 0 pour éviter la division par zéro
@@ -104,12 +112,14 @@ export const getSubjectAverage = (
 const getAverageDiffGrade = (
   grades: Grade[],
   list: Grade[],
-  target: Target = "student"
+  target: Target = "student",
+  useMath: boolean = false
 ): AverageDiffGrade => {
   const baseAverage = getSubjectAverage(list, target); // Calculer la moyenne de base avec toutes les notes
   const baseWithoutGradeAverage = getSubjectAverage(
     list.filter((grade) => JSON.stringify(grades[0]) !== JSON.stringify(grade)),
-    target
+    target,
+    useMath
   ); // Calculer la moyenne sans certaines notes
 
   return {
@@ -123,7 +133,8 @@ const getAverageDiffGrade = (
 const getAveragesHistory = (
   grades: Grade[],
   target: Target = "student",
-  final?: number
+  final?: number,
+  useMath: boolean = false
 ): GradeHistory[] => {
   // Générer l'historique des moyennes jusqu'à la date de chaque note
   const history = grades.map((grade, index) => ({
@@ -136,7 +147,7 @@ const getAveragesHistory = (
 
   // Ajouter un point final avec la moyenne finale (ou calculée)
   history.push({
-    value: final ?? getPronoteAverage(grades, target), // Moyenne finale ou calculée
+    value: final ?? getPronoteAverage(grades, target, useMath), // Moyenne finale ou calculée
     date: new Date().toISOString(), // Date actuelle
   });
 

@@ -9,7 +9,8 @@ export const balance = async (account: ARDAccount): Promise<Balance[]> => {
   return payments.walletData.map(wallet => ({
     amount: wallet.walletAmount / 100,
     currency: "€",
-    remaining: "-" as unknown as number // TODO ??
+    remaining: null,
+    label: wallet.walletName
   }));
 
 };

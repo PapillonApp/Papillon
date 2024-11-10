@@ -1,8 +1,8 @@
 import type { TurboselfAccount } from "@/stores/account/types";
-import { login } from "turbawself";
+import { authenticateWithCredentials } from "turboself-api";
 
-export const reload = async (account: TurboselfAccount): Promise<TurboselfAccount["authentication"]["auth"]> => {
-  const auth = { ...account.authentication.auth }; // make sure to make a copy of the object.
-  await login(auth);
-  return auth;
+export const reload = async (account: TurboselfAccount): Promise<TurboselfAccount["authentication"]["session"]> => {
+  const auth = { ...account.authentication };
+  const session = await authenticateWithCredentials(auth.username, auth.password);
+  return session;
 };

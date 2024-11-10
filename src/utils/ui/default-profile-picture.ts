@@ -4,6 +4,8 @@ export const defaultProfilePicture = (service: AccountService, accountProvider: 
   switch (accountProvider) {
     case "Université de Rennes":
       return require("../../../assets/images/service_rennes1.png");
+    case "IUT de Lannion":
+      return require("../../../assets/images/service_rennes1.png");
     case "Université de Rennes 2":
       return require("../../../assets/images/service_rennes2.png");
     case "Université de Limoges":
