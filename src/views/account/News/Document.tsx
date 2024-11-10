@@ -12,7 +12,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { LinearGradient } from "expo-linear-gradient";
@@ -74,7 +74,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   return (
     <View style={{
       flex: 1,
-      marginTop: insets.top
+      marginTop: Platform.OS === "android" && insets.top
     }}>
       <PapillonModernHeader native height={110} outsideNav={true}>
         <View style={{flexDirection: "row", gap: 10, alignItems: "center"}}>

@@ -73,9 +73,9 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   return (
     <View style={{
       flex: 1,
-      marginTop: insets.top,
+      marginTop: Platform.OS === "android" && insets.top,
     }}>
-      <PapillonModernHeader outsideNav={true} startLocation={0.6} height={110}>
+      <PapillonModernHeader outsideNav={true} startLocation={0.6} height={110} native={true}>
         <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
           <View style={{backgroundColor: theme.colors.background, borderRadius: 100}}>
             <View
