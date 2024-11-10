@@ -672,7 +672,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           style={{
             backgroundColor: theme.colors.background,
             padding: 16,
-            paddingTop: 80
+            paddingTop: 80,
+            zIndex: 1
           }}
         >
           <Reanimated.View
@@ -714,7 +715,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         initialScrollIndex={50}
         style={!isOnline ?{
           height: "80%",
-          marginTop: -100
+          marginTop: -90
         } : {
           height: "100%"
         }}
