@@ -1,4 +1,4 @@
-import {type Account, AccountService} from "@/stores/account/types";
+import {type Account, AccountService, TurboselfAccount} from "@/stores/account/types";
 export interface Reconnected<T extends Account> {
   instance: T["instance"]
   authentication: T["authentication"]
