@@ -6,8 +6,6 @@ import {useTheme} from "@react-navigation/native";
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import PackageJSON from "../../../../package.json";
 import {
-  ActivityIndicator,
-  Button,
   Dimensions,
   Platform,
   Pressable,
@@ -48,7 +46,7 @@ import {
 } from "./Animations/HomeAnimations";
 
 import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
-import {Gift, Sparkles, WifiOff} from "lucide-react-native";
+import {Gift, WifiOff} from "lucide-react-native";
 
 import NetInfo from "@react-native-community/netinfo";
 import {getErrorTitle} from "@/utils/format/get_papillon_error_title";
@@ -57,8 +55,6 @@ import {animPapillon} from "@/utils/ui/animations";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import { useFlagsStore } from "@/stores/flags";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import { th } from "date-fns/locale";
-import MissingItem from "@/components/Global/MissingItem";
 
 let headerHeight = Dimensions.get("window").height / 2.75;
 if (headerHeight < 275) {
@@ -333,7 +329,6 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
           >
             <AccountSwitcher
               translationY={translationY}
-              scrolled={scrolled}
               loading={!account.instance}
             />
           </ContextMenu>
@@ -391,7 +386,6 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
             >
               <AccountSwitcher
                 translationY={translationY}
-                scrolled={scrolled}
                 small
               />
             </TouchableOpacity>
@@ -445,9 +439,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
         >
           <Header
             scrolled={false}
-            openAccountSwitcher={openAccSwitcher}
             navigation={navigation}
-            scrolled={false}
           />
         </Reanimated.View>
 
