@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, View, Dimensions, ViewToken } from "react-native";
 import { Button, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
@@ -12,6 +12,8 @@ import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import Reanimated, {
   FadeIn,
   FadeOut,
+  FadeOutUp,
+  FlipInXDown,
   LinearTransition,
   ZoomIn,
 } from "react-native-reanimated";
@@ -19,7 +21,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { CalendarPlus, MoreVertical } from "lucide-react-native";
+import { CalendarPlus, MoreVertical, WifiOff } from "lucide-react-native";
 import {
   PapillonHeaderAction,
   PapillonHeaderSelector,
@@ -27,6 +29,9 @@ import {
   PapillonModernHeader,
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import NetInfo from "@react-native-community/netinfo";
+import { NativeList, NativeItem, NativeText } from "@/components/Global/NativeComponents";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
 const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const account = useCurrentAccount((store) => store.account!);
@@ -55,6 +60,14 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     const epochWeekNumber = dateToEpochWeekNumber(date);
     return epochWeekNumber;
   };
+
+  const errorTitle = useMemo(() => getErrorTitle(), []);
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const [updatedWeeks, setUpdatedWeeks] = React.useState(new Set<number>());
 
@@ -250,6 +263,35 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
         </PapillonPicker>
       </PapillonModernHeader>
 
+      {isOnline &&
+        <Reanimated.ScrollView
+          layout={animPapillon(LinearTransition)}
+          style={{
+            backgroundColor: theme.colors.background,
+            padding: 16,
+            paddingTop: 80,
+            zIndex: 1
+          }}
+        >
+          <Reanimated.View
+            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+            layout={animPapillon(LinearTransition)}
+          >
+            <NativeList inline>
+              <NativeItem icon={<WifiOff />}>
+                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                  {errorTitle.label} {errorTitle.emoji}
+                </NativeText>
+                <NativeText variant="subtitle">
+                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+                </NativeText>
+              </NativeItem>
+            </NativeList>
+          </Reanimated.View>
+        </Reanimated.ScrollView>
+      }
+
       <FlatList
         ref={flatListRef}
         data={data}
@@ -273,6 +315,10 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           setData((prevData) => [...prevData, ...newDates]);
         }}
         onEndReachedThreshold={0.5}
+        style={isOnline ? {
+          height: "80%",
+          marginTop: -90,
+        } : {}}
       />
 
       <LessonsDateModal
