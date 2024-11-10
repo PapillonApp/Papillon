@@ -260,9 +260,7 @@ export const PapillonHeaderSelector: React.FC<{
           >
             {children}
 
-            {!isOnline ? (
-              <WifiOff size={20} color="red" />
-            ) : loading &&
+            {isOnline && loading &&
               <PapillonSpinner
                 size={18}
                 color={theme.colors.text}

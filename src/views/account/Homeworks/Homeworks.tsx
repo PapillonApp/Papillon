@@ -468,31 +468,21 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   />
                 </Reanimated.View>
 
-                {!isOnline ? (
-                  <WifiOff
-                    size={20}
-                    color="red"
+                {!isOnline && loading && (
+                  <PapillonSpinner
+                    size={18}
+                    color={
+                      showPickerButtons
+                        ? theme.colors.primary
+                        : theme.colors.text
+                    }
+                    strokeWidth={2.8}
+                    entering={animPapillon(ZoomIn)}
+                    exiting={animPapillon(ZoomOut)}
                     style={{
-                      marginLeft: 5
+                      marginLeft: 5,
                     }}
                   />
-                ) : (
-                  loading && (
-                    <PapillonSpinner
-                      size={18}
-                      color={
-                        showPickerButtons
-                          ? theme.colors.primary
-                          : theme.colors.text
-                      }
-                      strokeWidth={2.8}
-                      entering={animPapillon(ZoomIn)}
-                      exiting={animPapillon(ZoomOut)}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )
                 )}
               </BlurView>
             </Reanimated.View>

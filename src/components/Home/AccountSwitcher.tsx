@@ -144,19 +144,15 @@ const AccountSwitcher: React.FC<{
                 : "Mon compte"}
             </Reanimated.Text>
 
-            {!isOnline ? (
-              <WifiOff size={20} color="red" />
-            ) : (
-              loading && (
-                <PapillonSpinner
-                  size={20}
-                  strokeWidth={3}
-                  color={modalOpen && !opened ? colors.text : "#FFF"}
-                  animated
-                  entering={animPapillon(ZoomIn)}
-                  exiting={animPapillon(ZoomOut)}
-                />
-              )
+            {isOnline && loading && (
+              <PapillonSpinner
+                size={20}
+                strokeWidth={3}
+                color={modalOpen && !opened ? colors.text : "#FFF"}
+                animated
+                entering={animPapillon(ZoomIn)}
+                exiting={animPapillon(ZoomOut)}
+              />
             )}
 
             <Reanimated.View layout={animPapillon(LinearTransition)}>

@@ -22,7 +22,6 @@ import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
 import NetInfo from "@react-native-community/netinfo";
-import { WifiOff } from "lucide-react-native";
 
 interface WidgetContainerProps {
   widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>;
@@ -126,17 +125,6 @@ const Widget: React.FC<WidgetContainerProps> = ({
               setHidden={setHidden}
               hidden={hidden}
             />
-            {!isOnline && (
-              <Reanimated.View
-                style={{
-                  position: "absolute",
-                  left: 165,
-                  top: 10,
-                }}
-              >
-                <WifiOff size={20} color="red" />
-              </Reanimated.View>
-            )}
           </Reanimated.View>
         </Reanimated.View>
       </PressableScale>
