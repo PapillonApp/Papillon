@@ -470,7 +470,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   />
                 </Reanimated.View>
 
-                {!isOnline && loading && (
+                {isOnline && loading && (
                   <PapillonSpinner
                     size={18}
                     color={
