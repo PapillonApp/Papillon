@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { Image, StyleSheet, FlatList, ListRenderItem, View } from "react-native";
+import { Image, StyleSheet, FlatList, ListRenderItem, View, RefreshControl } from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { updateNewsInCache } from "@/services/news";
 import { useNewsStore } from "@/stores/news";
 import { useCurrentAccount } from "@/stores/account";
 import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
-import { RefreshControl } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import BetaIndicator from "@/components/News/Beta";
 import NewsListItem from "./Atoms/Item";
