@@ -9,7 +9,6 @@ import Reanimated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import {Balance} from "@/services/shared/Balance";
 import {Theme} from "@react-navigation/native";
 
 const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
