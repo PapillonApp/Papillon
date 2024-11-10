@@ -38,12 +38,12 @@ const AccountSwitcher: React.FC<{
     borderWidth: 1,
     borderRadius: 80,
     borderColor: interpolateColor(
-      translationY?.value ?? 200,
+      translationY?.value || 0, // Should think to pass a default value
       [200, 251],
       ["#ffffff50", colors.border],
     ),
     backgroundColor: interpolateColor(
-      translationY?.value ?? 200,
+      translationY?.value || 0, // Should think to pass a default value
       [200, 251],
       ["#ffffff30", "transparent"],
     ),
@@ -51,7 +51,7 @@ const AccountSwitcher: React.FC<{
 
   const textAnimatedStyle = useAnimatedStyle(() => ({
     color: interpolateColor(
-      translationY?.value ?? 200,
+      translationY?.value || 0, // Should think to pass a default value
       [200, 251],
       ["#FFF", colors.text],
     ),
@@ -64,7 +64,7 @@ const AccountSwitcher: React.FC<{
   const AnimatedChevronDown = Reanimated.createAnimatedComponent(ChevronDown);
   const iconAnimatedStyle = useAnimatedStyle(() => ({
     color: interpolateColor(
-      translationY?.value ?? 200,
+      translationY?.value || 0, // Should think to pass a default value
       [200, 251],
       ["#FFF", colors.text],
     ),
@@ -124,7 +124,7 @@ const AccountSwitcher: React.FC<{
           >
             {!shouldHidePicture ? (
               <Image
-                source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+                source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, account.identityProvider?.name || "")}
                 style={[
                   styles.avatar,
                   {

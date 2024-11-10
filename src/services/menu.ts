@@ -9,7 +9,7 @@ export async function getMenu <T extends Account> (account: Account, date: Date)
       return menu;
     }
     default: {
-      return null
+      return null;
     }
   }
 }

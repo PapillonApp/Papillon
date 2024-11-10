@@ -22,6 +22,6 @@ export const getNews = async (account: PronoteAccount): Promise<Information[]> =
     throw new ErrorServiceUnauthenticated("pronote");
 
   const news = await pronote.news(account.instance);
-  const informations = news.items.filter(n => n.is === "information");
+  const informations = news.items.filter(n => n.is === "information") as pronote.NewsInformation[];
   return informations.map(parseInformation);
 };

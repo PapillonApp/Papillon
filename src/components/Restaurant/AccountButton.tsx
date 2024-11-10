@@ -9,25 +9,20 @@ import Reanimated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import {Balance} from "@/services/shared/Balance";
+import {Theme} from "@react-navigation/native";
 
 const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedView = Reanimated.createAnimatedComponent(View);
 
-interface LESvariables {
-  account: Balance,
-  isSelected: boolean,
-  onPress: () => void;
-  colors: {
-    primary: string;
-    background: string;
-    card: string;
-    text: string;
-    border: string;
-    notification: string;
-  },
+interface AccountButtonProps {
+  account: Balance
+  isSelected: boolean
+  onPress: () => any
+  colors: Theme["colors"]
 }
 
-const AccountButton = ({ account, isSelected, onPress, colors }: LESvariables) => {
+const AccountButton: React.FC<AccountButtonProps> = ({ account, isSelected, onPress, colors }) => {
   const COLLAPSED_WIDTH = 47;
   const [textMeasurement, setTextMeasurement] = React.useState(0);
   const EXPANDED_WIDTH = React.useMemo(() => COLLAPSED_WIDTH + textMeasurement + 16, [textMeasurement]); // 16 pour le gap

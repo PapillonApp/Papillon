@@ -18,6 +18,7 @@ export const UnivIUTLannion_Login: Screen<"UnivIUTLannion_Login"> = ({ navigatio
     catch (e: any) {
       console.error(e);
       // setLoading(false);
+      // @ts-ignore
       setError(e.toString());
     }
   };

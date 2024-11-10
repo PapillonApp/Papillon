@@ -20,15 +20,15 @@ export const getBookingsAvailableFromExternal = async (account: ExternalAccount,
   }
 };
 
-export const bookDayFromExternal = async (account: ExternalAccount, id: string, date: Date, booked: boolean): Promise<BookingDay | null> => {
+export const bookDayFromExternal = async (account: ExternalAccount, id: string, date: Date, booked: boolean): Promise<BookingDay | undefined> => {
   switch (account.service) {
     case AccountService.Turboself: {
       const { bookDay } = await import("./turboself/booking");
       const bookedDay = await bookDay(account, id, date, booked);
       return bookedDay;
     }
-    default: {
-      return null;
+    case AccountService.ARD: {
+      return undefined;
     }
   }
 };

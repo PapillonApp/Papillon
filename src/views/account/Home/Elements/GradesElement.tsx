@@ -8,7 +8,11 @@ import GradeItem from "../../Grades/Subject/GradeItem";
 import type { Grade } from "@/services/shared/Grade";
 import RedirectButton from "@/components/Home/RedirectButton";
 
-const GradesElement: React.FC<{onImportance: (input: number) => void}> = ({onImportance}) => {
+interface GradesElementProps {
+  onImportance: (value: number) => unknown
+}
+
+const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
   const account = useCurrentAccount((store) => store.account);
 
   const defaultPeriod = useGradesStore(store => store.defaultPeriod);
@@ -87,6 +91,7 @@ const GradesElement: React.FC<{onImportance: (input: number) => void}> = ({onImp
             navigation={PapillonNavigation.current}
             index={index}
             totalItems={lastThreeGrades.length}
+            allGrades={[]}
           />
         ))}
       </NativeList>

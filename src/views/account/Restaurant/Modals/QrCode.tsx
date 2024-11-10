@@ -58,9 +58,9 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
 
   useEffect(() => {
     (async () => {
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         const { status } = await Brightness.requestPermissionsAsync();
-        if (status !== 'granted') {
+        if (status !== "granted") {
           navigation.goBack();
           return;
         }

@@ -11,7 +11,11 @@ import { updateTimetableForWeekInCache } from "@/services/timetable";
 import MissingItem from "@/components/Global/MissingItem";
 import { TimetableItem } from "../../Lessons/Atoms/Item";
 
-const TimetableElement: React.FC<{onImportance: (input: number) => void}> = ({onImportance}) => {
+interface TimetableElementProps {
+  onImportance: (value: number) => unknown
+}
+
+const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => {
   const account = useCurrentAccount((store) => store.account!);
   const timetables = useTimetableStore((store) => store.timetables);
 

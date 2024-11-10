@@ -11,6 +11,7 @@ import {AlertTriangle} from "lucide-react-native";
 import {AccountService, IzlyAccount} from "@/stores/account/types";
 import {useAccounts, useCurrentAccount} from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
+
 const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -126,7 +127,6 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
           </View>
 
           <NativeText
-            pointerEvents="none"
             style={{
               width: "100%",
               paddingHorizontal: 16,

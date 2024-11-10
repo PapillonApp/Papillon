@@ -26,8 +26,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   const firstLogin = params?.firstLogin || false;
   const theme = useTheme();
 
-  if (!firstLogin) {
-    if (account && account.credentials) {
+  if(!firstLogin) {
+    if(account?.service == AccountService.Local && account.credentials) {
       username = account.credentials.username;
       password = account.credentials.password;
     }
@@ -70,8 +70,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       },
 
       credentials: {
-        username,
-        password
+        username: username || "",
+        password: password || ""
       },
 
       localID: uuid(),
@@ -105,7 +105,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     });
   };
 
-  const wbref = React.useRef(null);
+  const wbref = React.useRef<WebView>(null);
 
   const [canExtractJSON, setCanExtractJSON] = React.useState(false);
   const [redirectCount, setRedirectCount] = React.useState(0);

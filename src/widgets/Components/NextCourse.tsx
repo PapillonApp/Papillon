@@ -113,7 +113,7 @@ const NextCourseLesson: React.FC<{
   }, [nextCourse.title]);
 
   useEffect(() => {
-    const updateRemainingTime = () => {
+    const updateRemainingTime: () => number | NodeJS.Timeout = () => {
       const now = new Date().getTime();
       const distance = nextCourse.startTimestamp - now;
       const end = nextCourse.endTimestamp - now;

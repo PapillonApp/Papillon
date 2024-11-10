@@ -39,6 +39,7 @@ import {PressableScale} from "react-native-pressable-scale";
 
 import datasets from "@/consts/datasets.json";
 import Animated from "react-native-reanimated";
+import {PrimaryAccount} from "@/stores/account/types";
 
 
 // https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json
@@ -110,7 +111,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
       }
 
       if (accounts.filter((account) => !account.isExternal).length === 1) {
-        const selectedAccount = accounts.find((account) => !account.isExternal);
+        const selectedAccount = accounts.find((account) => !account.isExternal) as PrimaryAccount | undefined;
         if (selectedAccount && currentAccount?.localID !== selectedAccount.localID) {
           switchTo(selectedAccount);
 

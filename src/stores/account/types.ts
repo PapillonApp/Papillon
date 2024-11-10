@@ -160,7 +160,7 @@ export interface LocalAccount extends BaseAccount {
     rawData: Record<string, unknown>
   }
 
-  credentials: {
+  credentials?: {
     username: string
     password: string
   }

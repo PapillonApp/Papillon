@@ -9,13 +9,15 @@ import { debounce } from "lodash";
 import { PapillonNavigation } from "@/router/refs";
 import RedirectButton from "@/components/Home/RedirectButton";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RouteParameters } from "@/router/helpers/types";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {RouteParameters} from "@/router/helpers/types";
 
-const HomeworksElement:React.FC<{
-  onImportance: (input: number) => void,
-  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen" | "Homeworks", undefined>
-}> = ({ navigation, onImportance }) => {
+interface HomeworksElementProps {
+  onImportance: (value: number) => unknown
+  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>
+}
+
+const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImportance }) => {
   const account = useCurrentAccount(store => store.account!);
   const homeworks = useHomeworkStore(store => store.homeworks);
 
