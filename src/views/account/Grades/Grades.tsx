@@ -195,7 +195,6 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
           </PapillonHeaderSelector>
         </PapillonPicker>
       </PapillonModernHeader>
-      {console.log(isOnline && !isLoading)}
       {((isOnline && !isLoading) || !isOnline) && (
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
