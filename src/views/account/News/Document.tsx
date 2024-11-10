@@ -11,8 +11,8 @@ import {
   Link,
   MoreHorizontal,
 } from "lucide-react-native";
-import React, { useEffect, useLayoutEffect } from "react";
-import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent} from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent, Alert, Platform} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import RenderHtml from "react-native-render-html";
 import { PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
@@ -24,6 +24,9 @@ import {Screen} from "@/router/helpers/types";
 import {AttachmentType} from "@/services/shared/Attachment";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import { selectColorSeed } from "@/utils/format/select_color_seed";
+import { useAlert } from "@/providers/AlertProvider";
+import NetInfo from "@react-native-community/netinfo";
+
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   let message = JSON.parse(route.params.message) as Information;
@@ -32,6 +35,15 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   const account = useCurrentAccount((store) => store.account!);
 
   const theme = useTheme();
+
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
+  const { showAlert } = useAlert();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -76,7 +88,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             <NativeText variant="title" numberOfLines={1}>{message.title === "" ? message.author : message.title}</NativeText>
             <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toDateString()) : message.author}</NativeText>
           </View>
-          {isED && <PapillonPicker
+          {!isED && <PapillonPicker
             animated
             direction="right"
             delay={0}
@@ -85,8 +97,30 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                 icon: message.read ? <EyeOff /> : <Eye />,
                 label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
                 onPress: () => {
-                  setNewsRead(account, message, !message.read);
-                  message.read = !message.read;
+                  if (isOnline) {
+                    setNewsRead(account, message, !message.read);
+                    message.read = !message.read;
+                  } else {
+                    if (Platform.OS === "ios") {
+                      Alert.alert("Information", "Vous êtes en mode hors connexion ! Vérifiez votre connexion Internet et réessayez", [
+                        {
+                          text: "OK",
+                        },
+                      ]);
+                    } else {
+                      showAlert({
+                        title: "Information",
+                        message: "Vous êtes en mode hors connexion ! Vérifiez votre connexion Internet et réessayez",
+                        actions: [
+                          {
+                            title: "OK",
+                            onPress: () => {},
+                            backgroundColor: theme.colors.card,
+                          },
+                        ],
+                      });
+                    }
+                  }
                 }
               }
             ]}
