@@ -437,7 +437,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
               height: headerHeight,
               alignItems: "center",
               justifyContent: "center",
-              paddingTop: insets.top - 10,
+              paddingTop: insets.top - 17.5,
             },
             styles.header,
             Platform.OS === "ios" && stylez
