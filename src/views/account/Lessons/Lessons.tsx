@@ -269,7 +269,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           style={{
             backgroundColor: theme.colors.background,
             padding: 16,
-            paddingTop: 80,
+            paddingTop: "20%",
             zIndex: 1
           }}
         >
@@ -316,8 +316,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
         }}
         onEndReachedThreshold={0.5}
         style={!isOnline ? {
-          height: "80%",
-          marginTop: -90,
+          height: "90%",
+          marginTop: -80,
         } : {}}
       />
 
