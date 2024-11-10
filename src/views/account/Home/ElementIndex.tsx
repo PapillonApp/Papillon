@@ -2,6 +2,7 @@ import AttendanceElement from "./Elements/AttendanceElement";
 import GradesElement from "./Elements/GradesElement";
 import HomeworksElement from "./Elements/HomeworksElement";
 import TimetableElement from "./Elements/TimetableElement";
+import React from "react";
 
 export const Elements = [
   {
@@ -21,3 +22,9 @@ export const Elements = [
     component: HomeworksElement,
   }
 ];
+
+export type Element = {
+  id: string
+  component: React.FC<any>
+  importance?: number
+};
