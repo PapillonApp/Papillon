@@ -127,7 +127,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
     });
   }, []);
 
-  function sortElementsByImportance () {
+  const sortElementsByImportance = () => {
     setElements(prevElements => {
       const sortedElements = [...prevElements];
       sortedElements.sort((a, b) => {
@@ -137,7 +137,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
       });
       return sortedElements;
     });
-  }
+  };
 
   const updateImportance = (id: string, value: number) => {
     setElements(prevElements => {
