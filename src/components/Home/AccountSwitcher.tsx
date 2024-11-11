@@ -34,32 +34,6 @@ const AccountSwitcher: React.FC<{
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture =
     account.personalization.hideProfilePicOnHomeScreen || false;
-  
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff50", colors.border],
-    ),
-    backgroundColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff30", "transparent"],
-    ),
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    fontSize: 16,
-    fontFamily: "semibold",
-    maxWidth: 140,
-  }));
 
   const [isOnline, setIsOnline] = useState(true);
 
