@@ -13,9 +13,7 @@
       "resizeMode": "cover",
       "backgroundColor": "#32AB8E"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",

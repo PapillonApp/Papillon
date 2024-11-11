@@ -460,9 +460,12 @@ const BottomTabNavigator: React.ComponentType<any> = ({
     screenOptions,
   });
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Handle tab change animations
   useEffect(() => {
     if(Platform.OS !== "ios") return;
+    if(tablet) return;
     if (state.index === previousIndex) return;
 
     // Determine animation direction
@@ -484,9 +487,23 @@ const BottomTabNavigator: React.ComponentType<any> = ({
 
     // Update previous index
     setPreviousIndex(state.index);
-    setTimeout(() => {
+
+    // Clear previous timeout if exists
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set new timeout
+    timeoutRef.current = setTimeout(() => {
       setIsAnimating(false);
     }, 300);
+
+    // Cleanup on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [state.index, dims.width]);
 
   // Create animated styles
