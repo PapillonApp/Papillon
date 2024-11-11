@@ -237,6 +237,29 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           />
         }
       >
+
+        {!isOnline &&
+          <Reanimated.View
+            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+            layout={animPapillon(LinearTransition)}
+            style={{
+              backgroundColor: theme.colors.background,
+            }}
+          >
+            <NativeList inline>
+              <NativeItem icon={<WifiOff />}>
+                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                  {errorTitle.label} {errorTitle.emoji}
+                </NativeText>
+                <NativeText variant="subtitle">
+                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+                </NativeText>
+              </NativeItem>
+            </NativeList>
+          </Reanimated.View>
+        }
+
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View
             key={day}
@@ -666,31 +689,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         </Reanimated.View>
       </PapillonModernHeader>
 
-      {!isOnline &&
-        <Reanimated.View
-          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-          layout={animPapillon(LinearTransition)}
-          style={{
-            backgroundColor: theme.colors.background,
-            padding: 16,
-            paddingTop: "20%",
-            zIndex: 1
-          }}
-        >
-          <NativeList inline>
-            <NativeItem icon={<WifiOff />}>
-              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                {errorTitle.label} {errorTitle.emoji}
-              </NativeText>
-              <NativeText variant="subtitle">
-                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-              </NativeText>
-            </NativeItem>
-          </NativeList>
-        </Reanimated.View>
-      }
-
       <FlatList
         ref={flatListRef}
         data={data}
@@ -709,11 +707,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         onMomentumScrollEnd={onMomentumScrollEnd}
         scrollEventThrottle={16}
         initialScrollIndex={50}
-        style={!isOnline ?{
-          height: "90%",
-          marginTop: -100
-        } : {
-          height: "100%"
+        style={{
+          height: "100%",
         }}
       />
     </View>
