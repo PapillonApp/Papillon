@@ -279,7 +279,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             (d) => d.getTime() === newDate.getTime(),
           );
           if (index !== -1) {
-            flatListRef.current?.scrollToIndex({ index, animated: true });
+            flatListRef.current?.scrollToIndex({ index, animated: false });
           }
         }}
       />
