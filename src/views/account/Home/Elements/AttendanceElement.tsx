@@ -16,7 +16,11 @@ interface Attendance {
   }[];
 }
 
-const AttendanceElement: React.FC = ({onImportance}) => {
+interface AttendanceElementProps {
+  onImportance: (value: number) => unknown
+}
+
+const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) => {
   const account = useCurrentAccount((store) => store.account);
   const defaultPeriod = useAttendanceStore((store) => store.defaultPeriod) as string | null;
   const attendances = useAttendanceStore((store) => store.attendances) as Record<string, Attendance> | null;

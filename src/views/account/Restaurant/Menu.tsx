@@ -359,7 +359,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             showDatePicker={showDatePicker}
             setShowDatePicker={setShowDatePicker}
             currentDate={pickerDate}
-            onDateSelect={(date: Date) => {
+            onDateSelect={(date: Date | undefined) => {
+              if (!date) return;
               const newDate = new Date(date);
               newDate.setHours(0, 0, 0, 0);
               setPickerDate(newDate);

@@ -6,9 +6,9 @@ import {
   TabRouter,
   useNavigationBuilder,
 } from "@react-navigation/native";
-import { Text } from "react-native";
+import { Platform, Text } from "react-native";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Dimensions } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,10 +22,14 @@ import colorsList from "@/utils/data/colors.json";
 
 import Reanimated, {
   useAnimatedStyle,
-  useSharedValue,
   withTiming,
+  withSpring,
+  interpolate,
+  useSharedValue,
+  Easing,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import getCorners from "@/utils/ui/corner-radius";
 
 type DescriptorOptions = {
   tabBarLabel?: string;
@@ -432,14 +436,70 @@ const BottomTabNavigator: React.ComponentType<any> = ({
 }) => {
   const dims = Dimensions.get("window");
   const tablet = dims.width > 600;
+  const mainNavigator = useRef(null);
 
-  const { state, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder(TabRouter, {
-      initialRouteName,
-      backBehavior,
-      children,
-      screenOptions,
+  // Track previous index to determine direction
+  const [previousIndex, setPreviousIndex] = useState(0);
+
+  // Animation shared values
+  const slideAnim = useSharedValue(0);
+  const fadeAnim = useSharedValue(1);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const corners = useMemo(() => getCorners(), []);
+
+  const {
+    state,
+    descriptors,
+    navigation,
+    NavigationContent
+  } = useNavigationBuilder(TabRouter, {
+    initialRouteName,
+    backBehavior,
+    children,
+    screenOptions,
+  });
+
+  // Handle tab change animations
+  useEffect(() => {
+    if(Platform.OS !== "ios") return;
+    if (state.index === previousIndex) return;
+
+    // Determine animation direction
+    const isMovingForward = state.index > previousIndex;
+    setIsAnimating(true);
+
+    // Reset animations with direction
+    fadeAnim.value = 0;
+    slideAnim.value = isMovingForward ? 80 : -80;
+
+    fadeAnim.value = withTiming(1, {
+      duration: 200,
+      easing: Easing.inOut(Easing.ease),
     });
+    slideAnim.value = withTiming(0, {
+      duration: 400,
+      easing: Easing.out(Easing.exp),
+    });
+
+    // Update previous index
+    setPreviousIndex(state.index);
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+  }, [state.index, dims.width]);
+
+  // Create animated styles
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: fadeAnim.value,
+      transform: [
+        {
+          translateX: slideAnim.value,
+        },
+      ],
+    };
+  });
 
   return (
     <NavigationContent>
@@ -447,26 +507,53 @@ const BottomTabNavigator: React.ComponentType<any> = ({
         style={[
           {
             flex: 1,
+            overflow: "hidden", // Prevent content from showing outside bounds during animation
           },
           tablet && {
             flexDirection: "row-reverse",
           },
         ]}
       >
-        <BottomTabView
-          {...rest}
-          state = { state }
-          navigation = { navigation }
-          descriptors = { descriptors }
-        />
-        {!tablet ?
-          <BasePapillonBar state={state} descriptors={descriptors} navigation={navigation} />
-          :
-          <LargePapillonBar state={state} descriptors={descriptors} navigation={navigation} />
-        }
+        <Reanimated.View
+          ref={mainNavigator}
+          style={[
+            {
+              flex: 1,
+            },
+            Platform.OS === "ios" && isAnimating && {
+              borderTopLeftRadius: corners,
+              borderTopRightRadius: corners,
+              borderCurve: "continuous",
+              overflow: "hidden",
+            },
+            animatedStyles,
+          ]}
+        >
+          <BottomTabView
+            {...rest}
+            state={state}
+            navigation={navigation}
+            descriptors={descriptors}
+          />
+        </Reanimated.View>
+
+        {!tablet ? (
+          <BasePapillonBar
+            state={state}
+            descriptors={descriptors}
+            navigation={navigation}
+          />
+        ) : (
+          <LargePapillonBar
+            state={state}
+            descriptors={descriptors}
+            navigation={navigation}
+          />
+        )}
       </View>
     </NavigationContent>
   );
 };
+
 
 export default createNavigatorFactory(BottomTabNavigator);

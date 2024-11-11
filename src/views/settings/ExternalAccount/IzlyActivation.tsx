@@ -11,6 +11,7 @@ import {AlertTriangle} from "lucide-react-native";
 import {AccountService, IzlyAccount} from "@/stores/account/types";
 import {useAccounts, useCurrentAccount} from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
+
 const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -44,7 +45,7 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
         isExternal: true,
         localID: uuid(),
         data: {}
-      }
+      };
 
       create(new_account);
       linkExistingExternalAccount(new_account);
@@ -66,19 +67,19 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
-          behavior="height"
-          keyboardVerticalOffset={insets.top + 64}
-          style={{
-            flex: 1,
-            backgroundColor: theme.colors.background,
-            overflow: "visible",
-          }}
+        behavior="height"
+        keyboardVerticalOffset={insets.top + 64}
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          overflow: "visible",
+        }}
       >
         <SafeAreaView
           style={styles.container}
         >
           <PapillonShineBubble
-            message={"Un lien d'activation à était envoyé, peux-tu me le donner ?"}
+            message={"Tu viens de recevoir un lien par SMS, peux tu me l'indiquer ?"}
             width={270}
             numberOfLines={2}
             offsetTop={insets.top}
@@ -93,37 +94,49 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
               style={{ width: "100%" }}
             >
               {error && (
-                  <NativeList
-                      style={{
-                        backgroundColor: "#eb403422",
-                      }}
-                  >
-                    <NativeItem icon={<AlertTriangle />}>
-                      <NativeText variant="subtitle">{error}</NativeText>
-                    </NativeItem>
-                  </NativeList>
+                <NativeList
+                  style={{
+                    backgroundColor: "#eb403422",
+                  }}
+                >
+                  <NativeItem icon={<AlertTriangle />}>
+                    <NativeText variant="subtitle">{error}</NativeText>
+                  </NativeItem>
+                </NativeList>
               )}
               <NativeListHeader label="URL" />
               <NativeList>
                 <NativeItem>
-                    <TextInput
-                      value={activationURL}
-                      onChangeText={setActivationURL}
-                      onPress={() => {setError("")}}
-                      placeholder={"https://..."}
-                      placeholderTextColor={theme.colors.text + "55"}
-                      keyboardType={"url"}
-                      autoCapitalize="none"
-                      style={{
-                        fontSize: 16,
-                        fontFamily: "medium",
-                        color: theme.colors.text,
-                      }}
-                    />
+                  <TextInput
+                    value={activationURL}
+                    onChangeText={setActivationURL}
+                    onPress={() => {setError("");}}
+                    placeholder={"https://..."}
+                    placeholderTextColor={theme.colors.text + "55"}
+                    keyboardType={"url"}
+                    autoCapitalize="none"
+                    style={{
+                      fontSize: 16,
+                      fontFamily: "medium",
+                      color: theme.colors.text,
+                    }}
+                  />
                 </NativeItem>
               </NativeList>
             </View>
           </View>
+
+          <NativeText
+            style={{
+              width: "100%",
+              paddingHorizontal: 16,
+              fontSize: 14,
+              color: colors.text + "55",
+              textAlign: "center",
+            }}
+          >
+            Papillon ne donnera jamais vos informations d'authentification à des tiers.
+          </NativeText>
 
 
           <View style={styles.buttons}>

@@ -9,8 +9,11 @@ import { PapillonNavigation } from "@/router/refs";
 import { animPapillon } from "@/utils/ui/animations";
 import { FadeIn, FadeOutUp } from "react-native-reanimated";
 
+interface PopupRestaurationProps {
+  onImportance: (value: number) => unknown
+}
 
-const PopupRestauration: React.FC = ({onImportance}) => {
+const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) => {
   const { colors } = useTheme();
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);

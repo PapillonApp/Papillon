@@ -60,7 +60,7 @@ export type RouteParameters = {
   UnivLimoges_Login: undefined;
   UnivSorbonneParisNord_login: undefined;
   UnivUphf_Login: undefined;
-  BackgroundIUTLannion: { url: string; username: string; password: string };
+  BackgroundIUTLannion: { url?: string; username: string; password: string, firstLogin?: boolean } | undefined;
 
   // login.skolengo
   SkolengoAuthenticationSelector: undefined;

@@ -1,13 +1,13 @@
 import LoginView from "@/components/Templates/LoginView";
 import React, { useMemo, useState } from "react";
 import { View } from "react-native";
-import loginIUTLannion from "@/services/iutlan/fetch_iutlan";
+import type { Screen } from "@/router/helpers/types";
 
-export const UnivIUTLannion_Login: React.FC = ({ navigation }) => {
+export const UnivIUTLannion_Login: Screen<"UnivIUTLannion_Login"> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async (username, password) => {
+  const login = async (username: string, password: string) => {
     try {
       navigation.navigate("BackgroundIUTLannion", {
         username,
@@ -18,6 +18,7 @@ export const UnivIUTLannion_Login: React.FC = ({ navigation }) => {
     catch (e) {
       console.error(e);
       // setLoading(false);
+      // @ts-ignore
       setError(e.toString());
     }
   };

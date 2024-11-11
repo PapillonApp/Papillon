@@ -34,6 +34,32 @@ const AccountSwitcher: React.FC<{
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture =
     account.personalization.hideProfilePicOnHomeScreen || false;
+  
+  const borderAnimatedStyle = useAnimatedStyle(() => ({
+    borderWidth: 1,
+    borderRadius: 80,
+    borderColor: interpolateColor(
+      translationY?.value || 0, // Should think to pass a default value
+      [200, 251],
+      ["#ffffff50", colors.border],
+    ),
+    backgroundColor: interpolateColor(
+      translationY?.value || 0, // Should think to pass a default value
+      [200, 251],
+      ["#ffffff30", "transparent"],
+    ),
+  }));
+
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    color: interpolateColor(
+      translationY?.value || 0, // Should think to pass a default value
+      [200, 251],
+      ["#FFF", colors.text],
+    ),
+    fontSize: 16,
+    fontFamily: "semibold",
+    maxWidth: 140,
+  }));
 
   const [isOnline, setIsOnline] = useState(true);
 
@@ -101,12 +127,7 @@ const AccountSwitcher: React.FC<{
           >
             {!shouldHidePicture ? (
               <Image
-                source={
-                  account.personalization.profilePictureB64 &&
-                  account.personalization.profilePictureB64.trim() !== ""
-                    ? { uri: account.personalization.profilePictureB64 }
-                    : defaultProfilePicture(account.service)
-                }
+                source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, account.identityProvider?.name || "")}
                 style={[
                   styles.avatar,
                   {

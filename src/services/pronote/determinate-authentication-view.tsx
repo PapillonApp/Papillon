@@ -17,21 +17,21 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
   navigation: NativeStackNavigationProp<RouteParameters, ScreenName>,
   showAlert: (alert: Alert) => void
 ): Promise<void> => {
-  let instance: pronote.Instance | undefined;
+  let waitingInstance: pronote.Instance | undefined;
   if (!pronoteURL.startsWith("https://") && !pronoteURL.startsWith("http://")) {
     pronoteURL = `https://${pronoteURL}`;
   }
   pronoteURL = pronote.cleanURL(pronoteURL);
 
   try {
-    instance = await pronote.instance(pronoteURL);
+    waitingInstance = await pronote.instance(pronoteURL);
     info("PRONOTE->determinateAuthenticationView(): OK", "pronote");
   }
   catch (error) {
     try {
       warn(`PRONOTE->determinateAuthenticationView(): Une erreur est survenue avec l'URL '${pronoteURL}' ! Tentative avec une URL alternative (TOUTATICE)...`, "pronote");
       pronoteURL = pronoteURL.replace(".index-education.net", ".pronote.toutatice.fr");
-      instance = await pronote.instance(pronoteURL);
+      waitingInstance = await pronote.instance(pronoteURL);
       info("PRONOTE->determinateAuthenticationView(): OK", "pronote");
     }
     catch {
@@ -43,6 +43,8 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
       return;
     }
   }
+
+  const instance = waitingInstance as pronote.Instance;
 
   const goToLoginNoENT = () => navigation.navigate("PronoteCredentials", {
     instanceURL: pronoteURL,
