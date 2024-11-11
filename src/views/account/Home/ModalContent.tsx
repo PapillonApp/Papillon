@@ -211,7 +211,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
                   navigation={navigation}
                   onImportance={
                     Element.importance === undefined
-                      ? (value) => handleImportanceChange(Element.id, value)
+                      ? (value: number) => handleImportanceChange(Element.id, value)
                       : () => {}
                   }
                 />
