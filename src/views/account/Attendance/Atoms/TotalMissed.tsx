@@ -97,7 +97,7 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
                 fontSize: 18,
                 lineHeight: 18,
                 marginBottom: 1,
-                color: (totalMissed.unJustified.minutes > 0) ? "#D10000" : theme.colors.text + "88",
+                color: (totalMissed.unJustified.hours > 0) ? "#D10000" : theme.colors.text + "88",
               }}
             >
               h {leadingZero(totalMissed.unJustified.minutes)}
