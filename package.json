@@ -106,6 +106,7 @@
     "@types/html-to-text": "^9.0.4",
     "@types/lodash": "^4.17.7",
     "@types/react": "~18.2.45",
+    "@types/react-native-htmlview": "^0.16.5",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0",
