@@ -28,6 +28,7 @@
     "cal-parser": "^1.0.2",
     "date-fns": "^3.6.0",
     "esup-multi.js": "^1.0.2",
+    "expo": "~51.0.38",
     "expo-asset": "^10.0.10",
     "expo-auth-session": "~5.5.2",
     "expo-av": "~14.0.6",
@@ -53,7 +54,7 @@
     "expo-navigation-bar": "~3.0.7",
     "expo-sensors": "~13.0.9",
     "expo-sharing": "~12.0.1",
-    "expo-splash-screen": "~0.27.6",
+    "expo-splash-screen": "^0.27.7",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
     "expo-task-manager": "~11.8.2",
@@ -73,11 +74,11 @@
     "pawnote": "^1.2.2",
     "pawrd": "^0.6.1",
     "react": "18.2.0",
-    "react-native": "^0.74.3",
+    "react-native": "^0.74.5",
     "react-native-barcode-svg": "^0.0.15",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-draglist": "^3.6.1",
-    "react-native-gesture-handler": "^2.16.1",
+    "react-native-gesture-handler": "~2.16.1",
     "react-native-htmlview": "^0.17.0",
     "react-native-infinite-pager": "^0.3.16",
     "react-native-pager-view": "6.3.0",
@@ -110,9 +111,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-native": "^4.1.0",
-    "expo": "~51.0.17",
     "react-native-svg-transformer": "^1.5.0",
-    "typescript": "^5.3.3"
+    "typescript": "~5.3.3"
   },
   "private": true
 }
