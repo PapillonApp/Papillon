@@ -122,7 +122,10 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
       }}
       activeScale={0.975}
       weight="light"
-      onPress={() => setShowDetails(!showDetails)}
+      onPress={() => {
+        if (classAvg !== 0) {
+          setShowDetails(!showDetails);
+        }}}
     >
       {hLength > 0 && (
         <NativeList animated>
@@ -230,13 +233,19 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                   style={[styles.gradeValue]}
                   layout={animPapillon(LinearTransition)}
                 >
-                  <AnimatedNumber
-                    value={classAvg.toFixed(2)}
-                    style={styles.gradeNumberClass}
-                  />
-                  <Reanimated.View layout={animPapillon(LinearTransition)}>
-                    <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
-                  </Reanimated.View>
+                  {classAvg === 0 ? (
+                    <NativeText style={styles.gradeNumberClass}>Inconnue</NativeText>
+                  ) : (
+                    <>
+                      <AnimatedNumber
+                        value={classAvg.toFixed(2)}
+                        style={styles.gradeNumberClass}
+                      />
+                      <Reanimated.View layout={animPapillon(LinearTransition)}>
+                        <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
+                      </Reanimated.View>
+                    </>
+                  )}
                 </Reanimated.View>
               </View>
             </Reanimated.View>
