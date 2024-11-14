@@ -136,27 +136,18 @@ jobs:
             gh api --method PATCH repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }} --field body="$new_description"
           }
 
-          initial_message=$(create_message "~1 minute")
+          initial_message=$(create_message "4 heures")
           update_pr_description "$initial_message"
 
-          # Original loop for 4 hours updates
-          # for i in {1..11}; do
-          #   sleep 1200
-          #   remaining_hours=$((4 - i/3))
-          #   remaining_minutes=$((60 - (i*20)%60))
-          #   if [ $remaining_minutes -eq 60 ]; then
-          #     time_message="~$remaining_hours heures restantes"
-          #   else
-          #     time_message="~$remaining_hours heures et $remaining_minutes minutes restantes"
-          #   fi
-          #   update_message=$(create_message "$time_message")
-          #   update_pr_description "$update_message"
-          # done
-
-          for i in {1..2}; do
-            sleep 30
-            remaining_seconds=$((60 - i*30))
-            time_message="~$remaining_seconds secondes restantes"
+          for i in {1..11}; do
+            sleep 1200
+            remaining_hours=$((4 - i/3))
+            remaining_minutes=$((60 - (i*20)%60))
+            if [ $remaining_minutes -eq 60 ]; then
+              time_message="~$remaining_hours heures restantes"
+            else
+              time_message="~$remaining_hours heures et $remaining_minutes minutes restantes"
+            fi
             update_message=$(create_message "$time_message")
             update_pr_description "$update_message"
           done
