@@ -7,11 +7,12 @@ import {
 import { getSubjectData } from "@/services/shared/Subject";
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { GradeTitle } from "./Atoms/GradeTitle";
 import {
   Asterisk,
   Calculator,
+  Camera,
   Scale,
   School,
   UserMinus,
@@ -45,6 +46,14 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Note en " + subjectData.pretty,
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("GradeReaction", { grade })
+          }>
+          <Camera size={24} color={theme.colors.text} />
+        </TouchableOpacity>
+      ),
     });
   }, [navigation, subjectData]);
 

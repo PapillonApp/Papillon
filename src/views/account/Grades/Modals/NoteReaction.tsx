@@ -7,23 +7,32 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { CameraView, useCameraPermissions, PermissionStatus } from "expo-camera";
+import {
+  CameraView,
+  useCameraPermissions,
+  PermissionStatus,
+} from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { X, Share2, Save } from "lucide-react-native";
 import * as Sharing from "expo-sharing";
 import { useCurrentAccount } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
+import { getSubjectData } from "@/services/shared/Subject";
 
-const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
+const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
   const inset = useSafeAreaInsets();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+        MediaLibrary.usePermissions();
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView | null>(null);
   const composerRef = useRef(null);
-  const [capturedImage, setCapturedImage] = useState<string | undefined>(undefined);
-  const account = useCurrentAccount(store => store.account);
+  const [capturedImage, setCapturedImage] = useState<string | undefined>(
+    undefined
+  );
+  const account = useCurrentAccount((store) => store.account);
+  const [grade, setGrade] = useState(route.params.grade);
 
   useEffect(() => {
     const setupPermissions = async () => {
@@ -35,7 +44,12 @@ const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
       }
     };
     setupPermissions();
-  }, [mediaLibraryPermission, cameraPermission, requestMediaLibraryPermission, requestCameraPermission]);
+  }, [
+    mediaLibraryPermission,
+    cameraPermission,
+    requestMediaLibraryPermission,
+    requestCameraPermission,
+  ]);
 
   const captureImage = async () => {
     if (cameraPermission?.status !== PermissionStatus.GRANTED) {
@@ -94,17 +108,70 @@ const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    console.log("grade", route.params.grade);
+  }, [route.params.grade]);
+
+  const [subjectData, setSubjectData] = useState({
+    color: "#888888",
+    pretty: "Matière inconnue",
+    emoji: "❓",
+  });
+
+  const fetchSubjectData = () => {
+    const data = getSubjectData(grade.subjectName);
+    setSubjectData(data);
+  };
+
+  useEffect(() => {
+    fetchSubjectData();
+  }, [grade.subjectName]);
+
+  const getAdjustedGrade = (grade: number | null, outOf: number | null) => {
+    if (outOf === 20) {
+      return grade;
+    }
+    return grade !== null && outOf ? (grade / outOf) * 20 : null;
+  };
+
+  const getMessageForGrade = (adjustedGrade: number) => {
+    if (adjustedGrade === 20) {
+      return "Parfait ! Un sans faute, bravo !";
+    } else if (adjustedGrade >= 18) {
+      return "Très bien ! Une performance remarquable.";
+    } else if (adjustedGrade >= 15) {
+      return "Bien joué, tu es sur la bonne voie.";
+    } else if (adjustedGrade >= 12) {
+      return "Pas mal, mais tu peux encore t'améliorer.";
+    } else if (adjustedGrade >= 10) {
+      return "C'est moyen, un petit effort supplémentaire te fera du bien.";
+    } else if (adjustedGrade >= 5) {
+      return "Attention, tu dois vraiment travailler davantage.";
+    } else {
+      return "C'est très insuffisant, il faudra redoubler d'efforts.";
+    }
+  };
+
+  const adjustedGrade = getAdjustedGrade(grade.student.value, grade.outOf.value);
+  const message = adjustedGrade !== null ? getMessageForGrade(adjustedGrade) : "Grade not available";
+
   return (
     <View style={styles.container}>
-      <View ref={composerRef} style={[styles.cameraContainer, { marginTop: inset.top + 10}]}>
+      <View
+        ref={composerRef}
+        style={[styles.cameraContainer, { marginTop: inset.top + 10 }]}
+      >
         <Image
-          source={require("../../../assets/images/mask_logotype.png")}
+          source={require("../../../../../assets/images/mask_logotype.png")}
           tintColor={"#FFFFFF50"}
           resizeMode="contain"
           style={styles.logo}
         />
         {capturedImage ? (
-          <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+          <Image
+            source={{ uri: capturedImage }}
+            style={styles.capturedImage}
+          />
         ) : (
           <CameraView
             ref={cameraRef}
@@ -115,15 +182,23 @@ const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
         <View style={styles.infoNoteContainer}>
           <View style={styles.infoNote}>
             <View style={styles.emojiContainer}>
-              <Text style={styles.emoji}>🇬🇧</Text>
+              <Text style={styles.emoji}>{subjectData.emoji}</Text>
             </View>
             <View>
-              <Text style={styles.subjectText}>Oral d'anglais</Text>
-              <Text style={styles.dateText}>19 février 2024</Text>
+              <Text
+                style={styles.subjectText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {subjectData.pretty}
+              </Text>
+              <Text style={styles.dateText}>
+                {new Date(grade.timestamp).toLocaleDateString()}
+              </Text>
             </View>
             <View style={styles.scoreContainer}>
-              <Text style={styles.scoreText}>0.00</Text>
-              <Text style={styles.maxScoreText}>/20</Text>
+              <Text style={styles.scoreText}>{grade.student.value}</Text>
+              <Text style={styles.maxScoreText}>/{grade.outOf.value}</Text>
             </View>
           </View>
         </View>
@@ -132,7 +207,7 @@ const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
         <>
           <Text style={styles.titleText}>Une réaction ?</Text>
           <Text style={styles.descText}>
-            Cette note était... quelque peu regrettable ?
+            {message}
           </Text>
           <Text style={styles.descText}>
             Qu'as tu à dire {account?.studentName?.first || ""} ?
@@ -140,21 +215,45 @@ const NoteReaction: Screen<"NoteReaction"> = ({ navigation }) => {
         </>
       )}
       {capturedImage ? (
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.savebutton} onPress={saveImage}>
-            <Text style={styles.savebuttonText}>Enregistrer</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={shareImage}>
-            <Share2 size={24} color="#FFFFFF" />
-            <Text style={styles.buttonText}>Partager</Text>
-          </TouchableOpacity>
+        <View style={styles.actionContainer}>
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+              width: "100%",
+              gap: 50,
+            }}
+          >
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.savebutton}
+                onPress={saveImage}
+              >
+                <Text style={styles.savebuttonText}>Enregistrer</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              onPress={shareImage}
+            >
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+              >Partager</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
-        <TouchableOpacity style={styles.captureButton} onPress={captureImage}>
+        <TouchableOpacity
+          style={styles.captureButton}
+          onPress={captureImage}
+        >
           <View style={styles.captureButtonInner} />
         </TouchableOpacity>
       )}
-      <View style={{ height: inset.bottom }} >
+      <View style={{ height: inset.bottom }}>
         <Text>sus</Text>
       </View>
     </View>
@@ -214,9 +313,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#00000020",
     padding: 5,
     borderRadius: 20,
-
   },
-  subjectText: { fontWeight: "600", color: "#000000", fontSize: 16},
+  subjectText: {
+    fontWeight: "600",
+    color: "#000000",
+    fontSize: 16,
+    maxWidth: 150,
+  },
   dateText: { color: "#00000090" },
   scoreContainer: {
     marginLeft: "auto",
@@ -253,10 +356,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    height: 70,
-    paddingHorizontal: 83,
+    height: 60,
+    width: "100%",
     backgroundColor: "#FFFFFF",
-    borderRadius: 200,
+    borderRadius: 10,
   },
   captureButtonInner: {
     borderRadius: 30,
@@ -270,8 +373,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
-    marginBottom: 10,
-    gap: 10,
+    marginHorizontal: 20,
+  },
+  actionContainer: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 20,
+    alignItems: "center",
+    alignSelf: "center",
   },
   actionButton: {
     alignItems: "center",
@@ -295,4 +405,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NoteReaction;
+export default GradeReaction;

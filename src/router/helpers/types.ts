@@ -92,6 +92,7 @@ export type RouteParameters = {
     grade: Grade;
     allGrades?: Grade[];
   };
+  GradeReaction: { grade: Grade };
 
   Attendance: undefined;
 
