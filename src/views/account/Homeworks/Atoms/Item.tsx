@@ -137,7 +137,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
           layout={animPapillon(LinearTransition)}
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          {navigation.getState().routes[1]?.key.includes("Homeworks") && (
+          {(navigation.getState().routes[0]?.key.includes("HomeScreen") && navigation.getState().routes[1]?.key.includes("Homeworks")) || navigation.getState().routes[0]?.key.includes("Homeworks") && (
             <PapillonCheckbox
               checked={homework.done}
               loading={isLoading}
