@@ -5,12 +5,25 @@ import uuid from "@/utils/uuid-v4";
 import { user_by_username, login_check, get_user_profile } from "pawnilim";
 import { View } from "react-native";
 import WebView from "react-native-webview";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { useTheme } from "@react-navigation/native";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { NativeText } from "@/components/Global/NativeComponents";
+import { log } from "@/utils/logger/logger";
+import { useAlert } from "@/providers/AlertProvider";
 
 const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
   const createStoredAccount = useAccounts(store => store.create);
   const switchTo = useCurrentAccount(store => store.switchTo);
+  const theme = useTheme();
+
+  const { showAlert } = useAlert();
+  const [isLoading, setLoading] = useState(true);
+
+  let currentLoginStateIntervalRef = useRef<ReturnType<
+    typeof setInterval
+  > | null>(null);
 
   const handleLogin = async (tokens: {
     accessToken: string
@@ -67,11 +80,22 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
       });
     }
     catch (error) {
-      console.error(error);
+      showAlert({
+        title: "Erreur lors de la connexion",
+        message: "Une erreur est survenue lors de la connexion à votre compte Biome, veuillez réessayer plus tard.",
+        actions: [
+          {
+            title: "OK",
+            onPress: () => navigation.goBack()
+          },
+        ],
+      });
     }
   };
 
   const webViewRef = useRef<WebView>(null);
+  const BIOME_ORIGIN = "https://biome.unilim.fr";
+  const CAS_ORIGIN = "https://cas.unilim.fr";
 
   return (
     <View
@@ -79,35 +103,94 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
         flex: 1,
       }}
     >
+      {isLoading && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: theme.colors.card,
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+            gap: 6,
+          }}
+        >
+          <PapillonSpinner
+            size={48}
+            strokeWidth={5}
+            color="#29947a"
+            style={{
+              marginBottom: 16,
+              marginHorizontal: 26,
+            }}
+          />
+
+          <NativeText variant="title" style={{textAlign: "center"}}>
+            Connexion au compte Biome
+          </NativeText>
+
+          <NativeText variant="subtitle" style={{textAlign: "center"}}>
+            Chargement de Biome...
+          </NativeText>
+        </View>
+      )}
+
       <WebView
-        source={{ uri: "https://biome.unilim.fr" }}
+        ref={webViewRef}
         style={{
           height: "100%",
           width: "100%",
         }}
-        ref={webViewRef}
+        userAgent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
+        source={{ uri: BIOME_ORIGIN }}
+        setSupportMultipleWindows={false}
         startInLoadingState={true}
         incognito={true}
+        onLoadStart={(e) => {
+          log("start " + e.nativeEvent.url, "biome-login");
+
+          if (e.nativeEvent.url.includes(BIOME_ORIGIN))
+            setLoading(true);
+          else if (e.nativeEvent.url.includes(CAS_ORIGIN))
+            setLoading(false);
+        }}
         onLoadEnd={(e) => {
-          if (e.nativeEvent.url.includes("biome.unilim.fr")) {
-            webViewRef.current?.injectJavaScript(`
-              let interval = setInterval(() => {
+          log("end " + e.nativeEvent.url, "biome-login");
+
+          if (currentLoginStateIntervalRef.current)
+            clearInterval(currentLoginStateIntervalRef.current);
+
+          if (e.nativeEvent.url.includes(BIOME_ORIGIN)) {
+            setLoading(true);
+
+            currentLoginStateIntervalRef.current = setInterval(() => {
+              log("injecting script...", "biome-login");
+
+              webViewRef.current?.injectJavaScript(`
                 const tokens = sessionStorage.getItem("oidc.default:https://biome.unilim.fr/authentication/callback");
-                if (tokens) {
-                  window.ReactNativeWebView.postMessage(tokens);
-                  clearInterval(interval);
-                }
-              }, 100);
-            `);
+                if (tokens) window.ReactNativeWebView.postMessage(tokens);
+              `);
+            }, 500);
+          }
+          else if (e.nativeEvent.url.includes("cas.unilim.fr")) {
+            setLoading(false);
           }
         }}
-
         onMessage={(e) => {
+          log(e.nativeEvent.data, "biome-login");
+
           if (typeof e.nativeEvent.data !== "string") return;
           const data = JSON.parse(e.nativeEvent.data);
 
-          if (data && typeof data === "object" && "tokens" in data)
+          if (data && typeof data === "object" && data.tokens && data.tokens?.idTokenPayload) {
+            if (currentLoginStateIntervalRef.current)
+              clearInterval(currentLoginStateIntervalRef.current);
+
             handleLogin(data.tokens);
+          }
         }}
       />
     </View>
