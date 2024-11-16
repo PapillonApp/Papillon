@@ -7,10 +7,10 @@ import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
-import RenderHTML from "react-native-render-html";
+import HTMLView from "react-native-htmlview";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import { LinearGradient } from "expo-linear-gradient";
@@ -30,6 +30,15 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
   const [category, setCategory] = useState<string | null>(null);
   const account = useCurrentAccount((store) => store.account!);
+
+  const stylesText = StyleSheet.create({
+    body: {
+      color: theme.colors.text,
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22,
+    }
+  });
 
   useEffect(() => {
     if (account.personalization?.MagicHomeworks) {
@@ -156,18 +165,9 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200).delay(50)}
           >
-            <RenderHTML
-              source={{ html: homework.content }}
-              defaultTextProps={{
-                style: {
-                  color: theme.colors.text,
-                  fontFamily: "medium",
-                  fontSize: 16,
-                  lineHeight: 22,
-                },
-                numberOfLines: 3,
-              }}
-              contentWidth={300}
+            <HTMLView
+              value={`<body>${homework.content}</body>`}
+              stylesheet={stylesText}
             />
           </Reanimated.View>
           {homework.attachments.length > 0 && (

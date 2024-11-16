@@ -11,8 +11,8 @@ import {
   Text,
   Platform,
   Linking,
+  StyleSheet,
 } from "react-native";
-import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import { getSubjectData } from "@/services/shared/Subject";
 import { Screen } from "@/router/helpers/types";
 
@@ -32,7 +32,7 @@ import {
 
 import * as WebBrowser from "expo-web-browser";
 import { Link, useTheme } from "@react-navigation/native";
-import RenderHTML from "react-native-render-html";
+import HTMLView from "react-native-htmlview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { TimetableClass } from "@/services/shared/Timetable";
@@ -52,6 +52,14 @@ const getDuration = (minutes: number): string => {
 
 const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const stylesText = StyleSheet.create({
+    body: {
+      color: theme.colors.text,
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22,
+    }
+  });
 
   const lesson = route.params.lesson as unknown as TimetableClass;
   const subjects = useClassSubjectStore();
@@ -275,18 +283,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                 return (
                   <>
                     <NativeItem key={index}>
-                      <RenderHTML
-                        source={{ html: subject.content }}
-                        defaultTextProps={{
-                          style: {
-                            color: theme.colors.text,
-                            fontFamily: "medium",
-                            fontSize: 16,
-                            lineHeight: 22,
-                          },
-                        }}
-                        contentWidth={300}
-                      />
+                      <HTMLView value={`<body>${subject.content}</body>`} stylesheet={stylesText} />
                       {subject.attachments.map((attachment, index) => (
                         <NativeItem
                           key={index}

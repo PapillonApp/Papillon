@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import { getSubjectData } from "@/services/shared/Subject";
@@ -22,7 +23,7 @@ import { FileText, Link, Paperclip, CircleAlert } from "lucide-react-native";
 
 import * as WebBrowser from "expo-web-browser";
 import { useTheme } from "@react-navigation/native";
-import RenderHTML from "react-native-render-html";
+import HTMLView from "react-native-htmlview";
 import { Screen } from "@/router/helpers/types";
 import { WebBrowserPresentationStyle } from "expo-web-browser/src/WebBrowser.types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,6 +34,14 @@ import getAndOpenFile from "@/utils/files/getAndOpenFile";
 
 const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
+  const stylesText = StyleSheet.create({
+    body: {
+      color: theme.colors.text,
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22,
+    }
+  });
 
   const homework: Homework = route.params.homework || {};
   const account = useCurrentAccount((store) => store.account!);
@@ -160,18 +169,7 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
           )}
 
           <NativeItem>
-            <RenderHTML
-              source={{ html: homework.content }}
-              defaultTextProps={{
-                style: {
-                  color: theme.colors.text,
-                  fontFamily: "medium",
-                  fontSize: 16,
-                  lineHeight: 22,
-                },
-              }}
-              contentWidth={300}
-            />
+            <HTMLView value={`<body>${homework.content}</body>`} stylesheet={stylesText} />
           </NativeItem>
         </NativeList>
 
