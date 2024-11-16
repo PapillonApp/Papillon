@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import {
+  AlertTriangle,
   Clock2,
   QrCode,
   Utensils,
@@ -324,6 +325,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                 {[
                   { title: "Entrée", items: currentMenu.lunch.entry },
                   { title: "Plat", items: currentMenu.lunch.main },
+                  { title: "Accompagnement", items: currentMenu.lunch.side},
                   { title: "Fromage", items: currentMenu.lunch.fromage },
                   { title: "Dessert", items: currentMenu.lunch.dessert },
                   { title: "Boisson", items: currentMenu.lunch.drink },
@@ -332,7 +334,15 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                     <NativeItem key={index}>
                       <NativeText variant="subtitle">{title}</NativeText>
                       {items.map((food, idx) => (
-                        <NativeText key={idx} variant="title">{food.name ?? ""}</NativeText>
+                        <>
+                          <NativeText key={idx} variant="title">{food.name ?? ""}</NativeText>
+                          {food.allergens.length > 0 && (
+                            <View style={styles.allergensContainer}>
+                              <AlertTriangle size={16} color={colors.text} opacity={0.6}/>
+                              <NativeText key={"allergens-"+idx} variant="subtitle">Allergènes : {food.allergens.join(", ")}</NativeText>
+                            </View>
+                          )}
+                        </>
                       ))}
                     </NativeItem>
                   )
@@ -380,6 +390,7 @@ const styles = StyleSheet.create({
   horizontalList: { marginTop: 10 },
   calendarContainer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16, marginBottom: -10, gap: 10 },
   weekPickerText: { zIndex: 10000, fontSize: 14.5, fontFamily: "medium", opacity: 0.7 },
+  allergensContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }
 });
 
 export default Menu;

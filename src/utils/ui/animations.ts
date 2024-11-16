@@ -7,7 +7,9 @@ const animPapillon = (animation: any) => {
 };
 
 const EnteringDuration = 200;
+const EnteringScale = 0.8;
 const ExitingDuration = 150;
+const ExitingScale = 0.9;
 
 // Paramètres d'animation pour l'entrée du menu contextuel
 const PapillonAnimSettings = {
@@ -30,16 +32,12 @@ const PapillonContextEnter = () => {
       {
         scale: withTiming(1, PapillonAnimSettings),
       },
-      { translateY: withTiming(0, PapillonAnimSettings) },
-      { translateX: withTiming(0, PapillonAnimSettings) },
     ],
   };
   const initialValues = {
     opacity: 0,
     transform: [
-      { scale: 0.7 },
-      { translateY: -20 },
-      { translateX: 0 },
+      { scale: EnteringScale },
     ],
   };
   return {
@@ -54,14 +52,12 @@ const PapillonContextExit = () => {
   const animations = {
     opacity: withTiming(0, PapillonAnimSettingsExit),
     transform: [
-      { scale: withTiming(0.7, PapillonAnimSettingsExit) },
-      { translateY: withTiming(-20, PapillonAnimSettingsExit) },
-      { translateX: withTiming(0, PapillonAnimSettingsExit) },
+      { scale: withTiming(ExitingScale, PapillonAnimSettingsExit) },
     ],
   };
   const initialValues = {
     opacity: 1,
-    transform: [{ scale: 1 }, { translateY: 0 }, { translateX: 0 }],
+    transform: [{ scale: 1 }],
   };
   return {
     initialValues,

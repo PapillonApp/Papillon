@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Platform, ScrollView, Text, View,} from "react-native";
+import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View,} from "react-native";
 import {useTheme} from "@react-navigation/native";
 
 import type {Screen} from "@/router/helpers/types";
@@ -11,7 +11,7 @@ import parse_initials from "@/utils/format/format_pronote_initials";
 import InitialIndicator from "@/components/News/InitialIndicator";
 import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import RenderHTML from "react-native-render-html";
+import HTMLView from "react-native-htmlview";
 import Reanimated, {FadeIn, FadeOut} from "react-native-reanimated";
 import {AccountService} from "@/stores/account/types";
 import * as WebBrowser from "expo-web-browser";
@@ -23,6 +23,15 @@ import {getChatMessages} from "@/services/chats";
 const Chat: Screen<"Chat"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
+
+  const stylesText = StyleSheet.create({
+    body: {
+      color: theme.colors.text,
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22,
+    }
+  });
 
   const account = useCurrentAccount((state) => state.account!);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -101,19 +110,12 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
           >
             <NativeList>
               <NativeItem>
-                <RenderHTML
-                  source={{
-                    html: messages[0].content.replaceAll(/<\/?font[^>]*>/g, ""),
-                  }}
-                  defaultTextProps={{
-                    style: {
-                      color: theme.colors.text,
-                      fontFamily: "medium",
-                      fontSize: 16,
-                      lineHeight: 22,
-                    },
-                  }}
-                  contentWidth={300}
+                <HTMLView
+                  value={`<body>${messages[0].content.replaceAll(
+                    /<\/?font[^>]*>/g,
+                    ""
+                  )}</body>`}
+                  stylesheet={stylesText}
                 />
               </NativeItem>
             </NativeList>
