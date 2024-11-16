@@ -90,7 +90,7 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
             navigation={PapillonNavigation.current}
             index={index}
             totalItems={lastThreeGrades.length}
-            allGrades={[]}
+            allGrades={grades[defaultPeriod] || []}
           />
         ))}
       </NativeList>
