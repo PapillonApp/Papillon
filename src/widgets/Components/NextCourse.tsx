@@ -171,7 +171,7 @@ const NextCourseLesson: React.FC<{
           alignSelf: "flex-start",
         }}>
           <Text numberOfLines={1} style={{ color: subjectData.color, fontSize: 15, fontFamily: "semibold" }}>
-            {nextCourse.room}
+            {nextCourse.room ?? "Salle inconnue"}
           </Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, opacity: 0.5 }}>
