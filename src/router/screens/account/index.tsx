@@ -7,52 +7,59 @@ import NewsScreen from "@/views/account/News/News";
 import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
 import Messages from "@/views/account/Chat/Messages";
-import PlaceholderScreen from "@/views/account/Home/PlaceholderScreen";
 
 export const screens = [
   createScreen("Home", () => <HomeStackScreen accountScreens={screens} />, {
     headerShown: false,
     tabBarLabel: "Accueil",
     tabBarLottie: require("@/../assets/lottie/tab_home.json"),
+    animation: "simple_push",
   }),
   createScreen("Lessons", Lessons, {
     headerTitle: "Cours",
     headerShown: false,
     tabBarLabel: "Cours",
     tabBarLottie: require("@/../assets/lottie/tab_calendar.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Homeworks", Homeworks, {
     headerTitle: "Devoirs",
     headerShown: false,
     tabBarLabel: "Devoirs",
     tabBarLottie: require("@/../assets/lottie/tab_book_2.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Grades", Grades, {
     headerTitle: "Notes",
     headerShown: false,
     tabBarLabel: "Notes",
     tabBarLottie: require("@/../assets/lottie/tab_chart.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("News", NewsScreen, {
     headerTitle: "Actualités",
     tabBarLabel: "Actualités",
     tabBarLottie: require("@/../assets/lottie/tab_news.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Attendance", Attendance, {
     headerTitle: "Vie scolaire",
     headerShown: false,
     tabBarLabel: "Vie sco.",
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Messages", Messages, {
     headerTitle: "Messages",
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
+    animation: "slide_from_bottom",
   }),
   createScreen("Menu", Menu, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),
+    animation: "slide_from_bottom",
   }),
 ] as Array<ReturnType<typeof createScreen>>;
 
