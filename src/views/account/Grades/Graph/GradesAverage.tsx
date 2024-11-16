@@ -10,12 +10,14 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet, Platform, Alert } from "react-native";
 
 import Reanimated, {
   FadeIn,
   FadeInDown,
+  FadeInLeft,
   FadeOut,
+  FadeOutLeft,
   FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
@@ -115,6 +117,14 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
     setCurrentAvg(originalCurrentAvgRef.current);
   }, [originalCurrentAvgRef]);
 
+  const theoryAvgDisclaimer = useCallback(() => {
+    Alert.alert(
+      "Moyenne théorique",
+      "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations.",
+      [{ text: "Compris" }]
+    );
+  }, []);
+
   return (
     <PressableScale
       style={{
@@ -130,6 +140,42 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
             layout={animPapillon(LinearTransition)}
             key={theme.colors.primary + account.instance}
           >
+            {((showDetails && !overall) || selectedDate) && (
+              <Reanimated.View
+                style={{
+                  height: 5,
+                }}
+              />
+            )}
+
+            {((showDetails && !overall) || selectedDate) && (
+              <Reanimated.View
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: 10,
+                  backgroundColor: theme.colors.primary + "22",
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 8,
+                  borderCurve: "continuous",
+                  zIndex: 100,
+                }}
+                entering={animPapillon(FadeInLeft)}
+                exiting={animPapillon(FadeOutLeft)}
+              >
+                <Reanimated.Text
+                  style={{
+                    fontSize: 14,
+                    color: theme.colors.primary,
+                    fontFamily: "semibold",
+                  }}
+                >
+                  Estimation
+                </Reanimated.Text>
+              </Reanimated.View>
+            )}
+
             {hLength > 1 ? (
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
@@ -251,8 +297,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                   borderTopColor: theme.colors.border,
                   borderTopWidth: 0.5,
                   paddingTop: 0,
-                  paddingLeft: 4,
-                  paddingRight: 8,
                 }}
               >
                 <NativeItem
@@ -270,9 +314,12 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                       <NativeText variant="subtitle">/20</NativeText>
                     </View>
                   }
+                  onPress={() => theoryAvgDisclaimer()}
                   separator
+                  chevron={false}
+                  style={{ paddingHorizontal: 4 }}
                 >
-                  <NativeText variant="subtitle">Moyenne max.</NativeText>
+                  <NativeText variant="subtitle">Moyenne théorique max.</NativeText>
                 </NativeItem>
                 <NativeItem
                   trailing={
@@ -289,8 +336,11 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                       <NativeText variant="subtitle">/20</NativeText>
                     </View>
                   }
+                  onPress={() => theoryAvgDisclaimer()}
+                  chevron={false}
+                  style={{ paddingHorizontal: 4 }}
                 >
-                  <NativeText variant="subtitle">Moyenne min.</NativeText>
+                  <NativeText variant="subtitle">Moyenne théorique min.</NativeText>
                 </NativeItem>
               </Reanimated.View>
             ) : (
