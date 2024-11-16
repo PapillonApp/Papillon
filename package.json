@@ -3,7 +3,7 @@
   "version": "7.5.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "update": "ncu -c",
+    "update": "ncu -i",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
