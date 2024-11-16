@@ -6,8 +6,6 @@ import {useTheme} from "@react-navigation/native";
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import PackageJSON from "../../../../package.json";
 import {
-  ActivityIndicator,
-  Button,
   Dimensions,
   Platform,
   Pressable,
@@ -48,17 +46,15 @@ import {
 } from "./Animations/HomeAnimations";
 
 import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
-import {Gift, Sparkles, WifiOff} from "lucide-react-native";
+import {Gift, WifiOff} from "lucide-react-native";
 
 import NetInfo from "@react-native-community/netinfo";
 import {getErrorTitle} from "@/utils/format/get_papillon_error_title";
-import {Elements} from "./ElementIndex";
+import {Elements, type Element} from "./ElementIndex";
 import {animPapillon} from "@/utils/ui/animations";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import { useFlagsStore } from "@/stores/flags";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import { th } from "date-fns/locale";
-import MissingItem from "@/components/Global/MissingItem";
 
 let headerHeight = Dimensions.get("window").height / 2.75;
 if (headerHeight < 275) {
@@ -115,6 +111,47 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
 
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const defined = useFlagsStore(state => state.defined);
+  const [elements, setElements] = useState<Element[]>([]);
+
+  useEffect(() => {
+    setElements([]);
+    Elements.forEach((Element) => {
+      setElements((prevElements) => [
+        ...prevElements,
+        {
+          id: Element.id,
+          component: Element.component,
+          importance: undefined,
+        },
+      ]);
+    });
+  }, []);
+
+  const sortElementsByImportance = () => {
+    setElements(prevElements => {
+      const sortedElements = [...prevElements];
+      sortedElements.sort((a, b) => {
+        let aImportance = a.importance === undefined ? -1 : a.importance;
+        let bImportance = b.importance === undefined ? -1 : b.importance;
+        return bImportance - aImportance;
+      });
+      return sortedElements;
+    });
+  };
+
+  const updateImportance = (id: string, value: number) => {
+    setElements(prevElements => {
+      const updatedElements = [...prevElements];
+      const index = updatedElements.findIndex(element => element.id === id);
+      updatedElements[index].importance = value;
+      return updatedElements;
+    });
+  };
+
+  const handleImportanceChange = (id: string, value: number) => {
+    updateImportance(id, value);
+    sortElementsByImportance();
+  };
 
   useEffect(() => {
     AsyncStorage.getItem("changelog.lastUpdate")
@@ -292,7 +329,6 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
           >
             <AccountSwitcher
               translationY={translationY}
-              scrolled={scrolled}
               loading={!account.instance}
             />
           </ContextMenu>
@@ -350,7 +386,6 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
             >
               <AccountSwitcher
                 translationY={translationY}
-                scrolled={scrolled}
                 small
               />
             </TouchableOpacity>
@@ -396,7 +431,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
               height: headerHeight,
               alignItems: "center",
               justifyContent: "center",
-              paddingTop: insets.top - 10,
+              paddingTop: insets.top - 17.5,
             },
             styles.header,
             Platform.OS === "ios" && stylez
@@ -404,7 +439,6 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
         >
           <Header
             scrolled={false}
-            openAccountSwitcher={openAccSwitcher}
             navigation={navigation}
           />
         </Reanimated.View>
@@ -568,15 +602,16 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
               >
-                {Elements.map((Element, index) => (Element &&
+                {elements.map((Element, index) => (Element &&
                   <Reanimated.View
                     key={index}
                     layout={animPapillon(LinearTransition)}
                     entering={animPapillon(FadeInUp)}
                     exiting={animPapillon(FadeOutDown)}
                   >
-                    <Element
+                    <Element.component
                       navigation={navigation}
+                      onImportance={(value: number) => handleImportanceChange(Element.id, value)}
                     />
                   </Reanimated.View>
                 ))}
