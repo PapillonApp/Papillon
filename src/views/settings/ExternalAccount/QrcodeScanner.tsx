@@ -16,7 +16,7 @@ import { AccountService, ExternalAccount } from "@/stores/account/types";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { Camera, CameraView } from "expo-camera";
 import MaskedView from "@react-native-masked-view/masked-view";
 import * as Haptics from "expo-haptics";
 
@@ -37,7 +37,7 @@ const QrcodeScanner: Screen<"QrcodeScanner"> = ({ navigation, route }) => {
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     };
     getBarCodeScannerPermissions();
@@ -85,8 +85,8 @@ const QrcodeScanner: Screen<"QrcodeScanner"> = ({ navigation, route }) => {
           style={styles.maskContainer}
         />
         {hasPermission === true && (
-          <BarCodeScanner
-            onBarCodeScanned={
+          <CameraView
+            onBarcodeScanned={
               scanned ? undefined : handleBarCodeScanned
             }
             style={StyleSheet.absoluteFillObject}
