@@ -14,8 +14,6 @@ import Chat from "@/views/account/Chat/Modals/Chat";
 import HomeworksDocument from "@/views/account/Homeworks/Document";
 import LessonsImportIcal from "@/views/account/Lessons/Options/LessonsImportIcal";
 import LessonDocument from "@/views/account/Lessons/Document";
-import ScodocWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
-import ScodocBackgroundWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { Platform } from "react-native";
 
@@ -24,66 +22,81 @@ export default [
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("RestaurantQrCode", RestaurantQrCode, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "fullScreenModal",
+    animation: "slide_from_bottom",
   }),
   createScreen("RestaurantHistory", RestaurantHistory, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("SettingsTabs", SettingsTabs, {
     headerTitle: "Onglets et navigation",
+    animation: "slide_from_right",
   }),
   createScreen("NewsItem", NewsItem, {
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom",
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
   createScreen("AddonPage", AddonPage, {
     headerTitle: "Extension",
+    animation: "slide_from_right",
   }),
   createScreen("LessonsImportIcal", LessonsImportIcal, {
     headerTitle: "Importer un iCal",
     presentation: "modal",
     headerLargeTitle: true,
+    animation: "slide_from_bottom",
   }),
   createScreen("LessonDocument", LessonDocument, {
     headerTitle: "Cours",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom",
   }),
   createScreen("HomeworksDocument", HomeworksDocument, {
     headerTitle: "Devoir",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom",
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
   createScreen("GradeDocument", GradeDocument, {
     headerTitle: "Détail de la note",
     presentation: "modal",
     headerShown: Platform.OS !== "ios",
+    animation: "slide_from_right",
   }),
   createScreen("ChatCreate", ChatCreate, {
     headerTitle: "Nouvelle discussion",
     presentation: "modal",
+    animation: "slide_from_bottom",
   }),
   createScreen("Chat", Chat, {
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_bottom",
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",
     presentation: "modal",
+    animation: "slide_from_right",
   }),
 ] as const;
