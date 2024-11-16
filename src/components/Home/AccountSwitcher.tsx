@@ -1,31 +1,27 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 
 import Reanimated, {
-  interpolateColor,
-  LinearTransition, useAnimatedStyle,
+  FadeIn,
+  FadeOut,
+  LinearTransition,
   ZoomIn,
   ZoomOut,
-  SharedValue
 } from "react-native-reanimated";
 
 import { useCurrentAccount } from "@/stores/account";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
-import { BlurView } from "expo-blur";
-
-const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
 const AccountSwitcher: React.FC<{
   small?: boolean,
-  opened?: boolean,
-  modalOpen?: boolean,
-  translationY?:  SharedValue<number>,
+  scrolled?: boolean,
+  translationY?: Reanimated.SharedValue<number>,
   loading?: boolean,
-}> = ({ small, opened, modalOpen, translationY, loading }) => {
+}> = ({ small, scrolled, translationY, loading }) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -34,173 +30,133 @@ const AccountSwitcher: React.FC<{
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
 
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff50", colors.border],
-    ),
-    backgroundColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff30", "transparent"],
-    ),
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    fontSize: 16,
-    fontFamily: "semibold",
-    maxWidth: 140,
-  }));
-
-
-  const AnimatedChevronDown = Reanimated.createAnimatedComponent(ChevronDown);
-  const iconAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    marginLeft: -6,
-  }));
-
   return (
     <Reanimated.View
-      style={{
-        backgroundColor:
-          opened ?
-            theme.dark && !modalOpen ? "#00000044" : "#FFFFFF22"
-            : modalOpen ? colors.text + "10" : "#FFFFFF12",
-        borderRadius: 12,
-        borderCurve: "continuous",
-        overflow: "hidden",
-        alignSelf: "flex-start",
-      }}
       layout={animPapillon(LinearTransition)}
-    >
-      <ReanimatedBlurView
-        tint={theme.dark ? "dark" : "light"}
-        experimentalBlurMethod="dimezisBlurView"
-        style={{
-          paddingHorizontal: 2,
+      style={[
+        styles.accountSwitcher,
+        {
+          backgroundColor: colors.background,
+        },
+        loading && {
+          shadowOpacity: 0,
+        },
+        small && {
+          paddingHorizontal: 0,
+          shadowOpacity: 0,
+          elevation: 0,
+          borderRadius: 0,
           paddingVertical: 0,
-          alignSelf: "flex-start",
-        }}
+          backgroundColor: "transparent",
+        }
+      ]}
+    >
+
+      {!small && (
+        <Reanimated.View
+          style={[{
+            position: "absolute",
+            backgroundColor: theme.dark ? theme.colors.primary + "09" : theme.colors.primary + "11",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 10,
+          }]}
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(150)}
+        />
+      )}
+
+      <Reanimated.View
+        style={[
+          {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+          },
+        ]}
         layout={animPapillon(LinearTransition)}
       >
+        {!shouldHidePicture ? (
+          <Image
+            source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service)}
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: colors.text + "22",
+                height: small ? 30 : 28,
+                width: small ? 30 : 28,
+              }
+            ]}
+          />
+        ) : (
+          <View style={[
+            {
+              marginLeft: -8,
+              height: small ? 30 : 28,
+            }
+          ]} />
+        )}
+
+        <Text
+          style={[styles.accountSwitcherText, {
+            color: colors.text,
+          }]}
+
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {account.studentName ? (
+            account.studentName?.first + (shouldHideName ? "" : " " + account.studentName.last)
+          ) : "Mon compte"}
+        </Text>
+
+        {loading && (
+          <PapillonSpinner
+            size={20}
+            strokeWidth={3}
+            color={colors.text}
+            animated
+            entering={animPapillon(ZoomIn)}
+            exiting={animPapillon(ZoomOut)}
+          />
+        )}
+
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
-          style={[
-            styles.accountSwitcher,
-            loading && {
-              shadowOpacity: 0,
-            },
-            small && {
-              paddingHorizontal: 0,
-              shadowOpacity: 0,
-              elevation: 0,
-              borderRadius: 0,
-              paddingVertical: 0,
-              backgroundColor: "transparent",
-            }
-          ]}
         >
-          <Reanimated.View
-            style={[
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
-              },
-            ]}
-            layout={animPapillon(LinearTransition)}
-          >
-            {!shouldHidePicture ? (
-              <Image
-                source={(account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, account.identityProvider?.name || "")}
-                style={[
-                  styles.avatar,
-                  {
-                    backgroundColor: colors.text + "22",
-                    height: small ? 30 : 28,
-                    width: small ? 30 : 28,
-                    borderColor: modalOpen ? colors.text + "20" : "#FFFFFF32",
-                  }
-                ]}
-              />
-            ) : (
-              <View style={[
-                {
-                  marginLeft: -8,
-                  height: small ? 30 : 28,
-                }
-              ]} />
-            )}
-
-            <Reanimated.Text
-              style={{
-                color: modalOpen && !opened ? colors.text : "#FFF",
-                fontSize: 16,
-                fontFamily: "semibold",
-                maxWidth: 140,
-              }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {account.studentName ? (
-                account.studentName?.first + (shouldHideName ? "" : " " + account.studentName.last)
-              ) : "Mon compte"}
-            </Reanimated.Text>
-
-            {loading && (
-              <PapillonSpinner
-                size={20}
-                strokeWidth={3}
-                color={modalOpen && !opened ? colors.text : "#FFF"}
-                animated
-                entering={animPapillon(ZoomIn)}
-                exiting={animPapillon(ZoomOut)}
-              />
-            )}
-
-            <Reanimated.View
-              layout={animPapillon(LinearTransition)}
-            >
-              <AnimatedChevronDown
-                size={24}
-                strokeWidth={2.3}
-                color={modalOpen && !opened ? colors.text : "#FFF"}
-                style={{
-                  marginLeft: -6,
-                }}
-              />
-            </Reanimated.View>
-          </Reanimated.View>
+          <ChevronDown
+            size={24}
+            strokeWidth={2.3}
+            color={colors.text + "55"}
+            style={{ marginLeft: -6 }}
+          />
         </Reanimated.View>
-      </ReanimatedBlurView>
+      </Reanimated.View>
+
     </Reanimated.View>
   );
 };
 
 const styles = StyleSheet.create({
   accountSwitcher: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 6,
-    height: 40,
-    borderRadius: 800,
     alignSelf: "flex-start",
-    overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
     paddingVertical: 6,
-    gap: 6,
+    gap: 12,
+    borderRadius: 10,
+    borderCurve: "continuous",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,
   },
 
   avatar: {
@@ -208,12 +164,12 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 24,
     backgroundColor: "#00000010",
-    borderColor: "#00000020",
-    borderWidth: 1,
   },
 
   accountSwitcherText: {
-
+    fontSize: 16,
+    fontFamily: "semibold",
+    maxWidth: 140,
   },
 });
 
