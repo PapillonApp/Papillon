@@ -3,6 +3,7 @@
   "version": "7.5.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
+    "update": "ncu -i",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -68,6 +69,7 @@
     "lodash": "^4.17.21",
     "lottie-react-native": "^6.7.0",
     "lucide-react-native": "^0.378.0",
+    "npm-check-updates": "^17.1.11",
     "openid-client": "^5.7.0",
     "pawdirecte": "^1.6.0",
     "pawnilim": "^0.2.0",
