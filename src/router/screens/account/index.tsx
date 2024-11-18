@@ -8,6 +8,8 @@ import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
 import Messages from "@/views/account/Chat/Messages";
 
+const animation = "slide_from_bottom";
+
 export const screens = [
   createScreen("Home", () => <HomeStackScreen accountScreens={screens} />, {
     headerShown: false,
@@ -20,46 +22,46 @@ export const screens = [
     headerShown: false,
     tabBarLabel: "Cours",
     tabBarLottie: require("@/../assets/lottie/tab_calendar.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("Homeworks", Homeworks, {
     headerTitle: "Devoirs",
     headerShown: false,
     tabBarLabel: "Devoirs",
     tabBarLottie: require("@/../assets/lottie/tab_book_2.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("Grades", Grades, {
     headerTitle: "Notes",
     headerShown: false,
     tabBarLabel: "Notes",
     tabBarLottie: require("@/../assets/lottie/tab_chart.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("News", NewsScreen, {
     headerTitle: "Actualités",
     tabBarLabel: "Actualités",
     tabBarLottie: require("@/../assets/lottie/tab_news.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("Attendance", Attendance, {
     headerTitle: "Vie scolaire",
     headerShown: false,
     tabBarLabel: "Vie sco.",
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("Messages", Messages, {
     headerTitle: "Messages",
     tabBarLabel: "Messages",
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
   createScreen("Menu", Menu, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),
-    animation: "slide_from_bottom",
+    animation,
   }),
 ] as Array<ReturnType<typeof createScreen>>;
 
