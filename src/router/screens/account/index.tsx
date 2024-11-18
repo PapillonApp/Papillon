@@ -13,7 +13,7 @@ export const screens = [
     headerShown: false,
     tabBarLabel: "Accueil",
     tabBarLottie: require("@/../assets/lottie/tab_home.json"),
-    animation: "simple_push",
+    animation: "none",
   }),
   createScreen("Lessons", Lessons, {
     headerTitle: "Cours",
