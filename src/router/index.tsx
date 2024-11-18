@@ -56,10 +56,6 @@ const Router: React.FC = () => {
     if (account.personalization?.color?.hex?.primary !== undefined) {
       theme.colors.primary = account.personalization.color.hex.primary;
     }
-
-    if (account.personalization?.color?.hex?.darker !== undefined) {
-      SystemUI.setBackgroundColorAsync(account.personalization.color.hex.darker);
-    }
   }
 
   return (

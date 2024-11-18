@@ -114,6 +114,7 @@ const ContextMenu: React.FC<{
             style={[
               {
                 backgroundColor: colors.card,
+                transformOrigin: "top left",
               },
               styles.menu,
             ]}

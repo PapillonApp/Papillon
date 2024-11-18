@@ -225,6 +225,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                   <GradesAverageGraph
                     grades={grades[selectedPeriod] ?? []}
                     overall={averages[selectedPeriod]?.overall.value}
+                    classOverall={averages[selectedPeriod]?.classOverall.value}
                   />
                 </Reanimated.View>
               )}

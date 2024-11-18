@@ -139,7 +139,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     transform: [
       {scale: interpolate(
         scrollOffset.value,
-        [0, 100, 200, 260 + insets.top],
+        [0, 200, (260 + insets.top) - 40, 260 + insets.top],
         [1, 0.95, 0.95, 1],
         Extrapolation.CLAMP
       )},
