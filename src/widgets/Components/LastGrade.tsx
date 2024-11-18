@@ -150,7 +150,7 @@ const LastGradeWidget = forwardRef(({
             <Text
               style={{
                 color: colors.text + "50",
-                fontFamily: "semiBold",
+                fontFamily: "semibold",
                 fontSize: 15,
               }}
             >

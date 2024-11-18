@@ -88,8 +88,8 @@ android {
         applicationId 'xyz.getpapillon.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "7.3.0"
+        versionCode 7500
+        versionName "7.5.0"
     }
     signingConfigs {
         debug {
