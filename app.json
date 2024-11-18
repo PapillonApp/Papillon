@@ -15,6 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "buildNumber": "7500",
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
@@ -34,6 +35,7 @@
       }
     },
     "android": {
+      "versionCode": 7500,
       "playStoreUrl": "https://play.google.com/store/apps/details?id=xyz.getpapillon.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/launch/adaptive-icon-foreground.png",
@@ -58,7 +60,18 @@
       ]
     },
     "plugins": [
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/FixelText-Bold.ttf",
+            "assets/fonts/FixelText-Light.ttf",
+            "assets/fonts/FixelText-Medium.ttf",
+            "assets/fonts/FixelText-Regular.ttf",
+            "assets/fonts/FixelText-SemiBold.ttf"
+          ]
+        }
+      ],
       "expo-barcode-scanner",
       [
         "expo-location",
