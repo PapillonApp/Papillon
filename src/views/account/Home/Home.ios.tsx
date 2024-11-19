@@ -61,7 +61,7 @@ import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
 import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
 
-const Home: Screen<"HomeScreeniOS"> = ({ navigation }) => {
+const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const corners = useMemo(() => getCorners(), []);
