@@ -62,7 +62,7 @@ if (headerHeight < 275) {
 }
 const overHeaderHeight = Platform.OS === "ios" ? 46 : 52;
 
-const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
+const Home: Screen<"HomeScreenAndroid"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
   const tabBarHeight = useBottomTabBarHeight();
