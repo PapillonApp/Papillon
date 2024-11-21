@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Paperclip } from "lucide-react-native";
+import { Paperclip, Sparkles } from "lucide-react-native";
 import { getSubjectData } from "@/services/shared/Subject";
 import { useTheme } from "@react-navigation/native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
@@ -69,8 +69,13 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     if (category) {
       return (
         <LinearGradient
-          colors={[subjectData.color, subjectData.color + "80"]}
-          style={{ borderRadius: 50, zIndex: 10 }}
+          colors={[subjectData.color + "80", subjectData.color]}
+          style={{
+            borderRadius: 50,
+            zIndex: 10,
+            borderWidth: 1,
+            borderColor: theme.colors.text + "20",
+          }}
         >
           <View
             style={{
@@ -82,9 +87,16 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
               borderRadius: 8,
             }}
           >
+            <Sparkles
+              size={14}
+              strokeWidth={1.5}
+              fill={"#FFF"}
+              color="#FFF"
+            />
+
             <NativeText style={{
               color: "#FFF",
-              fontFamily: "medium",
+              fontFamily: "semibold",
               fontSize: 15,
               lineHeight: 18,
             }}
