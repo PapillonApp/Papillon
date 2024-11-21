@@ -5,8 +5,8 @@ import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import important_json from "@/utils/magic/regex/important.json"; // Ensure this file contains valid regex patterns
 import MagicContainerCard from "@/components/Settings/MagicContainerCard";
-import { NativeIcon, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
-import { ArrowUpNarrowWide, Brain } from "lucide-react-native";
+import { NativeIcon, NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { ArrowUpNarrowWide, BookDashed, Brain } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
 
 const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
@@ -24,6 +24,7 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
     >
       <MagicContainerCard theme={theme} />
 
+      <NativeListHeader label="Actualités" />
       <NativeList>
         <NativeItem
           trailing={
@@ -33,19 +34,23 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
             />
           }
           leading={
-            <NativeIcon
+            <NativeIconGradient
               icon={<ArrowUpNarrowWide />}
-              color={colors.primary}
+              colors={["#04ACDC", "#6FE3CD"]}
             />
           }
         >
           <NativeText variant="title">
-            Actualités Intelligentes
+            Actualités prioritaires
           </NativeText>
           <NativeText variant="subtitle">
             Trie les actualités en fonction de leur importance et place en haut de la page celles jugées importantes
           </NativeText>
         </NativeItem>
+      </NativeList>
+
+      <NativeListHeader label="Devoirs" />
+      <NativeList>
         <NativeItem
           trailing={
             <Switch
@@ -54,17 +59,17 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
             />
           }
           leading={
-            <NativeIcon
-              icon={<Brain />}
-              color={colors.primary}
+            <NativeIconGradient
+              icon={<BookDashed />}
+              colors={["#FFD700", "#FF8C00"]}
             />
           }
         >
           <NativeText variant="title">
-            Devoirs Intelligents
+            Classement automatique
           </NativeText>
           <NativeText variant="subtitle">
-            Détecte automatiquement la présence d'une évaluation ou d'une tâche finale parmi les devoirs.
+            Détermine si un devoir relève d'une évaluation, d'un exercice ou d'un travail à rendre automatiquement
           </NativeText>
         </NativeItem>
       </NativeList>

@@ -4,6 +4,7 @@ import Reanimated, { type AnimatedProps, LinearTransition } from "react-native-r
 import { useTheme } from "@react-navigation/native";
 import { ChevronRight } from "lucide-react-native";
 import { animPapillon } from "@/utils/ui/animations";
+import { LinearGradient } from "expo-linear-gradient";
 
 /**
  * Pour une raison quelconque, Reanimated n'epxose
@@ -344,6 +345,36 @@ export const NativeIcon: React.FC<NativeIconProps> = ({ icon, color, style }) =>
         color: "#FFFFFF",
       })}
     </View>
+  );
+};
+
+interface NativeIconGradientprops {
+  icon: ReactNode;
+  colors?: string[];
+  locations?: number[];
+  style?: StyleProp<ViewStyle>;
+}
+
+export const NativeIconGradient: React.FC<NativeIconGradientprops> = ({ icon, colors, locations, style }) => {
+  return (
+    <LinearGradient
+      colors={colors || ["#000", "#000"]}
+      locations={locations || [0, 1]}
+      style={[{
+        backgroundColor: "#000",
+        borderRadius: 9,
+        width: 36,
+        height: 36,
+        justifyContent: "center",
+        alignItems: "center",
+      }, style]}
+    >
+      {React.cloneElement(icon as React.ReactElement<any>, {
+        size: 22,
+        strokeWidth: 2.4,
+        color: "#FFFFFF",
+      })}
+    </LinearGradient>
   );
 };
 
