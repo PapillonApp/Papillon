@@ -187,8 +187,8 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         {
           icon: <WandSparkles />,
           color: "#58A3C3",
-          label: "Papillon Magic",
-          description: "Beta",
+          label: "Papillon Magic (Bêta)",
+          description: "Fonctionnalités intelligentes",
           onPress: () => navigation.navigate("SettingsMagic"),
         },
       ],
