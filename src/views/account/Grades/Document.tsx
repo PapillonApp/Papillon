@@ -293,7 +293,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
               }}
               numberOfLines={1}
             >
-              {grade.description}
+              {grade.description || "Note sans description"}
             </Text>
             <Text
               style={{
