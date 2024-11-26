@@ -84,14 +84,23 @@ export const TimetableItem: React.FC<{
               )}
 
               <View style={[styles.roomTextContainer, { backgroundColor: subjectData.color + "33" }]}>
-                <Text numberOfLines={1} style={[styles.roomText, { color: subjectData.color }]}>{item.room || "Salle inconnue"}</Text>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.roomText, { color: subjectData.color }]}
+                >
+                  {item.room
+                    ? item.room.includes(",")
+                      ? "Plusieurs salles dispo."
+                      : item.room
+                    : "Salle inconnue"}
+                </Text>
               </View>
 
               {durationMinutes > 89 && !small && <View style={{ height: 24 }} />}
 
               {!small && (
                 <View style={{ flexDirection: "row", flex: 1 }}>
-                  <Text numberOfLines={2} style={[styles.locationText, { color: colors.text }]}>{item.teacher || "Professeur inconnu"}</Text>
+                  <Text numberOfLines={2} style={[styles.locationText, { color: colors.text }]}>{item.teacher ?? "Professeur inconnu"}</Text>
                   <Text style={[styles.durationText, { color: colors.text }]}>{getDuration(durationMinutes)}</Text>
                 </View>
               )}

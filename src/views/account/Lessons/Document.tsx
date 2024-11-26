@@ -169,7 +169,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         {
           icon: <DoorOpen />,
           text: lesson.room?.includes(",") ? "Salles de classe" : "Salle de classe",
-          value: lesson.room,
+          value: lesson.room?.split(", ").join("\n"),
           enabled: lesson.room != null,
         },
         {

@@ -58,6 +58,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
+  const [isED, setIsED] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
@@ -88,13 +89,16 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    navigation.addListener("focus", () => fetchData(true));
-    fetchData();
-  }, [account.instance]);
+    if (account.service === AccountService.EcoleDirecte) setIsED(true);
+    if (sortedMessages.length === 0) {
+      navigation.addListener("focus", () => fetchData(true));
+      fetchData();
+    }
+  }, [sortedMessages, account.instance]);
 
   useEffect(() => {
     if (informations) {
-      if (account.personalization?.magicEnabled) {
+      if (account.personalization.MagicNews) {
         const { importantMessages, normalMessages } =
           categorizeMessages(informations);
         setImportantMessages(
@@ -130,7 +134,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         );
       }
     }
-  }, [informations, account.personalization?.magicEnabled]);
+  }, [informations, account.personalization.MagicNews]);
 
   const renderItem: ListRenderItem<NewsItem> = useCallback(
     ({ item, index }) => (
@@ -223,6 +227,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
                 data={importantMessages}
                 renderItem={renderItem}
                 keyExtractor={(_, index) => `important-${index}`}
+                scrollEnabled={false}
               />
             </LinearGradient>
           </NativeList>
@@ -240,6 +245,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
               data={sortedMessages}
               renderItem={renderItem}
               keyExtractor={(_, index) => `sorted-${index}`}
+              scrollEnabled={false}
             />
           </NativeList>
         </Reanimated.View>
