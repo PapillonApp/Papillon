@@ -42,7 +42,7 @@ export const categorizeMessages = (messages: Information[]): CategorizedMessages
       message.title = "";
     }
 
-    if (matchCount > 0 && !read) {
+    if (matchCount > 0 && !read && importantMessages.length < 3) {
       importantMessages.push({ ...message, matchCount, matchingWords, important: true });
 
       // Log the matching words or phrases for this message
@@ -52,7 +52,5 @@ export const categorizeMessages = (messages: Information[]): CategorizedMessages
     }
   }
 
-  const limitedImportantMessages = importantMessages.slice(0, 3);
-
-  return { importantMessages: limitedImportantMessages, normalMessages };
+  return { importantMessages, normalMessages };
 };

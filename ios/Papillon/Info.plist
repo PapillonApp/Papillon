@@ -61,6 +61,14 @@
     <string>Allow $(PRODUCT_NAME) to save photos</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Papillon utilise tes photos et vidéos pour personnaliser ton profil, ta gestion des cours et bien plus.</string>
+    <key>UIAppFonts</key>
+    <array>
+      <string>FixelText-Bold.ttf</string>
+      <string>FixelText-Light.ttf</string>
+      <string>FixelText-Medium.ttf</string>
+      <string>FixelText-Regular.ttf</string>
+      <string>FixelText-SemiBold.ttf</string>
+    </array>
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>

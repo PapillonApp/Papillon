@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, View, Dimensions, ViewToken } from "react-native";
-import { Button, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
@@ -8,6 +8,9 @@ import { updateTimetableForWeekInCache } from "@/services/timetable";
 import { Page } from "./Atoms/Page";
 import { LessonsDateModal } from "./LessonsHeader";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
+
+import * as StoreReview from "expo-store-review";
+
 
 import Reanimated, {
   FadeIn,
@@ -27,6 +30,7 @@ import {
   PapillonModernHeader,
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const account = useCurrentAccount((store) => store.account!);
@@ -49,14 +53,14 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [pickerDate, setPickerDate] = React.useState(new Date(today));
+  const [pickerDate, setPickerDate] = useState(new Date(today));
 
   const getWeekFromDate = (date: Date) => {
     const epochWeekNumber = dateToEpochWeekNumber(date);
     return epochWeekNumber;
   };
 
-  const [updatedWeeks, setUpdatedWeeks] = React.useState(new Set<number>());
+  const [updatedWeeks, setUpdatedWeeks] = useState(new Set<number>());
 
   useEffect(() => {
     void (async () => {
@@ -124,6 +128,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     return Array.from({ length: 100 }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() - 50 + i);
+      date.setHours(0, 0, 0, 0);
       return date;
     });
   });
@@ -173,6 +178,44 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   }),
   [],
   );
+
+  const askForReview = async () => {
+    StoreReview.isAvailableAsync().then((available) => {
+      if (available) {
+        StoreReview.requestReview();
+      }
+    });
+  };
+
+  useEffect(() => {
+    // on focus
+    const unsubscribe = navigation.addListener("focus", () => {
+      AsyncStorage.getItem("review_coursesOpen").then((value) => {
+        if (value) {
+          if (parseInt(value) >= 7) {
+            AsyncStorage.setItem("review_coursesOpen", "0");
+
+            setTimeout(() => {
+              AsyncStorage.getItem("review_given").then((value) => {
+                if(!value) {
+                  console.log("Asking for review");
+                  askForReview();
+                  AsyncStorage.setItem("review_given", "true");
+                }
+              });
+            }, 1000);
+          }
+          else {
+            AsyncStorage.setItem("review_coursesOpen", (parseInt(value) + 1).toString());
+          }
+        } else {
+          AsyncStorage.setItem("review_coursesOpen", "1");
+        }
+      });
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -287,7 +330,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             (d) => d.getTime() === newDate.getTime(),
           );
           if (index !== -1) {
-            flatListRef.current?.scrollToIndex({ index, animated: true });
+            flatListRef.current?.scrollToIndex({ index, animated: false });
           }
         }}
       />
