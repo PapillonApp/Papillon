@@ -168,7 +168,7 @@ const LoginView: React.FC<{
         <NativeList>
           <NativeItem>
             <TextInput
-              value={username}
+              defaultValue={username}
               onChangeText={setUsername}
               placeholder={usernamePlaceholder}
               autoCapitalize={autoCapitalize}
@@ -194,7 +194,7 @@ const LoginView: React.FC<{
               }}
             >
               <TextInput
-                value={password}
+                defaultValue={password}
                 onChangeText={setPassword}
                 placeholder={passwordPlaceholder}
                 placeholderTextColor={theme.colors.text + "55"}

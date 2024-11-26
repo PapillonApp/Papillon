@@ -42,6 +42,7 @@ export default [
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_right",
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",

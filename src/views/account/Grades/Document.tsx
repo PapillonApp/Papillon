@@ -10,6 +10,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Dimensions, Image, Pressable, ScrollView, Text, View, Platform } from "react-native";
 import { GradeTitle } from "./Atoms/GradeTitle";
 import * as SystemUI from "expo-system-ui";
+import * as StoreReview from "expo-store-review";
 import {
   Asterisk,
   Calculator,
@@ -23,6 +24,7 @@ import { getAverageDiffGrade } from "@/utils/grades/getAverages";
 import type { AverageDiffGrade } from "@/utils/grades/getAverages";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   const { grade, allGrades = [] } = route.params;
@@ -33,6 +35,47 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
     pretty: "Matière inconnue",
     emoji: "❓",
   });
+
+  const [shouldShowReviewOnClose, setShouldShowReviewOnClose] = useState(false);
+
+  const askForReview = async () => {
+    StoreReview.isAvailableAsync().then((available) => {
+      if (available) {
+        StoreReview.requestReview();
+      }
+    });
+  };
+
+  // on modal closed
+  useEffect(() => {
+    navigation.addListener("beforeRemove", (e) => {
+      if (shouldShowReviewOnClose) {
+        AsyncStorage.getItem("review_given").then((value) => {
+          if(!value) {
+            console.log("Asking for review");
+            askForReview();
+            AsyncStorage.setItem("review_given", "true");
+          }
+        });
+      }
+    });
+  });
+
+  useEffect(() => {
+    AsyncStorage.getItem("review_openGradeCount").then((value) => {
+      if (value) {
+        if (parseInt(value) >= 5) {
+          AsyncStorage.setItem("review_openGradeCount", "0");
+          setShouldShowReviewOnClose(true);
+        }
+        else {
+          AsyncStorage.setItem("review_openGradeCount", (parseInt(value) + 1).toString());
+        }
+      } else {
+        AsyncStorage.setItem("review_openGradeCount", "1");
+      }
+    });
+  }, []);
 
   const fetchSubjectData = () => {
     const data = getSubjectData(grade.subjectName);
@@ -184,7 +227,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       decelerationRate={Platform.OS === "ios" ? "fast" : "normal"}
-      snapToInterval={Platform.OS === "ios" ? (Dimensions.get("window").height / 3) : undefined}
+      snapToInterval={Platform.OS === "ios" ? (Dimensions.get("window").height / 4) : undefined}
     >
       <Pressable
         style={{
@@ -202,15 +245,8 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
           backgroundColor: theme.colors.background,
           borderRadius: Platform.OS === "ios" ? 19 : 0,
           borderCurve: "continuous",
-          marginTop: Platform.OS === "ios" ? Dimensions.get("window").height / 3 : 0,
-          overflow: "visible",
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: -2,
-          },
-          shadowOpacity: 0.3,
-          shadowRadius: 10,
+          marginTop: Platform.OS === "ios" ? Dimensions.get("window").height / 4 : 0,
+          overflow: "hidden",
         }}
       >
         <View

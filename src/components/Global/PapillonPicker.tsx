@@ -70,10 +70,8 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             styles.picker,
             direction === "left" ? {
               left: 0,
-              transformOrigin: "left top",
             } : {
               right: 0,
-              transformOrigin: "left right",
             },
             {
               backgroundColor: Platform.OS === "ios" ? theme.colors.card + 50 : theme.colors.card,

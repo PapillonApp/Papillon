@@ -33,7 +33,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
 
   const stylesText = StyleSheet.create({
     body: {
-      color: theme.colors.text,
+      color: homework.done ? theme.colors.text + "80" : theme.colors.text,
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22,
