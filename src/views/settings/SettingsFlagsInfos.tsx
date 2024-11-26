@@ -56,8 +56,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   value: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 14,
+    lineHeight: 22,
+    fontFamily: "Menlo",
   },
 });
 

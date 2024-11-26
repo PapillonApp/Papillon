@@ -9,6 +9,8 @@ import React from "react";
 import { Alert, Button, View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
+import { FadeInDown, FadeOutUp } from "react-native-reanimated";
+import { animPapillon } from "@/utils/ui/animations";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
@@ -25,6 +27,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   const url = "https://notes9.iutlan.univ-rennes1.fr/";
   const firstLogin = params?.firstLogin || false;
   const theme = useTheme();
+
+  const [step, setStep] = React.useState("Chargement du portail");
 
   if(!firstLogin) {
     if(account?.service == AccountService.Local && account.credentials) {
@@ -121,6 +125,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       return;
     }
 
+    setStep("Connexion à Sésame");
+
     const newRedirCount = redirectCount + 1;
     setRedirectCount(newRedirCount);
 
@@ -136,6 +142,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   };
 
   const redirectToData = () => {
+    setStep("Récupération des données");
     wbref.current?.injectJavaScript(`
               window.location.href = "https://notes9.iutlan.univ-rennes1.fr/services/data.php?q=dataPremièreConnexion";
             `);
@@ -159,10 +166,14 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
           gap: 6,
         }}
       >
-        <PapillonSpinner size={56} strokeWidth={5} />
+        <PapillonSpinner size={56} strokeWidth={5} color={theme.colors.primary} />
         <View style={{ height: 10 }} />
-        <NativeText variant="title">
-          En attente du portail
+        <NativeText variant="title" key={step}
+          animated
+          entering={animPapillon(FadeInDown)}
+          exiting={animPapillon(FadeOutUp)}
+        >
+          {step}
         </NativeText>
         <NativeText variant="subtitle">
           Cela peut prendre quelques secondes...
