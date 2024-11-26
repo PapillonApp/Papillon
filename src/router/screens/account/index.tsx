@@ -7,8 +7,9 @@ import NewsScreen from "@/views/account/News/News";
 import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
 import Messages from "@/views/account/Chat/Messages";
+import { Platform } from "react-native";
 
-const animation = "slide_from_bottom";
+const animation = Platform.OS === "android" ? "slide_from_bottom" : "none";
 
 export const screens = [
   createScreen("Home", () => <HomeStackScreen accountScreens={screens} />, {
