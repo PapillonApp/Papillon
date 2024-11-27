@@ -1,17 +1,20 @@
-name: ✨ Fonctionnalité
-description: Suggérez une fonctionnalité.
-title: '[Feature]: '
-labels: [feature]
+name: ✨ Amélioration/Fonctionnalité
+description: Comment pouvons-nous améliorer Papillon ?
+title: "[Feature]: "
+
 body:
   - type: textarea
     attributes:
       label: Description de la fonctionnalité
-      description: "Ajout d'un générateur de poneys ? D'un calcul de l'aura de l'élève ?"
+      description: Fait place à la créativité en bien détaillant ce qu'il faut faire
+      placeholder: Ça serait cool une intégration d'un simulateur permettant de savoir si on aura le bac/brevet !
     validations:
       required: true
+
   - type: textarea
     attributes:
-      label: Contexte supplémentaire
-      description: "Ajoutez tout autre contexte ou design permettant de clarifier votre idée."
+      label: Davantage de détails ?
+      description: Intégrer une/des image(s) pour nous projeter serait super, mais c'est pas grave s'il n'y en a pas
+      placeholder: Ah, même si j'ai des idées, je suis pas designer 🤣
     validations:
       required: false

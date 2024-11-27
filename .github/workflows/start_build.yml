@@ -14,17 +14,17 @@ jobs:
           rm -rf ~/Library/Developer/Xcode/DerivedData
           rm -rf android/app/build/
           rm -rf $HOME/.gradle/caches/
-        
+
   build_ios:
     needs: clean
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm ci
@@ -110,7 +110,7 @@ jobs:
                      OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_PATH" \
                      clean archive
           xcodebuild -exportArchive -archivePath build/Papillon.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build
-          
+
           if [ -f "./build/Papillon.ipa" ]; then
             echo "IPA file generated successfully"
           else
@@ -130,11 +130,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm ci
@@ -142,8 +142,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: "zulu"
+          java-version: "17"
 
       - name: Build Android app
         env:
@@ -153,7 +153,7 @@ jobs:
         run: |
           # Decode keystore
           echo $KEYSTORE_BASE64 | base64 --decode > android/app/release.keystore
-          
+
           # Build APK and AAB
           cd android
           ./gradlew assembleRelease
@@ -201,12 +201,12 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         run: |
           echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > appstore_connect_api_key.p8
-          
+
           xcrun notarytool submit Papillon.ipa --key appstore_connect_api_key.p8 \
             --key-id "$APP_STORE_CONNECT_API_KEY_ID" \
             --issuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
             --wait
-          
+
           echo "iOS build uploaded to TestFlight for beta testing"
 
       - name: Upload Android Release to Play Store Beta

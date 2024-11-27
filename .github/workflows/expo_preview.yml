@@ -1,0 +1,171 @@
+name: Create QR Code Workflow for PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number'
+        required: true
+        type: string
+
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      actions: write
+    steps:
+      - name: Get PR Number
+        id: pr
+        run: |
+          if [ ! -z "${{ github.event.pull_request.number }}" ]; then
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          else
+            echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout PR
+        run: |
+          gh pr checkout ${{ env.PR_NUMBER }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if PR is closed
+        id: check_pr
+        run: |
+          PR_STATE=$(gh pr view ${{ env.PR_NUMBER }} --json state -q '.state')
+          if [ "$PR_STATE" = "CLOSED" ] || [ "$PR_STATE" = "MERGED" ]; then
+            current_description=$(gh pr view ${{ env.PR_NUMBER }} --json body -q '.body')
+            if echo "$current_description" | grep -q "PREVIEW EXPO"; then
+              new_description=$(echo "$current_description" | sed 's/| ⏳ Expire dans.*|/| ⏳ Expire dans | ⚠️ Preview arrêtée - PR fermée |/')
+              gh api --method PATCH repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }} --field body="$new_description"
+            fi
+            echo "PR is closed or merged, stopping workflow"
+            echo "IS_CLOSED=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_CLOSED=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup java
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+
+      - name: Setup Android SDK
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Node.js
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        run: |
+          npm ci
+          npm install -g @expo/ngrok@^4.1.0
+
+      - name: Start Expo server
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        run: |
+          nohup npx expo start --no-dev --clear --tunnel 2>&1 | tee expo.log &
+          sleep 20
+        env:
+          EXPO_DEBUG: true
+
+      - name: Extract and Display Expo URL
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        run: |
+          expo_url=$(grep -oP '(?<=URL: ).*' expo.log | tail -n 1)
+          if [ -z "$expo_url" ]; then
+            echo "Failed to extract Expo URL"
+            exit 1
+          fi
+          echo "EXPO_URL=$expo_url" >> $GITHUB_ENV
+
+      - name: Generate QR Code URL
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        run: |
+          QR_URL="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${{ env.EXPO_URL }}"
+          echo "QR_URL=$QR_URL" >> $GITHUB_ENV
+
+      - name: Update PR description with QR Code link
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        run: |
+          create_message() {
+            local time_info="$1"
+            echo "
+          # 🚀 PREVIEW EXPO 📱
+
+          > ### ⚡️ Scannez & Testez ! ⚡️
+          > 
+          > 📸 Scannez le QR code → 📲 Ouvrez dans Expo Go → ✨ Testez !
+
+          | 📱 Preview | Info |
+          |-----------|------|
+          | 🔲 QR Code | <img src=\"${{ env.QR_URL }}\" width=\"300\" /> |
+          | 🔗 Lien | ${{ env.EXPO_URL }} |
+          | ⏳ Expire dans | $time_info |
+          "
+          }
+
+          update_pr_description() {
+            local message="$1"
+            local current_description=$(gh pr view ${{ env.PR_NUMBER }} --json body -q '.body')
+            local new_description
+            if echo "$current_description" | grep -q "PREVIEW EXPO"; then
+              new_description=$(echo "$current_description" | awk '/# 🚀 PREVIEW/{p=NR} p&&/Expire dans/{p="~0"} !p{print}')
+            else
+              new_description="$current_description"
+            fi
+            new_description="${new_description}
+          ${message}"
+            gh api --method PATCH repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }} --field body="$new_description"
+          }
+
+          initial_message=$(create_message "4 heures")
+          update_pr_description "$initial_message"
+
+          for i in {1..11}; do
+            sleep 1200
+            remaining_hours=$((4 - i/3))
+            remaining_minutes=$((60 - (i*20)%60))
+            if [ $remaining_minutes -eq 60 ]; then
+              time_message="~$remaining_hours heures restantes"
+            else
+              time_message="~$remaining_hours heures et $remaining_minutes minutes restantes"
+            fi
+            update_message=$(create_message "$time_message")
+            update_pr_description "$update_message"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Launch another workflow
+        if: steps.check_pr.outputs.IS_CLOSED != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'create_qrcode.yml', 
+              ref: 'main',
+              inputs: {
+                pr_number: '${{ env.PR_NUMBER }}'
+              }
+            })

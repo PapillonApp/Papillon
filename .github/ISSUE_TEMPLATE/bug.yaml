@@ -1,89 +1,90 @@
 name: 🐛 Signaler un bug
-description: Signalez un bug pour nous aider à améliorer Papillon
-title: '[Bug]: '
-labels: [bug]
+description: Signaler des bugs nous permet à améliorer Papillon !
+title: "[Bug]: "
+
 body:
   - type: textarea
     attributes:
       label: Description du bug
-      description: Une description claire et concise du bug.
+      description: Plus de détails nous permettent de trouver plus vite le bug !
+      placeholder: La connexion à mon établissement ne fonctionne pas, j'ai un chargement infini lors de la connexion
     validations:
       required: true
+
   - type: textarea
     attributes:
       label: Étapes à reproduire
-      description: 'Étapes pour reproduire le bug :'
+      description: Comment pouvons-nous reproduire le bug ?
       placeholder: |
-        1. [ex: Etape 1]
-        2. [ex: Etape 1]
-      value: |
-        1. 
-        2.
+        1. Ouvrir l'application
+        2. Se connecter à l'établissement
+        3. Appuyer sur "Connexion"
+        4. Observer le comportement
     validations:
       required: true
+
   - type: textarea
     attributes:
       label: Comportement attendu
-      description: Une description claire et concise de ce que vous attendiez.
+      description: Ce que Papillon doit faire
+      placeholder: Que la connexion à mon établissement fonctionne et qu'il n'y ait pas de chargement infini
     validations:
       required: true
+
   - type: input
     attributes:
       label: Appareil
+      description: Quel appareil utilisé pour rencontrer ce bug ?
       placeholder: iPhone 13, Samsung Galaxy S23...
     validations:
       required: true
+
   - type: input
     attributes:
-      label: Version du système d`exploitation
-      placeholder: iOS 18, Android 14...
+      label: Version du système d'exploitation
+      description: Paramètres (Téléphone) -> À propos (Android)/Général (Apple)
+      placeholder: iOS 18, Android 15...
     validations:
       required: true
+
+  - type: dropdown
+    attributes:
+      label: Papillon testé depuis
+      description: Tu as rencontré ce bug sur quel type de Papillon ?
+      options:
+        - Play/Apple Store (Version Stable)
+        - Play Store/TestFlight (Version Bêta)
+        - Expo Go (Version Dev)
+    validations:
+      required: true
+
   - type: input
     attributes:
-      label: Version
-      placeholder: '7.0.1-beta'
-      value: '7.0.1-beta'
+      label: Version utilisée
+      description: Sur quelle version le bug est rencontré ? Paramètres (Papillon) -> Version affichée en bas de la page
+      placeholder: "7.5.0"
     validations:
       required: true
+
   - type: dropdown
     attributes:
-      label: Environnement
+      label: Service scolaire/cantine
+      description: Chaque personne dans l'équipe de Papillon a un domaine pour plus d'efficacité (🎒 = Service scolaire et 🍽️ = Service de cantine)
       options:
-        - Application native Android
-        - Application native iOS
-        - Prébuild de développement (iOS/Android)
+        - 🎒🦋 Pronote
+        - 🎒🟦 ÉcoleDirecte
+        - 🎒🟡 Skolengo
+        - 🎒🏫 Universités et autres (à préciser dans la description du bug)
+        - 🍽️🔴 Turboself
+        - 🍽️🟣 ARD
+        - 🍽️🔵 Izly
     validations:
       required: true
-  - type: dropdown
-    attributes:
-      label: Source de l'application
-      options:
-        - Stores (Play Store / App Store)
-        - Github
-    validations:
-      required: true
-  - type: dropdown
-    attributes:
-      label: Service scolaire
-      options:
-        - 🦋 Pronote
-        - 🟦 EcoleDirecte
-        - 🟡 Skolengo
-        - 🔴 Turboself 
-        - 🟣 ARD-GEC
-        - ⭕ Autre
-    validations:
-      required: true
+
   - type: textarea
     attributes:
-      label: "Captures d'écran / vidéo"
-      description: "Si possible, ajoutez des captures d'écran pour aider à expliquer votre problème."
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Contexte supplémentaire
-      description: Des liens ? Des références ? Tout ce qui peut nous donner plus de détails sur le problème que vous rencontrez !
+      label: "Capture(s) d'écran / vidéo"
+      description: Cela permettra que le bug soit résolu encore plus vite
+      placeholder: Il faut cliquer sur l'icône 📎 pour pouvoir importer une/des photo(s)/vidéo(s)
     validations:
       required: false
