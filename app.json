@@ -15,7 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      /* "buildNumber": "7500", */
+      "buildNumber": "7501",
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
@@ -35,7 +35,7 @@
       }
     },
     "android": {
-      "versionCode": 7500,
+      "versionCode": 7501,
       "playStoreUrl": "https://play.google.com/store/apps/details?id=xyz.getpapillon.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/launch/adaptive-icon-foreground.png",

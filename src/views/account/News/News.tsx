@@ -94,7 +94,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       navigation.addListener("focus", () => fetchData(true));
       fetchData();
     }
-  }, [sortedMessages, account.instance]);
+  }, [account.instance]);
 
   useEffect(() => {
     if (informations) {
@@ -246,6 +246,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
               renderItem={renderItem}
               keyExtractor={(_, index) => `sorted-${index}`}
               scrollEnabled={false}
+              initialNumToRender={6}
             />
           </NativeList>
         </Reanimated.View>

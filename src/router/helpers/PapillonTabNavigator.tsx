@@ -509,12 +509,6 @@ const BottomTabNavigator: React.ComponentType<any> = ({
   // Create animated styles
   const animatedStyles = useAnimatedStyle(() => {
     return {
-      opacity: fadeAnim.value,
-      transform: [
-        {
-          translateX: slideAnim.value,
-        },
-      ],
     };
   });
 

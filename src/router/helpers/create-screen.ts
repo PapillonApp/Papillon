@@ -1,5 +1,6 @@
 import type { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import type { Screen, RouteParameters } from "@/router/helpers/types";
+import { Platform } from "react-native";
 
 export const navigatorScreenOptions: NativeStackNavigationOptions = {
   headerBackTitleStyle: {
@@ -9,6 +10,7 @@ export const navigatorScreenOptions: NativeStackNavigationOptions = {
     fontFamily: "semibold",
   },
   headerBackTitle: "Retour",
+  animation: Platform.OS === "android" ? "slide_from_right" : "default",
 };
 
 const createScreen = <ScreenName extends keyof RouteParameters>(

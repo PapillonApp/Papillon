@@ -365,7 +365,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
                 }}
                 numberOfLines={1}
               >
-                {grade.student.value?.toFixed(2)}
+                {grade.student.disabled ? "N. not" : grade.student.value?.toFixed(2)}
               </Text>
               <Text
                 style={{
