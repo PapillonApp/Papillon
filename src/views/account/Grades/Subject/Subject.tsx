@@ -4,6 +4,7 @@ import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { NativeListHeader } from "@/components/Global/NativeComponents";
 import { animPapillon } from "@/utils/ui/animations";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+import { FlatList } from "react-native";
 import SubjectItem from "./SubjectList";
 
 interface SubjectProps {
@@ -17,20 +18,33 @@ const Subject: React.FC<SubjectProps> = ({
   navigation,
   allGrades
 }) => {
+  const renderItem = ({ item, index }: { item: GradesPerSubject; index: number }) => (
+    <SubjectItem
+      key={item.average.subjectName + index}
+      subject={item}
+      navigation={navigation}
+      allGrades={allGrades}
+    />
+  );
+
+  const ListHeaderComponent = () => (
+    <NativeListHeader label="Mes notes" />
+  );
+
   return (
     <Reanimated.View
       layout={animPapillon(LinearTransition)}
     >
-      <NativeListHeader label="Mes notes" />
-
-      {gradesPerSubject.map((subject, index) => (
-        <SubjectItem
-          key={subject.average.subjectName + index}
-          subject={subject}
-          navigation={navigation}
-          allGrades={allGrades}
-        />
-      ))}
+      <FlatList
+        data={gradesPerSubject}
+        renderItem={renderItem}
+        ListHeaderComponent={ListHeaderComponent}
+        keyExtractor={(item, index) => item.average.subjectName + index}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={8}
+        windowSize={5}
+      />
     </Reanimated.View>
   );
 };

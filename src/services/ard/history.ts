@@ -25,7 +25,7 @@ export const history = async (account: ARDAccount): Promise<ReservationHistory[]
       label: "Transaction n°" + item.orderReference.toString()
     })),
     ...(consumptionsHistory ?? []).map((item) => ({
-      amount: item.amount / 100,
+      amount: -item.amount / 100,
       timestamp: item.consumptionDate * 1000,
       currency: "€",
       label: item.consumptionDescription

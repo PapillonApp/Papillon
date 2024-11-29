@@ -85,7 +85,7 @@ const GradeItem: React.FC<GradeItemProps> = ({
         <View style={styles.rightContent}>
           <NativeText style={styles.gradeValue}>{gradeValue}</NativeText>
           <NativeText style={styles.maxGrade}>
-            /{grade.outOf.value?.toFixed(0) ?? "??"}
+            /{grade.outOf.value ?? "??"}
           </NativeText>
         </View>
       </View>

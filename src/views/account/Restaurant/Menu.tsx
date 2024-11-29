@@ -195,7 +195,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
           ) : (
             <>
               <View style={styles.accountButtonContainer}>
-                {allBalances?.map((account, index) => (
+                {allBalances!.length > 1 && allBalances?.map((account, index) => (
                   <AccountButton
                     key={index}
                     account={account}
@@ -214,7 +214,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                 >
                   <RestaurantCard
                     solde={allBalances[selectedIndex].amount}
-                    repas={allBalances[selectedIndex].remaining || null }
+                    repas={
+                      allBalances?.[selectedIndex]?.remaining != null
+                        ? Math.max(0, allBalances[selectedIndex].remaining)
+                        : null
+                    }
                   />
                 </Reanimated.View>
               )}
