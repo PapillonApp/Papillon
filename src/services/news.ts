@@ -62,8 +62,12 @@ export async function setNewsRead <T extends Account> (account: T, message: Info
       await newsRead(account.instance, message.ref, read);
       break;
     }
-    case AccountService.Local:
-    case AccountService.EcoleDirecte:
+    case AccountService.Local: {
+      break;
+    }
+    case AccountService.EcoleDirecte: {
+      break;
+    }
     case AccountService.Multi:
       break;
     default: {

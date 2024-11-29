@@ -40,7 +40,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
           style={{
             textAlign: "left",
             fontFamily: "semibold",
-            color: solde < 0 ? "D10000" : "#5CB21F",
+            color: solde < 0 ? "#D10000" : "#5CB21F",
             fontSize: 30,
           }}
         >

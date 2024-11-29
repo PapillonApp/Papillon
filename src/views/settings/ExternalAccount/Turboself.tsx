@@ -36,6 +36,7 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
 
       navigation.pop();
       navigation.pop();
+      navigation.pop();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
