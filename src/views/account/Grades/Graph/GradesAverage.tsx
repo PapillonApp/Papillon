@@ -10,7 +10,7 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform, Alert } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 
 import Reanimated, {
   FadeIn,
@@ -27,10 +27,13 @@ import * as Haptics from "expo-haptics";
 import { PressableScale } from "react-native-pressable-scale";
 import { ReanimatedGraphProps, ReanimatedGraphPublicMethods } from "@birdwingo/react-native-reanimated-graph/src/core/dto/graphDTO";
 // Using require to set custom types bc module types are broken
-const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & React.RefAttributes<ReanimatedGraphPublicMethods>> = require("@birdwingo/react-native-reanimated-graph").default;
+const ReanimatedGraph: React.ForwardRefExoticComponent<
+  ReanimatedGraphProps & React.RefAttributes<ReanimatedGraphPublicMethods>
+> = require("@birdwingo/react-native-reanimated-graph").default;
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -61,6 +64,8 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   const originalCurrentAvgRef = useRef(originalCurrentAvg);
   const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
   const gradesHistoryRef = useRef(gradesHistory);
+
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     if (currentAvg !== originalCurrentAvg) {
@@ -120,11 +125,11 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   }, [originalCurrentAvgRef]);
 
   const theoryAvgDisclaimer = useCallback(() => {
-    Alert.alert(
-      "Moyenne théorique",
-      "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations.",
-      [{ text: "Compris" }]
-    );
+    showAlert({
+      title: "Moyenne théorique",
+      message:
+        "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations.",
+    });
   }, []);
 
   return (
