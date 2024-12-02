@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View, StyleSheet, Modal, Alert, KeyboardAvoidingView, TextInput, Pressable } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  KeyboardAvoidingView,
+  TextInput,
+  Pressable
+} from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
@@ -11,7 +20,11 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { QrCode } from "lucide-react-native";
 
-import Reanimated, { LinearTransition, FadeOutUp, FadeInUp } from "react-native-reanimated";
+import Reanimated, {
+  LinearTransition,
+  FadeOutUp,
+  FadeInUp
+} from "react-native-reanimated";
 import pronote from "pawnote";
 
 import { useAccounts, useCurrentAccount } from "@/stores/account";
@@ -19,17 +32,15 @@ import { Account, AccountService } from "@/stores/account/types";
 import { Audio } from "expo-av";
 import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
+import { useAlert } from "@/providers/AlertProvider";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
-  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-    /[xy]/g,
-    (c) => {
-      const r = (dt + Math.random() * 16) % 16 | 0;
-      dt = Math.floor(dt / 16);
-      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-    }
-  );
+  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (dt + Math.random() * 16) % 16 | 0;
+    dt = Math.floor(dt / 16);
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
   return uuid;
 };
 
@@ -37,8 +48,8 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const { colors } = theme;
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -55,12 +66,17 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   const codeInput = React.createRef<TextInput>();
   const [QRData, setQRData] = useState<string | null>(null);
 
+  const { showAlert } = useAlert();
+
   async function loginQR () {
     setScanned(false);
     setLoadingModalVisible(true);
 
     if (QRValidationCode === "" || QRValidationCode.length !== 4) {
-      Alert.alert("Code invalide", "Veuillez entrer un code à 4 chiffres.");
+      showAlert({
+        title: "Code invalide",
+        message: "Veuillez entrez un code à 4 chiffres.",
+      });
       return;
     }
 
@@ -68,29 +84,34 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
 
     try {
       let decodedJSON = JSON.parse(QRData!);
-
       const data = {
-        jeton : decodedJSON.jeton,
-        login : decodedJSON.login,
-        url : decodedJSON.url,
+        jeton: decodedJSON.jeton,
+        login: decodedJSON.login,
+        url: decodedJSON.url,
       };
 
       const session = pronote.createSessionHandle();
-      const refresh = await pronote.loginQrCode(session, {
-        qr: data,
-        pin: QRValidationCode,
-        deviceUUID: accountID
-      }).catch((error) => {
-        if (error instanceof pronote.SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          navigation.navigate("Pronote2FA_Auth", {
-            session,
-            error,
-            accountID
-          });
-        } else {
-          throw error;
-        }
-      });
+      const refresh = await pronote
+        .loginQrCode(session, {
+          qr: data,
+          pin: QRValidationCode,
+          deviceUUID: accountID
+        })
+        .catch((error) => {
+          if (
+            error instanceof pronote.SecurityError &&
+            !error.handle.shouldCustomPassword &&
+            !error.handle.shouldCustomDoubleAuth
+          ) {
+            navigation.navigate("Pronote2FA_Auth", {
+              session,
+              error,
+              accountID
+            });
+          } else {
+            throw error;
+          }
+        });
 
       if (!refresh) throw pronote.AuthenticateError;
 
@@ -138,12 +159,15 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     } catch (error) {
       console.error(error);
 
-      Alert.alert("Erreur", "Une erreur est survenue lors de la connexion.");
+      showAlert({
+        title: "Erreur",
+        message: "Une erreur est survenue lors de la connexion.",
+      });
       return;
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
         require("@/../assets/sound/4.wav")
@@ -174,13 +198,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
+  const handleBarCodeScanned = ({ data }: { data: string }) => {
     setScanned(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setQRData(data);
@@ -212,9 +230,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
         >
           <View style={{ flex: 1 }} />
 
-          <ActivityIndicator
-            size="large"
-          />
+          <ActivityIndicator size="large" />
 
           <Text
             style={{
@@ -263,9 +279,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
         visible={pinModalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => {
-          setPinModalVisible(!pinModalVisible);
-        }}
+        onRequestClose={() => setPinModalVisible(!pinModalVisible)}
       >
         <KeyboardAvoidingView
           style={{
@@ -306,7 +320,6 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               justifyContent: "center",
               alignItems: "center",
             }}
-
             layout={LinearTransition}
           >
             {!inputFocus && (
@@ -325,7 +338,10 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               </Reanimated.View>
             )}
 
-            <Pressable style={{ flex: 1, width: "100%" }} onPress={() => codeInput.current?.blur()} />
+            <Pressable
+              style={{ flex: 1, width: "100%" }}
+              onPress={() => codeInput.current?.blur()}
+            />
 
             <View
               style={{
@@ -362,7 +378,10 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               />
             </View>
 
-            <Pressable style={{ flex: 1, width: "100%" }} onPress={() => codeInput.current?.blur()} />
+            <Pressable
+              style={{ flex: 1, width: "100%" }}
+              onPress={() => codeInput.current?.blur()}
+            />
 
             <View
               style={{
@@ -376,9 +395,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               <View style={{ flex: 1 }}>
                 <ButtonCta
                   value="Annuler"
-                  onPress={() => {
-                    setPinModalVisible(false);
-                  }}
+                  onPress={() => setPinModalVisible(false)}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -396,13 +413,9 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
         </KeyboardAvoidingView>
       </Modal>
 
-      <View style={[styles.explainations,
-        { top: insets.top + 48 + 10 }
-      ]}>
+      <View style={[styles.explainations, { top: insets.top + 48 + 10 }]}>
         <QrCode size={32} color={"#fff"} />
-        <Text style={styles.title}>
-          Connexion à PRONOTE
-        </Text>
+        <Text style={styles.title}>Connexion à PRONOTE</Text>
         <Text style={styles.text}>
           Scannez le QR code de votre établissement pour vous connecter.
         </Text>
@@ -416,14 +429,10 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           </View>
         }
       >
-        <View
-          style={styles.maskContainer}
-        />
+        <View style={styles.maskContainer} />
         {hasPermission === true && (
           <BarCodeScanner
-            onBarCodeScanned={
-              scanned ? undefined : handleBarCodeScanned
-            }
+            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             style={StyleSheet.absoluteFillObject}
           />
         )}
