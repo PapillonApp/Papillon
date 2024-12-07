@@ -28,6 +28,7 @@
     "cal-parser": "^1.0.2",
     "date-fns": "^3.6.0",
     "esup-multi.js": "^1.0.2",
+    "expo": "~51.0.28",
     "expo-asset": "^10.0.10",
     "expo-auth-session": "~5.5.2",
     "expo-av": "~14.0.6",
@@ -55,6 +56,7 @@
     "expo-sharing": "~12.0.1",
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
+    "expo-store-review": "~7.0.2",
     "expo-system-ui": "~3.0.7",
     "expo-task-manager": "~11.8.2",
     "expo-web-browser": "~13.0.3",
@@ -95,9 +97,7 @@
     "scolengo-api": "^3.0.5",
     "text-encoding": "^0.7.0",
     "turboself-api": "^2.0.2",
-    "zustand": "^4.5.2",
-    "expo-store-review": "~7.0.2",
-    "expo": "~51.0.28"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
