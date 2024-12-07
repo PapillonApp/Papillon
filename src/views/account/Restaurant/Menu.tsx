@@ -230,7 +230,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                     solde={allBalances[selectedIndex].amount}
                     repas={
                       allBalances?.[selectedIndex]?.remaining != null
-                        ? Math.max(0, allBalances[selectedIndex].remaining)
+                        ? Math.max(0, allBalances[selectedIndex].remaining || 0)
                         : null
                     }
                   />
