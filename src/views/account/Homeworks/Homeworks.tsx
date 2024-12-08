@@ -65,11 +65,17 @@ const formatDate = (date: string | number | Date): string => {
 
 const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const flatListRef: React.MutableRefObject<FlatList> = useRef(null) as any as React.MutableRefObject<FlatList>;
-  const { width } = Dimensions.get("window");
-  const finalWidth = width - (width > 600 ? (
-    320 > width * 0.35 ? width * 0.35 :
+
+  const dims = Dimensions.get("screen");
+  const tabletWidth = dims.width;
+  const tabletHeight = dims.height;
+  const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+  const tablet = tabletDiagl >= 6.9;
+  const finalWidth = tabletWidth - (tablet ? (
+    320 > tabletWidth * 0.35 ? tabletWidth * 0.35 :
       320
   ) : 0);
+
   const insets = useSafeAreaInsets();
 
   const outsideNav = route.params?.outsideNav;
@@ -111,7 +117,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     length: finalWidth,
     offset: finalWidth * index,
     index,
-  }), [width]);
+  }), [finalWidth]);
 
   const keyExtractor = useCallback((item: any) => item.toString(), []);
 
@@ -470,7 +476,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                 ]}
                 layout={animPapillon(LinearTransition)}
                 >
-                  {width > 370 ? "Semaine" : "sem."}
+                  {tabletWidth > 370 ? "Semaine" : "sem."}
                 </Reanimated.Text>
 
                 <Reanimated.View
@@ -539,7 +545,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           />
         }
 
-        {showPickerButtons && !searchHasFocus && width > 330 &&
+        {showPickerButtons && !searchHasFocus && tabletWidth > 330 &&
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
           entering={animPapillon(FadeInLeft).delay(100)}

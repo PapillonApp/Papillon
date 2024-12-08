@@ -65,8 +65,11 @@ const AccountStackScreen: Screen<"AccountStack"> = () => {
     }
   }, [params]);
 
-  const dims = Dimensions.get("window");
-  const tablet = dims.width > 600;
+  const dims = Dimensions.get("screen");
+  const tabletWidth = dims.width;
+  const tabletHeight = dims.height;
+  const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+  const tablet = tabletDiagl >= 6.9;
 
   let newAccountScreens = screens;
 

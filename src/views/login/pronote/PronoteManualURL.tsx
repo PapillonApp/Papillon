@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { RouteParameters, Screen } from "@/router/helpers/types";
-import { TextInput, View, StyleSheet, TouchableOpacity } from "react-native";
+import { TextInput, View, StyleSheet, TouchableOpacity, KeyboardEvent, Keyboard } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import determinateAuthenticationView from "@/services/pronote/determinate-authentication-view";
 
@@ -21,8 +21,27 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
   const {colors} = theme;
   const insets = useSafeAreaInsets();
   const [instanceURL, setInstanceURL] = useState("");
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const {showAlert} = useAlert();
+
+  const keyboardDidShow = (event: KeyboardEvent) => {
+    setKeyboardOpen(true);
+  };
+
+  const keyboardDidHide = () => {
+    setKeyboardOpen(false);
+  };
+
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", keyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", keyboardDidHide);
+
+    return () => {
+      Keyboard.removeAllListeners("keyboardDidShow");
+      Keyboard.removeAllListeners("keyboardDidHide");
+    };
+  }, []);
 
   // find url in route params
   useEffect(() => {
@@ -80,24 +99,26 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
     <View style={[
       styles.container,
       {
-        paddingTop: insets.top,
+        paddingTop: "10%",
         paddingBottom: insets.bottom + 0,
       }
     ]}>
       <MaskStars />
 
-      <View style={{height: 44 + 20}} />
+      <View style={{ height: 44 + 20 }} />
 
-      <PapillonShineBubble
-        message={
-          !clipboardFound ?
-            "Indique moi l'adresse URL Pronote de ton établissement"
-            : "J'ai trouvé cette adresse dans ton presse-papier !"
-        }
-        numberOfLines={3}
-        width={250}
-        noFlex
-      />
+      {!keyboardOpen && (
+        <PapillonShineBubble
+          message={
+            !clipboardFound ?
+              "Indique moi l'adresse URL Pronote de ton établissement"
+              : "J'ai trouvé cette adresse dans ton presse-papier !"
+          }
+          numberOfLines={2}
+          width={250}
+          noFlex
+        />
+      )}
 
       <View style={{
         width: "100%",

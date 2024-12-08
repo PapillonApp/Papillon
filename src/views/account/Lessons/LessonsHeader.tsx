@@ -22,6 +22,12 @@ interface HeaderCalendarProps {
 }
 
 const HeaderCalendar: React.FC<HeaderCalendarProps> = () => {
+  const dims = Dimensions.get("screen");
+  const tabletWidth = dims.width;
+  const tabletHeight = dims.height;
+  const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+  const tablet = tabletDiagl >= 6.9;
+
   return (
     <Reanimated.View
       style={[{

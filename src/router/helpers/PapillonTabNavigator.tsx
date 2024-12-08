@@ -237,32 +237,20 @@ const BasePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "N
   );
 };
 
-export const LargePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "NavigationContent">> = ({ state, descriptors, navigation }) => {
+const LargePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "NavigationContent">> = ({ state, descriptors, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const account = useCurrentAccount(store => store.account!);
-  const [shouldShowLabel, setShouldShowLabel] = React.useState(true);
-
-  const [transparentTabBar, setTransparentTabBar] = React.useState(false);
-  const [hideTabBar, setHideTabBar] = React.useState(false);
-
-  const [showTabBackground, setShowTabBackground] = React.useState(false);
+  const [hideTabBar, setHideTabBar] = useState(false);
 
   useEffect(() => {
-    setShouldShowLabel(!account.personalization.hideTabTitles);
-    setShowTabBackground(account.personalization.showTabBackground ?? false);
-    setTransparentTabBar(account.personalization.transparentTabBar ?? false);
     setHideTabBar(account.personalization.hideTabBar ?? false);
   }, [account.personalization]);
 
   const bottomAnim = useSharedValue(1);
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    opacity: withTiming(bottomAnim.value, { duration: 200 }),
-  }));
-
-  React.useEffect(() => {
+  useEffect(() => {
     bottomAnim.value = hideTabBar ? 0 : 1;
   }, [hideTabBar]);
 
@@ -434,8 +422,11 @@ const BottomTabNavigator: React.ComponentType<any> = ({
   screenOptions,
   ...rest
 }) => {
-  const dims = Dimensions.get("window");
-  const tablet = dims.width > 600;
+  const dims = Dimensions.get("screen");
+  const tabletWidth = dims.width;
+  const tabletHeight = dims.height;
+  const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+  const tablet = tabletDiagl >= 6.9;
   const mainNavigator = useRef(null);
 
   // Track previous index to determine direction

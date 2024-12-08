@@ -43,9 +43,21 @@ const Header: React.FC<{
   const [addons] = useState<AddonHomePageInfo[]>([]);
   const [addonsTitle, setAddonsTitle] = useState<string[]>([]);
   const [click, setClick] = useState<false | true>(false);
+  const [tablet, setTablet] = useState<boolean>(false);
 
-  const dims = Dimensions.get("window");
-  const tablet = dims.width > 600;
+  useEffect(() => {
+    const updateTabletOrientation = () => {
+      const dims = Dimensions.get("screen");
+      const tabletWidth = dims.width;
+      const tabletHeight = dims.height;
+      const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+      setTablet(tabletDiagl >= 6.9);
+    };
+    updateTabletOrientation(); // 1ère fois qu'on arrive sur la page
+
+    const subscription = Dimensions.addEventListener("change", updateTabletOrientation); // Dès qu'on change de rotation
+    return () => subscription.remove(); // Permet d'éviter les fuites de mémoire
+  }, []);
 
   useEffect(() => {
     // On récupère le fichier principal de chaque extension.

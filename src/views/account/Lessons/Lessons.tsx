@@ -43,6 +43,16 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const loadedWeeks = useRef<Set<number>>(new Set());
   const currentlyLoadingWeeks = useRef<Set<number>>(new Set());
 
+  const dims = Dimensions.get("screen");
+  const tabletWidth = dims.width;
+  const tabletHeight = dims.height;
+  const tabletDiagl = (tabletWidth / tabletHeight) * 10;
+  const tablet = tabletDiagl >= 6.9;
+  const finalWidth = tabletWidth - (tablet ? (
+    320 > tabletWidth * 0.35 ? tabletWidth * 0.35 :
+      320
+  ) : 0);
+
   useEffect(() => {
     // add all week numbers in timetables to loadedWeeks
     for (const week in timetables) {
@@ -81,8 +91,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const loadTimetableWeek = async (weekNumber: number, force = false) => {
     if (
       (currentlyLoadingWeeks.current.has(weekNumber) ||
-				loadedWeeks.current.has(weekNumber)) &&
-			!force
+        loadedWeeks.current.has(weekNumber)) &&
+      !force
     ) {
       return;
     }
@@ -132,51 +142,55 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
       return date;
     });
   });
-  const renderItem = useCallback(({ item: date }: { item: Date }) => {
-    const weekNumber = getWeekFromDate(date);
-    return (
-      <View style={{ width: Dimensions.get("window").width }}>
-        <Page
-          paddingTop={outsideNav ? 80 : insets.top + 56}
-          current={date.getTime() === pickerDate.getTime()}
-          date={date}
-          day={getAllLessonsForDay(date)}
-          weekExists={
-            timetables[weekNumber] && timetables[weekNumber].length > 0
-          }
-          refreshAction={() => loadTimetableWeek(weekNumber, true)}
-          loading={loadingWeeks.includes(weekNumber)}
-        />
-      </View>
-    );
-  },
-  [
-    pickerDate,
-    timetables,
-    loadingWeeks,
-    outsideNav,
-    insets,
-    getAllLessonsForDay,
-    loadTimetableWeek,
-  ],
+  const renderItem = useCallback(
+    ({ item: date }: { item: Date }) => {
+      const weekNumber = getWeekFromDate(date);
+      return (
+        <View style={{ width: finalWidth, height: "100%" }}>
+          <Page
+            paddingTop={outsideNav ? 80 : insets.top + 56}
+            current={date.getTime() === pickerDate.getTime()}
+            date={date}
+            day={getAllLessonsForDay(date)}
+            weekExists={
+              timetables[weekNumber] && timetables[weekNumber].length > 0
+            }
+            refreshAction={() => loadTimetableWeek(weekNumber, true)}
+            loading={loadingWeeks.includes(weekNumber)}
+          />
+        </View>
+      );
+    },
+    [
+      pickerDate,
+      timetables,
+      loadingWeeks,
+      outsideNav,
+      insets,
+      finalWidth,
+      getAllLessonsForDay,
+      loadTimetableWeek,
+    ]
   );
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
-    if (viewableItems.length > 0) {
-      const newDate = viewableItems[0].item;
-      setPickerDate(newDate);
-      loadTimetableWeek(getWeekFromDate(newDate), false);
-    }
-  },
-  [loadTimetableWeek],
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
+      if (viewableItems.length > 0) {
+        const newDate = viewableItems[0].item;
+        setPickerDate(newDate);
+        loadTimetableWeek(getWeekFromDate(newDate), false);
+      }
+    },
+    [loadTimetableWeek]
   );
 
-  const getItemLayout = useCallback((_: any, index: number) => ({
-    length: Dimensions.get("window").width,
-    offset: Dimensions.get("window").width * index,
-    index,
-  }),
-  [],
+  const getItemLayout = useCallback(
+    (_: any, index: number) => ({
+      length: finalWidth,
+      offset: finalWidth * index,
+      index,
+    }),
+    [finalWidth]
   );
 
   const askForReview = async () => {
@@ -281,8 +295,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
               label: "Importer un iCal",
               onPress: () => {
                 navigation.navigate("LessonsImportIcal", {});
-              }
-            }
+              },
+            },
           ]}
         >
           <PapillonHeaderAction
@@ -327,7 +341,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           newDate.setHours(0, 0, 0, 0);
           setPickerDate(newDate);
           const index = data.findIndex(
-            (d) => d.getTime() === newDate.getTime(),
+            (d) => d.getTime() === newDate.getTime()
           );
           if (index !== -1) {
             flatListRef.current?.scrollToIndex({ index, animated: false });
