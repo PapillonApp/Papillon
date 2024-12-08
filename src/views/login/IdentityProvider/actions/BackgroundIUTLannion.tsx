@@ -6,11 +6,12 @@ import { AccountService, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Alert, Button, View } from "react-native";
+import { View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
+import { useAlert } from "@/providers/AlertProvider";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
@@ -22,7 +23,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   let username = params?.username || null;
   let password = params?.password || null;
 
-  const account = useCurrentAccount(store => store.account);
+  const account = useCurrentAccount((store) => store.account);
 
   const url = "https://notes9.iutlan.univ-rennes1.fr/";
   const firstLogin = params?.firstLogin || false;
@@ -30,25 +31,25 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
   const [step, setStep] = React.useState("Chargement du portail");
 
-  if(!firstLogin) {
-    if(account?.service == AccountService.Local && account.credentials) {
+  if (!firstLogin) {
+    if (account?.service == AccountService.Local && account.credentials) {
       username = account.credentials.username;
       password = account.credentials.password;
-    }
-    else {
+    } else {
       navigation.goBack();
     }
   }
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
+
+  const { showAlert } = useAlert();
 
   const useData = async (data: any) => {
-    if(firstLogin) {
+    if (firstLogin) {
       await actionFirstLogin(data);
-    }
-    else {
+    } else {
       mutateProperty("identityProvider", {
         identifier: "iut-lannion",
         name: "IUT de Lannion",
@@ -84,7 +85,10 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       isExternal: false,
       linkedExternalLocalIDs: [],
 
-      name: data["relevé"].etudiant.nom + " " + capitalizeFirst(data["relevé"].etudiant.prenom),
+      name:
+        data["relevé"].etudiant.nom +
+        " " +
+        capitalizeFirst(data["relevé"].etudiant.prenom),
       studentName: {
         first: capitalizeFirst(data["relevé"].etudiant.prenom),
         last: data["relevé"].etudiant.nom
@@ -115,12 +119,11 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   const [redirectCount, setRedirectCount] = React.useState(0);
 
   const injectPassword = () => {
-    if(redirectCount >= 2) {
-      Alert.alert(
-        "Erreur",
-        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifiez vos identifiants et réessayez.",
-        [{ text: "OK", onPress: () => navigation.goBack() }]
-      );
+    if (redirectCount >= 2) {
+      showAlert({
+        title: "Erreur",
+        message: "Impossible de se connecter au portail de l'IUT de Lannion. Vérifiez vos identifiants et réessayez."
+      });
       navigation.goBack();
       return;
     }
@@ -131,21 +134,21 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     setRedirectCount(newRedirCount);
 
     wbref.current?.injectJavaScript(`
-            // fill input id=username
-            document.getElementById("username").value = "${username}";
-            // fill input id=password
-            document.getElementById("password").value = "${password}";
-            // press button name=submitBtn
-            document.getElementsByName("submitBtn")[0].click();
-          `);
+      // fill input id=username
+      document.getElementById("username").value = "${username}";
+      // fill input id=password
+      document.getElementById("password").value = "${password}";
+      // press button name=submitBtn
+      document.getElementsByName("submitBtn")[0].click();
+    `);
     setCanExtractJSON(true);
   };
 
   const redirectToData = () => {
     setStep("Récupération des données");
     wbref.current?.injectJavaScript(`
-              window.location.href = "https://notes9.iutlan.univ-rennes1.fr/services/data.php?q=dataPremièreConnexion";
-            `);
+      window.location.href = "https://notes9.iutlan.univ-rennes1.fr/services/data.php?q=dataPremièreConnexion";
+    `);
   };
 
   return (
@@ -166,9 +169,15 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
           gap: 6,
         }}
       >
-        <PapillonSpinner size={56} strokeWidth={5} color={theme.colors.primary} />
+        <PapillonSpinner
+          size={56}
+          strokeWidth={5}
+          color={theme.colors.primary}
+        />
         <View style={{ height: 10 }} />
-        <NativeText variant="title" key={step}
+        <NativeText
+          variant="title"
+          key={step}
           animated
           entering={animPapillon(FadeInDown)}
           exiting={animPapillon(FadeOutUp)}
@@ -185,33 +194,37 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         source={{ uri: url }}
         incognito={true}
         ref={wbref}
-
         onLoad={(data) => {
           const url = data.nativeEvent.url;
           console.log(url);
 
-          if(url.startsWith("https://sso-cas.univ-rennes1.fr//login?")) {
+          if (url.startsWith("https://sso-cas.univ-rennes1.fr//login?")) {
             injectPassword();
           }
 
-          if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/") && canExtractJSON) {
+          if (
+            url.startsWith("https://notes9.iutlan.univ-rennes1.fr/") &&
+            canExtractJSON
+          ) {
             redirectToData();
             setCanExtractJSON(false);
           }
 
-          if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/services/data.php")) {
+          if (
+            url.startsWith(
+              "https://notes9.iutlan.univ-rennes1.fr/services/data.php"
+            )
+          ) {
             wbref.current?.injectJavaScript(`
-                window.ReactNativeWebView.postMessage(document.body.innerText);
-              `);
+              window.ReactNativeWebView.postMessage(document.body.innerText);
+            `);
           }
         }}
-
         onMessage={(event) => {
           try {
             const parsedData = JSON.parse(event.nativeEvent.data);
             useData(parsedData);
-          }
-          catch (e) {
+          } catch (e) {
             console.error(e);
           }
         }}

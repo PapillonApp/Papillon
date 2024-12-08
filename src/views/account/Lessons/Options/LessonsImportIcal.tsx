@@ -3,9 +3,9 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
-import { Calendar, Info, QrCode, X } from "lucide-react-native";
+import { Calendar, ClipboardCopy, Info, QrCode, Trash2, X } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Alert, Linking, Modal, Platform, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, TextInput, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import * as Clipboard from "expo-clipboard";
@@ -14,25 +14,23 @@ import { CameraView } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
-import { updateTimetableForWeekInCache } from "@/services/timetable";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
+import { useAlert } from "@/providers/AlertProvider";
 
 const ical = require("cal-parser");
 
 const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
 
   const defaultIcal = route.params?.ical || "";
   const defaultTitle = route.params?.title || "";
   const autoAdd = route.params?.autoAdd || false;
 
   const account = useCurrentAccount(store => store.account!);
-  const timetables = useTimetableStore(store => store.timetables);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
   const [url, setUrl] = React.useState(defaultIcal);
-  const [title, setTitle] = React.useState(defaultTitle);
+  const [title] = React.useState(defaultTitle);
 
   const [cameraVisible, setCameraVisible] = React.useState(false);
 
@@ -44,8 +42,9 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
 
   useEffect(() => {
     if (!account.instance) return;
+
     if (defaultIcal && autoAdd) {
-      if(account.personalization.icalURLs?.filter(u => u.url === defaultIcal).length === 0) {
+      if (account.personalization.icalURLs?.filter(u => u.url === defaultIcal).length === 0) {
         saveIcal().then(() => {
           if (autoAdd) {
             navigation.goBack();
@@ -58,6 +57,8 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
       }
     }
   }, [defaultIcal]);
+
+  const { showAlert } = useAlert();
 
   const saveIcal = async () => {
     setLoading(true);
@@ -84,7 +85,10 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         fetchIcalData(account);
       })
       .catch(() => {
-        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifiez l'URL et réessayez.");
+        showAlert({
+          title: "Erreur",
+          message: "Impossible de récupérer les données du calendrier. Vérifiez l'URL et réessayez.",
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -123,25 +127,29 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
           <X size={20} strokeWidth={2.5} color={"#fff"} />
         </TouchableOpacity>
 
-        <View style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 10,
-          height: "100%",
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent",
-        }}>
-          <View style={{
-            width: 260,
-            maxWidth: "90%",
-            aspectRatio: 1,
-            borderWidth: 3,
-            borderColor: "#fff",
-            borderRadius: 8,
-          }}/>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            height: "100%",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "transparent",
+          }}
+        >
+          <View
+            style={{
+              width: 260,
+              maxWidth: "90%",
+              aspectRatio: 1,
+              borderWidth: 3,
+              borderColor: "#fff",
+              borderRadius: 8,
+            }}
+          />
         </View>
 
         <CameraView
@@ -159,9 +167,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
       </Modal>
 
       <NativeList>
-        <NativeItem
-          icon={<Info />}
-        >
+        <NativeItem icon={<Info />}>
           <NativeText variant="subtitle">
             Les liens iCal permettent d'importer des calendriers en temps réel depuis un agenda compatible.
           </NativeText>
@@ -179,10 +185,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
               }}
               onPress={() => scanIcalQRCode()}
             >
-              <QrCode
-                size={24}
-                color={theme.colors.primary}
-              />
+              <QrCode size={24} color={theme.colors.primary} />
             </TouchableOpacity>
           }
         >
@@ -205,65 +208,79 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
 
       <ButtonCta
         value="Importer"
-        icon={loading ?
-          <View>
-            <PapillonSpinner
-              strokeWidth={3}
-              size={22}
-              color={theme.colors.text}
-            />
-          </View>: undefined
+        icon={
+          loading ? (
+            <View>
+              <PapillonSpinner
+                strokeWidth={3}
+                size={22}
+                color={theme.colors.text}
+              />
+            </View>
+          ) : undefined
         }
         primary={!loading}
         style={{
           marginTop: 16,
         }}
-        onPress={() => {saveIcal();}}
+        onPress={() => saveIcal()}
       />
 
-      {account.personalization.icalURLs && account.personalization.icalURLs.length > 0 &&(<>
-        <NativeListHeader label="URLs ajoutées" />
-
-        <NativeList>
-          {account.personalization.icalURLs.map((url, index) => (
-            <NativeItem
-              key={index}
-              icon={<Calendar />}
-              onPress={() => {
-                Alert.alert(url.name, url.url, [
-                  {
-                    text: "Annuler",
-                    style: "cancel",
-                  },
-                  {
-                    text: "Copier l'URL",
-                    onPress: () => {
-                      Clipboard.setString(url.url);
-                      Alert.alert("Copié", "L'URL a été copiée dans le presse-papiers.");
-                    },
-                  },
-                  {
-                    text: "Supprimer le calendrier",
-                    style: "destructive",
-                    onPress: () => {
-                      useTimetableStore.getState().removeClassesFromSource("ical://"+url.url);
-                      const urls = account.personalization.icalURLs || [];
-                      urls.splice(index, 1);
-                      mutateProperty("personalization", {
-                        ...account.personalization,
-                        icalURLs: urls,
-                      });
-                    },
-                  },
-                ]);
-              }}
-            >
-              <NativeText variant="title">{url.name}</NativeText>
-              <NativeText variant="subtitle">{url.url}</NativeText>
-            </NativeItem>
-          ))}
-        </NativeList>
-      </>)}
+      {account.personalization.icalURLs && account.personalization.icalURLs.length > 0 && (
+        <>
+          <NativeListHeader label="URLs ajoutées" />
+          <NativeList>
+            {account.personalization.icalURLs.map((url, index) => (
+              <NativeItem
+                key={index}
+                icon={<Calendar />}
+                onPress={() => {
+                  showAlert({
+                    title: url.name,
+                    message: url.url,
+                    actions: [
+                      {
+                        title: "Annuler",
+                        onPress: () => {},
+                        backgroundColor: theme.colors.card,
+                        icon: <X color={theme.colors.text} />
+                      },
+                      {
+                        title: "Copier l'URL",
+                        onPress: () => {
+                          Clipboard.setStringAsync(url.url);
+                          showAlert({
+                            title: "Copié !",
+                            message: "L'URL a été copiée dans le presse-papiers."
+                          });
+                        },
+                        icon: <ClipboardCopy color={theme.colors.text} />
+                      },
+                      {
+                        title: "Supprimer le calendrier",
+                        onPress: () => {
+                          useTimetableStore.getState().removeClassesFromSource("ical://" + url.url);
+                          const urls = account.personalization.icalURLs || [];
+                          urls.slice(index, 1);
+                          mutateProperty("personalization", {
+                            ...account.personalization,
+                            icalURLs: urls
+                          });
+                        },
+                        backgroundColor: "#CF0029",
+                        icon: <Trash2 color="#FFFFFF" />
+                      },
+                    ],
+                  });
+                }}
+              >
+                <NativeText variant="title">{url.name}</NativeText>
+                <NativeText variant="subtitle">{url.url}</NativeText>
+              </NativeItem>
+            ))}
+          </NativeList>
+        </>
+      )}
 
     </ScrollView>
   );

@@ -1,9 +1,9 @@
 import React from "react";
-import { View, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Screen } from "@/router/helpers/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
-import { Info } from "lucide-react-native";
+import { Info, X } from "lucide-react-native";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import pronote from "pawnote";
 import { Account, AccountService } from "@/stores/account/types";
@@ -11,14 +11,19 @@ import defaultPersonalization from "@/services/pronote/default-personalization";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
+import { useAlert } from "@/providers/AlertProvider";
+import { useTheme } from "@react-navigation/native";
 
 const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
+  const theme = useTheme();
   const { data } = route.params;
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const [loading, setLoading] = React.useState(false);
+
+  const { showAlert } = useAlert();
 
   const ResetImport = () => {
     navigation.pop();
@@ -29,23 +34,29 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
       setLoading(true);
 
       const session = pronote.createSessionHandle();
-      const refresh = await pronote.loginToken(session, {
-        url: data.instanceUrl,
-        kind: pronote.AccountKind.STUDENT,
-        username: data.username,
-        token: data.nextTimeToken,
-        deviceUUID: data.deviceUUID
-      }).catch((error) => {
-        if (error instanceof pronote.SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          navigation.navigate("Pronote2FA_Auth", {
-            session,
-            error,
-            accountID: data.deviceUUID
-          });
-        } else {
-          throw error;
-        }
-      });
+      const refresh = await pronote
+        .loginToken(session, {
+          url: data.instanceUrl,
+          kind: pronote.AccountKind.STUDENT,
+          username: data.username,
+          token: data.nextTimeToken,
+          deviceUUID: data.deviceUUID
+        })
+        .catch((error) => {
+          if (
+            error instanceof pronote.SecurityError &&
+            !error.handle.shouldCustomPassword &&
+            !error.handle.shouldCustomDoubleAuth
+          ) {
+            navigation.navigate("Pronote2FA_Auth", {
+              session,
+              error,
+              accountID: data.deviceUUID
+            });
+          } else {
+            throw error;
+          }
+        });
 
       if (!refresh) throw pronote.AuthenticateError;
 
@@ -91,28 +102,28 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
           routes: [{ name: "AccountCreated" }],
         });
       });
-    }
-    catch (error) {
+    } catch (error) {
       setLoading(false);
-      Alert.alert(
-        "Impossible de vous reconnecter automatiquement",
-        "Vous pouvez cepedant vous connecter manuellement en indiquant votre identifiant et mot de passe.",
-        [
+      showAlert({
+        title: "Impossible de vous reconnecter automatiquement",
+        message: "Vous pouvez cependant vous connecter manuellement en indiquant votre identifiant et mot de passe.",
+        actions: [
           {
-            text: "Se connecter manuellement",
+            title: "Se connecter manuellement",
             onPress: async () => {
               navigation.pop();
               await AsyncStorage.setItem("pronote:imported", "true");
               navigation.navigate("PronoteManualURL", { url: data.instanceUrl });
-            }
+            },
           },
           {
-            text: "Annuler",
-            style: "cancel",
-            onPress: ResetImport
+            title: "Annuler",
+            onPress: ResetImport,
+            backgroundColor: theme.colors.card,
+            icon: <X color={theme.colors.text} />
           }
         ]
-      );
+      });
     }
   };
 
@@ -122,9 +133,7 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
       contentContainerStyle={{ padding: 16 }}
     >
       <NativeList inline>
-        <NativeItem
-          icon={<Info />}
-        >
+        <NativeItem icon={<Info />}>
           <NativeText variant="subtitle">
             Il semblerait que vous ayez déjà utilisé l'application Papillon. Voulez-vous importer vos données ?
           </NativeText>
@@ -136,9 +145,7 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
           <NativeText variant="subtitle">
             Compte trouvé d'une ancienne installation
           </NativeText>
-          <NativeText variant="title">
-            {data.username.toUpperCase()}
-          </NativeText>
+          <NativeText variant="title">{data.username.toUpperCase()}</NativeText>
         </NativeItem>
       </NativeList>
 
@@ -152,13 +159,10 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
           primary
           value="Me reconnecter"
           onPress={() => TryLogin()}
-          icon={loading ? <ActivityIndicator />: undefined}
+          icon={loading ? <ActivityIndicator /> : undefined}
         />
 
-        <ButtonCta
-          value="Plus tard"
-          onPress={() => ResetImport()}
-        />
+        <ButtonCta value="Plus tard" onPress={() => ResetImport()} />
       </View>
     </ScrollView>
   );
