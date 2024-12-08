@@ -182,7 +182,8 @@ export interface ARDAccount extends BaseExternalAccount {
     pid: string
     username: string
     password: string
-    schoolID: string
+    schoolID: string,
+    mealPrice: number
   }
 }
 

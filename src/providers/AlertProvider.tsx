@@ -125,6 +125,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                   backgroundColor: colors.card,
                   marginBottom: 10 + insets.bottom,
                   width: Dimensions.get("window").width - 20,
+                  maxWidth: 600,
                 }
               ]}
               entering={FadeInDown.duration(200)}

@@ -33,6 +33,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="papillon"/>
         <data android:scheme="xyz.getpapillon.app"/>
+        <data android:scheme="izly"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>

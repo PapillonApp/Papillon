@@ -18,7 +18,7 @@ import ExternalTurboselfLogin from "@/views/settings/ExternalAccount/Turboself";
 import ExternalArdLogin from "@/views/settings/ExternalAccount/ARD";
 import SettingsDonorsList from "@/views/settings/SettingsDonorsList";
 import ExternalAccountSelector from "@/views/settings/ExternalAccount/ServiceSelector";
-import QrcodeAnswer from "@/views/settings/ExternalAccount/QrcodeAnswer";
+import PriceError from "@/views/settings/ExternalAccount/PriceError";
 import QrcodeScanner from "@/views/settings/ExternalAccount/QrcodeScanner";
 import PriceDetectionOnboarding from "@/views/settings/ExternalAccount/PriceDetectionOnboarding";
 import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
@@ -76,7 +76,7 @@ const settingsScreens = [
     headerTitle: "Configuration de la cantine",
   }),
 
-  createScreen("QrcodeAnswer", QrcodeAnswer, {
+  createScreen("PriceError", PriceError, {
     headerTitle: "Configuration de la cantine",
   }),
 
@@ -103,7 +103,11 @@ const settingsScreens = [
   }),
 
   createScreen("IzlyActivation", IzlyActivation, {
-    headerTitle: "Configuration de la cantine",
+    headerTitle: "Configuration de Izly",
+    presentation: "modal",
+    headerBackVisible: false,
+    gestureEnabled: false,
+
   }),
 
   createScreen("SettingsDevLogs", SettingsDevLogs, {

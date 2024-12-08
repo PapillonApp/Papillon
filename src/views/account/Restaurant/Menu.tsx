@@ -191,6 +191,20 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     })();
   }, [linkedAccounts]);
 
+  const fetchQRCode = async () => {
+    if (linkedAccounts) {
+      const qrCodes = await Promise.all(linkedAccounts.map(qrcodeFromExternal));
+      console.log("fqq", qrCodes);
+      setAllQRCodes(qrCodes.filter((code) => code !== null) as string[]);
+    }
+  };
+
+  useEffect(() => {
+    // force la regénération du QR code à chaque fois que l'écran est affiché
+    const unsub = navigation.addListener("focus", fetchQRCode);
+    return unsub;
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       {!isInitialised ? (
@@ -208,7 +222,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
           ) : (
             <>
               <View style={styles.accountButtonContainer}>
-                {allBalances?.map((account, index) => (
+                {allBalances!.length > 1 && allBalances?.map((account, index) => (
                   <AccountButton
                     key={index}
                     account={account}
@@ -227,7 +241,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                 >
                   <RestaurantCard
                     solde={allBalances[selectedIndex].amount}
-                    repas={allBalances[selectedIndex].remaining || null }
+                    repas={
+                      allBalances?.[selectedIndex]?.remaining != null
+                        ? Math.max(0, allBalances[selectedIndex].remaining)
+                        : null
+                    }
                   />
                 </Reanimated.View>
               )}

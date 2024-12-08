@@ -101,7 +101,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
           />
           <View style={{flex: 1, gap: 3}}>
             <NativeText variant="title" numberOfLines={1}>{message.title === "" ? message.author : message.title}</NativeText>
-            <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toDateString()) : message.author}</NativeText>
+            <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toString()) : message.author}</NativeText>
           </View>
           {!isED && (
             <PapillonPicker
@@ -226,7 +226,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             borderColor: theme.colors.border,
             marginTop: 16,
           }}>
-            <NativeText>{formatDate(message.date.toDateString())}</NativeText>
+            <NativeText>{formatDate(message.date.toString())}</NativeText>
           </View>
         </ScrollView>}
 
