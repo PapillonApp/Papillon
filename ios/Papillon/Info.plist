@@ -28,12 +28,13 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>papillon</string>
+          <string>izly</string>
           <string>xyz.getpapillon.ios</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>7501</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSRequiresIPhoneOS</key>

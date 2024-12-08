@@ -103,7 +103,11 @@ const settingsScreens = [
   }),
 
   createScreen("IzlyActivation", IzlyActivation, {
-    headerTitle: "Configuration de la cantine",
+    headerTitle: "Configuration de Izly",
+    presentation: "modal",
+    headerBackVisible: false,
+    gestureEnabled: false,
+
   }),
 
   createScreen("SettingsDevLogs", SettingsDevLogs, {
