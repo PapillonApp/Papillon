@@ -117,7 +117,10 @@ const settingsScreens = [
     animation: "slide_from_right",
   }),
   createScreen("IzlyActivation", IzlyActivation, {
-    headerTitle: "Configuration de la cantine",
+    headerTitle: "Configuration de Izly",
+    presentation: "modal",
+    headerBackVisible: false,
+    gestureEnabled: false,
     animation: "slide_from_right",
   }),
   createScreen("SettingsDevLogs", SettingsDevLogs, {
