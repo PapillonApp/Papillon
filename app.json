@@ -2,8 +2,8 @@
   "expo": {
     "name": "Papillon",
     "slug": "papillonvex",
-    "scheme": "papillon",
-    "version": "7.5.0",
+    "scheme": ["papillon", "izly"],
+    "version": "7.6.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
