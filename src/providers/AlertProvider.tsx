@@ -2,8 +2,8 @@ import { useTheme } from "@react-navigation/native";
 import { Check } from "lucide-react-native";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { Modal, View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Reanimated, { LinearTransition, FadeInDown, FadeOutDown } from "react-native-reanimated";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import Reanimated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 
 type AlertAction = {
   title: string;
@@ -40,7 +40,6 @@ type AlertProviderProps = {
 const AlertProvider = ({ children }: AlertProviderProps) => {
   const [alert, setAlert] = useState<Alert>({ title: "", message: "", actions: [] });
   const [visible, setVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -83,95 +82,86 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
     });
 
     setVisible(true);
-    setModalVisible(true);
 
     setAlert({ title, message, actions });
   };
 
   const hideAlert = () => {
-    setVisible(false);
     setAlert({ title: "", message: "", actions: [] });
-
-    setTimeout(() => {
-      setModalVisible(false);
-    }, 100);
+    setVisible(false);
   };
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
       {children}
 
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={hideAlert}
-        animationType="fade"
-      >
-        <Reanimated.View
-          style={styles.modalContainer}
-          layout={LinearTransition}
-        >
-          <Pressable
-            style={{ flex: 1, width: "100%" }}
-            onPress={hideAlert}
-            onTouchEnd={hideAlert}
-          />
+      {visible && (
+        <SafeAreaView>
+          <Modal
+            transparent={true}
+            onRequestClose={hideAlert}
+            animationType="fade"
+          >
+            <Reanimated.View style={styles.modalContainer}>
+              <Pressable
+                style={{ flex: 1, width: "100%" }}
+                onPress={hideAlert}
+                onTouchEnd={hideAlert}
+              />
 
-          {visible && (
-            <Reanimated.View
-              style={[
-                styles.alertBox,
-                {
-                  backgroundColor: colors.card,
-                  marginBottom: 10 + insets.bottom,
-                  width: Dimensions.get("window").width - 20,
-                  maxWidth: 600,
-                }
-              ]}
-              entering={FadeInDown.duration(200)}
-              exiting={FadeOutDown.duration(100)}
-            >
-              <View style={styles.contentContainer}>
-                <Text style={[styles.title, { color: colors.text }]}>
-                  {alert.title}
-                </Text>
+              <Reanimated.View
+                style={[
+                  styles.alertBox,
+                  {
+                    backgroundColor: colors.card,
+                    marginBottom: 10 + insets.bottom,
+                    width: Dimensions.get("window").width - 20,
+                    maxWidth: 600,
+                  }
+                ]}
+              >
+                <View style={styles.contentContainer}>
+                  <Text style={[styles.title, { color: colors.text }]}>
+                    {alert.title}
+                  </Text>
 
-                <Text style={[styles.message, { color: colors.text }]}>
-                  {alert.message}
-                </Text>
-              </View>
+                  <Text style={[styles.message, { color: colors.text }]}>
+                    {alert.message}
+                  </Text>
+                </View>
 
-              <View style={[styles.buttons, { borderColor: colors.border, backgroundColor: colors.text + "0a" }]}>
-                {(alert.actions ?? []).map(({ title, onPress, icon, primary, backgroundColor }) => (
-                  <Pressable
-                    key={title}
-                    onPress={() => {
-                      onPress();
-                      hideAlert();
-                    }}
-                    style={({ pressed }) => [
-                      styles.button,
-                      primary && styles.primaryButton,
-                      primary && {
-                        backgroundColor: backgroundColor ? backgroundColor : colors.primary,
-                      },
-                      {
-                        opacity: primary ? (pressed ? 0.6 : 1) : (pressed ? 0.3 : 0.6),
-                      }
-                    ]}
-                  >
-                    {icon ? icon : null}
+                <View style={[styles.buttons, { borderColor: colors.border, backgroundColor: colors.text + "0a" }]}>
+                  {(alert.actions ?? []).map(({ title, onPress, icon, primary, backgroundColor }) => (
+                    <Pressable
+                      key={title + "alertbutton"}
+                      onPress={() => {
+                        onPress();
+                        hideAlert();
+                      }}
+                      style={({ pressed }) => [
+                        styles.button,
+                        primary && styles.primaryButton,
+                        primary && {
+                          backgroundColor: backgroundColor ? backgroundColor : colors.primary,
+                        },
+                        {
+                          opacity: primary ? (pressed ? 0.6 : 1) : (pressed ? 0.3 : 0.6),
+                        }
+                      ]}
+                    >
+                      {icon ? icon : null}
 
-                    <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
-                      {title}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+                      <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
+                        {title}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </Reanimated.View>
             </Reanimated.View>
-          )}
-        </Reanimated.View>
-      </Modal>
+          </Modal>
+        </SafeAreaView>
+      )}
     </AlertContext.Provider>
   );
 };

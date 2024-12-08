@@ -18,7 +18,7 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import { defaultTabs } from "@/consts/DefaultTabs";
 import { Widgets } from "@/widgets";
 import LottieView from "lottie-react-native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import Widget from "./Widget";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
@@ -85,7 +85,7 @@ const Header: React.FC<{
 
       {!tablet && (
         tabs.filter(tab => !tab.enabled).length === 0 ?
-          <PressableScale
+          <TouchableOpacity
             style={{
               height: 38,
               width: "100%",
@@ -124,7 +124,7 @@ const Header: React.FC<{
                 Ajouter des onglets
               </Text>
             </View>
-          </PressableScale>
+          </TouchableOpacity>
           : (
             <ScrollView
               horizontal
@@ -145,7 +145,7 @@ const Header: React.FC<{
 
                 return (
                   <HeaderButton
-                    key={index}
+                    key={index+"headbtn1"}
                     index={index}
                     icon={<LottieView
                       loop={false}
@@ -168,7 +168,7 @@ const Header: React.FC<{
                 );
               })}
 
-              <PressableScale
+              <TouchableOpacity
                 onPress={() => {
                   setClick(true);
                   setTimeout(() => {
@@ -196,8 +196,6 @@ const Header: React.FC<{
                     size={18}
                     color="white"
                     strokeWidth={2.8}
-                    entering={animPapillon(ZoomIn)}
-                    exiting={animPapillon(ZoomOut)}
                   />
                 ) : (
                   <CopyPlus
@@ -215,7 +213,7 @@ const Header: React.FC<{
                 >
                   Gérer
                 </Text>
-              </PressableScale>
+              </TouchableOpacity>
             </ScrollView>
           )
       )}
@@ -245,7 +243,7 @@ const Header: React.FC<{
           >
             {Widgets.map((widget, index) => (
               <Widget
-                key={index}
+                key={index+"headwidg1"}
                 widget={widget}
                 navigation={navigation}
               />
@@ -253,7 +251,7 @@ const Header: React.FC<{
 
             {addons.map((addon, index) => (
               <Widget
-                key={index}
+                key={index+"headwidg2"}
                 widget={forwardRef(() => (
                   <View style={{flex: 1}} onLayout={() => {
                     let temp = addonsTitle;

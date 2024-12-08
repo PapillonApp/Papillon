@@ -84,7 +84,7 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
       >
         {lastThreeGrades.map((item, index) => (
           <GradeItem
-            key={index}
+            key={index + "gradelemidx"}
             subject={item.subject}
             grade={item.grade}
             navigation={PapillonNavigation.current}

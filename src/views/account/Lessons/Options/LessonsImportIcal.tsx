@@ -227,7 +227,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         <NativeList>
           {account.personalization.icalURLs.map((url, index) => (
             <NativeItem
-              key={index}
+              key={index + "icalurl"}
               icon={<Calendar />}
               onPress={() => {
                 Alert.alert(url.name, url.url, [

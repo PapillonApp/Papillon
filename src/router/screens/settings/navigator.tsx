@@ -10,7 +10,7 @@ export const SettingsScreen: Screen<"SettingStack"> = ({ route }) => {
       {screens.map((screen) => (
         // @ts-expect-error : type not compatible, but it works fine.
         <SettingsStack.Screen
-          key={screen.name}
+          key={screen.name+"_tabrt5"}
           {...screen}
           initialParams={{ ...route.params }}
         />

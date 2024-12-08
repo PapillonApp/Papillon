@@ -103,7 +103,7 @@ jobs:
                      -archivePath build/Papillon.xcarchive \
                      -allowProvisioningUpdates \
                      -destination generic/platform=iOS \
-                     IPHONEOS_DEPLOYMENT_TARGET=13.4 \
+                     IPHONEOS_DEPLOYMENT_TARGET=15.1 \
                      CODE_SIGN_STYLE=Manual \
                      PROVISIONING_PROFILE_SPECIFIER="Papillon" \
                      CODE_SIGN_IDENTITY="iPhone Distribution" \

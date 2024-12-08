@@ -248,7 +248,7 @@ export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  key={index}
+                  key={index + "2faauth"}
                 >
                   <TextInput
                     placeholder="0"

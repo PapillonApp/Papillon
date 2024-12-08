@@ -20,11 +20,11 @@ const createScreen = <ScreenName extends keyof RouteParameters>(
     tabBarLabel?: string
     tabBarLottie?: any
     tabEnabled?: boolean
-  }) = {}
+  }) = {},
 ) => ({
   name,
   component,
-  options
+  options,
 });
 
 export default createScreen;

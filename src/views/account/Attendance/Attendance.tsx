@@ -1,6 +1,6 @@
-import { useTheme } from "@react-navigation/native";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, ActivityIndicator, Platform } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
@@ -200,16 +200,14 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             </PapillonPicker>
           </Reanimated.View>
 
-          {isLoading && !isRefreshing &&
+          {isLoading && !isRefreshing && (
             <Reanimated.View
-              entering={FadeIn}
-              exiting={FadeOut.duration(1000)}
               layout={LinearTransition}
               style={{ marginRight: 6 }}
             >
               <ActivityIndicator color={Platform.OS === "android" ? theme.colors.primary : void 0} />
             </Reanimated.View>
-          }
+          )}
         </Reanimated.View>
       </PapillonHeader>
 
@@ -255,7 +253,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
         {Object.keys(attendances_observations_details).map(sectionName => (
           <AttendanceItem
-            key={sectionName}
+            key={sectionName+"_tabrt5"}
             title={sectionName}
             icon={<Eye />}
             attendances={attendances_observations_details[sectionName]}

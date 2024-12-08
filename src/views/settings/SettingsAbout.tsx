@@ -47,7 +47,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
       contentContainerStyle={{
         padding: 16,
         paddingTop: 0,
-        paddingBottom: insets.bottom + 16,
+        paddingBottom: insets.bottom + 100,
       }}
     >
       <AboutContainerCard
@@ -91,7 +91,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           <NativeItem
             onPress={team.link ? () => Linking.openURL(team.link) : undefined}
             chevron={team.link ? true : false}
-            key={index}
+            key={index + "team"}
             leading={<Image
               source={{ uri: team.ppimage }}
               style={{
@@ -149,7 +149,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           <NativeItem
             onPress={() => Linking.openURL(contributor.html_url)}
             chevron={true}
-            key={index}
+            key={index + "contributor"}
             leading={<Image
               source={{ uri: contributor.avatar_url }}
               style={{
@@ -189,7 +189,6 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           </NativeText>
           {PackageJSON.dependencies["react-native"]  &&
               <NativeText variant="subtitle">
-                {/* @ts-expect-error Le module expo est ajouté aux dépendances au moment du build. */}
                 RN : {PackageJSON.dependencies["react-native"].split("^")[1]} | Expo : {(PackageJSON.devDependencies.expo || PackageJSON.dependencies.expo).split("^")[1]}
               </NativeText>
           }

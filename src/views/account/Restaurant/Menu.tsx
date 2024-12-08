@@ -203,15 +203,13 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               emoji="🤔"
               title="Vous n'avez lié aucun compte"
               description="Pour accéder à la cantine, vous devez lier un compte dans l'onglet services externes."
-              entering={animPapillon(FadeInDown)}
-              exiting={animPapillon(FadeOut)}
             />
           ) : (
             <>
               <View style={styles.accountButtonContainer}>
                 {allBalances!.length > 1 && allBalances?.map((account, index) => (
                   <AccountButton
-                    key={index}
+                    key={index + "accountButtonindex"}
                     account={account}
                     isSelected={selectedIndex === index}
                     onPress={() => setSelectedIndex(index)}
@@ -222,8 +220,6 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
               {selectedIndex !== null && allBalances?.[selectedIndex] && (
                 <Reanimated.View
-                  entering={FadeInUp}
-                  exiting={FadeOutDown}
                   layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
                 >
                   <RestaurantCard
@@ -258,7 +254,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
               <Reanimated.View layout={animPapillon(LinearTransition)}>
                 <Reanimated.View
-                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" }) + "menupickerdate"}
                   entering={FadeIn.duration(150)}
                   exiting={FadeOut.duration(150)}
                 >
@@ -279,7 +275,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               <NativeListHeader label="Réservations disponibles" />
               <NativeList>
                 {allBookings.map((terminal, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={index + "bookignindex"}>
                     {terminal.days.map((bookingDay, dayIndex) =>
                       bookingDay.date.toDateString() === pickerDate.toDateString() ? (
                         <NativeItem
@@ -321,11 +317,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                   { title: "Boisson", items: currentMenu.lunch.drink },
                 ].map(({ title, items }, index) =>
                   items && (
-                    <NativeItem key={index}>
+                    <NativeItem key={index + "menuindex"}>
                       <NativeText variant="subtitle">{title}</NativeText>
                       {items.map((food, idx) => (
                         <>
-                          <NativeText key={idx} variant="title">{food.name ?? ""}</NativeText>
+                          <NativeText key={idx + "menuidxelement"} variant="title">{food.name ?? ""}</NativeText>
                           {food.allergens.length > 0 && (
                             <View style={styles.allergensContainer}>
                               <AlertTriangle size={16} color={colors.text} opacity={0.6}/>
@@ -349,8 +345,6 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                 day: "numeric",
                 year: "numeric",
               })}.`}
-              entering={animPapillon(FadeInDown)}
-              exiting={animPapillon(FadeOut)}
               style={{ marginTop: 16 }}
             />
           )}

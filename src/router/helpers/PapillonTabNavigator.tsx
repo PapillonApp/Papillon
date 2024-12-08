@@ -6,7 +6,7 @@ import {
   TabRouter,
   useNavigationBuilder,
 } from "@react-navigation/native";
-import { Platform, Text } from "react-native";
+import { Platform, Text, TouchableOpacity } from "react-native";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Dimensions } from "react-native";
@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { useTheme } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 import colorsList from "@/utils/data/colors.json";
 
@@ -155,7 +155,7 @@ const BasePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "N
 
           return (
             <PressableScale
-              key={route.key}
+              key={route.key+"_tabrt"}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -359,7 +359,7 @@ export const LargePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuil
 
             return (
               <PressableScale
-                key={route.key}
+                key={route.key+"_tabrt2"}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -550,15 +550,17 @@ const BottomTabNavigator: React.ComponentType<any> = ({
 
         {!tablet ? (
           <BasePapillonBar
+            {...rest}
             state={state}
             descriptors={descriptors}
             navigation={navigation}
           />
         ) : (
           <LargePapillonBar
+            {...rest}
             state={state}
-            descriptors={descriptors}
             navigation={navigation}
+            descriptors={descriptors}
           />
         )}
       </View>

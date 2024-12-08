@@ -191,7 +191,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
         contentContainerStyle={{
           padding: 16,
           paddingTop: 0,
-          paddingBottom: 16 + insets.bottom,
+          paddingBottom: 100 + insets.bottom,
         }}
       >
         {localSubjects.length > 0 && selectedSubject && (
@@ -340,8 +340,6 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                                   borderColor: colors.background,
                                   borderWidth: 3,
                                 }}
-                                entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
-                                exiting={ZoomOut.springify().mass(1).damping(20).stiffness(300)}
                               />
                             )}
                           </View>

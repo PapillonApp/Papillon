@@ -129,7 +129,7 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
           onScroll={handleScroll}
         >
           { qrcodes && qrcodes?.map((code, index) => (
-            <View key={index} style={styles.qrCodeInnerContainer}>
+            <View key={index + "qrcode"} style={styles.qrCodeInnerContainer}>
               <QRCode
                 value={code.toString()}
                 size={170}

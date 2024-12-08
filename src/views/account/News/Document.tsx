@@ -155,8 +155,13 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
       <ScrollView
         style={{
           flex: 1,
-          paddingBottom: 16 + insets.bottom,
-          paddingTop: 106 - 16,
+          paddingBottom: 100 + insets.bottom,
+          marginTop:
+            106 -
+            (account.service === AccountService.Pronote &&
+            message.ref.needToAcknowledge
+              ? 16
+              : 0),
         }}
       >
         <View
@@ -236,7 +241,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             <NativeList>
               {message.attachments.map((attachment, index) => (
                 <NativeItem
-                  key={index}
+                  key={index + "newsdocumentindex"}
                   chevron={false}
                   onPress={() => Linking.openURL(attachment.url)}
                   icon={

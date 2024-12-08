@@ -25,6 +25,7 @@ import type { AverageDiffGrade } from "@/utils/grades/getAverages";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   const { grade, allGrades = [] } = route.params;
@@ -89,7 +90,6 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Note en " + subjectData.pretty,
-      presentation: "transparentModal",
       headerStyle: {
         backgroundColor: Platform.OS === "android" ? subjectData.color : undefined,
       },
@@ -216,75 +216,48 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   ];
 
   return (
-    <ScrollView
+    <View
       style={{
         flex: 1,
-        borderTopLeftRadius: Platform.OS === "ios" ? 19 : 0,
-        borderTopRightRadius: Platform.OS === "ios" ? 19 : 0,
+        backgroundColor: theme.colors.background,
         borderCurve: "continuous",
       }}
-      contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
-      contentInsetAdjustmentBehavior="automatic"
-      showsVerticalScrollIndicator={false}
-      decelerationRate={Platform.OS === "ios" ? "fast" : "normal"}
-      snapToInterval={Platform.OS === "ios" ? (Dimensions.get("window").height / 4) : undefined}
     >
-      <Pressable
-        style={{
-          position: "absolute",
-          height: "100%",
-          width: "100%",
-        }}
-        onPress={() => navigation.goBack()}
-      />
       <View
         style={{
-          minHeight: "100%",
-          width: "100%",
-          maxWidth: 500,
-          backgroundColor: theme.colors.background,
-          borderRadius: Platform.OS === "ios" ? 19 : 0,
           borderCurve: "continuous",
-          marginTop: Platform.OS === "ios" ? Dimensions.get("window").height / 4 : 0,
-          overflow: "hidden",
+          minHeight: 150,
+          backgroundColor: subjectData.color,
         }}
       >
         <View
           style={{
-            borderTopLeftRadius: Platform.OS === "ios" ? 20 : 0,
-            borderTopRightRadius: Platform.OS === "ios" ? 20 : 0,
-            borderCurve: "continuous",
-            minHeight: 180,
-            backgroundColor: subjectData.color,
-            borderColor: "#ffffff33",
-            borderWidth: 1,
-            borderBottomWidth: 0,
+            backgroundColor: "#00000043",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 0,
           }}
         >
-          <View
+          <Image
+            source={require("../../../../assets/images/mask_stars_settings.png")}
             style={{
-              backgroundColor: "#00000043",
               position: "absolute",
-              top: 0,
               left: 0,
+              top: 0,
               width: "100%",
               height: "100%",
-              zIndex: -1,
+              objectFit: "cover",
+              tintColor: "#ffffff",
+              opacity: 0.1,
+              zIndex: 100,
             }}
-          >
-            <Image
-              source={require("../../../../assets/images/mask_stars_settings.png")}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                tintColor: "#ffffff",
-                opacity: 0.15,
-              }}
-            />
-          </View>
+          />
+        </View>
 
-          {Platform.OS === "ios" &&
+        {Platform.OS === "ios" &&
             <View
               style={{
                 backgroundColor: "#ffffff",
@@ -296,157 +269,176 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
                 marginVertical: 8,
               }}
             />
-          }
+        }
+
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            gap: 6,
+            flex: 1,
+            justifyContent: "flex-end",
+          }}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontSize: 14,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+              fontFamily: "semibold",
+              opacity: 0.6,
+            }}
+            numberOfLines={1}
+          >
+            {subjectData.pretty}
+          </Text>
+          <Text
+            style={{
+              color: "#ffffff",
+              fontSize: 17,
+              fontFamily: "semibold",
+              opacity: 1,
+            }}
+            numberOfLines={1}
+          >
+            {grade.description || "Note sans description"}
+          </Text>
+          <Text
+            style={{
+              color: "#ffffff",
+              fontSize: 15,
+              fontFamily: "medium",
+              opacity: 0.6,
+            }}
+            numberOfLines={1}
+          >
+            {new Date(grade.timestamp).toLocaleDateString("fr-FR", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+            })}
+          </Text>
 
           <View
             style={{
-              paddingHorizontal: 16,
-              paddingVertical: 16,
-              gap: 6,
-              flex: 1,
-              justifyContent: "flex-end",
+              flexDirection: "row",
+              alignItems: "flex-end",
+              justifyContent: "flex-start",
+              gap: 2,
+              marginTop: 8,
             }}
           >
             <Text
               style={{
                 color: "#ffffff",
-                fontSize: 14,
-                letterSpacing: 1,
-                textTransform: "uppercase",
-                fontFamily: "semibold",
-                opacity: 0.6,
-              }}
-              numberOfLines={1}
-            >
-              {subjectData.pretty}
-            </Text>
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 17,
+                fontSize: 28,
                 fontFamily: "semibold",
                 opacity: 1,
               }}
               numberOfLines={1}
             >
-              {grade.description || "Note sans description"}
+              {grade.student.disabled ? "N. not" : grade.student.value?.toFixed(2)}
             </Text>
             <Text
               style={{
                 color: "#ffffff",
-                fontSize: 15,
+                fontSize: 18,
                 fontFamily: "medium",
                 opacity: 0.6,
+                marginBottom: 1,
               }}
               numberOfLines={1}
             >
-              {new Date(grade.timestamp).toLocaleDateString("fr-FR", {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })}
+              /{grade.outOf.value}
             </Text>
-
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "flex-end",
-                justifyContent: "flex-start",
-                gap: 2,
-                marginTop: 8,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 28,
-                  fontFamily: "semibold",
-                  opacity: 1,
-                }}
-                numberOfLines={1}
-              >
-                {grade.student.disabled ? "N. not" : grade.student.value?.toFixed(2)}
-              </Text>
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 18,
-                  fontFamily: "medium",
-                  opacity: 0.6,
-                  marginBottom: 1,
-                }}
-                numberOfLines={1}
-              >
-                /{grade.outOf.value}
-              </Text>
-            </View>
           </View>
         </View>
-
+      </View>
+      <ScrollView
+        style={{
+          flex: 1,
+          borderCurve: "continuous",
+        }}
+        contentContainerStyle={{ flexGrow: 1, alignItems: "center", paddingBottom: 100 + useSafeAreaInsets().bottom, }}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <View
           style={{
-            paddingHorizontal: 16,
+            minHeight: "100%",
+            width: "100%",
+            maxWidth: 500,
+            backgroundColor: theme.colors.background,
+            borderCurve: "continuous",
           }}
         >
 
-          {lists.map((list, index) => (
-            <View key={index}>
-              <NativeListHeader label={list.title} />
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}
+          >
 
-              <NativeList>
-                {list.items.map(
-                  (item, index) =>
-                    item && (
-                      <NativeItem
-                        key={index}
-                        icon={item.icon}
-                        trailing={
-                          <View
-                            style={{
-                              marginRight: 10,
-                              alignItems: "flex-end",
-                              flexDirection: "row",
-                              gap: 2,
-                            }}
-                          >
-                            <NativeText
+            {lists.map((list, index) => (
+              <View key={index+"gradedocidx"}>
+                <NativeListHeader label={list.title} animated={false} />
+
+                <NativeList animated={false}>
+                  {list.items.map(
+                    (item, index) =>
+                      item && (
+                        <NativeItem
+                          animated={false}
+                          key={index + "gradedocitemidx"}
+                          icon={item.icon}
+                          trailing={
+                            <View
                               style={{
-                                fontSize: 18,
-                                lineHeight: 22,
-                                fontFamily: "semibold",
-                                color:
-															"color" in item ? item.color : theme.colors.text,
+                                marginRight: 10,
+                                alignItems: "flex-end",
+                                flexDirection: "row",
+                                gap: 2,
                               }}
                             >
-                              {item.value}
-                            </NativeText>
-
-                            {"bareme" in item && (
-                              <NativeText variant="subtitle">
-                                {item.bareme}
+                              <NativeText
+                                animated={false}
+                                style={{
+                                  fontSize: 18,
+                                  lineHeight: 22,
+                                  fontFamily: "semibold",
+                                  color: "color" in item ? item.color : theme.colors.text,
+                                }}
+                              >
+                                {item.value}
                               </NativeText>
-                            )}
-                          </View>
-                        }
-                      >
-                        <NativeText variant="overtitle">{item.title}</NativeText>
 
-                        {item.description && (
-                          <NativeText variant="subtitle">
-                            {item.description}
-                          </NativeText>
-                        )}
-                      </NativeItem>
-                    )
-                )}
-              </NativeList>
-            </View>
-          ))}
+                              {"bareme" in item && (
+                                <NativeText variant="subtitle" animated={false}>
+                                  {item.bareme}
+                                </NativeText>
+                              )}
+                            </View>
+                          }
+                        >
+                          <NativeText variant="overtitle" animated={false}>{item.title}</NativeText>
+
+                          {item.description && (
+                            <NativeText variant="subtitle" animated={false}>
+                              {item.description}
+                            </NativeText>
+                          )}
+                        </NativeItem>
+                      )
+                  )}
+                </NativeList>
+              </View>
+            ))}
+          </View>
+
+          <InsetsBottomView />
         </View>
-
-        <InsetsBottomView />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

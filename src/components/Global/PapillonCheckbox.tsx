@@ -1,9 +1,9 @@
-import { View, Animated, Easing, type ViewStyle, type StyleProp } from "react-native";
+import { View, Animated, Easing, type ViewStyle, type StyleProp, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 
-import Reanimated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
-import { PressableScale } from "react-native-pressable-scale";
+import Reanimated, { FadeOut, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { Svg, Circle, G } from "react-native-svg";
 import { Check } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
@@ -82,8 +82,14 @@ const PapillonCheckbox: React.FC<CheckboxProps> = ({
 
         {loading && (
           <Reanimated.View
-            entering={ZoomIn.springify().mass(1).damping(20).stiffness(300).delay(100)}
-            exiting={ZoomOut.duration(100)}
+            entering={loaded ?
+              ZoomIn
+                .springify()
+                .mass(1)
+                .damping(20)
+                .stiffness(300)
+              : void 0}
+            exiting={animPapillon(ZoomOut)}
           >
             <PapillonSpinner size={26} strokeWidth={4} color={color} />
           </Reanimated.View>
@@ -109,7 +115,9 @@ const PapillonCheckbox: React.FC<CheckboxProps> = ({
                 .stiffness(300)
               : void 0}
 
-            exiting={ZoomOut.duration(100)}
+
+            exiting={FadeOut.duration(200)}
+
           >
             {checked && (
               <Reanimated.View

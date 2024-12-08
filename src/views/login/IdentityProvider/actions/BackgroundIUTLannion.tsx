@@ -168,11 +168,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       >
         <PapillonSpinner size={56} strokeWidth={5} color={theme.colors.primary} />
         <View style={{ height: 10 }} />
-        <NativeText variant="title" key={step}
-          animated
-          entering={animPapillon(FadeInDown)}
-          exiting={animPapillon(FadeOutUp)}
-        >
+        <NativeText variant="title" key={step} animated>
           {step}
         </NativeText>
         <NativeText variant="subtitle">
