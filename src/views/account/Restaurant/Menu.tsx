@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
   View,
   ScrollView,
@@ -13,6 +13,7 @@ import {
   Clock2,
   QrCode,
   Utensils,
+  WifiOff,
 } from "lucide-react-native";
 
 import type { Screen } from "@/router/helpers/types";
@@ -30,7 +31,7 @@ import { Balance } from "@/services/shared/Balance";
 import { balanceFromExternal } from "@/services/balance";
 import MissingItem from "@/components/Global/MissingItem";
 import { animPapillon } from "@/utils/ui/animations";
-import Reanimated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, FadeOutUp, FlipInXDown, LinearTransition } from "react-native-reanimated";
 import { reservationHistoryFromExternal } from "@/services/reservation-history";
 import { qrcodeFromExternal } from "@/services/qrcode";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
@@ -42,6 +43,8 @@ import { LessonsDateModal } from "../Lessons/LessonsHeader";
 import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
 import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
 import AccountButton from "@/components/Restaurant/AccountButton";
+import NetInfo from "@react-native-community/netinfo";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -61,6 +64,14 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [isMenuLoading, setMenuLoading] = useState(false);
   const [isInitialised, setIsInitialised] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
+
+  const [isOnline, setIsOnline] = useState(true);
+  const errorTitle = useMemo(() => getErrorTitle(), []);
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const getWeekNumber = (date: Date) => {
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
@@ -194,7 +205,24 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      {!isInitialised ? (
+      {!isOnline ? (
+        <Reanimated.View
+          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+          layout={animPapillon(LinearTransition)}
+        >
+          <NativeList inline>
+            <NativeItem icon={<WifiOff />}>
+              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                {errorTitle.label} {errorTitle.emoji}
+              </NativeText>
+              <NativeText variant="subtitle">
+                Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </Reanimated.View>
+      ) : !isInitialised ? (
         <ActivityIndicator size="large" style={{ padding: 50 }} />
       ) : (
         <>
