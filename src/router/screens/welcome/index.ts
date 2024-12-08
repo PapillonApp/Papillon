@@ -13,30 +13,33 @@ export default [
     headerBackVisible: false,
     headerTitle: "",
     animation: "fade",
-    animationDuration: 300
   }),
   createScreen("FirstInstallation", FirstInstallation, {
     headerTransparent: true,
     headerBackVisible: false,
-    headerTitle: ""
+    headerTitle: "",
+    animation: "simple_push",
   }),
   createScreen("DevMenu", DevMenu, {
-    headerTitle: "Développement"
+    headerTitle: "Développement",
+    animation: "slide_from_right",
   }),
   createScreen("ColorSelector", ColorSelector, {
     headerTransparent: true,
     headerBackVisible: false,
-    headerTitle: ""
+    headerTitle: "",
+    animation: "slide_from_right",
   }),
   createScreen("AccountCreated", AccountCreated, {
     headerTransparent: true,
     headerBackVisible: false,
-    headerTitle: ""
+    headerTitle: "",
+    animation: "slide_from_right",
   }),
   createScreen("ChangelogScreen", ChangelogScreen, {
     headerTitle: "Quoi de neuf ?",
     presentation: "modal",
     headerLargeTitle: true,
+    animation: "slide_from_right",
   }),
 ] as const;
-

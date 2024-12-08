@@ -5,6 +5,7 @@ import EcoleDirecteCredentials from "@/views/login/ecoledirecte/EcoleDirecteCred
 export default [
   createScreen("EcoleDirecteCredentials", EcoleDirecteCredentials, {
     headerTitle: "Connexion à EcoleDirecte",
-    headerBackVisible: true
+    headerBackVisible: true,
+    animation: "slide_from_right",
   }),
 ] as const;
