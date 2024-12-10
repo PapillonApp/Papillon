@@ -106,9 +106,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           icon: <Bell />,
           color: "#CF0029",
           label: "Notifications",
-          description: "Disponible prochainement",
           onPress: () => navigation.navigate("SettingsNotifications"),
-          disabled: !defined("enable_notifications"),
         },
         {
           icon: <Cable />,

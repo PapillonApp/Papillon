@@ -44,6 +44,14 @@ export interface Personalization {
   magicEnabled?: boolean,
   MagicNews?: boolean,
   MagicHomeworks?: boolean,
+  notifications?: {
+    enabled?: boolean
+    news?: boolean
+    homeworks?: boolean
+    grades?: boolean
+    timetable?: boolean
+    attendance?: boolean
+  }
   icalURLs: PapillonIcalURL[],
   tabs: Tab[],
   subjects: {

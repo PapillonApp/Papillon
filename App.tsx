@@ -39,7 +39,7 @@ export default function App () {
 
     // Register background tasks only if not running in the Expo Go app
     expoGoWrapper(async () => {
-      const registerBackgroundTasks = (await import("@/background/BackgroundTasks")).default;
+      const { registerBackgroundTasks } = await import("@/background/BackgroundTasks");
       registerBackgroundTasks();
     });
   }, []);
