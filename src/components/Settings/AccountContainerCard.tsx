@@ -6,6 +6,7 @@ import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pen } from "lucide-react-native";
 import { PressableScale } from "react-native-pressable-scale";
+import React from "react";
 
 const AccountContainerCard = ({ account, onPress }: {
   account: Account

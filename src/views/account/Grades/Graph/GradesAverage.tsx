@@ -31,6 +31,7 @@ const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & Re
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
+import { AlertTriangle } from "lucide-react-native";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -252,8 +253,29 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                     key={"cAvgG"}
                     entering={animPapillon(FadeInDown)}
                     exiting={animPapillon(FadeOutUp)}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
                   >
-                    <NativeText numberOfLines={1}>Moyenne gén.</NativeText>
+                    <NativeText numberOfLines={1}>
+                      {(!overall || selectedDate) ? (
+                        "Moyenne estimée"
+                      ) : (
+                        "Moyenne gén."
+                      )}
+                    </NativeText>
+
+
+
+                    {(!overall || selectedDate) && (
+                      <AlertTriangle
+                        size={16}
+                        color={theme.colors.primary}
+                        strokeWidth={2.5}
+                      />
+                    )}
                   </Reanimated.View>
                 )}
 

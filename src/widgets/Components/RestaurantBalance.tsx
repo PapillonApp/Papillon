@@ -38,7 +38,7 @@ const RestaurantBalanceWidget = forwardRef(({
           balances.push(...balance);
         }
       }
-      setBalances(balances);
+      setBalances(balances.filter(balance => balance.label.toLowerCase() !== "cafetaria"));
       setHidden(balances.length === 0 || balances.every(balance => balance.remaining === 0));
       setLoading(false);
     }();

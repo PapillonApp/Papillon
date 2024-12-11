@@ -4,7 +4,7 @@ import { ErrorServiceUnauthenticated } from "../shared/errors";
 
 export const balance = async (account: ARDAccount): Promise<Balance[]> => {
   if (!account.instance) throw new ErrorServiceUnauthenticated("ARD");
-  const payments = await account.instance!.getOnlinePayments();
+  const payments = account.authentication.balances;
   const mealPrice = account.authentication.mealPrice;
 
   return payments.walletData.map(wallet => ({

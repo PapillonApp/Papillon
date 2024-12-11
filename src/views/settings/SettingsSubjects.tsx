@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useCallback, useLayoutEffect, useMemo } from "react";
-import { Alert, FlatList, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
@@ -9,11 +17,12 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { useCurrentAccount } from "@/stores/account";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2 } from "lucide-react-native";
+import { Trash2, Check, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import { set } from "lodash";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -105,6 +114,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
       )
     );
     debouncedUpdateSubject(subjectKey, { color: newColor });
+    setCustomColor(newColor);
   }, [debouncedUpdateSubject]);
 
   const setOnSubjects = useCallback((newSubjects: Item[]) => {
@@ -146,6 +156,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     });
   }, [navigation, colors.primary]);
 
+  const [customColor, setCustomColor] = useState("");
+
   const renderSubjectItem = useCallback(({ item: subject, index }: { item: Item, index: number }) => {
     if (!subject[0] || !subject[1] || !subject[1].emoji || !subject[1].pretty || !subject[1].color)
       return null;
@@ -154,6 +166,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
       <MemoizedNativeItem
         onPress={() => {
           setSelectedSubject(subject);
+          setCustomColor(subject[1].color);
           setCurrentTitle(subject[1].pretty);
           setOpened(true);
         }}
@@ -223,7 +236,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       gap: 14,
                     }}
                   >
-                    <ColorIndicator style={{ flex: 0 }} color={selectedSubject[1].color} />
+                    <ColorIndicator style={{ flex: 0 }} color={customColor} />
                     <View style={{ flex: 1, gap: 4 }}>
                       <MemoizedNativeText variant="title" numberOfLines={2}>
                         {currentTitle}
@@ -231,8 +244,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       <MemoizedNativeText
                         variant="subtitle"
                         style={{
-                          backgroundColor: selectedSubject[1].color + "22",
-                          color: selectedSubject[1].color,
+                          backgroundColor: customColor + "22",
+                          color: customColor,
                           alignSelf: "flex-start",
                           paddingHorizontal: 8,
                           paddingVertical: 2,
@@ -315,39 +328,114 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       keyExtractor={(item) => item}
                       ListFooterComponent={<View style={{ width: 16 }} />}
                       showsHorizontalScrollIndicator={false}
-                      renderItem={({ item }) => (
+                      renderItem={({ item }) => {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => handleSubjectColorChange(selectedSubject[0], item)}
+                          >
+                            <View
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 80,
+                                backgroundColor: item,
+                                marginHorizontal: 5,
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              {customColor === item && (
+                                <Reanimated.View
+                                  style={{
+                                    width: 26,
+                                    height: 26,
+                                    borderRadius: 80,
+                                    backgroundColor: item,
+                                    borderColor: colors.background,
+                                    borderWidth: 3,
+                                  }}
+                                  entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
+                                  exiting={ZoomOut.springify().mass(1).damping(20).stiffness(300)}
+                                />
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      }}
+                    />
+                  </MemoizedNativeItem>
+                  <MemoizedNativeItem>
+                    <MemoizedNativeText variant="subtitle" numberOfLines={1}>
+                      Code hexadécimal personnalisé
+                    </MemoizedNativeText>
+                    <View style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      height: 36,
+                    }}>
+                      <View
+                        style={{
+                          width: 26,
+                          height: 26,
+                          backgroundColor: /^#[0-9A-F]{6}$/i.test(customColor) ? customColor : colors.text,
+                          borderWidth: 1,
+                          borderColor: colors.border,
+                          marginRight: 8,
+                          borderRadius: 80
+                        }}
+                      />
+                      <TextInput
+                        style={{
+                          fontFamily: "regular",
+                          letterSpacing: 1,
+                          fontSize: 20,
+                          color: colors.text,
+                          flex: 1,
+                        }}
+                        value={customColor !== "" ? customColor : "#"}
+                        onChangeText={(text) => {
+                          if (!text.startsWith("#")) {
+                            text = "#" + text;
+                          }
+                          text = text.replaceAll(/[G-Z]/g, "");
+                          text = text.slice(0, 7).toUpperCase();
+                          setCustomColor(text);
+                        }}
+                      />
+                      {customColor !== selectedSubject[1].color && (
                         <TouchableOpacity
-                          onPress={() => handleSubjectColorChange(selectedSubject[0], item)}
+                          onPress={() => {
+                            if (/^#[0-9A-F]{6}$/i.test(customColor)) {
+                              handleSubjectColorChange(selectedSubject[0], customColor);
+                              setSelectedSubject((prev) => {
+                                if (prev) {
+                                  prev[1].color = customColor;
+                                }
+                                return prev;
+                              });
+                            }
+                          }}
                         >
                           <View
                             style={{
                               width: 32,
                               height: 32,
                               borderRadius: 80,
-                              backgroundColor: item,
-                              marginHorizontal: 5,
+                              marginHorizontal: 0,
                               alignItems: "center",
                               justifyContent: "center",
+                              backgroundColor: (/^#[0-9A-F]{6}$/i.test(customColor) ? colors.primary : "#888"),
                             }}
                           >
-                            {selectedSubject[1].color === item && (
-                              <Reanimated.View
-                                style={{
-                                  width: 26,
-                                  height: 26,
-                                  borderRadius: 80,
-                                  backgroundColor: item,
-                                  borderColor: colors.background,
-                                  borderWidth: 3,
-                                }}
-                                entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
-                                exiting={ZoomOut.springify().mass(1).damping(20).stiffness(300)}
-                              />
+                            {/^#[0-9A-F]{6}$/i.test(customColor) ? (
+                              <Check color={"#fff"} />
+                            ) : (
+                              <X color={"#fff"} />
                             )}
                           </View>
                         </TouchableOpacity>
                       )}
-                    />
+                    </View>
                   </MemoizedNativeItem>
                 </MemoizedNativeList>
               </>

@@ -73,6 +73,7 @@ export const getGradesAndAverages = async (account: PronoteAccount, periodName: 
       color: s.backgroundColor,
       max: decodeGradeValue(s.max),
       subjectName: s.subject.name,
+      id: s.subject.id ? s.subject.id.toString() : undefined,
       min: decodeGradeValue(s.min),
       average: decodeGradeValue(s.student),
       outOf: decodeGradeValue(s.outOf)
@@ -82,6 +83,7 @@ export const getGradesAndAverages = async (account: PronoteAccount, periodName: 
   const grades: Grade[] = overview.grades.map(g => ({
     id: buildLocalID(g),
     subjectName: g.subject.name,
+    subjectId: g.subject.id ? g.subject.id.toString() : undefined,
     description: g.comment,
     timestamp: g.date.getTime(),
 
