@@ -95,7 +95,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     start.setHours(0, 0, 0, 0);
     const diff = now.getTime() - start.getTime();
     const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    return Math.floor(diff / oneWeek) + 1;
+    return Math.floor(diff / oneWeek);
   };
 
   const currentWeek = getCurrentWeekNumber();
@@ -194,6 +194,14 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       if (hideDone) {
         acc[day] = acc[day].filter(homework => !homework.done);
       }
+
+      // homework completed downstairs
+      acc[day] = acc[day].sort((a, b) => {
+        if (a.done === b.done) {
+          return 0; // if both have the same status, keep the original order
+        }
+        return a.done ? 1 : -1; // completed go after
+      });
 
       // remove all empty days
       if (acc[day].length === 0) {

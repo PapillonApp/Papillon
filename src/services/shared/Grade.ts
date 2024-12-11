@@ -30,6 +30,7 @@ export interface GradeValue {
 
 export interface Grade {
   id: string;
+  subjectId?: string;
   subjectName: string;
   description: string;
   timestamp: number;
@@ -51,6 +52,7 @@ export interface Grade {
 
 export interface SubjectAverage {
   subjectName: string;
+  id?: string;
   average?: GradeValue;
   classAverage: GradeValue;
   max: GradeValue;
