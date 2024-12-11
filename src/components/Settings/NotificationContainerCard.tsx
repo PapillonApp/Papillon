@@ -97,6 +97,13 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
       <NativeItem
         trailing={
           <Switch
+            trackColor={{
+              false: colors.border,
+              true: colors.primary,
+            }}
+            style={{
+              marginRight: 10,
+            }}
             value={isEnable}
             onValueChange={setEnabled}
           />
@@ -106,7 +113,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
           Activer les notifications
         </NativeText>
         <NativeText variant="subtitle">
-          Reçois des notifications pour tes prochains cours et tes nouvelles notes.
+          Reçois des notifications pour ne rien rater de ta vie scolaire.
         </NativeText>
       </NativeItem>
     </NativeList>

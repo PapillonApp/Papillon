@@ -32,6 +32,14 @@ const radiuses = [
     radius: 59.0,
   },
   {
+    devices: "iPhone17,3, iPhone17,4", // iphone 16 & 16 plus
+    radius: 55.0,
+  },
+  {
+    devices: "iPhone17,1, iPhone17,2", // iphone 16 pro & 16 pro max
+    radius: 62.0,
+  },
+  {
     devices: "pixel 3",
     radius: 20.0,
   },

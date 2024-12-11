@@ -12,7 +12,16 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
   try {
     // Il faudrait peut-être penser à typer cette partie, tous les types sont any :(
     const scodocData = account.identityProvider.rawData;
-    const matieres = (scodocData["relevé"] as any).ressources;
+
+    const ressources = (scodocData["relevé"] as any).ressources;
+    const saes = (scodocData["relevé"] as any).saes;
+
+    const matieres = {
+      ...ressources,
+      ...saes,
+    };
+
+    console.log("identity", account.identity);
 
     const gradesList: Grade[] = [];
     const averages: AverageOverview = {

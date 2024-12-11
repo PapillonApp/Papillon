@@ -19,6 +19,7 @@ import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
+import React from "react";
 import NetInfo from "@react-native-community/netinfo";
 import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
