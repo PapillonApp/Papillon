@@ -10,7 +10,7 @@ export const balance = async (account: ARDAccount): Promise<Balance[]> => {
   return payments.walletData.map(wallet => ({
     amount: wallet.walletAmount / 100,
     currency: "€",
-    remaining: Math.floor((wallet.walletAmount / mealPrice!)),
+    remaining: wallet.walletName.toLowerCase() !== "cafetaria" ? Math.floor((wallet.walletAmount / mealPrice!)) : null,
     label: wallet.walletName[0].toUpperCase() + wallet.walletName.slice(1).toLowerCase()
   }));
 

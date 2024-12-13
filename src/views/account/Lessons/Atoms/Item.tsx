@@ -100,7 +100,7 @@ export const TimetableItem: React.FC<{
 
               {!small && (
                 <View style={{ flexDirection: "row", flex: 1 }}>
-                  <Text numberOfLines={2} style={[styles.locationText, { color: colors.text }]}>{item.teacher ?? "Professeur inconnu"}</Text>
+                  <Text numberOfLines={2} style={[styles.locationText, { color: item.teacher ? colors.text : colors.text + "80" }]}>{item.teacher ?? "Professeur inconnu"}</Text>
                   <Text style={[styles.durationText, { color: colors.text }]}>{getDuration(durationMinutes)}</Text>
                 </View>
               )}

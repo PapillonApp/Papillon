@@ -203,8 +203,8 @@ const SeparatorCourse: React.FC<{
             color: colors.text,
           }}
         >
-          {startHours > 11 &&
-            startHours < 14
+          {(startHours > 11 &&
+            startHours < 14)
             ? "Pause méridienne"
             : "Pas de cours"}
         </Text>

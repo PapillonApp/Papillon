@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 
-import { QrCodeIcon, LinkIcon, MapPinIcon, SearchIcon } from "lucide-react-native";
+import { QrCodeIcon, LinkIcon, MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
@@ -11,6 +11,7 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { Audio } from "expo-av";
+import { NativeText } from "@/components/Global/NativeComponents";
 
 const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -102,6 +103,33 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
       </Reanimated.View>
 
       <View style={styles.buttons}>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+            alignItems: "center",
+            marginBottom: 9,
+            marginHorizontal: 9,
+          }}
+        >
+          <LockIcon
+            size={20}
+            strokeWidth={2.5}
+            color={theme.colors.text + "88"}
+          />
+          <NativeText
+            style={{
+              flex: 1,
+              color: theme.colors.text,
+              opacity: 0.5,
+              fontSize: 13,
+              lineHeight: 16,
+            }}
+          >
+            Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée.
+          </NativeText>
+        </View>
+
         <ButtonCta
           primary
           value="Confirmer"

@@ -155,7 +155,6 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
       <ScrollView
         style={{
           flex: 1,
-          paddingBottom: 16 + insets.bottom,
           paddingTop: 106 - 16,
         }}
       >
@@ -258,6 +257,9 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             </NativeList>
           </View>
         )}
+
+        <InsetsBottomView />
+        <InsetsBottomView />
         <InsetsBottomView />
       </ScrollView>
     </View>

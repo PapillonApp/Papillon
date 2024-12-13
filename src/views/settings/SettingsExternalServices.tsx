@@ -83,7 +83,12 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
     removeAccount(localID);
   };
 
-  const filteredAccounts = accounts.filter((acc, index) => !(index === 0 && acc.service === AccountService.Pronote));
+  const filteredAccounts = accounts.filter((acc, index) => {
+    if (acc.isExternal) {
+      return true;
+    }
+    return false;
+  });
 
   return (
     <ScrollView

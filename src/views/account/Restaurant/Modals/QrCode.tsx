@@ -56,6 +56,8 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
     });
   }, [navigation]);
 
+  const [oldBrightness, setOldBrightness] = useState<number>(0.5);
+
   useEffect(() => {
     (async () => {
       if (Platform.OS === "android") {
@@ -65,10 +67,14 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
           return;
         }
       }
-      try { await Brightness.setBrightnessAsync(1); } catch (e) { console.warn("Brightness error:", e); }
+      try {
+        const brightness = await Brightness.getBrightnessAsync();
+        setOldBrightness(brightness);
+        await Brightness.setBrightnessAsync(1);
+      } catch (e) { console.warn("Brightness error:", e); }
     })();
-    return () => { Brightness.setBrightnessAsync(0.5); };
-  }, [navigation]);
+    return () => { Brightness.setBrightnessAsync(oldBrightness); };
+  }, [navigation, oldBrightness]);
 
 
   useEffect(() => {
@@ -117,57 +123,64 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
   }));
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle={"dark-content"} />
-      <View style={styles.qrCodeContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={200}
-          decelerationRate="fast"
-          scrollEnabled={qrcodes?.length > 1}
-          onScroll={handleScroll}
-        >
-          { qrcodes && qrcodes?.map((code, index) => (
-            <View key={index} style={styles.qrCodeInnerContainer}>
-              <QRCode
-                value={code.toString()}
-                size={170}
-                color="#000000"
-                backgroundColor="#FFFFFF"
-              />
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-      { qrcodes && qrcodes.length > 1 && (
-        <View style={styles.dotsContainer}>
-          {qrcodes.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                index === activeIndex ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
+    <View style={[styles.safeArea, {
+      backgroundColor: colors.primary,
+    }]}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#00000055",
+        }}
+      >
+        <StatusBar barStyle={"dark-content"} />
+        <View style={styles.qrCodeContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={200}
+            decelerationRate="fast"
+            scrollEnabled={qrcodes?.length > 1}
+            onScroll={handleScroll}
+          >
+            { qrcodes && qrcodes?.map((code, index) => (
+              <View key={index} style={styles.qrCodeInnerContainer}>
+                <QRCode
+                  value={code.toString()}
+                  size={250}
+                  color="#000000"
+                  backgroundColor="#FFFFFF"
+                />
+              </View>
+            ))}
+          </ScrollView>
         </View>
-      )}
-      <Animated.View style={[styles.instructionContainer, animatedStyle]}>
-        <ScanIcon color={colors.primary} />
-        <Text style={styles.instructionText}>
-          Orientez le code QR vers le scanner de la borne
-        </Text>
-      </Animated.View>
-    </SafeAreaView>
+        { qrcodes && qrcodes.length > 1 && (
+          <View style={styles.dotsContainer}>
+            {qrcodes.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  index === activeIndex ? styles.activeDot : styles.inactiveDot,
+                ]}
+              />
+            ))}
+          </View>
+        )}
+        <Animated.View style={[styles.instructionContainer, animatedStyle]}>
+          <ScanIcon color={colors.primary} />
+          <Text style={styles.instructionText}>
+            Orientez le code QR vers le scanner de la borne
+          </Text>
+        </Animated.View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "black",
   },
   headerButton: {
     padding: 8,
@@ -175,8 +188,8 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   qrCodeContainer: {
-    height: 200,
-    width: 200,
+    height: 300,
+    width: 300,
     borderRadius: 15,
     marginTop: 75,
     alignSelf: "center",
@@ -186,19 +199,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    width: 200,
+    width: 300,
+    alignSelf: "center",
   },
   instructionContainer: {
     marginTop: 60,
     justifyContent: "center",
     alignItems: "center",
+    gap: 10,
   },
   instructionText: {
     color: "#FFFFFF",
     fontSize: 15,
-    fontWeight: "bold",
+    lineHeight: 20,
     textAlign: "center",
     maxWidth: 200,
+    fontFamily: "medium",
   },
   dotsContainer: {
     flexDirection: "row",
