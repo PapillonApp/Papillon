@@ -11,7 +11,7 @@ import Reanimated, {
   FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
-import { Gift, WifiOff } from "lucide-react-native";
+import { Sparkles, WifiOff } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View } from "react-native";
@@ -177,7 +177,13 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
           exiting={animPapillon(FadeOutDown)}
         >
           <NativeItem
-            leading={<Gift color={colors.primary} size={28} strokeWidth={2} />}
+            leading={
+              <Sparkles
+                color={colors.primary}
+                size={28}
+                strokeWidth={2}
+              />
+            }
             onPress={() => navigation.navigate("ChangelogScreen")}
             style={{
               backgroundColor: colors.primary + "30",
@@ -187,11 +193,10 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             }}
           >
             <NativeText variant="title">
-              Papillon {PackageJSON.version} est arrivé !
+              Découvrez les nouveautés de Papillon {PackageJSON.version}
             </NativeText>
             <NativeText variant="subtitle">
-              Découvrez les nouveautés de cette nouvelle version en appuyant
-              ici.
+              Ouvrir les notes de mise à jour de cette version de Papillon
             </NativeText>
           </NativeItem>
         </NativeList>

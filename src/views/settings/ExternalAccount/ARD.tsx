@@ -41,6 +41,7 @@ const ExternalArdLogin: Screen<"ExternalArdLogin"> = ({ navigation }) => {
       const schoolID = customFields["schoolID"];
 
       const client = await authenticator.fromCredentials(schoolID, username, password);
+      const balances = await client.getOnlinePayments();
       const mealPrice = await detectMealPrice(client);
 
       const new_account: ARDAccount = {
@@ -52,7 +53,8 @@ const ExternalArdLogin: Screen<"ExternalArdLogin"> = ({ navigation }) => {
           username,
           password,
           pid: client.pid,
-          mealPrice: mealPrice ?? 100
+          mealPrice: mealPrice ?? 100,
+          balances
         },
         isExternal: true,
         localID: uuid(),

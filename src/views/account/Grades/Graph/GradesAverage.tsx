@@ -10,7 +10,7 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform, Alert } from "react-native";
+import { View, StyleSheet, Platform, Alert, TouchableOpacity, Linking } from "react-native";
 
 import Reanimated, {
   FadeIn,
@@ -31,7 +31,8 @@ const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & Re
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
-import { AlertTriangle } from "lucide-react-native";
+import { AlertTriangle, Calculator, Check, ExternalLink, PieChart, Spline, SquareRadical, TrendingUp } from "lucide-react-native";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -46,6 +47,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 }) => {
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
+  const { showAlert } = useAlert();
 
   const [gradesHistory, setGradesHistory] = useState<GradeHistory[]>([]);
   const [hLength, setHLength] = useState(0);
@@ -82,6 +84,9 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
     let maxAvg = getPronoteAverage(grades, "max");
     let minAvg = getPronoteAverage(grades, "min");
+
+    const finalAvg = getPronoteAverage(grades, "student");
+    console.log("finalAvg", finalAvg);
 
     setGradesHistory(hst);
     setHLength(hst.length);
@@ -121,11 +126,33 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   }, [originalCurrentAvgRef]);
 
   const theoryAvgDisclaimer = useCallback(() => {
-    Alert.alert(
-      "Moyenne théorique",
-      "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations.",
-      [{ text: "Compris" }]
-    );
+    showAlert({
+      icon: <TrendingUp />,
+      title: "Moyenne théorique",
+      message: "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations."
+    });
+  }, []);
+
+  const estimatedAvgDisclaimer = useCallback(() => {
+    showAlert({
+      icon: <PieChart />,
+      title: "Moyenne générale estimée",
+      message: "L'estimation automatique des moyennes n'est pas une information exacte, mais une approximation qui essaye de s'en rapprocher un maximum.",
+      actions: [
+        {
+          title: "En savoir plus",
+          icon: <ExternalLink />,
+          onPress: () => {
+            Linking.openURL("https://docs.papillon.bzh/kb/averages");
+          }
+        },
+        {
+          title: "OK",
+          icon: <Check />,
+          primary: true,
+        }
+      ]
+    });
   }, []);
 
   return (
@@ -146,37 +173,46 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
             {((showDetails && !overall) || selectedDate) && (
               <Reanimated.View
                 style={{
-                  height: 5,
+                  height: 10,
                 }}
               />
             )}
 
             {((showDetails && !overall) || selectedDate) && (
-              <Reanimated.View
+              <TouchableOpacity
+                onPress={() => {
+                  estimatedAvgDisclaimer();
+                }}
                 style={{
                   position: "absolute",
                   top: 10,
                   left: 10,
-                  backgroundColor: theme.colors.primary + "22",
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 8,
-                  borderCurve: "continuous",
                   zIndex: 100,
                 }}
-                entering={animPapillon(FadeInLeft)}
-                exiting={animPapillon(FadeOutLeft)}
               >
-                <Reanimated.Text
+                <Reanimated.View
                   style={{
-                    fontSize: 14,
-                    color: theme.colors.primary,
-                    fontFamily: "semibold",
+                    backgroundColor: theme.colors.primary + "22",
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 8,
+                    borderCurve: "continuous",
+                    zIndex: 100,
                   }}
+                  entering={animPapillon(FadeInLeft)}
+                  exiting={animPapillon(FadeOutLeft)}
                 >
-                  Estimation
-                </Reanimated.Text>
-              </Reanimated.View>
+                  <Reanimated.Text
+                    style={{
+                      fontSize: 14,
+                      color: theme.colors.primary,
+                      fontFamily: "semibold",
+                    }}
+                  >
+                    Estimation
+                  </Reanimated.Text>
+                </Reanimated.View>
+              </TouchableOpacity>
             )}
 
             {hLength > 1 ? (
