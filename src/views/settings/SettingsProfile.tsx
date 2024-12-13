@@ -107,7 +107,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
                 style={{
                   width: 55,
                   height: 55,
-                  borderRadius: 9,
+                  borderRadius: 90,
                   // @ts-expect-error : borderCurve is not in the Image style
                   borderCurve: "continuous",
                 }}
@@ -121,9 +121,13 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             <NativeText variant="title">
               {profilePic ? "Changer la photo de profil" : "Ajouter une photo de profil"}
             </NativeText>
-            {!profilePic && (
+            {!profilePic ? (
               <NativeText variant="subtitle">
                 Personnalisez votre compte en ajoutant une photo de profil.
+              </NativeText>
+            ) : (
+              <NativeText variant="subtitle">
+                Votre photo de profil reste sur votre appareil.
               </NativeText>
             )}
           </NativeItem>

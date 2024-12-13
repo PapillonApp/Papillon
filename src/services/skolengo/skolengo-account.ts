@@ -34,6 +34,9 @@ const getSkolengoAxiosInstance = () => {
         );
       }
       error.response?.data?.errors?.forEach((e: any) => {
+        // if unknown error, don't display the error message
+        if(!e["title"] || e["title"] === "FORBIDDEN") return;
+
         showAlert({
           title: "Skolengo - " + (e["title"].toString() || "Erreur"),
           message:

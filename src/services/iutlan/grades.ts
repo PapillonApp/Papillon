@@ -21,8 +21,6 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       ...saes,
     };
 
-    console.log("identity", account.identity);
-
     const gradesList: Grade[] = [];
     const averages: AverageOverview = {
       classOverall: {

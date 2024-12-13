@@ -100,7 +100,6 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   });
 
   const fetchSubjectData = () => {
-    console.log("Fetching subject data for", lesson);
     const data = getSubjectData(lesson.title || "");
     setSubjectData(data);
   };
@@ -181,7 +180,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         {
           icon: <Users />,
           text: lesson.group?.includes(",") ? "Groupes" : "Groupe",
-          value: lesson.group,
+          value: lesson.group?.replace(/\[|\]/g, ""),
           enabled: lesson.group != null
         },
       ],

@@ -2,6 +2,8 @@ import type React from "react";
 import { Text, View } from "react-native";
 import { NativeText } from "../Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
+import AnimatedNumber from "../Global/AnimatedNumber";
+import { Utensils } from "lucide-react-native";
 
 interface RestaurantCardProps {
   solde: number
@@ -12,66 +14,87 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
   const theme = useTheme();
   const { colors } = theme;
   return (
-    <View style={{
-      height: 80,
-      justifyContent: "space-between",
-      alignItems: "center",
-      overflow: "hidden",
-      flexDirection: "row",
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.card,
-    }}>
-      <View
+    <View
+      style={{
+        gap: 3,
+        paddingVertical: 16,
+        paddingBottom: 14,
+        borderRadius: 12,
+        borderCurve: "continuous",
+        backgroundColor: colors.primary + "16",
+      }}
+    >
+      <NativeText
         style={{
-          flex: 1,
-          padding: 15,
+          fontSize: 14,
+          fontFamily: "medium",
+          color: colors.text,
+          letterSpacing: 1,
+          textTransform: "uppercase",
+          textAlign: "center",
+          opacity: 0.5,
         }}
       >
-        <NativeText
+        Solde de cantine
+      </NativeText>
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 2,
+          justifyContent: "center",
+        }}
+      >
+        <AnimatedNumber
+          value={solde.toFixed(2).split(".")[0]}
           style={{
-            textAlign: "left",
+            fontSize: 36,
+            lineHeight: 36,
+            color: colors.primary,
+            fontFamily: "medium",
           }}
-        >
-          Solde actuel
-        </NativeText>
-        <Text
+        />
+        <AnimatedNumber
+          value={"."+solde.toFixed(2).split(".")[1]+" €"}
           style={{
-            textAlign: "left",
-            fontFamily: "semibold",
-            color: solde < 0 ? "#D10000" : "#5CB21F",
-            fontSize: 30,
+            fontSize: 28,
+            lineHeight: 28,
+            color: colors.primary,
+            fontFamily: "medium",
           }}
-        >
-          {solde.toFixed(2)} €
-        </Text>
+          contentContainerStyle={{
+            marginBottom: 0,
+          }}
+        />
       </View>
+
       {repas !== null && (
         <View
           style={{
-            flex: 1,
-            padding: 15,
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 8,
+            borderCurve: "continuous",
+            borderColor: colors.primary,
+            borderWidth: 1,
+            alignSelf: "center",
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+            borderRadius: 300,
+            alignItems: "center",
+            gap: 8,
           }}
         >
+          <Utensils size={16} strokeWidth={2.5} color={colors.primary} />
+
           <NativeText
             style={{
-              textAlign: "right",
-              color: colors.text + "50",
+              fontSize: 14,
+              fontFamily: "medium",
+              color: colors.primary,
             }}
           >
-            Repas restants
+            {repas} repas restants
           </NativeText>
-          <Text
-            style={{
-              textAlign: "right",
-              fontFamily: "semibold",
-              color: colors.text + "50",
-              fontSize: 30,
-            }}
-          >
-            {repas}
-          </Text>
         </View>
       )}
     </View>

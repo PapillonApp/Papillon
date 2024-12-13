@@ -1,7 +1,7 @@
 import {TimetableClass} from "@/services/shared/Timetable";
 
 function extractNames (text: string) {
-  const pattern = /\b([A-Z]+)\s+([A-Z][a-z]+)\b/g;
+  const pattern = /\b[A-ZÉÈÊÇÀÄÖÜË]{2,}\s[A-ZÉÈÊÇÀÄÖÜËa-zéèêçàäöüë]+/g;
   const matches = [...text.matchAll(pattern)];
   return matches.map(match => `${match[1]} ${match[2]}`);
 }
@@ -24,7 +24,7 @@ export const reduceIcalToCourse = (course: any, identityProvider: any, url: stri
 
   switch (identityProvider.identifier) {
     case "univ-rennes1":
-      const teacher = extractNames(course.description?.value).join(", ") || undefined;
+      const teacher = extractNames(course.description?.value.trim()).join(", ") || undefined;
 
       // get ressource
       const ressourceRegex = /(R\d{3})\s?-/;
@@ -36,7 +36,7 @@ export const reduceIcalToCourse = (course: any, identityProvider: any, url: stri
         CM: "CM (Cours magistral)",
         TD: "TD (Travaux dirigés)",
         TP: "TP (Travaux pratiques)",
-        DS: "DS -(Devoir surveillé)"
+        DS: "DS (Devoir surveillé)"
       };
 
       const itemType = (ressource ? ressource[0].replace("-","") + " - " : "") + (courseType ? courseTypes[courseType[0]] : "");
@@ -50,8 +50,6 @@ export const reduceIcalToCourse = (course: any, identityProvider: any, url: stri
 
       const cmSRegex = /\d{1,2}[a-z]\s[A-Z]{2,}/i;
       const cmS = course.summary?.value.match(cmSRegex);
-
-      console.log(course.summary?.value, cm, cmS);
 
       // remove ressource from title
       let title = course.summary?.value;

@@ -42,6 +42,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [selectedSubject, setSelectedSubject] = useState<Item | null>(null);
   const [opened, setOpened] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
+  const [currentEmoji, setCurrentEmoji] = useState(""); // New state for unsynced text input
 
   const emojiInput = React.useRef<TextInput>(null);
 
@@ -56,6 +57,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   useEffect(() => {
     if (selectedSubject) {
       setCurrentTitle(selectedSubject[1].pretty);
+      setCurrentEmoji(selectedSubject[1].emoji);
     }
   }, [selectedSubject]);
 
@@ -104,6 +106,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
         subject[0] === subjectKey ? [subject[0], { ...subject[1], emoji }] : subject
       )
     );
+    setCurrentEmoji(emoji);
     debouncedUpdateSubject(subjectKey, { emoji });
   }, [debouncedUpdateSubject]);
 
@@ -139,6 +142,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                   setSubjects([]);
                   setLocalSubjects([]);
                   setCurrentTitle("");
+                  setCurrentEmoji("");
 
                   mutateProperty("personalization", {
                     ...account.personalization,
@@ -168,6 +172,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
           setSelectedSubject(subject);
           setCustomColor(subject[1].color);
           setCurrentTitle(subject[1].pretty);
+          setCurrentEmoji(subject[1].emoji);
           setOpened(true);
         }}
         separator={index !== localSubjects.length - 1}
@@ -286,7 +291,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           height: 46,
                           width: 42,
                         }}
-                        value={selectedSubject[1].emoji}
+                        value={currentEmoji}
                         onChangeText={(newEmoji) => handleSubjectEmojiChange(selectedSubject[0], newEmoji)}
                       />
                     </MemoizedNativeItem>
@@ -402,39 +407,6 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           setCustomColor(text);
                         }}
                       />
-                      {customColor !== selectedSubject[1].color && (
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (/^#[0-9A-F]{6}$/i.test(customColor)) {
-                              handleSubjectColorChange(selectedSubject[0], customColor);
-                              setSelectedSubject((prev) => {
-                                if (prev) {
-                                  prev[1].color = customColor;
-                                }
-                                return prev;
-                              });
-                            }
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: 32,
-                              height: 32,
-                              borderRadius: 80,
-                              marginHorizontal: 0,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: (/^#[0-9A-F]{6}$/i.test(customColor) ? colors.primary : "#888"),
-                            }}
-                          >
-                            {/^#[0-9A-F]{6}$/i.test(customColor) ? (
-                              <Check color={"#fff"} />
-                            ) : (
-                              <X color={"#fff"} />
-                            )}
-                          </View>
-                        </TouchableOpacity>
-                      )}
                     </View>
                   </MemoizedNativeItem>
                 </MemoizedNativeList>

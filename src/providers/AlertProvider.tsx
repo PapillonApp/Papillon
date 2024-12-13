@@ -7,7 +7,7 @@ import Reanimated, { LinearTransition, FadeInDown, FadeOutDown } from "react-nat
 
 type AlertAction = {
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
   icon?: React.ReactElement;
   primary?: boolean;
   backgroundColor?: string;
@@ -16,6 +16,7 @@ type AlertAction = {
 export type Alert = {
   title: string;
   message: string;
+  icon? : React.ReactElement | null;
   actions?: AlertAction[];
 };
 
@@ -38,7 +39,7 @@ type AlertProviderProps = {
 };
 
 const AlertProvider = ({ children }: AlertProviderProps) => {
-  const [alert, setAlert] = useState<Alert>({ title: "", message: "", actions: [] });
+  const [alert, setAlert] = useState<Alert>({ title: "", message: "", icon: null, actions: [] });
   const [visible, setVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -48,6 +49,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
   const showAlert = ({
     title = "",
     message = "",
+    icon = null,
     actions = [
       {
         title: "Compris !",
@@ -85,7 +87,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
     setVisible(true);
     setModalVisible(true);
 
-    setAlert({ title, message, actions });
+    setAlert({ title, message, icon, actions });
   };
 
   const hideAlert = () => {
@@ -96,6 +98,12 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
       setModalVisible(false);
     }, 100);
   };
+
+  const finalIcon = alert.icon ?
+    React.cloneElement(alert.icon, { color: colors.text, size: 24 }) :
+    null;
+
+  console.log(finalIcon);
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
@@ -132,9 +140,12 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
               exiting={FadeOutDown.duration(100)}
             >
               <View style={styles.contentContainer}>
-                <Text style={[styles.title, { color: colors.text }]}>
-                  {alert.title}
-                </Text>
+                <View style={[styles.titleContainer]}>
+                  {finalIcon}
+                  <Text style={[styles.title, { color: colors.text }]}>
+                    {alert.title}
+                  </Text>
+                </View>
 
                 <Text style={[styles.message, { color: colors.text }]}>
                   {alert.message}
@@ -201,6 +212,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 0,
     gap: 6,
+  },
+
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
 
   title: {
