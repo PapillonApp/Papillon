@@ -72,20 +72,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   let account = useCurrentAccount(store => store.account!);
 
-  const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFull, setModalFull] = useState(false);
 
   const [canHaptics, setCanHaptics] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const openAccSwitcher = useCallback(() => {
-    setShouldOpenContextMenu(false);
-    setTimeout(() => {
-      setShouldOpenContextMenu(true);
-    }, 150);
-  }, []);
 
   const windowHeight = Dimensions.get("window").height;
   const tabbarHeight = useBottomTabBarHeight();
@@ -100,12 +92,14 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     ),
     transform: [
       { translateY: scrollOffset.value },
-      { scale: interpolate(
-        scrollOffset.value,
-        [0, 265],
-        [1, 0.9],
-        Extrapolation.CLAMP
-      )},
+      {
+        scale: interpolate(
+          scrollOffset.value,
+          [0, 265],
+          [1, 0.9],
+          Extrapolation.CLAMP
+        ),
+      }
     ]
   }));
 
@@ -132,36 +126,23 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     backgroundColor: colors.card,
     overflow: "hidden",
     transform: [
-      {scale: interpolate(
-        scrollOffset.value,
-        [0, 200, (260 + insets.top) - 40, 260 + insets.top],
-        [1, 0.95, 0.95, 1],
-        Extrapolation.CLAMP
-      )},
-      {translateY: interpolate(
-        scrollOffset.value,
-        [-1000, 0, 125, 265 ],
-        [-1000, 0, 105, 0],
-        Extrapolation.CLAMP
-      )}
+      {
+        scale: interpolate(
+          scrollOffset.value,
+          [0, 200, (260 + insets.top) - 40, 260 + insets.top],
+          [1, 0.95, 0.95, 1],
+          Extrapolation.CLAMP
+        )
+      },
+      {
+        translateY: interpolate(
+          scrollOffset.value,
+          [-1000, 0, 125, 265 ],
+          [-1000, 0, 105, 0],
+          Extrapolation.CLAMP
+        )
+      }
     ],
-  }));
-
-  const navigationBarAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: scrollOffset.value - 270 - insets.top,
-    left: 0,
-    right: 0,
-    height: interpolate(
-      scrollOffset.value,
-      [125, 265],
-      [0, insets.top + 60],
-      Extrapolation.CLAMP
-    ),
-    zIndex: 100,
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderBottomWidth: 0.5,
   }));
 
   const modalContentAnimatedStyle = useAnimatedStyle(() => ({
@@ -184,12 +165,14 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     top: 10,
     left: "50%",
     transform: [
-      {translateX: interpolate(
-        scrollOffset.value,
-        [125, 200],
-        [-25, -2],
-        Extrapolation.CLAMP
-      )}
+      {
+        translateX: interpolate(
+          scrollOffset.value,
+          [125, 200],
+          [-25, -2],
+          Extrapolation.CLAMP
+        )
+      }
     ],
     width: interpolate(
       scrollOffset.value,
@@ -217,7 +200,11 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   return (
     <View style={{flex: 1}}>
       {!modalOpen && focused && (
-        <StatusBar barStyle="light-content" backgroundColor={"transparent"} translucent />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={"transparent"}
+          translucent
+        />
       )}
       <ContextMenu
         style={[{
@@ -226,7 +213,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           left: 16,
           zIndex: 1000,
         }]}
-        shouldOpenContextMenu={shouldOpenContextMenu}
       >
         <AccountSwitcher
           translationY={scrollOffset}
@@ -258,26 +244,23 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
           setModalFull(e.nativeEvent.contentOffset.y >= 265 + insets.top);
         }}
-        refreshControl={<RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => setRefreshing(true)}
-          style={{zIndex: 100}}
-          progressViewOffset={285 + insets.top}
-        />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => setRefreshing(true)}
+            style={{zIndex: 100}}
+            progressViewOffset={285 + insets.top}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View
-          style={widgetAnimatedStyle}
-        >
-          <Header
-            scrolled={false}
-            // openAccountSwitcher={openAccSwitcher}
-            navigation={navigation}
-          />
+        <Animated.View style={widgetAnimatedStyle}>
+          <Header scrolled={false} navigation={navigation} />
         </Animated.View>
 
         <Animated.View style={[
-          modalAnimatedStyle, {
+          modalAnimatedStyle,
+          {
             borderCurve: "continuous",
             shadowOffset: {
               width: 0,
@@ -286,9 +269,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           }
         ]}
         >
-          <Animated.View
-            style={modalIndicatorAnimatedStyle}
-          />
+          <Animated.View style={modalIndicatorAnimatedStyle} />
           <Animated.View style={modalContentAnimatedStyle}>
             <ModalContent
               navigation={navigation}
