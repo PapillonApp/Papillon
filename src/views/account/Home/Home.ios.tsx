@@ -110,7 +110,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   }));
 
   const modalAnimatedStyle = useAnimatedStyle(() => ({
-    borderCurve: "continuous",
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
       [0, 100, 265 + insets.top - 1, 265 + insets.top],
@@ -125,10 +124,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     ),
 
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
     shadowOpacity: 0.2,
     shadowRadius: 10,
 
@@ -281,7 +276,16 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           />
         </Animated.View>
 
-        <Animated.View style={modalAnimatedStyle}>
+        <Animated.View style={[
+          modalAnimatedStyle, {
+            borderCurve: "continuous",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+          }
+        ]}
+        >
           <Animated.View
             style={modalIndicatorAnimatedStyle}
           />
