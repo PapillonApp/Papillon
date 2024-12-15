@@ -135,9 +135,9 @@ const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, ind
                 fontFamily: "medium",
               }}
             >
-              {typeof grade.student.value === "number"
+              {grade.student.disabled === true ? "N. not" : (typeof grade.student.value === "number"
                 ? grade.student.value.toFixed(2)
-                : "N. not"}
+                : "N. not")}
             </NativeText>
             <NativeText
               style={{
