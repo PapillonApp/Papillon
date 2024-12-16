@@ -157,7 +157,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                   <Pressable
                     key={title}
                     onPress={() => {
-                      onPress();
+                      onPress?.();
                       hideAlert();
                     }}
                     style={({ pressed }) => [
