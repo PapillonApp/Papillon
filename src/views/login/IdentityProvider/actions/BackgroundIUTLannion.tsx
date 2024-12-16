@@ -11,10 +11,37 @@ import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
+import { da } from "date-fns/locale";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const buildIdentity = (data: any) => {
+  return {
+    firstName: capitalizeFirst(data["relevé"].etudiant.prenom || ""),
+    lastName: (data["relevé"].etudiant.nom || "").toUpperCase(),
+    civility: data["relevé"].etudiant.civilite || undefined,
+    boursier: data["relevé"].etudiant.boursier || false,
+    ine: data["relevé"].etudiant.code_ine || undefined,
+    birthDate: data["relevé"].etudiant.date_naissance ? (
+      new Date(data["relevé"].etudiant.date_naissance.split("/").reverse().join("-")).getTime()
+    ) : undefined,
+    birthPlace: data["relevé"].etudiant.lieu_naissance || undefined,
+    phone: [
+      data["relevé"].etudiant.telephonemobile ? (data["relevé"].etudiant.telephonemobile).replaceAll(".", " ") : undefined,
+    ],
+    email: [
+      data["relevé"].etudiant.email || undefined,
+      data["relevé"].etudiant.emailperso || undefined,
+    ],
+    address: {
+      street: data["relevé"].etudiant.domicile || undefined,
+      city: data["relevé"].etudiant.villedomicile || undefined,
+      zipCode: data["relevé"].etudiant.codepostaldomicile || undefined,
+    },
+  };
 };
 
 const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigation }) => {
@@ -55,6 +82,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         rawData: data,
       });
 
+      mutateProperty("identity", buildIdentity(data));
+
       navigation.goBack();
     }
   };
@@ -72,6 +101,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         name: "IUT de Lannion",
         rawData: data,
       },
+
+      identity: buildIdentity(data),
 
       credentials: {
         username: username || "",
