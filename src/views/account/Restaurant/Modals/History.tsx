@@ -67,17 +67,24 @@ const RestaurantHistory = ({ route }: { route: NavigationProps }) => {
                   minute: "2-digit",
                 });
                 return (
-                  <NativeItem key={j}>
+                  <NativeItem key={j} style={{
+                    backgroundColor: history.amount === 0 ? "#D1000016" : "transparent",
+                  }}>
                     <View style={styles.row}>
-                      <View>
+                      <View style={{ flex: 1 }}>
                         <NativeText variant="title">{history.label}</NativeText>
                         <NativeText variant="subtitle">{time}</NativeText>
                       </View>
-                      <NativeText variant="titleLarge" style={{
-                        color: history.amount < 0 ? "#D10000" : "#5CB21F",
-                      }}>
-                        {history.amount > 0 ? "+" : "" }{history.amount.toFixed(2)}€
-                      </NativeText>
+                      {history.amount !== 0 && (
+                        <NativeText
+                          variant="titleLarge"
+                          style={{
+                            color: history.amount < 0 ? "#D10000" : "#5CB21F",
+                          }}
+                        >
+                          {history.amount > 0 ? "+" : ""}{history.amount.toFixed(2)}€
+                        </NativeText>
+                      )}
                     </View>
                   </NativeItem>
                 );

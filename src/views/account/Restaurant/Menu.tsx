@@ -206,6 +206,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   return (
     <ScrollView
       contentContainerStyle={styles.scrollViewContent}
+      showsHorizontalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
@@ -301,7 +302,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                       bookingDay.date.toDateString() === pickerDate.toDateString() ? (
                         <NativeItem
                           separator
-                          disabled={!bookingDay.canBook || allBalances?.every((balance) => balance.remaining === 0)}
+                          disabled={!bookingDay.canBook}
                           icon={<Utensils />}
                           key={dayIndex}
                           trailing={
@@ -329,47 +330,103 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             <>
               {isMenuLoading ? (
                 <ActivityIndicator size="large" style={{ padding: 50 }} />
-              ) : currentMenu?.lunch ? (
+              ) : currentMenu?.lunch || currentMenu?.dinner ? (
                 <>
-                  <NativeListHeader label="Menus du jour" />
-                  <NativeList>
-                    {[
-                      { title: "Entrée", items: currentMenu.lunch.entry },
-                      { title: "Plat", items: currentMenu.lunch.main },
-                      { title: "Accompagnement", items: currentMenu.lunch.side},
-                      { title: "Fromage", items: currentMenu.lunch.fromage },
-                      { title: "Dessert", items: currentMenu.lunch.dessert },
-                      { title: "Boisson", items: currentMenu.lunch.drink },
-                    ].map(({ title, items }, index) =>
-                      items && (
-                        <NativeItem key={index}>
-                          <NativeText variant="subtitle">{title}</NativeText>
-                          {items.map((food, idx) => (
-                            <>
-                              <NativeText key={idx} variant="title">{food.name ?? ""}</NativeText>
-                              {food.allergens.length > 0 && (
-                                <View style={styles.allergensContainer}>
-                                  <AlertTriangle size={16} color={colors.text} opacity={0.6}/>
-                                  <NativeText key={"allergens-"+idx} variant="subtitle">Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}</NativeText>
-                                </View>
-                              )}
-                            </>
-                          ))}
-                        </NativeItem>
-                      )
-                    )}
-                  </NativeList>
+                  {currentMenu?.lunch?.main && (
+                    <>
+                      <NativeListHeader label="Menu du jour" />
+                      <NativeList>
+                        {[
+                          { title: "Entrée", items: currentMenu.lunch.entry },
+                          { title: "Plat", items: currentMenu.lunch.main },
+                          { title: "Accompagnement", items: currentMenu.lunch.side },
+                          { title: "Fromage", items: currentMenu.lunch.fromage },
+                          { title: "Dessert", items: currentMenu.lunch.dessert },
+                          { title: "Boisson", items: currentMenu.lunch.drink },
+                        ].map(({ title, items }, index) =>
+                          items && (
+                            <NativeItem key={index}>
+                              <NativeText variant="subtitle">{title}</NativeText>
+                              {items.map((food, idx) => (
+                                <>
+                                  <NativeText key={idx} variant="title">
+                                    {food.name ?? ""}
+                                  </NativeText>
+                                  {food.allergens.length > 0 && (
+                                    <View style={styles.allergensContainer}>
+                                      <AlertTriangle
+                                        size={16}
+                                        color={colors.text}
+                                        opacity={0.6}
+                                      />
+                                      <NativeText key={"allergens-" + idx} variant="subtitle">
+                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
+                                      </NativeText>
+                                    </View>
+                                  )}
+                                </>
+                              ))}
+                            </NativeItem>
+                          )
+                        )}
+                      </NativeList>
+                    </>
+                  )}
+
+                  {currentMenu?.dinner?.main && (
+                    <>
+                      <NativeListHeader label="Menu du soir" />
+                      <NativeList>
+                        {[
+                          { title: "Entrée", items: currentMenu.dinner.entry },
+                          { title: "Plat", items: currentMenu.dinner.main },
+                          { title: "Accompagnement", items: currentMenu.dinner.side },
+                          { title: "Fromage", items: currentMenu.dinner.fromage },
+                          { title: "Dessert", items: currentMenu.dinner.dessert },
+                          { title: "Boisson", items: currentMenu.dinner.drink },
+                        ].map(({ title, items }, index) =>
+                          items && (
+                            <NativeItem key={index}>
+                              <NativeText variant="subtitle">{title}</NativeText>
+                              {items.map((food, idx) => (
+                                <>
+                                  <NativeText key={idx} variant="title">
+                                    {food.name ?? ""}
+                                  </NativeText>
+                                  {food.allergens.length > 0 && (
+                                    <View style={styles.allergensContainer}>
+                                      <AlertTriangle
+                                        size={16}
+                                        color={colors.text}
+                                        opacity={0.6}
+                                      />
+                                      <NativeText key={"allergens-" + idx} variant="subtitle">
+                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
+                                      </NativeText>
+                                    </View>
+                                  )}
+                                </>
+                              ))}
+                            </NativeItem>
+                          )
+                        )}
+                      </NativeList>
+                    </>
+                  )}
                 </>
               ) : (
                 <MissingItem
                   emoji="🍽️"
                   title="Aucun menu prévu"
-                  description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString("fr-FR", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}.`}
+                  description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString(
+                    "fr-FR",
+                    {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  )}.`}
                   entering={animPapillon(FadeInDown)}
                   exiting={animPapillon(FadeOut)}
                   style={{ marginTop: 16 }}

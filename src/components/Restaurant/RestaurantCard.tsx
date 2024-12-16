@@ -40,8 +40,8 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
       <View
         style={{
           flexDirection: "row",
-          gap: 2,
-          justifyContent: "center",
+          gap: 6,
+          justifyContent: "center"
         }}
       >
         <AnimatedNumber
