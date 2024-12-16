@@ -14,8 +14,8 @@ import * as WebBrowser from "expo-web-browser";
 import { Audio } from "expo-av";
 import * as SplashScreen from "expo-splash-screen";
 
-const PRIVACY_POLICY_URL = "https://safety.getpapillon.xyz/documents/privacy-policy";
-const TERMS_OF_SERVICE_URL = "https://safety.getpapillon.xyz/documents/terms-of-service";
+const PRIVACY_POLICY_URL = "https://docs.papillon.bzh/legal/privacy";
+const TERMS_OF_SERVICE_URL = "https://docs.papillon.bzh/legal/terms";
 
 const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   const theme = useTheme();
