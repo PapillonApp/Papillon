@@ -2,6 +2,7 @@ import type pronote from "pawnote";
 import type { Account as PawdirecteAccount, Session as PawdirecteSession } from "pawdirecte";
 import type { Client as ARDClient, Client as PawrdClient } from "pawrd";
 import { Client as TurboselfClient } from "turboself-api";
+import { Client as AliseClient, BookingDay } from "alise-api";
 import type ScolengoAPI from "scolengo-api";
 import {Configuration, Identification} from "ezly";
 import type MultiAPI from "esup-multi.js";
@@ -86,7 +87,8 @@ export enum AccountService {
   Parcoursup,
   Onisep,
   Multi,
-  Izly
+  Izly,
+  Alise
 }
 
 /**
@@ -184,6 +186,19 @@ export interface TurboselfAccount extends BaseExternalAccount {
   }
 }
 
+export interface AliseAccount extends BaseExternalAccount {
+  service: AccountService.Alise
+  instance: undefined
+  authentication: {
+    session: AliseClient
+    schoolID: string
+    username: string
+    password: string
+    bookings: BookingDay[]
+    mealPrice: number
+  }
+}
+
 export interface ARDAccount extends BaseExternalAccount {
   service: AccountService.ARD
   instance?: ARDClient
@@ -218,6 +233,7 @@ export type ExternalAccount = (
   | TurboselfAccount
   | ARDAccount
   | IzlyAccount
+  | AliseAccount
 );
 
 export type Account = (

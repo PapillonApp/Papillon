@@ -91,8 +91,8 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
       setIsLoading(true);
       await updateData();
 
-      if(isRefreshing) {
-        navigation.navigate("BackgroundIUTLannion");
+      if(isRefreshing && account.identityProvider?.identifier !== undefined) {
+        navigation.navigate("BackgroundIdentityProvider");
       }
 
       setTimeout(() => {

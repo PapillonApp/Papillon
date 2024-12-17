@@ -8,8 +8,8 @@ import { AttachmentType } from "../shared/Attachment";
 import { formatDate } from "@/services/ecoledirecte/format-date";
 
 const cleanContent = (message: string) => {
-  return message.replace(/>\s+/g, '>').replace(/&nbsp;/g, ' ');
-}
+  return message.replace(/>\s+/g, ">").replace(/&nbsp;/g, " ");
+};
 
 export const getHomeworkForWeek = async (
   account: EcoleDirecteAccount,

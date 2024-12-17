@@ -7,11 +7,6 @@ import { Image, View, StyleSheet, StatusBar, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import {
-  NativeItem,
-  NativeList,
-  NativeText,
-} from "@/components/Global/NativeComponents";
 import { AccountService } from "@/stores/account/types";
 import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
@@ -78,6 +73,18 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
             text="Izly"
             enabled={service === AccountService.Izly}
             onPress={() => setService(AccountService.Izly)}
+          />
+        </Reanimated.View>
+        <Reanimated.View
+          style={{ width: "100%" }}
+          layout={LinearTransition}
+          entering={FlipInXDown.springify().delay(200)}
+        >
+          <DuoListPressable
+            leading={<Image source={require("../../../../assets/images/service_alise.png")} style={styles.image} />}
+            text="Alise"
+            enabled={service === AccountService.Alise}
+            onPress={() => setService(AccountService.Alise)}
           />
         </Reanimated.View>
       </Reanimated.View>

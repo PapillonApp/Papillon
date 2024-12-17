@@ -23,6 +23,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@react-navigation/stack": "^6.4.0",
+    "alise-api": "^0.1.2",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
     "cal-parser": "^1.0.2",

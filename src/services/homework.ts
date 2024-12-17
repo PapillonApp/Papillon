@@ -18,7 +18,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
     switch (account.service) {
       case AccountService.Pronote: {
         const { getHomeworkForWeek } = await import("./pronote/homework");
-        const weekNumber = translateToWeekNumber(date, account.instance?.instance.firstDate || pronoteFirstDate);
+        const weekNumber = translateToWeekNumber(date, account.instance?.instance.firstMonday || pronoteFirstDate);
         homeworks = await getHomeworkForWeek(account, weekNumber);
         break;
       }

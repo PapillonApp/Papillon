@@ -25,6 +25,7 @@ import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
 import SettingsFlagsInfos from "@/views/settings/SettingsFlagsInfos";
 import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
 import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
+import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
 
 const settingsScreens = [
   createScreen("Settings", Settings, {
@@ -100,6 +101,9 @@ const settingsScreens = [
   }),
   createScreen("ExternalIzlyLogin", ExternalIzlyLogin, {
     headerTitle: "Connexion à Izly",
+  }),
+  createScreen("ExternalAliseLogin", ExternalAliseLogin, {
+    headerTitle: "Connexion à Alise",
   }),
 
   createScreen("IzlyActivation", IzlyActivation, {

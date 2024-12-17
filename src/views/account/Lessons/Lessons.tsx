@@ -326,12 +326,41 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           const newDate = new Date(date || 0);
           newDate.setHours(0, 0, 0, 0);
           setPickerDate(newDate);
-          const index = data.findIndex(
-            (d) => d.getTime() === newDate.getTime(),
-          );
-          if (index !== -1) {
-            flatListRef.current?.scrollToIndex({ index, animated: false });
+
+          const firstDate = data[0];
+          const lastDate = data[data.length - 1];
+
+          let updatedData = [...data];
+          const uniqueDates = new Set(updatedData.map(d => d.getTime()));
+
+          if (newDate < firstDate) {
+            const dates = [];
+            for (let d = new Date(firstDate); d >= newDate; d.setDate(d.getDate() - 1)) {
+              if (!uniqueDates.has(d.getTime())) {
+                dates.unshift(new Date(d));
+                uniqueDates.add(d.getTime());
+              }
+            }
+            updatedData = [...dates, ...data];
+          } else if (newDate > lastDate) {
+            const dates = [];
+            for (let d = new Date(lastDate); d <= newDate; d.setDate(d.getDate() + 1)) {
+              if (!uniqueDates.has(d.getTime())) {
+                dates.push(new Date(d));
+                uniqueDates.add(d.getTime());
+              }
+            }
+            updatedData = [...data, ...dates];
           }
+
+          setData(updatedData);
+
+          setTimeout(() => {
+            const index = updatedData.findIndex((d) => d.getTime() === newDate.getTime());
+            if (index !== -1) {
+              flatListRef.current?.scrollToIndex({ index, animated: false });
+            }
+          }, 0);
         }}
       />
     </View>

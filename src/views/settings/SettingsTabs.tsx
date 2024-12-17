@@ -193,7 +193,7 @@ const SettingsTabs = () => {
     log("Resetting tabs to default.", "SettingsTabs");
     const resetTabs = defaultTabs.map((tab) => ({
       ...tab,
-      enabled: tab.tab === "Home", // Only Home tab is enabled by default
+      enabled: tab.tab === "Home" || tab.tab === "Lessons" || tab.tab === "Homeworks" || tab.tab === "Grades" || tab.tab === "News", // Tabs Home, Lessons, Homeworks and Grades are enabled by default
       installed: true,
     }));
     setTabs(resetTabs);
