@@ -19,6 +19,7 @@ import Reanimated, {
 import {
   Bell,
   Cable,
+  CheckSquare,
   HandCoins,
   Info,
   Laptop,
@@ -145,6 +146,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               navigation.navigate("ColorSelector", { settings: true });
             }, 10);
           }
+        },
+        {
+          icon: <CheckSquare />,
+          color: "#4947E6FF",
+          label: "Devoirs",
+          onPress: () => navigation.navigate("SettingsCheck"),
         },
       ],
     },

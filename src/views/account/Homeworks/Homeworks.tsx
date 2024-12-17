@@ -106,6 +106,15 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
+  useEffect(() => {
+    const keeyActivated =
+      account.personalization.KeepCheckActivated === true
+        ? true
+        : false;
+
+    setHideDone(keeyActivated);
+  }, [account.personalization.KeepCheckActivated]);
+
 
   const getItemLayout = useCallback((_: any, index: number) => ({
     length: finalWidth,
@@ -454,7 +463,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   </Reanimated.View>
                 }
 
-                {!showPickerButtons && hideDone &&
+                {!showPickerButtons && hideDone && account.personalization.KeepCheckVisible &&
                     <Reanimated.View
                       entering={animPapillon(ZoomIn)}
                       exiting={animPapillon(FadeOut)}
@@ -547,7 +556,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           />
         }
 
-        {showPickerButtons && !searchHasFocus && width > 330 &&
+        {(showPickerButtons || !account.personalization.KeepCheckVisible) && !searchHasFocus && width > 330 &&
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
           entering={animPapillon(FadeInLeft).delay(100)}
@@ -560,9 +569,9 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             borderWidth: 1,
             borderRadius: 800,
             height: 40,
-            width: showPickerButtons ? 40 : null,
-            minWidth: showPickerButtons ? 40 : null,
-            maxWidth: showPickerButtons ? 40 : null,
+            width: 40,
+            minWidth: 40,
+            maxWidth: 40,
             gap: 4,
             shadowColor: "#00000022",
             shadowOffset: { width: 0, height: 2 },
@@ -574,6 +583,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             onPress={() => {
               setHideDone(!hideDone);
             }}
+            onLongPress={() => navigation.navigate("SettingStack", {view: "SettingsCheck"})}
+            delayLongPress={2000}
           >
             <CheckSquare
               size={20}
@@ -642,8 +653,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           >
             <TextInput
               placeholder={
-                (hideDone && !searchHasFocus) ? "Non terminé" :
-                  "Rechercher"
+                (searchHasFocus || account.personalization.KeepCheckVisible) ? "Rechercher" : ""
               }
               value={searchTerms}
               onChangeText={setSearchTerms}

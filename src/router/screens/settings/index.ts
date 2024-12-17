@@ -8,6 +8,7 @@ import SettingsIcons from "@/views/settings/SettingsIcons";
 import SettingsSubjects from "@/views/settings/SettingsSubjects";
 import SettingsExternalServices from "@/views/settings/SettingsExternalServices";
 import SettingsMagic from "@/views/settings/SettingsMagic";
+import SettingsCheck from "@/views/settings/SettingsCheck";
 import SettingsAddons from "@/views/settings/SettingsAddons";
 import AddonPage from "@/views/addon/AddonPage";
 import { create } from "lodash";
@@ -38,6 +39,9 @@ const settingsScreens = [
   }),
   createScreen("SettingsTrophies", SettingsTrophies, {
     headerTitle: "Trophées",
+  }),
+  createScreen("SettingsCheck", SettingsCheck, {
+    headerTitle: "Devoirs",
   }),
   createScreen("SettingsProfile", SettingsProfile, {
     headerTitle: "Profil",
