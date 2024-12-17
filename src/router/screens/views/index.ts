@@ -18,6 +18,7 @@ import ScodocWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTL
 import ScodocBackgroundWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { Platform } from "react-native";
+import BackgroundIdentityProvider from "@/views/login/IdentityProvider/BackgroundIdentityProvider";
 
 export default [
   createScreen("NoteReaction", NoteReaction, {
@@ -85,6 +86,10 @@ export default [
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",
+    presentation: "modal",
+  }),
+  createScreen("BackgroundIdentityProvider", BackgroundIdentityProvider, {
+    headerTitle: "Fournisseur d'identité",
     presentation: "modal",
   }),
 ] as const;

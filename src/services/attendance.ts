@@ -84,12 +84,25 @@ export async function updateAttendanceInCache <T extends Account> (account: T, p
       break;
     }
     case AccountService.Local: {
-      attendance = {
-        delays: [],
-        absences: [],
-        punishments: [],
-        observations: []
-      };
+      if (account.identityProvider.identifier == "iut-lannion") {
+        const { saveIUTLanAttendance } = await import("./iutlan/attendance");
+        const data = await saveIUTLanAttendance(account);
+
+        attendance = {
+          delays: data.delays,
+          absences: data.absences,
+          punishments: data.punishments,
+          observations: data.observations
+        };
+      }
+      else {
+        attendance = {
+          delays: [],
+          absences: [],
+          punishments: [],
+          observations: []
+        };
+      }
 
       break;
     }

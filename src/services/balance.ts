@@ -1,7 +1,7 @@
 import {AccountService, type ExternalAccount} from "@/stores/account/types";
 import type {Balance} from "./shared/Balance";
 
-export const balanceFromExternal = async (account: ExternalAccount): Promise<Balance[]> => {
+export const balanceFromExternal = async (account: ExternalAccount, force = false): Promise<Balance[]> => {
   switch (account.service) {
     case AccountService.Turboself: {
       const { getBalance } = await import("./turboself/balance");
@@ -14,6 +14,10 @@ export const balanceFromExternal = async (account: ExternalAccount): Promise<Bal
     case AccountService.Izly: {
       const { balance } = await import("./izly/balance");
       return balance(account);
+    }
+    case AccountService.Alise: {
+      const { getBalance } = await import("./alise/balance");
+      return getBalance(account, force);
     }
     default: {
       return [];

@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useMemo, useState } from "react";
-import { View, ActivityIndicator, Platform } from "react-native";
+import { View, ActivityIndicator, Platform, RefreshControl } from "react-native";
 
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
@@ -33,6 +33,8 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
   const errorTitle = useMemo(() => getErrorTitle(), []);
   const [isRefreshing] = useState(false);
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
@@ -49,6 +51,10 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   useEffect(() => {
     updateAttendancePeriodsInCache(account);
   }, [navigation, account.instance]);
+
+  useEffect(() => {
+    setIsRefreshing(false);
+  }, [attendances]);
 
   useEffect(() => {
     void async function () {
@@ -235,6 +241,21 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           padding: 16,
           paddingTop: 0,
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              setIsRefreshing(true);
+              if(account.identityProvider?.identifier !== undefined) {
+                navigation.navigate("BackgroundIdentityProvider");
+                updateAttendanceInCache(account, selectedPeriod).then(() => setIsRefreshing(false));
+              }
+              else {
+                updateAttendanceInCache(account, selectedPeriod).then(() => setIsRefreshing(false));
+              }
+            }}
+          />
+        }
       >
         {!isOnline &&
           <Reanimated.View

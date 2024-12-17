@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAccounts } from "@/stores/account";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import {ExternalAccount} from "@/stores/account/types";
-import {detectMealPrice} from "@/views/settings/ExternalAccount/ARD";
+import {detectMealPrice as ARDPriceDetector} from "@/views/settings/ExternalAccount/ARD";
 
 type Props = {
   navigation: any;
@@ -46,7 +46,7 @@ const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
   };
 
   const reloadMealPrice = async () => {
-    const mealPrice = await detectMealPrice(account);
+    const mealPrice = await ARDPriceDetector(account);
     if (!mealPrice) return Alert.alert("Erreur", "Impossible de déterminer le prix d'un repas");
     update<ExternalAccount>(accountId, "authentication", { "mealPrice": mealPrice });
     navigation.pop();

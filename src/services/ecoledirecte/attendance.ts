@@ -8,7 +8,7 @@ import {Absence} from "@/services/shared/Absence";
 import {Delay} from "@/services/shared/Delay";
 
 const decodeDelay = (item: AttendanceItem): Delay => {
-  const timeInterval = dateStringAsTimeInterval(item.displayDate); 
+  const timeInterval = dateStringAsTimeInterval(item.displayDate);
   const duration = (timeInterval?.end && timeInterval.start) ? getDuration(timeInterval).getTime() / (60 * 1000): 0;
   return {
     id: item.id.toString(),
