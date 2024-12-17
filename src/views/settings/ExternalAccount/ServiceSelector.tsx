@@ -80,19 +80,6 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
             onPress={() => setService(AccountService.Izly)}
           />
         </Reanimated.View>
-
-        <Reanimated.View
-          style={{ width: "100%" }}
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(300)}
-        >
-          <DuoListPressable
-            leading={<CircleDashed style={styles.image} />}
-            text="Ne sais pas/N’est pas listé"
-            enabled={service === "Other"}
-            onPress={() => setService("Other")}
-          />
-        </Reanimated.View>
       </Reanimated.View>
 
       <View style={styles.buttons}>

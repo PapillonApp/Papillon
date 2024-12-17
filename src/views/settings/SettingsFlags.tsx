@@ -37,8 +37,15 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
           key={key}
           onPress={() => navigation.navigate("SettingsFlagsInfos", { title: key, value: value })}
         >
-          <NativeText>{key}</NativeText>
-          <NativeText>{displayValue}</NativeText>
+          <NativeText
+            variant="subtitle"
+          >{key}</NativeText>
+          <NativeText
+            variant="default"
+            style={{
+              fontFamily: "Menlo",
+            }}
+          >{displayValue}</NativeText>
         </NativeItem>
       );
     };
@@ -76,7 +83,8 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
         <NativeList>
           <NativeItem>
             <TextInput
-              style={[styles.input, { color: colors.text }]}
+              style={[styles.input, { color: colors.text,
+                fontFamily: "Menlo", }]}
               placeholder="Nouveau flag"
               placeholderTextColor={colors.text + "80"}
               ref={textInputRef}

@@ -12,7 +12,14 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
   try {
     // Il faudrait peut-être penser à typer cette partie, tous les types sont any :(
     const scodocData = account.identityProvider.rawData;
-    const matieres = (scodocData["relevé"] as any).ressources;
+
+    const ressources = (scodocData["relevé"] as any).ressources;
+    const saes = (scodocData["relevé"] as any).saes;
+
+    const matieres = {
+      ...ressources,
+      ...saes,
+    };
 
     const gradesList: Grade[] = [];
     const averages: AverageOverview = {
@@ -39,19 +46,19 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       const grades: Grade[] = matiere.evaluations.map((note: any) => {
         const grade: Grade = {
           student: {
-            value: parseInt(note.note.value),
-            disabled: isNaN(parseInt(note.note.value)),
+            value: parseFloat(note.note.value),
+            disabled: isNaN(parseFloat(note.note.value)),
           },
           min: {
-            value: parseInt(note.note.min),
+            value: parseFloat(note.note.min),
             disabled: false,
           },
           max: {
-            value: parseInt(note.note.max),
+            value: parseFloat(note.note.max),
             disabled: false,
           },
           average: {
-            value: parseInt(note.note.moy),
+            value: parseFloat(note.note.moy),
             disabled: false,
           },
 
@@ -62,7 +69,7 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
           },
           description: note.description,
           timestamp: new Date(note.date).getTime(),
-          coefficient: parseInt(note.coef),
+          coefficient: parseFloat(note.coef),
           isBonus: false,
           isOptional: false,
           subjectName: subject.name,

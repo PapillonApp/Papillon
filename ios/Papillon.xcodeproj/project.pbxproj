@@ -10,10 +10,15 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2D6C6538E5F346C0964ED2DA /* FixelText-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2CA436545607494ABF55D4A0 /* FixelText-Light.ttf */; };
 		3884CE273E4A98CB47EAA284 /* libPods-Papillon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA9574CF2D4D94FAA137392F /* libPods-Papillon.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		472EB3522C45E0ED00503877 /* Stickers.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472EB3512C45E0ED00503877 /* Stickers.xcassets */; };
+		63920DB919D54244A4D0D651 /* FixelText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 222162480574474F81E8B151 /* FixelText-Regular.ttf */; };
+		65B64A82951D461DBA5DCB67 /* FixelText-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 52806640827D4D76AC6BD305 /* FixelText-Bold.ttf */; };
 		6C3E424F5C754637A91EF425 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3597223C6B74832B9814997 /* noop-file.swift */; };
+		767A8FDA738E456AA893A396 /* FixelText-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 54DA555BF32B482E8C5E646E /* FixelText-SemiBold.ttf */; };
+		80E8AF56A9AB4E44B1E37910 /* FixelText-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 523BD2EA68B24DC59000E016 /* FixelText-Medium.ttf */; };
 		9EB6A73F5C2B31DB35A4C1CC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0A2B67CB166ED7EB2EFEFD15 /* PrivacyInfo.xcprivacy */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -27,11 +32,16 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Papillon/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Papillon/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Papillon/main.m; sourceTree = "<group>"; };
+		222162480574474F81E8B151 /* FixelText-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "FixelText-Regular.ttf"; path = "../assets/fonts/FixelText-Regular.ttf"; sourceTree = "<group>"; };
+		2CA436545607494ABF55D4A0 /* FixelText-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "FixelText-Light.ttf"; path = "../assets/fonts/FixelText-Light.ttf"; sourceTree = "<group>"; };
 		34052B33E0B6329F11EBC220 /* Pods-Papillon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.release.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.release.xcconfig"; sourceTree = "<group>"; };
 		472EB33B2C45E06600503877 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
 		472EB34F2C45E0EC00503877 /* Autocollants Papillon.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Autocollants Papillon.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		472EB3512C45E0ED00503877 /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		472EB3532C45E0ED00503877 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		523BD2EA68B24DC59000E016 /* FixelText-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "FixelText-Medium.ttf"; path = "../assets/fonts/FixelText-Medium.ttf"; sourceTree = "<group>"; };
+		52806640827D4D76AC6BD305 /* FixelText-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "FixelText-Bold.ttf"; path = "../assets/fonts/FixelText-Bold.ttf"; sourceTree = "<group>"; };
+		54DA555BF32B482E8C5E646E /* FixelText-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "FixelText-SemiBold.ttf"; path = "../assets/fonts/FixelText-SemiBold.ttf"; sourceTree = "<group>"; };
 		8609E53447C1AEB25F30038A /* Pods-Papillon.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papillon.debug.xcconfig"; path = "Target Support Files/Pods-Papillon/Pods-Papillon.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Papillon/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -93,6 +103,11 @@
 		735BABD8E6204B0D9A2672EC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				52806640827D4D76AC6BD305 /* FixelText-Bold.ttf */,
+				2CA436545607494ABF55D4A0 /* FixelText-Light.ttf */,
+				523BD2EA68B24DC59000E016 /* FixelText-Medium.ttf */,
+				222162480574474F81E8B151 /* FixelText-Regular.ttf */,
+				54DA555BF32B482E8C5E646E /* FixelText-SemiBold.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -250,6 +265,11 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				9EB6A73F5C2B31DB35A4C1CC /* PrivacyInfo.xcprivacy in Resources */,
+				65B64A82951D461DBA5DCB67 /* FixelText-Bold.ttf in Resources */,
+				2D6C6538E5F346C0964ED2DA /* FixelText-Light.ttf in Resources */,
+				80E8AF56A9AB4E44B1E37910 /* FixelText-Medium.ttf in Resources */,
+				63920DB919D54244A4D0D651 /* FixelText-Regular.ttf in Resources */,
+				767A8FDA738E456AA893A396 /* FixelText-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,9 +336,11 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoMediaLibrary/ExpoMediaLibrary_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
 			);
@@ -332,9 +354,11 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoMediaLibrary_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
 			);

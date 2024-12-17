@@ -29,6 +29,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
+  const [isED, setIsED] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,22 +44,52 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   }, [account]);
 
   useEffect(() => {
-    navigation.addListener("focus", () => fetchData(true));
-    fetchData();
+    if (account.service === AccountService.EcoleDirecte) setIsED(true);
+    if (sortedMessages.length === 0) {
+      navigation.addListener("focus", () => fetchData(true));
+      fetchData();
+    }
   }, [account.instance]);
 
   useEffect(() => {
     if (informations) {
-      if (account.personalization?.magicEnabled) {
-        const { importantMessages, normalMessages } = categorizeMessages(informations);
-        setImportantMessages(importantMessages.map(message => ({ ...message, date: message.date.toString() })));
-        setSortedMessages(normalMessages.map(message => ({ ...message, date: message.date.toString(), important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      if (account.personalization.MagicNews) {
+        const { importantMessages, normalMessages } =
+          categorizeMessages(informations);
+        setImportantMessages(
+          importantMessages.map((message) => ({
+            ...message,
+            date: message.date.toString(),
+          }))
+        );
+        setSortedMessages(
+          normalMessages
+            .map((message) => ({
+              ...message,
+              date: message.date.toString(),
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       } else {
         setImportantMessages([]);
-        setSortedMessages(informations.map(info => ({ ...info, date: info.date.toString(), title: info.title || "", important: false })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setSortedMessages(
+          informations
+            .map((info) => ({
+              ...info,
+              date: info.date.toString(),
+              title: info.title || "",
+              important: false,
+            }))
+            .sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )
+        );
       }
     }
-  }, [informations, account.personalization?.magicEnabled]);
+  }, [informations, account.personalization.MagicNews]);
 
   const renderItem: ListRenderItem<NewsItem> = useCallback(({ item, index }) => (
     <NewsListItem
@@ -123,6 +154,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
                 data={importantMessages}
                 renderItem={renderItem}
                 keyExtractor={(_, index) => `important-${index}`}
+                scrollEnabled={false}
               />
             </LinearGradient>
           </NativeList>
@@ -140,6 +172,8 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
               data={sortedMessages}
               renderItem={renderItem}
               keyExtractor={(_, index) => `sorted-${index}`}
+              scrollEnabled={false}
+              initialNumToRender={6}
             />
           </NativeList>
         </Reanimated.View>

@@ -20,4 +20,5 @@ const papillonNotify = async (props: Notification) => {
 
 export {
   requestNotificationPermission,
+  papillonNotify,
 };

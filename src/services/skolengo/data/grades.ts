@@ -44,14 +44,14 @@ export const getGradesAndAverages = async (account: SkolengoAccount, periodName:
 
   const averages: AverageOverview = {
     classOverall: { value: 0, disabled: true },
-    overall: getOverall(evals),
-    subjects: evals.map(s => ({
+    overall: { value: 0, disabled: true },
+    subjects: evals.map((s) => ({
       classAverage: decodeGradeNumber(s.average),
       color: s.subject.color || "#888",
       subjectName: s.subject.label,
       average: decodeGradeNumber(s.studentAverage),
-      ...getSubjectMinMax(s)
-    }))
+      ...getSubjectMinMax(s),
+    })),
   };
 
   const grades: Grade[] = evals.map(e=>e.evaluations.map(f=>({...f, evaluation: e}))).flat().map(g => ({

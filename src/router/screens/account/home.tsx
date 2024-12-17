@@ -14,10 +14,8 @@ export const screenOptions: NativeStackNavigationOptions = {
 
 import { useCurrentAccount } from "@/stores/account";
 import createScreen from "@/router/helpers/create-screen";
-import HomeAndroid from "@/views/account/Home/Home.android";
-import HomeiOS from "@/views/account/Home/Home.ios";
+import Home from "@/views/account/Home/Home";
 import type { RouteParameters, Screen } from "@/router/helpers/types";
-import { Platform } from "react-native";
 
 const HomeStackScreen = ({ accountScreens }: {
   accountScreens: Array<ReturnType<typeof createScreen>>
@@ -50,13 +48,9 @@ const HomeStackScreen = ({ accountScreens }: {
 
   // Add Home as the first tab.
   newAccountScreens.unshift(
-    createScreen(
-      "HomeScreen",
-      Platform.OS === "android" ? HomeAndroid : HomeiOS,
-      {
-        headerShown: false,
-      }
-    ) as ReturnType<typeof createScreen>
+    createScreen("HomeScreen", Home, {
+      headerShown: false,
+    }) as ReturnType<typeof createScreen>
   );
 
   return (

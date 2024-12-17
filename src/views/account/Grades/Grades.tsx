@@ -4,6 +4,7 @@ import {
   PapillonModernHeader,
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import { useAlert } from "@/providers/AlertProvider";
 import type { Screen } from "@/router/helpers/types";
 import {
   updateGradesAndAveragesInCache,
@@ -11,6 +12,7 @@ import {
 } from "@/services/grades";
 import type { GradesPerSubject } from "@/services/shared/Grade";
 import { useCurrentAccount } from "@/stores/account";
+import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
@@ -106,21 +108,21 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
 
       const gradesPerSubject: GradesPerSubject[] = [];
 
-      for (const average of (averages[selectedPeriod] || { subjects: [] })
-        .subjects) {
+      for (const average of (averages[selectedPeriod] || { subjects: [] }).subjects) {
         const newGrades = (grades[selectedPeriod] || [])
-          .filter((grade) => grade.subjectName === average.subjectName)
+          .filter((grade) => account.service === AccountService.Pronote ? grade.subjectId === average.id : grade.subjectName === average.subjectName)
           .sort((a, b) => b.timestamp - a.timestamp);
-
         gradesPerSubject.push({
           average: average,
           grades: newGrades,
         });
       }
 
-      gradesPerSubject.sort((a, b) =>
-        a.average.subjectName.localeCompare(b.average.subjectName)
-      );
+      if (account.service !== AccountService.EcoleDirecte) {
+        gradesPerSubject.sort((a, b) =>
+          a.average.subjectName.localeCompare(b.average.subjectName)
+        );
+      }
       setGradesPerSubject(gradesPerSubject);
     }, 1);
   }, [selectedPeriod, averages, grades]);
@@ -224,7 +226,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 >
                   <GradesAverageGraph
                     grades={grades[selectedPeriod] ?? []}
-                    overall={averages[selectedPeriod]?.overall.value}
+                    overall={(averages[selectedPeriod]?.overall && !averages[selectedPeriod]?.overall.disabled) ? averages[selectedPeriod]?.overall.value : null}
                     classOverall={averages[selectedPeriod]?.classOverall.value}
                   />
                 </Reanimated.View>

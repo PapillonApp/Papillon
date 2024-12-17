@@ -59,7 +59,7 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
           {message.author}
         </NativeText>
 
-        {!message.read && isED && (
+        {!message.read && !isED && (
           <View style={{
             width: 8,
             height: 8,

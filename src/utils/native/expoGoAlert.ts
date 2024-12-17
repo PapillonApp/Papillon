@@ -11,8 +11,12 @@ export const alertExpoGo = async () => {
     "Sous Expo Go, les appels aux API natives sont indisponibles. Veuillez utiliser une build de développement pour accéder à toutes les fonctionnalités.",
   );
 };
-
-// function wrapper that only calls the function if the app is not Expo Go
+/**
+ * Function wrapper that only calls the function if the app is not Expo Go
+ * @param fn Founciton to call if not Expo Go
+ * @param alert Show an alert if the app is Expo Go
+ * @returns Execute the function if not Expo Go
+ */
 export const expoGoWrapper = (fn: () => void, alert?: boolean) => {
   if (!isExpoGo()) {
     return fn();

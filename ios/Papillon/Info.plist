@@ -19,7 +19,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>7.5.0</string>
+    <string>7.6.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -28,12 +28,13 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>papillon</string>
+          <string>izly</string>
           <string>xyz.getpapillon.ios</string>
         </array>
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>7500</string>
+    <string>7501</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSRequiresIPhoneOS</key>
@@ -61,9 +62,19 @@
     <string>Allow $(PRODUCT_NAME) to save photos</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Papillon utilise tes photos et vidéos pour personnaliser ton profil, ta gestion des cours et bien plus.</string>
+    <key>UIAppFonts</key>
+    <array>
+      <string>FixelText-Bold.ttf</string>
+      <string>FixelText-Light.ttf</string>
+      <string>FixelText-Medium.ttf</string>
+      <string>FixelText-Regular.ttf</string>
+      <string>FixelText-SemiBold.ttf</string>
+    </array>
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>
+      <string>processing</string>
+      <string>remote-notification</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>

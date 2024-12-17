@@ -45,10 +45,9 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   };
 
   const showAccountInfo = (account: any) => {
-    let info = `Service: ${getServiceName(account.service)}\n`;
-    info += `ID: ${account.username || "N. not"}\n`;
-    info += `School ID: ${account.authentication.schoolID || "N. not"}\n`;
-
+    let info = `Service : ${getServiceName(account.service)}\n`;
+    info += `Identifiant : ${account.username || "N. not"}\n`;
+    info += `Établissement : ${account.authentication.schoolID || "N. not"}\n`;
 
 
     Alert.alert(
@@ -84,7 +83,12 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
     removeAccount(localID);
   };
 
-  const filteredAccounts = accounts.filter((acc, index) => !(index === 0 && acc.service === AccountService.Pronote));
+  const filteredAccounts = accounts.filter((acc, index) => {
+    if (acc.isExternal) {
+      return true;
+    }
+    return false;
+  });
 
   return (
     <ScrollView

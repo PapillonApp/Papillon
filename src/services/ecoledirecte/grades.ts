@@ -22,37 +22,24 @@ const decodePeriod = (p: PawdirectePeriod): Period => {
   };
 };
 
-const decodeGradeKind = (kind: GradeKind): GradeInformation | undefined => {
-  switch (kind) {
-    case GradeKind.Error:
-    case GradeKind.Grade:
-      return undefined;
-    case GradeKind.Absent:
-      return GradeInformation.Absent;
-    case GradeKind.Exempted:
-      return GradeInformation.Exempted;
-    case GradeKind.NotGraded:
-      return GradeInformation.NotGraded;
-    default:
-      return undefined;
-  }
-};
-
 const decodeGradeValue = (
   value: ecoledirecte.GradeValue | undefined,
 ): GradeValue => {
-  if (!value)
-    return {
-      disabled: true,
-      information: GradeInformation.NotGraded,
-      value: 0,
-    };
+  if (typeof value === "undefined")
+    return { value: null, disabled: true };
 
-  return {
-    disabled: value.kind === GradeKind.Error,
-    information: decodeGradeKind(value.kind),
-    value: value?.points,
-  };
+  switch (value.kind) {
+    case GradeKind.Grade:
+      return { value: value.points ?? 0, disabled: false };
+    case GradeKind.Absent:
+      return { value: value.points ?? 0, disabled: true, information: GradeInformation.Absent };
+    case GradeKind.Exempted:
+      return { value: value.points ?? 0, disabled: true, information: GradeInformation.Exempted };
+    case GradeKind.NotGraded:
+      return { value: value.points ?? 0, disabled: true, information: GradeInformation.NotGraded };
+    default:
+      return { value: value.points ?? 0, disabled: true };
+  }
 };
 
 const getGradeValue = (value: number | string | undefined): GradeValue => {

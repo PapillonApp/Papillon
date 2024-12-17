@@ -38,7 +38,7 @@ const RestaurantBalanceWidget = forwardRef(({
           balances.push(...balance);
         }
       }
-      setBalances(balances);
+      setBalances(balances.filter(balance => balance.label.toLowerCase() !== "cafetaria"));
       setHidden(balances.length === 0 || balances.every(balance => balance.remaining === 0));
       setLoading(false);
     }();
@@ -97,31 +97,39 @@ const RestaurantBalanceWidget = forwardRef(({
             fontSize: 37,
             lineHeight: 37,
             fontFamily: "semibold",
-            color: "#5CB21F",
+            color: (currentBalance?.remaining ?? 0) <= 0
+              ? "#D10000"
+              : "#5CB21F",
           }}
           contentContainerStyle={{
             paddingLeft: 6,
           }}
         />
-        <View style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4,
-          backgroundColor: "#5CB21F" + "35",
-          borderRadius: 6,
-        }}>
-          <Text
-            style={{
-              color: "#5CB21F",
-              fontFamily: "medium",
-              fontSize: 16,
-              paddingHorizontal: 7,
-              paddingVertical: 3,
-            }}
-          >
-            {currentBalance?.remaining ?? 0} {currentBalance?.remaining === 1 ? "repas restant" : "repas restants"}
-          </Text>
-        </View>
+        {currentBalance?.remaining !== undefined && currentBalance?.remaining !== null && (
+          <View style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+            backgroundColor: (currentBalance?.remaining ?? 0) <= 0
+              ? "#D1000035"
+              : "#5CB21F35",
+            borderRadius: 6,
+          }}>
+            <Text
+              style={{
+                color: (currentBalance?.remaining ?? 0) <= 0
+                  ? "#D10000"
+                  : "#5CB21F",
+                fontFamily: "medium",
+                fontSize: 16,
+                paddingHorizontal: 7,
+                paddingVertical: 3,
+              }}
+            >
+              {Math.max(0, currentBalance?.remaining ?? 0)} {currentBalance?.remaining === 1 ? "repas restant" : "repas restants"}
+            </Text>
+          </View>
+        )}
       </Reanimated.View>
     </>
   );

@@ -31,8 +31,8 @@ export default [
     presentation: "fullScreenModal",
   }),
   createScreen("RestaurantHistory", RestaurantHistory, {
-    headerTitle: "",
-    headerTransparent: true,
+    headerTitle: "Historique des réservations",
+    headerShown: true,
     presentation: "modal",
   }),
   createScreen("SettingsTabs", SettingsTabs, {
@@ -42,6 +42,7 @@ export default [
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
+    animation: "slide_from_right",
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",

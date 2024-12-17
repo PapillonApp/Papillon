@@ -2,8 +2,8 @@
   "expo": {
     "name": "Papillon",
     "slug": "papillonvex",
-    "scheme": "papillon",
-    "version": "7.5.0",
+    "scheme": ["papillon", "izly"],
+    "version": "7.7.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -15,7 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "buildNumber": "7500",
+      "buildNumber": "7501",
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
@@ -35,7 +35,7 @@
       }
     },
     "android": {
-      "versionCode": 7500,
+      "versionCode": 7700,
       "playStoreUrl": "https://play.google.com/store/apps/details?id=xyz.getpapillon.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/launch/adaptive-icon-foreground.png",
