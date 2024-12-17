@@ -5,27 +5,31 @@ import { useNewsStore } from "@/stores/news";
 import { papillonNotify } from "../Notifications";
 import uuid from "@/utils/uuid-v4";
 import parse_news_resume from "@/utils/format/format_pronote_news";
+import { PrimaryAccount } from "@/stores/account/types";
 
-// Function to compare the differences between two arrays of objects
-const getDifferences = (currentNews: Information[], updatedNews: Information[]): Information[] => {
-  // Indentify the differences
-  const differences = updatedNews.filter((updatedItem) => {
-    const currentItem = currentNews.find((item) => item.id === updatedItem.id);
-    return !currentItem || JSON.stringify(currentItem) !== JSON.stringify(updatedItem);
+// Function to compare the differences between two arrays of objects and check if the news are readed
+const getDifferences = (oldArray: Information[], newArray: Information[]): Information[] => {
+  const differences = newArray.filter((newElement) => {
+    const oldElement = oldArray.find((element) => element.id === newElement.id);
+    if (!oldElement) return true;
+    return newElement.read !== oldElement.read;
   });
-
   return differences;
 };
 
-const fetchNews = async (): Promise<Information[]> => {
+/**
+ * Fetch the news for the account
+ * @param account The account to fetch the news
+ * @returns The updated news
+ */
+const fetchNews = async (account: PrimaryAccount): Promise<Information[]> => {
   // Account informations
-  const account = useCurrentAccount((store) => store.account!);
   const notificationsTypesPermissions = account.personalization.notifications;
 
   // Informations
-  const currentNews = await useNewsStore((store) => store.informations); // Get the news before the update
+  const currentNews = await useNewsStore.getState().informations; // Get the news before the update
   await updateNewsInCache(account); // Update the news
-  const updatedNews = await useNewsStore((store) => store.informations); // Get the news after the update
+  const updatedNews = await useNewsStore.getState().informations; // Get the news after the update
 
   const differences = getDifferences(currentNews, updatedNews);
 
@@ -58,7 +62,13 @@ const fetchNews = async (): Promise<Information[]> => {
     }
   }
 
-  return updatedNews;
+  return updatedNews.map((news) => {
+    return {
+      localID: account.localID,
+      ...news,
+      content: news.content ? parse_news_resume(news.content) : ""
+    };
+  });
 };
 
 export { fetchNews };

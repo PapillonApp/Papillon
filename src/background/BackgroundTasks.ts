@@ -1,10 +1,13 @@
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
+import Constants from "expo-constants";
+import Preferences from "react-native-shared-group-preferences";
 import { BackgroundFetchResult } from "expo-background-fetch";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { fetchNews } from "./data/News";
+import { PrimaryAccount } from "@/stores/account/types";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 
-import { fetchNews } from "./data/News";
 
 /**
  * Background fetch function that fetches all the data
@@ -13,15 +16,33 @@ import { fetchNews } from "./data/News";
  */
 const backgroundFetch = async () => {
   console.log("[background fetch] Running background fetch");
+  const appGroupIdentifier = `group.${Constants.expoConfig?.ios?.bundleIdentifier}`;
+  const news = [];
 
-  const accounts = useAccounts((store) => store.accounts).filter(account => account.isExternal === false); // Get all accounts
-  const switchTo = useCurrentAccount(store => store.switchTo); // Get the switchTo function
+  try {
+    const accounts = useAccounts.getState().accounts.filter((account) => account.isExternal === false);
+    const switchTo = (account: PrimaryAccount) => useCurrentAccount.getState().switchTo(account);
 
-  for (const account of accounts) {
-    await switchTo(account);
-    await Promise.all([fetchNews()]);
+    // Fetch for each account
+    for (const account of accounts) {
+      await switchTo(account);
+      const actualAccount = useCurrentAccount.getState().account;
+
+      const fetchedNews = await fetchNews(actualAccount!);
+      // fetchedNews is an array of Information objects
+      news.push(...fetchedNews);
+    }
+
+    await Preferences.setItem("accounts", JSON.stringify(accounts.map(({name, schoolName, localID}) => ({name, schoolName, localID}))), appGroupIdentifier);
+    console.log("[background fetch] Accounts fetched and saved in shared preferences");
+    await Preferences.setItem("news", JSON.stringify(news), appGroupIdentifier);
+    console.log("[background fetch] News fetched and saved in shared preferences", await Preferences.getItem("news", appGroupIdentifier));
+
+    return BackgroundFetchResult.NewData;
+  } catch (error) {
+    console.error("[background fetch] Error while fetching data", error);
+    return BackgroundFetchResult.Failed;
   }
-  return BackgroundFetchResult.NewData;
 };
 
 const registerBackgroundTasks = async () => {
