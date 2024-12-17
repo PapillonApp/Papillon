@@ -413,7 +413,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
         }}
         onScroll={scrollHandler}
         scrollEventThrottle={Platform.OS == "ios" ? 8 : 32}
-        snapToOffsets={[0, headerHeight]}
+        snapToOffsets={[0, headerHeight - 60]}
         bounces={!scrolled}
         decelerationRate={
           Platform.OS === "ios" ?
@@ -431,7 +431,7 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
               height: headerHeight,
               alignItems: "center",
               justifyContent: "center",
-              paddingTop: insets.top - 17.5,
+              paddingTop: insets.top,
             },
             styles.header,
             Platform.OS === "ios" && stylez
@@ -443,29 +443,12 @@ const Home: Screen<"HomeScreen"> = ({ route, navigation }) => {
           />
         </Reanimated.View>
 
-        {Platform.OS === "ios" && (
-          <Reanimated.View
-            pointerEvents={"none"}
-            style={[
-              {
-                backgroundColor: "#000000",
-                zIndex: -80,
-                width: "100%",
-                height: "200%",
-                position: "absolute",
-                top: -700,
-                left: 0,
-              },
-              backdropStyle
-            ]}
-          />
-        )}
-
         <Reanimated.View
           style={[
             styles.card,
             {
               backgroundColor: colors.background,
+              marginTop: -60,
               minHeight:
                 Platform.OS === "ios" ?
                   Dimensions.get("window").height - tabBarHeight - 13

@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 
@@ -38,7 +38,9 @@ const AccountSwitcher: React.FC<{
   return (
     <Reanimated.View
       style={{
-        backgroundColor: colors.primary + "70",
+        backgroundColor:
+        Platform.OS === "ios" ? colors.text + "16" :
+          colors.text + "40",
         borderRadius: 12,
         borderCurve: "continuous",
         overflow: "hidden",
