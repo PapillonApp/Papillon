@@ -32,6 +32,9 @@
       },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.xyz.getpapillon.ios"]
       }
     },
     "android": {
