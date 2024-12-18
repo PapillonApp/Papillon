@@ -281,7 +281,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
               setLoading(true);
 
               if (url.includes("mobile.eleve.html")) {
-                setLoginStep("En attente de votre établissement");
+                setLoginStep("En attente de ton établissement");
                 setShowWebView(false);
               }
             }}

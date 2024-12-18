@@ -180,7 +180,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
               opacity: 0.5,
             }}
           >
-            Vos conversations arrivent...
+            Tes conversations arrivent...
           </Text>
         </Reanimated.View>
       )}

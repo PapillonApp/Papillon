@@ -250,7 +250,7 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
                 entering={FadeInUp.springify()}
                 exiting={FadeOutUp.springify()}
               >
-                {hasSearched ? "Aucun établissement trouvé, modifiez votre recherche." : "Recherchez un établissement."}
+                {hasSearched ? "Aucun établissement trouvé, modifie ta recherche." : "Recherche un établissement."}
               </Reanimated.Text>
             )}
 

@@ -28,10 +28,10 @@ const SubjectContainerCard = ({ theme }: { theme: any }) => {
       </View>
       <NativeItem>
         <NativeText variant="title">
-          Personnalisez vos matières
+          Personnalise tes matières
         </NativeText>
         <NativeText variant="subtitle">
-          Personnalisez le nom, l'émoji et la couleur des matières de votre emploi du temps
+          Personnalise le nom, l'émoji et la couleur des matières de ton emploi du temps
         </NativeText>
       </NativeItem>
     </NativeList>

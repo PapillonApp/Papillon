@@ -298,7 +298,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
               <MissingItem
                 emoji="🔍"
                 title="Aucun résultat"
-                description="Aucun devoir ne correspond à votre recherche."
+                description="Aucun devoir ne correspond à ta recherche."
               />
               :
               hideDone ?

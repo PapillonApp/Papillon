@@ -97,7 +97,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
-        En continuant, vous acceptez les&nbsp;
+        En continuant, tu acceptes les&nbsp;
         <Text
           style={{ textDecorationLine: "underline" }}
           onPress={() => openUrl(TERMS_OF_SERVICE_URL)}

@@ -170,7 +170,7 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
         <Animated.View style={[styles.instructionContainer, animatedStyle]}>
           <ScanIcon color={colors.primary} />
           <Text style={styles.instructionText}>
-            Orientez le code QR vers le scanner de la borne
+            Oriente le code QR vers le scanner de la borne
           </Text>
         </Animated.View>
       </SafeAreaView>
