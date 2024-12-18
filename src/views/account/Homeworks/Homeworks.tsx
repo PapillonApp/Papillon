@@ -87,18 +87,26 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   }
   const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
-  // Function to get the current week number since epoch
-  const getCurrentWeekNumber = () => {
+  const getWeekNumber = (homeworks: Record<number, Homework[]>) => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    const start = new Date(1970, 0, 0);
-    start.setHours(0, 0, 0, 0);
-    const diff = now.getTime() - start.getTime();
-    const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    return Math.floor(diff / oneWeek);
+    const currentWeekNumber = Math.floor((now.getTime() - new Date(1970, 0, 0).getTime()) / (1000 * 60 * 60 * 24 * 7));
+
+    // Set the last day of the current week (Sunday)
+    const endOfWeek = new Date(now);
+    endOfWeek.setDate(now.getDate() + (7 - now.getDay())); // Dimanche de cette semaine
+
+    // Homework for all days between the current day and the last day of the week (Sunday)
+    const currentWeekHomeworks = homeworks[currentWeekNumber]?.filter(hw => {
+      const dueDate = new Date(hw.due);
+      return dueDate >= now && dueDate <= endOfWeek;
+    });
+
+    // If homework remains in the current week, return the current week, otherwise return the next week
+    return currentWeekHomeworks && currentWeekHomeworks.length > 0 ? currentWeekNumber : currentWeekNumber + 1;
   };
 
-  const currentWeek = getCurrentWeekNumber();
+  const currentWeek = getWeekNumber(homeworks);
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
@@ -163,6 +171,14 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [searchTerms, setSearchTerms] = useState("");
 
   const renderWeek: ListRenderItem<number> = ({ item }) => {
+    // Each time an item is rendered, we check whether the homework for that week exists, and if not, we fetch it
+    useEffect(() => {
+      if (!homeworks[item]) {
+        console.log(`[Homeworks]: Fetching missing data for week ${item}`);
+        updateHomeworks(true, false, false);
+      }
+    }, [item, homeworks]);
+
     const homeworksInWeek = homeworks[item] ?? [];
 
     const sortedHomework = homeworksInWeek.sort((a, b) => new Date(a.due).getTime() - new Date(b.due).getTime());
