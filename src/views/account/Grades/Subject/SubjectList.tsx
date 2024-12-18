@@ -43,11 +43,15 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     fetchSubjectData();
   }, [subject.average.subjectName]);
 
+  if (!subjectData) {
+    return null;
+  }
+
   return (
     <NativeList
       animated
-      entering={animPapillon(FadeInUp)}
-      exiting={animPapillon(FadeOutUp)}
+
+
     >
       <SubjectTitle
         navigation={navigation}
@@ -88,7 +92,7 @@ interface SubjectGradeItemProps {
 const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, index, onPress }) => {
   return (
     <Reanimated.View
-      key={grade.id + index}
+      key={grade.id + index + "subjectlistname"}
       entering={animPapillon(FadeInDown).delay(50 * index + 100)}
       exiting={animPapillon(FadeOutUp).delay(50 * index)}
     >

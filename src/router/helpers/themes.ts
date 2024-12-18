@@ -3,7 +3,6 @@ import { DefaultTheme, DarkTheme, type Theme } from "@react-navigation/native";
 export const PapillonLight: Theme = {
   ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,
     primary: "#29947A",
     background: "#FFFFFF",
     card: "#FFFFFF",
@@ -16,7 +15,6 @@ export const PapillonLight: Theme = {
 export const PapillonDark: Theme = {
   ...DarkTheme,
   colors: {
-    ...DarkTheme.colors,
     primary: "#29947A",
     background: "#0a0a0a",
     card: "#111111",

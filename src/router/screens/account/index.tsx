@@ -10,7 +10,7 @@ import Messages from "@/views/account/Chat/Messages";
 import PlaceholderScreen from "@/views/account/Home/PlaceholderScreen";
 
 export const screens = [
-  createScreen("Home", () => <HomeStackScreen accountScreens={screens} />, {
+  createScreen("Home", () => <HomeStackScreen key={"hmstack"} accountScreens={screens} />, {
     headerShown: false,
     tabBarLabel: "Accueil",
     tabBarLottie: require("@/../assets/lottie/tab_home.json"),

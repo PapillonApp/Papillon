@@ -108,7 +108,7 @@ const AccountStackScreen: Screen<"AccountStack"> = () => {
     <AccountStack.Navigator screenOptions={screenOptions} tabBar={TabBarContainer}>
       {finalScreens.map((screen) => (
         <AccountStack.Screen
-          key={screen.name}
+          key={screen.name+"_tabrt4"}
           {...screen}
           initialParams={{
             outsideNav: false

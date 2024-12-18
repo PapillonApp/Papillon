@@ -75,7 +75,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(100)}
         >
           <DuoListPressable
             leading={
@@ -92,7 +91,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(200)}
         >
           <DuoListPressable
             leading={
@@ -109,7 +107,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(300)}
         >
           <DuoListPressable
             leading={
@@ -126,7 +123,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(400)}
         >
           <DuoListPressable
             leading={

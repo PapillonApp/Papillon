@@ -220,7 +220,7 @@ const LoginView: React.FC<{
         </NativeList>
 
         {customFieldsInputs.map((field, index) => (
-          <View key={"c" + index}>
+          <View key={"cfi" + index}>
             <NativeListHeader label={field.title} />
 
             <NativeList>

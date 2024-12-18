@@ -70,8 +70,6 @@ export const NativeList: React.FC<NativeListProps> = ({
         style,
       ]}
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering}
-      exiting={exiting}
     >
       <Reanimated.View
         style={[{
@@ -116,8 +114,6 @@ export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label,
     <Reanimated.View
       style={[list_header_styles.container, style]}
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering}
-      exiting={exiting}
     >
       {icon && (
         <View
@@ -218,7 +214,7 @@ export const NativeItem: React.FC<NativeItemProps> = ({
   subtitle,
   endPadding,
   disabled,
-  pointerEvents
+  pointerEvents,
 }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -226,9 +222,8 @@ export const NativeItem: React.FC<NativeItemProps> = ({
   return (
     <Reanimated.View
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering && entering}
-      exiting={exiting && exiting}
       pointerEvents={pointerEvents}
+      key={children ? children.toString() : null + "_nitem"}
     >
       <NativePressable
         onPress={!disabled ? onPress : () => {}}
@@ -237,6 +232,7 @@ export const NativeItem: React.FC<NativeItemProps> = ({
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         androidStyle={androidStyle}
+        key={children ? children.toString() : null + "_npressable"}
         style={({ pressed }) => [
           item_styles.item,
           onPress && {
@@ -350,7 +346,7 @@ export const NativeIcon: React.FC<NativeIconProps> = ({ icon, color, style }) =>
 
 interface NativeIconGradientprops {
   icon: ReactNode;
-  colors?: string[];
+  colors: string[];
   locations?: number[];
   style?: StyleProp<ViewStyle>;
 }
@@ -358,8 +354,8 @@ interface NativeIconGradientprops {
 export const NativeIconGradient: React.FC<NativeIconGradientprops> = ({ icon, colors, locations, style }) => {
   return (
     <LinearGradient
-      colors={colors || ["#000", "#000"]}
-      locations={locations || [0, 1]}
+      colors={[colors[0], colors[1]]}
+      locations={locations ? [locations[0], locations[1]] : [0, 1]}
       style={[{
         backgroundColor: "#000",
         borderRadius: 9,
@@ -452,6 +448,7 @@ export const NativeText: React.FC<NativeTextProps> = (props) => {
       layout={props.animated && animPapillon(LinearTransition)}
       entering={props.entering}
       exiting={props.exiting}
+      key={(props.children||"" + props.style||"" + props.variant).toString()}
     >
       {props.children}
     </Reanimated.Text>

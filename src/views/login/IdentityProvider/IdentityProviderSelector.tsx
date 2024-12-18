@@ -82,7 +82,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       <NativeList>
         {universityProviders.map((identityProvider) => (
           <NativeItem
-            key={identityProvider.name}
+            key={identityProvider.name + "idprovidname"}
             onPress={() => identityProvider.navigate(identityProvider.instanceURL || "", identityProvider.title, identityProvider.image)}
             leading={<Image source={identityProvider.image} style={{ width: 40, height: 40, borderRadius: 10 }} />}
           >
@@ -99,7 +99,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       <NativeList>
         {identityProviders.map((identityProvider) => (
           <NativeItem
-            key={identityProvider.name}
+            key={identityProvider.name + "idprovidname2"}
             onPress={() => identityProvider.navigate()}
             leading={<Image source={identityProvider.image} style={{ width: 40, height: 40, borderRadius: 10 }} />}
           >

@@ -155,9 +155,10 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               size={18}
               color="white"
               strokeWidth={2.8}
-              entering={animPapillon(ZoomIn)}
-              exiting={animPapillon(ZoomOut)}
-            />) : <Route />,
+            />
+          ) : (
+            <Route />
+          ),
           color: "#7E1174",
           label: "Onglets & Navigation",
           onPress: async () => {
@@ -283,17 +284,15 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
   return (
     <>
-      {!scrolled && Platform.OS === "ios" &&
+      {!scrolled && Platform.OS === "ios" && (
         <Reanimated.View
-          exiting={FadeOut.duration(100)}
-          entering={FadeIn.duration(100)}
           style={{
             zIndex: 1000,
           }}
         >
           <ModalHandle />
         </Reanimated.View>
-      }
+      )}
 
       <Reanimated.ScrollView
         onScroll={scrollHandler}
@@ -315,7 +314,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               <NativeList>
                 {addons.map((addon, index) => (
                   <NativeItem
-                    key={index}
+                    key={index + "settingsaddon"}
                     onPress={() => navigation.navigate("AddonSettingsPage", { addon, from: "Settings" })}
                     leading={
                       <Image
@@ -343,15 +342,15 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           <View key={index}>
             {tab.label &&
           <NativeListHeader
-            key={index}
+            key={index + "settingsheaderindexname"}
             label={tab.label}
           />
             }
             <NativeList>
               {tab.tabs.map((subtab, index) => (
-                (Platform.OS === "android" && "android" in subtab && !subtab.android) ? <View key={index} /> :
+                (Platform.OS === "android" && "android" in subtab && !subtab.android) ? <View key={index+"androidsubtab"} /> :
                   <NativeItem
-                    key={index}
+                    key={index + "subtabmain"}
                     onPress={subtab.onPress}
                     disabled={"disabled" in subtab && subtab.disabled}
                     leading={

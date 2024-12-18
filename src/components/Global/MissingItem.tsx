@@ -28,8 +28,6 @@ const MissingItem: React.FC<MissingItemProps> = ({
         gap: 4,
         paddingHorizontal: 40,
       }, style]}
-      entering={entering ? entering : FadeInUp}
-      exiting={exiting ? exiting : FadeOutDown}
     >
       <Text style={{ fontSize: 32 }}>
         {emoji}

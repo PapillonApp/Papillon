@@ -240,7 +240,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
         contentContainerStyle={{
           padding: 16,
           paddingTop: 70 + 16,
-          paddingBottom: useSafeAreaInsets().bottom + 16,
+          paddingBottom: useSafeAreaInsets().bottom + 100,
         }}
         style={{ flex: 1 }}
       >
@@ -251,7 +251,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
 
           return (
             <View key={index}>
-              <NativeListHeader label={info.title} key={index} />
+              <NativeListHeader label={info.title} key={index + "newslabel"} />
 
               <NativeList>
                 {info.informations.map((item, index) => {
@@ -281,7 +281,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
               {classSubjects.map((subject, index) => {
                 return (
                   <>
-                    <NativeItem key={index}>
+                    <NativeItem key={index + "newscontentitem"}>
                       <HTMLView value={`<body>${subject.content}</body>`} stylesheet={stylesText} />
                       {subject.attachments.map((attachment, index) => (
                         <NativeItem

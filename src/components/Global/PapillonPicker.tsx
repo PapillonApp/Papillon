@@ -79,8 +79,6 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               top: contentHeight + 10,
             }
           ]}
-          entering={PapillonContextEnter}
-          exiting={PapillonContextExit}
         >
           <BlurView
             intensity={70}
@@ -108,7 +106,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               }) : null;
 
               return (
-                <View key={index}>
+                <View key={index + "_pickerelem"}>
                   <TouchableOpacity
                     key={index}
                     onPress={onPressItem ? () => {

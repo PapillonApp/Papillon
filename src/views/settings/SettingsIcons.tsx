@@ -85,7 +85,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
       />
 
       {Object.keys(data).map((key, index) => (
-        <View key={index}>
+        <View key={index + "iconssettingsmain"}>
           <NativeListHeader
             label={key}
             trailing={(
@@ -128,7 +128,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
           <NativeList>
             {data[key as keyof typeof data].map((icon, index) => (
               <NativeItem
-                key={index}
+                key={index + "settingsiconsindex"}
                 chevron={false}
                 onPress={() => {
                   setNewIcon(icon);

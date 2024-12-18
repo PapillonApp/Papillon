@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import MaskStarsColored from "@/components/FirstInstallation/MaskStarsColored";
 import { useTheme } from "@react-navigation/native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
-import Reanimated, { ZoomIn, ZoomOut, LinearTransition, FadeIn, FadeOut, FlipInXDown, FadeOutUp } from "react-native-reanimated";
+import Reanimated from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { getIconName, setIconName } from "@candlefinance/app-icon";
 
@@ -29,6 +29,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
+  const [selectColor, setSelectColor] = useState<Color>(account?.personalization?.color!);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -61,7 +62,29 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         sound2.unloadAsync();
       }
     };
-  }, []);
+  });
+
+  useEffect(() => {
+    const color = {... selectColor};
+
+    expoGoWrapper(() => {
+      getIconName().then((currentIcon) => {
+        if (currentIcon.includes("_Dynamic_")) {
+          const mainColor = color.hex.primary;
+          const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
+          const nameIcon = removeColor(currentIcon);
+
+          const iconConstructName = nameIcon + (colorItem ? "_" + colorItem.id : "");
+
+          setIconName(iconConstructName);
+        }
+      });
+    });
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    playSound2();
+    mutateProperty("personalization", { color });
+  }, [selectColor]);
 
   const playSound = async () => {
     if (sound) {
@@ -79,30 +102,10 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
     [color.hex.primary]: color.description
   })).reduce((acc, cur) => ({ ...acc, ...cur }), {} as { [key: string]: string });
 
-  const selectColor = (color: Color) => {
-    mutateProperty("personalization", { color });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    playSound2();
-
-    expoGoWrapper(() => {
-      getIconName().then((currentIcon) => {
-        if (currentIcon.includes("_Dynamic_")) {
-          const mainColor = color.hex.primary;
-          const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
-          const nameIcon = removeColor(currentIcon);
-
-          const iconConstructName = nameIcon + (colorItem ? "_" + colorItem.id : "");
-
-          setIconName(iconConstructName);
-        }
-      });
-    });
-  };
-
   const ColorButton: React.FC<{ color: Color }> = ({ color }) => (
     <View style={styles.colorButtonContainer}>
       <Pressable
-        onPress={() => selectColor(color)}
+        onPress={() => setSelectColor(color)}
         style={({ pressed }) => [
           styles.button,
           {
@@ -111,7 +114,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         ]}
       />
 
-      {account?.personalization?.color?.hex.primary === color.hex.primary && (
+      {selectColor.hex.primary === color.hex.primary && (
         <Reanimated.View
           pointerEvents="none"
           style={[
@@ -124,11 +127,9 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               height: 60,
               borderRadius: 200,
               borderColor: color.hex.primary,
-              zIndex: -99,
+              zIndex: 99,
             }
           ]}
-          entering={ZoomIn.springify().mass(1).stiffness(150)}
-          exiting={ZoomOut}
         />
       )}
     </View>
@@ -137,9 +138,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Reanimated.View
-        entering={Platform.OS === "ios" ? FadeIn.duration(400) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(2000) : void 0}
-        key={account?.personalization?.color?.hex.primary || ""}
+        key={selectColor.hex.primary || "" + "_bg"}
         style={{
           position: "absolute",
           top: 0,
@@ -156,7 +155,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
             width: "100%",
             height: "100%",
           }}
-          colors={[account?.personalization?.color?.hex.primary + "22", colors.background]}
+          colors={[selectColor.hex.primary + "22", colors.background]}
           locations={[0, 0.5]}
         />
       </Reanimated.View>
@@ -166,31 +165,27 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         numberOfLines={1}
         width={280}
       />
-      <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text}/>
+      <MaskStarsColored color={selectColor.hex.primary || colors.text}/>
       <View style={styles.colors}>
         <View style={styles.row}>
-          {colorsList.slice(0, 3).map((color) => <ColorButton key={color.id} color={color} />)}
+          {colorsList.slice(0, 3).map((color) => <ColorButton key={color.id + "_colid"} color={color} />)}
         </View>
         <View style={styles.row}>
-          {colorsList.slice(3, 6).map((color) => <ColorButton key={color.id} color={color} />)}
+          {colorsList.slice(3, 6).map((color) => <ColorButton key={color.id + "_colid"} color={color} />)}
         </View>
 
         <Reanimated.View
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(50)}
-          exiting={FadeOutUp.springify()}
-          key={account?.personalization?.color?.hex.primary || ""}
+          key={selectColor.hex.primary || "" + "_colprimid"}
           style={[styles.message, {
-            backgroundColor: account?.personalization?.color?.hex.primary + "33",
+            backgroundColor: selectColor.hex.primary + "33",
             overflow: "hidden",
             alignItems: "center",
             justifyContent: "center",
             alignSelf: "center"}]}
         >
           <Reanimated.Text
-            layout={LinearTransition.springify().stiffness(150)}
             style={{
-              color: account?.personalization?.color?.hex.primary || "",
+              color: selectColor.hex.primary || "",
               fontFamily: "semibold",
               fontSize: 15,
               textAlign: "center",
@@ -200,16 +195,14 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               width: "100%"
             }}
           >
-            {messages[account?.personalization?.color?.hex.primary || ""]}
+            {messages[selectColor.hex.primary || ""]}
           </Reanimated.Text>
         </Reanimated.View>
       </View>
 
       <Reanimated.View
         style={styles.done}
-        entering={Platform.OS === "ios" ? FadeIn.duration(200) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(1000) : void 0}
-        key={(account?.personalization?.color?.hex.primary || "") + "_btn"}
+        key={(selectColor.hex.primary || "") + "_btn"}
       >
         <ButtonCta
           primary
@@ -223,7 +216,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           disabled={!account?.personalization?.color}
           style={{
             marginBottom: insets.bottom + 20,
-            backgroundColor: account?.personalization?.color?.hex.primary
+            backgroundColor: selectColor.hex.primary
           }}
         />
       </Reanimated.View>

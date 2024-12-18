@@ -120,8 +120,6 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
       <NativeList
         animated
         key="loadingCourses"
-        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
-        exiting={FadeOut.duration(300)}
       >
         <NativeItem animated style={{ paddingVertical: 10 }}>
           <MissingItem
@@ -139,8 +137,6 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
       <NativeList
         animated
         key="emptyCourses"
-        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
-        exiting={FadeOut.duration(300)}
       >
         <NativeItem animated style={{ paddingVertical: 10 }}>
           <MissingItem
@@ -171,7 +167,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
         style={{ marginTop: 24, gap: 10 }}
       >
         {nextCourses.map((course, index) => (
-          <React.Fragment key={course.id || index}>
+          <React.Fragment key={course.id || index + "course"}>
             <TimetableItem item={course} index={index} small />
           </React.Fragment>
         ))}

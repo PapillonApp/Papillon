@@ -114,8 +114,6 @@ const LessonsDateModal: React.FC<LessonsDateModalProps> = ({
               borderRadius: 16,
               borderCurve: "continuous",
             }}
-            entering={FadeInDown.mass(1).damping(20).stiffness(300)}
-            exiting={FadeOutDown.mass(1).damping(20).stiffness(300)}
           >
             <View
               style={{
