@@ -49,7 +49,7 @@ const HomeStackScreen = ({ accountScreens }: {
   // Add Home as the first tab.
   newAccountScreens.unshift(
     createScreen("HomeScreen", Home, {
-      headerShown: false
+      headerShown: false,
     }) as ReturnType<typeof createScreen>
   );
 

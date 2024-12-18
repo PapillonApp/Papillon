@@ -144,7 +144,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
       >
         <NativeItem animated style={{ paddingVertical: 10 }}>
           <MissingItem
-            emoji="📚"
+            emoji="📆"
             title="Aucun cours à venir"
             description="Il n'y a pas de cours à venir pour les prochains jours."
           />
