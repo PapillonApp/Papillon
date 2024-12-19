@@ -1,8 +1,6 @@
 import { BottomTabView } from "@react-navigation/bottom-tabs";
 import {
   createNavigatorFactory,
-  ParamListBase,
-  TabNavigationState,
   TabRouter,
   useNavigationBuilder,
 } from "@react-navigation/native";
@@ -23,8 +21,6 @@ import colorsList from "@/utils/data/colors.json";
 import Reanimated, {
   useAnimatedStyle,
   withTiming,
-  withSpring,
-  interpolate,
   useSharedValue,
   Easing,
 } from "react-native-reanimated";
@@ -222,10 +218,13 @@ const BasePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "N
               </View>
 
               {shouldShowLabel && (
-                <Text style={{
-                  color: tabColor,
-                  fontFamily: "semibold", fontSize: 13,
-                }}>
+                <Text
+                  style={{
+                    color: tabColor,
+                    fontFamily: "semibold", fontSize: 13,
+                  }}
+                  numberOfLines={1}
+                >
                   {label}
                 </Text>
               )}
@@ -257,10 +256,6 @@ export const LargePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuil
   }, [account.personalization]);
 
   const bottomAnim = useSharedValue(1);
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    opacity: withTiming(bottomAnim.value, { duration: 200 }),
-  }));
 
   React.useEffect(() => {
     bottomAnim.value = hideTabBar ? 0 : 1;
@@ -324,8 +319,6 @@ export const LargePapillonBar: React.FC<Omit<ReturnType<typeof useNavigationBuil
               : options.title !== undefined
                 ? options.title
                 : route.name;
-
-            const icon = options.tabBarIcon && options.tabBarIcon;
 
             const isFocused = state.index === index;
 

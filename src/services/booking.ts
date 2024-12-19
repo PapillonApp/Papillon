@@ -6,8 +6,6 @@ export const getBookingsAvailableFromExternal = async (account: ExternalAccount,
     case AccountService.Turboself: {
       const { getBookingWeek } = await import("./turboself/booking");
       const bookings = await getBookingWeek(account, weekNumber);
-      console.log(weekNumber);
-      console.log(bookings[0].days[0].booked);
       return bookings;
     }
     case AccountService.ARD: {

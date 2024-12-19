@@ -21,8 +21,6 @@ const LinkFavicon = (props: LinkFaviconProps) => {
   const finalUrl = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
   const localUrl = `${FileSystem.cacheDirectory}${domain}.ico`;
 
-  console.log("finalUrl", finalUrl);
-
   const { colors } = useTheme();
 
   const [fetchURL, setFetchURL] = useState<string | null>(null);

@@ -5,6 +5,7 @@ import type { Screen } from "@/router/helpers/types";
 import { ScrollView } from "react-native-gesture-handler";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { Info } from "lucide-react-native";
+import InsetsBottomView from "@/components/Global/InsetsBottomView";
 
 const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigation }) => {
   const universityProviders = [
@@ -77,7 +78,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       style={{ flex: 1 }}
       contentContainerStyle={{ padding: 16, paddingTop: 0 }}
     >
-      <NativeListHeader label="Service universitaire disponible" />
+      <NativeListHeader label="Services universitaires" />
 
       <NativeList>
         {universityProviders.map((identityProvider) => (
@@ -94,7 +95,17 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
         ))}
       </NativeList>
 
-      <NativeListHeader label="Fournisseurs disponibles" />
+      <NativeListHeader label="Fonctionnalités limitées" />
+
+      <NativeList>
+        <NativeItem
+          icon={<Info />}
+        >
+          <NativeText variant="subtitle">
+            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de vous connecter à l'application.
+          </NativeText>
+        </NativeItem>
+      </NativeList>
 
       <NativeList>
         {identityProviders.map((identityProvider) => (
@@ -111,16 +122,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
         ))}
       </NativeList>
 
-
-      <NativeList inline>
-        <NativeItem
-          icon={<Info />}
-        >
-          <NativeText variant="subtitle">
-            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de vous connecter à l'application.
-          </NativeText>
-        </NativeItem>
-      </NativeList>
+      <InsetsBottomView />
 
     </ScrollView>
   );

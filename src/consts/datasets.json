@@ -1,5 +1,6 @@
 {
   "kofi-supporters": "https://raw.githubusercontent.com/PapillonApp/datasets/main/kofi-supporters.json",
   "changelog": "https://raw.githubusercontent.com/PapillonApp/datasets/main/updates/[version].json",
-  "illustrations": "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json"
+  "illustrations": "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json",
+  "establishment": "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/establishment/[postcode].json"
 }

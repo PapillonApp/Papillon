@@ -52,7 +52,6 @@ const QrcodeScanner: Screen<"QrcodeScanner"> = ({ navigation, route }) => {
   }) => {
     setScanned(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    console.log(`Bar code with type ${type} and data ${data} has been scanned!`);
     update<ExternalAccount>(accountID, "data", { "qrcodedata": data, "qrcodetype": type });
     navigation.navigate("PriceDetectionOnboarding", { accountID });
   };

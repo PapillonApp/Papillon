@@ -1,4 +1,5 @@
 import { useCurrentAccount } from "@/stores/account";
+import { Screen } from "@/router/helpers/types";
 import { useEffect } from "react";
 
 const BackgroundIdentityProvider: Screen<"BackgroundIdentityProvider"> = ({ route, navigation }) => {
@@ -9,7 +10,7 @@ const BackgroundIdentityProvider: Screen<"BackgroundIdentityProvider"> = ({ rout
       navigation.goBack();
     }
 
-    const identityProvider = account.identityProvider;
+    const identityProvider = account!.identityProvider;
 
     if(identityProvider) {
       const { identifier, rawData } = identityProvider;
