@@ -117,7 +117,7 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
               value="Annuler"
               disabled={loading}
               onPress={() => (Alert.alert("Annuler", "Êtes-vous sûr de vouloir annuler l'activation ?", [
-                { text: "Continer l'activation", style: "cancel" },
+                { text: "Continuer l'activation", style: "cancel" },
                 { text: "Confirmer", style: "destructive", onPress: () => navigation.pop() }
               ]))}
             />

@@ -3,7 +3,7 @@ import { authenticateWithCredentials } from "turboself-api";
 
 export const reload = async (account: TurboselfAccount): Promise<TurboselfAccount["authentication"]> => {
   const auth = { ...account.authentication };
-  const session = await authenticateWithCredentials(auth.username, auth.password);
+  const session = await authenticateWithCredentials(auth.username, auth.password, true, false, auth.session.host?.id);
   return {
     session,
     username: auth.username,

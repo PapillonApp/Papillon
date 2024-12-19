@@ -11,6 +11,7 @@ import type React from "react";
 import type { School as SkolengoSchool} from "scolengo-api/types/models/School";
 import { ImageSourcePropType } from "react-native";
 import {Client} from "pawrd";
+import { Host } from "turboself-api";
 import {Evaluation} from "@/services/shared/Evaluation";
 
 export type RouteParameters = {
@@ -157,6 +158,7 @@ export type RouteParameters = {
   PriceDetectionOnboarding: { accountID: string };
   PriceBeforeScan: { accountID: string };
   PriceAfterScan: { accountID: string };
+  TurboselfAccountSelector: { accounts: Array<Host>, username: string, password: string};
 
   AddonSettingsPage: {
     addon: AddonPlacementManifest;

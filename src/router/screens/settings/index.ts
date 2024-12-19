@@ -24,6 +24,7 @@ import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
 import SettingsFlagsInfos from "@/views/settings/SettingsFlagsInfos";
 import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
 import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
+import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
 
@@ -108,6 +109,13 @@ const settingsScreens = [
 
   createScreen("IzlyActivation", IzlyActivation, {
     headerTitle: "Configuration de Izly",
+    presentation: "modal",
+    headerBackVisible: false,
+    gestureEnabled: false,
+
+  }),
+  createScreen("TurboselfAccountSelector", TurboselfAccountSelector, {
+    headerTitle: "Configuration de Turboself",
     presentation: "modal",
     headerBackVisible: false,
     gestureEnabled: false,

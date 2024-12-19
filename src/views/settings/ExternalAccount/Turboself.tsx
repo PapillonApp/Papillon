@@ -18,7 +18,9 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
 
     try {
       const session = await authenticateWithCredentials(username, password);
+      const siblings = await session.getSiblings();
 
+      if (siblings.length !== 0) return navigation.navigate("TurboselfAccountSelector", {accounts: siblings, username, password});
       const new_account: TurboselfAccount = {
         instance: undefined,
         service: AccountService.Turboself,

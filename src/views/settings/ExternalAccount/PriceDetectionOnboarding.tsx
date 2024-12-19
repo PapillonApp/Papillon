@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { BellRing, CircleDashed, Star } from "lucide-react-native";
+import { BellRing } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image, View, StyleSheet, StatusBar, ScrollView, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
-import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import {
-  NativeItem,
-  NativeList,
-  NativeText,
-} from "@/components/Global/NativeComponents";
-import { AccountService, ExternalAccount } from "@/stores/account/types";
+import { Image, View, StyleSheet, Text } from "react-native";
+import { NativeText, } from "@/components/Global/NativeComponents";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
-import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import BetaIndicator from "@/components/News/Beta";
 
@@ -23,12 +13,8 @@ const PriceDetectionOnboarding: Screen<"PriceDetectionOnboarding"> = ({ navigati
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const update = useAccounts(store => store.update);
-  const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const accountID = route.params?.accountID;
-
-  const [answer, setAnswer] = useState(false);
 
   return (
     <View
