@@ -1,11 +1,11 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 
 import Reanimated, {
-  interpolateColor,
-  LinearTransition, useAnimatedStyle,
+  LinearTransition,
+  SharedValue,
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
@@ -14,8 +14,8 @@ import { useCurrentAccount } from "@/stores/account";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
-import Animated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import Animated from "react-native-reanimated";
 
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
@@ -23,7 +23,7 @@ const AccountSwitcher: React.FC<{
   small?: boolean,
   opened?: boolean,
   modalOpen?: boolean,
-  translationY?: Reanimated.SharedValue<number>,
+  translationY?: SharedValue<number>,
   loading?: boolean,
 }> = ({ small, opened, modalOpen, translationY, loading }) => {
   const theme = useTheme();
@@ -33,51 +33,14 @@ const AccountSwitcher: React.FC<{
 
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
-
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff50", colors.border],
-    ),
-    backgroundColor: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#ffffff30", "transparent"],
-    ),
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    fontSize: 16,
-    fontFamily: "semibold",
-    maxWidth: 140,
-  }));
-
-
   const AnimatedChevronDown = Animated.createAnimatedComponent(ChevronDown);
-  const iconAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0, // Should think to pass a default value
-      [200, 251],
-      ["#FFF", colors.text],
-    ),
-    marginLeft: -6,
-  }));
 
   return (
     <Reanimated.View
       style={{
         backgroundColor:
-          opened ?
-            theme.dark && !modalOpen ? "#00000044" : "#FFFFFF22"
-            : modalOpen ? colors.text + "10" : "#FFFFFF12",
+        Platform.OS === "ios" ? colors.text + "16" :
+          colors.text + "40",
         borderRadius: 12,
         borderCurve: "continuous",
         overflow: "hidden",
@@ -210,10 +173,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#00000010",
     borderColor: "#00000020",
     borderWidth: 1,
-  },
-
-  accountSwitcherText: {
-
   },
 });
 
