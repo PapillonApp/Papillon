@@ -45,10 +45,10 @@ export const TimetableItem: React.FC<{
       style={styles.itemContainer}
       entering={Platform.OS === "ios" ? FadeInDown.delay((50 * index)).springify().mass(1).damping(20).stiffness(300) : void 0}
       exiting={Platform.OS === "ios" ? FadeOut.duration(300) : void 0}
-      key={item.title + item.startTimestamp}
+      key={item.title + item.startTimestamp + "lessonsitemtitleelement" + item.id}
       layout={animPapillon(LinearTransition)}
     >
-      <View style={[styles.timeContainer, small && styles.timeContainerSmall]}>
+      <View style={[styles.timeContainer, small && styles.timeContainerSmall]} key={item.title + item.startTimestamp + "timecontainer" + item.id}>
         <Text style={[styles.timeText, { color: colors.text }]}>{formattedStartTime}</Text>
         <Text style={[styles.timeTextSec, { color: colors.text }]}>{formattedEndTime}</Text>
       </View>
@@ -60,6 +60,7 @@ export const TimetableItem: React.FC<{
           PapillonNavigation.current.navigate("LessonDocument", { lesson: item });
 
         }}
+        key={item.title + item.startTimestamp + "nativtouchlesson" + item.id}
       >
         <View style={[{ flex: 1, flexDirection: "column", overflow: "hidden", borderRadius: 10 }]}>
           {item.statusText && (
@@ -83,7 +84,7 @@ export const TimetableItem: React.FC<{
                 </Text>
               )}
 
-              <View style={[styles.roomTextContainer, { backgroundColor: subjectData.color + "33" }]}>
+              <View style={[styles.roomTextContainer, { backgroundColor: subjectData.color + "33" }]} key={item.title + item.startTimestamp + "roomtextcontainer" + item.id}>
                 <Text
                   numberOfLines={1}
                   style={[styles.roomText, { color: subjectData.color }]}

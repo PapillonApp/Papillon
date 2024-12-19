@@ -11,11 +11,9 @@
     <item name="android:textColorHint">#c8c8c8</item>
     <item name="android:textColor">@android:color/black</item>
   </style>
-  <style name="Theme.App.SplashScreen" parent="AppTheme">
-    <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splashscreen_background</item>
-    <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/splash_anim</item>
-    <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">3000</item>
-    <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">#1DB491</item>
-    <item name="android:windowBackground">@drawable/splashscreen</item>
+  <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/splashscreen_background</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_logo</item>
+    <item name="postSplashScreenTheme">@style/AppTheme</item>
   </style>
 </resources>

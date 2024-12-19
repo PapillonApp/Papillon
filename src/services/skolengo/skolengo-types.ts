@@ -1,5 +1,4 @@
 import type { DiscoveryDocument, TokenResponse } from "expo-auth-session";
-import type { TokenSetParameters } from "openid-client";
 import { School } from "scolengo-api/types/models/School";
 
 export type SkolengoJWT = {
@@ -35,7 +34,18 @@ export type SkolengoJWT = {
   family_name: string
 };
 
-export type SkolengoTokenSet = TokenSetParameters;
+export type SkolengoTokenSet = {
+  access_token?: string;
+  token_type?: string;
+  id_token?: string;
+  refresh_token?: string;
+  scope?: string;
+
+  expires_at?: number;
+  session_state?: string;
+
+  [key: string]: unknown;
+};
 
 export const authTokenToSkolengoTokenSet = (authToken: TokenResponse): SkolengoTokenSet => ({
   "access_token": authToken.accessToken,

@@ -14,7 +14,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Screen} from "@/router/helpers/types";
@@ -101,21 +101,15 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
 
   return (
     <ScrollView
-      style={[
-        {
-          padding: 16,
-          paddingTop: 0
-        }
-      ]}
+      contentContainerStyle={{
+        padding: 16,
+        paddingTop: 0,
+        paddingBottom: insets.bottom + 100,
+      }}
       contentInsetAdjustmentBehavior="automatic"
     >
       {loading && (
-        <NativeList
-          inline
-          animated
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOutUp)}
-        >
+        <NativeList inline animated>
           <NativeItem
             leading={<PapillonSpinner color={theme.colors.primary} size={24} strokeWidth={3.5} />}
           >
@@ -130,12 +124,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
       )}
 
       {notFound && (
-        <NativeList
-          inline
-          animated
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOutUp)}
-        >
+        <NativeList inline animated>
           <NativeItem
             icon={<AlertTriangle />}
           >
@@ -150,12 +139,8 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
       )}
 
       {changelog && (
-        <Reanimated.View
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOutUp)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <PressableScale>
+        <Reanimated.View layout={animPapillon(LinearTransition)}>
+          <TouchableOpacity>
             <NativeList
               animated inline
             >
@@ -191,7 +176,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
                 </NativeText>
               </NativeItem>
             </NativeList>
-          </PressableScale>
+          </TouchableOpacity>
 
           <Reanimated.View>
             <NativeListHeader
@@ -215,7 +200,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
               {changelog.features.map((feature: Feature, index) => {
                 return (
                   <ChangelogFeature
-                    key={index}
+                    key={index + "featurechange"}
                     feature={feature}
                     navigation={navigation}
                     theme={theme}
@@ -247,7 +232,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
               {changelog.bugfixes.map((feature: Feature, index) => {
                 return (
                   <ChangelogFeature
-                    key={index}
+                    key={index + "bugfixchange"}
                     feature={feature}
                     navigation={navigation}
                     theme={theme}
@@ -266,7 +251,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
 
 const ChangelogFeature: React.FC<{ feature: Feature, navigation: any, theme: any }> = ({ feature, navigation, theme }) => {
   return (
-    <PressableScale>
+    <TouchableOpacity>
       <NativeList
         inline
         style={{
@@ -331,7 +316,7 @@ const ChangelogFeature: React.FC<{ feature: Feature, navigation: any, theme: any
         </NativeItem>
 
       </NativeList>
-    </PressableScale>
+    </TouchableOpacity>
   );
 };
 

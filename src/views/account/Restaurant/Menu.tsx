@@ -227,7 +227,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               <View style={styles.accountButtonContainer}>
                 {allBalances!.length > 1 && allBalances?.map((account, index) => (
                   <AccountButton
-                    key={index}
+                    key={index + "accountButtonindex"}
                     account={account}
                     isSelected={selectedIndex === index}
                     onPress={() => setSelectedIndex(index)}
@@ -238,8 +238,6 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
               {selectedIndex !== null && allBalances?.[selectedIndex] && (
                 <Reanimated.View
-                  entering={FadeInUp}
-                  exiting={FadeOutDown}
                   layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
                 >
                   <RestaurantCard
@@ -275,7 +273,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
               <Reanimated.View layout={animPapillon(LinearTransition)}>
                 <Reanimated.View
-                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" }) + "menupickerdate"}
                   entering={FadeIn.duration(150)}
                   exiting={FadeOut.duration(150)}
                 >
@@ -297,7 +295,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               <NativeListHeader label="Réservations disponibles" />
               <NativeList>
                 {allBookings.map((terminal, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={index + "bookignindex"}>
                     {terminal.days.map((bookingDay, dayIndex) =>
                       bookingDay.date?.toDateString() === pickerDate.toDateString() ? (
                         <NativeItem

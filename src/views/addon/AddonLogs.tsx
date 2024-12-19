@@ -18,7 +18,7 @@ const AddonLogs: Screen<"AddonLogs"> = ({ navigation, route }) => {
         <NativeList>
           {logs.map((log, index) => (
             <NativeItem
-              key={index}
+              key={index + "addonlogindex"}
               leading={
                 <View>
                   {log.type === "log" && (

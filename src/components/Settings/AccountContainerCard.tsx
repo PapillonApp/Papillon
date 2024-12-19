@@ -1,12 +1,12 @@
-import { Image, Text, View } from "react-native";
+import React from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { Account } from "@/stores/account/types";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pen } from "lucide-react-native";
-import { PressableScale } from "react-native-pressable-scale";
-import React from "react";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 const AccountContainerCard = ({ account, onPress }: {
   account: Account
@@ -30,7 +30,7 @@ const AccountContainerCard = ({ account, onPress }: {
       }}
     />
 
-    <PressableScale
+    <TouchableOpacity
       style={{
         shadowColor: "#000",
         shadowOffset: {
@@ -171,7 +171,7 @@ const AccountContainerCard = ({ account, onPress }: {
           </View>
         </View>
       </View>
-    </PressableScale>
+    </TouchableOpacity>
   </>);
 };
 

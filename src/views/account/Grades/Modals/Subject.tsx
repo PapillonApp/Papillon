@@ -132,7 +132,7 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
         {averages.map((average) => {
           return (
             <NativeItem
-              key={average.label}
+              key={average.label + "averagelabel"}
               icon={average.icon}
               trailing={
                 <View

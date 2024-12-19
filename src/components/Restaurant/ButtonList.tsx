@@ -5,9 +5,10 @@ import {
   View,
   GestureResponderEvent,
   ViewStyle,
+  TouchableOpacity,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 interface ItemProps {
   title: string;
@@ -20,7 +21,7 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress, enable = true }) => {
   const { colors } = useTheme();
 
   return (
-    <PressableScale
+    <TouchableOpacity
       onPress={onPress}
       style={[
         styles.pressableScale,
@@ -32,7 +33,7 @@ const Item: React.FC<ItemProps> = ({ title, icon, onPress, enable = true }) => {
         {icon}
         <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
       </View>
-    </PressableScale>
+    </TouchableOpacity>
   );
 };
 

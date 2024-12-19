@@ -113,7 +113,13 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
             }
           ]}
         >
-          <Link2 size={24} color={colors.text + "55"} />
+          <Link2
+            size={24}
+            color={colors.text + "55"}
+            style={{
+              marginTop: __DEV__ ? 7.5 : 0,
+            }}
+          />
 
           <TextInput
             keyboardType="url"
@@ -133,11 +139,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           />
 
           {instanceURL.length > 0 && (
-            <Reanimated.View
-              layout={LinearTransition}
-              entering={ZoomIn.springify()}
-              exiting={ZoomOut.springify()}
-            >
+            <Reanimated.View layout={LinearTransition}>
               <TouchableOpacity onPress={() => {
                 setInstanceURL("");
               }}>

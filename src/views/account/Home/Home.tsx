@@ -59,7 +59,7 @@ import Header from "@/components/Home/Header";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
-import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
+import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/component/ScrollView";
 
 const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -88,7 +88,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   }, []);
 
   const windowHeight = Dimensions.get("window").height;
-  const tabbarHeight = useBottomTabBarHeight();
+  const tabbarHeight = 44;
 
   const widgetAnimatedStyle = useAnimatedStyle(() => ({
     paddingTop: insets.top,
@@ -263,6 +263,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
           setModalFull(e.nativeEvent.contentOffset.y >= 265 + insets.top);
         }}
+        scrollEventThrottle={Platform.OS === "ios" ? 16 : 32}
         refreshControl={<RefreshControl
           refreshing={refreshing}
           onRefresh={() => setRefreshing(true)}
@@ -285,11 +286,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           <Animated.View
             style={modalIndicatorAnimatedStyle}
           />
-          <Animated.View style={modalContentAnimatedStyle}>
+          <Animated.View style={modalContentAnimatedStyle} key={"modalctcontainer"}>
             <ModalContent
               navigation={navigation}
               refresh={refreshing}
               endRefresh={() => setRefreshing(false)}
+              key={"modalct"}
             />
           </Animated.View>
         </Animated.View>

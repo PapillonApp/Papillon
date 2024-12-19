@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { View, Switch, Platform, Alert } from "react-native";
+import { View, Switch, Platform, Alert, TouchableOpacity } from "react-native";
 import {
   NativeItem,
   NativeList,
@@ -22,7 +22,7 @@ import {
   NestableScrollContainer,
   ShadowDecorator,
 } from "react-native-draggable-flatlist";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -208,7 +208,7 @@ const SettingsTabs = () => {
     <View>
       <NestableScrollContainer
         contentContainerStyle={{
-          paddingBottom: 16 + insets.bottom,
+          paddingBottom: 100 + insets.bottom,
         }}
       >
         <View
@@ -251,11 +251,9 @@ const SettingsTabs = () => {
                 {tabs.filter((tab) => tab.enabled).map((tab, index) => {
                   return (
                     <Reanimated.View
-                      key={tab.tab}
+                      key={tab.tab + "settingtab"}
                       style={{ flex: 1 }}
                       layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
-                      entering={ZoomIn}
-                      exiting={ZoomOut}
                     >
                       <PressableScale
                         activeScale={0.85}
@@ -328,8 +326,6 @@ const SettingsTabs = () => {
                               fontSize: 12.5,
                             }}
                             numberOfLines={1}
-                            entering={FadeIn}
-                            exiting={FadeOut.duration(100)}
                             layout={LinearTransition}
                           >
                             {tab.label}
@@ -352,8 +348,6 @@ const SettingsTabs = () => {
                       justifyContent: "center",
                       marginHorizontal: 4,
                     }}
-                    entering={ZoomIn.springify().mass(1).damping(20).stiffness(500)}
-                    exiting={FadeOut.duration(100)}
                   >
                     <AlertTriangle
                       size={20}
@@ -435,10 +429,7 @@ const SettingsTabs = () => {
                           }}
                         >
                           {!safeTabs.includes(item.tab) && (
-                            <Reanimated.View
-                              entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
-                              exiting={ZoomOut.duration(300)}
-                            >
+                            <Reanimated.View>
                               {!loading && (
                                 <PapillonCheckbox
                                   checked={item.enabled}

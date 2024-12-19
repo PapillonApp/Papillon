@@ -119,8 +119,6 @@ const ContextMenu: React.FC<{
               },
               styles.menu,
             ]}
-            entering={PapillonContextEnter}
-            exiting={PapillonContextExit}
           >
             <View
               style={{
@@ -130,7 +128,7 @@ const ContextMenu: React.FC<{
             >
               {accounts.map((account, index) => !account.isExternal && (
                 <Pressable
-                  key={index}
+                  key={index+"accountswitchcontext"}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
                     switchTo(account).then(() => {
@@ -359,8 +357,6 @@ const ContextMenu: React.FC<{
                 backgroundColor: "#00000050"
               },
             ]}
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
           >
             <BlurView
               tint="dark"
