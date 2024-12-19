@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { Image, View, StyleSheet, Text, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
@@ -17,6 +17,7 @@ import { Check, School, Undo2 } from "lucide-react-native";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { sr } from "date-fns/locale";
+import NetInfo from "@react-native-community/netinfo";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -29,6 +30,14 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const [service, setService] = useState<Services | null>(null);
 
   const [v6Data, setV6Data] = useState<any | null>(null);
+
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   useEffect(() => {
     setTimeout(async () => {
@@ -202,12 +211,41 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       </View>
 
       <View style={styles.buttons}>
-        <ButtonCta
-          primary
-          value="Confirmer"
-          disabled={service === null}
-          onPress={services.find((srv) => srv.name === service)?.login}
-        />
+        {isOnline ? (
+          <ButtonCta
+            primary
+            value="Confirmer"
+            disabled={service === null}
+            onPress={services.find((srv) => srv.name === service)?.login}
+          />
+        ) : (
+          <ButtonCta
+            primary
+            value="Confirmer"
+            disabled={service === null}
+            onPress={() => {
+              if (Platform.OS === "ios") {
+                Alert.alert("Information", "Pour poursuivre la connexion, vous devez être connecté à Internet. Vérifiez votre connexion Internet et réessayez", [
+                  {
+                    text: "OK",
+                  },
+                ]);
+              } else {
+                showAlert({
+                  title: "Information",
+                  message: "Pour poursuivre la connexion, vous devez être connecté à Internet. Vérifiez votre connexion Internet et réessayez",
+                  actions: [
+                    {
+                      title: "OK",
+                      onPress: () => {},
+                      backgroundColor: theme.colors.card,
+                    },
+                  ],
+                });
+              }
+            }}
+          />
+        )}
 
         {v6Data && v6Data.restore && (
           <ButtonCta
