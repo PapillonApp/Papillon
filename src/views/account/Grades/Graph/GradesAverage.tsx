@@ -275,7 +275,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                       style={{ color: theme.colors.primary }}
                       numberOfLines={1}
                     >
-                      au{" "}
                       {new Date(selectedDate).toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
