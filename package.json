@@ -98,6 +98,7 @@
     "reanimated-color-picker": "^3.0.4",
     "scolengo-api": "^3.0.5",
     "text-encoding": "^0.7.0",
+    "expo-document-picker": "~12.0.2",
     "turboself-api": "^2.1.6",
     "zustand": "^4.5.2"
   },

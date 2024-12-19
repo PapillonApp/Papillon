@@ -17,12 +17,15 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { useCurrentAccount } from "@/stores/account";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2, Check, X } from "lucide-react-native";
+import { Trash2, ArrowDownCircle, ArrowUpCircle, Check, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
 import { set } from "lodash";
+import * as Clipboard from "expo-clipboard";
+import * as FileSystem from "expo-file-system";
+import * as DocumentPicker from "expo-document-picker";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -33,6 +36,7 @@ type Item = [key: string, value: { color: string; pretty: string; emoji: string;
 
 const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const account = useCurrentAccount(store => store.account!);
+  const subjectsForCopy = account.personalization.subjects;
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const insets = useSafeAreaInsets();
   const colors = useTheme().colors;
@@ -68,6 +72,25 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
       )
     );
   }, []);
+
+  const setSubjectsFromJson = (json: { [key: string]: { color: string; pretty: string; emoji: string; } }) => {
+    const newSubjects: Item[] = Object.entries(json) as Item[];
+    setSubjects(newSubjects);
+    setLocalSubjects(newSubjects);
+    mutateProperty("personalization", {
+      ...account.personalization,
+      subjects: json,
+    });
+  };
+
+  const  isJsonable = (strTest: string) => {
+    try {
+      JSON.parse(strTest);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
 
   const debouncedUpdateSubject = useMemo(
     () => debounce((subjectKey: string, updates: Partial<Item[1]>) => {
@@ -131,31 +154,152 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              "Réinitialiser les matières",
-              "Voulez-vous vraiment réinitialiser les matières ?",
-              [
-                { text: "Annuler", style: "cancel" },
-                { text: "Réinitialiser", style: "destructive", onPress: () => {
-                  setSubjects([]);
-                  setLocalSubjects([]);
-                  setCurrentTitle("");
-                  setCurrentEmoji("");
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
 
-                  mutateProperty("personalization", {
-                    ...account.personalization,
-                    subjects: {},
-                  });
-                }},
-              ]
-            );
-          }}
-          style={{ marginRight: 2 }}
-        >
-          <Trash2 size={22} color={colors.primary} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                "Exporter",
+                "Exporter les couleurs actuelles ?",
+                [
+                  { text: "Annuler", style: "cancel" },
+                  {
+                    text: "Presse papier",
+                    style: "destructive",
+                    onPress: () => {
+                      const writeToClipboard = async (text: string) => {
+                        await Clipboard.setStringAsync(text);
+                      };
+                      writeToClipboard(JSON.stringify(subjectsForCopy));
+                    }
+                  },
+                  {
+                    text: "Fichier",
+                    style: "destructive",
+                    onPress: () => {
+                      const saveFile = async (text: string) => {
+                        try {
+                          // Demande à l'utilisateur de choisir un dossier
+                          const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                          if (!permissions.granted) {
+                            Alert.alert("Permission refusée", "Impossible d'accéder au dossier.");
+                            return;
+                          }
+                          const fileContent = text;
+                          const fileName = "papillon_colors.json";
+                          await FileSystem.StorageAccessFramework.createFileAsync(
+                            permissions.directoryUri,
+                            fileName,
+                            "application/json"
+                          ).then(async (uri) => {
+                            await FileSystem.writeAsStringAsync(uri, fileContent, {
+                              encoding: FileSystem.EncodingType.UTF8,
+                            });
+                            Alert.alert("Succès", "Fichier enregistré avec succès !");
+                          });
+                        } catch (error) {
+                          console.error("Erreur SAF :", error);
+                          Alert.alert("Erreur", "Impossible de sauvegarder le fichier.");
+                        }
+                      };
+                      saveFile(JSON.stringify(subjectsForCopy));
+                    }
+                  },
+                ]
+              );
+            }}
+            style={{ marginRight: 15 }}
+          >
+            <ArrowUpCircle size={22} color={colors.primary} />
+          </TouchableOpacity>
+
+          {/* Bouton importer */}
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                "Importer",
+                "Importer une table de couleurs depuis le presse papier ?",
+                [
+                  { text: "Annuler", style: "cancel" },
+                  {
+                    text: "Presse papier",
+                    style: "destructive",
+                    onPress: () => {
+                      const getClipboard = async () => {
+                        const result = await Clipboard.getStringAsync();
+                        if (isJsonable(result)) {
+                          setSubjectsFromJson(JSON.parse(result));
+                        }
+                      };
+                      getClipboard();
+                    }
+                  },
+                  {
+                    text: "Fichier",
+                    style: "destructive",
+                    onPress: () => {
+                      const pickAndReadJsonFile = async () => {
+                        try {
+                          const result = await DocumentPicker.getDocumentAsync({
+                            type: "application/json",
+                          });
+
+                          if (result.canceled) {
+                            console.log("Sélection annulée.");
+                            return;
+                          }
+                          const { uri } = result.assets[0];
+                          const fileContent = await FileSystem.readAsStringAsync(uri, {
+                            encoding: FileSystem.EncodingType.UTF8,
+                          });
+
+                          if (isJsonable(fileContent)) {
+                            setSubjectsFromJson(JSON.parse(fileContent));
+                          }
+                        } catch (err) {
+                          console.error("Erreur lors de la lecture du fichier :", err);
+                        }
+                      };
+                      pickAndReadJsonFile();
+                    }
+                  },
+                ]
+              );
+            }}
+            style={{ marginRight: 15 }}
+          >
+            <ArrowDownCircle size={22} color={colors.primary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                "Réinitialiser les matières",
+                "Voulez-vous vraiment réinitialiser les matières ?",
+                [
+                  { text: "Annuler", style: "cancel" },
+                  {
+                    text: "Réinitialiser",
+                    style: "destructive",
+                    onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    }
+                  },
+                ]
+              );
+            }}
+            style={{ marginRight: 2 }}
+          >
+            <Trash2 size={22} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation, colors.primary]);
