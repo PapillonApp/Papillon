@@ -57,4 +57,11 @@ export const defaultTabs = [
     icon: require("@/../assets/lottie/tab_pizza.json"),
     enabled: true,
   },
+  {
+    tab: "Evaluation",
+    label: "Compétences",
+    description: "Vos compétences et évaluations",
+    icon: require("@/../assets/lottie/tab_evaluations.json"),
+    enabled: true,
+  }
 ] as const;

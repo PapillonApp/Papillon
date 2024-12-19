@@ -405,6 +405,9 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           text = text.replaceAll(/[G-Z]/g, "");
                           text = text.slice(0, 7).toUpperCase();
                           setCustomColor(text);
+                          if (/^#[0-9A-F]{6}$/i.test(text)) {
+                            handleSubjectColorChange(selectedSubject[0], text);
+                          }
                         }}
                       />
                     </View>

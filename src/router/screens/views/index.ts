@@ -14,10 +14,9 @@ import Chat from "@/views/account/Chat/Modals/Chat";
 import HomeworksDocument from "@/views/account/Homeworks/Document";
 import LessonsImportIcal from "@/views/account/Lessons/Options/LessonsImportIcal";
 import LessonDocument from "@/views/account/Lessons/Document";
-import ScodocWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
-import ScodocBackgroundWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { Platform } from "react-native";
+import EvaluationDocument from "@/views/account/Evaluation/Document";
 import BackgroundIdentityProvider from "@/views/login/IdentityProvider/BackgroundIdentityProvider";
 
 export default [
@@ -87,6 +86,11 @@ export default [
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",
     presentation: "modal",
+  }),
+  createScreen("EvaluationDocument", EvaluationDocument, {
+    headerTitle: "Compétence",
+    presentation: "modal",
+    headerShown: Platform.OS !== "ios",
   }),
   createScreen("BackgroundIdentityProvider", BackgroundIdentityProvider, {
     headerTitle: "Fournisseur d'identité",

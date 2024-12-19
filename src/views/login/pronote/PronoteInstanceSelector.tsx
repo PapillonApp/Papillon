@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator, Keyboard, KeyboardEvent } from "react-native";
+import {
+  TextInput,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Keyboard,
+  KeyboardEvent,
+  Text
+} from "react-native";
 import pronote from "pawnote";
 import Reanimated, { LinearTransition, FlipInXDown, FadeInUp, FadeOutUp, ZoomIn, ZoomOut, Easing, ZoomInEasyDown } from "react-native-reanimated";
 import determinateAuthenticationView from "@/services/pronote/determinate-authentication-view";
@@ -14,6 +23,7 @@ import { useTheme } from "@react-navigation/native";
 import { Search, X, GraduationCap, } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
+import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
 
 const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   route: { params },
@@ -74,15 +84,48 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
     };
   }, []);
 
-  const playSound = () => sound?.replayAsync();
 
   useEffect(() => {
     if (params) {
       void async function () {
-        const instances = await pronote.geolocation(params);
+        const dataset_instances = await getInstancesFromDataset(params.longitude, params.latitude);
+        const pronote_instances = await pronote.geolocation(params);
+
+        // On calcule la distance entre les instances et l'utilisateur.
+        let instances = pronote_instances.map((instance) => {
+          const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+          const R = 6371; // Earth's radius in kilometers
+
+          const lat1 = toRadians(params.latitude);
+          const lon1 = toRadians(params.longitude);
+          const lat2 = toRadians(instance.latitude);
+          const lon2 = toRadians(instance.longitude);
+
+          const dLat = lat2 - lat1;
+          const dLon = lon2 - lon1;
+
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c;
+
+          return {
+            ...instance,
+            distance, // Distance in kilometers
+          };
+        });
+
         // On limite à 20 instances.
         instances.splice(20);
 
+        // On ajoute les instances trouvées par l'API adresse.
+        instances.push(...dataset_instances);
+
+        // On trie par distance.
+        instances.sort((a, b) => a.distance - b.distance);
+
+        // On met à jour les instances.
         setInstances(instances);
         setOriginalInstances(instances);
       }();
@@ -248,7 +291,6 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                         color={colors.text + "88"}
                       />
                     }
-                    text={instance.name}
                     onPress={async () => {
                       determinateAuthenticationView(
                         instance.url,
@@ -256,7 +298,34 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                         showAlert
                       );
                     }}
-                  />
+                  >
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontFamily: "medium",
+                          width: "100%",
+                          color: colors.text + "88"
+                        }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {instance.name}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontFamily: "medium",
+                          width: "100%",
+                          color: colors.text + "55",
+                        }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {`à ${instance.distance.toFixed(2)}km de toi`}
+                      </Text>
+                    </View>
+                  </DuoListPressable>
                 </Reanimated.View>
               ))}
             </Reanimated.View>

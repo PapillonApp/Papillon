@@ -6,21 +6,21 @@ const animPapillon = (animation: any) => {
   return animation.springify().mass(1).damping(20).stiffness(300);
 };
 
-const EnteringDuration = 200;
+const EnteringDuration = 180;
 const EnteringScale = 0.8;
-const ExitingDuration = 150;
+const ExitingDuration = 120;
 const ExitingScale = 0.9;
 
 // Paramètres d'animation pour l'entrée du menu contextuel
 const PapillonAnimSettings = {
   duration: EnteringDuration,
-  easing: Easing.bezier(0, 0, 0, 1),
+  easing: Easing.bezier(0.3, 0.3, 0, 1),
 };
 
 // Paramètres d'animation pour la sortie du menu contextuel
 const PapillonAnimSettingsExit = {
   duration: ExitingDuration,
-  easing: Easing.bezier(0, 0, 0, 1),
+  easing: Easing.bezier(0.3, 0.3, 0, 1),
 };
 
 // Fonction d'animation pour l'entrée du menu contextuel

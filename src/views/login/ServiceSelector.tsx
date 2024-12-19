@@ -17,6 +17,7 @@ import { Check, School, Undo2 } from "lucide-react-native";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { sr } from "date-fns/locale";
+import { sub } from "date-fns";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -76,7 +77,8 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
     },
     {
       name: "university",
-      title: "Universités et autres",
+      title: "Enseignement supérieur",
+      subtitle: "Universités, IUT, écoles, etc.",
       image: require("../../../assets/images/service_skolengo.png"),
       icon: <School />,
       login: () => {
@@ -193,6 +195,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
                     />
                 }
                 text={srv.title}
+                subtext={srv.subtitle}
                 enabled={srv.name === service}
                 onPress={() => setService(srv.name as Services)}
               />

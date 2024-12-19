@@ -5,7 +5,7 @@ export const getHistory = async (account: TurboselfAccount): Promise<Reservation
   const history = await account.authentication.session.getHistory();
 
   return (history ?? []).map((reservation) => ({
-    timestamp: reservation.date.getTime(),
+    timestamp: new Date(reservation.date.getTime() + reservation.date.getTimezoneOffset() * 60000).getTime(),
     amount: reservation.amount / 100,
     currency: account.authentication.session.establishment?.currencySymbol ?? "€",
     label: reservation.label,

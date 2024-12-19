@@ -44,7 +44,7 @@ const TabAnimatedTitleLeft = ({ route, style }: TabAnimatedTitleProps) => {
         colorFilters={[{ keypath: "*", color: theme.colors.text }]}
       />
 
-      <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+      <Text style={[styles.headerTitle, { color: theme.colors.text }]} numberOfLines={1}>
         {defaultTabs.find((curr) => curr.tab === route.name)?.label}
       </Text>
     </View>

@@ -12,6 +12,7 @@ import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimat
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { Audio } from "expo-av";
 import { NativeText } from "@/components/Global/NativeComponents";
+import { LinearGradient } from "expo-linear-gradient";
 
 const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -68,79 +69,119 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         offsetTop={"16%"}
       />
 
-      <Reanimated.View
-        style={styles.list}
-        layout={LinearTransition}
+      <View
+        style={{
+          width: "100%",
+          flex: 1,
+          alignItems: "center",
+          marginTop: -36,
+          zIndex: 1000,
+        }}
       >
-        <Reanimated.View
-          style={{ width: "100%" }}
+        <LinearGradient
+          colors={[theme.colors.background, theme.colors.background + "00"]}
+          style={{
+            width: "100%",
+            height: 40,
+            position: "absolute",
+            top: 0,
+            zIndex: 100,
+          }}
+        />
+
+        <LinearGradient
+          colors={[theme.colors.background + "00", theme.colors.background]}
+          style={{
+            width: "100%",
+            height: 40,
+            position: "absolute",
+            bottom: 0,
+            zIndex: 100,
+          }}
+        />
+
+        <Reanimated.ScrollView
+          style={styles.list}
+          contentContainerStyle={{
+            alignItems: "center",
+            gap: 9,
+            paddingHorizontal: 20,
+            paddingTop: 30,
+            paddingBottom: 60,
+          }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(100)}
         >
-          <DuoListPressable
-            leading={
-              <MapPinIcon
-                size={24}
-                color={method === "geolocation" ? theme.colors.primary : (theme.colors.text + "88")}
-              />
-            }
-            text="Utiliser ma position"
-            enabled={method === "geolocation"}
-            onPress={() => setMethod("geolocation")}
-          />
-        </Reanimated.View>
-        <Reanimated.View
-          style={{ width: "100%" }}
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(200)}
-        >
-          <DuoListPressable
-            leading={
-              <SearchIcon
-                size={24}
-                color={method === "manual-location" ? theme.colors.primary : (theme.colors.text + "88")}
-              />
-            }
-            text="Rechercher une ville"
-            enabled={method === "manual-location"}
-            onPress={() => setMethod("manual-location")}
-          />
-        </Reanimated.View>
-        <Reanimated.View
-          style={{ width: "100%" }}
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(300)}
-        >
-          <DuoListPressable
-            leading={
-              <QrCodeIcon
-                size={24}
-                color={method === "qr-code" ? theme.colors.primary : (theme.colors.text + "88")}
-              />
-            }
-            text="J'ai un QR Code"
-            enabled={method === "qr-code"}
-            onPress={() => setMethod("qr-code")}
-          />
-        </Reanimated.View>
-        <Reanimated.View
-          style={{ width: "100%" }}
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(400)}
-        >
-          <DuoListPressable
-            leading={
-              <LinkIcon
-                size={24}
-                color={method === "manual-url" ? theme.colors.primary : (theme.colors.text + "88")}
-              />
-            }
-            text="J'ai une URL de connexion"
-            enabled={method === "manual-url"}
-            onPress={() => setMethod("manual-url")}
-          />
-        </Reanimated.View>
-      </Reanimated.View>
+          <Reanimated.View
+            style={{ width: "100%" }}
+            layout={LinearTransition}
+            entering={FlipInXDown.springify().delay(100)}
+          >
+            <DuoListPressable
+              leading={
+                <MapPinIcon
+                  size={24}
+                  color={method === "geolocation" ? theme.colors.primary : (theme.colors.text + "88")}
+                />
+              }
+              text="Utiliser ma position"
+              subtext="Trouver un étab. autour de moi"
+              enabled={method === "geolocation"}
+              onPress={() => setMethod("geolocation")}
+            />
+          </Reanimated.View>
+          <Reanimated.View
+            style={{ width: "100%" }}
+            layout={LinearTransition}
+            entering={FlipInXDown.springify().delay(200)}
+          >
+            <DuoListPressable
+              leading={
+                <SearchIcon
+                  size={24}
+                  color={method === "manual-location" ? theme.colors.primary : (theme.colors.text + "88")}
+                />
+              }
+              text="Rechercher une ville"
+              enabled={method === "manual-location"}
+              onPress={() => setMethod("manual-location")}
+            />
+          </Reanimated.View>
+          <Reanimated.View
+            style={{ width: "100%" }}
+            layout={LinearTransition}
+            entering={FlipInXDown.springify().delay(300)}
+          >
+            <DuoListPressable
+              leading={
+                <QrCodeIcon
+                  size={24}
+                  color={method === "qr-code" ? theme.colors.primary : (theme.colors.text + "88")}
+                />
+              }
+              text="J'ai un QR Code"
+              enabled={method === "qr-code"}
+              onPress={() => setMethod("qr-code")}
+            />
+          </Reanimated.View>
+          <Reanimated.View
+            style={{ width: "100%" }}
+            layout={LinearTransition}
+            entering={FlipInXDown.springify().delay(400)}
+          >
+            <DuoListPressable
+              leading={
+                <LinkIcon
+                  size={24}
+                  color={method === "manual-url" ? theme.colors.primary : (theme.colors.text + "88")}
+                />
+              }
+              text="J'ai une URL de connexion"
+              enabled={method === "manual-url"}
+              onPress={() => setMethod("manual-url")}
+            />
+          </Reanimated.View>
+        </Reanimated.ScrollView>
+      </View>
 
       <View style={styles.buttons}>
         <View
@@ -191,9 +232,6 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     width: "100%",
-    alignItems: "center",
-    gap: 9,
-    paddingHorizontal: 20,
   },
 
   buttons: {

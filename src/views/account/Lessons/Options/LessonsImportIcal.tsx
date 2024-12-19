@@ -69,7 +69,6 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         const parsed = ical.parseString(text);
         let newParsed = parsed;
         newParsed.events = [];
-        console.log(newParsed);
 
         const defaultTitle = "Mon calendrier" + (oldUrls.length > 0 ? ` ${oldUrls.length + 1}` : "");
 

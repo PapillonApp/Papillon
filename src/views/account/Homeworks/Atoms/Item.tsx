@@ -17,6 +17,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useCurrentAccount } from "@/stores/account";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
+import { timestampToString } from "@/utils/format/DateHelper";
+
 
 interface HomeworkItemProps {
   key: number | string
@@ -26,6 +28,7 @@ interface HomeworkItemProps {
   onDonePressHandler: () => unknown
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen" | "Homeworks", undefined>
 }
+
 
 const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }: HomeworkItemProps) => {
   const theme = useTheme();
@@ -69,13 +72,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     setMainLoaded(true);
   }, [homework.done]);
 
-  const timestampToString = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const today = new Date();
 
-    const difference = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return difference === 0 ? "Aujourd'hui" : difference === 1 ? "Demain" : difference === 2 ? "Après-demain" : `Dans ${difference} jours`;
-  };
 
   const renderCategoryOrReturnType = () => {
     if (category) {

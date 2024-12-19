@@ -138,10 +138,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     if (showLoading) {
       setLoading(true);
     }
-    console.log("[Homeworks]: updating cache...", selectedWeek, epochWNToDate(selectedWeek));
     updateHomeworkForWeekInCache(account, epochWNToDate(selectedWeek))
       .then(() => {
-        console.log("[Homeworks]: updated cache !", epochWNToDate(selectedWeek));
         setLoading(false);
         setRefreshing(false);
         setLoadedWeeks(prev => [...prev, selectedWeek]);
@@ -228,7 +226,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             setTimeout(() => {
               AsyncStorage.getItem("review_given").then((value) => {
                 if(!value) {
-                  console.log("Asking for review");
                   askForReview();
                   AsyncStorage.setItem("review_given", "true");
                 }

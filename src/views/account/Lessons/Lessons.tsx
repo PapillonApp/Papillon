@@ -198,7 +198,6 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             setTimeout(() => {
               AsyncStorage.getItem("review_given").then((value) => {
                 if(!value) {
-                  console.log("Asking for review");
                   askForReview();
                   AsyncStorage.setItem("review_given", "true");
                 }

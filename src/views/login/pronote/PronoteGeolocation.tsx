@@ -70,7 +70,8 @@ const PronoteGeolocation: Screen<"PronoteGeolocation"> = ({ navigation }) => {
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
         Votre position est nécessaire pour trouver les instances PRONOTE à proximité.
-        Elle n'est pas stockée et ne sera pas partagée.
+        Elle sera envoyée à Pronote et à l'api adresse du gouvernement pour trouver les établissements.
+        Elle n'est pas stockée.
       </Text>
     </SafeAreaView>
   );

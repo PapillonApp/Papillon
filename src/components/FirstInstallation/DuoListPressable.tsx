@@ -11,6 +11,7 @@ const DuoListPressable: React.FC<{
   children?: JSX.Element,
   leading?: JSX.Element,
   text?: string,
+  subtext?: string,
   trailing?: JSX.Element,
   enabled?: boolean,
   onPress?: () => void,
@@ -18,6 +19,7 @@ const DuoListPressable: React.FC<{
   children,
   leading,
   text,
+  subtext,
   trailing,
   enabled,
   onPress = () => { },
@@ -104,6 +106,19 @@ const DuoListPressable: React.FC<{
               {text}
             </Text>
           )}
+
+          {subtext && (
+            <Text style={[
+              styles.subtext,
+              enabled && styles.subtext_enabled,
+              enabled ? { color: colors.primary } : { color: colors.text + "88" },
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            >
+              {subtext}
+            </Text>
+          )}
         </View>
 
         {trailing && (
@@ -136,8 +151,19 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
+  subtext: {
+    fontSize: 16,
+    width: "100%",
+    marginTop: 2,
+    opacity: 0.7,
+    fontFamily: "medium",
+  },
+
   text_enabled: {
     fontFamily: "semibold",
+  },
+
+  subtext_enabled: {
   },
 });
 
