@@ -1,0 +1,20 @@
+name: ✨ Amélioration/Fonctionnalité
+description: Comment pouvons-nous améliorer Papillon ?
+title: "[Feature]: "
+
+body:
+  - type: textarea
+    attributes:
+      label: Description de la fonctionnalité
+      description: Fait place à ta créativité en détaillant ce que tu veux
+      placeholder: Ça serait cool une intégration d'un simulateur permettant de savoir si on aura le bac/brevet 
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Davantage de détails ?
+      description: Une image pour montrer à quoi ça ressemblerait ? Ce n'est pas obligatoire
+      placeholder: Ah, même si j'ai des idées, je ne suis pas designer 😂
+    validations:
+      required: false
