@@ -33,8 +33,6 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
   const errorTitle = useMemo(() => getErrorTitle(), []);
   const [isRefreshing] = useState(false);
-
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
