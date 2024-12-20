@@ -44,22 +44,26 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       };
 
       const grades: Grade[] = matiere.evaluations.map((note: any) => {
+        const parsedStudent = note.note.value !== "~" ? parseFloat(note.note.value) : null; // Create a condition when ~ ("~" appears when a grade is not already put in scodoc)
+        const parsedAverage = note.note.moy !== "~" ? parseFloat(note.note.moy) : null;
+        const parsedMin = note.note.min !== "~" ? parseFloat(note.note.min) : null;
+        const parsedMax = note.note.max !== "~" ? parseFloat(note.note.max) : null;
         const grade: Grade = {
           student: {
             value: parseFloat(note.note.value),
-            disabled: isNaN(parseFloat(note.note.value)),
+            disabled: parsedStudent === null || isNaN(parsedStudent),
           },
           min: {
             value: parseFloat(note.note.min),
-            disabled: false,
+            disabled: parsedMin === null || isNaN(parsedMin),
           },
           max: {
             value: parseFloat(note.note.max),
-            disabled: false,
+            disabled: parsedMax === null || isNaN(parsedMax),
           },
           average: {
             value: parseFloat(note.note.moy),
-            disabled: false,
+            disabled: parsedAverage === null || isNaN(parsedAverage),
           },
 
           id: uuid(),
@@ -80,10 +84,13 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
         return grade;
       });
 
-      const average = grades.filter(grade => grade.student.value != null).reduce((acc, grade) => acc + (grade.student.value as number), 0) / grades.length;
-      const min = grades.filter(grade => grade.min.value != null).reduce((acc, grade) => Math.min(acc, (grade.min.value as number)), 20);
-      const max = grades.filter(grade => grade.max.value != null).reduce((acc, grade) => Math.max(acc, (grade.max.value as number)), 0);
-      const classAverage = grades.filter(grade => grade.average.value != null).reduce((acc, grade) => acc + (grade.average.value as number), 0) / grades.length;
+      //
+      const average = grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).length > 0? grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).reduce((acc, grade) => acc + (grade.student.value as number), 0) / grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).length: NaN;
+
+      const min = grades.filter(grade => grade.min.value != null && !isNaN(grade.min.value)).length > 0 ?grades.filter(grade => grade.min.value != null && !isNaN(grade.min.value)).reduce((acc, grade) => Math.min(acc, (grade.min.value as number)), 20): NaN;
+      const max = grades.filter(grade => grade.max.value != null && !isNaN(grade.max.value)).length > 0 ? grades.filter(grade => grade.max.value != null && !isNaN(grade.max.value)).reduce((acc, grade) => Math.max(acc, (grade.max.value as number)), 0): NaN;
+
+      const classAverage = grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).length > 0 ? grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).reduce((acc, grade) => acc + (grade.average.value as number), 0) / grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).length: NaN;
 
 
       if (grades.length === 0) {
