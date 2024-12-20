@@ -18,16 +18,17 @@ export const saveIUTLanAttendance = async (account: LocalAccount): Promise<Atten
 
           let to = new Date(absence.dateFin);
           to.setHours(absence.fin);
-
-          allAbsences.push({
-            id: absence.idAbs,
-            fromTimestamp: from ? new Date(from).getTime() : undefined,
-            toTimestamp: to ? new Date(to).getTime() : undefined,
-            justified: absence.justifie ?? false,
-            hours: (parseInt(absence.fin) - parseInt(absence.debut)) + "h 00",
-            administrativelyFixed: absence.justifie ?? false,
-            reasons: undefined,
-          });
+          if (!(absence.statut === "present")){
+            allAbsences.push({
+              id: absence.idAbs,
+              fromTimestamp: from ? new Date(from).getTime() : undefined,
+              toTimestamp: to ? new Date(to).getTime() : undefined,
+              justified: Boolean(absence.justifie), // Caster dans un bool au cas ou mais non essentiel
+              hours: (parseInt(absence.fin) - parseInt(absence.debut)) + "h 00",
+              administrativelyFixed: Boolean(absence.justifie),
+              reasons: undefined,
+            });
+          }
         }
       }
     }
