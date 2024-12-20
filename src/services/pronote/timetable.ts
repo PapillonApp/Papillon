@@ -25,6 +25,7 @@ const decodeTimetableClass = (c: pronote.TimetableClassLesson | pronote.Timetabl
       group: c.groupNames.join(", ") || void 0,
       status: c.status === "Cours annulé" || c.status === "Prof. absent" || c.status === "Classe absente" || c.status === "Prof./pers. absent" || c.status === "Sortie pédagogique" ? TimetableClassStatus.CANCELED : c.test ? TimetableClassStatus.TEST : void 0,
       statusText: c.test ? "Devoir Surveillé" : c.status,
+      ressourceID: c.lessonResourceID ?? void 0,
       ...base
     } satisfies TimetableClass;
   }
@@ -67,5 +68,43 @@ export const getTimetableForWeek = async (account: PronoteAccount, weekNumber: n
     withPlannedClasses: true
   });
 
-  return timetable.classes.map(decodeTimetableClass);
+  let timetable_formatted = timetable.classes.map(decodeTimetableClass);
+
+  await Promise.all(
+    timetable_formatted.map(async (c) => {
+      if (c.type === "lesson" && c.ressourceID) {
+        let ressource = (await pronote.resource(account.instance!, c.ressourceID)).contents;
+        c.ressource = ressource.map((r) => {
+          let category = category_match[r.category] ?? r.categoryText;
+          return {
+            title: r.title,
+            description: r.description,
+            category,
+            files: r.files.map((f) => {
+              return {
+                name: f.name,
+                url: f.url
+              };
+            })
+          };
+        });
+      }
+    })
+  );
+
+  return timetable_formatted;
+};
+
+const category_match = {
+  0: undefined,
+  1: "Cours",
+  2: "Correction",
+  3: "Devoir sur table",
+  4: "Interrogation orale",
+  5: "Travaux Dirigés",
+  6: "Travaux Pratiques",
+  7: "Évaluation",
+  8: "Enseignements Pratiques Interdisciplinaires",
+  9: "Accompagnement personnalisé",
+  12: "Visioconférence",
 };

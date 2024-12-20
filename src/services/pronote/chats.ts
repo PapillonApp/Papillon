@@ -52,11 +52,10 @@ export const createDiscussionRecipients = async (account: PronoteAccount): Promi
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
-  const user = account.instance.user.resources[0];
   const recipientsALL = await Promise.all([
     pronote.EntityKind.Teacher,
     pronote.EntityKind.Personal
-  ].map(kind => pronote.newDiscussionRecipients(account.instance!, user, kind)));
+  ].map(kind => pronote.newDiscussionRecipients(account.instance!, kind)));
 
   const recipients = recipientsALL.flat();
   info("PRONOTE->createDiscussionRecipients(): OK", "pronote");
