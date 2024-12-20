@@ -59,7 +59,7 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
   if (instance.casToken && instance.casURL) {
     showAlert({
       title: `L'instance ${instance.name} nécessite une connexion ENT.`,
-      message: "Vous serez redirigé vers le portail de connexion de votre ENT.",
+      message: "Tu seras redirigé vers le portail de connexion de ton ENT.",
       actions: [
         {
           title: "Identifiants",

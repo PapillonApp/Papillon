@@ -25,7 +25,7 @@ const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
 
   const manualInput = () => {
     Alert.prompt(
-      "Entrez le prix d'un repas",
+      "Entre le prix d'un repas",
       "",
       [
         { text: "Annuler", onPress: () => {} },

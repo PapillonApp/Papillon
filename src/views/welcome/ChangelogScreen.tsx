@@ -143,7 +143,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
               Impossible de trouver les notes de mise à jour
             </NativeText>
             <NativeText variant="subtitle">
-              Vous êtes peut-être hors-ligne ou alors quelque chose ne s'est pas passé comme prévu...
+              Tu es peut-être hors-ligne ou alors une erreur est survenue...
             </NativeText>
           </NativeItem>
         </NativeList>

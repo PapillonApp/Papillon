@@ -168,10 +168,10 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             }}
           >
             <NativeText variant="title">
-              Découvrez les nouveautés de Papillon {PackageJSON.version}
+              Découvre les nouveautés de Papillon {PackageJSON.version}
             </NativeText>
             <NativeText variant="subtitle">
-              Ouvrir les notes de mise à jour de cette version de Papillon
+              Ouvrir les notes de mise à jour
             </NativeText>
           </NativeItem>
         </NativeList>
@@ -191,7 +191,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
           {errorTitle.label} {errorTitle.emoji}
         </NativeText>
         <NativeText variant="subtitle">
-          Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+          Tu es hors ligne. Les données affichées peuvent être obsolètes.
         </NativeText>
       </NativeItem>
     </NativeList>

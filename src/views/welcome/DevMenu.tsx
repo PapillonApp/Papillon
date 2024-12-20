@@ -81,7 +81,7 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
               opacity: 0.7,
             }}
           >
-            Intégrez vos options et paramètres de développement ici.
+            Intègre tes options et paramètres de développement ici.
           </Text>
         </View>
       )}
@@ -168,7 +168,7 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
             onPress={() => {
               Alert.alert(
                 "Réinitialisation de Papillon",
-                "Êtes-vous sûr de vouloir réinitialiser toutes les données de l'application ?",
+                "Es-tu sûr de vouloir réinitialiser toutes les données de l'application ?",
                 [
                   {
                     text: "Annuler",

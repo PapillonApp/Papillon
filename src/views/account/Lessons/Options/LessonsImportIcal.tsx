@@ -83,7 +83,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         fetchIcalData(account);
       })
       .catch(() => {
-        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifiez l'URL et réessayez.");
+        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifie l'URL et réessaye.");
       })
       .finally(() => {
         setLoading(false);

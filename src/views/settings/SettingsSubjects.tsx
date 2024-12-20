@@ -135,7 +135,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
           onPress={() => {
             Alert.alert(
               "Réinitialiser les matières",
-              "Voulez-vous vraiment réinitialiser les matières ?",
+              "Veux-tu vraiment réinitialiser les matières ?",
               [
                 { text: "Annuler", style: "cancel" },
                 { text: "Réinitialiser", style: "destructive", onPress: () => {
@@ -222,7 +222,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                   handleSubjectTitleBlur(); // Update subject title when closing the bottom sheet
                 }
               } else {
-                Alert.alert("Aucun émoji défini", "Vous devez définir un émoji pour cette matière avant de pouvoir quitter cette page.");
+                Alert.alert("Aucun émoji défini", "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page.");
                 emojiInput.current?.focus();
               }
             }}
@@ -437,7 +437,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
             style={{ marginTop: 16 }}
             emoji={"🎨"}
             title={"Une matière manque ?"}
-            description={"Essayez d'ouvrir quelques journées dans votre emploi du temps"}
+            description={"Essaye d'ouvrir quelques journées dans ton emploi du temps"}
           />
         )}
       </ScrollView>

@@ -85,7 +85,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
                 <Reanimated.Text
                   numberOfLines={2}
                   style={[styles.message, textAnimatedStyle]}>
-                  Vous avez cours en salle B03 avec M. Perruche dans 5 minutes.
+                  Tu as cours en salle B03 avec M. Perruche dans 5 minutes.
                 </Reanimated.Text>
               </View>
             </View>

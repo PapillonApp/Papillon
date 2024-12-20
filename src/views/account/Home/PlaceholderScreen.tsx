@@ -39,7 +39,7 @@ const PlaceholderScreen: Screen<"Messages" | "Menu"> = ({ route, navigation }) =
       <MissingItem
         emoji={"🚧"}
         title={"Fonctionnalité en construction"}
-        description={"Cette page est en cours de développement, revenez plus tard."}
+        description={"Cette page est en cours de développement, reviens plus tard."}
       />
     </View>
   );

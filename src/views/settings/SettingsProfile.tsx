@@ -123,11 +123,11 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             </NativeText>
             {!profilePic ? (
               <NativeText variant="subtitle">
-                Personnalisez votre compte en ajoutant une photo de profil.
+                Personnalise ton compte en ajoutant une photo de profil.
               </NativeText>
             ) : (
               <NativeText variant="subtitle">
-                Votre photo de profil reste sur votre appareil.
+                Ta photo de profil reste sur ton appareil.
               </NativeText>
             )}
           </NativeItem>

@@ -207,7 +207,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Pronote ou à Index Éducation. Vos données restent uniquement sur votre appareil de manière sécurisée.
+            Papillon n'est pas affilié à Pronote ou à Index Éducation. Tes données restent uniquement sur ton appareil de manière sécurisée.
           </NativeText>
         </View>
 

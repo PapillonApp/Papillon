@@ -127,7 +127,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
           <MissingItem
             emoji="⏳"
             title="Chargement de l'emploi du temps"
-            description="Veuillez patienter..."
+            description="Patiente, s'il te plaît..."
           />
         </NativeItem>
       </NativeList>
