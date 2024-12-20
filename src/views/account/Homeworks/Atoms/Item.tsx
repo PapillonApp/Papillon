@@ -10,7 +10,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import HTMLView from "react-native-htmlview";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Alert, Platform, View } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,7 +18,8 @@ import { useCurrentAccount } from "@/stores/account";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
-
+import NetInfo from "@react-native-community/netinfo";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface HomeworkItemProps {
   key: number | string
@@ -47,6 +48,15 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     }
   });
 
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
+
+  const { showAlert } = useAlert();
+
   useEffect(() => {
     if (account.personalization?.MagicHomeworks) {
       const data = getSubjectData(homework.subject);
@@ -61,9 +71,31 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePress = useCallback(() => {
-    setIsLoading(true);
-    onDonePressHandler();
-  }, [onDonePressHandler]);
+    if (isOnline) {
+      setIsLoading(true);
+      onDonePressHandler();
+    } else {
+      if (Platform.OS === "ios") {
+        Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
+          {
+            text: "OK",
+          },
+        ]);
+      } else {
+        showAlert({
+          title: "Information",
+          message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
+          actions: [
+            {
+              title: "OK",
+              onPress: () => {},
+              backgroundColor: theme.colors.card,
+            },
+          ],
+        });
+      }
+    }
+  }, [onDonePressHandler, isOnline]);
 
   const [mainLoaded, setMainLoaded] = useState(false);
 

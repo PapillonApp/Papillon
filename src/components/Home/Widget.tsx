@@ -1,4 +1,10 @@
-import React, { type FunctionComponent, RefAttributes, useRef, useState } from "react";
+import React, {
+  type FunctionComponent,
+  RefAttributes,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
@@ -7,7 +13,7 @@ import Reanimated, {
   FadeIn,
   FadeOut,
   LinearTransition,
-  ZoomIn
+  ZoomIn,
 } from "react-native-reanimated";
 
 import { animPapillon } from "@/utils/ui/animations";
@@ -15,10 +21,14 @@ import { PressableScale } from "react-native-pressable-scale";
 import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
+import NetInfo from "@react-native-community/netinfo";
 
 interface WidgetContainerProps {
-  widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
-  navigation?: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
+  widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>;
+  navigation?: NativeStackNavigationProp<
+    RouteParameters,
+    keyof RouteParameters
+  >;
 }
 
 export interface WidgetProps {
@@ -28,13 +38,23 @@ export interface WidgetProps {
   hidden: boolean;
 }
 
-const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigation }) => {
+const Widget: React.FC<WidgetContainerProps> = ({
+  widget: DynamicWidget,
+  navigation,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
   const widgetRef = useRef<FunctionComponent<WidgetProps> | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener((state) => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   const handlePress = () => {
     const location = (widgetRef.current as any)?.handlePress();
@@ -47,30 +67,27 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
     <Reanimated.View
       layout={LinearTransition}
       style={{
-        opacity: loading ? 0.5 : 1,
+        opacity: isOnline && loading ? 0.5 : 1,
         display: hidden ? "none" : "flex",
       }}
-      entering={animPapillon(ZoomIn).withInitialValues({ transform: [{ scale: 0.7 }], opacity: 0 })}
+      entering={animPapillon(ZoomIn).withInitialValues({
+        transform: [{ scale: 0.7 }],
+        opacity: 0,
+      })}
       exiting={FadeOut.duration(150)}
     >
-      <PressableScale
-        onPress={() => handlePress()}
-      >
+      <PressableScale onPress={() => handlePress()}>
         <Reanimated.View
-          entering={
-            FadeIn.springify().mass(1).damping(20).stiffness(300)
-          }
-          exiting={
-            FadeOut
-          }
+          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOut}
           style={[
             styles.widget,
             {
               backgroundColor: colors.card,
-            }
+            },
           ]}
         >
-          {loading && (
+          {isOnline && loading && (
             <Reanimated.View
               style={{
                 ...StyleSheet.absoluteFillObject,
@@ -86,9 +103,7 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
               exiting={FadeOut.duration(150)}
             >
               <ActivityIndicator />
-              <NativeText variant="subtitle">
-                Chargement...
-              </NativeText>
+              <NativeText variant="subtitle">Chargement...</NativeText>
             </Reanimated.View>
           )}
 
@@ -96,9 +111,11 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
             style={[
               styles.widgetContent,
               {
-                backgroundColor: theme.dark ? colors.primary + "09" : colors.primary + "11",
+                backgroundColor: theme.dark
+                  ? colors.primary + "09"
+                  : colors.primary + "11",
                 overflow: "hidden",
-              }
+              },
             ]}
           >
             <DynamicWidget
@@ -109,7 +126,6 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
               hidden={hidden}
             />
           </Reanimated.View>
-
         </Reanimated.View>
       </PressableScale>
     </Reanimated.View>

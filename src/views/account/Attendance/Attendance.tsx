@@ -6,10 +6,10 @@ import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useAttendanceStore } from "@/stores/attendance";
 import { updateAttendanceInCache, updateAttendancePeriodsInCache } from "@/services/attendance";
-import { NativeText } from "@/components/Global/NativeComponents";
-import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
+import Reanimated, { FadeIn, FadeOut, FadeOutUp, FlipInXDown, LinearTransition } from "react-native-reanimated";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import { ChevronDown, Eye, Scale, Timer, UserX } from "lucide-react-native";
+import { ChevronDown, Eye, Scale, Timer, UserX, WifiOff } from "lucide-react-native";
 import PapillonHeader from "@/components/Global/PapillonHeader";
 import { animPapillon } from "@/utils/ui/animations";
 import AttendanceItem from "./Atoms/AttendanceItem";
@@ -20,6 +20,8 @@ import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
 import React from "react";
+import NetInfo from "@react-native-community/netinfo";
+import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -29,13 +31,20 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const periods = useAttendanceStore(store => store.periods);
   const attendances = useAttendanceStore(store => store.attendances);
 
-
-
+  const errorTitle = useMemo(() => getErrorTitle(), []);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
   const selectedPeriod = useMemo(() => userSelectedPeriod ?? defaultPeriod, [userSelectedPeriod, defaultPeriod]);
+
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    return NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected ?? false);
+    });
+  }, []);
 
   useEffect(() => {
     updateAttendancePeriodsInCache(account);
@@ -205,16 +214,20 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             </PapillonPicker>
           </Reanimated.View>
 
-          {isLoading && !isRefreshing &&
+          {isOnline && isLoading && !isRefreshing && (
             <Reanimated.View
               entering={FadeIn}
               exiting={FadeOut.duration(1000)}
               layout={LinearTransition}
               style={{ marginRight: 6 }}
             >
-              <ActivityIndicator color={Platform.OS === "android" ? theme.colors.primary : void 0} />
+              <ActivityIndicator
+                color={
+                  Platform.OS === "android" ? theme.colors.primary : void 0
+                }
+              />
             </Reanimated.View>
-          }
+          )}
         </Reanimated.View>
       </PapillonHeader>
 
@@ -242,6 +255,24 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           />
         }
       >
+        {!isOnline &&
+          <Reanimated.View
+            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
+            layout={animPapillon(LinearTransition)}
+          >
+            <NativeList inline>
+              <NativeItem icon={<WifiOff />}>
+                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                  {errorTitle.label} {errorTitle.emoji}
+                </NativeText>
+                <NativeText variant="subtitle">
+                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+                </NativeText>
+              </NativeItem>
+            </NativeList>
+          </Reanimated.View>
+        }
         {attendances[selectedPeriod] && attendances[selectedPeriod].absences.length === 0 && attendances[selectedPeriod].delays.length === 0 && attendances[selectedPeriod].punishments.length === 0 && Object.keys(attendances_observations_details).length === 0 &&(
           <MissingItem
             title="Aucune absence"
