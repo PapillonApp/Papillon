@@ -52,8 +52,8 @@ const ButtonCta: React.FC<{
   return (
     <Reanimated.View
       style={{
-        transform: [{ scale: scale }],
-        opacity: opacity
+        transform: [{ scale }],
+        opacity
       }}
     >
       <Pressable

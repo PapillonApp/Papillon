@@ -118,8 +118,8 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
   }, [currentState, opacity, rotate]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ rotate: `${rotate.value}deg` }],
+    opacity: opacity.get(),
+    transform: [{ rotate: `${rotate.get()}deg` }],
   }));
 
   return (

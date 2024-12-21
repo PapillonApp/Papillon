@@ -57,7 +57,7 @@ const HomeStackScreen = ({ accountScreens }: {
     <HomeStack.Navigator screenOptions={screenOptions}>
       {newAccountScreens.map((screen) => (
         <HomeStack.Screen
-          key={screen.name}
+          key={screen.name+"_tabrt3"}
           {...screen}
           initialParams={{
             outsideNav: true

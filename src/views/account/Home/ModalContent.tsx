@@ -146,11 +146,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
       }}
     >
       {(defined("force_changelog") || updatedRecently) && (
-        <NativeList
-          animated
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOutDown)}
-        >
+        <NativeList animated>
           <NativeItem
             leading={
               <Sparkles
@@ -177,36 +173,32 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
         </NativeList>
       )}
 
-      {!isOnline &&
-  <Reanimated.View
-    entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-    exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-    layout={animPapillon(LinearTransition)}
-  >
-    <NativeList inline>
-      <NativeItem
-        icon={<WifiOff />}
-      >
-        <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-          {errorTitle.label} {errorTitle.emoji}
-        </NativeText>
-        <NativeText variant="subtitle">
-          Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-        </NativeText>
-      </NativeItem>
-    </NativeList>
-  </Reanimated.View>
-      }
+      {!isOnline && (
+        <Reanimated.View
+          layout={animPapillon(LinearTransition)}
+        >
+          <NativeList inline>
+            <NativeItem
+              icon={<WifiOff />}
+            >
+              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
+                {errorTitle.label} {errorTitle.emoji}
+              </NativeText>
+              <NativeText variant="subtitle">
+                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </Reanimated.View>
+      )}
 
       <Reanimated.View
         layout={animPapillon(LinearTransition)}
       >
         {elements.map((Element, index) => (Element &&
         <Reanimated.View
-          key={index}
+          key={index + "modctidx"}
           layout={animPapillon(LinearTransition)}
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOutDown)}
         >
           <Element.component
             navigation={navigation}

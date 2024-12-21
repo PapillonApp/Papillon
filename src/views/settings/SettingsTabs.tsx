@@ -22,19 +22,10 @@ import {
   NestableScrollContainer,
   ShadowDecorator,
 } from "react-native-draggable-flatlist";
-import { PressableScale } from "react-native-pressable-scale";
-import Reanimated, {
-  FadeIn,
-  FadeOut,
-  FadeInUp,
-  FadeOutDown,
-  LinearTransition,
-  ZoomIn,
-  ZoomOut,
-} from "react-native-reanimated";
+import { PressableScale } from "@/components/Global/PressableScale";
+import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { defaultTabs } from "@/consts/DefaultTabs";
-import { animPapillon } from "@/utils/ui/animations";
 import { log } from "@/utils/logger/logger";
 import { useAlert } from "@/providers/AlertProvider";
 
@@ -45,16 +36,6 @@ interface Tab {
   enabled: boolean;
   installed: boolean;
   icon: any; // Should be updated if Lottie icon types are more specific
-}
-
-interface Personalization {
-  tabs: Array<{ name: string; enabled: boolean; installed: boolean }>;
-  hideTabTitles?: boolean;
-  showTabBackground?: boolean;
-}
-
-interface Account {
-  personalization: Personalization;
 }
 
 const SettingsTabs = () => {
@@ -120,22 +101,27 @@ const SettingsTabs = () => {
     const loadTabs = async () => {
       if (account.personalization.tabs) {
         const storedTabs = account.personalization.tabs;
-        const updatedTabs = defaultTabs
-          .filter((defaultTab) =>
-            storedTabs.some((storedTab) => storedTab.name === defaultTab.tab)
-          )
-          .map((defaultTab) => {
-            const storedTab = storedTabs.find((t) => t.name === defaultTab.tab);
-            return {
-              ...defaultTab,
-              enabled: storedTab ? storedTab.enabled : false,
-              installed: true,
-            };
-          });
 
-        const newTabsFound: Tab[] = defaultTabs.filter((defaultTab) => !storedTabs.some((storedTab) => storedTab.name === defaultTab.tab)).map((tab) => ({ ...tab, installed: true }));
+        const updatedTabs: Tab[] = storedTabs.map((storedTab) => {
+          const defaultTab = defaultTabs.find((defaultTab) => defaultTab.tab === storedTab.name);
+          return {
+            tab: storedTab.name,
+            label: defaultTab?.label || "Default Label",
+            icon: defaultTab?.icon || null,
+            enabled: storedTab.enabled,
+            installed: true,
+          };
+        });
 
-        setTabs(updatedTabs);
+        const newTabsFound: Tab[] = defaultTabs
+          .filter((defaultTab) => !storedTabs.some((storedTab) => storedTab.name === defaultTab.tab))
+          .map((tab) => ({
+            ...tab,
+            installed: true,
+            enabled: false,
+          }));
+
+        setTabs([...updatedTabs, ...newTabsFound]);
         setNewTabs(newTabsFound);
         setShowNewTabsNotification(newTabsFound.length > 0);
       } else {
@@ -208,7 +194,7 @@ const SettingsTabs = () => {
     <View>
       <NestableScrollContainer
         contentContainerStyle={{
-          paddingBottom: 16 + insets.bottom,
+          paddingBottom: 100 + insets.bottom,
         }}
       >
         <View
@@ -251,11 +237,9 @@ const SettingsTabs = () => {
                 {tabs.filter((tab) => tab.enabled).map((tab, index) => {
                   return (
                     <Reanimated.View
-                      key={tab.tab}
+                      key={tab.tab + "settingtab"}
                       style={{ flex: 1 }}
                       layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
-                      entering={ZoomIn}
-                      exiting={ZoomOut}
                     >
                       <PressableScale
                         activeScale={0.85}
@@ -328,8 +312,6 @@ const SettingsTabs = () => {
                               fontSize: 12.5,
                             }}
                             numberOfLines={1}
-                            entering={FadeIn}
-                            exiting={FadeOut.duration(100)}
                             layout={LinearTransition}
                           >
                             {tab.label}
@@ -352,8 +334,6 @@ const SettingsTabs = () => {
                       justifyContent: "center",
                       marginHorizontal: 4,
                     }}
-                    entering={ZoomIn.springify().mass(1).damping(20).stiffness(500)}
-                    exiting={FadeOut.duration(100)}
                   >
                     <AlertTriangle
                       size={20}
@@ -376,9 +356,7 @@ const SettingsTabs = () => {
 
           <NativeListHeader label="Réorganiser les onglets" />
 
-          <NativeList
-            animated
-          >
+          <NativeList>
             {showNewTabsNotification && (
               <NativeItem
                 leading={
@@ -400,6 +378,7 @@ const SettingsTabs = () => {
             )}
 
             <NestableDraggableFlatList
+              key={tabs.map((tab) => tab.tab).join(",")}
               initialNumToRender={tabs.length}
               scrollEnabled={false}
               data={tabs}
@@ -417,10 +396,12 @@ const SettingsTabs = () => {
                       leading={
                         <LottieView
                           source={item.icon}
-                          colorFilters={[{
-                            keypath: "*",
-                            color: theme.colors.text,
-                          }]}
+                          colorFilters={[
+                            {
+                              keypath: "*",
+                              color: theme.colors.text,
+                            }
+                          ]}
                           style={{ width: 24, height: 24, marginVertical: 2 }}
                         />
                       }
@@ -434,41 +415,41 @@ const SettingsTabs = () => {
                             width: 70,
                           }}
                         >
-                          {!safeTabs.includes(item.tab) && (
-                            <Reanimated.View
-                              entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
-                              exiting={ZoomOut.duration(300)}
-                            >
-                              {!loading && (
-                                <PapillonCheckbox
-                                  checked={item.enabled}
-                                  onPress={() => {
-                                    if (!item.enabled && tabs.filter(t => t.enabled).length === 5) {
-                                      if (Platform.OS === "ios") {
-                                        Alert.alert("Information", "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.", [
-                                          {
-                                            text: "OK",
-                                          },
-                                        ]);
-                                      } else {
-                                        showAlert({
-                                          title: "Information",
-                                          message: "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.",
-                                          actions: [
-                                            {
-                                              title: "OK",
-                                              onPress: () => {},
-                                              backgroundColor: theme.colors.card,
-                                            },
-                                          ],
-                                        });
-                                      }
-                                    }
-                                    toggleTab(item.tab);
-                                  }}
-                                />
-                              )}
-                            </Reanimated.View>
+                          {!safeTabs.includes(item.tab) && !loading && (
+                            <PapillonCheckbox
+                              checked={item.enabled}
+                              onPress={() => {
+                                if (
+                                  !item.enabled &&
+                                  tabs.filter(t => t.enabled).length === 5
+                                ) {
+                                  if (Platform.OS === "ios") {
+                                    Alert.alert(
+                                      "Information",
+                                      "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.",
+                                      [
+                                        {
+                                          text: "OK",
+                                        }
+                                      ]
+                                    );
+                                  } else {
+                                    showAlert({
+                                      title: "Information",
+                                      message: "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.",
+                                      actions: [
+                                        {
+                                          title: "OK",
+                                          onPress: () => {},
+                                          backgroundColor: theme.colors.card,
+                                        },
+                                      ],
+                                    });
+                                  }
+                                }
+                                toggleTab(item.tab);
+                              }}
+                            />
                           )}
 
                           <Equal
@@ -479,7 +460,9 @@ const SettingsTabs = () => {
                         </View>
                       }
                     >
-                      <NativeText variant="title">{item.label}</NativeText>
+                      <NativeText variant="title">
+                        {item.label}
+                      </NativeText>
                     </NativeItem>
                   </View>
                 </ShadowDecorator>

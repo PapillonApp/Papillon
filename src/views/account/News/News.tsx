@@ -93,7 +93,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
 
   const renderItem: ListRenderItem<NewsItem> = useCallback(({ item, index }) => (
     <NewsListItem
-      key={index}
+      key={index + "newslistitemindex"}
       index={index}
       message={item}
       navigation={navigation}
@@ -126,11 +126,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       }
     >
       {importantMessages.length > 0 && (
-        <Reanimated.View
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOut)}
-          layout={animPapillon(LinearTransition)}
-        >
+        <Reanimated.View layout={animPapillon(LinearTransition)}>
           <NativeListHeader
             label="Peut-être Important"
             animated
@@ -162,11 +158,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
       )}
 
       {sortedMessages.length > 0 && (
-        <Reanimated.View
-          entering={animPapillon(FadeInUp)}
-          exiting={animPapillon(FadeOut)}
-          layout={animPapillon(LinearTransition)}
-        >
+        <Reanimated.View layout={animPapillon(LinearTransition)}>
           <NativeList animated inline>
             <FlatList
               data={sortedMessages}

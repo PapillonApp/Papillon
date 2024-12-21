@@ -235,7 +235,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             <NativeList>
               {message.attachments.map((attachment, index) => (
                 <NativeItem
-                  key={index}
+                  key={index + "newsdocumentindex"}
                   chevron={false}
                   onPress={() => Linking.openURL(attachment.url)}
                   icon={

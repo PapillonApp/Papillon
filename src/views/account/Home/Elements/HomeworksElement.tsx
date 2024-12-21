@@ -89,7 +89,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
           <HomeworkItem
             navigation={navigation}
             homework={hw}
-            key={index}
+            key={index + "hwitemidx"}
             index={index}
             total={homeworks[dateToEpochWeekNumber(actualDay) + 1]?.length || 0}
             onDonePressHandler={() => {
@@ -100,7 +100,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
         {new Date().getDay() >= 2 && homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime).map((hw, index) => (
           <HomeworkItem
             homework={hw}
-            key={index}
+            key={index + "hwitemdayidx"}
             index={index}
             navigation={navigation}
             total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}

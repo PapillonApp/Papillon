@@ -51,7 +51,7 @@ const BottomSheet = ({ children, opened, setOpened, ...props }: BottomSheetProps
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.get() }],
     };
   });
 
@@ -94,8 +94,6 @@ const BottomSheet = ({ children, opened, setOpened, ...props }: BottomSheetProps
                 animatedStyle,
                 props.contentContainerStyle,
               ]}
-              entering={SlideInDown.easing(Easing.bezier(0.5, 0, 0, 1).factory()).duration(300)}
-              exiting={SlideOutDown}
             >
               {children}
             </Reanimated.View>

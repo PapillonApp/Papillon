@@ -13,6 +13,7 @@ import {
   Alert,
   Platform,
   Modal,
+  TouchableOpacity
 } from "react-native";
 import React from "react";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
@@ -32,7 +33,7 @@ import {
   UserCog,
 } from "lucide-react-native";
 import {get_addons_list} from "@/addons/addons";
-import {PressableScale} from "react-native-pressable-scale";
+import {PressableScale} from "@/components/Global/PressableScale";
 import * as Linking from "expo-linking";
 import * as FileSystem from "expo-file-system";
 import {AddonManifest} from "@/addons/types";
@@ -127,7 +128,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
               <NativeText variant="subtitle" style={{width: "100%", textAlign: "center"}}>
                 {"v" + selectedAddons.version + " - " + (selectedAddons.license == "" ? "Licence non précisé": selectedAddons.license)}
               </NativeText>
-              <PressableScale
+              <TouchableOpacity
                 onPress={() => {
                   Linking.openURL("https://github.com/" + selectedAddons.author);
                 }}
@@ -142,7 +143,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
                 <NativeText variant="subtitle" style={{width: "100%", textAlign: "center"}}>
                   {"par @" + selectedAddons.author}
                 </NativeText>
-              </PressableScale>
+              </TouchableOpacity>
             </View>
             <View>
               <NativeText variant="title" style={{fontSize: 18, paddingHorizontal: 16}}>
@@ -152,7 +153,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
                 <View style={{display: "flex", gap: 10, flexDirection: "row", paddingHorizontal: 16}}>
                   {selectedAddons.screenshot.map((screenshot, index) => (
                     <Image
-                      key={index}
+                      key={index + "screenshot"}
                       source={{uri: screenshot}}
                       style={{
                         width: 120,
@@ -271,7 +272,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
         <NativeList>
           {storageAddons.map((addon, index) => (
             <NativeItem
-              key={index}
+              key={index + "addon"}
               onPress={addon.error ? () => {} : () => {
                 setSelectedAddons(addon);
                 setOpened(true);
@@ -290,7 +291,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
                 />
               }
               trailing={addon.error && (
-                <PressableScale
+                <TouchableOpacity
                   onPress={() => {
                     Alert.alert(`Impossible de charger le plugin "${addon.name}"`, addon.error);
                   }}
@@ -300,7 +301,7 @@ const SettingsAddons: Screen<"SettingsAddons"> = () => {
                     color={"#BE0B00"}
                     style={{marginRight: 5}}
                   />
-                </PressableScale>
+                </TouchableOpacity>
               )}
             >
               <NativeText variant="title" numberOfLines={1} style={{opacity: addon.error ? 0.5 : 1}}>

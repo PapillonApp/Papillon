@@ -1,5 +1,5 @@
 import type { Screen } from "@/router/helpers/types";
-import { ActivityIndicator, ScrollView, Share, ShareContent } from "react-native";
+import { ActivityIndicator, ScrollView, Share, ShareContent, TouchableOpacity } from "react-native";
 import {
   NativeIcon,
   NativeItem,
@@ -18,7 +18,7 @@ import {
   TriangleAlert,
 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { FadeInDown, FadeInUp, FadeOutDown, FadeOutUp } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 
@@ -36,11 +36,11 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
 
     navigation.setOptions({
       headerRight: (props) => (
-        <PressableScale
+        <TouchableOpacity
           onPress={() => delete_logs()}
         >
           <Delete />
-        </PressableScale>
+        </TouchableOpacity>
       ),
     });
   }, [navigation]);
@@ -49,18 +49,14 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
     <ScrollView
       contentContainerStyle={{
         padding: 16,
-        paddingBottom: 16 + insets.bottom,
+        paddingBottom: 100 + insets.bottom,
         paddingTop: 0,
       }}
     >
       <NativeListHeader animated label={"Logs"} />
 
       {loading && (
-        <NativeList
-          animated
-          entering={animPapillon(FadeInDown)}
-          exiting={animPapillon(FadeOutUp)}
-        >
+        <NativeList animated>
           <NativeItem
             leading={
               <ActivityIndicator />
@@ -78,15 +74,11 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
       )}
 
       {logs.length !== 0 && (
-        <NativeList
-          animated
-          entering={animPapillon(FadeInDown)}
-          exiting={animPapillon(FadeOutUp)}
-        >
+        <NativeList animated>
           {logs.map((log, index) => (
             <NativeItem
               animated
-              key={index}
+              key={index + "log"}
               leading={
                 <NativeIcon
                   icon={

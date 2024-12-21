@@ -53,12 +53,10 @@ const RestaurantHistory = ({ route }: { route: NavigationProps }) => {
           emoji="🧾"
           title="Aucune réservation"
           description="Effectuez une réservation pour la voir apparaître ici."
-          entering={animPapillon(FadeInDown)}
-          exiting={animPapillon(FadeOut)}
         />
       ) : (
         groupedHistories.map(([date, reservations], i) => (
-          <Fragment key={i}>
+          <Fragment key={i + "historygroupfrag"}>
             <NativeListHeader label={date} />
             <NativeList>
               {reservations.map((history: ReservationHistory, j: number) => {
@@ -67,7 +65,7 @@ const RestaurantHistory = ({ route }: { route: NavigationProps }) => {
                   minute: "2-digit",
                 });
                 return (
-                  <NativeItem key={j} style={{
+                  <NativeItem key={j + "historyitem"} style={{
                     backgroundColor: history.amount === 0 ? "#D1000016" : "transparent",
                   }}>
                     <View style={styles.row}>

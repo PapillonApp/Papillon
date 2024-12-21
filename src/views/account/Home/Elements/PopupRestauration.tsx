@@ -35,12 +35,7 @@ const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) =
   }, []);
 
   return (
-    <NativeList
-      inline
-      animated
-      entering={animPapillon(FadeIn)}
-      exiting={animPapillon(FadeOutUp)}
-    >
+    <NativeList inline animated>
       <View style={[styles.container, { borderColor: colors.border }]}>
         <View style={styles.imageContainer}>
           <Image

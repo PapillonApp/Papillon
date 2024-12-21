@@ -104,7 +104,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
             contentContainerStyle={{
               padding: 16,
               paddingTop: 70 + 16,
-              paddingBottom: useSafeAreaInsets().bottom + 16,
+              paddingBottom: useSafeAreaInsets().bottom + 100,
             }}
             style={{ flex: 1 }}
           >
@@ -126,7 +126,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                 <NativeList>
                   {messages[0].attachments.map((attachment, index) => (
                     <NativeItem
-                      key={index}
+                      key={index+"chatidx"}
                       onPress={() => openUrl(attachment.url)}
                       icon={
                         attachment.type === "file" ? <FileText /> : <Link />
@@ -144,7 +144,6 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
         </>
       ) : (
         <Reanimated.View
-          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
           exiting={
             Platform.OS === "ios"
               ? FadeOut.springify().mass(1).damping(20).stiffness(300)
