@@ -15,7 +15,7 @@ export const screenOptions: NativeStackNavigationOptions = {
 import { useCurrentAccount } from "@/stores/account";
 import createScreen from "@/router/helpers/create-screen";
 import Home from "@/views/account/Home/Home";
-import type { RouteParameters, Screen } from "@/router/helpers/types";
+import type { RouteParameters } from "@/router/helpers/types";
 
 const HomeStackScreen = ({ accountScreens }: {
   accountScreens: Array<ReturnType<typeof createScreen>>

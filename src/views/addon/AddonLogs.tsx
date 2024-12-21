@@ -1,6 +1,6 @@
 import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
 import {ScrollView, View} from "react-native";
-import {CircleAlert, CircleX, Code, Frown, MessageCircle, Scroll, TriangleAlert} from "lucide-react-native";
+import {CircleAlert, CircleX, Code, TriangleAlert} from "lucide-react-native";
 import {Screen} from "@/router/helpers/types";
 import {AddonLogs as Logs} from "@/addons/types";
 

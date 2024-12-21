@@ -1,7 +1,6 @@
-import {RouteProp, useTheme} from "@react-navigation/native";
+import { useTheme} from "@react-navigation/native";
 import React from "react";
 import {
-  Dimensions,
   View,
 } from "react-native";
 import {

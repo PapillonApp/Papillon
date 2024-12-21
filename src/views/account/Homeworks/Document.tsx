@@ -21,14 +21,13 @@ import * as WebBrowser from "expo-web-browser";
 import { useTheme } from "@react-navigation/native";
 import HTMLView from "react-native-htmlview";
 import { Screen } from "@/router/helpers/types";
-import { WebBrowserPresentationStyle } from "expo-web-browser/src/WebBrowser.types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
-import { FileText, Link, Paperclip, CircleAlert, FileIcon } from "lucide-react-native";
+import { Paperclip, CircleAlert } from "lucide-react-native";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { timestampToString } from "@/utils/format/DateHelper";
 

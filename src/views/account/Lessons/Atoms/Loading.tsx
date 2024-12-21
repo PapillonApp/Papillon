@@ -1,12 +1,9 @@
 import { useTheme } from "@react-navigation/native";
-import { Calendar } from "lucide-react-native";
 import { ActivityIndicator, Platform, Text } from "react-native";
 
 import Reanimated, {
   FadeIn,
-  FadeInDown,
-  FadeOut,
-  FadeOutUp
+  FadeOut
 } from "react-native-reanimated";
 
 const LessonsLoading = () => {

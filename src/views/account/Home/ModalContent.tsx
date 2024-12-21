@@ -7,7 +7,7 @@ import Reanimated, {
   FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
-import {Gift, Sparkle, Sparkles, WifiOff} from "lucide-react-native";
+import { Sparkles, WifiOff} from "lucide-react-native";
 import {useTheme} from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
 import {Dimensions, View} from "react-native";

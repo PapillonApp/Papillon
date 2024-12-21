@@ -17,7 +17,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent, Text, StyleSheet} from "react-native";
+import {View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";

@@ -31,7 +31,7 @@ import {
 } from "lucide-react-native";
 
 import * as WebBrowser from "expo-web-browser";
-import { Link, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import HTMLView from "react-native-htmlview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";

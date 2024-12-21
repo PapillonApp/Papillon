@@ -11,7 +11,7 @@ import { useTheme } from "@react-navigation/native";
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
-import { get_iso_date, Log } from "@/utils/logger/logger";
+import { get_iso_date } from "@/utils/logger/logger";
 import {AddonLogs} from "@/addons/types";
 
 export type AddonHomePageInfo = {

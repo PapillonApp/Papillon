@@ -4,7 +4,6 @@ import {
   PapillonModernHeader,
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import { useAlert } from "@/providers/AlertProvider";
 import type { Screen } from "@/router/helpers/types";
 import {
   updateGradesAndAveragesInCache,
@@ -15,7 +14,6 @@ import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
-import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 import React from "react";

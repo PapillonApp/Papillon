@@ -10,7 +10,7 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform, Alert, TouchableOpacity, Linking } from "react-native";
+import { View, StyleSheet, Platform, TouchableOpacity, Linking } from "react-native";
 
 import Reanimated, {
   FadeIn,
@@ -31,7 +31,7 @@ const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & Re
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
-import { AlertTriangle, Calculator, Check, ExternalLink, PieChart, Spline, SquareRadical, TrendingUp } from "lucide-react-native";
+import { AlertTriangle, Check, ExternalLink, PieChart, TrendingUp } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 
 interface GradesAverageGraphProps {

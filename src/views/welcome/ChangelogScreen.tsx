@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Image, Linking, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Linking, Platform, ScrollView, View } from "react-native";
 
 import PackageJSON from "../../../package.json";
 import datasets from "@/consts/datasets.json";

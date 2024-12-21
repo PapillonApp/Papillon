@@ -10,7 +10,7 @@ import {AverageDiffGrade, getAverageDiffGrade} from "@/utils/grades/getAverages"
 import { useTheme } from "@react-navigation/native";
 import { User, UserMinus, UserPlus, Users } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import {Screen} from "@/router/helpers/types";
 
 

@@ -5,7 +5,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { LogBox } from "react-native";
 import React, { useEffect } from "react";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 SplashScreen.preventAutoHideAsync();
 
