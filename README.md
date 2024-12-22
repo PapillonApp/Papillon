@@ -11,7 +11,7 @@
 ![A propos du projet](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/part_about_light.svg#gh-light-mode-only)
 ![A propos du projet](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/part_about_dark.svg#gh-dark-mode-only)
 
-> **Papillon est une application mobile qui vise à simplifier la vie scolaire des étudiants en France.**
+> **Papillon est une application mobile qui vise à simplifier la vie scolaire des étudiants.**
 
 ### Progression
 
