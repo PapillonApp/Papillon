@@ -65,6 +65,23 @@ export interface Personalization {
   }
 }
 
+export interface Identity {
+  firstName?: string,
+  lastName?: string,
+  civility?: string,
+  boursier?: boolean,
+  ine?: string,
+  birthDate?: Date,
+  birthPlace?: string,
+  phone?: string[],
+  email?: string[],
+  address?: {
+    street?: string,
+    zipCode?: string,
+    city?: string,
+  },
+}
+
 export interface CurrentAccountStore {
   /** Si un compte est en cours d'utilisation, on obtient l'ID, sinon `null`. */
   account: PrimaryAccount | null
@@ -96,19 +113,20 @@ export enum AccountService {
  * for EVERY accounts stored.
  */
 interface BaseAccount {
-  localID: string
-  isExternal: false
+  localID: string;
+  isExternal: false;
 
-  name: string
-  className?: string
-  schoolName?: string
-  linkedExternalLocalIDs: string[]
+  name: string;
+  className?: string;
+  schoolName?: string;
+  linkedExternalLocalIDs: string[];
+  identity: Partial<Identity>;
 
   studentName: {
-    first: string
-    last: string
-  },
-  personalization: Partial<Personalization>
+    first: string;
+    last: string;
+  };
+  personalization: Partial<Personalization>;
 }
 
 interface BaseExternalAccount {

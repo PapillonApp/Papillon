@@ -3,10 +3,13 @@ import { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Plus, TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
+import { Camera, ChevronDown, ChevronUp, Plus, TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import * as Clipboard from "expo-clipboard";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();
@@ -79,6 +82,48 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
       hideProfilePicOnHomeScreen: hideProfilePicOnHomeScreen,
     });
   }, [hideNameOnHomeScreen, hideProfilePicOnHomeScreen]);
+
+  const identityData = account.identity ? [
+    account.identity.civility && {
+      label: "Civilité",
+      value: account.identity.civility === "M" ? "Monsieur" : "Madame",
+    },
+    account.identity.birthDate && {
+      label: "Date de naissance",
+      value: new Date(account.identity.birthDate).toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    },
+    account.identity.birthPlace && {
+      label: "Lieu de naissance",
+      value: account.identity.birthPlace,
+    },
+    account.identity.ine && {
+      label: "INE",
+      value: account.identity.ine,
+    },
+    account.identity.boursier && {
+      label: "Boursier",
+      value: "Oui",
+    },
+    account.identity.email && {
+      label: "Email",
+      value: account.identity.email[0],
+    },
+    account.identity.phone && {
+      label: "Téléphone",
+      value: account.identity.phone[0],
+    },
+    account.identity.address && {
+      label: "Adresse",
+      value: `${account.identity.address.street}, ${account.identity.address.zipCode} ${account.identity.address.city}`,
+    },
+  ].filter(Boolean) as { label: string, value: string }[
+  ] : [];
+
+  const [showIdentity, setShowIdentity] = useState(false);
 
   return (
     <KeyboardAvoidingView
@@ -228,6 +273,50 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             </NativeText>
           </NativeItem>
         </NativeList>
+
+        {account.identity && Object.keys(account.identity) !== undefined && Object.keys(account.identity).length > 0 && (
+          <NativeListHeader
+            label="Informations d'identité"
+            trailing={
+              <TouchableOpacity
+                onPress={() => setShowIdentity(!showIdentity)}
+              >
+                {showIdentity ?
+                  <ChevronUp
+                    size={24}
+                    color={theme.colors.primary}
+                  /> :
+                  <ChevronDown
+                    size={24}
+                    color={theme.colors.primary}
+                  />
+                }
+              </TouchableOpacity>
+            }
+          />
+        )}
+
+        {showIdentity && (
+          <NativeList>
+            {identityData.map((item, index) => (
+              <NativeItem
+                key={"identityData_"+index}
+                onPress={async () => {
+                  await Clipboard.setStringAsync(item.value);
+                  Alert.alert("Copié", "L'information a été copiée dans le presse-papier.");
+                }}
+                chevron={false}
+              >
+                <NativeText variant="subtitle">
+                  {item.label}
+                </NativeText>
+                <NativeText variant="body">
+                  {item.value}
+                </NativeText>
+              </NativeItem>
+            ))}
+          </NativeList>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );

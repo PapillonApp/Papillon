@@ -67,7 +67,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
         />
       </View>
 
-      {repas !== null && (
+      {repas !== null && repas !== Infinity && (
         <View
           style={{
             flexDirection: "row",
