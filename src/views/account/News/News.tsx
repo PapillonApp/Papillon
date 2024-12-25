@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from "react";
 import {
@@ -17,10 +16,8 @@ import { updateNewsInCache } from "@/services/news";
 import { useNewsStore } from "@/stores/news";
 import { useCurrentAccount } from "@/stores/account";
 import {
-  NativeItem,
   NativeList,
   NativeListHeader,
-  NativeText,
 } from "@/components/Global/NativeComponents";
 import { RefreshControl } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,8 +26,6 @@ import NewsListItem from "./Atoms/Item";
 import Reanimated, {
   FadeInUp,
   FadeOut,
-  FadeOutUp,
-  FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
@@ -41,9 +36,7 @@ import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
 import { Information } from "@/services/shared/Information";
 import { AccountService } from "@/stores/account/types";
-import NetInfo from "@react-native-community/netinfo";
-import { WifiOff } from "lucide-react-native";
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
+import detectOnline from "@/hooks/detectOnline";
 
 type NewsItem = Omit<Information, "date"> & {
   date: string;
@@ -54,18 +47,11 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
   const informations = useNewsStore((store) => store.informations);
-  const errorTitle = useMemo(() => getErrorTitle(), []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
-  const [isED, setIsED] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   useEffect(() => {
     if (!isOnline && isLoading) {
@@ -89,7 +75,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    if (account.service === AccountService.EcoleDirecte) setIsED(true);
     if (sortedMessages.length === 0) {
       navigation.addListener("focus", () => fetchData(true));
       fetchData();
@@ -175,24 +160,7 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         <RefreshControl refreshing={isLoading} onRefresh={fetchData} />
       }
     >
-      {!isOnline &&
-        <Reanimated.View
-          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <NativeList inline>
-            <NativeItem icon={<WifiOff />}>
-              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                {errorTitle.label} {errorTitle.emoji}
-              </NativeText>
-              <NativeText variant="subtitle">
-                Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-              </NativeText>
-            </NativeItem>
-          </NativeList>
-        </Reanimated.View>
-      }
+      {!isOnline && UNEerreur}
 
       {importantMessages.length > 0 && (
         <Reanimated.View

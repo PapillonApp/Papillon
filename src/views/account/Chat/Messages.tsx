@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   ScrollView,
   LogBox,
@@ -28,13 +28,8 @@ import Reanimated, {
   FadeIn,
   FadeInDown,
   FadeOut,
-  FadeOutUp,
-  FlipInXDown,
-  LinearTransition,
 } from "react-native-reanimated";
-import NetInfo from "@react-native-community/netinfo";
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
-import { WifiOff } from "lucide-react-native";
+import detectOnline from "@/hooks/detectOnline";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -52,14 +47,7 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
   const account = useCurrentAccount((state) => state.account!);
   const [chats, setChats] = useState<Chat[] | null>(null);
 
-  const [isOnline, setIsOnline] = useState(true);
-  const errorTitle = useMemo(() => getErrorTitle(), []);
-
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline, UNEerreur } = detectOnline(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -100,110 +88,93 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
         paddingTop: 0,
       }}
     >
-      {!isOnline ?
-        <Reanimated.View
-          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <NativeList inline>
-            <NativeItem icon={<WifiOff />}>
-              <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                {errorTitle.label} {errorTitle.emoji}
-              </NativeText>
-              <NativeText variant="subtitle">
-                Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez
-              </NativeText>
-            </NativeItem>
-          </NativeList>
-        </Reanimated.View>
-        : (
-          !chats ? (
-            <Reanimated.View
-              entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
-              exiting={
-                Platform.OS === "ios"
-                  ? FadeOut.springify().mass(1).damping(20).stiffness(300)
-                  : undefined
-              }
+      {!isOnline ? UNEerreur : (
+        !chats ? (
+          <Reanimated.View
+            entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
+            exiting={
+              Platform.OS === "ios"
+                ? FadeOut.springify().mass(1).damping(20).stiffness(300)
+                : undefined
+            }
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 26,
+            }}
+          >
+            <ActivityIndicator size={"large"} />
+
+            <Text
               style={{
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 26,
+                color: colors.text,
+                fontSize: 18,
+                textAlign: "center",
+                fontFamily: "semibold",
+                marginTop: 10,
               }}
             >
-              <ActivityIndicator size={"large"} />
+              Chargement des discussions...
+            </Text>
 
-              <Text
-                style={{
-                  color: colors.text,
-                  fontSize: 18,
-                  textAlign: "center",
-                  fontFamily: "semibold",
-                  marginTop: 10,
-                }}
+            <Text
+              style={{
+                color: colors.text,
+                fontSize: 16,
+                textAlign: "center",
+                fontFamily: "medium",
+                marginTop: 4,
+                opacity: 0.5,
+              }}
+            >
+              Vos conversations arrivent...
+            </Text>
+          </Reanimated.View>
+        ) : chats.length === 0 ? (
+          <MissingItem
+            emoji="💬"
+            title="Aucune discussion"
+            description="Commencez une nouvelle discussion pour les afficher ici."
+            entering={animPapillon(FadeInDown)}
+            exiting={animPapillon(FadeOut)}
+            style={{ paddingVertical: 26 }}
+          />
+        ) : (
+          <NativeList>
+            {chats.map((chat) => (
+              <NativeItem
+                key={chat.id}
+                onPress={() => navigation.navigate("Chat", { handle: chat })}
+                leading={
+                  <InitialIndicator
+                    initial={parse_initials(chat.recipient)}
+                    color={getProfileColorByName(chat.recipient).bright}
+                    textColor={getProfileColorByName(chat.recipient).dark}
+                  />
+                }
               >
-                Chargement des discussions...
-              </Text>
-
-              <Text
-                style={{
-                  color: colors.text,
-                  fontSize: 16,
-                  textAlign: "center",
-                  fontFamily: "medium",
-                  marginTop: 4,
-                  opacity: 0.5,
-                }}
-              >
-                Vos conversations arrivent...
-              </Text>
-            </Reanimated.View>
-          ) : chats.length === 0 ? (
-            <MissingItem
-              emoji="💬"
-              title="Aucune discussion"
-              description="Commencez une nouvelle discussion pour les afficher ici."
-              entering={animPapillon(FadeInDown)}
-              exiting={animPapillon(FadeOut)}
-              style={{ paddingVertical: 26 }}
-            />
-          ) : (
-            <NativeList>
-              {chats.map((chat) => (
-                <NativeItem
-                  key={chat.id}
-                  onPress={() => navigation.navigate("Chat", { handle: chat })}
-                  leading={
-                    <InitialIndicator
-                      initial={parse_initials(chat.recipient)}
-                      color={getProfileColorByName(chat.recipient).bright}
-                      textColor={getProfileColorByName(chat.recipient).dark}
-                    />
-                  }
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
                 >
-                  <View
-                    style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
-                  >
-                    {!chat.read && (
-                      <View
-                        style={{
-                          backgroundColor: getProfileColorByName(chat.recipient)
-                            .dark,
-                          borderRadius: 5,
-                          height: 10,
-                          width: 10,
-                        }}
-                      />
-                    )}
-                    <NativeText variant={"subtitle"}>{chat.recipient}</NativeText>
-                  </View>
-                  <NativeText>{chat.subject || "Aucun sujet"}</NativeText>
-                </NativeItem>
-              ))}
-            </NativeList>
-          )
-        )}
+                  {!chat.read && (
+                    <View
+                      style={{
+                        backgroundColor: getProfileColorByName(chat.recipient)
+                          .dark,
+                        borderRadius: 5,
+                        height: 10,
+                        width: 10,
+                      }}
+                    />
+                  )}
+                  <NativeText variant={"subtitle"}>{chat.recipient}</NativeText>
+                </View>
+                <NativeText>{chat.subject || "Aucun sujet"}</NativeText>
+              </NativeItem>
+            ))}
+          </NativeList>
+        )
+      )}
     </ScrollView>
   );
 };

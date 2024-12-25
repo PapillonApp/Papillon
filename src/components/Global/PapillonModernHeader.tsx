@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
@@ -8,8 +8,7 @@ import { PressableScale } from "react-native-pressable-scale";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import NetInfo from "@react-native-community/netinfo";
-import { WifiOff } from "lucide-react-native";
+import detectOnline from "@/hooks/detectOnline";
 
 interface ModernHeaderProps {
   children: React.ReactNode,
@@ -228,13 +227,7 @@ export const PapillonHeaderSelector: React.FC<{
   loading = false,
 }) => {
   const theme = useTheme();
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
 
   return (
     <Reanimated.View

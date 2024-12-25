@@ -1,7 +1,6 @@
 import React, {
   type FunctionComponent,
   RefAttributes,
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -21,7 +20,7 @@ import { PressableScale } from "react-native-pressable-scale";
 import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
-import NetInfo from "@react-native-community/netinfo";
+import detectOnline from "@/hooks/detectOnline";
 
 interface WidgetContainerProps {
   widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>;
@@ -48,13 +47,7 @@ const Widget: React.FC<WidgetContainerProps> = ({
 
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener((state) => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
 
   const handlePress = () => {
     const location = (widgetRef.current as any)?.handlePress();

@@ -18,8 +18,8 @@ import { useCurrentAccount } from "@/stores/account";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
-import NetInfo from "@react-native-community/netinfo";
 import { useAlert } from "@/providers/AlertProvider";
+import detectOnline from "@/hooks/detectOnline";
 
 interface HomeworkItemProps {
   key: number | string
@@ -48,12 +48,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     }
   });
 
-  const [isOnline, setIsOnline] = useState(true);
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
 
   const { showAlert } = useAlert();
 

@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { Image, View, StyleSheet, Text, Platform, Alert } from "react-native";
+import { Image, View, StyleSheet, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
@@ -13,12 +13,9 @@ import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import { useTheme } from "@react-navigation/native";
 import GetV6Data from "@/utils/login/GetV6Data";
-import { Check, School, Undo2 } from "lucide-react-native";
-import Constants from "expo-constants";
+import { School } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { sr } from "date-fns/locale";
-import { sub } from "date-fns";
-import NetInfo from "@react-native-community/netinfo";
+import detectOnline from "@/hooks/detectOnline";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -32,13 +29,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
 
   const [v6Data, setV6Data] = useState<any | null>(null);
 
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
 
   useEffect(() => {
     setTimeout(async () => {

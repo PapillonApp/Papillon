@@ -5,7 +5,6 @@ import {
   NativeListHeader,
   NativeText,
 } from "@/components/Global/NativeComponents";
-import InitialIndicator from "@/components/News/InitialIndicator";
 import { Information } from "@/services/shared/Information";
 import formatDate from "@/utils/format/format_date_complets";
 import { useTheme } from "@react-navigation/native";
@@ -17,7 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent, Text, StyleSheet, Alert, Platform} from "react-native";
+import {View, Linking, TouchableOpacity, StyleSheet, Alert, Platform} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -29,12 +28,9 @@ import {Screen} from "@/router/helpers/types";
 import {AttachmentType} from "@/services/shared/Attachment";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { newsInformationAcknowledge } from "pawnote";
-import parse_initials from "@/utils/format/format_pronote_initials";
-import { selectColorSeed } from "@/utils/format/select_color_seed";
 import { AccountService } from "@/stores/account/types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAlert } from "@/providers/AlertProvider";
-import NetInfo from "@react-native-community/netinfo";
+import detectOnline from "@/hooks/detectOnline";
 
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
@@ -42,8 +38,6 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   const important = route.params.important;
   const isED = route.params.isED;
   const account = useCurrentAccount((store) => store.account!);
-
-  const insets = useSafeAreaInsets();
 
   const theme = useTheme();
   const stylesText = StyleSheet.create({
@@ -60,13 +54,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
     },
   });
 
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
   const { showAlert } = useAlert();
 
   useLayoutEffect(() => {
@@ -83,26 +71,6 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
     }));
   }, [account.instance]);
 
-  const tagsStyles = {
-    body: {
-      color: theme.colors.text,
-    },
-    a: {
-      color: theme.colors.primary,
-      textDecorationColor: theme.colors.primary,
-    },
-  };
-
-  function onPress (event: GestureResponderEvent, href: string) {
-    Linking.openURL(href);
-  }
-
-  const renderersProps = {
-    a: {
-      onPress: onPress,
-    },
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <PapillonModernHeader native height={110} outsideNav={true}>
@@ -111,47 +79,49 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             <NativeText variant="title" numberOfLines={1}>{message.title === "" ? message.author : message.title}</NativeText>
             <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toString()) : message.author}</NativeText>
           </View>
-          {!isED && <PapillonPicker
-            animated
-            direction="right"
-            delay={0}
-            data={[
-              {
-                icon: message.read ? <EyeOff /> : <Eye />,
-                label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
-                onPress: () => {
-                  if (isOnline) {
-                    setNewsRead(account, message, !message.read);
-                    message.read = !message.read;
-                  } else {
-                    if (Platform.OS === "ios") {
-                      Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
-                        {
-                          text: "OK",
-                        },
-                      ]);
+          {!isED && (
+            <PapillonPicker
+              animated
+              direction="right"
+              delay={0}
+              data={[
+                {
+                  icon: message.read ? <EyeOff /> : <Eye />,
+                  label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
+                  onPress: () => {
+                    if (isOnline) {
+                      setNewsRead(account, message, !message.read);
+                      message.read = !message.read;
                     } else {
-                      showAlert({
-                        title: "Information",
-                        message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
-                        actions: [
+                      if (Platform.OS === "ios") {
+                        Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
                           {
-                            title: "OK",
-                            onPress: () => {},
-                            backgroundColor: theme.colors.card,
+                            text: "OK",
                           },
-                        ],
-                      });
+                        ]);
+                      } else {
+                        showAlert({
+                          title: "Information",
+                          message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
+                          actions: [
+                            {
+                              title: "OK",
+                              onPress: () => {},
+                              backgroundColor: theme.colors.card,
+                            },
+                          ],
+                        });
+                      }
                     }
                   }
                 }
-              }
-            ]}
-          >
-            <TouchableOpacity>
-              <MoreHorizontal size={24} color={theme.colors.text} />
-            </TouchableOpacity>
-          </PapillonPicker>}
+              ]}
+            >
+              <TouchableOpacity>
+                <MoreHorizontal size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </PapillonPicker>
+          )}
         </View>
       </PapillonModernHeader>
       {important && (

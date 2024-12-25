@@ -3,21 +3,17 @@ import {
   NativeList,
   NativeText,
 } from "@/components/Global/NativeComponents";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Reanimated, {
   FadeInUp,
   FadeOutDown,
-  FadeOutUp,
-  FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
-import { Sparkles, WifiOff } from "lucide-react-native";
+import { Sparkles } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View } from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
 import { Elements, type Element } from "./ElementIndex";
 import { animPapillon } from "@/utils/ui/animations";
 import { useFlagsStore } from "@/stores/flags";
@@ -26,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {defaultTabs} from "@/consts/DefaultTabs";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RouteParameters} from "@/router/helpers/types";
+import detectOnline from "@/hooks/detectOnline";
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>
@@ -42,8 +39,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const defined = useFlagsStore((state) => state.defined);
 
-  const [isOnline, setIsOnline] = useState(true);
-  const errorTitle = useMemo(() => getErrorTitle(), []);
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   const [elements, setElements] = useState<Element[]>([]);
 
@@ -135,40 +131,13 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     });
   }, []);
 
-  useEffect(() => {
-    return NetInfo.addEventListener((state) => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
-
   return (
     <View
       style={{
         minHeight: Dimensions.get("window").height - 131,
       }}
     >
-      {!isOnline && (
-        <Reanimated.View
-          entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-          exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-          layout={animPapillon(LinearTransition)}
-        >
-          <NativeList inline>
-            <NativeItem icon={<WifiOff />}>
-              <NativeText
-                variant="title"
-                style={{ paddingVertical: 2, marginBottom: -4 }}
-              >
-                {errorTitle.label} {errorTitle.emoji}
-              </NativeText>
-              <NativeText variant="subtitle">
-                Vous êtes hors ligne. Les données affichées peuvent être
-                obsolètes.
-              </NativeText>
-            </NativeItem>
-          </NativeList>
-        </Reanimated.View>
-      )}
+      {!isOnline && UNEerreur}
 
       {(defined("force_changelog") || updatedRecently) && isOnline && (
         <NativeList

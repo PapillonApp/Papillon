@@ -1,19 +1,16 @@
-import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { useTheme } from "@react-navigation/native";
-import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import {
   View,
-  Text,
   FlatList,
   Dimensions,
-  Button,
   ScrollView,
   RefreshControl,
   StyleSheet,
-  ActivityIndicator,
   TextInput,
   ListRenderItem
 } from "react-native";
@@ -21,19 +18,17 @@ import { dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
 
 import * as StoreReview from "expo-store-review";
 
-import HomeworksNoHomeworksItem from "./Atoms/NoHomeworks";
 import HomeworkItem from "./Atoms/Item";
 import { PressableScale } from "react-native-pressable-scale";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, WifiOff, X } from "lucide-react-native";
+import { Book, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, Search, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
-import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, FadeOutRight, FadeOutUp, FlipInXDown, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -42,21 +37,8 @@ import {Account} from "@/stores/account/types";
 import {Screen} from "@/router/helpers/types";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
-import {SearchBar} from "react-native-screens";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo";
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
+import detectOnline from "@/hooks/detectOnline";
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -122,18 +104,12 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     return days[new Date(date).getDay()];
   };
 
-  const errorTitle = useMemo(() => getErrorTitle(), []);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
 
-  const [isOnline, setIsOnline] = useState(true);
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   const updateHomeworks = useCallback(async (force = false, showRefreshing = true, showLoading = true) => {
     if(!account) return;
@@ -268,27 +244,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         }
       >
 
-        {!isOnline &&
-          <Reanimated.View
-            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-            layout={animPapillon(LinearTransition)}
-            style={{
-              backgroundColor: theme.colors.background,
-            }}
-          >
-            <NativeList inline>
-              <NativeItem icon={<WifiOff />}>
-                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                  {errorTitle.label} {errorTitle.emoji}
-                </NativeText>
-                <NativeText variant="subtitle">
-                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-                </NativeText>
-              </NativeItem>
-            </NativeList>
-          </Reanimated.View>
-        }
+        {!isOnline && UNEerreur}
 
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View

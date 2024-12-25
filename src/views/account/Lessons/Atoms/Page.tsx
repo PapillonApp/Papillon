@@ -1,7 +1,6 @@
-import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
+import React from "react";
+import { Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
 import { TimetableItem } from "./Item";
 import { createNativeWrapper } from "react-native-gesture-handler";
 
@@ -9,17 +8,13 @@ import Reanimated, {
   FadeInDown,
   FadeOut,
   FadeOutUp,
-  FlipInXDown,
-  LinearTransition
 } from "react-native-reanimated";
-import NetInfo from "@react-native-community/netinfo";
-import { Activity, Sofa, Utensils, WifiOff } from "lucide-react-native";
-import LessonsNoCourseItem from "./NoCourse";
-import { Timetable, TimetableClass } from "@/services/shared/Timetable";
+import { Sofa, Utensils } from "lucide-react-native";
+import { TimetableClass } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
-import { getErrorTitle } from "@/utils/format/get_papillon_error_title";
+import detectOnline from "@/hooks/detectOnline";
 
 const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
@@ -45,14 +40,8 @@ interface PageProps {
 }
 
 export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists }: PageProps) => {
-  const errorTitle = useMemo(() => getErrorTitle(), []);
-  const [isOnline, setIsOnline] = useState(true);
-  const theme = useTheme();
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline, UNEerreur } = detectOnline(true);
+
   return (
     <ScrollView
       style={{
@@ -81,27 +70,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
             width: "100%"
           }}
         >
-          {!isOnline &&
-          <Reanimated.View
-            entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-            exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-            layout={animPapillon(LinearTransition)}
-            style={{
-              backgroundColor: theme.colors.background,
-            }}
-          >
-            <NativeList inline>
-              <NativeItem icon={<WifiOff />}>
-                <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-                  {errorTitle.label} {errorTitle.emoji}
-                </NativeText>
-                <NativeText variant="subtitle">
-                  Vous êtes hors ligne. Les données affichées peuvent être obsolètes.
-                </NativeText>
-              </NativeItem>
-            </NativeList>
-          </Reanimated.View>
-          }
+          {!isOnline && UNEerreur}
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
             <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
               <TimetableItem key={item.startTimestamp} item={item} index={i} />

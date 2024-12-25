@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { ChevronDown, WifiOff } from "lucide-react-native";
+import { ChevronDown } from "lucide-react-native";
 
 import Reanimated, {
   LinearTransition,
@@ -15,7 +15,7 @@ import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import Animated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
-import NetInfo from "@react-native-community/netinfo";
+import detectOnline from "@/hooks/detectOnline";
 
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
@@ -35,13 +35,7 @@ const AccountSwitcher: React.FC<{
   const shouldHidePicture =
     account.personalization.hideProfilePicOnHomeScreen || false;
 
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    return NetInfo.addEventListener((state) => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
+  const { isOnline } = detectOnline();
 
   const AnimatedChevronDown = Animated.createAnimatedComponent(ChevronDown);
 
