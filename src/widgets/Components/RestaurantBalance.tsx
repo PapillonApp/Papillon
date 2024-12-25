@@ -105,7 +105,7 @@ const RestaurantBalanceWidget = forwardRef(({
             paddingLeft: 6,
           }}
         />
-        {currentBalance?.remaining !== undefined && currentBalance?.remaining !== null && (
+        {currentBalance?.remaining !== undefined && currentBalance?.remaining !== null && currentBalance.remaining !== Infinity && (
           <View style={{
             flexDirection: "row",
             alignItems: "center",

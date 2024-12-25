@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView, Platform,
+  AppState,
 } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -59,6 +60,29 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
   const [oldBrightness, setOldBrightness] = useState<number>(0.5);
 
   useEffect(() => {
+    let isActive = true;
+
+    const handleAppStateChange = async (nextAppState: string) => {
+      if (nextAppState === "background" || nextAppState === "inactive") {
+        if (isActive) {
+          isActive = false;
+          await Brightness.setBrightnessAsync(oldBrightness);
+        }
+      } else if (nextAppState === "active") {
+        isActive = true;
+        await Brightness.setBrightnessAsync(1);
+      }
+    };
+
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+
+    const navigationSubscription = navigation.addListener("beforeRemove", () => {
+      Brightness.setBrightnessAsync(oldBrightness);
+    });
+
     (async () => {
       if (Platform.OS === "android") {
         const { status } = await Brightness.requestPermissionsAsync();
@@ -73,7 +97,11 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
         await Brightness.setBrightnessAsync(1);
       } catch (e) { console.warn("Brightness error:", e); }
     })();
-    return () => { Brightness.setBrightnessAsync(oldBrightness); };
+    return () => {
+      appStateSubscription.remove();
+      navigationSubscription();
+      Brightness.setBrightnessAsync(oldBrightness);
+    };
   }, [navigation, oldBrightness]);
 
 
