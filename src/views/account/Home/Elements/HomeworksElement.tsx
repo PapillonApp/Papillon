@@ -65,16 +65,12 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
 
   const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-  );
+  ) ?? [];
   const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-  );
+  ) ?? [];
 
-
-  if (
-    (!hwSemaineActuelle && !hwSemaineProchaine) ||
-    (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0)
-  ) {
+  if (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0) {
     return (
       <NativeList
         animated
