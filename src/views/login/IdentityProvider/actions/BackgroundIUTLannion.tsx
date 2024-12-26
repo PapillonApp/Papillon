@@ -2,7 +2,7 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import defaultPersonalization from "@/services/local/default-personalization";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { AccountService, LocalAccount } from "@/stores/account/types";
+import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
@@ -18,16 +18,16 @@ const capitalizeFirst = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const buildIdentity = (data: any) => {
+const buildIdentity = (data: any): Partial<Identity> => {
   return {
     firstName: capitalizeFirst(data["relevé"].etudiant.prenom || ""),
     lastName: (data["relevé"].etudiant.nom || "").toUpperCase(),
     civility: data["relevé"].etudiant.civilite || undefined,
     boursier: data["relevé"].etudiant.boursier || false,
     ine: data["relevé"].etudiant.code_ine || undefined,
-    birthDate: data["relevé"].etudiant.date_naissance ? (
-      new Date(data["relevé"].etudiant.date_naissance.split("/").reverse().join("-")).getTime()
-    ) : undefined,
+    birthDate: data["relevé"].etudiant.date_naissance
+      ? new Date(data["relevé"].etudiant.date_naissance.split("/").reverse().join("-"))
+      : undefined,
     birthPlace: data["relevé"].etudiant.lieu_naissance || undefined,
     phone: [
       data["relevé"].etudiant.telephonemobile ? (data["relevé"].etudiant.telephonemobile).replaceAll(".", " ") : undefined,

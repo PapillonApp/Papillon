@@ -81,7 +81,7 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
           entering={FlipInXDown.springify().delay(200)}
         >
           <DuoListPressable
-            leading={<Image source={require("../../../../assets/images/service_alise.png")} style={styles.image} />}
+            leading={<Image source={require("../../../../assets/images/service_alise.jpg")} style={styles.image} />}
             text="Alise"
             enabled={service === AccountService.Alise}
             onPress={() => setService(AccountService.Alise)}

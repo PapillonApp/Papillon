@@ -16,6 +16,14 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
     const ressources = (scodocData["relevé"] as any).ressources;
     const saes = (scodocData["relevé"] as any).saes;
 
+    Object.keys(ressources).forEach((key) => {
+      ressources[key].type = "ressource";
+    });
+
+    Object.keys(saes).forEach((key) => {
+      saes[key].type = "sae";
+    });
+
     const matieres = {
       ...ressources,
       ...saes,
@@ -36,7 +44,10 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
 
     Object.keys(matieres).forEach((key) => {
       const matiere = matieres[key];
-      const subjectName = matiere.titre + " > " + key;
+      const subjectName =
+        matiere.type === "sae"
+          ? key + " - " + matiere.titre + " > " + key
+          : matiere.titre + " > " + key;
 
       const subject = {
         id: uuid(),

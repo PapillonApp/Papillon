@@ -82,7 +82,8 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           session: currentSession,
           account
         },
-        personalization: await defaultPersonalization(account)
+        personalization: await defaultPersonalization(account),
+        identity: {}
       };
 
 
