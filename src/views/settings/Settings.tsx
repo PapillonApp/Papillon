@@ -18,6 +18,7 @@ import Reanimated, {
 import {
   Bell,
   Cable,
+  HandCoins,
   Info,
   Laptop,
   LogOut,
@@ -44,6 +45,8 @@ import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
+import * as WebBrowser from "expo-web-browser";
+import { WebBrowserPresentationStyle } from "expo-web-browser";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -56,6 +59,13 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const [click, setClick] = useState<true | false>(false);
 
   const removeAccount = useAccounts((store) => store.remove);
+
+  const openUrl = (url: string) => {
+    WebBrowser.openBrowserAsync(url, {
+      presentationStyle: WebBrowserPresentationStyle.FORM_SHEET,
+      controlsColor: theme.colors.primary,
+    });
+  };
 
   useEffect(() => {
     AsyncStorage.getItem("devmode")
@@ -270,6 +280,8 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       color: "#f0a500",
       label: "Soutenir Papillon",
       onPress: () => openUrl("https://papillon.bzh/donate"),
+      android: true,
+      description: ""
     });
   }
 

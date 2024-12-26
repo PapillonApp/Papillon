@@ -74,7 +74,7 @@ const ExternalAliseLogin: Screen<"ExternalAliseLogin"> = ({ navigation }) => {
 
   return (
     <LoginView
-      serviceIcon={require("@/../assets/images/service_alise.png")}
+      serviceIcon={require("@/../assets/images/service_alise.jpg")}
       serviceName="Alise"
       onLogin={(username, password, customFields) => handleLogin(username, password, customFields)}
       loading={loading}

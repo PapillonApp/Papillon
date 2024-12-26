@@ -106,7 +106,8 @@ export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInf
     schoolName: userInfo?.school?.name,
     className: userInfo?.className,
     personalization: await defaultSkolengoPersonalization(skolengoAccount),
-    userInfo
+    userInfo,
+    identity: {}
   };
   return account;
 };

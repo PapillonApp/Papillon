@@ -15,6 +15,9 @@ import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
 import detectOnline from "@/hooks/detectOnline";
+import { getHolidayEmoji } from "@/utils/format/holidayEmoji";
+
+const emoji = getHolidayEmoji();
 
 const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
@@ -121,7 +124,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
       )}
 
       {day.length === 1 && current && !loading && (day[0].type === "vacation" ? <MissingItem
-        emoji="🏝️"
+        emoji={emoji}
         title="C'est les vacances !"
         description="Profitez de vos vacances, à bientôt."
         entering={animPapillon(FadeInDown)}

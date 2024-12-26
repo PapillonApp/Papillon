@@ -11,6 +11,7 @@ import { AccountService } from "@/stores/account/types";
 import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import { LinearGradient } from "expo-linear-gradient";
 
 const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -27,14 +28,24 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
       style={styles.container}
     >
       <PapillonShineBubble
+        noFlex
         message={"Pour commencer, quel est ton service de cantine ?"}
         width={250}
         numberOfLines={2}
-        offsetTop={insets.top}
+        style={{
+          height: 180,
+        }}
       />
 
-      <Reanimated.View
+      <Reanimated.ScrollView
         style={styles.list}
+        contentContainerStyle={{
+          alignItems: "center",
+          gap: 9,
+          paddingHorizontal: 20,
+          paddingTop: 30,
+          paddingBottom: 60,
+        }}
         layout={LinearTransition}
       >
         <Reanimated.View
@@ -66,7 +77,7 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(200)}
+          entering={FlipInXDown.springify().delay(300)}
         >
           <DuoListPressable
             leading={<Image source={require("../../../../assets/images/service_izly.png")} style={styles.image} />}
@@ -78,16 +89,16 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
         <Reanimated.View
           style={{ width: "100%" }}
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(200)}
+          entering={FlipInXDown.springify().delay(400)}
         >
           <DuoListPressable
-            leading={<Image source={require("../../../../assets/images/service_alise.png")} style={styles.image} />}
+            leading={<Image source={require("../../../../assets/images/service_alise.jpg")} style={styles.image} />}
             text="Alise"
             enabled={service === AccountService.Alise}
             onPress={() => setService(AccountService.Alise)}
           />
         </Reanimated.View>
-      </Reanimated.View>
+      </Reanimated.ScrollView>
 
       <View style={styles.buttons}>
         <ButtonCta
@@ -115,9 +126,6 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     width: "100%",
-    alignItems: "center",
-    gap: 9,
-    paddingHorizontal: 20,
   },
 
   buttons: {
