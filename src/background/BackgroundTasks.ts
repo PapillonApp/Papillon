@@ -6,7 +6,10 @@ import { BackgroundFetchResult } from "expo-background-fetch";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 import { fetchNews } from "./data/News";
 import { PrimaryAccount } from "@/stores/account/types";
+import { reloadAllTimelines } from "react-native-widgetkit";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
+
+import { fetchLessons } from "./data/Lessons";
 
 
 /**
@@ -18,6 +21,7 @@ const backgroundFetch = async () => {
   console.log("[background fetch] Running background fetch");
   const appGroupIdentifier = `group.${Constants.expoConfig?.ios?.bundleIdentifier}`;
   const news = [];
+  const lessons = [];
 
   try {
     const accounts = useAccounts.getState().accounts.filter((account) => account.isExternal === false);
@@ -29,14 +33,20 @@ const backgroundFetch = async () => {
       const actualAccount = useCurrentAccount.getState().account;
 
       const fetchedNews = await fetchNews(actualAccount!);
-      // fetchedNews is an array of Information objects
+      const fetchedLessons = await fetchLessons(actualAccount!);
       news.push(...fetchedNews);
+      lessons.push(...fetchedLessons);
     }
 
     await Preferences.setItem("accounts", JSON.stringify(accounts.map(({name, schoolName, localID}) => ({name, schoolName, localID}))), appGroupIdentifier);
     console.log("[background fetch] Accounts fetched and saved in shared preferences");
     await Preferences.setItem("news", JSON.stringify(news), appGroupIdentifier);
-    console.log("[background fetch] News fetched and saved in shared preferences", await Preferences.getItem("news", appGroupIdentifier));
+    console.log("[background fetch] News fetched and saved in shared preferences");
+    await Preferences.setItem("timetable", JSON.stringify(lessons), appGroupIdentifier);
+    console.log("[background fetch] Lessons fetched and saved in shared preferences", await Preferences.getItem("timetable", appGroupIdentifier));
+
+    // Reload all the timelines for iOS widgets
+    await reloadAllTimelines();
 
     return BackgroundFetchResult.NewData;
   } catch (error) {
