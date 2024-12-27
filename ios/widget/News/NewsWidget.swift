@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import WidgetKit
 
-// Fonction pour récupérer les données partagées et les convertir en NewsItem
+// MARK: retrieveNewsData
 func retrieveNewsData(for accountID: String?) -> [NewsItem] {
     let sharedDefaults = UserDefaults(suiteName: "group.xyz.getpapillon.ios")
     if let jsonString = sharedDefaults?.string(forKey: "news"),
@@ -31,7 +31,6 @@ func retrieveNewsData(for accountID: String?) -> [NewsItem] {
                        let refContent = refDict["content"] as? String,
                        let link = refDict["link"] as? String {
 
-                        // Filtrer les actualités par compte si accountID est défini
                         if localID == accountID {
                             let attachments = attachmentsArray.compactMap { attachmentDict in
                                 if let name = attachmentDict["name"] as? String,
@@ -49,7 +48,6 @@ func retrieveNewsData(for accountID: String?) -> [NewsItem] {
                         }
                     }
                 }
-
                 return newsItems
             }
         } catch {
@@ -59,26 +57,24 @@ func retrieveNewsData(for accountID: String?) -> [NewsItem] {
     return []
 }
 
-// Widget TimelineProvider
+// MARK: - Widget TimelineProvider
 struct NewsWidgetProvider: IntentTimelineProvider {
     typealias Entry = NewsWidgetEntry
-    typealias Intent = SelectAccountIntent // Intégration de votre intent
+    typealias Intent = SelectAccountIntent
 
     func placeholder(in context: Context) -> NewsWidgetEntry {
-      NewsWidgetEntry(date: Date(), selectionnedAccount: "", news: [])
+        NewsWidgetEntry(date: Date(), selectionnedAccount: "", news: [])
     }
 
     func getSnapshot(for configuration: SelectAccountIntent, in context: Context, completion: @escaping (NewsWidgetEntry) -> Void) {
-        // Récupérer les actualités pour l'aperçu avec l'identifiant sélectionné
-      let sharedNews = retrieveNewsData(for: configuration.selected?.identifier)
-      let entry = NewsWidgetEntry(date: Date(), selectionnedAccount: configuration.selected?.identifier ?? "", news: sharedNews)
+        let sharedNews = retrieveNewsData(for: configuration.selected?.identifier)
+        let entry = NewsWidgetEntry(date: Date(), selectionnedAccount: configuration.selected?.identifier ?? "", news: sharedNews)
         completion(entry)
     }
 
     func getTimeline(for configuration: SelectAccountIntent, in context: Context, completion: @escaping (Timeline<NewsWidgetEntry>) -> Void) {
         let currentDate = Date()
-        // Récupérer les actualités pour l'identifiant sélectionné
-      let sharedNews = retrieveNewsData(for: configuration.selected?.identifier)
+        let sharedNews = retrieveNewsData(for: configuration.selected?.identifier)
         let entry = NewsWidgetEntry(date: currentDate, selectionnedAccount: configuration.selected?.identifier ?? "", news: sharedNews)
         let refreshDate = Calendar.current.date(byAdding: .minute, value: 15, to: currentDate)!
         let timeline = Timeline(entries: [entry], policy: .after(refreshDate))
@@ -86,14 +82,14 @@ struct NewsWidgetProvider: IntentTimelineProvider {
     }
 }
 
-// Widget Entry
+// MARK: Widget Entry
 struct NewsWidgetEntry: TimelineEntry {
     let date: Date
     let selectionnedAccount: String
     let news: [NewsItem]
 }
 
-// Widget View
+// MARK: Widget View
 struct NewsWidgetView: View {
     var entry: NewsWidgetEntry
 
@@ -111,7 +107,7 @@ struct NewsWidgetView: View {
     }
 }
 
-// Widget principal
+// MARK: Widget
 struct NewsWidget: Widget {
     private let supportedFamilies: [WidgetFamily] = {
             return [.systemMedium, .systemLarge]
