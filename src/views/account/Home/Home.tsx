@@ -40,6 +40,7 @@ import React, { useMemo, useState } from "react";
 import {
   Dimensions,
   Platform,
+  RefreshControl,
   StatusBar,
   View
 } from "react-native";
@@ -316,6 +317,11 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     ]
   }));
 
+  const scrollViewAnimatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    backgroundColor: scrollOffset.value > 265 + insets.top ? colors.card : colors.primary,
+  }));
+
   return (
     <Animated.View style={[{ flex: 1 }, backgroundAnimatedStyle]}>
       <View style={{flex: 1}}>
@@ -342,16 +348,37 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
         </ContextMenu>
         <Reanimated.ScrollView
           ref={scrollRef}
+          style={scrollViewAnimatedStyle}
+          onScroll={(e) => {
+            if (Platform.OS !== "android") {
+              setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
+            }
+          }}
           onScrollEndDrag={(e) => {
-            if (modalOpen && e.nativeEvent.contentOffset.y < 275 + insets.top) {
-              scrollRef.current?.scrollTo({ y: 0, animated: true });
-              setModalOpen(false);
-            } else if (!modalOpen && e.nativeEvent.contentOffset.y > 50) {
-              scrollRef.current?.scrollTo({ y: 275 + insets.top, animated: true });
-              setModalOpen(true);
+            if (Platform.OS === "android") {
+              if (modalOpen && e.nativeEvent.contentOffset.y < 275 + insets.top) {
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
+                setModalOpen(false);
+              } else if (!modalOpen && e.nativeEvent.contentOffset.y > 50) {
+                scrollRef.current?.scrollTo({ y: 275 + insets.top, animated: true });
+                setModalOpen(true);
+              }
+            } else {
+              if (e.nativeEvent.contentOffset.y < 265 + insets.top && modalOpen) {
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
+              }
             }
             setScrool(true);
           }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => setRefreshing(true)}
+              style={{zIndex: 100}}
+              progressViewOffset={285 + insets.top}
+            />
+          }
+          showsVerticalScrollIndicator={false}
         >
           <Animated.View style={widgetAnimatedStyle}>
             <Header scrolled={false} navigation={navigation} />
