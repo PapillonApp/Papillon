@@ -15,7 +15,8 @@ export const screenOptions: NativeStackNavigationOptions = {
 import { useCurrentAccount } from "@/stores/account";
 import createScreen from "@/router/helpers/create-screen";
 import Home from "@/views/account/Home/Home";
-import type { RouteParameters, Screen } from "@/router/helpers/types";
+import type { RouteParameters } from "@/router/helpers/types";
+import { Platform } from "react-native";
 
 const HomeStackScreen = ({ accountScreens }: {
   accountScreens: Array<ReturnType<typeof createScreen>>
@@ -34,6 +35,7 @@ const HomeStackScreen = ({ accountScreens }: {
           ...tabData.options,
           tabEnabled: tab.enabled,
           presentation: "modal",
+          animation: Platform.OS === "android" ? "slide_from_right" : "default",
         };
 
         return tabData;
@@ -49,7 +51,8 @@ const HomeStackScreen = ({ accountScreens }: {
   // Add Home as the first tab.
   newAccountScreens.unshift(
     createScreen("HomeScreen", Home, {
-      headerShown: false
+      headerShown: false,
+      animation: Platform.OS === "android" ? "slide_from_right" : "default",
     }) as ReturnType<typeof createScreen>
   );
 
