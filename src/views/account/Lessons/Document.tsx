@@ -31,7 +31,8 @@ import {
 } from "lucide-react-native";
 
 import * as WebBrowser from "expo-web-browser";
-import { Link, useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@react-navigation/native";
 import HTMLView from "react-native-htmlview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -272,20 +273,17 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
             </View>
           );
         })}
-        {classSubjects.length > 0 && (
+        {(classSubjects.length > 0 || (lesson.ressource?.length ?? 0) > 0) && (
           <View>
             <NativeListHeader label="Contenu de séance" />
             <NativeList>
-              {classSubjects.map((subject, index) => (
-                <>
-                  <NativeItem key={index}>
-                    <HTMLView
-                      value={`<body>${subject.content}</body>`}
-                      stylesheet={stylesText}
-                    />
-                    {subject.attachments.map((attachment, idx) => (
+              {classSubjects.map((subject, index) => {
+                return (
+                  <NativeItem key={"classSubject_" + index}>
+                    <HTMLView value={`<body>${subject.content}</body>`} stylesheet={stylesText} />
+                    {subject.attachments.map((attachment, index) => (
                       <NativeItem
-                        key={idx}
+                        key={"classSubject_attachement_" + index}
                         onPress={() =>
                           openUrl(
                             `${attachment.name}\\${attachment.id}\\${attachment.kind}`,
@@ -299,8 +297,101 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                       </NativeItem>
                     ))}
                   </NativeItem>
-                </>
-              ))}
+                );
+              })}
+              <NativeItem>
+                {lesson.ressource?.map((r, index) => {
+                  let title = (r.title?.charAt(0).toUpperCase() ?? "") + (r.title?.slice(1) ?? ""); // S'assurer que la première lettre est en majuscule
+                  let desc = r.description?.replace("\n\n", "\n") ?? ""; // Remplacer les doubles sauts de ligne par un seul
+                  let descText = desc.replace(/<[^>]*>/g, ""); // Il peut arriver que le contenu soit vide, mais qu'il y ait du html tout de même
+                  return (
+                    <React.Fragment key={"res_" + index}>
+                      {index > 0 &&
+                        <View
+                          style={{
+                            height: 1,
+                            flex: 1,
+                            borderColor: theme.colors.text + "20",
+                            borderWidth: 1,
+                            borderRadius: 50,
+                            marginTop: 10,
+                            marginBottom: 10,
+                          }}
+                        />
+                      }
+                      { !!r.category && (
+                        <LinearGradient
+                          colors={[subjectData.color + "80", subjectData.color]}
+                          style={{
+                            borderRadius: 50,
+                            zIndex: 10,
+                            borderWidth: 1,
+                            borderColor: theme.colors.text + "20",
+                            width: "auto",
+                            alignSelf: "flex-start",
+                            marginBottom: title ? 0 : void 0,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: 4,
+                              paddingVertical: 3,
+                              paddingHorizontal: 8,
+                              borderRadius: 8,
+                            }}
+                          >
+                            <NativeText style={{
+                              color: "#FFF",
+                              fontFamily: "semibold",
+                              fontSize: 15,
+                              lineHeight: 18,
+                            }}
+                            numberOfLines={1}
+                            >
+                              {r.category}
+                            </NativeText>
+                          </View>
+                        </LinearGradient>
+                      )}
+                      { !!title && (
+                        <NativeText variant="title">
+                          {title}
+                        </NativeText>
+                      )}
+                      { !!descText &&
+                        <HTMLView
+                          value={`<body>${desc}</body>`}
+                          stylesheet={stylesText}
+                          addLineBreaks={false}
+                          onLinkPress={url => openUrl(url) }
+                          style={{paddingLeft: 10}}
+                          key={"res_html_" + index}
+                        />
+                      }
+                      {(r.files?.length ?? 0) > 0 && (
+                        <NativeList style={{marginLeft: 10, marginTop: 10}}>
+                          {r.files?.map((file, index) => (
+                            <NativeItem
+                              key={"res_attach" + index}
+                              onPress={() =>
+                                openUrl(file.url)
+                              }
+                              icon={<FileText />}
+                            >
+                              <NativeText variant="title" numberOfLines={2}>
+                                {file.name}
+                              </NativeText>
+                            </NativeItem>
+                          ))}
+                        </NativeList>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+
+              </NativeItem>
             </NativeList>
           </View>
         )}
