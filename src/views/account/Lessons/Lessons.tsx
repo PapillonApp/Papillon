@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, View, Dimensions, ViewToken } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, Text } from "react-native";
 import { StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
@@ -11,7 +11,6 @@ import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 
 import * as StoreReview from "expo-store-review";
 
-
 import Reanimated, {
   FadeIn,
   FadeOut,
@@ -22,7 +21,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { CalendarPlus, MoreVertical } from "lucide-react-native";
+import { CalendarPlus, MoreVertical, Eye, EyeOff } from "lucide-react-native";
 import {
   PapillonHeaderAction,
   PapillonHeaderSelector,
@@ -42,6 +41,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   const loadedWeeks = useRef<Set<number>>(new Set());
   const currentlyLoadingWeeks = useRef<Set<number>>(new Set());
+
+  const [showNames, setShowNames] = useState(true);
 
   useEffect(() => {
     // add all week numbers in timetables to loadedWeeks
@@ -81,8 +82,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const loadTimetableWeek = async (weekNumber: number, force = false) => {
     if (
       (currentlyLoadingWeeks.current.has(weekNumber) ||
-				loadedWeeks.current.has(weekNumber)) &&
-			!force
+        loadedWeeks.current.has(weekNumber)) &&
+      !force
     ) {
       return;
     }
@@ -132,51 +133,56 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
       return date;
     });
   });
-  const renderItem = useCallback(({ item: date }: { item: Date }) => {
-    const weekNumber = getWeekFromDate(date);
-    return (
-      <View style={{ width: Dimensions.get("window").width }}>
-        <Page
-          paddingTop={outsideNav ? 80 : insets.top + 56}
-          current={date.getTime() === pickerDate.getTime()}
-          date={date}
-          day={getAllLessonsForDay(date)}
-          weekExists={
-            timetables[weekNumber] && timetables[weekNumber].length > 0
-          }
-          refreshAction={() => loadTimetableWeek(weekNumber, true)}
-          loading={loadingWeeks.includes(weekNumber)}
-        />
-      </View>
-    );
-  },
-  [
-    pickerDate,
-    timetables,
-    loadingWeeks,
-    outsideNav,
-    insets,
-    getAllLessonsForDay,
-    loadTimetableWeek,
-  ],
+  const renderItem = useCallback(
+    ({ item: date }: { item: Date }) => {
+      const weekNumber = getWeekFromDate(date);
+      return (
+        <View style={{ width: Dimensions.get("window").width }}>
+          <Page
+            paddingTop={outsideNav ? 80 : insets.top + 56}
+            current={date.getTime() === pickerDate.getTime()}
+            date={date}
+            day={getAllLessonsForDay(date)}
+            weekExists={
+              timetables[weekNumber] && timetables[weekNumber].length > 0
+            }
+            refreshAction={() => loadTimetableWeek(weekNumber, true)}
+            loading={loadingWeeks.includes(weekNumber)}
+            showNames={showNames} // Ajoutez cette ligne
+          />
+        </View>
+      );
+    },
+    [
+      pickerDate,
+      timetables,
+      loadingWeeks,
+      outsideNav,
+      insets,
+      getAllLessonsForDay,
+      loadTimetableWeek,
+      showNames, // Ajoutez cette ligne
+    ]
   );
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
-    if (viewableItems.length > 0) {
-      const newDate = viewableItems[0].item;
-      setPickerDate(newDate);
-      loadTimetableWeek(getWeekFromDate(newDate), false);
-    }
-  },
-  [loadTimetableWeek],
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
+      if (viewableItems.length > 0) {
+        const newDate = viewableItems[0].item;
+        setPickerDate(newDate);
+        loadTimetableWeek(getWeekFromDate(newDate), false);
+      }
+    },
+    [loadTimetableWeek]
   );
 
-  const getItemLayout = useCallback((_: any, index: number) => ({
-    length: Dimensions.get("window").width,
-    offset: Dimensions.get("window").width * index,
-    index,
-  }),
-  [],
+  const getItemLayout = useCallback(
+    (_: any, index: number) => ({
+      length: Dimensions.get("window").width,
+      offset: Dimensions.get("window").width * index,
+      index,
+    }),
+    []
   );
 
   const askForReview = async () => {
@@ -197,15 +203,17 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
             setTimeout(() => {
               AsyncStorage.getItem("review_given").then((value) => {
-                if(!value) {
+                if (!value) {
                   askForReview();
                   AsyncStorage.setItem("review_given", "true");
                 }
               });
             }, 1000);
-          }
-          else {
-            AsyncStorage.setItem("review_coursesOpen", (parseInt(value) + 1).toString());
+          } else {
+            AsyncStorage.setItem(
+              "review_coursesOpen",
+              (parseInt(value) + 1).toString()
+            );
           }
         } else {
           AsyncStorage.setItem("review_coursesOpen", "1");
@@ -225,11 +233,15 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     const lastDate = data[data.length - 1];
 
     let updatedData = [...data];
-    const uniqueDates = new Set(updatedData.map(d => d.getTime()));
+    const uniqueDates = new Set(updatedData.map((d) => d.getTime()));
 
     if (newDate < firstDate) {
       const dates = [];
-      for (let d = new Date(firstDate); d >= newDate; d.setDate(d.getDate() - 1)) {
+      for (
+        let d = new Date(firstDate);
+        d >= newDate;
+        d.setDate(d.getDate() - 1)
+      ) {
         if (!uniqueDates.has(d.getTime())) {
           dates.unshift(new Date(d));
           uniqueDates.add(d.getTime());
@@ -238,7 +250,11 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
       updatedData = [...dates, ...data];
     } else if (newDate > lastDate) {
       const dates = [];
-      for (let d = new Date(lastDate); d <= newDate; d.setDate(d.getDate() + 1)) {
+      for (
+        let d = new Date(lastDate);
+        d <= newDate;
+        d.setDate(d.getDate() + 1)
+      ) {
         if (!uniqueDates.has(d.getTime())) {
           dates.push(new Date(d));
           uniqueDates.add(d.getTime());
@@ -250,7 +266,9 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     setData(updatedData);
 
     setTimeout(() => {
-      const index = updatedData.findIndex((d) => d.getTime() === newDate.getTime());
+      const index = updatedData.findIndex(
+        (d) => d.getTime() === newDate.getTime()
+      );
       if (index !== -1) {
         flatListRef.current?.scrollToIndex({ index, animated: false });
       }
@@ -259,6 +277,13 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      {!showNames && (
+        <View style={styles.notification}>
+          <Text style={styles.notificationText}>
+            Vous avez caché des infos sensibles.
+          </Text>
+        </View>
+      )}
       <PapillonModernHeader outsideNav={outsideNav}>
         <PapillonHeaderSelector
           loading={loading}
@@ -271,7 +296,9 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
         >
           <Reanimated.View layout={animPapillon(LinearTransition)}>
             <Reanimated.View
-              key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+              key={pickerDate.toLocaleDateString("fr-FR", {
+                weekday: "short",
+              })}
               entering={FadeIn.duration(150)}
               exiting={FadeOut.duration(150)}
             >
@@ -326,8 +353,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
               label: "Importer un iCal",
               onPress: () => {
                 navigation.navigate("LessonsImportIcal", {});
-              }
-            }
+              },
+            },
           ]}
         >
           <PapillonHeaderAction
@@ -336,6 +363,12 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             exiting={FadeOut.duration(130)}
           />
         </PapillonPicker>
+        <PapillonHeaderAction
+          icon={showNames ? <EyeOff /> : <Eye />}
+          onPress={() => setShowNames(!showNames)}
+          entering={animPapillon(ZoomIn)}
+          exiting={FadeOut.duration(130)}
+        />
       </PapillonModernHeader>
 
       <FlatList
@@ -420,6 +453,15 @@ const styles = StyleSheet.create({
     width: 38,
     justifyContent: "center",
     alignItems: "center",
+  },
+  notification: {
+    backgroundColor: "yellow",
+    padding: 10,
+    alignItems: "center",
+  },
+  notificationText: {
+    color: "black",
+    fontWeight: "bold",
   },
 });
 
