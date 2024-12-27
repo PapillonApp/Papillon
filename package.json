@@ -95,6 +95,7 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-view-shot": "3.8.0",
     "react-native-webview": "13.8.6",
+    "react-native-widgetkit": "^1.0.9",
     "reanimated-color-picker": "^3.0.4",
     "scolengo-api": "^3.0.5",
     "text-encoding": "^0.7.0",
