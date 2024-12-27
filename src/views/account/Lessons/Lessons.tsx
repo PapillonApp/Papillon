@@ -148,7 +148,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             }
             refreshAction={() => loadTimetableWeek(weekNumber, true)}
             loading={loadingWeeks.includes(weekNumber)}
-            showNames={showNames} // Ajoutez cette ligne
+            showNames={showNames} 
           />
         </View>
       );
@@ -161,7 +161,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
       insets,
       getAllLessonsForDay,
       loadTimetableWeek,
-      showNames, // Ajoutez cette ligne
+      showNames,
     ]
   );
 
