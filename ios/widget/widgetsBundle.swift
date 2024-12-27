@@ -12,5 +12,6 @@ import SwiftUI
 struct widgetsBundle: WidgetBundle {
     var body: some Widget {
         NewsWidget()
+        TimetableWidget()
     }
 }
