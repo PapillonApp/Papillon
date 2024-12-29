@@ -157,7 +157,6 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             style={{
               flex: 1,
               flexDirection: "column",
-              backgroundColor: colors.card,
               paddingHorizontal: 14,
               paddingVertical: 12,
               gap: 8,
