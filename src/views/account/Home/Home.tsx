@@ -218,7 +218,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
             Extrapolation.CLAMP
           )}
         ],
-      }
+      };
     };
   });
 
