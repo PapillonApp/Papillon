@@ -298,34 +298,9 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                         showAlert
                       );
                     }}
-                  >
-                    <View>
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontFamily: "medium",
-                          width: "100%",
-                          color: colors.text + "88"
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {instance.name}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          fontFamily: "medium",
-                          width: "100%",
-                          color: colors.text + "55",
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {`à ${instance.distance.toFixed(2)}km de toi`}
-                      </Text>
-                    </View>
-                  </DuoListPressable>
+                    text={instance.name}
+                    subtext={`à ${instance.distance.toFixed(2)}km de toi`}
+                  />
                 </Reanimated.View>
               ))}
             </Reanimated.View>

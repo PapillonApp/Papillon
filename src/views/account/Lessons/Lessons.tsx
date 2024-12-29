@@ -216,12 +216,58 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     return unsubscribe;
   }, []);
 
+  const onDateSelect = (date: Date | undefined) => {
+    const newDate = new Date(date || 0);
+    newDate.setHours(0, 0, 0, 0);
+    setPickerDate(newDate);
+
+    const firstDate = data[0];
+    const lastDate = data[data.length - 1];
+
+    let updatedData = [...data];
+    const uniqueDates = new Set(updatedData.map(d => d.getTime()));
+
+    if (newDate < firstDate) {
+      const dates = [];
+      for (let d = new Date(firstDate); d >= newDate; d.setDate(d.getDate() - 1)) {
+        if (!uniqueDates.has(d.getTime())) {
+          dates.unshift(new Date(d));
+          uniqueDates.add(d.getTime());
+        }
+      }
+      updatedData = [...dates, ...data];
+    } else if (newDate > lastDate) {
+      const dates = [];
+      for (let d = new Date(lastDate); d <= newDate; d.setDate(d.getDate() + 1)) {
+        if (!uniqueDates.has(d.getTime())) {
+          dates.push(new Date(d));
+          uniqueDates.add(d.getTime());
+        }
+      }
+      updatedData = [...data, ...dates];
+    }
+
+    setData(updatedData);
+
+    setTimeout(() => {
+      const index = updatedData.findIndex((d) => d.getTime() === newDate.getTime());
+      if (index !== -1) {
+        flatListRef.current?.scrollToIndex({ index, animated: false });
+      }
+    }, 0);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <PapillonModernHeader outsideNav={outsideNav}>
         <PapillonHeaderSelector
           loading={loading}
           onPress={() => setShowDatePicker(true)}
+          onLongPress={() => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            onDateSelect(today);
+          }}
         >
           <Reanimated.View layout={animPapillon(LinearTransition)}>
             <Reanimated.View
@@ -322,44 +368,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
         setShowDatePicker={setShowDatePicker}
         currentDate={pickerDate}
         onDateSelect={(date) => {
-          const newDate = new Date(date || 0);
-          newDate.setHours(0, 0, 0, 0);
-          setPickerDate(newDate);
-
-          const firstDate = data[0];
-          const lastDate = data[data.length - 1];
-
-          let updatedData = [...data];
-          const uniqueDates = new Set(updatedData.map(d => d.getTime()));
-
-          if (newDate < firstDate) {
-            const dates = [];
-            for (let d = new Date(firstDate); d >= newDate; d.setDate(d.getDate() - 1)) {
-              if (!uniqueDates.has(d.getTime())) {
-                dates.unshift(new Date(d));
-                uniqueDates.add(d.getTime());
-              }
-            }
-            updatedData = [...dates, ...data];
-          } else if (newDate > lastDate) {
-            const dates = [];
-            for (let d = new Date(lastDate); d <= newDate; d.setDate(d.getDate() + 1)) {
-              if (!uniqueDates.has(d.getTime())) {
-                dates.push(new Date(d));
-                uniqueDates.add(d.getTime());
-              }
-            }
-            updatedData = [...data, ...dates];
-          }
-
-          setData(updatedData);
-
-          setTimeout(() => {
-            const index = updatedData.findIndex((d) => d.getTime() === newDate.getTime());
-            if (index !== -1) {
-              flatListRef.current?.scrollToIndex({ index, animated: false });
-            }
-          }, 0);
+          onDateSelect(date);
         }}
       />
     </View>

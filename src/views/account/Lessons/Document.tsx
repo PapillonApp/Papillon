@@ -299,13 +299,16 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                   </NativeItem>
                 );
               })}
-              <NativeItem>
-                {lesson.ressource?.map((r, index) => {
-                  let title = (r.title?.charAt(0).toUpperCase() ?? "") + (r.title?.slice(1) ?? ""); // S'assurer que la première lettre est en majuscule
-                  let desc = r.description?.replace("\n\n", "\n") ?? ""; // Remplacer les doubles sauts de ligne par un seul
-                  let descText = desc.replace(/<[^>]*>/g, ""); // Il peut arriver que le contenu soit vide, mais qu'il y ait du html tout de même
-                  return (
-                    <React.Fragment key={"res_" + index}>
+
+              {lesson.ressource?.map((r, index) => {
+                let title = (r.title?.charAt(0).toUpperCase() ?? "") + (r.title?.slice(1) ?? ""); // S'assurer que la première lettre est en majuscule
+                let desc = r.description?.replace("\n\n", "\n").trim() ?? ""; // Remplacer les doubles sauts de ligne par un seul
+                let descText = desc.replace(/<[^>]*>/g, "").trim(); // Il peut arriver que le contenu soit vide, mais qu'il y ait du html tout de même
+                return (
+                  <>
+                    <NativeItem key={"res_" + index}
+                      separator={r.files?.length ?? 0 > 0 ? true : false}
+                    >
                       {index > 0 &&
                         <View
                           style={{
@@ -366,32 +369,32 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                           stylesheet={stylesText}
                           addLineBreaks={false}
                           onLinkPress={url => openUrl(url) }
-                          style={{paddingLeft: 10}}
                           key={"res_html_" + index}
                         />
                       }
-                      {(r.files?.length ?? 0) > 0 && (
-                        <NativeList style={{marginLeft: 10, marginTop: 10}}>
-                          {r.files?.map((file, index) => (
-                            <NativeItem
-                              key={"res_attach" + index}
-                              onPress={() =>
-                                openUrl(file.url)
-                              }
-                              icon={<FileText />}
-                            >
-                              <NativeText variant="title" numberOfLines={2}>
-                                {file.name}
-                              </NativeText>
-                            </NativeItem>
-                          ))}
-                        </NativeList>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+                    </NativeItem>
+                    {(r.files?.length ?? 0) > 0 && (
+                      <>
+                        {r.files?.map((file, fileIndex) => (
+                          <NativeItem
+                            key={"res_attach" + fileIndex}
+                            onPress={() =>
+                              openUrl(file.url)
+                            }
+                            icon={<FileText />}
+                            separator={true}
+                          >
+                            <NativeText variant="title" numberOfLines={2}>
+                              {file.name}
+                            </NativeText>
+                          </NativeItem>
+                        ))}
+                      </>
+                    )}
+                  </>
+                );
+              })}
 
-              </NativeItem>
             </NativeList>
           </View>
         )}

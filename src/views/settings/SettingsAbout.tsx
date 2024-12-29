@@ -26,6 +26,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const fetchContributors = async () => {
     const fetchedContributors = await getContributors();
     setContributors(fetchedContributors);
+    console.log(fetchedContributors[0]);
   };
 
   useEffect(() => {
@@ -159,7 +160,19 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
               }}
             />}
           >
-            <NativeText variant="title">{contributor.login}</NativeText>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <NativeText variant="title">{contributor.login}</NativeText>
+              <Github size={18} color={colors.text} strokeWidth={2.5} />
+            </View>
+            <NativeText variant="subtitle">
+              {contributor.contributions} contribution{contributor.contributions > 1 ? "s" : ""}
+            </NativeText>
           </NativeItem>
         ))}
       </NativeList>
