@@ -16,7 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {View, Linking, TouchableOpacity, StyleSheet, Alert, Platform} from "react-native";
+import { View, Linking, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -24,8 +24,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { setNewsRead } from "@/services/news";
 import { useCurrentAccount } from "@/stores/account";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import {Screen} from "@/router/helpers/types";
-import {AttachmentType} from "@/services/shared/Attachment";
+import { Screen } from "@/router/helpers/types";
+import { AttachmentType } from "@/services/shared/Attachment";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { newsInformationAcknowledge } from "pawnote";
 import { AccountService } from "@/stores/account/types";
@@ -197,7 +197,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
 
 
           <HTMLView
-            value={`<body>${message.content}</body`}
+            value={`<body>${message.content.replaceAll("<p>", "").replaceAll("</p>", "")}</body>`}
             stylesheet={stylesText}
           />
         </View>
