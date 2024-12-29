@@ -191,13 +191,13 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
       return {
         borderTopLeftRadius: interpolate(
           scrollOffset.value,
-          [0, 100, 265 + insets.top - 1, 265 + insets.top],
+          [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
           [12, 12, corners, 0],
           Extrapolation.CLAMP
         ),
         borderTopRightRadius: interpolate(
           scrollOffset.value,
-          [0, 100, 265 + insets.top - 1, 265 + insets.top],
+          [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
           [12, 12, corners, 0],
           Extrapolation.CLAMP
         ),
@@ -211,12 +211,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
         backgroundColor: colors.card,
         overflow: "hidden",
         transform: [
-          {scale: interpolate(
-            scrollOffset.value,
-            [0, 200, (260 + insets.top) - 40, 260 + insets.top],
-            [1, 0.95, 0.95, 1],
-            Extrapolation.CLAMP
-          )},
           {translateY: interpolate(
             scrollOffset.value,
             [-1000, 0, 125, 265 ],
@@ -224,8 +218,8 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
             Extrapolation.CLAMP
           )}
         ],
-      };
-    }
+      }
+    };
   });
 
   const modalIndicatorAnimatedStyle = useAnimatedStyle(() => {

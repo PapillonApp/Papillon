@@ -7,7 +7,7 @@ import Reanimated, {
   FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
-import {Gift, Sparkle, Sparkles, WifiOff} from "lucide-react-native";
+import {Gift, Sparkle, Sparkles, WifiOff, X} from "lucide-react-native";
 import {useTheme} from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
 import {Dimensions, View} from "react-native";
@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {defaultTabs} from "@/consts/DefaultTabs";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RouteParameters} from "@/router/helpers/types";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>
@@ -151,29 +152,56 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
           entering={animPapillon(FadeInUp)}
           exiting={animPapillon(FadeOutDown)}
         >
-          <NativeItem
-            leading={
-              <Sparkles
-                color={colors.primary}
-                size={28}
-                strokeWidth={2}
-              />
-            }
+          <TouchableOpacity
             onPress={() => navigation.navigate("ChangelogScreen")}
             style={{
-              backgroundColor: colors.primary + "30",
-            }}
-            androidStyle={{
+              flex: 1,
+              flexDirection: "column",
+              backgroundColor: colors.card,
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              gap: 8,
               backgroundColor: colors.primary + "20",
             }}
           >
-            <NativeText variant="title">
-              Découvrez les nouveautés de Papillon {PackageJSON.version}
-            </NativeText>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Sparkles
+                size={22}
+                strokeWidth={2}
+                color={colors.text}
+              />
+              <NativeText variant="title" style={{ flex: 1}}>
+                Papillon vient d'être mis à jour à la version {PackageJSON.version} !
+              </NativeText>
+
+              <TouchableOpacity
+                onPress={() => {
+                  AsyncStorage.setItem("changelog.lastUpdate", PackageJSON.version);
+                  setUpdatedRecently(false);
+                }}
+                style={{
+                  padding: 4,
+                  borderRadius: 100,
+                  backgroundColor: colors.text + "20",
+                }}
+              >
+                <X
+                  size={18}
+                  strokeWidth={3}
+                  color={colors.text}
+                />
+              </TouchableOpacity>
+            </View>
             <NativeText variant="subtitle">
-              Ouvrir les notes de mise à jour de cette version de Papillon
+              Cliquez ici pour voir tous les changements et les dernières nouveautés.
             </NativeText>
-          </NativeItem>
+          </TouchableOpacity>
         </NativeList>
       )}
 
