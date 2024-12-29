@@ -52,7 +52,7 @@ const RestaurantHistory = ({ route }: { route: NavigationProps }) => {
         <MissingItem
           emoji="🧾"
           title="Aucune réservation"
-          description="Effectuez une réservation pour la voir apparaître ici."
+          description="Effectue une réservation pour la voir apparaître ici."
           entering={animPapillon(FadeInDown)}
           exiting={animPapillon(FadeOut)}
         />

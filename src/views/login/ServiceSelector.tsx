@@ -91,7 +91,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const UnsupportedAlert = () => {
     showAlert({
       title: "Service non supporté",
-      message: "Désolé, ce service n'est pas encore supporté. Veuillez réessayer dans une prochaine version."
+      message: "Désolé, ce service n'est pas encore supporté. Réessaye dans une prochaine version."
     });
   };
 

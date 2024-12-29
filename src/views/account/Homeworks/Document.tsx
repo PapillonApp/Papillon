@@ -124,15 +124,15 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
                   onPress={() => {
                     Alert.alert(
                       homework.returnType === "file_upload"
-                        ? "Vous devez rendre ce devoir sur votre ENT"
+                        ? "Tu dois rendre ce devoir sur ton ENT"
                         : homework.returnType === "paper"
-                          ? "Vous devrez rendre ce devoir en classe"
+                          ? "Tu dois rendre ce devoir en classe"
                           : "Ce devoir est à rendre",
                       homework.returnType === "file_upload"
-                        ? "Papillon ne permet pas de rendre des devoirs sur l'ENT. Vous devez le faire sur l'ENT de votre établissement"
+                        ? "Papillon ne permet pas de rendre des devoirs sur l'ENT. Tu dois le faire sur l'ENT de ton établissement"
                         : homework.returnType === "paper"
-                          ? "Votre professeur vous indiquera comment rendre ce devoir"
-                          : "Votre professeur vous indiquera comment rendre ce devoir",
+                          ? "Ton professeur t'indiquera comment rendre ce devoir"
+                          : "Ton professeur t'indiquera comment rendre ce devoir",
                     );
                   }}
                 >

@@ -71,7 +71,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
               Obtention des logs...
             </NativeText>
             <NativeText variant="subtitle">
-              Cela peut prendre plusieurs secondes, veuillez patienter.
+              Cela peut prendre plusieurs secondes, patiente s'il te plaît.
             </NativeText>
           </NativeItem>
         </NativeList>

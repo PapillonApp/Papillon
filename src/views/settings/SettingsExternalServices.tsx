@@ -68,7 +68,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   const confirmDeleteAccount = (account: any) => {
     Alert.alert(
       "Supprimer le compte",
-      "Êtes-vous sûr de vouloir supprimer ce compte ?",
+      "Es-tu sûr de vouloir supprimer ce compte ?",
       [
         { text: "Annuler", style: "cancel" },
         {

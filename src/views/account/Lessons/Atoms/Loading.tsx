@@ -45,7 +45,7 @@ const LessonsLoading = () => {
           opacity: 0.5,
         }}
       >
-        Veuillez patienter
+        Patiente, s'il te plaît
       </Text>
     </Reanimated.View>
   );

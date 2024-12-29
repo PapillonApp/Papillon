@@ -106,7 +106,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                     onPress={() => {
                       Alert.alert(
                         "Icônes dynamiques",
-                        "Les icônes dynamiques changent de couleur en fonction de votre thème.",
+                        "Les icônes dynamiques changent de couleur en fonction de ton thème.",
                       );
                     }}
                   >
@@ -161,7 +161,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                         onPress={() => {
                           Alert.alert(
                             "Icône dynamique",
-                            "Cette icône est dynamique, elle change de couleur en fonction de votre thème.",
+                            "Cette icône est dynamique, elle change de couleur en fonction de ton thème.",
                           );
                         }}
                       >

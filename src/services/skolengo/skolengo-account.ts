@@ -31,7 +31,7 @@ const getSkolengoAxiosInstance = () => {
 
       Alert.alert(
         "Skolengo - " + (e["title"].toString() || "Erreur"),
-        htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue")+"\n\nSi cette erreur persiste, veuillez contacter les équipes de Papillon.",
+        htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue")+"\n\nSi cette erreur persiste, contacte les équipes de Papillon.",
       );
     });
     return Promise.reject(error);

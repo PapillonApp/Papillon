@@ -109,14 +109,14 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
               textAlign: "center",
             }}
           >
-            Papillon ne donnera jamais vos informations d'authentification à des tiers.
+            Papillon ne donnera jamais tes informations d'authentification à des tiers.
           </NativeText>
 
           <View style={styles.buttons}>
             <ButtonCta
               value="Annuler"
               disabled={loading}
-              onPress={() => (Alert.alert("Annuler", "Êtes-vous sûr de vouloir annuler l'activation ?", [
+              onPress={() => (Alert.alert("Annuler", "Es-tu sûr de vouloir annuler l'activation ?", [
                 { text: "Continer l'activation", style: "cancel" },
                 { text: "Confirmer", style: "destructive", onPress: () => navigation.pop() }
               ]))}

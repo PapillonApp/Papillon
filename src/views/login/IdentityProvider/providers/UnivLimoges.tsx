@@ -83,7 +83,7 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
     catch (error) {
       showAlert({
         title: "Erreur lors de la connexion",
-        message: "Une erreur est survenue lors de la connexion à votre compte Biome, veuillez réessayer plus tard.",
+        message: "Une erreur est survenue lors de la connexion à ton compte Biome, réessaye plus tard.",
         actions: [
           {
             title: "OK",

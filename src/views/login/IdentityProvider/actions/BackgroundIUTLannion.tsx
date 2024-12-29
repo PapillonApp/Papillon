@@ -146,7 +146,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     if(redirectCount >= 2) {
       Alert.alert(
         "Erreur",
-        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifiez vos identifiants et réessayez.",
+        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie tes identifiants et réessaye.",
         [{ text: "OK", onPress: () => navigation.goBack() }]
       );
       navigation.goBack();

@@ -66,11 +66,9 @@ const PronoteGeolocation: Screen<"PronoteGeolocation"> = ({ navigation }) => {
         </View>
       )}
 
-      <Text
-        style={[styles.terms_text, { color: colors.text + "59" }]}
-      >
-        Votre position est nécessaire pour trouver les instances PRONOTE à proximité.
-        Elle sera envoyée à Pronote et à l'api adresse du gouvernement pour trouver les établissements.
+      <Text style={[styles.terms_text, { color: colors.text + "59" }]}>
+        Ta position est nécessaire pour trouver les instances PRONOTE à proximité.
+        Elle sera envoyée à Pronote et à l'API adresse du gouvernement pour trouver les établissements.
         Elle n'est pas stockée.
       </Text>
     </SafeAreaView>

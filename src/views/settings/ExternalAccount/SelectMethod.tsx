@@ -26,7 +26,7 @@ const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ na
       }}
     >
       <PapillonShineBubble
-        message={`Sélectionnez votre méthode de connexion au service ${route.params.service === "Other" ? "(autre)" : AccountService[route.params.service]}`}
+        message={`Sélectionne ta méthode de connexion au service ${route.params.service === "Other" ? "(autre)" : AccountService[route.params.service]}`}
         width={300}
         numberOfLines={2}
         offsetTop={insets.top}
@@ -76,7 +76,7 @@ const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ na
             Connexion manuelle
           </NativeText>
           <NativeText variant="subtitle">
-            Entrez vos identifiants manuellement
+            Entre tes identifiants manuellement
           </NativeText>
         </NativeItem>
       </NativeList>

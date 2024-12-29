@@ -126,7 +126,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée.
+            Papillon n'est pas affilié à Skolengo. Tes données restent uniquement sur ton appareil de manière sécurisée.
           </NativeText>
         </View>
 
