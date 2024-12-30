@@ -182,7 +182,7 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
           </View>
           <View style={{flex: 1, display: "flex", gap: 5}}>
             <NativeText variant="title">{addon.name + " requiert votre position"}</NativeText>
-            <NativeText variant="subtitle">L'extension indique : Nous utilisons votre positions pour vous manger durant votre sommeil 😈</NativeText>
+            <NativeText variant="subtitle">L'extension indique : Nous utilisons votre positions pour vous manger durant votre sommeil 😈, miam</NativeText>
           </View>
         </View>
         <View style={{paddingHorizontal: 16, display: "flex", flexDirection: "row", gap: 10, height: 48}}>
