@@ -14,7 +14,8 @@ export const getChats = async (account: EcoleDirecteAccount): Promise<Chat[]> =>
     subject: chat.subject,
     recipient: chat.sender,
     creator: chat.sender,
-    read: chat.read
+    read: chat.read,
+    date: chat.date
   }));
 };
 

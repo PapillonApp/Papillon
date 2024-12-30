@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Platform,
   Text,
+  RefreshControl,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
@@ -29,6 +30,10 @@ import Reanimated, {
   FadeInDown,
   FadeOut,
 } from "react-native-reanimated";
+import PapillonHeader from "@/components/Global/PapillonHeader";
+import { SquarePen } from "lucide-react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import detectOnline from "@/hooks/detectOnline";
 
 // Voir la documentation de `react-navigation`.
@@ -40,7 +45,7 @@ LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
 ]);
 
-const Messages: Screen<"Messages"> = ({ navigation, route }) => {
+const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -48,6 +53,9 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
   const [chats, setChats] = useState<Chat[] | null>(null);
 
   const { isOnline, UNEerreur } = detectOnline(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const getChatCreator = (chat: Chat) => chat.creator === account.name ? chat.recipient : chat.creator;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,7 +70,14 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
     })();
   }, [account?.instance]);
 
-  if (account.service !== AccountService.EcoleDirecte)
+  const onRefresh = async () => {
+    setRefreshing(true);
+    const chats = await getChats(account);
+    setChats(chats);
+    setRefreshing(false);
+  };
+
+  if (account.service !== AccountService.Pronote)
     return (
       <View
         style={{
@@ -82,14 +97,28 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
     );
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        padding: 16,
-        paddingTop: 0,
-      }}
-    >
-      {!isOnline ? UNEerreur : (
-        !chats ? (
+    <>
+      <PapillonHeader route={route} navigation={navigation}>
+        <TouchableOpacity style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 7,
+          paddingRight: 8,
+        }}
+        onPress={() => navigation.navigate("ChatCreate")}>
+          <NativeText color={theme.colors.primary}>Composer</NativeText>
+          <SquarePen color={theme.colors.primary}/>
+        </TouchableOpacity>
+      </PapillonHeader>
+      <ScrollView
+        contentContainerStyle={{
+          padding: 20,
+          paddingTop: 0,
+        }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        {!chats ? (
           <Reanimated.View
             entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
             exiting={
@@ -147,9 +176,9 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
                 onPress={() => navigation.navigate("Chat", { handle: chat })}
                 leading={
                   <InitialIndicator
-                    initial={parse_initials(chat.recipient)}
-                    color={getProfileColorByName(chat.recipient).bright}
-                    textColor={getProfileColorByName(chat.recipient).dark}
+                    initial={parse_initials(getChatCreator(chat))}
+                    color={getProfileColorByName(getChatCreator(chat)).bright}
+                    textColor={getProfileColorByName(getChatCreator(chat)).dark}
                   />
                 }
               >
@@ -159,7 +188,7 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
                   {!chat.read && (
                     <View
                       style={{
-                        backgroundColor: getProfileColorByName(chat.recipient)
+                        backgroundColor: getProfileColorByName(getChatCreator(chat))
                           .dark,
                         borderRadius: 5,
                         height: 10,
@@ -167,16 +196,19 @@ const Messages: Screen<"Messages"> = ({ navigation, route }) => {
                       }}
                     />
                   )}
-                  <NativeText variant={"subtitle"}>{chat.recipient}</NativeText>
+                  <NativeText variant={"subtitle"}>{getChatCreator(chat)}</NativeText>
                 </View>
                 <NativeText>{chat.subject || "Aucun sujet"}</NativeText>
+                <NativeText variant={"subtitle"}>Il y a {Math.floor((new Date().getTime() - new Date(chat.date).getTime()) / (1000 * 60 * 60 * 24))} jours</NativeText>
               </NativeItem>
             ))}
           </NativeList>
-        )
-      )}
-    </ScrollView>
+        )}
+
+        <InsetsBottomView />
+      </ScrollView>
+    </>
   );
 };
 
-export default Messages;
+export default Discussions;

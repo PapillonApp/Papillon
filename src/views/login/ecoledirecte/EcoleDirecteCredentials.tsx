@@ -70,6 +70,14 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         isExternal: false,
         linkedExternalLocalIDs: [],
 
+        identity: {
+          firstName: account.firstName,
+          lastName: account.lastName,
+          civility: account.gender,
+          phone: [account.phone],
+          email: [account.email],
+        },
+
         name: `${account.lastName} ${account.firstName}`,
         studentName: {
           first: account.firstName,
@@ -83,7 +91,6 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           account
         },
         personalization: await defaultPersonalization(account),
-        identity: {}
       };
 
 

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Papillon",
     "slug": "papillonvex",
-    "scheme": ["papillon", "izly"],
+    "scheme": "papillon", 
     "version": "7.7.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,6 +20,13 @@
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
       "associatedDomains": ["applinks:getpapillon.xyz"],
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": ["papillon", "izly"]
+          }
+        ]
+      },
       "splash": {
         "backgroundColor": "#32AB8E",
         "image": "./assets/launch/splash.png",
@@ -43,6 +50,16 @@
         "monochromeImage": "./assets/launch/adaptive-icon-monochrome.png",
         "backgroundColor": "#32AB8E"
       },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            { "scheme": "papillon" },
+            { "scheme": "izly" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "splash": {
         "backgroundColor": "#32AB8E",
         "image": "./assets/launch/splash.png",

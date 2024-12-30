@@ -18,6 +18,8 @@ import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/Backgro
 import { Platform } from "react-native";
 import EvaluationDocument from "@/views/account/Evaluation/Document";
 import BackgroundIdentityProvider from "@/views/login/IdentityProvider/BackgroundIdentityProvider";
+import ChatDetails from "@/views/account/Chat/Modals/ChatDetails";
+import ChatThemes from "@/views/account/Chat/Modals/ChatThemes";
 
 export default [
   createScreen("NoteReaction", NoteReaction, {
@@ -76,12 +78,23 @@ export default [
     headerShown: Platform.OS !== "ios",
   }),
   createScreen("ChatCreate", ChatCreate, {
-    headerTitle: "Nouvelle discussion",
+    headerTitle: "Créer une discussion",
     presentation: "modal",
   }),
   createScreen("Chat", Chat, {
-    presentation: "modal",
+    headerTitle: "Discussions",
     headerShown: false,
+    presentation: "modal"
+  }),
+  createScreen("ChatDetails", ChatDetails, {
+    headerTitle: "Discussions",
+    headerShown: false,
+    presentation: "modal"
+  }),
+  createScreen("ChatThemes", ChatThemes, {
+    headerTitle: "Thèmes",
+    headerShown: true,
+    presentation: "modal"
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",

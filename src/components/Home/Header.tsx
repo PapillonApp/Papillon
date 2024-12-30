@@ -36,7 +36,7 @@ const Header: React.FC<{
   const account = useCurrentAccount(store => store.account!);
   const [tabs, setTabs] = useState<Tab[]>([
     { name: "Attendance", enabled: true },
-    { name: "Messages", enabled: true },
+    { name: "Discussions", enabled: true },
     { name: "Menu", enabled: true },
   ]);
 

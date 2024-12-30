@@ -6,6 +6,7 @@ export interface Chat {
   recipient: string
   creator: string
   read: boolean
+  date: Date
   /**
    * Link to the original instance.
    * You can also not use it, it all depends on the service
@@ -14,6 +15,12 @@ export interface Chat {
    * **Should only be used internally, not in the front-end.**
    */
   _handle?: any
+}
+
+export interface ChatRecipient {
+  id: string
+  name: string
+  class: null | string
 }
 
 export interface ChatMessage {

@@ -74,14 +74,10 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => deleteAccount(account.localID)
+          onPress: () => removeAccount(account.localID)
         }
       ]
     );
-  };
-
-  const deleteAccount = (localID: string) => {
-    removeAccount(localID);
   };
 
   const filteredAccounts = accounts.filter((acc, index) => {
