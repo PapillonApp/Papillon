@@ -29,13 +29,18 @@ const backgroundFetch = async () => {
 
     // Fetch for each account
     for (const account of accounts) {
-      await switchTo(account);
-      const actualAccount = useCurrentAccount.getState().account;
+      try {
+        await switchTo(account);
+        const actualAccount = useCurrentAccount.getState().account;
 
-      const fetchedNews = await fetchNews(actualAccount!);
-      const fetchedLessons = await fetchLessons(actualAccount!);
-      news.push(...fetchedNews);
-      lessons.push(...fetchedLessons);
+        const fetchedNews = await fetchNews(actualAccount!);
+        const fetchedLessons = await fetchLessons(actualAccount!);
+        news.push(...fetchedNews);
+        lessons.push(...fetchedLessons);
+      }
+      catch (error) {
+        console.error("[background fetch] Error while fetching data for account", account, error);
+      }
     }
 
     await Preferences.setItem("accounts", JSON.stringify(accounts.map(({name, schoolName, localID}) => ({name, schoolName, localID}))), appGroupIdentifier);
