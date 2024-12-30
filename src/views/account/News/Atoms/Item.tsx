@@ -1,21 +1,12 @@
-import {RouteProp, useTheme} from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import React from "react";
-import {
-  Dimensions,
-  View,
-} from "react-native";
-import {
-  NativeItem,
-  NativeText,
-} from "@/components/Global/NativeComponents";
+import { View } from "react-native";
+import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import parse_news_resume from "@/utils/format/format_pronote_news";
-import parse_initials from "@/utils/format/format_pronote_initials";
 import formatDate from "@/utils/format/format_date_complets";
-import InitialIndicator from "@/components/News/InitialIndicator";
-import {NativeStackNavigationProp} from "@react-navigation/native-stack";
-import {RouteParameters} from "@/router/helpers/types";
-import {Information} from "@/services/shared/Information";
-import { selectColorSeed } from "@/utils/format/select_color_seed";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteParameters } from "@/router/helpers/types";
+import { Information } from "@/services/shared/Information";
 
 type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
@@ -62,16 +53,20 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
         {message.title}
       </NativeText>}
 
-      <NativeText
-        numberOfLines={2}
-        variant="default"
-        style={{
-          lineHeight: 20,
-          opacity: 0.8,
-        }}
-      >
-        {message.content ? parse_news_resume(message.content) : ""}
-      </NativeText>
+      {message.content && (
+        <NativeText
+          numberOfLines={2}
+          variant="default"
+          style={{
+            lineHeight: 20,
+            opacity: 0.8,
+          }}
+        >
+          {!message.content.includes("<img")
+            ? parse_news_resume(message.content)
+            : "Contient une image"}
+        </NativeText>
+      )}
       <View
         style={{
           flexDirection: "row",

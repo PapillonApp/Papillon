@@ -6,7 +6,7 @@ import Menu from "@/views/account/Restaurant/Menu";
 import NewsScreen from "@/views/account/News/News";
 import Grades from "@/views/account/Grades/Grades";
 import Attendance from "@/views/account/Attendance/Attendance";
-import Messages from "@/views/account/Chat/Messages";
+import Discussions from "@/views/account/Chat/Messages";
 import Evaluation from "@/views/account/Evaluation/Evaluation";
 
 export const screens = [
@@ -44,9 +44,10 @@ export const screens = [
     tabBarLabel: "Vie sco.",
     tabBarLottie: require("@/../assets/lottie/tab_check.json"),
   }),
-  createScreen("Messages", Messages, {
-    headerTitle: "Messages",
-    tabBarLabel: "Messages",
+  createScreen("Discussions", Discussions, {
+    headerTitle: "Discussions",
+    tabBarLabel: "Discussions",
+    headerShown: false,
     tabBarLottie: require("@/../assets/lottie/tab_chat.json"),
   }),
   createScreen("Menu", Menu, {

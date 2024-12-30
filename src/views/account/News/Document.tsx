@@ -5,7 +5,6 @@ import {
   NativeListHeader,
   NativeText,
 } from "@/components/Global/NativeComponents";
-import InitialIndicator from "@/components/News/InitialIndicator";
 import { Information } from "@/services/shared/Information";
 import formatDate from "@/utils/format/format_date_complets";
 import { useTheme } from "@react-navigation/native";
@@ -17,7 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {View, Dimensions, Linking, TouchableOpacity, type GestureResponderEvent, Text, StyleSheet} from "react-native";
+import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -25,22 +24,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import { setNewsRead } from "@/services/news";
 import { useCurrentAccount } from "@/stores/account";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import {Screen} from "@/router/helpers/types";
-import {AttachmentType} from "@/services/shared/Attachment";
+import { Screen } from "@/router/helpers/types";
+import { AttachmentType } from "@/services/shared/Attachment";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { newsInformationAcknowledge } from "pawnote";
-import parse_initials from "@/utils/format/format_pronote_initials";
-import { selectColorSeed } from "@/utils/format/select_color_seed";
 import { AccountService } from "@/stores/account/types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   const [message, setMessage] = useState<Information>(JSON.parse(route.params.message) as Information);
   const important = route.params.important;
   const isED = route.params.isED;
   const account = useCurrentAccount((store) => store.account!);
-
-  const insets = useSafeAreaInsets();
 
   const theme = useTheme();
   const stylesText = StyleSheet.create({
@@ -200,7 +194,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
 
 
           <HTMLView
-            value={`<body>${message.content}</body`}
+            value={`<body>${message.content.replaceAll("<p>", "").replaceAll("</p>", "")}</body>`}
             stylesheet={stylesText}
           />
         </View>

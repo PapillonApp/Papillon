@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
 
   terms_text: {
     fontSize: 12,
+    lineHeight: 16,
     textAlign: "center",
     fontFamily: "medium",
     paddingHorizontal: 20,

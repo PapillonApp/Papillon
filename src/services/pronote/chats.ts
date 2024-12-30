@@ -1,5 +1,5 @@
 import { PronoteAccount } from "@/stores/account/types";
-import { Chat, ChatMessage } from "../shared/Chat";
+import { Chat, ChatMessage, ChatRecipient } from "../shared/Chat";
 import pronote from "pawnote";
 import { ErrorServiceUnauthenticated } from "../shared/errors";
 import { decodeAttachment } from "./attachment";
@@ -7,24 +7,56 @@ import { Recipient } from "../shared/Recipient";
 import { info } from "@/utils/logger/logger";
 
 export const getChats = async (account: PronoteAccount): Promise<Array<Chat>> => {
-  if (!account.instance)
+  if (!account.instance) {
     throw new ErrorServiceUnauthenticated("pronote");
+  }
 
   const chats = await pronote.discussions(account.instance);
   info("PRONOTE->getChats(): OK", "pronote");
 
   const studentName = account.instance.user.resources[0].name;
 
-  return chats.items.map((chat) => {
+  const parseFrenchDate = (dateText: string): Date => {
+    const datePart = dateText.split(" ").pop();
+    if (!datePart) return new Date();
+
+    const [day, month] = datePart.split("/");
+    const currentYear = new Date().getFullYear();
+    return new Date(`${currentYear}-${month}-${day}`);
+  };
+
+  return chats.items.map((chat) => ({
+    id: chat.participantsMessageID,
+    read: true,
+    subject: chat.subject,
+    creator: chat.creator ?? studentName,
+    recipient: chat.recipientName ?? studentName,
+    date: parseFrenchDate(chat.dateAsFrenchText),
+    _handle: chat
+  }));
+};
+
+export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Promise<ChatRecipient[]> => {
+  if (!account.instance)
+    throw new ErrorServiceUnauthenticated("pronote");
+
+  const recipients = await pronote.discussionRecipients(account.instance, <pronote.Discussion>chat._handle);
+  return recipients.map((recipient) => {
+    const [namePart, classPart] = recipient.name.split("(");
+
     return {
-      id: chat.participantsMessageID,
-      read: true,
-      subject: chat.subject,
-      creator: chat.creator ?? studentName,
-      recipient: chat.recipientName ?? studentName,
-      _handle: chat
+      id: recipient.id,
+      name: namePart.trim(),
+      class: classPart ? classPart.replace(")", "").trim() : null
     };
   });
+};
+
+export const sendMessageInChat = async (account: PronoteAccount, chat: Chat, content: string): Promise<void> => {
+  if (!account.instance)
+    throw new ErrorServiceUnauthenticated("pronote");
+
+  await pronote.discussionSendMessage(account.instance, chat._handle, content);
 };
 
 export const getChatMessages = async (account: PronoteAccount, chat: Chat): Promise<Array<ChatMessage>> => {
@@ -35,6 +67,8 @@ export const getChatMessages = async (account: PronoteAccount, chat: Chat): Prom
   info("PRONOTE->getChatMessages(): OK", "pronote");
 
   const studentName = account.instance.user.resources[0].name;
+
+  messages.sents.sort((a, b) => new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime());
 
   return messages.sents.map((message) => {
     return {
@@ -52,16 +86,21 @@ export const createDiscussionRecipients = async (account: PronoteAccount): Promi
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
-  const recipientsALL = await Promise.all([
-    pronote.EntityKind.Teacher,
-    pronote.EntityKind.Personal
-  ].map(kind => pronote.newDiscussionRecipients(account.instance!, kind)));
-
+  const recipientsALL = await Promise.all(
+    account.instance!.user!.resources.flatMap(resource =>
+      [
+        pronote.EntityKind.Teacher,
+        pronote.EntityKind.Personal
+      ].map(kind => pronote.newDiscussionRecipients(account.instance!, kind))
+    )
+  );
   const recipients = recipientsALL.flat();
   info("PRONOTE->createDiscussionRecipients(): OK", "pronote");
-
   return recipients.map((recipient) => ({
     name: recipient.name,
+    subject: recipient.subjects.length > 0
+      ? recipient.subjects.map(subject => subject.name).join(", ")
+      : undefined,
     _handle: recipient
   }));
 };

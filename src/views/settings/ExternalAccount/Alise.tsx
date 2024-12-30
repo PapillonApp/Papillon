@@ -79,6 +79,7 @@ const ExternalAliseLogin: Screen<"ExternalAliseLogin"> = ({ navigation }) => {
       onLogin={(username, password, customFields) => handleLogin(username, password, customFields)}
       loading={loading}
       error={error}
+      usernameKeyboardType="email-address"
       usernamePlaceholder="Identifiant ou adresse e-mail"
       passwordLabel="Mot de passe"
       passwordPlaceholder="Mot de passe"

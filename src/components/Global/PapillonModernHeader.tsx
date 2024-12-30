@@ -33,18 +33,18 @@ export const PapillonModernHeader: React.FC<ModernHeaderProps> = (props) => {
   }
 
   return (
-    <LinearGradientModernHeader {...props} />
+    <LinearGradientModernHeader {...props} tint={props.tint}/>
   );
 };
 
-const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav = false, height = 70, startLocation = 0.5 }) => {
+const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav = false, height = 70, startLocation = 0.5, tint = null }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
     <>
       <LinearGradient
-        colors={[theme.colors.background + "EE", theme.colors.background + "00"]}
+        colors={tint && tint !== "" ? [tint + "EE", tint + "00"] : [theme.colors.background + "EE", theme.colors.background + "00"]}
         locations={[startLocation, 1]}
         style={{
           position: "absolute",

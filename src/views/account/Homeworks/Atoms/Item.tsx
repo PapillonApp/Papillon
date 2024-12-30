@@ -187,7 +187,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             exiting={FadeOut.duration(200).delay(50)}
           >
             <HTMLView
-              value={`<body>${homework.content}</body>`}
+              value={`<body>${homework.content.replaceAll("<br>", " ")}</body>`}
               stylesheet={stylesText}
             />
             {route.name === "HomeScreen" && (

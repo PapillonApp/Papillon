@@ -19,7 +19,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>7.6.0</string>
+    <string>7.7.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -29,7 +29,6 @@
         <array>
           <string>papillon</string>
           <string>izly</string>
-          <string>xyz.getpapillon.ios</string>
         </array>
       </dict>
     </array>
