@@ -5,26 +5,22 @@ struct systemLargeNews: View {
 
   var body: some View {
     VStack(alignment: .leading) {
-        HStack {
-            Text("\(Image(systemName: "newspaper")) Dernières actualités")
-            Spacer()
-        }
-        .font(.system(size: 16))
-        .opacity(0.5)
-
-        Spacer()
-
         switch (entry.selectionnedAccount.isEmpty, entry.news.isEmpty) {
         case (true, _):
-            Text("Veuillez sélectionner un compte")
-              .foregroundColor(.gray)
-              .font(.system(size: 14))
+          emptyMessageNoAccount(image: "newspaper")
         case (false, true):
-            Text("Aucune actualité disponible.")
-              .foregroundColor(.gray)
-              .font(.system(size: 14))
+          emptyNewsMessage()
         case (false, false):
             let displayedNews = entry.news.prefix(3)
+          
+          HStack {
+              Text("\(Image(systemName: "newspaper")) Dernières actualités")
+              Spacer()
+          }
+          .font(.system(size: 16))
+          .opacity(0.5)
+
+          Spacer()
 
             ForEach(0..<3, id: \.self) { index in
                 VStack {

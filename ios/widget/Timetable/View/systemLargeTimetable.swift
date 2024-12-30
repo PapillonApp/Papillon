@@ -9,26 +9,22 @@ struct systemLargeTimetable: View {
         let upcomingLessons = TimeHelper.filterUpcomingLessons(timetable: entry.timetable)
         
         VStack(alignment: .leading) {
-            HStack {
-                Text("\(Image(systemName: "calendar")) Prochains cours")
-                Spacer()
-            }
-            .font(.system(size: 16))
-            .opacity(0.5)
-
-            Spacer()
-
             switch (entry.selectedAccount.isEmpty, upcomingLessons.isEmpty) {
             case (true, _):
-                Text("Veuillez sélectionner un compte")
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+              emptyMessageNoAccount(image: "calendar")
             case (false, true):
-                Text("Aucun cours, bon repos!")
-                  .foregroundColor(.gray)
-                  .font(.system(size: 14))
+              emptyTimetableMessage()
             case (false, false):
                 let displayedNews = upcomingLessons.prefix(3)
+              
+              HStack {
+                  Text("\(Image(systemName: "calendar")) Prochains cours")
+                  Spacer()
+              }
+              .font(.system(size: 16))
+              .opacity(0.5)
+
+              Spacer()
 
                 ForEach(0..<3, id: \.self) { index in
                     VStack {

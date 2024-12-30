@@ -5,25 +5,20 @@ struct systemMediumNews: View {
 
   var body: some View {
     VStack(alignment: .leading) {
-      HStack {
-        Text("\(Image(systemName: "newspaper")) Dernière actualité")
-        Spacer()
-      }
-      .font(.system(size: 16))
-      .opacity(0.5)
-
-      Spacer()
-
       switch (entry.selectionnedAccount.isEmpty, entry.news.first) {
       case (true, _):
-          Text("Veuillez sélectionner un compte")
-              .foregroundColor(.gray)
-              .font(.system(size: 14))
+        emptyMessageNoAccount(image: "newspaper")
       case (false, nil):
-          Text("Aucune actualité disponible.")
-              .foregroundColor(.gray)
-              .font(.system(size: 14))
+        emptyNewsMessage()
       case (false, let firstNews?):
+        HStack {
+          Text("\(Image(systemName: "newspaper")) Dernière actualité")
+          Spacer()
+        }
+        .font(.system(size: 16))
+        .opacity(0.5)
+
+        Spacer()
         VStack {
           newsItem(item: firstNews)
         }

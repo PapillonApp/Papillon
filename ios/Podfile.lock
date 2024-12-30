@@ -1238,6 +1238,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-widgetkit (1.0.9):
+    - React
   - React-nativeconfig (0.74.6)
   - React-NativeModulesApple (0.74.6):
     - glog
@@ -1630,6 +1632,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - react-native-webview (from `../node_modules/react-native-webview`)
+  - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1817,6 +1820,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-view-shot"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
+  react-native-widgetkit:
+    :path: "../node_modules/react-native-widgetkit"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1960,6 +1965,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: a240ad4b683349e48b1d51fed1611138d1bdad97
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: 05bae3a03a1e4f59568dfc05286c0ebf8954106c
+  react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   React-nativeconfig: c36a079fa219a9911070cc0058b746407e1ef47d
   React-NativeModulesApple: eab84dd7bda0650f3ce41c53f76ffd49d689763f
   React-perflogger: 9f21c9e3d8d220833e649a141fed8e5ca08977d9
@@ -1999,4 +2005,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 7f0387b1ee3dbf846a6b743dd3d86d401c33d8c2
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
