@@ -92,7 +92,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           <NativeItem
             onPress={team.link ? () => Linking.openURL(team.link) : undefined}
             chevron={team.link ? true : false}
-            key={index}
+            key={index + "team"}
             leading={<Image
               source={{ uri: team.ppimage }}
               style={{
@@ -150,7 +150,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           <NativeItem
             onPress={() => Linking.openURL(contributor.html_url)}
             chevron={true}
-            key={index}
+            key={index + "contributor"}
             leading={<Image
               source={{ uri: contributor.avatar_url }}
               style={{

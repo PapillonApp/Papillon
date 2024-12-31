@@ -14,13 +14,13 @@ export function dateAsISO860 (str: string): string {
   const hour = parts[timeIndex].split(":");
   const monthIndex = parts.findIndex(part => months.includes(part));
 
-  return (new Date(
+  return new Date(
     Number(parts[monthIndex + 1]),
     months.indexOf(parts[monthIndex]),
     Number(parts[monthIndex - 1]),
     Number(hour[0]),
     Number(hour[1])
-  )).toISOString();
+  ).toISOString();
 }
 
 export function dateStringAsTimeInterval (
@@ -28,10 +28,10 @@ export function dateStringAsTimeInterval (
 ): Timeinterval | undefined {
   if (str.includes("du")) {
     /**
-       * @example
-       * str is equal to "du mercredi 21 février 2024 au jeudi 22 février 2024"
-       * or "du mercredi 27 novembre 2024 à 08:10 au vendredi 06 décembre 2024 à 08:10"
-       */
+     * @example
+     * str is equal to "du mercredi 21 février 2024 au jeudi 22 février 2024"
+     * or "du mercredi 27 novembre 2024 à 08:10 au vendredi 06 décembre 2024 à 08:10"
+     */
     const [startPart, endPart] = str.split("au").map(part => part.trim());
     let start = startPart.replace("du", "").trim();
     let end = endPart.trim();
@@ -56,10 +56,10 @@ export function dateStringAsTimeInterval (
 
   if (str.includes("le")) {
     /**
-       * @example
-       * str is equal to "le mercredi 21 février 2024 de 08:10 à 16:10"
-       * or "le jeudi 22 février 2024"
-       */
+     * @example
+     * str is equal to "le mercredi 21 février 2024 de 08:10 à 16:10"
+     * or "le jeudi 22 février 2024"
+     */
     const parts = str.split("à");
     let startDate: string;
     let endDate: string;

@@ -31,10 +31,8 @@ import { Check, CirclePlus, Cog, Plus } from "lucide-react-native";
 const ContextMenu: React.FC<{
   style?: any;
   children: React.ReactNode;
-  transparent?: boolean;
-  shouldOpenContextMenu?: boolean,
-  menuStyles?: any;
-}> = ({ children, style, shouldOpenContextMenu, transparent, menuStyles }) => {
+  shouldOpenContextMenu?: boolean
+}> = ({ children, style, shouldOpenContextMenu }) => {
   const theme = useTheme();
   const { colors } = theme;
   const navigation = useNavigation();
@@ -120,10 +118,7 @@ const ContextMenu: React.FC<{
                 transformOrigin: "top left",
               },
               styles.menu,
-              menuStyles,
             ]}
-            entering={PapillonContextEnter}
-            exiting={PapillonContextExit}
           >
             <View
               style={{
@@ -133,7 +128,7 @@ const ContextMenu: React.FC<{
             >
               {accounts.map((account, index) => !account.isExternal && (
                 <Pressable
-                  key={index}
+                  key={index+"accountswitchcontext"}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
                     switchTo(account).then(() => {
@@ -333,52 +328,48 @@ const ContextMenu: React.FC<{
         )}
       </View>
 
-      {!transparent && opened && (
-        <Pressable
-          pointerEvents={opened ? "auto" : "none"}
-          style={[
-            styles.container,
-            {
-              width: Dimensions.get("window").width,
-              height: Dimensions.get("window").height,
-              overflow: "hidden",
-            },
-          ]}
-          onPress={() => {
-            setOpened(false);
-          }}
-        >
-          {opened && (
-            <Reanimated.View
-              pointerEvents="none"
-              style={[
-                {
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "#00000050"
-                },
-              ]}
-              entering={FadeIn.duration(200)}
-              exiting={FadeOut.duration(200)}
-            >
-              <BlurView
-                tint="dark"
-                intensity={60}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-                experimentalBlurMethod="dimezisBlurView"
-              />
-            </Reanimated.View>
-          )}
-        </Pressable>
-      )}
+      <Pressable
+        pointerEvents={opened ? "auto" : "none"}
+        style={[
+          styles.container,
+          {
+            width: Dimensions.get("window").width,
+            height: Dimensions.get("window").height,
+            overflow: "hidden",
+          },
+        ]}
+        onPress={() => {
+          setOpened(false);
+        }}
+      >
+        {opened && (
+          <Reanimated.View
+            pointerEvents="none"
+            style={[
+              {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#00000050"
+              },
+            ]}
+          >
+            <BlurView
+              tint="dark"
+              intensity={60}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              experimentalBlurMethod="dimezisBlurView"
+            />
+          </Reanimated.View>
+        )}
+      </Pressable>
     </>
   );
 };

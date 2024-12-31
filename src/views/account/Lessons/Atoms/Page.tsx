@@ -66,6 +66,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
     >
       {current &&
         <View
+          key={date.toString() + "timetableitemdate_currentPage"}
           style={{
             paddingHorizontal: 10,
             paddingVertical: 10,
@@ -74,8 +75,8 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
           }}
         >
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
-            <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
-              <TimetableItem key={item.startTimestamp} item={item} index={i} />
+            <View key={item.startTimestamp + i.toString() + "timetableitemdateindex"} style={{ gap: 10 }}>
+              <TimetableItem key={item.startTimestamp + "timetableitemdate"} item={item} index={i} />
 
               {day[i + 1] &&
                 day[i + 1].startTimestamp - item.endTimestamp > 1740000 && (
@@ -95,8 +96,6 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
           style={{
             padding: 26,
           }}
-          entering={animPapillon(FadeInDown)}
-          exiting={animPapillon(FadeOutUp).delay(100)}
         >
           <LessonsLoading />
         </Reanimated.View>
@@ -108,28 +107,28 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
             emoji="🌴"
             title="C'est le week-end !"
             description="Profitez de votre week-end, il n'y a pas de cours aujourd'hui."
-            entering={animPapillon(FadeInDown)}
-            exiting={animPapillon(FadeOut)}
           />
         ) : (
           <MissingItem
             emoji="📆"
             title="Pas de cours aujourd'hui"
             description="Aucun cours n'est prévu pour aujourd'hui."
-            entering={animPapillon(FadeInDown)}
-            exiting={animPapillon(FadeOut)}
           />
         )
       )}
 
-      {day.length === 1 && current && !loading && (day[0].type === "vacation" ? <MissingItem
-        emoji={emoji}
-        title="C'est les vacances !"
-        description="Profitez de vos vacances, à bientôt."
-        entering={animPapillon(FadeInDown)}
-        exiting={animPapillon(FadeOut)}
-      />: <></>
-      )}
+      {day.length === 1 &&
+        current &&
+        !loading &&
+        (day[0].type === "vacation" ? (
+          <MissingItem
+            emoji={emoji}
+            title="C'est les vacances !"
+            description="Profitez de vos vacances, à bientôt."
+          />
+        ) : (
+          <></>
+        ))}
     </ScrollView>
   );
 };
@@ -164,7 +163,7 @@ const SeparatorCourse: React.FC<{
             .stiffness(300)
           : void 0
       }
-      exiting={Platform.OS === "ios" ? FadeOut.duration(300) : void 0}
+
     >
       <View
         style={{

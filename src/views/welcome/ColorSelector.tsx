@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import MaskStarsColored from "@/components/FirstInstallation/MaskStarsColored";
 import { useTheme } from "@react-navigation/native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
-import Reanimated, { ZoomIn, ZoomOut, LinearTransition, FadeIn, FadeOut, FlipInXDown, FadeOutUp } from "react-native-reanimated";
+import Reanimated from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { getIconName, setIconName } from "@candlefinance/app-icon";
 
@@ -124,11 +124,9 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               height: 60,
               borderRadius: 200,
               borderColor: color.hex.primary,
-              zIndex: -99,
+              zIndex: 99,
             }
           ]}
-          entering={ZoomIn.springify().mass(1).stiffness(150)}
-          exiting={ZoomOut}
         />
       )}
     </View>
@@ -137,8 +135,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Reanimated.View
-        entering={Platform.OS === "ios" ? FadeIn.duration(400) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(2000) : void 0}
         key={account?.personalization?.color?.hex.primary || ""}
         style={{
           position: "absolute",
@@ -176,9 +172,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         </View>
 
         <Reanimated.View
-          layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(50)}
-          exiting={FadeOutUp.springify()}
           key={account?.personalization?.color?.hex.primary || ""}
           style={[styles.message, {
             backgroundColor: account?.personalization?.color?.hex.primary + "33",
@@ -188,7 +181,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
             alignSelf: "center"}]}
         >
           <Reanimated.Text
-            layout={LinearTransition.springify().stiffness(150)}
             style={{
               color: account?.personalization?.color?.hex.primary || "",
               fontFamily: "semibold",
@@ -207,8 +199,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
 
       <Reanimated.View
         style={styles.done}
-        entering={Platform.OS === "ios" ? FadeIn.duration(200) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(1000) : void 0}
         key={(account?.personalization?.color?.hex.primary || "") + "_btn"}
       >
         <ButtonCta

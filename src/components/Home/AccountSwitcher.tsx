@@ -165,8 +165,6 @@ const AccountSwitcher: React.FC<{
                 strokeWidth={3}
                 color={modalOpen && !opened ? colors.text : "#FFF"}
                 animated
-                entering={animPapillon(ZoomIn)}
-                exiting={animPapillon(ZoomOut)}
               />
             )}
 

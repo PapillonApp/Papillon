@@ -1,13 +1,7 @@
 import { Coffee, Utensils } from "lucide-react-native";
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
-import Reanimated, {
-  useSharedValue,
-  withSpring,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
+import { View, TouchableOpacity } from "react-native";
+import Reanimated from "react-native-reanimated";
 import {Balance} from "@/services/shared/Balance";
 import {Theme} from "@react-navigation/native";
 

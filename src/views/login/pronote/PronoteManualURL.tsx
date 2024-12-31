@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Check, Link2, TriangleAlert, X } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Constants from "expo-constants";
 
 const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -113,7 +114,13 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
             }
           ]}
         >
-          <Link2 size={24} color={colors.text + "55"} />
+          <Link2
+            size={24}
+            color={colors.text + "55"}
+            style={{
+              marginTop: Constants.appOwnership === "expo" ? 7.5 : 0,
+            }}
+          />
 
           <TextInput
             keyboardType="url"
@@ -133,11 +140,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           />
 
           {instanceURL.length > 0 && (
-            <Reanimated.View
-              layout={LinearTransition}
-              entering={ZoomIn.springify()}
-              exiting={ZoomOut.springify()}
-            >
+            <Reanimated.View layout={LinearTransition}>
               <TouchableOpacity onPress={() => {
                 setInstanceURL("");
               }}>

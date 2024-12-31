@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, View, StyleSheet, Modal, Alert, KeyboardAvoidi
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { CameraView, Camera } from "expo-camera";
 import MaskedView from "@react-native-masked-view/masked-view";
 import * as Haptics from "expo-haptics";
 
@@ -19,6 +19,9 @@ import { Account, AccountService } from "@/stores/account/types";
 import { Audio } from "expo-av";
 import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
+
+// TODO: use expo camera
+const BarCodeScanner = () => null;
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -170,7 +173,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     };
     getBarCodeScannerPermissions();
@@ -313,8 +316,6 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           >
             {!inputFocus && (
               <Reanimated.View
-                entering={FadeInUp.duration(250)}
-                exiting={FadeOutUp.duration(150)}
                 style={{ zIndex: 9999 }}
                 layout={LinearTransition}
               >
@@ -422,10 +423,11 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           style={styles.maskContainer}
         />
         {hasPermission === true && (
-          <BarCodeScanner
-            onBarCodeScanned={
-              scanned ? undefined : handleBarCodeScanned
-            }
+          <CameraView
+            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            barcodeScannerSettings={{
+              barcodeTypes: ["qr", "pdf417"],
+            }}
             style={StyleSheet.absoluteFillObject}
           />
         )}

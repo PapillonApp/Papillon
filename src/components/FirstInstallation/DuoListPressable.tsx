@@ -57,8 +57,8 @@ const DuoListPressable: React.FC<{
   return (
     <Reanimated.View
       style={{
-        transform: [{ scale: scale }],
-        opacity: opacity,
+        transform: [{ scale }],
+        opacity,
         width: "100%",
       }}
     >

@@ -34,7 +34,7 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
 
       return (
         <NativeItem
-          key={key}
+          key={key + "mainflag"}
           onPress={() => navigation.navigate("SettingsFlagsInfos", { title: key, value: value })}
         >
           <NativeText
@@ -78,7 +78,12 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        style={{
+          paddingBottom: useSafeAreaInsets().bottom + 100,
+        }}
+      >
         <NativeListHeader label="Ajouter un flag" />
         <NativeList>
           <NativeItem>
@@ -99,7 +104,7 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
             <NativeList>
               {flags.map((flag) => (
                 <NativeItem
-                  key={flag}
+                  key={flag + "flag"}
                   icon={<Code color={colors.text} />}
                   onPress={() => confirmRemoveFlag(flag)}
                 >

@@ -170,7 +170,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
       const currentItemIndex = Math.round(event.contentOffset.x / ITEM_TOTAL_WIDTH);
-      if (currentItemIndex !== lastItemIndex.value) {
+      if (currentItemIndex !== lastItemIndex.get()) {
         lastItemIndex.value = currentItemIndex;
         runOnJS(setIsProgrammaticScroll)(false);
         if (!isProgrammaticScroll) {

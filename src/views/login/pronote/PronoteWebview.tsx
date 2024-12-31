@@ -202,16 +202,12 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 paddingHorizontal: 20,
                 backgroundColor: theme.colors.card,
               }}
-              entering={FadeIn.duration(200)}
-              exiting={FadeOut.duration(200)}
             >
               <PapillonSpinner
                 animated={true}
                 size={48}
                 color={theme.colors.primary}
                 strokeWidth={6}
-                entering={!showWebView && FadeInUp.duration(200)}
-                exiting={FadeOutDown.duration(100)}
               />
 
               <Reanimated.Text
@@ -222,8 +218,6 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                   fontFamily: "semibold",
                   textAlign: "center",
                 }}
-                entering={!showWebView && FadeInUp.duration(200)}
-                exiting={FadeOutDown.duration(100)}
                 layout={animPapillon(LinearTransition)}
               >
                 Connexion à Pronote
@@ -231,8 +225,6 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
 
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
-                entering={!showWebView && FadeInUp.duration(200)}
-                exiting={FadeOutDown.duration(100)}
                 key={loginStep + "stp"}
               >
                 <Reanimated.Text
@@ -277,13 +269,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
             onLoadStart={(e) => {
               const { url } = e.nativeEvent;
               setCurrentURL(url);
-
               setLoading(true);
-
-              if (url.includes("mobile.eleve.html")) {
-                setLoginStep("En attente de votre établissement");
-                setShowWebView(false);
-              }
             }}
             onMessage={async ({ nativeEvent }) => {
               const message = JSON.parse(nativeEvent.data);

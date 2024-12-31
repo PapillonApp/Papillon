@@ -23,11 +23,7 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
   const theme = useTheme();
 
   return (
-    <NativeList
-      animated
-      entering={animPapillon(FadeIn)}
-      exiting={animPapillon(FadeOut)}
-    >
+    <NativeList animated>
       <View
         style={{
           flexDirection: "row",

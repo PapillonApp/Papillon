@@ -23,6 +23,7 @@ import type { AverageDiffGrade } from "@/utils/grades/getAverages";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   const { grade, allGrades = [] } = route.params;
@@ -215,6 +216,8 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
     <View
       style={{
         flex: 1,
+        backgroundColor: theme.colors.background,
+        borderCurve: "continuous",
       }}
     >
       <View
@@ -238,6 +241,9 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
           <Image
             source={require("../../../../assets/images/mask_stars_settings.png")}
             style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
               width: "100%",
               height: "100%",
               objectFit: "cover",
@@ -362,65 +368,76 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
       >
         <View
           style={{
-            paddingHorizontal: 16,
+            minHeight: "100%",
+            width: "100%",
+            maxWidth: 500,
+            backgroundColor: theme.colors.background,
+            borderCurve: "continuous",
           }}
         >
 
-          {lists.map((list, index) => (
-            <View key={index}>
-              <NativeListHeader label={list.title} />
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}
+          >
 
-              <NativeList>
-                {list.items.map(
-                  (item, index) =>
-                    item && (
-                      <NativeItem
-                        key={index}
-                        icon={item.icon}
-                        trailing={
-                          <View
-                            style={{
-                              marginRight: 10,
-                              alignItems: "flex-end",
-                              flexDirection: "row",
-                              gap: 2,
-                            }}
-                          >
-                            <NativeText
+            {lists.map((list, index) => (
+              <View key={index+"gradedocidx"}>
+                <NativeListHeader label={list.title} animated={false} />
+
+                <NativeList animated={false}>
+                  {list.items.map(
+                    (item, index) =>
+                      item && (
+                        <NativeItem
+                          animated={false}
+                          key={index + "gradedocitemidx"}
+                          icon={item.icon}
+                          trailing={
+                            <View
                               style={{
-                                fontSize: 18,
-                                lineHeight: 22,
-                                fontFamily: "semibold",
-                                color:
-															"color" in item ? item.color : theme.colors.text,
+                                marginRight: 10,
+                                alignItems: "flex-end",
+                                flexDirection: "row",
+                                gap: 2,
                               }}
                             >
-                              {item.value}
-                            </NativeText>
-
-                            {"bareme" in item && (
-                              <NativeText variant="subtitle">
-                                {item.bareme}
+                              <NativeText
+                                animated={false}
+                                style={{
+                                  fontSize: 18,
+                                  lineHeight: 22,
+                                  fontFamily: "semibold",
+                                  color: "color" in item ? item.color : theme.colors.text,
+                                }}
+                              >
+                                {item.value}
                               </NativeText>
-                            )}
-                          </View>
-                        }
-                      >
-                        <NativeText variant="overtitle">{item.title}</NativeText>
 
-                        {item.description && (
-                          <NativeText variant="subtitle">
-                            {item.description}
-                          </NativeText>
-                        )}
-                      </NativeItem>
-                    )
-                )}
-              </NativeList>
-            </View>
-          ))}
+                              {"bareme" in item && (
+                                <NativeText variant="subtitle" animated={false}>
+                                  {item.bareme}
+                                </NativeText>
+                              )}
+                            </View>
+                          }
+                        >
+                          <NativeText variant="overtitle" animated={false}>{item.title}</NativeText>
+
+                          {item.description && (
+                            <NativeText variant="subtitle" animated={false}>
+                              {item.description}
+                            </NativeText>
+                          )}
+                        </NativeItem>
+                      )
+                  )}
+                </NativeList>
+              </View>
+            ))}
+          </View>
         </View>
-
         <InsetsBottomView />
       </ScrollView>
     </View>

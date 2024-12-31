@@ -8,34 +8,24 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "primaryColor": "#32AB8E",
-    "splash": {
-      "image": "./assets/launch/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#32AB8E"
-    },
-    "assetBundlePatterns": ["**/*"],
+    "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "buildNumber": "7501",
+      "buildNumber": "7700",
       "supportsTablet": true,
       "appStoreUrl": "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       "bundleIdentifier": "xyz.getpapillon.ios",
-      "associatedDomains": ["applinks:getpapillon.xyz"],
+      "associatedDomains": [
+        "applinks:getpapillon.xyz"
+      ],
       "infoPlist": {
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": ["papillon", "izly"]
           }
         ]
-      },
-      "splash": {
-        "backgroundColor": "#32AB8E",
-        "image": "./assets/launch/splash.png",
-        "resizeMode": "cover",
-        "dark": {
-          "backgroundColor": "#001C0F",
-          "image": "./assets/launch/splash-dark.png",
-          "resizeMode": "cover"
-        }
       },
       "config": {
         "usesNonExemptEncryption": false
@@ -60,16 +50,6 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "splash": {
-        "backgroundColor": "#32AB8E",
-        "image": "./assets/launch/splash.png",
-        "resizeMode": "cover",
-        "dark": {
-          "backgroundColor": "#001C0F",
-          "image": "./assets/launch/splash-dark.png",
-          "resizeMode": "cover"
-        }
-      },
       "package": "xyz.getpapillon.app",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -77,6 +57,14 @@
       ]
     },
     "plugins": [
+      "./plugins/notifee-mod.js",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#39CCAA",
+          "image": "./assets/splash.png"
+        }
+      ],
       [
         "expo-font",
         {
@@ -89,7 +77,6 @@
           ]
         }
       ],
-      "expo-barcode-scanner",
       [
         "expo-location",
         {
@@ -116,7 +103,8 @@
         {
           "photosPermission": "Papillon utilise tes photos et vidéos pour personnaliser ton profil, ta gestion des cours et bien plus."
         }
-      ]
+      ],
+      "expo-asset"
     ]
   }
 }

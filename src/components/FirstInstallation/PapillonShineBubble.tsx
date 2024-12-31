@@ -159,14 +159,7 @@ const PapillonShineBubble: React.FC<{
           style={[
             papillon_ls_styles.logo,
             {
-              transform: [
-                {
-                  translateY: translateY
-                },
-                {
-                  rotate: rotate
-                },
-              ],
+              transform: [{ translateY }, { rotate }],
             }
           ]}
           resizeMode="contain"
@@ -175,11 +168,7 @@ const PapillonShineBubble: React.FC<{
         <Reanimated.Image
           source={require("../../../assets/images/shaded_papillon_setup_shadow.png")}
           style={{
-            transform: [
-              {
-                scale: shadowScale
-              },
-            ],
+            transform: [{ scale: shadowScale }],
           }}
           resizeMode="contain"
           tintColor={"#000000"}

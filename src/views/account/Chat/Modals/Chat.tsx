@@ -385,7 +385,6 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
         </>
       ) : (
         <Reanimated.View
-          entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
           exiting={
             Platform.OS === "ios"
               ? FadeOut.springify().mass(1).damping(20).stiffness(300)

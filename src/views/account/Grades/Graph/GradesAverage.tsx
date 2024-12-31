@@ -24,7 +24,7 @@ import Reanimated, {
 import { animPapillon } from "@/utils/ui/animations";
 
 import * as Haptics from "expo-haptics";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { ReanimatedGraphProps, ReanimatedGraphPublicMethods } from "@birdwingo/react-native-reanimated-graph/src/core/dto/graphDTO";
 // Using require to set custom types bc module types are broken
 const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & React.RefAttributes<ReanimatedGraphPublicMethods>> = require("@birdwingo/react-native-reanimated-graph").default;
@@ -33,6 +33,7 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
 import { AlertTriangle, Calculator, Check, ExternalLink, PieChart, Spline, SquareRadical, TrendingUp } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
+import Constants from "expo-constants";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -167,7 +168,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
         <NativeList animated>
           <Reanimated.View
             layout={animPapillon(LinearTransition)}
-            key={theme.colors.primary + account.instance}
+            key={theme.colors.primary + account.instance + "G"}
           >
             {((showDetails && !overall) || selectedDate) && (
               <Reanimated.View
@@ -214,11 +215,9 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
               </TouchableOpacity>
             )}
 
-            {hLength > 1 ? (
+            {Constants.appOwnership !== "expo" && hLength > 1 ? (
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
-                entering={FadeIn}
-                exiting={FadeOut}
                 style={{
                   paddingTop: 16,
                   marginVertical: -16,
@@ -268,8 +267,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                 {selectedDate ? (
                   <Reanimated.View
                     key={"sDateG"}
-                    entering={animPapillon(FadeInDown)}
-                    exiting={animPapillon(FadeOutUp)}
                   >
                     <NativeText
                       style={{ color: theme.colors.primary }}
@@ -348,8 +345,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
             {showDetails && maxAvg > 0 && minAvg > 0 ? (
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
-                entering={FadeIn}
-                exiting={FadeOut}
                 key={"detailsG"}
                 style={{
                   borderTopColor: theme.colors.border,

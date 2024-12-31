@@ -1,9 +1,8 @@
 import Router from "@/router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { LogBox, AppState, AppStateStatus } from "react-native";
+import { LogBox, AppState, AppStateStatus, ActivityIndicator, View } from "react-native";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
@@ -27,13 +26,19 @@ export default function App () {
   const accounts = useAccounts((store) => store.accounts)
     .filter(account => !account.isExternal);
 
-  const [fontsLoaded, fontError] = useFonts({
+  const [fontsLoaded] = useFonts({
     light: require("./assets/fonts/FixelText-Light.ttf"),
     regular: require("./assets/fonts/FixelText-Regular.ttf"),
     medium: require("./assets/fonts/FixelText-Medium.ttf"),
     semibold: require("./assets/fonts/FixelText-SemiBold.ttf"),
     bold: require("./assets/fonts/FixelText-Bold.ttf"),
   });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch((error) => log(`Error hiding splash screen: ${error}`, "SplashScreen"));
+    }
+  }, [fontsLoaded]);
 
   const getBackgroundTimeLimit = useCallback((service: AccountService): number => {
     return BACKGROUND_LIMITS[service] ?? DEFAULT_BACKGROUND_TIME;
@@ -44,31 +49,12 @@ export default function App () {
       if (!backgroundStartTime.current) return;
 
       const timeInBackground = Date.now() - backgroundStartTime.current;
-      await AsyncStorage.setItem("@background_timestamp", Date.now().toString());
+      backgroundStartTime.current = null;
 
       for (const account of accounts) {
         const timeLimit = getBackgroundTimeLimit(account.service);
-        const timeInBackgroundSeconds = Math.floor(timeInBackground / 1000);
-        const serviceName = AccountService[account.service];
-
-        log(`Checking account ${account.studentName.first} ${account.studentName.last}:`, "RefreshToken");
-        log(`Time in background: ${timeInBackgroundSeconds}s`, "RefreshToken");
-        log(`Time limit: ${timeLimit / 1000}s`, "RefreshToken");
-        log(`Account type: ${serviceName}`, "RefreshToken");
-        log(`Using ${BACKGROUND_LIMITS[account.service] ? "specific" : "default"} time limit`, "RefreshToken");
-
         if (timeInBackground >= timeLimit) {
-          log(`⚠️ Refreshing account ${account.studentName.first} ${account.studentName.last} after ${timeInBackgroundSeconds}s in background`, "RefreshToken");
-
-          // Prevent React state updates during render
-          setTimeout(() => {
-            switchTo(account).catch((error) => {
-              log(`Error during switchTo: ${error}`, "RefreshToken");
-            });
-          }, 0);
-
-          // Wait before processing next account
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await switchTo(account);
         }
       }
     } catch (error) {
@@ -99,9 +85,7 @@ export default function App () {
     LogBox.ignoreLogs([
       "[react-native-gesture-handler]",
       "VirtualizedLists should never be nested",
-      "TNodeChildrenRenderer: Support for defaultProps",
-      "Service not implemented",
-      "Linking found multiple possible"
+      "TNodeChildrenRenderer: Support for defaultProps"
     ]);
 
     expoGoWrapper(async () => {
@@ -111,21 +95,27 @@ export default function App () {
   }, []);
 
   const applyGlobalPolyfills = useCallback(() => {
-    const encoding = require("text-encoding");
-    Object.assign(global, {
-      TextDecoder: encoding.TextDecoder,
-      TextEncoder: encoding.TextEncoder,
-      atob: atobPolyfill,
-      btoa: btoaPolyfill
-    });
+    if (!global.TextEncoder || !global.TextDecoder) {
+      const encoding = require("text-encoding");
+      Object.assign(global, {
+        TextDecoder: encoding.TextDecoder,
+        TextEncoder: encoding.TextEncoder,
+        atob: atobPolyfill,
+        btoa: btoaPolyfill,
+      });
+    }
   }, []);
 
   useEffect(() => {
     applyGlobalPolyfills();
   }, [applyGlobalPolyfills]);
 
-  if (!fontsLoaded && !fontError) {
-    return null;
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return <Router />;

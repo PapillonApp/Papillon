@@ -169,7 +169,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
           <NativeList>
             {chats.map((chat) => (
               <NativeItem
-                key={chat.id}
+                key={chat.id+"chatid"}
                 onPress={() => navigation.navigate("Chat", { handle: chat })}
                 leading={
                   <InitialIndicator

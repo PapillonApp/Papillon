@@ -35,7 +35,7 @@ const SettingsFlagsInfos: Screen<"SettingsFlagsInfos"> = ({ route, navigation })
       contentContainerStyle={[
         styles.container,
         {
-          paddingBottom: insets.bottom,
+          paddingBottom: insets.bottom + 100,
           backgroundColor: colors.background
         }
       ]}

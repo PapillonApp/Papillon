@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { Search, X } from "lucide-react-native";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
+import Constants from "expo-constants";
 
 /**
  * Allows the get the location of the user manually.
@@ -117,8 +118,6 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
 
         {municipalities.results.length == 0 && (
           <Reanimated.View
-            entering={FadeInUp.duration(250).delay(200)}
-            exiting={FadeOutUp.duration(150)}
             style={{ zIndex: 9999 }}
             layout={LinearTransition}
           >
@@ -144,7 +143,13 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
           ]}
           layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
         >
-          <Search size={24} color={colors.text + "55"} />
+          <Search
+            size={24}
+            color={colors.text + "55"}
+            style={{
+              marginTop: Constants.appOwnership === "expo" ? 7.5 : 0,
+            }}
+          />
 
           <TextInput
             ref={searchInputRef}
@@ -162,11 +167,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
           />
 
           { search.length > 0 && (
-            <Reanimated.View
-              layout={LinearTransition}
-              entering={ZoomIn.springify()}
-              exiting={ZoomOut.springify()}
-            >
+            <Reanimated.View layout={LinearTransition}>
               <TouchableOpacity onPress={() => {
                 setSearch("");
                 searchInputRef.current?.focus();
@@ -192,8 +193,6 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
               <Reanimated.View
                 style={styles.loadingContainer}
                 layout={LinearTransition}
-                entering={FadeInDown.springify()}
-                exiting={FadeOutDown.springify()}
               >
                 <ActivityIndicator />
                 <Text
@@ -210,10 +209,8 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
               municipalities.results.map((municipality, index) => (
                 <Reanimated.View
                   style={{ width: "100%" }}
-                  entering={FlipInXDown.springify().delay(100 * index)}
-                  exiting={FadeOutDown.duration(150).delay(100 * index)}
                   layout={LinearTransition}
-                  key={index}
+                  key={index + "municipality"}
                 >
                   <DuoListPressable
                     text={`${municipality.properties.name} (${municipality.properties.postcode})`}

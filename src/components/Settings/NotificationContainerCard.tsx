@@ -36,17 +36,17 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
   }, [isEnable]);
 
   const containerAnimatedStyle = useAnimatedStyle(() => ({
-    borderRadius: borderRadius.value,
-    width: width.value as DimensionValue | undefined,
-    marginBottom: marginBottom.value,
+    borderRadius: borderRadius.get(),
+    width: width.get() as DimensionValue | undefined,
+    marginBottom: marginBottom.get(),
   }));
 
   const textAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: opacity.get(),
   }));
 
   const invertedTextAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: invertedOpacity.value,
+    opacity: invertedOpacity.get(),
   }));
 
   return (

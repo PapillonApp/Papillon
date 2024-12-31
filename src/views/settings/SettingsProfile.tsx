@@ -2,10 +2,11 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTheme } from "@react-navigation/native";
+import Constants from "expo-constants";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, ChevronDown, ChevronUp, Plus, TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Switch, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as Clipboard from "expo-clipboard";
@@ -134,7 +135,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
         contentContainerStyle={{
           padding: 16,
           paddingTop: 0,
-          paddingBottom: 16 + insets.bottom,
+          paddingBottom: 100 + insets.bottom,
         }}
       >
 
@@ -197,6 +198,9 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
                 fontSize: 16,
                 fontFamily: "semibold",
                 color: theme.colors.text,
+                marginTop: Constants.appOwnership === "expo" ? -7.5 : 0,
+                marginBottom: Constants.appOwnership === "expo" ? -7.5 : 0,
+                marginLeft: Constants.appOwnership === "expo" ? -4 : 0,
               }}
               placeholder="Théo"
               placeholderTextColor={theme.colors.text + "80"}
@@ -219,6 +223,9 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
                 fontSize: 16,
                 fontFamily: "semibold",
                 color: theme.colors.text,
+                marginTop: Constants.appOwnership === "expo" ? -7.5 : 0,
+                marginBottom: Constants.appOwnership === "expo" ? -7.5 : 0,
+                marginLeft: Constants.appOwnership === "expo" ? -4 : 0,
               }}
               placeholder="Dubois"
               placeholderTextColor={theme.colors.text + "80"}
@@ -242,6 +249,11 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               <Switch
                 value={!hideNameOnHomeScreen}
                 onValueChange={() => setHideNameOnHomeScreen(!hideNameOnHomeScreen)}
+                style={{
+                  marginTop: -7.5,
+                  marginBottom: -7.5,
+                  marginLeft: -4,
+                }}
               />
             }
           >
@@ -261,6 +273,11 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               <Switch
                 value={!hideProfilePicOnHomeScreen}
                 onValueChange={() => setHideProfilePicOnHomeScreen(!hideProfilePicOnHomeScreen)}
+                style={{
+                  marginTop: -7.5,
+                  marginBottom: -7.5,
+                  marginLeft: -4,
+                }}
               />
             }
           >

@@ -2,8 +2,8 @@ import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import { animPapillon } from "@/utils/ui/animations";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { PressableScale } from "react-native-pressable-scale";
+import { TouchableOpacity, View } from "react-native";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import type { Grade } from "@/services/shared/Grade";
 
@@ -36,14 +36,17 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
   }, [grade.subjectName]);
 
   return (
-    <PressableScale
+    <TouchableOpacity
       onPress={() => navigation.navigate("GradeDocument", { grade, allGrades })}
     >
       <NativeList
         animated
-        key={grade.id}
+        key={grade.id + "gradeslatestitemitem"}
+        entering={animPapillon(FadeInRight).delay(100 * i + 100)}
+        exiting={animPapillon(FadeOutLeft).delay(100 * i)}
         style={{
           width: 230,
+          elevation: 0,
         }}
       >
         <View
@@ -146,7 +149,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
           </View>
         </View>
       </NativeList>
-    </PressableScale>
+    </TouchableOpacity>
   );
 };
 

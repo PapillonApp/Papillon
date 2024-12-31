@@ -158,8 +158,6 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
 
       {!keyboardOpen &&
         <Reanimated.View
-          entering={FadeInUp.duration(250).delay(200)}
-          exiting={FadeOutUp.duration(150)}
           style={{ zIndex: 9999 }}
           layout={LinearTransition}
         >
@@ -185,7 +183,13 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
         ]}
         layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
       >
-        <Search size={24} color={colors.text + "55"} />
+        <Search
+          size={24}
+          color={colors.text + "55"}
+          style={{
+            marginTop: 7.5,
+          }}
+        />
 
         <TextInput
           ref={searchInputRef}
@@ -204,8 +208,6 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
         {search.length > 0 && (
           <Reanimated.View
             layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
-            entering={ZoomIn.springify()}
-            exiting={ZoomOut.springify()}
           >
             <TouchableOpacity onPress={() => {
               setSearch("");
@@ -255,8 +257,6 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                   fontFamily: "medium",
                   fontSize: 16,
                 }}
-                entering={FadeInUp.springify()}
-                exiting={FadeOutUp.springify()}
               >
                 Aucun établissement trouvé.
               </Reanimated.Text>
@@ -282,7 +282,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                       : ZoomInEasyDown.duration(400).easing(Easing.bezier(0.25, 0.1, 0.25, 1)).delay(30 * index)
                   }
                   exiting={index < 10 ? FadeOutUp : void 0}
-                  key={instance.url}
+                  key={instance.url + "instanceurlindex"}
                 >
                   <DuoListPressable
                     leading={
