@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import { Image, ActivityIndicator, FlatList, ImageBackground, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView,} from "react-native";
 import { useTheme} from "@react-navigation/native";
 
@@ -39,7 +39,10 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22,
-    }
+    },
+    a: {
+      textDecorationLine: "underline",
+    },
   });
 
   const stylesTextAuthor = StyleSheet.create({
@@ -48,7 +51,10 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22
-    }
+    },
+    a: {
+      textDecorationLine: "underline",
+    },
   });
 
   const account = useCurrentAccount((state) => state.account!);
@@ -85,9 +91,20 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
       setMessages(messages);
       setRecipients(recipients);
       setActualTheme(theme);
+
+      setTimeout(() => {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }, 100);
     })();
   }, [route.params.handle]);
 
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (messages.length > 0 && flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages, flatListRef.current]);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -143,12 +160,12 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
             style={{ flex: 1 }}
           >
             <FlatList
-              inverted
-              data={[...messages].reverse()}
+              ref={flatListRef}
+              data={[...messages]}
               keyExtractor={(item, index) => index.toString()}
               contentContainerStyle={{
                 padding: 16,
-                paddingTop: 40
+                paddingTop: 120
               }}
               style={{
                 flex: 1,
@@ -195,7 +212,6 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                   };
                 }
 
-
                 return (
                   <View style={{ gap: 10 }}>
                     {!isFirst ? null : (
@@ -238,14 +254,16 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                       ...borderStyle,
                       gap: 5,
                       position: "relative",
+                      maxWidth: "87%",
                     }}>
                       {item.content.trim() !== "" && (
                         <HTMLView
                           value={`<body>${item.content.replaceAll(/<\/?font[^>]*>/g, "")}</body>`}
                           stylesheet={authorIsUser ? stylesTextAuthor : stylesText}
+                          onLinkPress={(url) => openUrl(url)}
                         />
                       )}
-                      {item.attachments && (
+                      {item.attachments && item.attachments.length > 0 && (
                         <View
                           style={{
                             marginTop: 10,

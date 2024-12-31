@@ -99,7 +99,9 @@ export default function App () {
     LogBox.ignoreLogs([
       "[react-native-gesture-handler]",
       "VirtualizedLists should never be nested",
-      "TNodeChildrenRenderer: Support for defaultProps"
+      "TNodeChildrenRenderer: Support for defaultProps",
+      "Service not implemented",
+      "Linking found multiple possible"
     ]);
 
     expoGoWrapper(async () => {

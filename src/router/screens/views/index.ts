@@ -84,7 +84,8 @@ export default [
   createScreen("Chat", Chat, {
     headerTitle: "Discussions",
     headerShown: false,
-    presentation: "modal"
+    presentation: "modal",
+    gestureEnabled: false,
   }),
   createScreen("ChatDetails", ChatDetails, {
     headerTitle: "Discussions",
