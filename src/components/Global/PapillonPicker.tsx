@@ -11,7 +11,7 @@ import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { Check } from "lucide-react-native";
 
-type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown }[];
+type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown, checked?: boolean }[];
 
 interface PapillonPickerProps {
   children: React.ReactNode
@@ -92,7 +92,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             }}
             tint={theme.dark ? "dark" : "light"}
           >
-            {data.map((item, index) => {
+            {data.filter((item) => item !== null).map((item, index) => {
               // check if item is a string or a component
               const isNotString = typeof item !== "string";
 
@@ -137,7 +137,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
 
                     <View style={{ flex: 1 }} />
 
-                    {item === selected && (
+                    {item === selected || (isNotString && item.checked) && (
                       <Check
                         size={20}
                         strokeWidth={2.5}

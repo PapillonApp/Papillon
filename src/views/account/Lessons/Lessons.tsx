@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
-import { updateTimetableForWeekInCache } from "@/services/timetable";
+import { getWeekFrequency, updateTimetableForWeekInCache } from "@/services/timetable";
 import { Page } from "./Atoms/Page";
 import { LessonsDateModal } from "./LessonsHeader";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
@@ -22,7 +22,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { CalendarPlus, MoreVertical } from "lucide-react-native";
+import { CalendarPlus, Eye, MoreVertical } from "lucide-react-native";
 import {
   PapillonHeaderAction,
   PapillonHeaderSelector,
@@ -31,6 +31,8 @@ import {
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { WeekFrequency } from "@/services/shared/Timetable";
+import { frequency } from "pawnote";
 
 const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const account = useCurrentAccount((store) => store.account!);
@@ -42,6 +44,9 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   const loadedWeeks = useRef<Set<number>>(new Set());
   const currentlyLoadingWeeks = useRef<Set<number>>(new Set());
+
+  const [shouldShowWeekFrequency, setShouldShowWeekFrequency] = useState(true);
+  const [weekFrequency, setWeekFrequency] = useState<WeekFrequency | null>(null);
 
   useEffect(() => {
     // add all week numbers in timetables to loadedWeeks
@@ -66,6 +71,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     void (async () => {
       const weekNumber = getWeekFromDate(pickerDate);
       await loadTimetableWeek(weekNumber, false);
+      setWeekFrequency((await getWeekFrequency(account, weekNumber)));
     })();
   }, [pickerDate, account.instance]);
 
@@ -312,6 +318,41 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
           >
             {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
           </Reanimated.Text>
+
+          { weekFrequency && shouldShowWeekFrequency && (
+            <Reanimated.View
+              layout={animPapillon(LinearTransition)}
+              entering={FadeIn.duration(150)}
+              exiting={FadeOut.duration(150)}
+            >
+              <Reanimated.View
+                style={[
+                  {
+                    borderColor: theme.colors.text,
+                    borderWidth: 1,
+                    paddingHorizontal: 4,
+                    paddingVertical: 3,
+                    borderRadius: 6,
+                    opacity: 0.5,
+                  },
+                ]}
+                layout={animPapillon(LinearTransition)}
+              >
+                <Reanimated.Text
+                  style={[
+                    {
+                      color: theme.colors.text,
+                      fontFamily: "medium",
+                      letterSpacing: 0.5,
+                    },
+                  ]}
+                  layout={animPapillon(LinearTransition)}
+                >
+                  {weekFrequency.freqLabel}
+                </Reanimated.Text>
+              </Reanimated.View>
+            </Reanimated.View>
+          ) }
         </PapillonHeaderSelector>
 
         <PapillonHeaderSeparator />
@@ -327,6 +368,14 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
               onPress: () => {
                 navigation.navigate("LessonsImportIcal", {});
               }
+            },
+            weekFrequency && {
+              icon: <Eye />,
+              label: "Afficher type sem.",
+              onPress: () => {
+                setShouldShowWeekFrequency(!shouldShowWeekFrequency);
+              },
+              checked: shouldShowWeekFrequency,
             }
           ]}
         >
