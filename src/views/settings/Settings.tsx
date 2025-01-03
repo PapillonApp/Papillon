@@ -28,7 +28,9 @@ import {
   Route,
   Scroll,
   Settings as SettingsLucide,
-  Sparkles, SunMoon,
+  Sparkles, 
+  SunMoon, 
+  Smile,
   SwatchBook,
   WandSparkles,
   X
@@ -114,6 +116,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#D79400",
           label: "Services externes",
           onPress: () => navigation.navigate("SettingsExternalServices"),
+        },
+        {
+          icon: <Smile />,
+          color: "#136B00",
+          label: "Réactions",
+          onPress: () => navigation.navigate("SettingsReactions"),
         },
       ],
     },
