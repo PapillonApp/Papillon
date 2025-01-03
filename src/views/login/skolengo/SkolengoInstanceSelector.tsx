@@ -11,7 +11,6 @@ import { useTheme } from "@react-navigation/native";
 
 import { Search, X, GraduationCap, } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
-import { Audio } from "expo-av";
 import type { School } from "scolengo-api/types/models/School";
 import { Skolengo } from "scolengo-api";
 import { useDebounce } from "@/hooks/debounce";
@@ -38,7 +37,6 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const keyboardDidShow = (event: KeyboardEvent) => {
     setKeyboardOpen(true);
@@ -59,25 +57,6 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
       Keyboard.removeAllListeners("keyboardDidHide");
     };
   }, []);
-
-  useEffect(() => {
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("@/../assets/sound/3.wav")
-      );
-      setSound(sound);
-    };
-
-    loadSound();
-
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
-
-  const playSound = () => sound?.replayAsync();
 
   useEffect(() => {
     if (params && params.pos && params.pos !== null) {

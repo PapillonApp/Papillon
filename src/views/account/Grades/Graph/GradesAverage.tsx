@@ -33,6 +33,7 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
 import { AlertTriangle, Calculator, Check, ExternalLink, PieChart, Spline, SquareRadical, TrendingUp } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -48,6 +49,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
   const { showAlert } = useAlert();
+  const { enableHaptics } = useThemeSoundHaptics();
 
   const [gradesHistory, setGradesHistory] = useState<GradeHistory[]>([]);
   const [hLength, setHLength] = useState(0);
@@ -66,7 +68,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   const gradesHistoryRef = useRef(gradesHistory);
 
   useEffect(() => {
-    if (currentAvg !== originalCurrentAvg) {
+    if (currentAvg !== originalCurrentAvg && enableHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   }, [currentAvg]);

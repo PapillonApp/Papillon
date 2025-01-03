@@ -16,6 +16,7 @@ import { getIconName, setIconName } from "@candlefinance/app-icon";
 import colorsList from "@/utils/data/colors.json";
 import { removeColor } from "../settings/SettingsIcons";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 type Color = typeof colorsList[number];
 
@@ -26,6 +27,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const account = useCurrentAccount(store => store.account);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const settings = route.params?.settings || false;
+  const { enableSon, enableHaptics } = useThemeSoundHaptics();
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
@@ -81,8 +83,8 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
 
   const selectColor = (color: Color) => {
     mutateProperty("personalization", { color });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    playSound2();
+    if (enableHaptics) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (enableSon) playSound2();
 
     expoGoWrapper(() => {
       getIconName().then((currentIcon) => {
@@ -215,7 +217,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           primary
           value="Finaliser"
           onPress={async () => {
-            if (!settings) {
+            if (!settings && enableSon) {
               await playSound();
             }
             navigation.navigate("AccountStack", {onboard: true});

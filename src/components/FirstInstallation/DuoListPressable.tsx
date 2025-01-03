@@ -6,6 +6,7 @@ import * as Haptics from "expo-haptics";
 import { Audio } from "expo-av";
 
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const DuoListPressable: React.FC<{
   children?: JSX.Element,
@@ -31,6 +32,8 @@ const DuoListPressable: React.FC<{
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
+  const { enableSon, enableHaptics } = useThemeSoundHaptics();
+
   const playSound = useCallback(async () => {
     const { sound } = await Audio.Sound.createAsync(
       require("@/../assets/sound/click_003.wav")
@@ -44,8 +47,8 @@ const DuoListPressable: React.FC<{
       scale.value = withTiming(1, { duration: 0, easing: Easing.linear });
       scale.value = withTiming(0.95, { duration: 50, easing: Easing.linear });
       opacity.value = withTiming(0.7, { duration: 10, easing: Easing.linear });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      playSound();
+      if (enableHaptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (enableSon) playSound();
     }
     else {
       scale.value = withTiming(1, { duration: 100, easing: Easing.linear });

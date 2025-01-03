@@ -14,12 +14,14 @@ import * as Haptics from "expo-haptics";
 
 import { useCurrentAccount } from "@/stores/account";
 import { Audio } from "expo-av";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
 
   const account = useCurrentAccount((state) => state.account!);
+  const { enableSon, enableHaptics } = useThemeSoundHaptics();
 
   const loadSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
@@ -72,11 +74,13 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
     const unsubscribe = navigation.addListener("focus", () => {
       setShowAnimation(true);
 
-      // loop 20 times
-      for (let i = 0; i < 15; i++) {
-        setTimeout(() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        }, i * 20);
+      if (enableHaptics) {
+        // loop 20 times
+        for (let i = 0; i < 15; i++) {
+          setTimeout(() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }, i * 20);
+        }
       }
     });
 
@@ -130,14 +134,14 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
           primary
           onPress={() => {
             navigation.navigate("ColorSelector");
-            playSound();
+            if (enableSon) playSound();
           }}
         />
         <ButtonCta
           value="Ignorer cette étape"
           onPress={() => {
             navigation.navigate("AccountStack", { onboard: true });
-            playSound2();
+            if (enableSon) playSound2();
           }}
         />
       </View>

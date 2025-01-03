@@ -30,6 +30,7 @@ import {
   Settings as SettingsLucide,
   Sparkles, SunMoon,
   SwatchBook,
+  Volume2,
   WandSparkles,
   X
 } from "lucide-react-native";
@@ -146,6 +147,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               navigation.navigate("ColorSelector", { settings: true });
             }, 10);
           }
+        },
+        {
+          icon: <Volume2 />,
+          color: "#FF0075",
+          label: "Son et vibrations",
+          onPress: () => navigation.navigate("SettingsSoundHaptics"),
         },
         {
           icon: <SunMoon />,

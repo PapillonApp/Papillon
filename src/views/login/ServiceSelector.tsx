@@ -18,6 +18,7 @@ import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { sr } from "date-fns/locale";
 import { sub } from "date-fns";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -30,6 +31,8 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const [service, setService] = useState<Services | null>(null);
 
   const [v6Data, setV6Data] = useState<any | null>(null);
+
+  const { enableSon } = useThemeSoundHaptics();
 
   useEffect(() => {
     setTimeout(async () => {
@@ -54,7 +57,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       image: require("../../../assets/images/service_pronote.png"),
       login: () => {
         navigation.navigate("PronoteAuthenticationSelector");
-        playSound();
+        if (enableSon) playSound();
       },
     },
     {
@@ -63,7 +66,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       image: require("../../../assets/images/service_ed.png"),
       login: () => {
         navigation.navigate("EcoleDirecteCredentials");
-        playSound();
+        if (enableSon) playSound();
       }
     },
     {
@@ -72,7 +75,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       image: require("../../../assets/images/service_skolengo.png"),
       login: () => {
         navigation.navigate("SkolengoAuthenticationSelector");
-        playSound();
+        if (enableSon) playSound();
       }
     },
     {
@@ -83,7 +86,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       icon: <School />,
       login: () => {
         navigation.navigate("IdentityProviderSelector");
-        playSound();
+        if (enableSon) playSound();
       }
     },
   ];

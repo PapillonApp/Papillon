@@ -44,6 +44,7 @@ import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes"
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
 import {SearchBar} from "react-native-screens";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 type HomeworksPageProps = {
   index: number;
@@ -71,6 +72,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       320
   ) : 0);
   const insets = useSafeAreaInsets();
+  const { enableHaptics } = useThemeSoundHaptics();
 
   const outsideNav = route.params?.outsideNav;
 
@@ -415,7 +417,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             onPress={() => setShowPickerButtons(!showPickerButtons)}
             onLongPress={() => {
               setHideDone(!hideDone);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              if (enableHaptics) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             }}
             delayLongPress={200}
           >

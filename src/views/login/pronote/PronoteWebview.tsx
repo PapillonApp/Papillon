@@ -34,6 +34,7 @@ import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import { useAlert } from "@/providers/AlertProvider";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -51,6 +52,8 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
 
   const [loginStep, setLoginStep] = useState("Préparation de la connexion");
+
+  const { enableSon } = useThemeSoundHaptics();
 
   const instanceURL = route.params.instanceURL.toLowerCase();
 
@@ -105,7 +108,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    playSound();
+    if (enableSon) playSound();
   }, []);
 
   const INJECT_PRONOTE_JSON = `
@@ -357,7 +360,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 queueMicrotask(() => {
                   // Reset the navigation stack to the "Home" screen.
                   // Prevents the user from going back to the login screen.
-                  playSound();
+                  if (enableSon) playSound();
                   navigation.reset({
                     index: 0,
                     routes: [{ name: "AccountCreated" }],

@@ -19,6 +19,7 @@ import { Account, AccountService } from "@/stores/account/types";
 import { Audio } from "expo-av";
 import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -54,6 +55,8 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
 
   const codeInput = React.createRef<TextInput>();
   const [QRData, setQRData] = useState<string | null>(null);
+
+  const { enableSon, enableHaptics } = useThemeSoundHaptics();
 
   async function loginQR () {
     setScanned(false);
@@ -130,7 +133,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
         queueMicrotask(() => {
           // Reset the navigation stack to the "Home" screen.
           // Prevents the user from going back to the login screen.
-          playSound();
+          if (enableSon) playSound();
           navigation.reset({
             index: 0,
             routes: [{ name: "AccountCreated" }],
@@ -184,7 +187,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     data: string;
   }) => {
     setScanned(true);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (enableHaptics) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setQRData(data);
     setPinModalVisible(true);
   };

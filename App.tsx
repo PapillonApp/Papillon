@@ -9,6 +9,7 @@ import {AccountService, PrimaryAccount} from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
+import { SoundHapticsProvider } from "@/hooks/Theme_Sound_Haptics";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -128,5 +129,9 @@ export default function App () {
     return null;
   }
 
-  return <Router />;
+  return (
+    <SoundHapticsProvider>
+      <Router />
+    </SoundHapticsProvider>
+  );
 }

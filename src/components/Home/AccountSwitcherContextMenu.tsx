@@ -27,6 +27,7 @@ import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
 import { Check, CirclePlus, Cog, Plus } from "lucide-react-native";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const ContextMenu: React.FC<{
   style?: any;
@@ -38,6 +39,7 @@ const ContextMenu: React.FC<{
   const theme = useTheme();
   const { colors } = theme;
   const navigation = useNavigation();
+  const { enableHaptics } = useThemeSoundHaptics();
 
   const [opened, setOpened] = useState(false); // État pour gérer l'ouverture du menu contextuel
 
@@ -74,7 +76,7 @@ const ContextMenu: React.FC<{
           <TouchableOpacity
             onPress={() => {
               setOpened(!opened);
-              openEffects();
+              if (enableHaptics) openEffects();
             }}
             // @ts-expect-error
             pointerEvents="auto"
@@ -90,7 +92,7 @@ const ContextMenu: React.FC<{
           <TouchableNativeFeedback
             onPress={() => {
               setOpened(!opened);
-              openEffects();
+              if (enableHaptics) openEffects();
             }}
             useForeground={true}
             style={{

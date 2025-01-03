@@ -12,6 +12,7 @@ import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimat
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { Audio } from "expo-av";
 import { NativeText } from "@/components/Global/NativeComponents";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -19,6 +20,8 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
   type Methods = "geolocation" | "manual-location" | "manual-url" | "qr-code";
   const [method, setMethod] = useState<Methods | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  const { enableSon } = useThemeSoundHaptics();
 
   const loadSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
@@ -48,7 +51,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
         break;
     }
 
-    playSound();
+    if (enableSon) playSound();
   };
 
   return (
