@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, Animated, Easing, ViewStyle, StyleProp } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { Animated, Easing, ViewStyle, StyleProp } from "react-native";
 import Reanimated, {
   LinearTransition,
   EntryExitAnimationFunction,

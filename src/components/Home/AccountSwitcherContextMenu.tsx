@@ -26,7 +26,7 @@ import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-import { Check, CirclePlus, Cog, Plus } from "lucide-react-native";
+import { Check, Cog, Plus } from "lucide-react-native";
 
 const ContextMenu: React.FC<{
   style?: any;

@@ -1,5 +1,4 @@
 import { LocalAccount } from "@/stores/account/types";
-import uuid from "@/utils/uuid-v4";
 import { Attendance } from "../shared/Attendance";
 import { Absence } from "../shared/Absence";
 

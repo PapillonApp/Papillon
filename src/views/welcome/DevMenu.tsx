@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { ChevronRight } from "lucide-react-native";
 import React, { useLayoutEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Button, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";

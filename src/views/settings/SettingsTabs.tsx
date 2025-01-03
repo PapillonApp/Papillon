@@ -26,15 +26,12 @@ import { PressableScale } from "react-native-pressable-scale";
 import Reanimated, {
   FadeIn,
   FadeOut,
-  FadeInUp,
-  FadeOutDown,
   LinearTransition,
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { defaultTabs } from "@/consts/DefaultTabs";
-import { animPapillon } from "@/utils/ui/animations";
 import { log } from "@/utils/logger/logger";
 import { useAlert } from "@/providers/AlertProvider";
 

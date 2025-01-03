@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, View, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { GraduationCap, Utensils, BookOpen, Building, School, BookmarkMinus, Compass } from "lucide-react-native";
+import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
   NativeList,
@@ -12,7 +12,7 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { AccountService } from "@/stores/account/types";
-import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { useAccounts } from "@/stores/account";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },

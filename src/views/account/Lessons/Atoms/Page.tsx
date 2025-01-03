@@ -1,7 +1,6 @@
-import { NativeText } from "@/components/Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
+import React from "react";
+import { Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
 import { TimetableItem } from "./Item";
 import { createNativeWrapper } from "react-native-gesture-handler";
 
@@ -11,9 +10,8 @@ import Reanimated, {
   FadeOutUp
 } from "react-native-reanimated";
 
-import { Activity, Sofa, Utensils } from "lucide-react-native";
-import LessonsNoCourseItem from "./NoCourse";
-import { Timetable, TimetableClass } from "@/services/shared/Timetable";
+import { Sofa, Utensils } from "lucide-react-native";
+import { TimetableClass } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";

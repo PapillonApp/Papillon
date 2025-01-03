@@ -1,10 +1,8 @@
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
-import { animPapillon } from "@/utils/ui/animations";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PressableScale } from "react-native-pressable-scale";
-import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import type { Grade } from "@/services/shared/Grade";
 
 type GradeLatestItemProps = {

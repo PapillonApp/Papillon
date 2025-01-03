@@ -4,7 +4,7 @@ import type { Homework } from "./shared/Homework";
 import { error } from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
-import { dateToEpochWeekNumber, epochWNToPronoteWN } from "@/utils/epochWeekNumber";
+import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
 

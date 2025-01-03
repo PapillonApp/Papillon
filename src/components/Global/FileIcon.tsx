@@ -1,4 +1,4 @@
-import { FileText, FileType, FileType2, Music, Paperclip, Image, Clapperboard, TypeIcon } from "lucide-react-native";
+import { FileText, Music, Paperclip, Image, Clapperboard, TypeIcon } from "lucide-react-native";
 
 export const AutoFileIcon = (props: any) => {
   const { filename } = props;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { Image, View } from "react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";

@@ -1,21 +1,14 @@
 import React, { useEffect } from "react";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { CircleDashed, QrCode, Star } from "lucide-react-native";
+import { QrCode } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image, View, StyleSheet, StatusBar, ScrollView, Text } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
-import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import {
-  NativeItem,
-  NativeList,
-  NativeText,
-} from "@/components/Global/NativeComponents";
-import { AccountService, ExternalAccount } from "@/stores/account/types";
-import { useAccounts, useCurrentAccount } from "@/stores/account";
-import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
-import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+
+
+import { ExternalAccount } from "@/stores/account/types";
+import { useAccounts } from "@/stores/account";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import MaskedView from "@react-native-masked-view/masked-view";
 import * as Haptics from "expo-haptics";

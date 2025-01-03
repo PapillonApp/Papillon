@@ -4,9 +4,7 @@ import { Platform, Text } from "react-native";
 
 import Reanimated, {
   FadeIn,
-  FadeInDown,
-  FadeOut,
-  FadeOutUp
+  FadeOut
 } from "react-native-reanimated";
 
 const HomeworksNoHomeworksItem = () => {

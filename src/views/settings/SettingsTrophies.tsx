@@ -1,8 +1,7 @@
 import React from "react";
-import { Text, ScrollView, View, TouchableOpacity, StyleSheet, Image, Switch } from "react-native";
+import { ScrollView, View, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { ChevronLeft, MegaphoneOff } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 

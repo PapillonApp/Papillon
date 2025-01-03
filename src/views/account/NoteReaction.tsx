@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions, PermissionStatus } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { X, Share2, Save } from "lucide-react-native";
+import { X, Share2 } from "lucide-react-native";
 import * as Sharing from "expo-sharing";
 import { useCurrentAccount } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
