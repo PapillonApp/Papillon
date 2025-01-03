@@ -351,7 +351,6 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         style={{
           flex: 1,
           width: "100%",
-          maxWidth: 500,
           backgroundColor: theme.colors.background,
           borderCurve: "continuous",
           overflow: "hidden",

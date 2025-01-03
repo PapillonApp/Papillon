@@ -4,7 +4,7 @@
     "slug": "papillonvex",
     "scheme": "papillon", 
     "version": "7.7.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "primaryColor": "#32AB8E",

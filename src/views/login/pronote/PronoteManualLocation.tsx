@@ -108,14 +108,14 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
         style={[
           {
             flex: 1,
-            paddingTop: insets.top + 44,
+            paddingTop: "14%",
             justifyContent: "center",
           }
         ]}
       >
         <MaskStars />
 
-        {municipalities.results.length == 0 && (
+        {!keyboardOpen && municipalities.results.length == 0 && (
           <Reanimated.View
             entering={FadeInUp.duration(250).delay(200)}
             exiting={FadeOutUp.duration(150)}
@@ -127,7 +127,6 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
               numberOfLines={2}
               width={250}
               noFlex
-              style={{ marginTop: 20 }}
             />
           </Reanimated.View>
         )}
