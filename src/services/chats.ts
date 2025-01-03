@@ -1,6 +1,8 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import type { Chat, ChatMessage, ChatRecipient } from "./shared/Chat";
 import type { Recipient } from "./shared/Recipient";
+import {getFeatureAccount} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 export const getChats = async <T extends Account> (account: T): Promise<Array<Chat>> => {
   switch (account.service) {
@@ -11,6 +13,13 @@ export const getChats = async <T extends Account> (account: T): Promise<Array<Ch
     case AccountService.EcoleDirecte: {
       const {getChats} = await import("./ecoledirecte/chats");
       return await getChats(account);
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await getChats(service);
     }
     default:
       console.info(`[getChats]: returning empty since ${account.service} not implemented.`);
@@ -28,6 +37,13 @@ export const getChatRecipients = async <T extends Account> (account: T, chat: Ch
       // TODO
       return [];
     }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await getChatRecipients(service, chat);
+    }
     default:
       console.info(`[getChatRecipients]: returning empty since ${account.service} not implemented.`);
       return [];
@@ -42,6 +58,13 @@ export const sendMessageInChat = async <T extends Account> (account: T, chat: Ch
     }
     case AccountService.EcoleDirecte: {
       // TODO
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await sendMessageInChat(service, chat, content);
     }
     default:
       console.info("[sendMessageInChat]: Not Implementend.");
@@ -58,6 +81,13 @@ export const getChatMessages = async <T extends Account> (account: T, chat: Chat
       const { getChatMessages } = await import("./ecoledirecte/chats");
       return [await getChatMessages(account, chat)];
     }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await getChatMessages(service, chat);
+    }
     default:
       console.info(`[getChatMessages]: returning empty since ${account.service} not implemented.`);
       return [];
@@ -69,6 +99,13 @@ export const createDiscussionRecipients = async <T extends Account> (account: T)
     case AccountService.Pronote: {
       const { createDiscussionRecipients } = await import("./pronote/chats");
       return createDiscussionRecipients(account);
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await createDiscussionRecipients(service);
     }
     default:
       console.info(`[createDiscussionRecipients]: returning empty since ${account.service} not implemented.`);
@@ -82,6 +119,13 @@ export const createDiscussion = async <T extends Account> (account: T, subject: 
       const { createDiscussion } = await import("./pronote/chats");
       createDiscussion(account, subject, content, recipients);
       break;
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await createDiscussion(service, subject, content, recipients);
     }
     default:
       console.info(`[createDiscussion]: doing nothing since ${account.service} is not implemented.`);

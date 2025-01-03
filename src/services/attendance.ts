@@ -4,6 +4,8 @@ import { useAttendanceStore } from "@/stores/attendance";
 import { Attendance } from "./shared/Attendance";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { error } from "@/utils/logger/logger";
+import {MultiServiceFeature} from "@/stores/multiService/types";
+import {getFeatureAccount} from "@/utils/multiservice";
 
 export async function updateAttendancePeriodsInCache <T extends Account> (account: T): Promise<void> {
   let periods: Period[] = [];
@@ -61,6 +63,13 @@ export async function updateAttendancePeriodsInCache <T extends Account> (accoun
 
       break;
     }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Attendance, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return updateAttendancePeriodsInCache(service);
+    }
     default:
       throw new Error("Service not implemented");
   }
@@ -115,6 +124,13 @@ export async function updateAttendanceInCache <T extends Account> (account: T, p
       attendance = await getAttendance(account);
 
       break;
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Attendance, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return updateAttendanceInCache(service, periodName);
     }
     default:
       throw new Error("Service not implemented");

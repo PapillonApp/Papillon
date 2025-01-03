@@ -61,6 +61,9 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
       const { reloadInstance } = await import("./multi/reload-multi");
       return await reloadInstance(account.authentication) as Reconnected<T>;
     }
+    case AccountService.PapillonMultiService: {
+      console.warn("PapillonMultiService space should never be reloaded.");
+    }
     default: {
       console.warn("Service not implemented");
       return { instance: undefined, authentication: undefined };

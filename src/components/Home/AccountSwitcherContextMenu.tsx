@@ -209,7 +209,7 @@ const ContextMenu: React.FC<{
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >
-                        {AccountService[account.service] !== "Local" ?
+                        {AccountService[account.service] !== "Local" && account.service !== AccountService.PapillonMultiService ?
                           AccountService[account.service] :
                           account.identityProvider ?
                             account.identityProvider.name :

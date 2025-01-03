@@ -86,6 +86,7 @@ export interface CurrentAccountStore {
   /** Si un compte est en cours d'utilisation, on obtient l'ID, sinon `null`. */
   account: PrimaryAccount | null
   linkedAccounts: ExternalAccount[]
+  associatedAccounts: PrimaryAccount[]
   mutateProperty: <T extends keyof PrimaryAccount>(key: T, value: PrimaryAccount[T]) => void
   linkExistingExternalAccount: (account: ExternalAccount) => void
   switchTo: (account: PrimaryAccount) => Promise<void>
@@ -105,7 +106,8 @@ export enum AccountService {
   Onisep,
   Multi,
   Izly,
-  Alise
+  Alise,
+  PapillonMultiService
 }
 
 /**
@@ -145,6 +147,7 @@ export interface PronoteAccount extends BaseAccount {
     deviceUUID: string
   }
   identityProvider?: undefined
+  associatedAccountsLocalIDs?: undefined
 }
 
 export interface EcoleDirecteAccount extends BaseAccount {
@@ -155,6 +158,7 @@ export interface EcoleDirecteAccount extends BaseAccount {
     account: PawdirecteAccount
   }
   identityProvider?: undefined
+  associatedAccountsLocalIDs?: undefined
 }
 
 export interface SkolengoAccount extends BaseAccount {
@@ -163,6 +167,7 @@ export interface SkolengoAccount extends BaseAccount {
   authentication: SkolengoAuthConfig
   userInfo: ScolengoAPIUser
   identityProvider?: undefined
+  associatedAccountsLocalIDs?: undefined
 }
 
 export interface MultiAccount extends BaseAccount {
@@ -173,6 +178,7 @@ export interface MultiAccount extends BaseAccount {
     refreshAuthToken: string
   }
   identityProvider?: undefined
+  associatedAccountsLocalIDs?: undefined
 }
 
 export interface LocalAccount extends BaseAccount {
@@ -192,7 +198,22 @@ export interface LocalAccount extends BaseAccount {
     username: string
     password: string
   }
+
+  associatedAccountsLocalIDs?: undefined
 }
+
+export interface PapillonMultiServiceSpace extends BaseAccount {
+  service: AccountService.PapillonMultiService
+  instance: null | string
+  authentication: null
+  identityProvider: {
+    name: string,
+    identifier: undefined,
+    rawData: undefined
+  },
+  associatedAccountsLocalIDs: string[]
+}
+
 
 export interface TurboselfAccount extends BaseExternalAccount {
   service: AccountService.Turboself
@@ -246,6 +267,7 @@ export type PrimaryAccount = (
   | SkolengoAccount
   | MultiAccount
   | LocalAccount
+  | PapillonMultiServiceSpace
 );
 export type ExternalAccount = (
   | TurboselfAccount

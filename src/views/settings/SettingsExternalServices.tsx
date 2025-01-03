@@ -26,7 +26,8 @@ const serviceConfig = {
   [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
   [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
   [AccountService.Local]: { icon: GraduationCap, name: "Local" },
-  [AccountService.Multi]: { icon: GraduationCap, name: "Polytechnique Hauts-de-France" }
+  [AccountService.Multi]: { icon: GraduationCap, name: "Polytechnique Hauts-de-France" },
+  [AccountService.PapillonMultiService]: { icon: GraduationCap, name: "Environnement virtuel Papillon" }
 };
 
 const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({

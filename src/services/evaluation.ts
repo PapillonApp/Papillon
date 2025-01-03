@@ -3,6 +3,8 @@ import type { Period } from "./shared/Period";
 import {useEvaluationStore} from "@/stores/evaluation";
 import {Evaluation} from "@/services/shared/Evaluation";
 import {error} from "@/utils/logger/logger";
+import {getFeatureAccount} from "@/utils/multiservice";
+import {MultiServiceFeature} from "@/stores/multiService/types";
 
 const getDefaultPeriod = (periods: Period[]): string => {
   const now = Date.now();
@@ -24,6 +26,13 @@ export async function updateEvaluationPeriodsInCache <T extends Account> (accoun
 
       break;
     }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Evaluations, account.localID);
+      if (!service) {
+        throw new Error("No service set in multi-service space");
+      }
+      return await updateEvaluationPeriodsInCache(service);
+    }
     default:
       throw new Error("Service not implemented");
   }
@@ -40,6 +49,13 @@ export async function updateEvaluationsInCache <T extends Account> (account: T, 
         const { getEvaluations } = await import("./pronote/evaluations");
         evaluations = await getEvaluations(account, periodName);
         break;
+      }
+      case AccountService.PapillonMultiService: {
+        const service = getFeatureAccount(MultiServiceFeature.Evaluations, account.localID);
+        if (!service) {
+          throw new Error("No service set in multi-service space");
+        }
+        return await updateEvaluationsInCache(service, periodName);
       }
       default:
         throw new Error(`Service (${AccountService[account.service]}) not implemented for this request`);

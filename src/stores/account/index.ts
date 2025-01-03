@@ -18,6 +18,8 @@ import { useGradesStore } from "../grades";
 import { useNewsStore } from "../news";
 import { useAttendanceStore } from "../attendance";
 import { info, log } from "@/utils/logger/logger";
+import {useMultiService} from "@/stores/multiService";
+import {MultiServiceFeature, MultiServiceSpace} from "@/stores/multiService/types";
 
 /**
  * Store for the currently selected account.
@@ -26,6 +28,8 @@ import { info, log } from "@/utils/logger/logger";
 export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
   account: null,
   linkedAccounts: [],
+  // For multi service, to not mix Primary & External accounts
+  associatedAccounts: [],
 
   mutateProperty: <T extends keyof PrimaryAccount>(key: T, value: PrimaryAccount[T]) => {
     log(`mutate property ${key} in storage`, "current:update");
@@ -81,8 +85,13 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       return store.persist.rehydrate();
     }));
 
-    // Account is currently not authenticated,
-    if (typeof account.instance === "undefined") {
+    const accounts = useAccounts.getState().accounts;
+
+    // Special case for spaces
+    if (account.service === AccountService.PapillonMultiService) {
+      log("switching to virtual space, setting instance to a non-null value and reloading associated accounts...", "[switchTo]");
+      account.instance = "PapillonPrime"; // Une chaine random, juste pour que l'instance ne soit pas "undefined" (ou null) et que l'espace multiservice soit interprété comme "déconnecté"
+    } else if (typeof account.instance === "undefined") { // Account is currently not authenticated,
       log("instance undefined, reloading...", "[switchTo]");
       // Automatically reconnect the main instance.
       const { instance, authentication } = await reload(account);
@@ -91,12 +100,15 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       log("instance reload done !", "[switchTo]");
     }
 
-    const accounts = useAccounts.getState().accounts;
     const linkedAccounts = account.linkedExternalLocalIDs.map((linkedID) => {
       return {...accounts.find((acc) => acc.localID === linkedID)};
     }).filter(Boolean) as ExternalAccount[] ?? [];
 
-    info(`found ${linkedAccounts.length} external accounts`, "switchTo");
+    const associatedAccounts = account.associatedAccountsLocalIDs?.map((associatedID) => {
+      return {...accounts.find((acc) => acc.localID === associatedID)};
+    }).filter(Boolean) as PrimaryAccount[] ?? [];
+
+    info(`found ${linkedAccounts.length} external accounts and ${associatedAccounts.length} associated accounts`, "switchTo");
 
     for (const linkedAccount of linkedAccounts) {
       const { instance, authentication } = await reload(linkedAccount);
@@ -105,9 +117,16 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       log("reloaded external", "[switchTo]");
     }
 
-    log("reloaded all external accounts", "[switchTo]");
+    for (const associatedAccount of associatedAccounts) {
+      const { instance, authentication } = await reload(associatedAccount);
+      associatedAccount.instance = instance;
+      associatedAccount.authentication = authentication;
+      log("reloaded associated account", "[switchTo]");
+    }
 
-    set({ linkedAccounts });
+    log("reloaded all external and associated accounts", "[switchTo]");
+
+    set({ linkedAccounts, associatedAccounts });
     log(`done reading ${account.name} and rehydrating stores.`, "[switchTo]");
   },
 
@@ -173,6 +192,44 @@ export const useAccounts = create<AccountsStore>()(
             (account) => account.localID !== localID
           )
         }));
+
+        // On met à jour les espace multi-service, pour que :
+        // 1. Si le compte supprimé était lié à un espace: on le supprime de l'espace
+        // 2. Si l'espace n'a donc plus aucun compté associé, on le supprime (car un espace est une sorte de groupement de comptes, sans comptes il cesse de fonctionner)
+
+        // On récupère les comptes correspondant aux espaces
+        const spacesAccounts  = get().accounts.filter(account => account.service === AccountService.PapillonMultiService);
+        for (const spaceAccount of spacesAccounts) {
+
+          // Le compte que l'on a supprimé est lié à cet espace
+          if (spaceAccount.associatedAccountsLocalIDs.includes(localID)) {
+            log(`found ${localID} in PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+
+            // On supprime la liaison du compte (ainsi que de chaque fonctionnalité à laquelle il est associé)
+            spaceAccount.associatedAccountsLocalIDs.splice(spaceAccount.associatedAccountsLocalIDs.indexOf(localID), 1);
+            const space = useMultiService.getState().spaces.find(space => space.accountLocalID === spaceAccount.localID) as MultiServiceSpace;
+            Object.entries(space.featuresServices).map(([key, value]) => {
+              if (value === localID) {
+                space.featuresServices[key as MultiServiceFeature] = undefined;
+              }
+            });
+            useMultiService.getState().update(spaceAccount.localID, "featuresServices", space.featuresServices);
+
+            log(`removed ${localID} from PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+          }
+
+          // Si l'espace est vide, on le supprime
+          if (spaceAccount.associatedAccountsLocalIDs.length === 0) {
+            log(`PapillonMultiServiceSpace ${spaceAccount.name} is now empty, removing it`, "accounts:remove");
+            useMultiService.getState().remove(spaceAccount.localID);
+            set((state) => ({
+              accounts: state.accounts.filter(
+                (account) => account.localID !== spaceAccount.localID
+              )
+            }));
+            log(`deleted PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+          }
+        }
 
         log(`removed ${localID}`, "accounts:remove");
       },
