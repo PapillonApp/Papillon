@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { updateGradesPeriodsInCache } from "@/services/grades";
 import { useCurrentAccount } from "@/stores/account";
 import { useAttendanceStore } from "@/stores/attendance";
@@ -10,6 +10,8 @@ import RedirectButton from "@/components/Home/RedirectButton";
 import { PapillonNavigation } from "@/router/refs";
 import { log } from "@/utils/logger/logger";
 import type { Attendance } from "@/services/shared/Attendance";
+import MissingItem from "@/components/Global/MissingItem";
+import { FadeInDown, FadeOut } from "react-native-reanimated";
 
 
 interface AttendanceElementProps {
@@ -89,7 +91,28 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
   };
 
   if (!totalMissed || totalMissed.absences.length === 0) {
-    return null;
+    return (
+      <NativeList
+        animated
+        key="emptyCourses"
+        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+        exiting={FadeOut.duration(300)}
+      >
+        <NativeItem animated style={{ paddingVertical: 10 }}>
+          <MissingItem
+            title="Aucune absence"
+            description={
+              defaultPeriod
+                ? "Vous n'avez pas d'absences ni de retards au " +
+                  defaultPeriod +
+                  "."
+                : "Vous n'avez pas d'absences ni de retards pour cette période."
+            }
+            emoji="🎉"
+          />
+        </NativeItem>
+      </NativeList>
+    );
   }
 
   return (

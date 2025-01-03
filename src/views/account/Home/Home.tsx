@@ -36,7 +36,7 @@ import type {Screen} from "@/router/helpers/types";
 import {useCurrentAccount} from "@/stores/account";
 import getCorners from "@/utils/ui/corner-radius";
 import {useIsFocused, useTheme} from "@react-navigation/native";
-import React, {useCallback, useMemo, useState} from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -44,7 +44,7 @@ import {
   StatusBar,
   View
 } from "react-native";
-import Reanimated from "react-native-reanimated";
+import Reanimated, { interpolateColor } from "react-native-reanimated";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -57,7 +57,6 @@ import AccountSwitcher from "@/components/Home/AccountSwitcher";
 import ContextMenu from "@/components/Home/AccountSwitcherContextMenu";
 import Header from "@/components/Home/Header";
 import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
-import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
 import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
@@ -75,96 +74,230 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   let account = useCurrentAccount(store => store.account!);
 
-  const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalFull, setModalFull] = useState(false);
+  const [scrool, setScrool] = useState(false);
 
-  const [canHaptics, setCanHaptics] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const openAccSwitcher = useCallback(() => {
-    setShouldOpenContextMenu(false);
-    setTimeout(() => {
-      setShouldOpenContextMenu(true);
-    }, 150);
-  }, []);
 
   const windowHeight = Dimensions.get("window").height;
   const tabbarHeight = useBottomTabBarHeight();
 
-  const widgetAnimatedStyle = useAnimatedStyle(() => ({
-    paddingTop: insets.top,
-    opacity: interpolate(
-      scrollOffset.value,
-      [0, 265 + insets.top],
-      [1, 0],
-      Extrapolation.CLAMP
-    ),
-    transform: [
-      { translateY: scrollOffset.value },
-      { scale: interpolate(
+  const backgroundAnimatedStyle = useAnimatedStyle(() => {
+    const isModalFullyOpen = scrollOffset.value >= 265;
+    const backgroundColor = !modalOpen
+      ? interpolateColor(scrollOffset.value, [0, 195], [colors.primary, colors.primary])
+      : interpolateColor(scrollOffset.value, [0, 265], [colors.primary, colors.card]);
+
+    return {
+      backgroundColor: isModalFullyOpen ? colors.card : backgroundColor,
+    };
+  });
+
+  const widgetAnimatedStyle = useAnimatedStyle(() => {
+    if (Platform.OS === "android") {
+      if (modalOpen) {
+        return {
+          transform: [{ scale: 1 }],
+          opacity: 1,
+        };
+      }
+
+      const translateY = interpolate(
         scrollOffset.value,
         [0, 265],
-        [1, 0.9],
+        [0, 0],
         Extrapolation.CLAMP
-      )},
-    ]
-  }));
-
-  const modalAnimatedStyle = useAnimatedStyle(() => ({
-    borderCurve: "continuous",
-    borderTopLeftRadius: interpolate(
-      scrollOffset.value,
-      [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
-      [12, 12, corners, 0],
-      Extrapolation.CLAMP
-    ),
-    borderTopRightRadius: interpolate(
-      scrollOffset.value,
-      [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
-      [12, 12, corners, 0],
-      Extrapolation.CLAMP
-    ),
-
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-
-    flex: 1,
-    minHeight: windowHeight - tabbarHeight - 8,
-    backgroundColor: colors.card,
-    overflow: "hidden",
-    transform: [
-      {translateY: interpolate(
+      );
+      const scale = interpolate(
         scrollOffset.value,
-        [-1000, 0, 125, 265 ],
+        [0, 265],
+        [1, 0.95],
+        Extrapolation.CLAMP
+      );
+      const opacity = interpolate(
+        scrollOffset.value,
+        [0, 200, 265],
+        [1, 1, 0],
+        Extrapolation.CLAMP
+      );
+
+      return {
+        paddingTop: insets.top,
+        opacity,
+        transform: [{ translateY }, { scale }],
+      };
+    } else {
+      return {
+        paddingTop: insets.top,
+        opacity: interpolate(
+          scrollOffset.value,
+          [0, 265 + insets.top],
+          [1, 0],
+          Extrapolation.CLAMP
+        ),
+        transform: [
+          { translateY: scrollOffset.value },
+          { scale: interpolate(
+            scrollOffset.value,
+            [0, 265],
+            [1, 0.9],
+            Extrapolation.CLAMP
+          )},
+        ]
+      };
+    }
+  });
+
+  const modalAnimatedStyle = useAnimatedStyle(() => {
+    if (Platform.OS === "android") {
+      const isScrolling = scrollOffset.value > 0;
+
+      const borderRadius = isScrolling
+        ? 0
+        : interpolate(
+          scrollOffset.value,
+          [0, 100, 265 + insets.top - 1, 265 + insets.top],
+          [12, 12, corners, 0],
+          Extrapolation.CLAMP
+        );
+
+      const scale = isScrolling
+        ? 1
+        : interpolate(
+          scrollOffset.value,
+          [0, 200, 260 + insets.top - 40, 260 + insets.top],
+          [1, 0.95, 0.95, 1],
+          Extrapolation.CLAMP
+        );
+
+      const translateY = interpolate(
+        scrollOffset.value,
+        [-1000, 0, 125, 265],
         [-1000, 0, 105, 0],
         Extrapolation.CLAMP
-      )}
-    ],
-  }));
+      );
 
-  const navigationBarAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: scrollOffset.value - 270 - insets.top,
-    left: 0,
-    right: 0,
-    height: interpolate(
-      scrollOffset.value,
-      [125, 265],
-      [0, insets.top + 60],
-      Extrapolation.CLAMP
-    ),
-    zIndex: 100,
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderBottomWidth: 0.5,
-  }));
+      return {
+        flex: 1,
+        minHeight: windowHeight - tabbarHeight - 8,
+        backgroundColor: colors.card,
+        overflow: "hidden",
+        borderTopLeftRadius: borderRadius,
+        borderTopRightRadius: borderRadius,
+        transform: [{ scale }, { translateY }],
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+      };
+    } else {
+      return {
+        borderTopLeftRadius: interpolate(
+          scrollOffset.value,
+          [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
+          [12, 12, corners, 0],
+          Extrapolation.CLAMP
+        ),
+        borderTopRightRadius: interpolate(
+          scrollOffset.value,
+          [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
+          [12, 12, corners, 0],
+          Extrapolation.CLAMP
+        ),
+
+        shadowColor: "#000",
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+
+        flex: 1,
+        minHeight: windowHeight - tabbarHeight - 8,
+        backgroundColor: colors.card,
+        overflow: "hidden",
+        transform: [
+          {translateY: interpolate(
+            scrollOffset.value,
+            [-1000, 0, 125, 265 ],
+            [-1000, 0, 105, 0],
+            Extrapolation.CLAMP
+          )}
+        ],
+      };
+    };
+  });
+
+  const modalIndicatorAnimatedStyle = useAnimatedStyle(() => {
+    if (Platform.OS === "android") {
+      const isScrolling = scrollOffset.value > 0;
+
+      return {
+        position: "absolute",
+        top: 10,
+        left: "50%",
+        transform: [
+          {
+            translateX: isScrolling
+              ? -2
+              : interpolate(
+                scrollOffset.value,
+                [125, 200],
+                [-25, -2],
+                Extrapolation.CLAMP
+              ),
+          },
+        ],
+        width: isScrolling
+          ? 4
+          : interpolate(
+            scrollOffset.value,
+            [125, 200],
+            [50, 4],
+            Extrapolation.CLAMP
+          ),
+        height: 4,
+        backgroundColor: colors.text + "20",
+        zIndex: 100,
+        borderRadius: 5,
+        opacity: isScrolling
+          ? 0
+          : interpolate(
+            scrollOffset.value,
+            [125, 180, 200],
+            [1, 0.5, 0],
+            Extrapolation.CLAMP
+          ),
+      };
+    } else {
+      return {
+        position: "absolute",
+        top: 10,
+        left: "50%",
+        transform: [
+          {translateX: interpolate(
+            scrollOffset.value,
+            [125, 200],
+            [-25, -2],
+            Extrapolation.CLAMP
+          )}
+        ],
+        width: interpolate(
+          scrollOffset.value,
+          [125, 200],
+          [50, 4],
+          Extrapolation.CLAMP
+        ),
+        height: 4,
+        backgroundColor: colors.text + "20",
+        zIndex: 100,
+        borderRadius: 5,
+        opacity: interpolate(
+          scrollOffset.value,
+          [125, 180, 200],
+          [1, 0.5, 0],
+          Extrapolation.CLAMP
+        ),
+      };
+    }
+  });
 
   const modalContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingHorizontal: 16,
@@ -181,117 +314,96 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     ]
   }));
 
-  const modalIndicatorAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: 10,
-    left: "50%",
-    transform: [
-      {translateX: interpolate(
-        scrollOffset.value,
-        [125, 200],
-        [-25, -2],
-        Extrapolation.CLAMP
-      )}
-    ],
-    width: interpolate(
-      scrollOffset.value,
-      [125, 200],
-      [50, 4],
-      Extrapolation.CLAMP
-    ),
-    height: 4,
-    backgroundColor: colors.text + "20",
-    zIndex: 100,
-    borderRadius: 5,
-    opacity: interpolate(
-      scrollOffset.value,
-      [125, 180, 200],
-      [1, 0.5, 0],
-      Extrapolation.CLAMP
-    ),
-  }));
-
   const scrollViewAnimatedStyle = useAnimatedStyle(() => ({
     flex: 1,
     backgroundColor: scrollOffset.value > 265 + insets.top ? colors.card : colors.primary,
   }));
 
   return (
-    <View style={{flex: 1}}>
-      {!modalOpen && focused && !isTablet && (
-        <StatusBar barStyle="light-content" backgroundColor={"transparent"} translucent />
-      )}
-      <ContextMenu
-        style={[{
-          position: "absolute",
-          top: insets.top + 8,
-          left: 16,
-          zIndex: 1000,
-        }]}
-        shouldOpenContextMenu={shouldOpenContextMenu}
-      >
-        <AccountSwitcher
-          translationY={scrollOffset}
-          modalOpen={modalOpen}
-          loading={!account.instance}
-        />
-      </ContextMenu>
-      <Reanimated.ScrollView
-        ref={scrollRef}
-        snapToEnd={false}
-        snapToStart={false}
-        disableIntervalMomentum={true}
-        style={scrollViewAnimatedStyle}
-        snapToOffsets={[0, 265 + insets.top]}
-        decelerationRate={modalFull || Platform.OS === "android" ? "normal" : 0}
-        onScrollEndDrag={(e) => {
-          if (e.nativeEvent.contentOffset.y < 265 + insets.top && modalOpen) {
-            scrollRef.current?.scrollTo({ y: 0, animated: true });
-          }
-        }}
-        onScroll={(e) => {
-          if (e.nativeEvent.contentOffset.y > 125 && canHaptics) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setCanHaptics(false);
-          } else if (e.nativeEvent.contentOffset.y < 125 && !canHaptics) {
-            setCanHaptics(true);
-          }
-
-          setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
-          setModalFull(e.nativeEvent.contentOffset.y >= 265 + insets.top);
-        }}
-        refreshControl={<RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => setRefreshing(true)}
-          style={{zIndex: 100}}
-          progressViewOffset={285 + insets.top}
-        />}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View
-          style={widgetAnimatedStyle}
+    <Animated.View style={[{ flex: 1 }, backgroundAnimatedStyle]}>
+      <View style={{flex: 1}}>
+        {!modalOpen && focused && !isTablet && (
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={"transparent"}
+            translucent
+          />
+        )}
+        <ContextMenu
+          style={[{
+            position: "absolute",
+            top: insets.top + 8,
+            left: 16,
+            zIndex: 1000,
+          }]}
         >
-          <Header
-            scrolled={false}
-            // openAccountSwitcher={openAccSwitcher}
-            navigation={navigation}
+          <AccountSwitcher
+            translationY={scrollOffset}
+            modalOpen={modalOpen}
+            loading={!account.instance}
           />
-        </Animated.View>
-
-        <Animated.View style={modalAnimatedStyle}>
-          <Animated.View
-            style={modalIndicatorAnimatedStyle}
-          />
-          <Animated.View style={modalContentAnimatedStyle}>
-            <ModalContent
-              navigation={navigation}
-              refresh={refreshing}
-              endRefresh={() => setRefreshing(false)}
+        </ContextMenu>
+        <Reanimated.ScrollView
+          ref={scrollRef}
+          style={scrollViewAnimatedStyle}
+          onScroll={(e) => {
+            if (Platform.OS !== "android") {
+              setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
+            }
+          }}
+          onScrollEndDrag={(e) => {
+            if (Platform.OS === "android") {
+              if (modalOpen && e.nativeEvent.contentOffset.y < 275 + insets.top) {
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
+                setModalOpen(false);
+              } else if (!modalOpen && e.nativeEvent.contentOffset.y > 50) {
+                scrollRef.current?.scrollTo({ y: 275 + insets.top, animated: true });
+                setModalOpen(true);
+              }
+            } else {
+              if (e.nativeEvent.contentOffset.y < 265 + insets.top && modalOpen) {
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
+              }
+            }
+            setScrool(true);
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => setRefreshing(true)}
+              style={{zIndex: 100}}
+              progressViewOffset={285 + insets.top}
             />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View style={widgetAnimatedStyle}>
+            <Header scrolled={false} navigation={navigation} />
           </Animated.View>
-        </Animated.View>
-      </Reanimated.ScrollView>
-    </View>
+
+          <Animated.View style={[
+            modalAnimatedStyle,
+            {
+              borderCurve: "continuous",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+            }
+          ]}
+          >
+            <Animated.View style={modalIndicatorAnimatedStyle} />
+            <Animated.View style={modalContentAnimatedStyle}>
+              <ModalContent
+                navigation={navigation}
+                refresh={refreshing}
+                endRefresh={() => setRefreshing(false)}
+              />
+            </Animated.View>
+          </Animated.View>
+        </Reanimated.ScrollView>
+      </View>
+    </Animated.View>
   );
 };
 
