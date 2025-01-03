@@ -1,22 +1,20 @@
-import { NativeText } from "@/components/Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
+import React from "react";
+import { Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
 import { TimetableItem } from "./Item";
 import { createNativeWrapper } from "react-native-gesture-handler";
 
 import Reanimated, {
   FadeInDown,
   FadeOut,
-  FadeOutUp
+  FadeOutUp,
 } from "react-native-reanimated";
-
-import { Activity, Sofa, Utensils } from "lucide-react-native";
-import LessonsNoCourseItem from "./NoCourse";
-import { Timetable, TimetableClass } from "@/services/shared/Timetable";
+import { Sofa, Utensils } from "lucide-react-native";
+import { TimetableClass } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
+import detectOnline from "@/hooks/detectOnline";
 import { getHolidayEmoji } from "@/utils/format/holidayEmoji";
 
 const emoji = getHolidayEmoji();
@@ -45,6 +43,8 @@ interface PageProps {
 }
 
 export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists }: PageProps) => {
+  const { isOnline, UNEerreur } = detectOnline(true);
+
   return (
     <ScrollView
       style={{
@@ -73,6 +73,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
             width: "100%"
           }}
         >
+          {!isOnline && UNEerreur}
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
             <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
               <TimetableItem key={item.startTimestamp} item={item} index={i} />

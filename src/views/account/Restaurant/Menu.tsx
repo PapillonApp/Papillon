@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import {
   View,
   ScrollView,
@@ -44,6 +44,7 @@ import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
 import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
 import AccountButton from "@/components/Restaurant/AccountButton";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import detectOnline from "@/hooks/detectOnline";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -71,6 +72,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     setIsRefreshing(true);
     setRefreshCount(refreshCount + 1);
   };
+
+  const { isOnline, UNEerreur } = detectOnline(false);
 
   const getWeekNumber = (date: Date) => {
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
@@ -216,7 +219,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
         />
       }
     >
-      {!isInitialised ? (
+      {!isOnline ? UNEerreur : !isInitialised ? (
         <ActivityIndicator size="large" style={{ padding: 50 }} />
       ) : (
         <>

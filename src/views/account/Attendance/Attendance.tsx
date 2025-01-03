@@ -20,6 +20,7 @@ import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
 import React from "react";
+import detectOnline from "@/hooks/detectOnline";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -29,13 +30,13 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const periods = useAttendanceStore(store => store.periods);
   const attendances = useAttendanceStore(store => store.attendances);
 
-
-
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
   const selectedPeriod = useMemo(() => userSelectedPeriod ?? defaultPeriod, [userSelectedPeriod, defaultPeriod]);
+
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   useEffect(() => {
     updateAttendancePeriodsInCache(account);
@@ -205,16 +206,20 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             </PapillonPicker>
           </Reanimated.View>
 
-          {isLoading && !isRefreshing &&
+          {isOnline && isLoading && !isRefreshing && (
             <Reanimated.View
               entering={FadeIn}
               exiting={FadeOut.duration(1000)}
               layout={LinearTransition}
               style={{ marginRight: 6 }}
             >
-              <ActivityIndicator color={Platform.OS === "android" ? theme.colors.primary : void 0} />
+              <ActivityIndicator
+                color={
+                  Platform.OS === "android" ? theme.colors.primary : void 0
+                }
+              />
             </Reanimated.View>
-          }
+          )}
         </Reanimated.View>
       </PapillonHeader>
 
@@ -242,6 +247,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           />
         }
       >
+        {!isOnline && UNEerreur}
         {attendances[selectedPeriod] && attendances[selectedPeriod].absences.length === 0 && attendances[selectedPeriod].delays.length === 0 && attendances[selectedPeriod].punishments.length === 0 && Object.keys(attendances_observations_details).length === 0 &&(
           <MissingItem
             title="Aucune absence"

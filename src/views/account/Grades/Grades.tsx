@@ -4,7 +4,6 @@ import {
   PapillonModernHeader,
 } from "@/components/Global/PapillonModernHeader";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import { useAlert } from "@/providers/AlertProvider";
 import type { Screen } from "@/router/helpers/types";
 import {
   updateGradesAndAveragesInCache,
@@ -15,7 +14,6 @@ import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
-import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 import React from "react";
@@ -34,6 +32,7 @@ import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import detectOnline from "@/hooks/detectOnline";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -66,6 +65,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   useEffect(() => {
     setTimeout(() => {
@@ -176,15 +176,20 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
           </PapillonHeaderSelector>
         </PapillonPicker>
       </PapillonModernHeader>
-
-      {!isLoading && (
+      {((isOnline && !isLoading) || !isOnline) && (
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => setIsRefreshing(true)}
-              colors={Platform.OS === "android" ? [theme.colors.primary] : void 0}
+              onRefresh={() => {
+                if (isOnline) {
+                  setIsRefreshing(true);
+                }
+              }}
+              colors={
+                Platform.OS === "android" ? [theme.colors.primary] : void 0
+              }
               progressViewOffset={outsideNav ? 72 : insets.top + 56}
             />
           }
@@ -202,9 +207,10 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 paddingBottom: 16 + insets.bottom,
               }}
             >
-              {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
-							!isLoading &&
-							!isRefreshing && (
+              {!isOnline && UNEerreur}
+
+              {(!grades[selectedPeriod] ||
+                grades[selectedPeriod].length === 0) && (
                 <MissingItem
                   style={{ marginTop: 24, marginHorizontal: 16 }}
                   emoji="📚"
@@ -213,9 +219,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 />
               )}
 
-              {!isLoading &&
-							grades[selectedPeriod] &&
-							grades[selectedPeriod].length > 1 && (
+              {grades[selectedPeriod] && grades[selectedPeriod].length > 1 && (
                 <Reanimated.View
                   layout={animPapillon(LinearTransition)}
                   entering={FadeInUp.duration(200)}

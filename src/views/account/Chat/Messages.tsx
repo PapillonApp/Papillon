@@ -7,6 +7,7 @@ import {
   Platform,
   Text,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import type { Screen } from "@/router/helpers/types";
@@ -34,6 +35,8 @@ import PapillonHeader from "@/components/Global/PapillonHeader";
 import { SquarePen } from "lucide-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import detectOnline from "@/hooks/detectOnline";
+import { useAlert } from "@/providers/AlertProvider";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -50,6 +53,8 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
 
   const account = useCurrentAccount((state) => state.account!);
   const [chats, setChats] = useState<Chat[] | null>(null);
+
+  const { isOnline, UNEerreur } = detectOnline(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const getChatCreator = (chat: Chat) => chat.creator === account.name ? chat.recipient : chat.creator;
@@ -73,6 +78,8 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
     setChats(chats);
     setRefreshing(false);
   };
+
+  const { showAlert } = useAlert();
 
   if (account.service !== AccountService.Pronote)
     return (
@@ -103,7 +110,31 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
           gap: 7,
           paddingRight: 8,
         }}
-        onPress={() => navigation.navigate("ChatCreate")}>
+        onPress={() => {
+          if (isOnline) {
+            navigation.navigate("ChatCreate");
+          } else {
+            if (Platform.OS === "ios") {
+              Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
+                {
+                  text: "OK",
+                },
+              ]);
+            } else {
+              showAlert({
+                title: "Information",
+                message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
+                actions: [
+                  {
+                    title: "OK",
+                    onPress: () => {},
+                    backgroundColor: theme.colors.card,
+                  },
+                ],
+              });
+            }
+          }}}
+        >
           <NativeText color={theme.colors.primary}>Composer</NativeText>
           <SquarePen color={theme.colors.primary}/>
         </TouchableOpacity>
@@ -113,9 +144,16 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
           padding: 20,
           paddingTop: 0,
         }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={isOnline && refreshing}
+            onRefresh={onRefresh}
+          />
+        }
       >
-        {!chats ? (
+        {!isOnline ? (
+          UNEerreur
+        ) : !chats ? (
           <Reanimated.View
             entering={FadeIn.springify().mass(1).damping(20).stiffness(300)}
             exiting={

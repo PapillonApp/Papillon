@@ -2,18 +2,15 @@ import { NativeList, NativeListHeader } from "@/components/Global/NativeComponen
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { useTheme } from "@react-navigation/native";
-import React, { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import {
   View,
-  Text,
   FlatList,
   Dimensions,
-  Button,
   ScrollView,
   RefreshControl,
   StyleSheet,
-  ActivityIndicator,
   TextInput,
   ListRenderItem
 } from "react-native";
@@ -21,19 +18,17 @@ import { dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
 
 import * as StoreReview from "expo-store-review";
 
-import HomeworksNoHomeworksItem from "./Atoms/NoHomeworks";
 import HomeworkItem from "./Atoms/Item";
 import { PressableScale } from "react-native-pressable-scale";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, Check, CheckCircle, CheckCircle2, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, CircleDotDashed, Search, X } from "lucide-react-native";
+import { Book, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, Search, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
-import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, FadeOutRight, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -42,19 +37,8 @@ import {Account} from "@/stores/account/types";
 import {Screen} from "@/router/helpers/types";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
-import {SearchBar} from "react-native-screens";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
+import detectOnline from "@/hooks/detectOnline";
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -124,6 +108,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
+
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   const updateHomeworks = useCallback(async (force = false, showRefreshing = true, showLoading = true) => {
     if(!account) return;
@@ -257,6 +243,9 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           />
         }
       >
+
+        {!isOnline && UNEerreur}
+
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View
             key={day}
@@ -491,10 +480,14 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                   />
                 </Reanimated.View>
 
-                {loading &&
+                {isOnline && loading && (
                   <PapillonSpinner
                     size={18}
-                    color={showPickerButtons ? theme.colors.primary : theme.colors.text}
+                    color={
+                      showPickerButtons
+                        ? theme.colors.primary
+                        : theme.colors.text
+                    }
                     strokeWidth={2.8}
                     entering={animPapillon(ZoomIn)}
                     exiting={animPapillon(ZoomOut)}
@@ -502,7 +495,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                       marginLeft: 5,
                     }}
                   />
-                }
+                )}
               </BlurView>
             </Reanimated.View>
           </PressableScale>

@@ -16,7 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Linking, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -29,6 +29,9 @@ import { AttachmentType } from "@/services/shared/Attachment";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { newsInformationAcknowledge } from "pawnote";
 import { AccountService } from "@/stores/account/types";
+import { useAlert } from "@/providers/AlertProvider";
+import detectOnline from "@/hooks/detectOnline";
+
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   const [message, setMessage] = useState<Information>(JSON.parse(route.params.message) as Information);
@@ -51,6 +54,9 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
     },
   });
 
+  const { isOnline } = detectOnline();
+  const { showAlert } = useAlert();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: message.title,
@@ -64,26 +70,6 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
       read: true,
     }));
   }, [account.instance]);
-
-  const tagsStyles = {
-    body: {
-      color: theme.colors.text,
-    },
-    a: {
-      color: theme.colors.primary,
-      textDecorationColor: theme.colors.primary,
-    },
-  };
-
-  function onPress (event: GestureResponderEvent, href: string) {
-    Linking.openURL(href);
-  }
-
-  const renderersProps = {
-    a: {
-      onPress: onPress,
-    },
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -101,17 +87,34 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
               data={[
                 {
                   icon: message.read ? <EyeOff /> : <Eye />,
-                  label: message.read
-                    ? "Marquer comme non lu"
-                    : "Marquer comme lu",
+                  label:  message.read ? "Marquer comme non lu" : "Marquer comme lu",
                   onPress: () => {
-                    setNewsRead(account, message, !message.read);
-                    setMessage((prev) => ({
-                      ...prev,
-                      read: !prev.read,
-                    }));
-                  },
-                },
+                    if (isOnline) {
+                      setNewsRead(account, message, !message.read);
+                      message.read = !message.read;
+                    } else {
+                      if (Platform.OS === "ios") {
+                        Alert.alert("Information", "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez", [
+                          {
+                            text: "OK",
+                          },
+                        ]);
+                      } else {
+                        showAlert({
+                          title: "Information",
+                          message: "Vous êtes hors ligne. Vérifiez votre connexion Internet et réessayez",
+                          actions: [
+                            {
+                              title: "OK",
+                              onPress: () => {},
+                              backgroundColor: theme.colors.card,
+                            },
+                          ],
+                        });
+                      }
+                    }
+                  }
+                }
               ]}
             >
               <TouchableOpacity>

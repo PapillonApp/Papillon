@@ -15,6 +15,7 @@ import {EvaluationsPerSubject} from "@/services/shared/Evaluation";
 import MissingItem from "@/components/Global/MissingItem";
 import Subject from "@/views/account/Evaluation/Subject/Subject";
 import EvaluationsLatestList from "@/views/account/Evaluation/Latest/LatestEvaluations";
+import detectOnline from "@/hooks/detectOnline";
 
 const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -43,6 +44,7 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { isOnline, UNEerreur } = detectOnline(true);
 
   useEffect(() => {
     setTimeout(() => {
@@ -148,14 +150,20 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
           </PapillonHeaderSelector>
         </PapillonPicker>
       </PapillonModernHeader>
-      {!isLoading && (
+      {((isOnline && !isLoading) || !isOnline) && (
         <ScrollView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => setIsRefreshing(true)}
-              colors={Platform.OS === "android" ? [theme.colors.primary] : void 0}
+              onRefresh={() => {
+                if (isOnline) {
+                  setIsRefreshing(true);
+                }
+              }}
+              colors={
+                Platform.OS === "android" ? [theme.colors.primary] : void 0
+              }
               progressViewOffset={outsideNav ? 72 : insets.top + 56}
             />
           }
@@ -173,9 +181,10 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
                 paddingBottom: 16 + insets.bottom,
               }}
             >
-              {(!evaluations[selectedPeriod] || evaluations[selectedPeriod].length === 0) &&
-                  !isLoading &&
-                  !isRefreshing && (
+              {!isOnline && UNEerreur}
+
+              {(!evaluations[selectedPeriod] ||
+                evaluations[selectedPeriod].length === 0)  && (
                 <MissingItem
                   style={{ marginTop: 24, marginHorizontal: 16 }}
                   emoji="📚"
