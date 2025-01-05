@@ -24,6 +24,7 @@ import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
 import SettingsFlagsInfos from "@/views/settings/SettingsFlagsInfos";
 import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
 import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
+import SettingsReactions from "@/views/settings/SettingsReactions";
 import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
@@ -56,6 +57,9 @@ const settingsScreens = [
 
   createScreen("SettingsSubjects", SettingsSubjects, {
     headerTitle: "Matières",
+  }),
+  createScreen("SettingsReactions", SettingsReactions, {
+    headerTitle: "Mes réactions",
   }),
   createScreen("SettingsExternalServices", SettingsExternalServices, {
     headerTitle: "Services externes",

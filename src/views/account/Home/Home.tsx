@@ -60,12 +60,15 @@ import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
 import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
+import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const corners = useMemo(() => getCorners(), []);
   const focused = useIsFocused();
+
+  const {isTablet} = useScreenDimensions();
 
   let scrollRef = useAnimatedRef<AnimatedScrollView>();
   let scrollOffset = useScrollViewOffset(scrollRef);
@@ -215,7 +218,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   return (
     <View style={{flex: 1}}>
-      {!modalOpen && focused && (
+      {!modalOpen && focused && !isTablet && (
         <StatusBar barStyle="light-content" backgroundColor={"transparent"} translucent />
       )}
       <ContextMenu

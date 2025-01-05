@@ -229,6 +229,13 @@ export const NativeItem: React.FC<NativeItemProps> = ({
       entering={entering && entering}
       exiting={exiting && exiting}
       pointerEvents={pointerEvents}
+      style={[
+        item_styles.item,
+        style,
+        disabled && {
+          opacity: 0.5,
+        },
+      ]}
     >
       <NativePressable
         onPress={!disabled ? onPress : () => {}}
@@ -238,13 +245,8 @@ export const NativeItem: React.FC<NativeItemProps> = ({
         onTouchEnd={onTouchEnd}
         androidStyle={androidStyle}
         style={({ pressed }) => [
-          item_styles.item,
           onPress && {
             backgroundColor: pressed && !disabled ? colors.text + "12" : "transparent",
-          },
-          style,
-          disabled && {
-            opacity: 0.5,
           },
         ]}
       >

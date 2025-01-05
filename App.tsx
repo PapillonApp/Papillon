@@ -5,7 +5,7 @@ import { LogBox, AppState, AppStateStatus } from "react-native";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { AccountService } from "@/stores/account/types";
+import {AccountService, PrimaryAccount} from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
@@ -24,8 +24,8 @@ export default function App () {
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const backgroundStartTime = useRef<number | null>(null);
   const switchTo = useCurrentAccount((store) => store.switchTo);
-  const accounts = useAccounts((store) => store.accounts)
-    .filter(account => !account.isExternal);
+  const accounts: PrimaryAccount[] = useAccounts((store) => store.accounts)
+    .filter(account => !account.isExternal) as PrimaryAccount[];
 
   const [fontsLoaded, fontError] = useFonts({
     light: require("./assets/fonts/FixelText-Light.ttf"),
@@ -99,7 +99,9 @@ export default function App () {
     LogBox.ignoreLogs([
       "[react-native-gesture-handler]",
       "VirtualizedLists should never be nested",
-      "TNodeChildrenRenderer: Support for defaultProps"
+      "TNodeChildrenRenderer: Support for defaultProps",
+      "Service not implemented",
+      "Linking found multiple possible"
     ]);
 
     expoGoWrapper(async () => {

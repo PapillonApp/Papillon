@@ -15,7 +15,7 @@ interface AnimatedNumberProps {
    * d'animer chaque chiffre et d'avoir un
    * flottant fixé, par exemple.
    */
-  value: string;
+  value: string | any;
 
   /**
    * Style du texte du nombre.
@@ -50,7 +50,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
       }, contentContainerStyle]}
       layout={animPapillon(LinearTransition)}
     >
-      {value.split("").map((n, i) => (
+      {value.toString().split("").map((n, i) => (
         <Reanimated.View
           key={i + "_" + n}
           entering={animPapillon(FadeInDown).delay(i * 20 + 20).mass(1).damping(30).stiffness(700)}

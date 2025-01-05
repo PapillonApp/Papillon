@@ -6,6 +6,12 @@ const animPapillon = (animation: any) => {
   return animation.springify().mass(1).damping(20).stiffness(300);
 };
 
+const anim2Papillon = (animation: any) => {
+  if (!animation) return;
+
+  return animation.duration(300).easing(Easing.bezier(0.3, 0.3, 0, 1));
+};
+
 const EnteringDuration = 180;
 const EnteringScale = 0.8;
 const ExitingDuration = 120;
@@ -67,6 +73,7 @@ const PapillonContextExit = () => {
 
 export {
   animPapillon,
+  anim2Papillon,
   PapillonContextEnter,
   PapillonContextExit,
 };

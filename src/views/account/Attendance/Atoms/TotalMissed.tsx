@@ -5,6 +5,7 @@ import { leadingZero } from "@/utils/format/attendance_time";
 import { animPapillon } from "@/utils/ui/animations";
 import { FadeIn, FadeOut } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
+import AnimatedNumber from "@/components/Global/AnimatedNumber";
 
 interface TotalMissedProps {
   totalMissed: {
@@ -43,15 +44,14 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
               alignItems: "flex-end",
             }}
           >
-            <NativeText
+            <AnimatedNumber
+              value={totalMissed.total.hours}
               style={{
                 fontSize: 28,
                 lineHeight: 28,
                 fontFamily: "semibold",
               }}
-            >
-              {totalMissed.total.hours}
-            </NativeText>
+            />
             <NativeText
               style={{
                 fontSize: 18,
@@ -83,15 +83,14 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
               alignItems: "flex-end",
             }}
           >
-            <NativeText
+            <AnimatedNumber
+              value={totalMissed.unJustified.hours}
               style={{
                 fontSize: 28,
                 lineHeight: 28,
                 color: (totalMissed.unJustified.hours > 0) ? "#D10000" : theme.colors.text,
               }}
-            >
-              {totalMissed.unJustified.hours}
-            </NativeText>
+            />
             <NativeText
               style={{
                 fontSize: 18,
