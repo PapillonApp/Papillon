@@ -5,7 +5,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
 
 import { WebView } from "react-native-webview";
@@ -33,18 +32,12 @@ import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
-import { useAlert } from "@/providers/AlertProvider";
 
 const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const { showAlert } = useAlert();
 
-  const [, setLoading] = useState(true);
-  const [, setLoadProgress] = useState(0);
   const [showWebView, setShowWebView] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
-
-  const [, setCurrentURL] = useState("");
 
   const [deviceUUID] = useState(uuid());
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -268,17 +261,11 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
             ]}
             source={{ uri: infoMobileURL }}
             setSupportMultipleWindows={false}
-            onLoadProgress={({ nativeEvent }) => {
-              setLoadProgress(nativeEvent.progress);
-            }}
             onError={(e) => {
               console.error("Pronote webview error", e);
             }}
             onLoadStart={(e) => {
               const { url } = e.nativeEvent;
-              setCurrentURL(url);
-
-              setLoading(true);
 
               if (url.includes("mobile.eleve.html")) {
                 setLoginStep("En attente de votre établissement");
@@ -306,14 +293,18 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                     kind: pronote.AccountKind.STUDENT,
                     username: message.data.login,
                     token: message.data.mdp,
-                    deviceUUID
-                  }
-                  ).catch((error) => {
-                    if (error instanceof pronote.SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+                    deviceUUID,
+                  })
+                  .catch((error) => {
+                    if (
+                      error instanceof pronote.SecurityError &&
+                      !error.handle.shouldCustomPassword &&
+                      !error.handle.shouldCustomDoubleAuth
+                    ) {
                       navigation.navigate("Pronote2FA_Auth", {
                         session,
                         error,
-                        accountID: deviceUUID
+                        accountID: deviceUUID,
                       });
                     } else {
                       throw error;
@@ -345,12 +336,11 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                   authentication: { ...refresh, deviceUUID },
                   personalization: await defaultPersonalization(session),
 
-                  identity: {}
+                  identity: {},
                 };
 
                 pronote.startPresenceInterval(session);
                 createStoredAccount(account);
-                setLoading(false);
                 switchTo(account);
 
                 // We need to wait a tick to make sure the account is set before navigating.
@@ -379,8 +369,10 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
               ) {
                 webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
               } else {
-                setLoading(false);
-                if (url.includes("pronote/mobile.eleve.html") && url.includes("identifiant")) {
+                if (
+                  url.includes("pronote/mobile.eleve.html") &&
+                  url.includes("identifiant")
+                ) {
                   webViewRef.current?.injectJavaScript(
                     INJECT_PRONOTE_INITIAL_LOGIN_HOOK
                   );
