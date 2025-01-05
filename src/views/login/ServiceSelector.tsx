@@ -219,7 +219,6 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
               opacity: 0.5,
               fontSize: 13,
               lineHeight: 16,
-              fontFamily: "bold",
             }}
           >
             Seuls les comptes élèves sont supportés pour le moment. Se connecter
