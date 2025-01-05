@@ -116,7 +116,7 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
               style={{backgroundColor: "#C53424"}}
             >
               <NativeText variant="title" color={"#FFF"}>Redémarrer l'application</NativeText>
-              <NativeText variant={"subtitle"} color={"#FFF"}>Cette option nécessite un redémarrage de l'application pour être appliquée.</NativeText>
+              <NativeText variant={"subtitle"} color={"#FFF"}>Cette option nécessite un redémarrage de l'application pour être appliqué.</NativeText>
             </NativeItem>
           </NativeList>
         </Animated.View>
