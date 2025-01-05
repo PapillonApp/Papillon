@@ -13,11 +13,12 @@ import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import { useTheme } from "@react-navigation/native";
 import GetV6Data from "@/utils/login/GetV6Data";
-import { Check, School, Undo2 } from "lucide-react-native";
+import { Check, Info, LockIcon, School, Undo2 } from "lucide-react-native";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { sr } from "date-fns/locale";
 import { sub } from "date-fns";
+import { NativeText } from "@/components/Global/NativeComponents";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -205,6 +206,35 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       </View>
 
       <View style={styles.buttons}>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+            alignItems: "center",
+            marginBottom: 9,
+            marginHorizontal: 9,
+          }}
+        >
+          <Info
+            size={20}
+            strokeWidth={2.5}
+            color={theme.colors.text + "88"}
+          />
+          <NativeText
+            style={{
+              flex: 1,
+              color: theme.colors.text,
+              opacity: 0.5,
+              fontSize: 13,
+              lineHeight: 16,
+              fontFamily: "bold",
+            }}
+          >
+            Seuls les comptes élèves sont supportés pour le moment. Se connecter
+            avec un autre type de compte ne fonctionnera pas et
+            provoquera des bugs.
+          </NativeText>
+        </View>
         <ButtonCta
           primary
           value="Confirmer"
