@@ -1,6 +1,5 @@
 import createScreen from "@/router/helpers/create-screen";
 
-import NoteReaction from "@/views/account/NoteReaction";
 import SettingsTabs from "@/views/settings/SettingsTabs";
 import RestaurantQrCode from "@/views/account/Restaurant/Modals/QrCode";
 import NewsItem from "@/views/account/News/Document";
@@ -16,13 +15,14 @@ import LessonsImportIcal from "@/views/account/Lessons/Options/LessonsImportIcal
 import LessonDocument from "@/views/account/Lessons/Document";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { Platform } from "react-native";
+import GradeReaction from "@/views/account/Grades/Modals/GradeReaction";
 import EvaluationDocument from "@/views/account/Evaluation/Document";
 import BackgroundIdentityProvider from "@/views/login/IdentityProvider/BackgroundIdentityProvider";
 import ChatDetails from "@/views/account/Chat/Modals/ChatDetails";
 import ChatThemes from "@/views/account/Chat/Modals/ChatThemes";
 
 export default [
-  createScreen("NoteReaction", NoteReaction, {
+  createScreen("GradeReaction", GradeReaction, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",

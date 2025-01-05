@@ -24,7 +24,7 @@ import MissingItem from "@/components/Global/MissingItem";
 import { animPapillon } from "@/utils/ui/animations";
 import GetThemeForChatId from "@/utils/chat/themes/GetThemeForChat";
 import { Theme } from "@/utils/chat/themes/Themes.types";
-import { AttachmentType } from "@/services/shared/Attachment";
+import {type Attachment, AttachmentType} from "@/services/shared/Attachment";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
 import LinkFavicon from "@/components/Global/LinkFavicon";
 
@@ -93,7 +93,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
       setActualTheme(theme);
 
       setTimeout(() => {
-        flatListRef.current.scrollToEnd({ animated: true });
+        flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     })();
   }, [route.params.handle]);
@@ -270,7 +270,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                             gap: 12,
                           }}
                         >
-                          {item.attachments.map((attachment) => (
+                          {item.attachments.map((attachment: Attachment) => (
                             <TouchableOpacity onPress={() => openUrl(attachment.url)}>
                               <View style={{flexDirection: "row", alignItems: "center", gap: 10, maxWidth: "90%"}}>
                                 <View>

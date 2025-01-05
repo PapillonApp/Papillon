@@ -165,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(TabItem);
+export default TabItem;

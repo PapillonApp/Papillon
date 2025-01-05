@@ -5,6 +5,7 @@ import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 
 import { fetchNews } from "./data/News";
+import {PrimaryAccount} from "@/stores/account/types";
 
 /**
  * Background fetch function that fetches all the data
@@ -14,7 +15,7 @@ import { fetchNews } from "./data/News";
 const backgroundFetch = async () => {
   console.log("[background fetch] Running background fetch");
 
-  const accounts = useAccounts((store) => store.accounts).filter(account => account.isExternal === false); // Get all accounts
+  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal) as PrimaryAccount[]; // Get all primary accounts
   const switchTo = useCurrentAccount(store => store.switchTo); // Get the switchTo function
 
   for (const account of accounts) {
