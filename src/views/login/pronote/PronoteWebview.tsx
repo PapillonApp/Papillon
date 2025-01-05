@@ -380,42 +380,6 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
               } else {
                 setLoading(false);
-                if (url.includes("pronote/mobile.eleve.html")) {
-                  if (!url.includes("identifiant")) {
-                    if (Platform.OS === "ios") {
-                      Alert.alert(
-                        "Attention",
-                        "Désolé, seuls les comptes élèves sont compatibles pour le moment.",
-                        [
-                          {
-                            text: "OK",
-                            onPress: () => navigation.goBack(),
-                          },
-                        ]
-                      );
-                    } else {
-                      showAlert({
-                        title: "Attention",
-                        message:
-                          "Désolé, seuls les comptes élèves sont compatibles pour le moment.",
-                        actions: [
-                          {
-                            title: "OK",
-                            onPress: () => navigation.goBack(),
-                            backgroundColor: theme.colors.card,
-                          },
-                        ],
-                      });
-                    }
-                  } else {
-                    webViewRef.current?.injectJavaScript(
-                      INJECT_PRONOTE_INITIAL_LOGIN_HOOK
-                    );
-                    webViewRef.current?.injectJavaScript(
-                      INJECT_PRONOTE_CURRENT_LOGIN_STATE
-                    );
-                  }
-                }
 
                 if (url.split("?")[0].includes("mobile.eleve.html") == false) {
                   setShowWebView(true);
