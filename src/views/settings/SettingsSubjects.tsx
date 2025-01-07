@@ -9,6 +9,7 @@ import {
   View
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import Reanimated, { ZoomIn, ZoomOut } from "react-native-reanimated";
@@ -94,10 +95,10 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
 
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
     let emoji = "";
-    if(newEmoji.length >= 1) {
+    if (newEmoji.length >= 1) {
       var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
       const emojiMatch = newEmoji.match(regexp);
-      if(emojiMatch) {
+      if (emojiMatch) {
         emoji = emojiMatch[emojiMatch.length - 1];
       }
     }
@@ -131,31 +132,58 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              "Réinitialiser les matières",
-              "Voulez-vous vraiment réinitialiser les matières ?",
-              [
-                { text: "Annuler", style: "cancel" },
-                { text: "Réinitialiser", style: "destructive", onPress: () => {
-                  setSubjects([]);
-                  setLocalSubjects([]);
-                  setCurrentTitle("");
-                  setCurrentEmoji("");
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {JSON.stringify(account).includes("pronote") && (
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Importer depuis Pronote",
+                  "Voulez-vous vraiment importer les matières depuis Pronote ?",
+                  [
+                    { text: "Annuler", style: "cancel" },
+                    {
+                      text: "Importer", onPress: () => {
 
-                  mutateProperty("personalization", {
-                    ...account.personalization,
-                    subjects: {},
-                  });
-                }},
-              ]
-            );
-          }}
-          style={{ marginRight: 2 }}
-        >
-          <Trash2 size={22} color={colors.primary} />
-        </TouchableOpacity>
+                      }
+                    },
+                  ]
+                );
+              }}
+            >
+              <Image
+                source={require("../../../assets/images/service_pronote.png")}
+                style={{ width: 22, height: 22, borderRadius: 11 }}
+              />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                "Réinitialiser les matières",
+                "Voulez-vous vraiment réinitialiser les matières ?",
+                [
+                  { text: "Annuler", style: "cancel" },
+                  {
+                    text: "Réinitialiser", style: "destructive", onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+                      setCurrentEmoji("");
+
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    }
+                  },
+                ]
+              );
+            }}
+            style={{ marginLeft: 25 }}
+          >
+            <Trash2 size={22} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation, colors.primary]);
