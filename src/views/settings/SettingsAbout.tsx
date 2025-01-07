@@ -193,10 +193,6 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             ver. {AppJSON.expo.version} {Constants.appOwnership === "expo" ? "(Expo Go)" : ""} {__DEV__ ? "(debug)" : ""}
           </NativeText>
         </NativeItem>
-        <NativeItem
-          onPress={() => navigation.navigate("SettingsDevLogs")}
-          chevron={false}
-        >
           <NativeText variant="title">
             Version des dépendances
           </NativeText>
