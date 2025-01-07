@@ -39,10 +39,10 @@ const detectOnline = (cache: boolean = false) => {
             {errorTitle.label} {errorTitle.emoji}
           </NativeText>
           <NativeText variant="subtitle">
-            Vous êtes hors ligne.{" "}
+            Tu es hors ligne.{" "}
             {cache
               ? "Les données affichées peuvent être obsolètes."
-              : "Vérifiez votre connexion Internet et réessayez"}
+              : "Vérifie ta connexion Internet et réessaye"}
           </NativeText>
         </NativeItem>
       </NativeList>
