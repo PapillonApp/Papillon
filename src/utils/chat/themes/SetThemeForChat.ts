@@ -2,7 +2,7 @@ import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 async function DownloadTheme (meta: ThemesMeta): Promise<boolean> {
-  let f_theme = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/themes/main/" + meta.path + "/theme.json");
+  let f_theme = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/themes/" + meta.path + "/theme.json");
   let r_theme = await f_theme.json();
 
   let to_download: string[] = [];
@@ -13,7 +13,7 @@ async function DownloadTheme (meta: ThemesMeta): Promise<boolean> {
     to_download.push(r_theme.lightModifier.chatBackgroundImage);
   }
   for (let i = 0; i < to_download.length; i++) {
-    let f = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/themes/refs/heads/main/" + meta.path + "/" + to_download[i]);
+    let f = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/themes/" + meta.path + "/" + to_download[i]);
     let r = await f.blob();
     let reader = new FileReader();
     reader.readAsDataURL(r);
