@@ -26,7 +26,7 @@ import {
   Hourglass,
   Info,
   LinkIcon,
-  PersonStanding,
+  User2,
   Users,
 } from "lucide-react-native";
 
@@ -173,7 +173,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
           enabled: Boolean(lesson.room?.trim()), // Check if lesson.room exists, is not null, and not empty
         },
         {
-          icon: <PersonStanding />,
+          icon: <User2 />,
           text: lesson.teacher?.includes(",") ? "Professeurs" : "Professeur",
           value: lesson.teacher || "Aucun",
           enabled: Boolean(lesson.teacher?.trim()), // Check if lesson.teacher exists, is not null, and not empty.

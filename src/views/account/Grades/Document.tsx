@@ -339,10 +339,10 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
             <TouchableOpacity
               style={{
                 position: "absolute",
-                bottom: 20,
-                right: 20,
-                paddingHorizontal: 10,
-                paddingVertical: 8,
+                bottom: 12,
+                right: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
                 borderRadius: 100,
                 backgroundColor: "#00000043",
                 zIndex: 50,
