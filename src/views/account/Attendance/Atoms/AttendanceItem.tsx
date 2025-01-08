@@ -17,7 +17,7 @@ interface AttendanceItemProps {
   missed?: { hours: number, minutes: number }
 }
 
-const NO_JUSTICATION = "Sans justification";
+const NO_JUSTICATION = "Aucune description";
 
 const AttendanceItem: React.FC<AttendanceItemProps> = ({
   title,
@@ -74,13 +74,15 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
         let totalTime = "";
         if ("hours" in item) {
           const [hours, minutes] = item.hours.split("h").map(Number);
-          totalTime = hours + "h " + leadingZero(minutes) + "min";
+          if (hours === 0) {
+            totalTime = `${leadingZero(minutes)} min`;
+          } else {
+            totalTime = `${hours}h ${leadingZero(minutes)}min`;
+          }
         }
         else if ("duration" in item) {
           totalTime = item.duration + " min";
         }
-
-        totalTime = totalTime.replace("0h ", "");
 
         const timestamp = "fromTimestamp" in item ? item.fromTimestamp : item.timestamp;
         const not_justified = "justified" in item && !item.justified;
