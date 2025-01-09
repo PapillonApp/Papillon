@@ -1,6 +1,6 @@
 {
   "name": "papillonvex",
-  "version": "7.7.0",
+  "version": "7.7.1",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -74,7 +74,7 @@
     "openid-client": "^5.7.0",
     "pawdirecte": "^1.7.1",
     "pawnilim": "^0.2.0",
-    "pawnote": "^1.3.1",
+    "pawnote": "^1.3.4",
     "pawrd": "^0.6.1",
     "react": "18.2.0",
     "react-native": "^0.74.3",
