@@ -16,6 +16,7 @@ import Reanimated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import debounce from "lodash/debounce";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
+import { useTimetableStore } from "@/stores/timetable";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
 import { Trash2, Check, X } from "lucide-react-native";
@@ -34,6 +35,7 @@ type Item = [key: string, value: { color: string; pretty: string; emoji: string;
 
 const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const account = useCurrentAccount(store => store.account!);
+  const timetables = useTimetableStore(store => store.timetables);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const insets = useSafeAreaInsets();
   const colors = useTheme().colors;
@@ -143,7 +145,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     { text: "Annuler", style: "cancel" },
                     {
                       text: "Importer", onPress: () => {
-
+                        console.log(timetables);
                       }
                     },
                   ]
