@@ -232,7 +232,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: "Se déconnecter",
           onPress: () => {
             if (Platform.OS === "ios") {
-              Alert.alert("Se déconnecter", "Êtes-vous sûr de vouloir vous déconnecter ?", [
+              Alert.alert("Se déconnecter", "Es-tu sûr de vouloir te déconnecter ?", [
                 {
                   text: "Annuler",
                   style: "cancel",
@@ -252,7 +252,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
             } else {
               showAlert({
                 title: "Se déconnecter",
-                message: "Êtes-vous sûr de vouloir vous déconnecter ?",
+                message: "Es-tu sûr de vouloir te déconnecter ?",
                 actions: [
                   {
                     title: "Annuler",

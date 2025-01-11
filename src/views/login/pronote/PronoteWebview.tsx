@@ -268,7 +268,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
               const { url } = e.nativeEvent;
 
               if (url.includes("mobile.eleve.html")) {
-                setLoginStep("En attente de votre établissement");
+                setLoginStep("En attente de ton établissement");
                 setShowWebView(false);
               }
             }}

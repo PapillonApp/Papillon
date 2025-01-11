@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Text, ScrollView, View, TouchableOpacity, StyleSheet, Image, Switch } from "react-native";
+import { ScrollView, Switch } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { Bell, ChevronLeft, MegaphoneOff, CalendarCheck, BookCheck, TrendingUp, Backpack, ChefHat, Newspaper } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, LinearTransition } from "react-native-reanimated";
+import { Newspaper } from "lucide-react-native";
+import { useSharedValue, withTiming } from "react-native-reanimated";
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import NotificationContainerCard from "@/components/Settings/NotificationContainerCard";
 import { requestNotificationPermission } from "@/background/Notifications";

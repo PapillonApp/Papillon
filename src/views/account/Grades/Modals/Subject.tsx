@@ -10,7 +10,7 @@ import {AverageDiffGrade, getAverageDiffGrade} from "@/utils/grades/getAverages"
 import { useTheme } from "@react-navigation/native";
 import { User, UserMinus, UserPlus, Users } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import {Screen} from "@/router/helpers/types";
 
 
@@ -36,7 +36,7 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
   const averages = [
     {
       icon: <User />,
-      label: "Votre moyenne",
+      label: "Ta moyenne",
       value: parseFloat((subject.average?.average?.value || -1).toString()).toFixed(2),
     },
     {
@@ -204,7 +204,7 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
         >
           <NativeText variant="overtitle">Impact sur la moyenne</NativeText>
           <NativeText variant="subtitle">
-            Indique le poids de {subjectData.pretty} sur votre moyenne générale
+            Indique le poids de {subjectData.pretty} sur ta moyenne générale
           </NativeText>
         </NativeItem>
       </NativeList>

@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Dimensions, TouchableOpacity, View } from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 import { Calendar } from "lucide-react-native";
 import Reanimated, {
   Easing,

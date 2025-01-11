@@ -1,6 +1,5 @@
 import type { MultiAccount, Personalization } from "@/stores/account/types";
 import { defaultTabs } from "@/consts/DefaultTabs";
-import type pronote from "pawnote";
 
 import colors from "@/utils/data/colors.json";
 

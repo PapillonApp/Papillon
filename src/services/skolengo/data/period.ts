@@ -1,5 +1,4 @@
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
-import { Period } from "@/services/shared/Period";
 import { SkolengoAccount } from "@/stores/account/types";
 
 export const getPeriod = async (account: SkolengoAccount) => {

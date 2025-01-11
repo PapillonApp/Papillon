@@ -1,7 +1,6 @@
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
 import type { SkolengoAccount } from "@/stores/account/types";
 import { weekNumberToDateRange } from "@/utils/epochWeekNumber";
-import { info } from "@/utils/logger/logger";
 import { toSkolengoDate } from "../skolengo-types";
 import { TimetableClassStatus, type Timetable, type TimetableClass } from "@/services/shared/Timetable";
 import type { Lesson } from "scolengo-api/types/models/Calendar";

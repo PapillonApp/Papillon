@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { QrCodeIcon, LinkIcon, MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
 import type { Screen } from "@/router/helpers/types";
@@ -207,7 +207,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Pronote ou à Index Éducation. Vos données restent uniquement sur votre appareil de manière sécurisée.
+            Papillon n'est pas affilié à Pronote ou à Index Éducation. Tes données restent uniquement sur ton appareil de manière sécurisée.
           </NativeText>
         </View>
 

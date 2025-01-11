@@ -83,7 +83,8 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
             offsetTop={insets.top}
           />
           <View style={{
-            padding: 10
+            padding: 10,
+            gap: 10
           }}>
             {account.map((item, index) => (
               <Reanimated.View
@@ -115,7 +116,7 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
             <ButtonCta
               primary
               value="Continuer"
-              disabled={choosenHostId !== 0}
+              disabled={choosenHostId === 0}
               onPress={() => handleLogin()}
             />
             <ButtonCta

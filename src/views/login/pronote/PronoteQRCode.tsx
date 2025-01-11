@@ -60,7 +60,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     setLoadingModalVisible(true);
 
     if (QRValidationCode === "" || QRValidationCode.length !== 4) {
-      Alert.alert("Code invalide", "Veuillez entrer un code à 4 chiffres.");
+      Alert.alert("Code invalide", "Entre un code à 4 chiffres.");
       return;
     }
 
@@ -319,7 +319,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
                 layout={LinearTransition}
               >
                 <PapillonShineBubble
-                  message="Indiquez le code à 4 chiffres que vous venez de créer sur PRONOTE"
+                  message="Indique le code à 4 chiffres que tu viens de créer sur PRONOTE"
                   width={250}
                   numberOfLines={3}
                   noFlex
@@ -406,7 +406,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           Connexion à PRONOTE
         </Text>
         <Text style={styles.text}>
-          Scannez le QR code de votre établissement pour vous connecter.
+          Scanne le QR code de ton établissement pour te connecter.
         </Text>
       </View>
 

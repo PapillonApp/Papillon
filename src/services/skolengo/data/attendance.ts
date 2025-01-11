@@ -1,7 +1,6 @@
 import type { SkolengoAccount } from "@/stores/account/types";
 import { info } from "@/utils/logger/logger";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
-import type { AbsenceState } from "scolengo-api/types/models/SchoolLife";
 import type { Attendance } from "@/services/shared/Attendance";
 import { SupportedAbsenceType } from "scolengo-api/types/models/SchoolLife/AbsenceReason";
 
