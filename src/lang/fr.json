@@ -14,7 +14,7 @@
       "message": "Pour commencer, quel est ton service scolaire ?",
       "post": "Enseignements supérieurs"
     },
-    "PronoteAuthenticationSelector": {
+    "PronoteAuthSelector": {
       "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
       "locate": "Utiliser ma position",
       "locateSubtitle": "Trouver un étab. autour de moi",
@@ -56,9 +56,35 @@
         "ent": "Utiliser l'ENT"
       }
     },
-    "EDCredentials": {
-      "title": "Connexion à EcoleDirecte",
-      "upper": "Se connecter au service"
+    "GenericLogin": {
+      "title": "Connexion à {{name}}",
+      "upper": "Se connecter au service",
+      "service": "{{name}}",
+      "privacy": "Papillon n'est pas affilié à {{name}}. La politique de confidentialité de {{name}} s'applique.",
+      "username": "Identifiant",
+      "usernamePlaceholder": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Mot de passe",
+      "login": "Se connecter"
+    },
+    "SkolengoAuthSelector": {
+      "message": "Que préfères-tu utiliser pour te connecter à Skolengo ?",
+      "locate": "Utiliser ma position",
+      "locateSubtitle": "Trouver un étab. autour de moi",
+      "city": "Rechercher une ville",
+      "privacy": "Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée."
+    },
+    "SkolengoInstanceSelector": {
+      "message": "Voici les établissements que j'ai trouvé !",
+      "placeholder": "Rechercher une ville, un établissement...",
+      "subtitle": "Recherchez un établissement",
+      "distance": "à {{distance}} km de toi"
+    },
+    "IdentityProviderSelector": {
+      "title": "Universités et autres",
+      "services": "Services universitaires",
+      "limited": "Fonctionnalités limitées",
+      "callout": "Les fournisseurs d'identité ne fournissent pasde données (calendrier, notes...) mais permettent de vous connecter à l'application"
     }
   }
 }
