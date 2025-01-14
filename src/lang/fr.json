@@ -99,6 +99,12 @@
       "restaurantQR": "Cantine scolaire",
       "restaurantQRSubtitleOne": "Toucher pour afficher le QR Code",
       "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
+    },
+    "modal": {
+      "tommorowCourses": "Cours de demain",
+      "seeMore": "Voir plus",
+      "lastGrades": "Dernières notes",
+      "homework": "Travail à faire"
     }
   }
 }
