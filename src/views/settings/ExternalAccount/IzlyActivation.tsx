@@ -2,12 +2,11 @@ import React, {useState, useEffect} from "react";
 import type {Screen} from "@/router/helpers/types";
 import {useTheme} from "@react-navigation/native";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import {Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TextInput, TouchableWithoutFeedback, View} from "react-native";
+import {Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";
+import { NativeText,} from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import {extractActivationURL, tokenize} from "ezly";
-import {AlertTriangle} from "lucide-react-native";
+import { tokenize} from "ezly";
 import {AccountService, IzlyAccount} from "@/stores/account/types";
 import {useAccounts, useCurrentAccount} from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
@@ -109,14 +108,14 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
               textAlign: "center",
             }}
           >
-            Papillon ne donnera jamais vos informations d'authentification à des tiers.
+            Papillon ne donnera jamais tes informations d'authentification à des tiers.
           </NativeText>
 
           <View style={styles.buttons}>
             <ButtonCta
               value="Annuler"
               disabled={loading}
-              onPress={() => (Alert.alert("Annuler", "Êtes-vous sûr de vouloir annuler l'activation ?", [
+              onPress={() => (Alert.alert("Annuler", "Es-tu sûr de vouloir annuler l'activation ?", [
                 { text: "Continuer l'activation", style: "cancel" },
                 { text: "Confirmer", style: "destructive", onPress: () => navigation.pop() }
               ]))}

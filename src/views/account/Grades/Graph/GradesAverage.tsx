@@ -10,7 +10,7 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform, Alert, TouchableOpacity, Linking } from "react-native";
+import { View, StyleSheet, Platform, TouchableOpacity, Linking } from "react-native";
 
 import Reanimated, {
   FadeIn,
@@ -31,7 +31,7 @@ const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & Re
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
-import { AlertTriangle, Calculator, Check, ExternalLink, PieChart, Spline, SquareRadical, TrendingUp } from "lucide-react-native";
+import { AlertTriangle, Check, ExternalLink, PieChart, TrendingUp } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 
 interface GradesAverageGraphProps {
@@ -54,7 +54,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
   const [currentAvg, setCurrentAvg] = useState(0);
   const [originalCurrentAvg, setOriginalCurrentAvg] = useState(0);
-  const [classAvg, setClassAvg] = useState(0);
+  const [classAvg, setClassAvg] = useState<number | null>(0);
   const [maxAvg, setMaxAvg] = useState(0);
   const [minAvg, setMinAvg] = useState(0);
 
@@ -97,7 +97,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
     originalCurrentAvgRef.current = hst[hst.length - 1].value;
 
-    setClassAvg(cla[cla.length - 1].value);
+    setClassAvg(cla.length > 0 ? cla[cla.length - 1].value : null);
 
     setMaxAvg(maxAvg);
     setMinAvg(minAvg);
@@ -329,20 +329,26 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                 </Reanimated.View>
               </View>
               <View style={[styles.gradeInfo, styles.gradeRight]}>
-                <NativeText numberOfLines={1}>Moyenne classe</NativeText>
-                <Reanimated.View
-                  style={[styles.gradeValue]}
-                  layout={animPapillon(LinearTransition)}
-                >
-                  <AnimatedNumber
-                    value={classAvg.toFixed(2)}
-                    style={styles.gradeNumberClass}
-                  />
-                  <Reanimated.View layout={animPapillon(LinearTransition)}>
-                    <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
-                  </Reanimated.View>
-                </Reanimated.View>
-              </View>
+              <NativeText numberOfLines={1}>Moyenne classe</NativeText>
+              <Reanimated.View
+                style={[styles.gradeValue]}
+                layout={animPapillon(LinearTransition)}
+              >
+                {classAvg !== null ? (
+                  <>
+                    <AnimatedNumber
+                      value={classAvg.toFixed(2)}
+                      style={styles.gradeNumberClass}
+                    />
+                    <Reanimated.View layout={animPapillon(LinearTransition)}>
+                      <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
+                    </Reanimated.View>
+                  </>
+                ) : (
+                  <NativeText style={styles.gradeNumberClass}>Inconnue</NativeText>
+                )}
+              </Reanimated.View>
+            </View>
             </Reanimated.View>
 
             {showDetails && maxAvg > 0 && minAvg > 0 ? (

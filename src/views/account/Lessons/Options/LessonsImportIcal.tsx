@@ -5,7 +5,7 @@ import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
 import { Calendar, Info, QrCode, X } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Alert, Linking, Modal, Platform, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, TextInput, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import * as Clipboard from "expo-clipboard";
@@ -14,7 +14,6 @@ import { CameraView } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
-import { updateTimetableForWeekInCache } from "@/services/timetable";
 import {Screen} from "@/router/helpers/types";
 
 const ical = require("cal-parser");
@@ -83,7 +82,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         fetchIcalData(account);
       })
       .catch(() => {
-        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifiez l'URL et réessayez.");
+        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifie l'URL et réessaye.");
       })
       .finally(() => {
         setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, DimensionValue, Switch } from "react-native";
+import { View, StyleSheet, DimensionValue, Switch } from "react-native";
 import LottieView from "lottie-react-native";
 import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
@@ -85,7 +85,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
                 <Reanimated.Text
                   numberOfLines={2}
                   style={[styles.message, textAnimatedStyle]}>
-                  Vous avez cours en salle B03 avec M. Perruche dans 5 minutes.
+                  Tu as cours en salle B03 avec M. Perruche dans 5 minutes.
                 </Reanimated.Text>
               </View>
             </View>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { QrCodeIcon, LinkIcon, MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
+import { MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
@@ -126,7 +126,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée.
+            Papillon n'est pas affilié à Skolengo. Tes données restent uniquement sur ton appareil de manière sécurisée.
           </NativeText>
         </View>
 

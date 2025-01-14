@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ScrollView,
   View,
@@ -36,6 +36,26 @@ const SubjectBadge = ({ emoji, color }: { emoji: string; color: string }) => (
 const ReelThumbnail = ({ reel, onPress, width }: { reel: Reel; onPress: () => void; width: number }) => {
   const { colors } = useTheme();
 
+  // Vérification de sécurité pour l'image
+  const imageSource = reel.imagewithouteffect
+    ? { uri: `data:image/jpeg;base64,${reel.imagewithouteffect}` }
+    : null; // Vous pouvez aussi mettre une image par défaut ici
+
+  if (!imageSource) {
+    return (
+      <View style={[styles.item, {
+        backgroundColor: colors.card,
+        width: width,
+        height: width * 1.5,
+        margin: 4,
+        justifyContent: "center",
+        alignItems: "center"
+      }]}>
+        <Text style={{color: colors.text}}>Image non disponible</Text>
+      </View>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={[
@@ -50,9 +70,10 @@ const ReelThumbnail = ({ reel, onPress, width }: { reel: Reel; onPress: () => vo
       onPress={onPress}
     >
       <Image
-        source={{ uri: `data:image/jpeg;base64,${reel.imagewithouteffect}` }}
+        source={imageSource}
         style={styles.thumbnail}
         resizeMode="cover"
+        defaultSource={require("@/../assets/images/service_unknown.png")} // Ajoutez une image par défaut
       />
       <View style={[styles.infoContainer, { backgroundColor: colors.card }]}>
         <SubjectBadge
@@ -73,6 +94,7 @@ interface ReelGalleryProps {
   reels: Reel[];
 }
 
+// Sécurisation du composant principal
 const ReelGallery = ({ reels }: ReelGalleryProps) => {
   const [selectedReel, setSelectedReel] = useState<Reel | null>(null);
   const windowWidth = Dimensions.get("window").width;
@@ -80,22 +102,30 @@ const ReelGallery = ({ reels }: ReelGalleryProps) => {
   const gap = 8;
   const numColumns = 2;
 
+  // Vérification des reels valides
+  const validReels = reels.filter(reel =>
+    reel &&
+    typeof reel.id === "string" &&
+    reel.grade &&
+    reel.subjectdata
+  );
+
   const itemWidth = (Math.min(500, windowWidth) - (padding * 2) - (gap * (numColumns - 1))) / numColumns;
 
-  const deleteReel = (reelId: string) => {
+  const deleteReel = useCallback((reelId: string) => {
     useGradesStore.setState((store) => {
       const updatedReels = { ...store.reels };
       delete updatedReels[reelId];
       return { reels: updatedReels };
     });
     setSelectedReel(null);
-  };
+  }, []);
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <View style={[styles.galleryContent, { gap }]}>
-          {reels.map((reel) => (
+          {validReels.map((reel) => (
             <ReelThumbnail
               key={reel.id}
               reel={reel}
@@ -109,9 +139,9 @@ const ReelGallery = ({ reels }: ReelGalleryProps) => {
       {selectedReel && (
         <GradeModal
           isVisible={!!selectedReel}
-          imageBase64={selectedReel.image}
+          imageBase64={selectedReel.image || ""}
           onClose={() => setSelectedReel(null)}
-          DeleteGrade={() => deleteReel(selectedReel.id)}
+          DeleteGrade={() => selectedReel.id && deleteReel(selectedReel.id)}
         />
       )}
     </ScrollView>

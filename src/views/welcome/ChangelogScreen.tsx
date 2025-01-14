@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Image, Linking, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Linking, Platform, ScrollView, View } from "react-native";
 
 import PackageJSON from "../../../package.json";
 import datasets from "@/consts/datasets.json";
@@ -143,7 +143,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
               Impossible de trouver les notes de mise à jour
             </NativeText>
             <NativeText variant="subtitle">
-              Vous êtes peut-être hors-ligne ou alors quelque chose ne s'est pas passé comme prévu...
+              Tu es peut-être hors-ligne ou alors une erreur est survenue...
             </NativeText>
           </NativeItem>
         </NativeList>

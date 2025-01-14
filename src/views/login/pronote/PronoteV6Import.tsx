@@ -97,8 +97,8 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
     catch (error) {
       setLoading(false);
       Alert.alert(
-        "Impossible de vous reconnecter automatiquement",
-        "Vous pouvez cepedant vous connecter manuellement en indiquant votre identifiant et mot de passe.",
+        "Impossible de te reconnecter automatiquement",
+        "Tu peux cependant te connecter manuellement en indiquant ton identifiant et mot de passe.",
         [
           {
             text: "Se connecter manuellement",
@@ -128,7 +128,7 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
           icon={<Info />}
         >
           <NativeText variant="subtitle">
-            Il semblerait que vous ayez déjà utilisé l'application Papillon. Voulez-vous importer vos données ?
+            Il semblerait que tu as déjà utilisé l'application Papillon. Veux-tu importer tes données ?
           </NativeText>
         </NativeItem>
       </NativeList>

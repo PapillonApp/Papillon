@@ -1,6 +1,5 @@
 // On importe le type `Grade` depuis le chemin spécifié
 import type { Grade } from "@/services/shared/Grade";
-import { is } from "date-fns/locale";
 
 // Définition de l'interface `GradeHistory` pour représenter l'historique des notes avec une valeur numérique et une date
 export interface GradeHistory {

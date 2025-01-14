@@ -103,8 +103,8 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
       return;
     }
 
-    const weekCourses = timetables[currentWeekNumber];
-    const upcomingCourses = filterAndSortCourses(weekCourses);
+    // Current week courses + nextWeek courses
+    const upcomingCourses = filterAndSortCourses([...timetables[currentWeekNumber] || [], ...timetables[currentWeekNumber + 1] || []]);
 
     setNextCourses(upcomingCourses);
     ImportanceHandler(upcomingCourses);
@@ -133,7 +133,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
           <MissingItem
             emoji="⏳"
             title="Chargement de l'emploi du temps"
-            description="Veuillez patienter..."
+            description="Patiente, s'il te plaît..."
           />
         </NativeItem>
       </NativeList>
@@ -197,11 +197,32 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
     );
   }
 
-  const label = isToday(nextCourses[0].startTimestamp)
-    ? "Emploi du temps"
-    : isTomorrow(nextCourses[0].startTimestamp)
-      ? "Cours de demain"
-      : "Prochains cours";
+  // Determining the timetable label to use depending on the next course
+  const getLabelForNextCourse = (timestamp: number) => {
+    const today = new Date();
+    const courseDate = new Date(timestamp);
+
+    const isTodayCourse = courseDate.toDateString() === today.toDateString();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const isTomorrowCourse = courseDate.toDateString() === tomorrow.toDateString();
+
+    const currentWeek = dateToEpochWeekNumber(today);
+    const courseWeek = dateToEpochWeekNumber(courseDate);
+
+    if (isTodayCourse) {
+      return "Emploi du temps";
+    } else if (isTomorrowCourse) {
+      return "Cours de demain";
+    } else if (courseWeek === currentWeek + 1) {
+      return "Semaine prochaine";
+    } else {
+      return "Prochains cours";
+    }
+  };
+
+  const label = nextCourses.length > 0 ? getLabelForNextCourse(nextCourses[0].startTimestamp) : "";
 
   return (
     <>

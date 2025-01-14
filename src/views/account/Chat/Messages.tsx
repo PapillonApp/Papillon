@@ -87,7 +87,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
           emoji={"🚧"}
           title={"Fonctionnalité en construction"}
           description={
-            "Cette page est en cours de développement, revenez plus tard."
+            "Cette page est en cours de développement, reviens plus tard."
           }
         />
       </View>

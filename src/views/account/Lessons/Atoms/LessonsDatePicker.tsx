@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform, FlatList, ListRenderItem} from "react-native";
+import {View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ListRenderItem} from "react-native";
 import { format, addDays, isSameDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTheme } from "@react-navigation/native";

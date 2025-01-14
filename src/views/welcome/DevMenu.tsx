@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { ChevronRight } from "lucide-react-native";
 import React, { useLayoutEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Button, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -81,7 +81,7 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
               opacity: 0.7,
             }}
           >
-            Intégrez vos options et paramètres de développement ici.
+            Intègre tes options et paramètres de développement ici.
           </Text>
         </View>
       )}
@@ -168,7 +168,7 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
             onPress={() => {
               Alert.alert(
                 "Réinitialisation de Papillon",
-                "Êtes-vous sûr de vouloir réinitialiser toutes les données de l'application ?",
+                "Es-tu sûr de vouloir réinitialiser toutes les données de l'application ?",
                 [
                   {
                     text: "Annuler",
