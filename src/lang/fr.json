@@ -1,3 +1,64 @@
 {
-  "test": "Ceci est un test"
+  "welcome": {
+    "confirm": "Confirmer",
+    "FirstInstallation": {
+      "message": "Bienvenue sur Papillon !",
+      "subtitle": "L'unique application pour gérer toute ta vie scrolaire au même endroit !",
+      "start": "Commençons !",
+      "help": "Besoin d'aide ?",
+      "tos": "En continuant, vous acceptez les {{conditions}} et la {{privacy}}.",
+      "conditions": "conditions d'utilisation",
+      "privacy": "politique de confidentialité"
+    },
+    "ServiceSelector": {
+      "message": "Pour commencer, quel est ton service scolaire ?",
+      "post": "Enseignements supérieurs"
+    },
+    "PronoteAuthenticationSelector": {
+      "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
+      "locate": "Utiliser ma position",
+      "locateSubtitle": "Trouver un étab. autour de moi",
+      "city": "Rechercher une ville",
+      "qr": "J'ai un QR Code",
+      "url": "J'ai une URL de connexion",
+      "affiliation": "Papillon n'est pas affilié à PRONOTE ou à Index Éducation. Vos données restent uniquement sur votre appareil de manière sécurisée."
+    },
+    "PronoteGeolocation": {
+      "message": "Papillon a besoin de ton emplacement pour chercher des établissements",
+      "ask": "Demander la permission",
+      "subtitle": "Votre position est nécéssaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
+      "pending": "Localisation en cours..."
+    },
+    "PronoteManualLocation": {
+      "message": "Dans quelle ville se trouve ton établissement ?",
+      "placeholder": "Rechercher une ville, code postal..."
+    },
+    "PronoteQRCode": {
+      "title": "Connexion à PRONOTE",
+      "subtitle": "Scannesz le QR Code de votre établissement pour vous connecter."
+    },
+    "PronoteManualURL": {
+      "message": "Entrez l'URL de connexion à Pronote",
+      "placeholder": "URL de l'instance Pronote"
+    },
+    "PronoteWebview": {
+      "title": "Connexion à Pronote",
+      "subtitle": "Obtention des informations"
+    },
+    "PronoteInstanceSelector": {
+      "message": "Voici les établissements que j'ai trouvé !",
+      "placeholder": "Rechercher un établissement",
+      "distance": "à {{distance}} km de toi",
+      "alert": {
+        "title": "L'instance {{name}} nécéssite une connexion ENT",
+        "subtitle": "Vous serez redirigé vers le portail de connextion de votre ENT.",
+        "login": "Identifiants",
+        "ent": "Utiliser l'ENT"
+      }
+    },
+    "EDCredentials": {
+      "title": "Connexion à EcoleDirecte",
+      "upper": "Se connecter au service"
+    }
+  }
 }
