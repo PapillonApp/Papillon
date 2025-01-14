@@ -86,5 +86,19 @@
       "limited": "Fonctionnalités limitées",
       "callout": "Les fournisseurs d'identité ne fournissent pasde données (calendrier, notes...) mais permettent de vous connecter à l'application"
     }
+  },
+  "home": {
+    "widgets": {
+      "nextCourse": "Prochain cours",
+      "grades": "Notes",
+      "gradesSubtitle": "Moyenne générale",
+      "lastGrade": "Dernières note",
+      "restaurantBalance": "Solde du Self",
+      "restaurantBalanceSubtitleOne": "repas restant",
+      "restaurantBalanceSubtitle": "repas restants",
+      "restaurantQR": "Cantine scolaire",
+      "restaurantQRSubtitleOne": "Toucher pour afficher le QR Code",
+      "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
+    }
   }
 }
