@@ -26,7 +26,7 @@
     "PronoteGeolocation": {
       "message": "Papillon a besoin de ton emplacement pour chercher des établissements",
       "ask": "Demander la permission",
-      "subtitle": "Votre position est nécéssaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
+      "subtitle": "Votre position est nécessaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
       "pending": "Localisation en cours..."
     },
     "PronoteManualLocation": {
@@ -51,7 +51,7 @@
       "distance": "à {{distance}} km de toi",
       "alert": {
         "title": "L'instance {{name}} nécessite une connexion ENT",
-        "subtitle": "Vous serez redirigé vers le portail de connextion de votre ENT.",
+        "subtitle": "Vous serez redirigé vers le portail de connexion de votre ENT.",
         "login": "Identifiants",
         "ent": "Utiliser l'ENT"
       }
@@ -77,14 +77,14 @@
     "SkolengoInstanceSelector": {
       "message": "Voici les établissements que j'ai trouvé !",
       "placeholder": "Rechercher une ville, un établissement...",
-      "subtitle": "Recherchez un établissement",
+      "subtitle": "Recherche un établissement",
       "distance": "à {{distance}} km de toi"
     },
     "IdentityProviderSelector": {
       "title": "Universités et autres",
       "services": "Services universitaires",
       "limited": "Fonctionnalités limitées",
-      "callout": "Les fournisseurs d'identité ne fournissent pas de données (calendrier, notes...) mais permettent de vous connecter à l'application"
+      "callout": "Les fournisseurs d'identité ne fournissent pas de données (calendrier, notes...) mais permettent de te connecter à l'application"
     }
   },
   "home": {
