@@ -1,3 +1,110 @@
 {
-  "test": "This is a test"
+  "welcome": {
+    "confirm": "Confirmer",
+    "FirstInstallation": {
+      "message": "Bienvenue sur Papillon !",
+      "subtitle": "L'unique application pour gérer toute ta vie scrolaire au même endroit !",
+      "start": "Commençons !",
+      "help": "Besoin d'aide ?",
+      "tos": "En continuant, vous acceptez les {{conditions}} et la {{privacy}}.",
+      "conditions": "conditions d'utilisation",
+      "privacy": "politique de confidentialité"
+    },
+    "ServiceSelector": {
+      "message": "Pour commencer, quel est ton service scolaire ?",
+      "post": "Enseignement supérieur"
+    },
+    "PronoteAuthSelector": {
+      "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
+      "locate": "Utiliser ma position",
+      "locateSubtitle": "Trouver un étab. autour de moi",
+      "city": "Rechercher une ville",
+      "qr": "J'ai un QR Code",
+      "url": "J'ai une URL de connexion",
+      "affiliation": "Papillon n'est pas affilié à PRONOTE ou à Index Éducation. Vos données restent uniquement sur votre appareil de manière sécurisée."
+    },
+    "PronoteGeolocation": {
+      "message": "Papillon a besoin de ton emplacement pour chercher des établissements",
+      "ask": "Demander la permission",
+      "subtitle": "Votre position est nécessaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
+      "pending": "Localisation en cours..."
+    },
+    "PronoteManualLocation": {
+      "message": "Dans quelle ville se trouve ton établissement ?",
+      "placeholder": "Rechercher une ville, un code postal..."
+    },
+    "PronoteQRCode": {
+      "title": "Connexion à PRONOTE",
+      "subtitle": "Scanne le QR Code de ton établissement pour te connecter !"
+    },
+    "PronoteManualURL": {
+      "message": "Entrez l'URL de connexion à Pronote",
+      "placeholder": "URL de l'instance Pronote"
+    },
+    "PronoteWebview": {
+      "title": "Connexion à Pronote",
+      "subtitle": "Obtention des informations"
+    },
+    "PronoteInstanceSelector": {
+      "message": "Voici les établissements que j'ai trouvé !",
+      "placeholder": "Rechercher un établissement",
+      "distance": "à {{distance}} km de toi",
+      "alert": {
+        "title": "L'instance {{name}} nécessite une connexion ENT",
+        "subtitle": "Vous serez redirigé vers le portail de connexion de votre ENT.",
+        "login": "Identifiants",
+        "ent": "Utiliser l'ENT"
+      }
+    },
+    "GenericLogin": {
+      "title": "Connexion à {{name}}",
+      "upper": "Se connecter au service",
+      "service": "{{name}}",
+      "privacy": "Papillon n'est pas affilié à {{name}}. La politique de confidentialité de {{name}} s'applique.",
+      "username": "Identifiant",
+      "usernamePlaceholder": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Mot de passe",
+      "login": "Se connecter"
+    },
+    "SkolengoAuthSelector": {
+      "message": "Que préfères-tu utiliser pour te connecter à Skolengo ?",
+      "locate": "Utiliser ma position",
+      "locateSubtitle": "Trouver un étab. autour de moi",
+      "city": "Rechercher une ville",
+      "privacy": "Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée."
+    },
+    "SkolengoInstanceSelector": {
+      "message": "Voici les établissements que j'ai trouvé !",
+      "placeholder": "Rechercher une ville, un établissement...",
+      "subtitle": "Recherche un établissement",
+      "distance": "à {{distance}} km de toi"
+    },
+    "IdentityProviderSelector": {
+      "title": "Universités et autres",
+      "services": "Services universitaires",
+      "limited": "Fonctionnalités limitées",
+      "callout": "Les fournisseurs d'identité ne fournissent pas de données (calendrier, notes...) mais permettent de te connecter à l'application"
+    }
+  },
+  "home": {
+    "widgets": {
+      "nextCourse": "Prochain cours",
+      "grades": "Notes",
+      "gradesSubtitle": "Moyenne générale",
+      "lastGrade": "Dernière note",
+      "restaurantBalance": "Solde du self",
+      "restaurantBalanceSubtitleOne": "repas restant",
+      "restaurantBalanceSubtitle": "repas restants",
+      "restaurantQR": "Cantine scolaire",
+      "restaurantQRSubtitleOne": "Toucher pour afficher le QR Code",
+      "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
+    },
+    "modal": {
+      "tomorrowCourses": "Cours de demain",
+      "seeMore": "Voir plus",
+      "lastGrades": "Dernières notes",
+      "homework": "Travail à faire"
+    }
+  }
 }
