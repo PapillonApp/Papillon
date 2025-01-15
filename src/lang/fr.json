@@ -92,8 +92,8 @@
       "nextCourse": "Prochain cours",
       "grades": "Notes",
       "gradesSubtitle": "Moyenne générale",
-      "lastGrade": "Dernières note",
-      "restaurantBalance": "Solde du Self",
+      "lastGrade": "Dernière note",
+      "restaurantBalance": "Solde du self",
       "restaurantBalanceSubtitleOne": "repas restant",
       "restaurantBalanceSubtitle": "repas restants",
       "restaurantQR": "Cantine scolaire",
@@ -101,7 +101,7 @@
       "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
     },
     "modal": {
-      "tommorowCourses": "Cours de demain",
+      "tomorrowCourses": "Cours de demain",
       "seeMore": "Voir plus",
       "lastGrades": "Dernières notes",
       "homework": "Travail à faire"
