@@ -3,7 +3,7 @@
     "confirm": "Confirmer",
     "FirstInstallation": {
       "message": "Bienvenue sur Papillon !",
-      "subtitle": "L'unique application pour gérer toute ta vie scrolaire au même endroit !",
+      "subtitle": "L'unique application pour gérer toute ta vie scolaire au même endroit !",
       "start": "Commençons !",
       "help": "Besoin d'aide ?",
       "tos": "En continuant, vous acceptez les {{conditions}} et la {{privacy}}.",
@@ -12,7 +12,7 @@
     },
     "ServiceSelector": {
       "message": "Pour commencer, quel est ton service scolaire ?",
-      "post": "Enseignement supérieur"
+      "highEdu": "Enseignement supérieur"
     },
     "PronoteAuthSelector": {
       "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
