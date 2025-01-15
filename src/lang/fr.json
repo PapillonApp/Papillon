@@ -12,7 +12,7 @@
     },
     "ServiceSelector": {
       "message": "Pour commencer, quel est ton service scolaire ?",
-      "post": "Enseignements supérieurs"
+      "post": "Enseignement supérieur"
     },
     "PronoteAuthSelector": {
       "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
@@ -31,11 +31,11 @@
     },
     "PronoteManualLocation": {
       "message": "Dans quelle ville se trouve ton établissement ?",
-      "placeholder": "Rechercher une ville, code postal..."
+      "placeholder": "Rechercher une ville, un code postal..."
     },
     "PronoteQRCode": {
       "title": "Connexion à PRONOTE",
-      "subtitle": "Scannesz le QR Code de votre établissement pour vous connecter."
+      "subtitle": "Scanne le QR Code de ton établissement pour te connecter !"
     },
     "PronoteManualURL": {
       "message": "Entrez l'URL de connexion à Pronote",
@@ -50,7 +50,7 @@
       "placeholder": "Rechercher un établissement",
       "distance": "à {{distance}} km de toi",
       "alert": {
-        "title": "L'instance {{name}} nécéssite une connexion ENT",
+        "title": "L'instance {{name}} nécessite une connexion ENT",
         "subtitle": "Vous serez redirigé vers le portail de connextion de votre ENT.",
         "login": "Identifiants",
         "ent": "Utiliser l'ENT"
@@ -84,7 +84,7 @@
       "title": "Universités et autres",
       "services": "Services universitaires",
       "limited": "Fonctionnalités limitées",
-      "callout": "Les fournisseurs d'identité ne fournissent pasde données (calendrier, notes...) mais permettent de vous connecter à l'application"
+      "callout": "Les fournisseurs d'identité ne fournissent pas de données (calendrier, notes...) mais permettent de vous connecter à l'application"
     }
   },
   "home": {
