@@ -161,7 +161,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
             onPress={() => {
               Alert.alert(
                 "Réinitialiser les matières",
-                "Voulez-vous vraiment réinitialiser les matières ?",
+                "Veux-tu vraiment réinitialiser les matières ?",
                 [
                   { text: "Annuler", style: "cancel" },
                   {
