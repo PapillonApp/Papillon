@@ -2,11 +2,11 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import defaultPersonalization from "@/services/local/default-personalization";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { AccountService, LocalAccount } from "@/stores/account/types";
+import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Alert, Button, View } from "react-native";
+import { Alert, View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
@@ -15,6 +15,32 @@ import { animPapillon } from "@/utils/ui/animations";
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const buildIdentity = (data: any): Partial<Identity> => {
+  return {
+    firstName: capitalizeFirst(data["relevé"].etudiant.prenom || ""),
+    lastName: (data["relevé"].etudiant.nom || "").toUpperCase(),
+    civility: data["relevé"].etudiant.civilite || undefined,
+    boursier: data["relevé"].etudiant.boursier || false,
+    ine: data["relevé"].etudiant.code_ine || undefined,
+    birthDate: data["relevé"].etudiant.date_naissance
+      ? new Date(data["relevé"].etudiant.date_naissance.split("/").reverse().join("-"))
+      : undefined,
+    birthPlace: data["relevé"].etudiant.lieu_naissance || undefined,
+    phone: [
+      data["relevé"].etudiant.telephonemobile ? (data["relevé"].etudiant.telephonemobile).replaceAll(".", " ") : undefined,
+    ],
+    email: [
+      data["relevé"].etudiant.email || undefined,
+      data["relevé"].etudiant.emailperso || undefined,
+    ],
+    address: {
+      street: data["relevé"].etudiant.domicile || undefined,
+      city: data["relevé"].etudiant.villedomicile || undefined,
+      zipCode: data["relevé"].etudiant.codepostaldomicile || undefined,
+    },
+  };
 };
 
 const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigation }) => {
@@ -55,14 +81,13 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         rawData: data,
       });
 
+      mutateProperty("identity", buildIdentity(data));
+
       navigation.goBack();
     }
   };
 
   const actionFirstLogin = async (data: any) => {
-    console.log("First login");
-    console.log(data);
-
     const local_account: LocalAccount = {
       authentication: undefined,
       instance: undefined,
@@ -72,6 +97,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         name: "IUT de Lannion",
         rawData: data,
       },
+
+      identity: buildIdentity(data),
 
       credentials: {
         username: username || "",
@@ -118,7 +145,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     if(redirectCount >= 2) {
       Alert.alert(
         "Erreur",
-        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifiez vos identifiants et réessayez.",
+        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie tes identifiants et réessaye.",
         [{ text: "OK", onPress: () => navigation.goBack() }]
       );
       navigation.goBack();
@@ -188,13 +215,12 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
         onLoad={(data) => {
           const url = data.nativeEvent.url;
-          console.log(url);
 
           if(url.startsWith("https://sso-cas.univ-rennes1.fr//login?")) {
             injectPassword();
           }
 
-          if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/") && canExtractJSON) {
+          if(url.startsWith("https://notes9.iutlan.univ-rennes.fr/") && canExtractJSON) {
             redirectToData();
             setCanExtractJSON(false);
           }

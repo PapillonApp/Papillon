@@ -1,6 +1,5 @@
 import createScreen from "@/router/helpers/create-screen";
 
-import NoteReaction from "@/views/account/NoteReaction";
 import SettingsTabs from "@/views/settings/SettingsTabs";
 import RestaurantQrCode from "@/views/account/Restaurant/Modals/QrCode";
 import NewsItem from "@/views/account/News/Document";
@@ -14,13 +13,16 @@ import Chat from "@/views/account/Chat/Modals/Chat";
 import HomeworksDocument from "@/views/account/Homeworks/Document";
 import LessonsImportIcal from "@/views/account/Lessons/Options/LessonsImportIcal";
 import LessonDocument from "@/views/account/Lessons/Document";
-import ScodocWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
-import ScodocBackgroundWebview from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { Platform } from "react-native";
+import GradeReaction from "@/views/account/Grades/Modals/GradeReaction";
+import EvaluationDocument from "@/views/account/Evaluation/Document";
+import BackgroundIdentityProvider from "@/views/login/IdentityProvider/BackgroundIdentityProvider";
+import ChatDetails from "@/views/account/Chat/Modals/ChatDetails";
+import ChatThemes from "@/views/account/Chat/Modals/ChatThemes";
 
 export default [
-  createScreen("NoteReaction", NoteReaction, {
+  createScreen("GradeReaction", GradeReaction, {
     headerTitle: "",
     headerTransparent: true,
     presentation: "modal",
@@ -76,15 +78,36 @@ export default [
     headerShown: Platform.OS !== "ios",
   }),
   createScreen("ChatCreate", ChatCreate, {
-    headerTitle: "Nouvelle discussion",
+    headerTitle: "Créer une discussion",
     presentation: "modal",
   }),
   createScreen("Chat", Chat, {
-    presentation: "modal",
+    headerTitle: "Discussions",
     headerShown: false,
+    presentation: "modal",
+    gestureEnabled: false,
+  }),
+  createScreen("ChatDetails", ChatDetails, {
+    headerTitle: "Discussions",
+    headerShown: false,
+    presentation: "modal"
+  }),
+  createScreen("ChatThemes", ChatThemes, {
+    headerTitle: "Thèmes",
+    headerShown: true,
+    presentation: "modal"
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",
+    presentation: "modal",
+  }),
+  createScreen("EvaluationDocument", EvaluationDocument, {
+    headerTitle: "Compétence",
+    presentation: "modal",
+    headerShown: Platform.OS !== "ios",
+  }),
+  createScreen("BackgroundIdentityProvider", BackgroundIdentityProvider, {
+    headerTitle: "Fournisseur d'identité",
     presentation: "modal",
   }),
 ] as const;

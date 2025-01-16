@@ -14,8 +14,8 @@ import * as WebBrowser from "expo-web-browser";
 import { Audio } from "expo-av";
 import * as SplashScreen from "expo-splash-screen";
 
-const PRIVACY_POLICY_URL = "https://safety.getpapillon.xyz/documents/privacy-policy";
-const TERMS_OF_SERVICE_URL = "https://safety.getpapillon.xyz/documents/terms-of-service";
+const PRIVACY_POLICY_URL = "https://docs.papillon.bzh/legal/privacy";
+const TERMS_OF_SERVICE_URL = "https://docs.papillon.bzh/legal/terms";
 
 const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   const theme = useTheme();
@@ -97,7 +97,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
-        En continuant, vous acceptez les&nbsp;
+        En continuant, tu acceptes les&nbsp;
         <Text
           style={{ textDecorationLine: "underline" }}
           onPress={() => openUrl(TERMS_OF_SERVICE_URL)}
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
 
   terms_text: {
     fontSize: 12,
+    lineHeight: 16,
     textAlign: "center",
     fontFamily: "medium",
     paddingHorizontal: 20,

@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, View, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { GraduationCap, Utensils, BookOpen, Building, School, BookmarkMinus, Compass } from "lucide-react-native";
+import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
   NativeList,
@@ -12,7 +12,7 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { AccountService } from "@/stores/account/types";
-import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { useAccounts } from "@/stores/account";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },
@@ -22,6 +22,7 @@ const serviceConfig = {
   [AccountService.Turboself]: { icon: Utensils, name: "Turboself" },
   [AccountService.ARD]: { icon: Utensils, name: "ARD" },
   [AccountService.Izly]: { icon: Utensils, name: "Izly" },
+  [AccountService.Alise]: { icon: Utensils, name: "Alise" },
   [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
   [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
   [AccountService.Local]: { icon: GraduationCap, name: "Local" },
@@ -67,20 +68,16 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   const confirmDeleteAccount = (account: any) => {
     Alert.alert(
       "Supprimer le compte",
-      "Êtes-vous sûr de vouloir supprimer ce compte ?",
+      "Es-tu sûr de vouloir supprimer ce compte ?",
       [
         { text: "Annuler", style: "cancel" },
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => deleteAccount(account.localID)
+          onPress: () => removeAccount(account.localID)
         }
       ]
     );
-  };
-
-  const deleteAccount = (localID: string) => {
-    removeAccount(localID);
   };
 
   const filteredAccounts = accounts.filter((acc, index) => {

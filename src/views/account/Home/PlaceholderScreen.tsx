@@ -1,15 +1,11 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useLayoutEffect } from "react";
-import { View, Text, StatusBar, TouchableOpacity, Platform } from "react-native";
-
-import { defaultTabs } from "@/consts/DefaultTabs";
-import LottieView from "lottie-react-native";
-import { X } from "lucide-react-native";
+import { View } from "react-native";
 import MissingItem from "@/components/Global/MissingItem";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import {Screen} from "@/router/helpers/types";
 
-const PlaceholderScreen: Screen<"Messages" | "Menu"> = ({ route, navigation }) => {
+const PlaceholderScreen: Screen<"Discussions" | "Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
 
   useLayoutEffect(() => {
@@ -39,7 +35,7 @@ const PlaceholderScreen: Screen<"Messages" | "Menu"> = ({ route, navigation }) =
       <MissingItem
         emoji={"🚧"}
         title={"Fonctionnalité en construction"}
-        description={"Cette page est en cours de développement, revenez plus tard."}
+        description={"Cette page est en cours de développement, reviens plus tard."}
       />
     </View>
   );

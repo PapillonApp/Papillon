@@ -7,15 +7,11 @@ export const getBookingWeek = async (account: TurboselfAccount, weekNumber?: num
   return bookings.map((booking) => ({
     account,
     id: booking.id,
-    week: booking.week,
-    from: booking.from,
-    to: booking.to,
     terminalLabel: booking.terminal.name,
     days: booking.days.map((day) => ({
       id: day.id,
       canBook: day.canBook,
       date: day.date,
-      message: day.message,
       booked: day.booked,
     })),
   }));
@@ -23,12 +19,10 @@ export const getBookingWeek = async (account: TurboselfAccount, weekNumber?: num
 
 export const bookDay = async (account: TurboselfAccount, id: string, date: Date, booked: boolean): Promise<BookingDay> => {
   const bookedDay = await account.authentication.session.bookMeal(id, date.getDay(), booked ? 1 : 0);
-  console.log(bookedDay);
   return {
     id: bookedDay.id,
     canBook: bookedDay.canBook,
     date: bookedDay.date,
-    message: bookedDay.message,
     booked: bookedDay.booked,
   };
 };

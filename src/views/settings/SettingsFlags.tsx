@@ -68,7 +68,7 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const confirmRemoveFlag = (flag: string) => {
     Alert.alert(
       "Supprimer le flag",
-      `Voulez-vous vraiment supprimer le flag "${flag}" ?`,
+      `Veux-tu vraiment supprimer le flag "${flag}" ?`,
       [
         { text: "Annuler" },
         { text: "Supprimer", onPress: () => remove(flag), style: "destructive" }

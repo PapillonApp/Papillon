@@ -1,40 +1,72 @@
-import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View,} from "react-native";
-import {useTheme} from "@react-navigation/native";
+import React, { useEffect, useRef, useState} from "react";
+import { Image, ActivityIndicator, FlatList, ImageBackground, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView,} from "react-native";
+import { useTheme} from "@react-navigation/native";
 
 import type {Screen} from "@/router/helpers/types";
-import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";
+import { NativeText,} from "@/components/Global/NativeComponents";
 import {useCurrentAccount} from "@/stores/account";
-import type {ChatMessage} from "@/services/shared/Chat";
-import {FileText, Link, Paperclip} from "lucide-react-native";
+import type {ChatMessage, ChatRecipient} from "@/services/shared/Chat";
+import {ChevronLeft, File, Link, Send} from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import InitialIndicator from "@/components/News/InitialIndicator";
 import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import HTMLView from "react-native-htmlview";
-import Reanimated, {FadeIn, FadeOut} from "react-native-reanimated";
+import Reanimated, {FadeIn, FadeInDown, FadeOut} from "react-native-reanimated";
 import {AccountService} from "@/stores/account/types";
 import * as WebBrowser from "expo-web-browser";
 import {WebBrowserPresentationStyle} from "expo-web-browser";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
 import {getProfileColorByName} from "@/services/local/default-personalization";
-import {getChatMessages} from "@/services/chats";
+import { getChatMessages, sendMessageInChat, getChatRecipients } from "@/services/chats";
+import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import MissingItem from "@/components/Global/MissingItem";
+import { animPapillon } from "@/utils/ui/animations";
+import GetThemeForChatId from "@/utils/chat/themes/GetThemeForChat";
+import { Theme } from "@/utils/chat/themes/Themes.types";
+import {type Attachment, AttachmentType} from "@/services/shared/Attachment";
+import { AutoFileIcon } from "@/components/Global/FileIcon";
+import LinkFavicon from "@/components/Global/LinkFavicon";
 
 const Chat: Screen<"Chat"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const insets = useSafeAreaInsets();
 
   const stylesText = StyleSheet.create({
     body: {
-      color: theme.colors.text,
+      color: colors.text,
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22,
-    }
+    },
+    a: {
+      textDecorationLine: "underline",
+    },
+  });
+
+  const stylesTextAuthor = StyleSheet.create({
+    body: {
+      color: "#FFF",
+      fontFamily: "medium",
+      fontSize: 16,
+      lineHeight: 22
+    },
+    a: {
+      textDecorationLine: "underline",
+    },
   });
 
   const account = useCurrentAccount((state) => state.account!);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [text, setText] = useState<string>("");
+  const [recipients, setRecipients] = useState<ChatRecipient[]>([]);
+  const [chatTheme, setActualTheme] = useState<Theme>();
+
+  const creatorName = route.params.handle.creator === account.name ? route.params.handle.recipient : route.params.handle.creator;
+  const backgroundImage = theme.dark
+    ? { uri: `${chatTheme?.darkModifier.chatBackgroundImage}` }
+    : { uri: `${chatTheme?.lightModifier.chatBackgroundImage}` };
 
   const openUrl = (url: string) => {
     if (
@@ -54,93 +86,302 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
   useEffect(() => {
     void (async () => {
       const messages = await getChatMessages(account, route.params.handle);
+      const recipients = await getChatRecipients(account, route.params.handle);
+      const theme = await GetThemeForChatId(route.params.handle.subject);
       setMessages(messages);
+      setRecipients(recipients);
+      setActualTheme(theme);
+
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     })();
   }, [route.params.handle]);
 
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (messages.length > 0 && flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages, flatListRef.current]);
+
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       {messages[0] ? (
         <>
-          <PapillonModernHeader outsideNav={true}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-            >
-              <View
-                style={{
-                  backgroundColor: theme.colors.background,
-                  borderRadius: 100,
-                }}
+          <PapillonModernHeader height={130} outsideNav={true} tint={theme.dark ? chatTheme?.darkModifier.headerBackgroundColor : chatTheme?.lightModifier.headerBackgroundColor}>
+            <View style={{flexDirection: "row", gap: 10, alignItems: "center"}}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <ChevronLeft color={
+                  (theme.dark ? chatTheme?.darkModifier.headerTextColor : chatTheme?.lightModifier.headerTextColor + "80")
+                } size={26}  />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ChatDetails", {
+                  handle: route.params.handle,
+                  recipients: recipients,
+                  onThemeChange: async (updatedTheme) => {
+                    const theme = await GetThemeForChatId(route.params.handle.subject);
+                    setActualTheme(theme);
+                  }
+                })}
+                style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
               >
-                <View
-                  style={{
-                    borderRadius: 100,
-                    width: 42,
-                    height: 42,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <InitialIndicator
-                    initial={parse_initials(messages[0].author)}
-                    color={getProfileColorByName(messages[0].author).bright}
-                    textColor={getProfileColorByName(messages[0].author).dark}
-                  />
+                <InitialIndicator
+                  initial={recipients.length > 2 ? "group":parse_initials(creatorName)}
+                  color={getProfileColorByName(creatorName).bright}
+                  textColor={getProfileColorByName(creatorName).dark}
+                  size={38}
+                />
+                <View style={{flex: 1}}>
+                  <NativeText
+                    variant="subtitle"
+                    color={theme.dark ? chatTheme?.darkModifier.headerTextColor : chatTheme?.lightModifier.headerTextColor}
+                  >
+                    {route.params.handle.subject ? creatorName: "Conversation avec"}
+                  </NativeText>
+                  <NativeText
+                    variant="title"
+                    numberOfLines={1}
+                    style={{
+                      maxWidth: 250
+                    }}
+                    color={theme.dark ? chatTheme?.darkModifier.headerTextColor : chatTheme?.lightModifier.headerTextColor}
+                  >
+                    {route.params.handle.subject || creatorName}
+                  </NativeText>
                 </View>
-              </View>
-              <View style={{ flex: 1 }}>
-                <NativeText variant="title" numberOfLines={1}>
-                  {messages[0]?.subject}
-                </NativeText>
-                <NativeText variant="subtitle" numberOfLines={1}>
-                  {messages[0].author}
-                </NativeText>
-              </View>
-              <View></View>
+              </TouchableOpacity>
             </View>
           </PapillonModernHeader>
-
-          <ScrollView
-            contentContainerStyle={{
-              padding: 16,
-              paddingTop: 70 + 16,
-              paddingBottom: useSafeAreaInsets().bottom + 16,
-            }}
+          <ImageBackground
+            source={backgroundImage}
             style={{ flex: 1 }}
           >
-            <NativeList>
-              <NativeItem>
-                <HTMLView
-                  value={`<body>${messages[0].content.replaceAll(
-                    /<\/?font[^>]*>/g,
-                    ""
-                  )}</body>`}
-                  stylesheet={stylesText}
-                />
-              </NativeItem>
-            </NativeList>
-            {messages[0].attachments.length > 0 && (
-              <View>
-                <NativeListHeader label="Pièces jointes" icon={<Paperclip />} />
+            <FlatList
+              ref={flatListRef}
+              data={[...messages]}
+              keyExtractor={(item, index) => index.toString()}
+              contentContainerStyle={{
+                padding: 16,
+                paddingTop: 120
+              }}
+              style={{
+                flex: 1,
+                backgroundColor: chatTheme?.darkModifier.chatBackgroundImage
+                  ? undefined
+                  : theme.dark
+                    ? chatTheme?.darkModifier.chatBackgroundColor
+                    : chatTheme?.lightModifier.chatBackgroundColor,
+              }}
+              renderItem={({ item, index }) => {
+                const isFirst = index === 0 || messages[index-1].author !== item.author;
+                const isMiddle: boolean = (messages[index - 1] && messages[index + 1] && messages[index - 1].author === item.author && messages[index + 1].author === item.author) ?? false;
+                const isLast = (index === messages.length - 1 || messages[index + 1] && messages[index + 1].author !== item.author);
 
-                <NativeList>
-                  {messages[0].attachments.map((attachment, index) => (
-                    <NativeItem
-                      key={index}
-                      onPress={() => openUrl(attachment.url)}
-                      icon={
-                        attachment.type === "file" ? <FileText /> : <Link />
-                      }
-                    >
-                      <NativeText variant="title" numberOfLines={2}>
-                        {attachment.name}
-                      </NativeText>
-                    </NativeItem>
-                  ))}
-                </NativeList>
-              </View>
-            )}
-          </ScrollView>
+                const authorIsUser = item.author === account.name;
+                let borderStyle = {
+                  borderTopLeftRadius: theme.dark ? chatTheme?.darkModifier.receivedMessageborderRadiusDefault : chatTheme?.lightModifier.receivedMessageborderRadiusDefault,
+                  borderTopRightRadius: theme.dark ? chatTheme?.darkModifier.receivedMessageborderRadiusDefault : chatTheme?.lightModifier.receivedMessageborderRadiusDefault,
+                  borderBottomLeftRadius: theme.dark ? chatTheme?.darkModifier.receivedMessageborderRadiusDefault : chatTheme?.lightModifier.receivedMessageborderRadiusDefault,
+                  borderBottomRightRadius: theme.dark ? chatTheme?.darkModifier.receivedMessageborderRadiusDefault : chatTheme?.lightModifier.receivedMessageborderRadiusDefault,
+                };
+
+                if (isFirst && !isLast) {
+                  borderStyle.borderBottomLeftRadius = theme.dark ? chatTheme?.darkModifier.receivedMessageBorderRadiusLinked : chatTheme?.lightModifier.receivedMessageBorderRadiusLinked;
+                }
+
+                if (isMiddle) {
+                  borderStyle.borderBottomLeftRadius = theme.dark ? chatTheme?.darkModifier.receivedMessageBorderRadiusLinked : chatTheme?.lightModifier.receivedMessageBorderRadiusLinked;
+                  borderStyle.borderTopLeftRadius = theme.dark ? chatTheme?.darkModifier.receivedMessageBorderRadiusLinked : chatTheme?.lightModifier.receivedMessageBorderRadiusLinked;
+                }
+
+                if (isLast && !isFirst) {
+                  borderStyle.borderBottomLeftRadius = theme.dark ? chatTheme?.darkModifier.receivedMessageBorderRadiusLinked : chatTheme?.lightModifier.receivedMessageborderRadiusDefault;
+                  borderStyle.borderTopLeftRadius = theme.dark ? chatTheme?.darkModifier.receivedMessageBorderRadiusLinked : chatTheme?.lightModifier.receivedMessageBorderRadiusLinked;
+                }
+
+                if (authorIsUser) {
+                  borderStyle = {
+                    ...borderStyle,
+                    borderTopLeftRadius: borderStyle.borderTopRightRadius,
+                    borderTopRightRadius: borderStyle.borderTopLeftRadius,
+                    borderBottomLeftRadius: borderStyle.borderBottomRightRadius,
+                    borderBottomRightRadius: borderStyle.borderBottomLeftRadius,
+                  };
+                }
+
+                return (
+                  <View style={{ gap: 10 }}>
+                    {!isFirst ? null : (
+                      <View style={{ flex: 1, flexDirection: item.author === account.name ? "row-reverse" : "row", alignItems: "center", gap: 10 }}>
+                        {authorIsUser ? (
+                          <Image
+                            source={account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== ""
+                              ? { uri: account.personalization.profilePictureB64 }
+                              : defaultProfilePicture(account.service, "")}
+                            style={{ width: 25, height: 25, borderRadius: 25 / 2 }}
+                          />
+                        ) : (
+                          <InitialIndicator
+                            initial={parse_initials(item.author)}
+                            color={getProfileColorByName(item.author).bright}
+                            textColor={getProfileColorByName(item.author).dark}
+                            size={25}
+                          />
+                        )}
+                        <NativeText variant="subtitle">{ authorIsUser ? `${account.studentName.last} ${account.studentName.first}` : item.author}</NativeText>
+                        <View style={{ width: 5, height: 5, backgroundColor: colors.text + "65", borderRadius: 5 }} />
+                        <NativeText variant="subtitle">
+                          {item.date.toLocaleString("fr-FR", {
+                            hour12: false,
+                            day: "2-digit",
+                            month: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </NativeText>
+                      </View>
+                    )}
+                    <View style={{
+                      marginBottom: 10,
+                      padding: 15,
+                      backgroundColor: authorIsUser ? theme.dark ? chatTheme?.darkModifier.sentMessageBackgroundColor : chatTheme?.lightModifier.sentMessageBackgroundColor : theme.dark ? chatTheme?.darkModifier.receivedMessageBackgroundColor : chatTheme?.lightModifier.receivedMessageBackgroundColor,
+                      borderColor: authorIsUser ? theme.dark ? chatTheme?.darkModifier.sentMessageBorderColor : chatTheme?.lightModifier.sentMessageBorderColor : theme.dark ? chatTheme?.darkModifier.receivedMessageBorderColor : chatTheme?.lightModifier.receivedMessageBorderColor,
+                      borderWidth: authorIsUser ? theme.dark ? chatTheme?.darkModifier.sentMessageBorderSize : chatTheme?.lightModifier.sentMessageBorderSize : theme.dark ? chatTheme?.darkModifier.receivedMessageBorderSize : chatTheme?.lightModifier.receivedMessageBorderSize,
+                      alignSelf: authorIsUser ? "flex-end" : "flex-start",
+                      ...borderStyle,
+                      gap: 5,
+                      position: "relative",
+                      maxWidth: "87%",
+                    }}>
+                      {item.content.trim() !== "" && (
+                        <HTMLView
+                          value={`<body>${item.content.replaceAll(/<\/?font[^>]*>/g, "")}</body>`}
+                          stylesheet={authorIsUser ? stylesTextAuthor : stylesText}
+                          onLinkPress={(url) => openUrl(url)}
+                        />
+                      )}
+                      {item.attachments && item.attachments.length > 0 && (
+                        <View
+                          style={{
+                            marginTop: 10,
+                            gap: 12,
+                          }}
+                        >
+                          {item.attachments.map((attachment: Attachment) => (
+                            <TouchableOpacity onPress={() => openUrl(attachment.url)}>
+                              <View style={{flexDirection: "row", alignItems: "center", gap: 10, maxWidth: "90%"}}>
+                                <View>
+                                  {attachment.type === AttachmentType.File ? (
+                                    <AutoFileIcon filename={attachment.name} size={28} color={colors.text} opacity={0.7}/>
+                                  ) : (
+                                    <LinkFavicon size={28} url={attachment.url} />
+                                  )}
+                                </View>
+                                <View
+                                  style={{
+                                    gap: 2,
+                                  }}
+                                >
+                                  <NativeText>{attachment.name}</NativeText>
+                                  <NativeText variant="subtitle" numberOfLines={1}>{attachment.url}</NativeText>
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                      {isLast && authorIsUser && (
+                        <View style={{ position: "absolute", bottom: 2, right: 0, zIndex: 10, pointerEvents: "none" }}>
+                          <View
+                            style={{
+                              width: 17,
+                              height: 17,
+                              backgroundColor: theme.dark ? chatTheme?.darkModifier.sentMessageBackgroundColor : chatTheme?.lightModifier.sentMessageBackgroundColor,
+                              borderRadius: 15,
+                              position: "absolute",
+                              bottom: 0,
+                              right: 0,
+                            }}
+                          />
+
+                          <View
+                            style={{
+                              width: 8,
+                              height: 8,
+                              backgroundColor: theme.dark ? chatTheme?.darkModifier.sentMessageBackgroundColor : chatTheme?.lightModifier.sentMessageBackgroundColor ,
+                              borderRadius: 15,
+                              position: "absolute",
+                              bottom: -7,
+                              right: -7,
+                            }}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                );
+              }}
+              ListEmptyComponent={() => (
+                <MissingItem
+                  emoji="💬"
+                  title="C'est le début de la conversation"
+                  description="Envoyez un message pour commencer la discussion."
+                  entering={animPapillon(FadeInDown)}
+                  exiting={animPapillon(FadeOut)}
+                  style={{paddingVertical: 26}}
+                />
+              )}
+            />
+            <View style={{
+              minHeight: 90,
+              paddingVertical: 20,
+              paddingHorizontal: 20,
+              borderTopWidth: 0.5,
+              borderTopColor: colors.text + "22",
+              backgroundColor: theme.dark ? chatTheme?.darkModifier.inputBarBackgroundColor : chatTheme?.lightModifier.inputBarBackgroundColor,
+              flexDirection: "row",
+              alignItems: "flex-start",
+            }}
+            >
+
+              <TextInput
+                placeholder={"Envoyer un message à " + creatorName}
+                placeholderTextColor={colors.text + "60"}
+                style={{
+                  backgroundColor: "transparent",
+                  borderRadius: 25,
+                  flex: 1,
+                  marginRight: 10,
+                  fontSize: 16,
+                  color: colors.text,
+                  fontFamily: "medium",
+                }}
+                multiline={true}
+                onChangeText={(text) => setText(text)}
+                value={text}
+              />
+              <TouchableOpacity
+                style={{
+                  backgroundColor: theme.dark ? chatTheme?.darkModifier.sendButtonBackgroundColor : chatTheme?.lightModifier.sendButtonBackgroundColor,
+                  width: 56,
+                  height: 40,
+                  borderRadius: 32,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: -5
+                }}
+                onPress={() => {
+                  sendMessageInChat(account, route.params.handle, text);
+                }}
+              >
+                <Send color={"#FFF"} size={24} style={{marginTop: 1, marginLeft: -3}}/>
+              </TouchableOpacity>
+            </View>
+            <View style={{height: insets.bottom, backgroundColor: theme.dark ? chatTheme?.darkModifier.inputBarBackgroundColor : chatTheme?.lightModifier.inputBarBackgroundColor }}></View>
+          </ImageBackground>
         </>
       ) : (
         <Reanimated.View
@@ -180,11 +421,11 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
               opacity: 0.5,
             }}
           >
-            Vos conversations arrivent...
+            Tes conversations arrivent...
           </Text>
         </Reanimated.View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

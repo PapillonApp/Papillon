@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { View } from "react-native";
 
 import { WebView } from "react-native-webview";
 
@@ -92,7 +92,9 @@ const UnivRennes2_Login: Screen<"UnivRennes2_Login"> = ({ navigation }) => {
         className: "UR2", // TODO ?
         schoolName: data?.formation["Formation"] + " - Université de Rennes 2",
 
-        personalization: await defaultPersonalization()
+        personalization: await defaultPersonalization(),
+
+        identity: {}
       };
 
       createStoredAccount(local_account);

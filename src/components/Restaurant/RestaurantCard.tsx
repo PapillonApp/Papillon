@@ -1,5 +1,5 @@
 import type React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { NativeText } from "../Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "../Global/AnimatedNumber";
@@ -40,8 +40,8 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
       <View
         style={{
           flexDirection: "row",
-          gap: 2,
-          justifyContent: "center",
+          gap: 6,
+          justifyContent: "center"
         }}
       >
         <AnimatedNumber
@@ -67,7 +67,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
         />
       </View>
 
-      {repas !== null && (
+      {repas !== null && repas !== Infinity && (
         <View
           style={{
             flexDirection: "row",

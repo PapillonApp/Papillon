@@ -1,19 +1,18 @@
 import React, { useEffect } from "react";
-import { Text, ScrollView, View, TouchableOpacity, StyleSheet, Image, Switch, Alert } from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, Image, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { ChevronLeft, MegaphoneOff, Sparkles } from "lucide-react-native";
+import { Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import IconsContainerCard from "@/components/Settings/IconsContainerCard";
-import Constants from "expo-constants";
 
 import { icones } from "@/utils/data/icones";
 import colorsList from "@/utils/data/colors.json";
 
 import { getIconName, setIconName } from "@candlefinance/app-icon";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
-import { alertExpoGo, expoGoWrapper, isExpoGo } from "@/utils/native/expoGoAlert";
+import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 
 type Icon = {
   id: string;
@@ -106,7 +105,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                     onPress={() => {
                       Alert.alert(
                         "Icônes dynamiques",
-                        "Les icônes dynamiques changent de couleur en fonction de votre thème.",
+                        "Les icônes dynamiques changent de couleur en fonction de ton thème.",
                       );
                     }}
                   >
@@ -161,7 +160,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                         onPress={() => {
                           Alert.alert(
                             "Icône dynamique",
-                            "Cette icône est dynamique, elle change de couleur en fonction de votre thème.",
+                            "Cette icône est dynamique, elle change de couleur en fonction de ton thème.",
                           );
                         }}
                       >

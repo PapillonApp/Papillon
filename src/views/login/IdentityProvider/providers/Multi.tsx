@@ -32,6 +32,14 @@ const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
         isExternal: false,
         linkedExternalLocalIDs: [],
 
+        identity: {
+          firstName: account.userData.firstname,
+          lastName: account.userData.name,
+          ine: account.userData.ine,
+          birthDate: account.userData.birthDate ? new Date(account.userData.birthDate) : undefined,
+          email: [account.userData.email],
+        },
+
         name: account.userData.name + " " + account.userData.firstname,
         studentName: {
           last: account.userData.name,

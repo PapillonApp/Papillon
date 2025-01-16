@@ -10,13 +10,12 @@ import AlertProvider from "@/providers/AlertProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as NavigationBar from "expo-navigation-bar";
 
-import * as SystemUI from "expo-system-ui";
-
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useCurrentAccount } from "@/stores/account";
 import { navigatorScreenOptions } from "./helpers/create-screen";
 import {navigate} from "@/utils/logger/logger";
 import { PapillonNavigation } from "./refs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Stack = createNativeStackNavigator<RouteParameters>();
 
@@ -48,7 +47,31 @@ const Router: React.FC = () => {
     config,
   };
 
-  const theme: Theme = scheme === "dark" ? PapillonDark : PapillonLight;
+  const [themeValue, setThemeValue] = React.useState<number>(0);
+
+  const [theme, setTheme] = React.useState<Theme>(scheme === "dark" ? PapillonDark : PapillonLight);
+
+  useEffect(() => {
+    AsyncStorage.getItem("theme").then((value) => {
+      if (value)
+        setThemeValue(parseInt(value));
+    });
+  }, []);
+
+  useEffect(() => {
+    switch (themeValue) {
+      case 0:
+        setTheme(scheme === "dark" ? PapillonDark : PapillonLight);
+        break;
+      case 1:
+        setTheme(PapillonLight);
+        break;
+      default:
+        setTheme(PapillonDark);
+        break;
+    }
+  }, [scheme, themeValue]);
+
 
   const account = useCurrentAccount(store => store.account!);
   if (account && account.personalization?.color !== undefined) {
@@ -64,7 +87,18 @@ const Router: React.FC = () => {
         <StatusBar
           backgroundColor={"transparent"}
           translucent={true}
-          barStyle={scheme === "dark" ? "light-content" : "dark-content"}
+          barStyle={
+            themeValue == 0 ?
+              scheme === "dark" ?
+                "light-content"
+                :
+                "dark-content"
+              :
+              themeValue == 1 ?
+                "dark-content"
+                :
+                "light-content"
+          }
         />
       )}
 

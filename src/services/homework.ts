@@ -4,7 +4,7 @@ import type { Homework } from "./shared/Homework";
 import { error } from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
-import { dateToEpochWeekNumber, epochWNToPronoteWN } from "@/utils/epochWeekNumber";
+import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
 
@@ -18,7 +18,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
     switch (account.service) {
       case AccountService.Pronote: {
         const { getHomeworkForWeek } = await import("./pronote/homework");
-        const weekNumber = translateToWeekNumber(date, account.instance?.instance.firstDate || pronoteFirstDate);
+        const weekNumber = translateToWeekNumber(date, account.instance?.instance.firstMonday || pronoteFirstDate);
         homeworks = await getHomeworkForWeek(account, weekNumber);
         break;
       }

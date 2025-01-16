@@ -14,7 +14,6 @@ import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
-import BackgroundIUTLannion from "@/views/login/IdentityProvider/actions/BackgroundIUTLannion";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
 import React from "react";
@@ -90,8 +89,8 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
       setIsLoading(true);
       await updateData();
 
-      if(isRefreshing) {
-        navigation.navigate("BackgroundIUTLannion");
+      if(isRefreshing && account.identityProvider?.identifier !== undefined) {
+        navigation.navigate("BackgroundIdentityProvider");
       }
 
       setTimeout(() => {
@@ -117,24 +116,24 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
         });
       }
 
-      gradesPerSubject.sort((a, b) =>
-        a.average.subjectName.localeCompare(b.average.subjectName)
-      );
+      if (account.service !== AccountService.EcoleDirecte) {
+        gradesPerSubject.sort((a, b) =>
+          a.average.subjectName.localeCompare(b.average.subjectName)
+        );
+      }
       setGradesPerSubject(gradesPerSubject);
     }, 1);
   }, [selectedPeriod, averages, grades]);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (selectedPeriod === "") return;
+    if (selectedPeriod === "") return;
 
-      const latestGrades = (grades[selectedPeriod] || [])
-        .slice()
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 10);
+    const latestGrades = (grades[selectedPeriod] || [])
+      .slice()
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, 10);
 
-      latestGradesRef.current = latestGrades;
-    }, 1);
+    latestGradesRef.current = latestGrades;
   }, [selectedPeriod, grades]);
 
   return (

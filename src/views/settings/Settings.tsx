@@ -3,7 +3,6 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Image, Platform, Text, View } from "react-native";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as WebBrowser from "expo-web-browser";
 import AppJSON from "../../../app.json";
 
 import Reanimated, {
@@ -31,6 +30,8 @@ import {
   Scroll,
   Settings as SettingsLucide,
   Sparkles,
+  SunMoon,
+  Smile,
   SwatchBook,
   WandSparkles,
   X
@@ -47,6 +48,8 @@ import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
+import * as WebBrowser from "expo-web-browser";
+import { WebBrowserPresentationStyle } from "expo-web-browser";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -60,10 +63,10 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
   const removeAccount = useAccounts((store) => store.remove);
 
-  const openUrl = async (url: string) => {
-    await WebBrowser.openBrowserAsync(url, {
-      controlsColor: colors.primary,
-      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+  const openUrl = (url: string) => {
+    WebBrowser.openBrowserAsync(url, {
+      presentationStyle: WebBrowserPresentationStyle.FORM_SHEET,
+      controlsColor: theme.colors.primary,
     });
   };
 
@@ -115,6 +118,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: "Services externes",
           onPress: () => navigation.navigate("SettingsExternalServices"),
         },
+        {
+          icon: <Smile />,
+          color: "#136B00",
+          label: "Réactions",
+          onPress: () => navigation.navigate("SettingsReactions"),
+        },
       ],
     },
     {
@@ -148,10 +157,10 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           }
         },
         {
-          icon: <CheckSquare />,
-          color: "#4947E6FF",
-          label: "Devoirs",
-          onPress: () => navigation.navigate("SettingsCheck"),
+          icon: <SunMoon />,
+          color: "#1e316a",
+          label: "Mode d'affichage",
+          onPress: () => navigation.navigate("SettingsApparence"),
         },
       ],
     },
@@ -224,7 +233,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: "Se déconnecter",
           onPress: () => {
             if (Platform.OS === "ios") {
-              Alert.alert("Se déconnecter", "Êtes-vous sûr de vouloir vous déconnecter ?", [
+              Alert.alert("Se déconnecter", "Es-tu sûr de vouloir te déconnecter ?", [
                 {
                   text: "Annuler",
                   style: "cancel",
@@ -244,7 +253,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
             } else {
               showAlert({
                 title: "Se déconnecter",
-                message: "Êtes-vous sûr de vouloir vous déconnecter ?",
+                message: "Es-tu sûr de vouloir te déconnecter ?",
                 actions: [
                   {
                     title: "Annuler",
@@ -273,6 +282,17 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       ]
     }
   ];
+
+  if (Platform.OS === "android") {
+    tabs[3].tabs.push({
+      icon: <HandCoins />,
+      color: "#f0a500",
+      label: "Soutenir Papillon",
+      onPress: () => openUrl("https://papillon.bzh/donate"),
+      android: true,
+      description: ""
+    });
+  }
 
   const translationY = useSharedValue(0);
   const [scrolled, setScrolled] = useState(false);
@@ -352,10 +372,10 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         {tabs.map((tab, index) => (
           <View key={index}>
             {tab.label &&
-          <NativeListHeader
-            key={index}
-            label={tab.label}
-          />
+              <NativeListHeader
+                key={index}
+                label={tab.label}
+              />
             }
             <NativeList>
               {tab.tabs.map((subtab, index) => (
@@ -388,7 +408,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           </View>
         ))}
 
-        {devModeEnabled == true && (
+        {devModeEnabled && (
           <View>
             <NativeListHeader label={"Développeur"}/>
             <NativeList>

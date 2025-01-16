@@ -4,6 +4,7 @@ import {
   Image,
   type ImageSourcePropType,
   KeyboardAvoidingView,
+  type KeyboardType,
   ScrollView,
   TextInput,
   TouchableOpacity,
@@ -23,6 +24,7 @@ import ButtonCta from "../FirstInstallation/ButtonCta";
 
 export interface LoginViewCustomInput {
   identifier: string;
+  keyboardType?: KeyboardType;
   title: string;
   placeholder?: string;
   secureTextEntry?: boolean;
@@ -45,6 +47,8 @@ const LoginView: React.FC<{
   usernamePlaceholder?: string;
   passwordLabel?: string;
   passwordPlaceholder?: string;
+  usernameKeyboardType?: KeyboardType;
+  passwordKeyboardType?: KeyboardType;
 }> = ({
   serviceIcon,
   serviceName,
@@ -57,6 +61,8 @@ const LoginView: React.FC<{
   usernamePlaceholder = "Nom d'utilisateur",
   passwordLabel = "Mot de passe",
   passwordPlaceholder = "Mot de passe",
+  usernameKeyboardType = "default",
+  passwordKeyboardType = "default",
 }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -172,6 +178,7 @@ const LoginView: React.FC<{
               onChangeText={setUsername}
               placeholder={usernamePlaceholder}
               autoCapitalize={autoCapitalize}
+              keyboardType={usernameKeyboardType}
               placeholderTextColor={theme.colors.text + "55"}
               style={{
                 fontSize: 16,
@@ -199,6 +206,7 @@ const LoginView: React.FC<{
                 placeholder={passwordPlaceholder}
                 placeholderTextColor={theme.colors.text + "55"}
                 autoCapitalize={autoCapitalize}
+                keyboardType={passwordKeyboardType}
                 style={{
                   fontSize: 16,
                   fontFamily: "medium",

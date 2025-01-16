@@ -70,6 +70,14 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         isExternal: false,
         linkedExternalLocalIDs: [],
 
+        identity: {
+          firstName: account.firstName,
+          lastName: account.lastName,
+          civility: account.gender,
+          phone: [account.phone],
+          email: [account.email],
+        },
+
         name: `${account.lastName} ${account.firstName}`,
         studentName: {
           first: account.firstName,
@@ -82,7 +90,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           session: currentSession,
           account
         },
-        personalization: await defaultPersonalization(account)
+        personalization: await defaultPersonalization(account),
       };
 
 
@@ -136,7 +144,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
     const correct = await checkDoubleAuth(currentSession, answer).finally(() => setLoading(false));
 
     if (!correct) {
-      setError("Mauvaise réponse, veuillez réessayer");
+      setError("Mauvaise réponse, réessaye");
       setDoubleAuthChallenge(null);
       setSession(null);
       return;
@@ -165,7 +173,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           <View>
             <View style={{padding: 16, height: 60 + 16, paddingBottom: 0}}>
               <NativeText variant={"title"}>{doubleAuthChallenge.question}</NativeText>
-              <NativeText variant={"subtitle"}>Répondez à la question suivante pour continuer vous authentifier</NativeText>
+              <NativeText variant={"subtitle"}>Réponds à la question suivante pour continuer ton authentification</NativeText>
             </View>
             <SvgFromXml
               xml={`

@@ -11,7 +11,6 @@ import SettingsMagic from "@/views/settings/SettingsMagic";
 import SettingsCheck from "@/views/settings/SettingsCheck";
 import SettingsAddons from "@/views/settings/SettingsAddons";
 import AddonPage from "@/views/addon/AddonPage";
-import { create } from "lodash";
 import ExternalAccountSelectMethod from "@/views/settings/ExternalAccount/SelectMethod";
 import SettingsFlags from "@/views/settings/SettingsFlags";
 import SettingsDevLogs from "@/views/settings/SettingsDevLogs";
@@ -26,6 +25,10 @@ import PriceBeforeScan from "@/views/settings/ExternalAccount/PriceBeforeScan";
 import SettingsFlagsInfos from "@/views/settings/SettingsFlagsInfos";
 import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
 import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
+import SettingsReactions from "@/views/settings/SettingsReactions";
+import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
+import SettingsApparence from "@/views/settings/SettingsApparence";
+import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
 
 const settingsScreens = [
   createScreen("Settings", Settings, {
@@ -58,6 +61,9 @@ const settingsScreens = [
 
   createScreen("SettingsSubjects", SettingsSubjects, {
     headerTitle: "Matières",
+  }),
+  createScreen("SettingsReactions", SettingsReactions, {
+    headerTitle: "Mes réactions",
   }),
   createScreen("SettingsExternalServices", SettingsExternalServices, {
     headerTitle: "Services externes",
@@ -105,9 +111,19 @@ const settingsScreens = [
   createScreen("ExternalIzlyLogin", ExternalIzlyLogin, {
     headerTitle: "Connexion à Izly",
   }),
+  createScreen("ExternalAliseLogin", ExternalAliseLogin, {
+    headerTitle: "Connexion à Alise",
+  }),
 
   createScreen("IzlyActivation", IzlyActivation, {
     headerTitle: "Configuration de Izly",
+    presentation: "modal",
+    headerBackVisible: false,
+    gestureEnabled: false,
+
+  }),
+  createScreen("TurboselfAccountSelector", TurboselfAccountSelector, {
+    headerTitle: "Configuration de Turboself",
     presentation: "modal",
     headerBackVisible: false,
     gestureEnabled: false,
@@ -121,6 +137,9 @@ const settingsScreens = [
   createScreen("SettingsDonorsList", SettingsDonorsList, {
     headerTitle: "Donateurs",
   }),
+  createScreen("SettingsApparence", SettingsApparence, {
+    headerTitle: "Mode d'affichage",
+  })
 ] as const;
 
 export default settingsScreens;

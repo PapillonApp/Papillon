@@ -49,7 +49,7 @@ const fetchNews = async (): Promise<Information[]> => {
         papillonNotify({
           id: `${account.localID}-${uuid()}-news`,
           title: `[${account.name}] Nouvelles informations`,
-          body: `Vous avez ${differences.length} nouvelles informations.`,
+          body: `Tu as ${differences.length} nouvelles informations.`,
           ios: {
             categoryId: account.localID,
           }

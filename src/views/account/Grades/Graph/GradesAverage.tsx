@@ -10,7 +10,7 @@ import {
 } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import React, { useRef, useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Platform, Alert, TouchableOpacity, Linking } from "react-native";
+import { View, StyleSheet, Platform, TouchableOpacity, Linking } from "react-native";
 
 import Reanimated, {
   FadeIn,
@@ -31,7 +31,8 @@ const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & Re
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
-import { AlertTriangle } from "lucide-react-native";
+import { AlertTriangle, Check, ExternalLink, PieChart, TrendingUp } from "lucide-react-native";
+import { useAlert } from "@/providers/AlertProvider";
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -46,13 +47,14 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 }) => {
   const theme = useTheme();
   const account = useCurrentAccount((store) => store.account!);
+  const { showAlert } = useAlert();
 
   const [gradesHistory, setGradesHistory] = useState<GradeHistory[]>([]);
   const [hLength, setHLength] = useState(0);
 
   const [currentAvg, setCurrentAvg] = useState(0);
   const [originalCurrentAvg, setOriginalCurrentAvg] = useState(0);
-  const [classAvg, setClassAvg] = useState(0);
+  const [classAvg, setClassAvg] = useState<number | null>(0);
   const [maxAvg, setMaxAvg] = useState(0);
   const [minAvg, setMinAvg] = useState(0);
 
@@ -84,7 +86,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
     let minAvg = getPronoteAverage(grades, "min");
 
     const finalAvg = getPronoteAverage(grades, "student");
-    console.log("finalAvg", finalAvg);
 
     setGradesHistory(hst);
     setHLength(hst.length);
@@ -96,7 +97,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
     originalCurrentAvgRef.current = hst[hst.length - 1].value;
 
-    setClassAvg(cla[cla.length - 1].value);
+    setClassAvg(cla.length > 0 ? cla[cla.length - 1].value : null);
 
     setMaxAvg(maxAvg);
     setMinAvg(minAvg);
@@ -124,11 +125,33 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
   }, [originalCurrentAvgRef]);
 
   const theoryAvgDisclaimer = useCallback(() => {
-    Alert.alert(
-      "Moyenne théorique",
-      "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations.",
-      [{ text: "Compris" }]
-    );
+    showAlert({
+      icon: <TrendingUp />,
+      title: "Moyenne théorique",
+      message: "La moyenne théorique est calculée en prenant en compte toutes les moyennes de tes matières. Elle est donc purement indicative et ne reflète pas la réalité des différentes options ou variations."
+    });
+  }, []);
+
+  const estimatedAvgDisclaimer = useCallback(() => {
+    showAlert({
+      icon: <PieChart />,
+      title: "Moyenne générale estimée",
+      message: "L'estimation automatique des moyennes n'est pas une information exacte, mais une approximation qui essaye de s'en rapprocher un maximum.",
+      actions: [
+        {
+          title: "En savoir plus",
+          icon: <ExternalLink />,
+          onPress: () => {
+            Linking.openURL("https://docs.papillon.bzh/kb/averages");
+          }
+        },
+        {
+          title: "OK",
+          icon: <Check />,
+          primary: true,
+        }
+      ]
+    });
   }, []);
 
   return (
@@ -157,7 +180,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
             {((showDetails && !overall) || selectedDate) && (
               <TouchableOpacity
                 onPress={() => {
-                  Linking.openURL("https://docs.papillon.bzh/kb/averages");
+                  estimatedAvgDisclaimer();
                 }}
                 style={{
                   position: "absolute",
@@ -252,7 +275,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                       style={{ color: theme.colors.primary }}
                       numberOfLines={1}
                     >
-                      au{" "}
                       {new Date(selectedDate).toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
@@ -307,20 +329,26 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                 </Reanimated.View>
               </View>
               <View style={[styles.gradeInfo, styles.gradeRight]}>
-                <NativeText numberOfLines={1}>Moyenne classe</NativeText>
-                <Reanimated.View
-                  style={[styles.gradeValue]}
-                  layout={animPapillon(LinearTransition)}
-                >
-                  <AnimatedNumber
-                    value={classAvg.toFixed(2)}
-                    style={styles.gradeNumberClass}
-                  />
-                  <Reanimated.View layout={animPapillon(LinearTransition)}>
-                    <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
-                  </Reanimated.View>
-                </Reanimated.View>
-              </View>
+              <NativeText numberOfLines={1}>Moyenne classe</NativeText>
+              <Reanimated.View
+                style={[styles.gradeValue]}
+                layout={animPapillon(LinearTransition)}
+              >
+                {classAvg !== null ? (
+                  <>
+                    <AnimatedNumber
+                      value={classAvg.toFixed(2)}
+                      style={styles.gradeNumberClass}
+                    />
+                    <Reanimated.View layout={animPapillon(LinearTransition)}>
+                      <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
+                    </Reanimated.View>
+                  </>
+                ) : (
+                  <NativeText style={styles.gradeNumberClass}>Inconnue</NativeText>
+                )}
+              </Reanimated.View>
+            </View>
             </Reanimated.View>
 
             {showDetails && maxAvg > 0 && minAvg > 0 ? (

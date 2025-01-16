@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
-import type { Screen } from "@/router/helpers/types";
+import React from "react";
 
-import { ScrollView, Image, Text, View } from "react-native";
-import LottieView from "lottie-react-native";
+import { Image, View } from "react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
 
 const SubjectContainerCard = ({ theme }: { theme: any }) => {
@@ -28,10 +26,10 @@ const SubjectContainerCard = ({ theme }: { theme: any }) => {
       </View>
       <NativeItem>
         <NativeText variant="title">
-          Personnalisez vos matières
+          Personnalise tes matières
         </NativeText>
         <NativeText variant="subtitle">
-          Personnalisez le nom, l'émoji et la couleur des matières de votre emploi du temps
+          Personnalise le nom, l'émoji et la couleur des matières de ton emploi du temps
         </NativeText>
       </NativeItem>
     </NativeList>

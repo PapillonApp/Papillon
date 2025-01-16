@@ -1,18 +1,19 @@
 import {AddonLogs as AddonLog, AddonPlacementManifest} from "@/addons/types";
-import type { Chat } from "@/services/shared/Chat";
+import type { Chat, ChatRecipient } from "@/services/shared/Chat";
 import type {Grade, GradesPerSubject} from "@/services/shared/Grade";
 import { Homework } from "@/services/shared/Homework";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import type { AccountService } from "@/stores/account/types";
-import { Log } from "@/utils/logger/logger";
 import type { CurrentPosition } from "@/utils/native/location";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type pronote from "pawnote";
 import type React from "react";
 import type { School as SkolengoSchool} from "scolengo-api/types/models/School";
-import {Information} from "@/services/shared/Information";
 import { ImageSourcePropType } from "react-native";
 import {Client} from "pawrd";
+import { Host } from "turboself-api";
+import {Evaluation} from "@/services/shared/Evaluation";
+import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
 
 export type RouteParameters = {
   // welcome.index
@@ -54,14 +55,21 @@ export type RouteParameters = {
 
   // login.identityProvider
   IdentityProviderSelector: undefined;
-  Multi_Login: { instanceURL: string, title: string, image: ImageSourcePropType };
+  Multi_Login: {
+    instanceURL: string;
+    title: string;
+    image: ImageSourcePropType;
+  };
   UnivRennes1_Login: undefined;
   UnivRennes2_Login: undefined;
   UnivIUTLannion_Login: undefined;
   UnivLimoges_Login: undefined;
   UnivSorbonneParisNord_login: undefined;
   UnivUphf_Login: undefined;
-  BackgroundIUTLannion: { url?: string; username: string; password: string, firstLogin?: boolean } | undefined;
+  BackgroundIdentityProvider: undefined;
+  BackgroundIUTLannion:
+    | { url?: string; username: string; password: string; firstLogin?: boolean }
+    | undefined;
 
   // login.skolengo
   SkolengoAuthenticationSelector: undefined;
@@ -71,7 +79,6 @@ export type RouteParameters = {
   // account.index
   Home: undefined;
   HomeScreen?: { onboard: boolean };
-  NoteReaction: undefined;
 
   Lessons?: { outsideNav?: boolean };
   LessonsImportIcal: {
@@ -92,6 +99,13 @@ export type RouteParameters = {
   GradeDocument: {
     grade: Grade;
     allGrades?: Grade[];
+  };
+  GradeReaction: { grade: Grade };
+
+  Evaluation: { outsideNav?: boolean };
+  EvaluationDocument: {
+    evaluation: Evaluation;
+    allEvaluations?: Evaluation[];
   };
 
   Attendance: undefined;
@@ -119,17 +133,21 @@ export type RouteParameters = {
   SettingsAddons: undefined;
   SettingsDevLogs: undefined;
   SettingsDonorsList: undefined;
+  SettingsReactions: undefined;
+  SettingsApparence: undefined;
 
   Menu?: undefined;
   RestaurantQrCode: {
-    QrCodes: string[]
+    QrCodes: string[];
   };
   RestaurantHistory: {
-    histories: ReservationHistory[]
+    histories: ReservationHistory[];
   };
 
-  Messages: undefined;
+  Discussions: undefined;
   ChatCreate: undefined;
+  ChatDetails: { handle: Chat, recipients: ChatRecipient[], onThemeChange?: (selectedThemePath: ThemesMeta) => void };
+  ChatThemes: { handle: Chat; themes: ThemesMeta[]; onGoBack?: (selectedThemePath: ThemesMeta) => void };
   Chat: { handle: Chat };
 
   AccountStack: { onboard: boolean };
@@ -138,13 +156,14 @@ export type RouteParameters = {
   ExternalTurboselfLogin: undefined;
   ExternalArdLogin: undefined;
   ExternalIzlyLogin: undefined;
-  IzlyActivation: { username: string, password: string };
-  PriceError: { account: Client, accountId: string };
+  ExternalAliseLogin: undefined;
+  IzlyActivation: { username: string; password: string };
+  PriceError: { account: Client; accountId: string };
   QrcodeScanner: { accountID: string };
   PriceDetectionOnboarding: { accountID: string };
   PriceBeforeScan: { accountID: string };
   PriceAfterScan: { accountID: string };
-
+  TurboselfAccountSelector: { accounts: Array<Host>, username: string, password: string};
 
   AddonSettingsPage: {
     addon: AddonPlacementManifest;

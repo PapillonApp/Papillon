@@ -18,7 +18,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         subject: c.subjectName,
         title: c.subjectName,
         room: c.room || void 0,
-        teacher: c.teacher ?? void 0,
+        teacher: c.teacher || void 0,
         // TODO: add more states
         status: c.updated ? TimetableClassStatus.MODIFIED : c.cancelled ? TimetableClassStatus.CANCELED : void 0,
         statusText: c.updated ? TimetableClassStatus.MODIFIED : c.cancelled ? TimetableClassStatus.CANCELED : void 0,
@@ -30,6 +30,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         subject: c.subjectName,
         id: c.id,
         title: c.subjectName ?? "Sans titre",
+        teacher: c.teacher || void 0,
         room: c.room || void 0,
         ...base
       };
@@ -39,6 +40,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         subject: c.subjectName,
         id: c.id,
         title: c.subjectName ?? "Sans titre",
+        teacher: c.teacher || void 0,
         room: c.room || void 0,
         ...base
       };
@@ -48,6 +50,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         subject: c.subjectName,
         id: c.id,
         title: "Congés",
+        teacher: c.teacher || void 0,
         room: void 0,
         ...base
       };
@@ -57,6 +60,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
         subject: "",
         id: c.id,
         title: "Sanction",
+        teacher: c.teacher || void 0,
         room: "PERMANENCE",
         ...base
       };

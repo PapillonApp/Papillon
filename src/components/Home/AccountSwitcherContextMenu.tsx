@@ -13,7 +13,8 @@ import {
 
 import Reanimated, {
   FadeIn,
-  FadeOut
+  FadeOut,
+  ZoomIn
 } from "react-native-reanimated";
 
 import { useNavigation } from "@react-navigation/native";
@@ -21,17 +22,19 @@ import * as Haptics from "expo-haptics";
 
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
-import { PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
+import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-import { Check, CirclePlus, Cog } from "lucide-react-native";
+import { Check, Cog, Plus } from "lucide-react-native";
 
 const ContextMenu: React.FC<{
   style?: any;
   children: React.ReactNode;
-  shouldOpenContextMenu?: boolean
-}> = ({ children, style, shouldOpenContextMenu }) => {
+  transparent?: boolean;
+  shouldOpenContextMenu?: boolean,
+  menuStyles?: any;
+}> = ({ children, style, shouldOpenContextMenu, transparent, menuStyles }) => {
   const theme = useTheme();
   const { colors } = theme;
   const navigation = useNavigation();
@@ -117,6 +120,7 @@ const ContextMenu: React.FC<{
                 transformOrigin: "top left",
               },
               styles.menu,
+              menuStyles,
             ]}
             entering={PapillonContextEnter}
             exiting={PapillonContextExit}
@@ -131,9 +135,10 @@ const ContextMenu: React.FC<{
                 <Pressable
                   key={index}
                   onPress={() => {
-                    switchTo(account);
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-                    setOpened(false);
+                    switchTo(account).then(() => {
+                      setOpened(false);
+                    });
                   }}
                   style={({ pressed }) => [
                     {
@@ -147,8 +152,8 @@ const ContextMenu: React.FC<{
                       flexDirection: "row",
                       padding: 9,
                       borderStyle: "solid",
-                      borderBottomWidth: index !== accounts.length - 1 ? 2 : 0,
-                      borderColor: theme.dark ? "#ffffff20" :"#00000020",
+                      borderBottomWidth: index !== accounts.length - 1 ? 1 : 0,
+                      borderColor: theme.colors.text + "20",
                       alignItems: "center",
                     }}
                   >
@@ -212,18 +217,21 @@ const ContextMenu: React.FC<{
                         }
                       </Text>
                     </View>
-                    {currentAccount.localID === account.localID && (
-                      <View
+                    {currentAccount.localID === account.localID && (accounts.length > 1) && (
+                      <Reanimated.View
                         style={{
                           position: "absolute",
                           right: 15,
                         }}
+                        entering={animPapillon(ZoomIn)}
+                        exiting={FadeOut.duration(200)}
                       >
                         <Check
-                          size={25}
-                          color={colors.text}
+                          size={22}
+                          strokeWidth={3.0}
+                          color={colors.primary}
                         />
-                      </View>
+                      </Reanimated.View>
                     )}
                   </View>
                 </Pressable>
@@ -246,18 +254,19 @@ const ContextMenu: React.FC<{
                     flexDirection: "row",
                     padding: 9,
                     borderStyle: "solid",
-                    borderTopWidth: 2,
+                    borderTopWidth: 6,
                     borderBottomColor: colors.border,
                     borderColor: theme.dark ? "#ffffff20" :"#00000020",
                     alignItems: "center",
                     gap: 10,
                   }}
                 >
-                  <CirclePlus
-                    size={26}
+                  <Plus
+                    size={24}
                     color={colors.text}
                     style={{
-                      opacity: 0.65,
+                      opacity: 0.8,
+                      marginHorizontal: 3,
                     }}
                   />
 
@@ -265,8 +274,8 @@ const ContextMenu: React.FC<{
                     style={{
                       fontSize: 16,
                       fontWeight: 600,
-                      color: colors.text + "50",
-                      fontFamily: "semibold",
+                      color: colors.text + "80",
+                      fontFamily: "medium",
                     }}
                   >
                     Ajouter un compte
@@ -291,7 +300,7 @@ const ContextMenu: React.FC<{
                     padding: 9,
                     backgroundColor: theme.dark ? theme.colors.primary + "09" : theme.colors.primary + "11",
                     borderStyle: "solid",
-                    borderTopWidth: 6,
+                    borderTopWidth: 1,
                     borderBottomColor: colors.border,
                     borderColor: theme.dark ? "#ffffff20" :"#00000020",
                     alignItems: "center",
@@ -299,16 +308,19 @@ const ContextMenu: React.FC<{
                   }}
                 >
                   <Cog
-                    size={26}
+                    size={24}
                     color={colors.text}
-                    opacity={0.65}
+                    style={{
+                      opacity: 1,
+                      marginHorizontal: 3,
+                    }}
                   />
 
                   <Text
                     style={{
                       fontSize: 16,
                       fontWeight: 600,
-                      color: colors.text + "80",
+                      color: colors.text + "ff",
                       fontFamily: "semibold",
                     }}
                   >
@@ -321,50 +333,52 @@ const ContextMenu: React.FC<{
         )}
       </View>
 
-      <Pressable
-        pointerEvents={opened ? "auto" : "none"}
-        style={[
-          styles.container,
-          {
-            width: Dimensions.get("window").width,
-            height: Dimensions.get("window").height,
-            overflow: "hidden",
-          },
-        ]}
-        onPress={() => {
-          setOpened(false);
-        }}
-      >
-        {opened && (
-          <Reanimated.View
-            pointerEvents="none"
-            style={[
-              {
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "#00000050"
-              },
-            ]}
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-          >
-            <BlurView
-              tint="dark"
-              intensity={60}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              experimentalBlurMethod="dimezisBlurView"
-            />
-          </Reanimated.View>
-        )}
-      </Pressable>
+      {!transparent && opened && (
+        <Pressable
+          pointerEvents={opened ? "auto" : "none"}
+          style={[
+            styles.container,
+            {
+              width: Dimensions.get("window").width,
+              height: Dimensions.get("window").height,
+              overflow: "hidden",
+            },
+          ]}
+          onPress={() => {
+            setOpened(false);
+          }}
+        >
+          {opened && (
+            <Reanimated.View
+              pointerEvents="none"
+              style={[
+                {
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#00000050"
+                },
+              ]}
+              entering={FadeIn.duration(200)}
+              exiting={FadeOut.duration(200)}
+            >
+              <BlurView
+                tint="dark"
+                intensity={60}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                experimentalBlurMethod="dimezisBlurView"
+              />
+            </Reanimated.View>
+          )}
+        </Pressable>
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { Pizza } from "lucide-react-native";
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Text, View } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
@@ -105,7 +105,7 @@ const RestaurantBalanceWidget = forwardRef(({
             paddingLeft: 6,
           }}
         />
-        {currentBalance?.remaining !== undefined && currentBalance?.remaining !== null && (
+        {currentBalance?.remaining !== undefined && currentBalance?.remaining !== null && currentBalance.remaining !== Infinity && (
           <View style={{
             flexDirection: "row",
             alignItems: "center",

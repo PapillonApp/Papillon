@@ -60,12 +60,15 @@ import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
 import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
+import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const corners = useMemo(() => getCorners(), []);
   const focused = useIsFocused();
+
+  const {isTablet} = useScreenDimensions();
 
   let scrollRef = useAnimatedRef<AnimatedScrollView>();
   let scrollOffset = useScrollViewOffset(scrollRef);
@@ -113,13 +116,13 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     borderCurve: "continuous",
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
-      [0, 100, 265 + insets.top - 1, 265 + insets.top],
+      [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
       [12, 12, corners, 0],
       Extrapolation.CLAMP
     ),
     borderTopRightRadius: interpolate(
       scrollOffset.value,
-      [0, 100, 265 + insets.top - 1, 265 + insets.top],
+      [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
       [12, 12, corners, 0],
       Extrapolation.CLAMP
     ),
@@ -137,12 +140,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     backgroundColor: colors.card,
     overflow: "hidden",
     transform: [
-      {scale: interpolate(
-        scrollOffset.value,
-        [0, 200, (260 + insets.top) - 40, 260 + insets.top],
-        [1, 0.95, 0.95, 1],
-        Extrapolation.CLAMP
-      )},
       {translateY: interpolate(
         scrollOffset.value,
         [-1000, 0, 125, 265 ],
@@ -221,7 +218,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   return (
     <View style={{flex: 1}}>
-      {!modalOpen && focused && (
+      {!modalOpen && focused && !isTablet && (
         <StatusBar barStyle="light-content" backgroundColor={"transparent"} translucent />
       )}
       <ContextMenu

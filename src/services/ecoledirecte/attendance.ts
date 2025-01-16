@@ -2,7 +2,7 @@ import ecoledirecte, {AttendanceItem, AttendanceItemKind} from "pawdirecte";
 import type { EcoleDirecteAccount } from "@/stores/account/types";
 import { ErrorServiceUnauthenticated } from "../shared/errors";
 import type { Attendance } from "../shared/Attendance";
-import {dateStringAsTimeInterval, getDuration} from "@/services/ecoledirecte/time-interval";
+import {dateStringAsTimeInterval, getDuration, getDurationInHours} from "@/services/ecoledirecte/time-interval";
 import {Punishment} from "@/services/shared/Punishment";
 import {Absence} from "@/services/shared/Absence";
 import {Delay} from "@/services/shared/Delay";
@@ -22,7 +22,7 @@ const decodeDelay = (item: AttendanceItem): Delay => {
 
 const decodeAbsence = (item: AttendanceItem): Absence => {
   const timeInterval = dateStringAsTimeInterval(item.displayDate);
-  const duration = (timeInterval?.end && timeInterval.start) ? getDuration(timeInterval): new Date();
+  const duration = (timeInterval?.end && timeInterval.start) ? getDurationInHours(timeInterval) : "";
   const fromTimestamp = timeInterval?.start ? new Date(timeInterval.start).getTime(): 0;
   const toTimestamp = timeInterval?.end ? new Date(timeInterval.end).getTime(): 0;
   return {
@@ -30,7 +30,7 @@ const decodeAbsence = (item: AttendanceItem): Absence => {
     fromTimestamp,
     toTimestamp,
     justified: item.justified,
-    hours: duration.getHours() + "h" + duration.getMinutes(),
+    hours: duration,
     administrativelyFixed: item.justified,
     reasons: item.reason,
   };
