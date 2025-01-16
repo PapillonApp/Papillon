@@ -99,6 +99,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
+
   const [hideDone, setHideDone] = useState(false);
   useEffect(() => {
     const keeyActivated =
@@ -572,6 +574,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         >
           <TouchableOpacity
             onPress={() => {
+              mutateProperty("personalization", { KeepCheckActivated: !hideDone })
               setHideDone(!hideDone);
             }}
             onLongPress={() => navigation.navigate("SettingStack", {view: "SettingsTabs"})}
