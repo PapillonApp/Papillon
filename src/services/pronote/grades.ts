@@ -13,7 +13,7 @@ const getTab = (account: PronoteAccount): pronote.Tab => {
 
   const tab = account.instance.user.resources[0].tabs.get(pronote.TabLocation.Grades);
   if (!tab)
-    throw new Error("Vous n'avez pas accès à l'onglet 'Notes' dans PRONOTE");
+    throw new Error("Tu n'as pas accès à l'onglet 'Notes' dans PRONOTE");
 
   return tab;
 };

@@ -7,7 +7,6 @@ import defaultPersonalization from "@/services/local/default-personalization";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import LoginView from "@/components/Templates/LoginView";
-import { is } from "date-fns/locale";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";
 

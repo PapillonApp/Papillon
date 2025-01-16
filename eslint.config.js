@@ -1,4 +1,5 @@
 const stylistic = require("@stylistic/eslint-plugin");
+const unusedImports = require("eslint-plugin-unused-imports");
 const typescript = require("@typescript-eslint/parser");
 
 module.exports = [
@@ -19,14 +20,16 @@ module.exports = [
       parser: typescript
     },
     plugins: {
-      "@stylistic": stylistic
+      "@stylistic": stylistic,
+      "unused-imports": unusedImports
     },
     rules: {
       "@stylistic/indent": ["error", 2],
       "@stylistic/no-trailing-spaces": "error",
       "@stylistic/quotes": ["error", "double"],
       "@stylistic/semi": ["error", "always"],
-      "@stylistic/space-before-function-paren": ["error", "always"]
+      "@stylistic/space-before-function-paren": ["error", "always"],
+      "unused-imports/no-unused-imports": "error"
     }
   }
 ];

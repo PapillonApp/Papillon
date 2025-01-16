@@ -1,5 +1,5 @@
 import type React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { NativeText } from "../Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
 import AnimatedNumber from "../Global/AnimatedNumber";

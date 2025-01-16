@@ -6,12 +6,11 @@ import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Alert, Button, View } from "react-native";
+import { Alert, View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
-import { da } from "date-fns/locale";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
@@ -146,7 +145,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     if(redirectCount >= 2) {
       Alert.alert(
         "Erreur",
-        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifiez vos identifiants et réessayez.",
+        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie tes identifiants et réessaye.",
         [{ text: "OK", onPress: () => navigation.goBack() }]
       );
       navigation.goBack();
@@ -221,7 +220,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
             injectPassword();
           }
 
-          if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/") && canExtractJSON) {
+          if(url.startsWith("https://notes9.iutlan.univ-rennes.fr/") && canExtractJSON) {
             redirectToData();
             setCanExtractJSON(false);
           }

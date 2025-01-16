@@ -5,10 +5,10 @@ import { useTheme } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import {type RouteParameters, Screen} from "@/router/helpers/types";
+import {type RouteParameters} from "@/router/helpers/types";
 import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import type {Grade, GradesPerSubject} from "@/services/shared/Grade";
-import { getPronoteAverage, getSubjectAverage } from "@/utils/grades/getAverages";
+import { getSubjectAverage } from "@/utils/grades/getAverages";
 
 type SubjectTitleParameters = {
   navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>

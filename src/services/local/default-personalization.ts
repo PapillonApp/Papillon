@@ -1,7 +1,5 @@
 import type { Personalization } from "@/stores/account/types";
-import downloadAsBase64 from "@/utils/external/download-as-base64";
 import { defaultTabs } from "@/consts/DefaultTabs";
-import type { Account } from "pawdirecte";
 
 import colors from "@/utils/data/colors.json";
 

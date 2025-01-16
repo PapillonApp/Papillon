@@ -1,8 +1,8 @@
-import { AverageOverview, Grade, GradeInformation, GradeValue } from "@/services/shared/Grade";
+import { AverageOverview, Grade, GradeValue } from "@/services/shared/Grade";
 import type { SkolengoAccount } from "@/stores/account/types";
 import { getPeriod } from "./period";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
-import { Evaluation, EvaluationDetail } from "scolengo-api/types/models/Results";
+import { Evaluation } from "scolengo-api/types/models/Results";
 
 const SKOLENGO_DEFAULT_SCALE = 20;
 

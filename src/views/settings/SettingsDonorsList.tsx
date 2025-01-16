@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";

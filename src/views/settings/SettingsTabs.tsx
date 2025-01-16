@@ -26,15 +26,12 @@ import { PressableScale } from "react-native-pressable-scale";
 import Reanimated, {
   FadeIn,
   FadeOut,
-  FadeInUp,
-  FadeOutDown,
   LinearTransition,
   ZoomIn,
   ZoomOut,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { defaultTabs } from "@/consts/DefaultTabs";
-import { animPapillon } from "@/utils/ui/animations";
 import { log } from "@/utils/logger/logger";
 import { useAlert } from "@/providers/AlertProvider";
 
@@ -368,7 +365,7 @@ const SettingsTabs = () => {
                 Rangement des sections
               </NativeText>
               <NativeText variant="subtitle">
-                Vous pouvez choisir jusqu'à 5 onglets à afficher sur la page d'accueil.
+                Tu peux choisir jusqu'à 5 onglets à afficher sur la page d'accueil.
               </NativeText>
             </NativeItem>
 
@@ -394,7 +391,7 @@ const SettingsTabs = () => {
               >
                 <NativeText variant="title">Nouveaux onglets disponibles !</NativeText>
                 <NativeText variant="subtitle">
-                  {newTabs.map((tab) => tab.label).join(", ")}. Appuyez ici pour les ajouter.
+                  {newTabs.map((tab) => tab.label).join(", ")}. Appuie ici pour les ajouter.
                 </NativeText>
               </NativeItem>
             )}
@@ -445,7 +442,7 @@ const SettingsTabs = () => {
                                   onPress={() => {
                                     if (!item.enabled && tabs.filter(t => t.enabled).length === 5) {
                                       if (Platform.OS === "ios") {
-                                        Alert.alert("Information", "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.", [
+                                        Alert.alert("Information", "Tu ne peux pas ajouter plus de 5 onglets sur la page d'accueil.", [
                                           {
                                             text: "OK",
                                           },
@@ -453,7 +450,7 @@ const SettingsTabs = () => {
                                       } else {
                                         showAlert({
                                           title: "Information",
-                                          message: "Vous ne pouvez pas ajouter plus de 5 onglets sur la page d'accueil.",
+                                          message: "Tu ne peux pas ajouter plus de 5 onglets sur la page d'accueil.",
                                           actions: [
                                             {
                                               title: "OK",

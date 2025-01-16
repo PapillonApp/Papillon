@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
@@ -13,11 +13,8 @@ import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import { useTheme } from "@react-navigation/native";
 import GetV6Data from "@/utils/login/GetV6Data";
-import { Check, School, Undo2 } from "lucide-react-native";
-import Constants from "expo-constants";
+import { School } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { sr } from "date-fns/locale";
-import { sub } from "date-fns";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
@@ -91,7 +88,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const UnsupportedAlert = () => {
     showAlert({
       title: "Service non supporté",
-      message: "Désolé, ce service n'est pas encore supporté. Veuillez réessayer dans une prochaine version."
+      message: "Désolé, ce service n'est pas encore supporté. Réessaye dans une prochaine version."
     });
   };
 

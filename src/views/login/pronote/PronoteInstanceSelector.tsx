@@ -8,10 +8,19 @@ import {
   ActivityIndicator,
   Keyboard,
   KeyboardEvent,
-  Text
+  Text,
 } from "react-native";
 import pronote from "pawnote";
-import Reanimated, { LinearTransition, FlipInXDown, FadeInUp, FadeOutUp, ZoomIn, ZoomOut, Easing, ZoomInEasyDown } from "react-native-reanimated";
+import Reanimated, {
+  LinearTransition,
+  FlipInXDown,
+  FadeInUp,
+  FadeOutUp,
+  ZoomIn,
+  ZoomOut,
+  Easing,
+  ZoomInEasyDown,
+} from "react-native-reanimated";
 import determinateAuthenticationView from "@/services/pronote/determinate-authentication-view";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -20,7 +29,7 @@ import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 
-import { Search, X, GraduationCap, } from "lucide-react-native";
+import { Search, X, GraduationCap } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
@@ -30,10 +39,14 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   navigation,
 }) => {
   // `null` when loading, `[]` when no instances found.
-  const [instances, setInstances] = useState<pronote.GeolocatedInstance[] | null>(null);
-  const [originalInstances, setOriginalInstances] = useState<pronote.GeolocatedInstance[] | null>(null);
+  const [instances, setInstances] = useState<
+    pronote.GeolocatedInstance[] | null
+  >(null);
+  const [originalInstances, setOriginalInstances] = useState<
+    pronote.GeolocatedInstance[] | null
+  >(null);
 
-  const {colors} = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const { showAlert } = useAlert();
@@ -46,6 +59,9 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  const routes = navigation.getState()?.routes;
+  const prevRoute = routes[routes.length - 2];
 
   const keyboardDidShow = (event: KeyboardEvent) => {
     setKeyboardOpen(true);
@@ -84,11 +100,13 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
     };
   }, []);
 
-
   useEffect(() => {
     if (params) {
-      void async function () {
-        const dataset_instances = await getInstancesFromDataset(params.longitude, params.latitude);
+      void (async function () {
+        const dataset_instances = await getInstancesFromDataset(
+          params.longitude,
+          params.latitude
+        );
         const pronote_instances = await pronote.geolocation(params);
 
         // On calcule la distance entre les instances et l'utilisateur.
@@ -104,9 +122,12 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
           const dLat = lat2 - lat1;
           const dLon = lon2 - lon1;
 
-          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1) *
+              Math.cos(lat2) *
+              Math.sin(dLon / 2) *
+              Math.sin(dLon / 2);
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
           const distance = R * c;
 
@@ -128,7 +149,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
         // On met à jour les instances.
         setInstances(instances);
         setOriginalInstances(instances);
-      }();
+      })();
     }
   }, [params]);
 
@@ -149,14 +170,14 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
         styles.container,
         {
           paddingTop: insets.top,
-        }
+        },
       ]}
     >
       <MaskStars />
 
-      <View style={{height: insets.top}} />
+      <View style={{ height: insets.top }} />
 
-      {!keyboardOpen &&
+      {!keyboardOpen && (
         <Reanimated.View
           entering={FadeInUp.duration(250).delay(200)}
           exiting={FadeOutUp.duration(150)}
@@ -171,7 +192,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
             style={{ marginTop: 0, zIndex: 9999 }}
           />
         </Reanimated.View>
-      }
+      )}
 
       <Reanimated.View
         style={[
@@ -181,7 +202,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
             // @ts-expect-error
             color: colors.text,
             borderColor: colors.border,
-          }
+          },
         ]}
         layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
       >
@@ -197,19 +218,20 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
             styles.searchInput,
             {
               color: colors.text,
-            }
+            },
           ]}
         />
 
         {search.length > 0 && (
           <Reanimated.View
-            layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+            layout={LinearTransition.springify()
+              .mass(1)
+              .stiffness(100)
+              .damping(40)}
             entering={ZoomIn.springify()}
             exiting={ZoomOut.springify()}
           >
-            <TouchableOpacity onPress={() => {
-              setSearch("");
-            }}>
+            <TouchableOpacity onPress={() => setSearch("")}>
               <X size={24} color={colors.text + "55"} />
             </TouchableOpacity>
           </Reanimated.View>
@@ -223,15 +245,14 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
       ) : (
         <Reanimated.View
           style={styles.overScrollContainer}
-          layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+          layout={LinearTransition.springify()
+            .mass(1)
+            .stiffness(100)
+            .damping(40)}
         >
-
           <LinearGradient
             pointerEvents="none"
-            colors={[
-              colors.background + "00",
-              colors.background,
-            ]}
+            colors={[colors.background + "00", colors.background]}
             style={{
               position: "absolute",
               bottom: 0,
@@ -244,7 +265,10 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
 
           <Reanimated.ScrollView
             style={styles.overScroll}
-            layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+            layout={LinearTransition.springify()
+              .mass(1)
+              .stiffness(100)
+              .damping(40)}
           >
             {instances.length === 0 && (
               <Reanimated.Text
@@ -263,21 +287,30 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
             )}
 
             <Reanimated.View
-              style={[styles.list,
+              style={[
+                styles.list,
                 {
-                  paddingBottom: keyboardHeight + insets.bottom + (keyboardHeight > 0 ? 0 : 20),
-                }
+                  paddingBottom:
+                    keyboardHeight +
+                    insets.bottom +
+                    (keyboardHeight > 0 ? 0 : 20),
+                },
               ]}
-              layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+              layout={LinearTransition.springify()
+                .mass(1)
+                .stiffness(100)
+                .damping(40)}
             >
               {instances.map((instance, index) => (
                 <Reanimated.View
                   style={{ width: "100%" }}
-                  layout={LinearTransition.springify().mass(1).stiffness(150).damping(20)}
+                  layout={LinearTransition.springify()
+                    .mass(1)
+                    .stiffness(150)
+                    .damping(20)}
                   entering={
-                    index < 10 &&
-                    !hasSearched ?
-                      FlipInXDown.springify().delay(100 * index)
+                    index < 10 && !hasSearched
+                      ? FlipInXDown.springify().delay(100 * index)
                       // @ts-expect-error
                       : ZoomInEasyDown.duration(400).easing(Easing.bezier(0.25, 0.1, 0.25, 1)).delay(30 * index)
                   }
@@ -286,10 +319,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                 >
                   <DuoListPressable
                     leading={
-                      <GraduationCap
-                        size={24}
-                        color={colors.text + "88"}
-                      />
+                      <GraduationCap size={24} color={colors.text + "88"} />
                     }
                     onPress={async () => {
                       determinateAuthenticationView(
@@ -299,14 +329,17 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                       );
                     }}
                     text={instance.name}
-                    subtext={`à ${instance.distance.toFixed(2)}km de toi`}
+                    subtext={
+                      prevRoute.name === "PronoteManualLocation"
+                        ? undefined
+                        : `à ${instance.distance.toFixed(2)}km de ta position`
+                    }
                   />
                 </Reanimated.View>
               ))}
             </Reanimated.View>
           </Reanimated.ScrollView>
         </Reanimated.View>
-
       )}
     </View>
   );
@@ -375,7 +408,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontFamily: "medium",
-  }
+  },
 });
 
 export default PronoteInstanceSelector;

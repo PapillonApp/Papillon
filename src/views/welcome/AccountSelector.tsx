@@ -340,7 +340,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                 opacity: 0.8,
               }}
             >
-              Sélectionnez un compte pour commencer.
+              Sélectionne un compte pour commencer.
             </Text>
           </View>
         </Reanimated.View>
@@ -390,7 +390,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                       // delete account
                       Alert.alert(
                         "Supprimer le compte",
-                        "Êtes-vous sûr de vouloir supprimer ce compte ?",
+                        "Es-tu sûr de vouloir supprimer ce compte ?",
                         [
                           {
                             text: "Annuler",
@@ -401,8 +401,8 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                             style: "destructive",
                             onPress: () => {
                               Alert.alert(
-                                "Êtes-vous sûr ?",
-                                "Voulez-vous supprimer définitivement " + account.studentName.first + " " + account.studentName.last + " ?",
+                                "Es-tu sûr ?",
+                                "Veux-tu supprimer définitivement " + account.studentName.first + " " + account.studentName.last + " ?",
                                 [
                                   {
                                     text: "Annuler",

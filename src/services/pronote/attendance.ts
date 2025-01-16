@@ -14,7 +14,7 @@ const getTab = (account: PronoteAccount): pronote.Tab => {
 
   const tab = account.instance.user.resources[0].tabs.get(pronote.TabLocation.Notebook);
   if (!tab)
-    throw new Error("Vous n'avez pas accès à l'onglet 'Vie Scolaire' dans PRONOTE");
+    throw new Error("Tu n'as pas accès à l'onglet 'Vie Scolaire' dans PRONOTE");
 
   return tab;
 };

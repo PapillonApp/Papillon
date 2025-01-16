@@ -19,7 +19,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>7.7.0</string>
+    <string>7.7.2</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -46,11 +46,11 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Papillon utilise ta caméra pour scanner des QR-codes pour vous connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réaction.</string>
+    <string>Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réaction.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Autoriser $(PRODUCT_NAME) à utiliser votre localisation.</string>
+    <string>Autoriser $(PRODUCT_NAME) à utiliser ta localisation.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Autoriser $(PRODUCT_NAME) à utiliser votre localisation.</string>
+    <string>Autoriser $(PRODUCT_NAME) à utiliser ta localisation.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Papillon utilise ton emplacement pour trouver les établissements autour de toi.</string>
     <key>NSMicrophoneUsageDescription</key>

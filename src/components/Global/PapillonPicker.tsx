@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Platform, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
@@ -8,7 +8,6 @@ import Reanimated, { LinearTransition, type AnimatedStyle } from "react-native-r
 import { NativeText } from "./NativeComponents";
 
 import { BlurView } from "expo-blur";
-import * as Haptics from "expo-haptics";
 import { Check } from "lucide-react-native";
 
 type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown }[];

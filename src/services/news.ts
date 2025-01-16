@@ -4,7 +4,6 @@ import type { Information } from "./shared/Information";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { error } from "@/utils/logger/logger";
 import { newsRead } from "pawnote";
-import { ca } from "date-fns/locale";
 
 /**
  * Updates the state and cache for the news.

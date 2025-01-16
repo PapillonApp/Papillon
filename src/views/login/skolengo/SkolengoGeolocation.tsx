@@ -69,7 +69,7 @@ const SkolengoGeolocation: Screen<"SkolengoGeolocation"> = ({ navigation }) => {
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
-        Votre position est nécessaire pour trouver les instances SKOLENGO à proximité.
+        Ta position est nécessaire pour trouver les instances SKOLENGO à proximité.
         Elle n'est pas stockée et ne sera pas partagée.
       </Text>
     </SafeAreaView>
