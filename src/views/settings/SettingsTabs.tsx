@@ -16,6 +16,7 @@ import {
   Equal,
   SendToBack,
   Gift,
+  CheckSquare,
 } from "lucide-react-native";
 import {
   NestableDraggableFlatList,
@@ -553,6 +554,30 @@ const SettingsTabs = () => {
                 }}
               >
                 Afficher un fond aux onglets
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+
+          <NativeListHeader label="Devoirs" />
+
+          <NativeList>
+            <NativeItem
+              trailing={
+                <Switch
+                  value={account?.personalization?.KeepCheckVisible ?? false}
+                  onValueChange={(value) => mutateProperty("personalization", { KeepCheckVisible: value })}
+                />
+              }
+              icon={<CheckSquare />}
+            >
+              <NativeText
+                style={{
+                  fontSize: 16,
+                  fontFamily: "semibold",
+                  color: theme.colors.text,
+                }}
+              >
+                Cacher le bouton devoirs non-faits
               </NativeText>
             </NativeItem>
           </NativeList>
