@@ -1,6 +1,7 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
-import { en, fr } from "./index";
+import fr from "./fr.json";
+import en from "./en.json";
 
 const resources = {
   en: {
@@ -12,8 +13,8 @@ const resources = {
 };
 
 i18next.use(initReactI18next).init({
-  debug: true,
-  fallbackLng: "fr",
+  fallbackLng: "en",
+  lng: "fr",
   interpolation: {
     escapeValue: false,
   },

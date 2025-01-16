@@ -7,6 +7,7 @@ import type { Screen } from "@/router/helpers/types";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import ChangeLanguage from "@/components/FirstInstallation/ChangeLanguage";
 
 import { useTheme } from "@react-navigation/native";
 
@@ -56,6 +57,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <MaskStars />
+      <ChangeLanguage />
 
       <PapillonShineBubble
         message="Bienvenue sur Papillon !"
