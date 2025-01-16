@@ -18,7 +18,6 @@ import Reanimated, {
 import {
   Bell,
   Cable,
-  CheckSquare,
   HandCoins,
   Info,
   Laptop,
