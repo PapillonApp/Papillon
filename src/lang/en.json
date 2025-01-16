@@ -2,13 +2,13 @@
   "welcome": {
     "confirm": "Confirm",
     "FirstInstallation": {
-      "message": "Welcome on Papillon !",
+      "message": "Welcome on Papillon!",
       "subtitle": "The only app to manage all your school life in one place!",
-      "start": "Let's start!",
+      "getStarted": "Let's start!",
       "help": "Need help?",
-      "tos": "By continuing, you accept the {{conditions}} and the {{privacy}}.",
-      "conditions": "terms of use",
-      "privacy": "privacy policy"
+      "tos": "By continuing, you accept the {{termsOfService}} and the {{privacyPolicy}}.",
+      "terms": "terms of use",
+      "privacyPolicy": "privacy policy"
     },
     "ServiceSelector": {
       "message": "To begin with, what's your school service?",
