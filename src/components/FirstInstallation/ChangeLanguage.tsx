@@ -28,7 +28,7 @@ const ChangeLanguage: React.FC = () => {
 
     getLanguage();
   }, [language]);
-
+  // TODO: create the switcher
   return (
     <View
       style={{
@@ -40,7 +40,7 @@ const ChangeLanguage: React.FC = () => {
       }}
     >
       <Globe size={24} color={colors.text} />
-      <Text style={{ color: colors.text }}>{t("welcome.confirm")}</Text>
+      <Text style={{ color: colors.text }}>{"TODO"}</Text>
     </View>
   );
 };
