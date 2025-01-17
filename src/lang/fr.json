@@ -117,6 +117,9 @@
     }
   },
   "home": {
+    "addAccount": "Ajouter un compte",
+    "localAccount": "Compte local",
+    "settings": "Paramètres",
     "widgets": {
       "nextCourse": "Prochain cours",
       "grades": "Notes",

@@ -25,6 +25,7 @@ import { AccountService } from "@/stores/account/types";
 import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BlurView } from "expo-blur";
 import { Check, Cog, Plus } from "lucide-react-native";
 
@@ -37,6 +38,7 @@ const ContextMenu: React.FC<{
 }> = ({ children, style, shouldOpenContextMenu, transparent, menuStyles }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const navigation = useNavigation();
 
   const [opened, setOpened] = useState(false); // État pour gérer l'ouverture du menu contextuel
@@ -213,7 +215,7 @@ const ContextMenu: React.FC<{
                           AccountService[account.service] :
                           account.identityProvider ?
                             account.identityProvider.name :
-                            "Compte local"
+                            t("home.localAccount")
                         }
                       </Text>
                     </View>
@@ -278,7 +280,7 @@ const ContextMenu: React.FC<{
                       fontFamily: "medium",
                     }}
                   >
-                    Ajouter un compte
+                    {t("home.addAccount")}
                   </Text>
                 </View>
               </Pressable>
@@ -324,7 +326,7 @@ const ContextMenu: React.FC<{
                       fontFamily: "semibold",
                     }}
                   >
-                    Paramètres
+                    {t("home.settings")}
                   </Text>
                 </View>
               </Pressable>
