@@ -1,4 +1,5 @@
 {
+  "loading": "Loading...",
   "welcome": {
     "confirm": "Confirm",
     "FirstInstallation": {
@@ -9,13 +10,17 @@
       "tos": "By continuing, you accept the {{termsOfService}} and the {{privacyPolicy}}.",
       "terms": "terms of use",
       "privacyPolicy": "privacy policy"
-    },
+    }
+  },
+  "login": {
     "ServiceSelector": {
       "message": "To begin with, what's your school service?",
-      "highEdu": "Higher education"
+      "highEdu": "Higher education",
+      "highEduSubtitle": "Universities, institutes, schools...",
+      "importV6": "Import my account"
     },
     "PronoteAuthSelector": {
-      "message": "What do you prefer to use to connect to Pronote?",
+      "message": "What do you prefer to connect to Pronote?",
       "locate": "Use my location",
       "locateSubtitle": "Find a school around me",
       "city": "Search for a city",
@@ -25,9 +30,12 @@
     },
     "PronoteGeolocation": {
       "message": "Papillon needs your location to search for establishments",
+      "numberOfLines": 3,
       "ask": "Ask for permission",
-      "subtitle": "Your location is needed to find nearby PRONOTE instances. It will be sent to PRONOTE and to the government's address api to find establishments. It is not stored.",
-      "pending": "Locating..."
+      "terms": "Your location is needed to find nearby PRONOTE instances. It will be sent to PRONOTE and to the government's address api to find establishments. It is not stored.",
+      "pending": "Locating...",
+      "loadingPermissions": "Loading permissions",
+      "needPermission": "Papillon needs your location to find establishments"
     },
     "PronoteManualLocation": {
       "message": "In which city is your establishment located?",
@@ -42,19 +50,16 @@
       "placeholder": "Pronote instance URL"
     },
     "PronoteWebview": {
-      "title": "Connection to Pronote",
-      "subtitle": "Getting information"
+      "title": "Connecting to Pronote",
+      "preparing": "Preparing to connect",
+      "waitingForEtablishments": "Waiting for your establishment",
+      "obtainingInformations": "Getting information"
     },
     "PronoteInstanceSelector": {
       "message": "Here are the establishments I found!",
       "placeholder": "Search for an establishment",
       "distance": "at {{distance}} km from you",
-      "alert": {
-        "title": "The {{name}} instance requires an ENT connection",
-        "subtitle": "You will be redirected to your ENT's login portal.",
-        "login": "Credentials",
-        "ent": "Use the ENT"
-      }
+      "notFound": "No establishment found"
     },
     "GenericLogin": {
       "title": "Connection to {{name}}",
@@ -66,6 +71,12 @@
       "password": "Password",
       "passwordPlaceholder": "Password",
       "login": "Login"
+    },
+    "ENTAlert": {
+      "title": "The {{name}} instance requires an ENT connection",
+      "subtitle": "You will be redirected to your ENT's login portal.",
+      "login": "Credentials",
+      "ent": "Use the ENT"
     },
     "SkolengoAuthSelector": {
       "message": "What do you prefer to use to connect to Skolengo?",
@@ -85,6 +96,16 @@
       "services": "University services",
       "limited": "Limited features",
       "callout": "Identity providers do not provide data (calendar, grades...) but allow you to connect to the application"
+    },
+    "AccountCreated": {
+      "message": "Nice to meet you {{name}}! Let's customize your experience.",
+      "noNameMessage": "Welcome on Papillon!",
+      "customize": "Customize Papillon",
+      "skip": "Skip"
+    },
+    "ColorSelector": {
+      "message": "What's your favorite color?",
+      "done": "Take me in!"
     }
   },
   "home": {
@@ -106,5 +127,8 @@
       "lastGrades": "Last grades",
       "homework": "Homework"
     }
+  },
+  "grades": {
+    "estimated": "Estimated"
   }
 }

@@ -16,11 +16,13 @@ import { getIconName, setIconName } from "@candlefinance/app-icon";
 import colorsList from "@/utils/data/colors.json";
 import { removeColor } from "../settings/SettingsIcons";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { useTranslation } from "react-i18next";
 
 type Color = typeof colorsList[number];
 
 const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account);
@@ -162,7 +164,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
       </Reanimated.View>
 
       <PapillonShineBubble
-        message={"Quelle est ta couleur préférée ?"}
+        message={t("login.ColorSelector.message")}
         numberOfLines={1}
         width={280}
       />
@@ -213,7 +215,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
       >
         <ButtonCta
           primary
-          value="Finaliser"
+          value={t("login.ColorSelector.done")}
           onPress={async () => {
             if (!settings) {
               await playSound();

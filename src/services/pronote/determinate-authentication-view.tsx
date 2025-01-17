@@ -17,6 +17,7 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
   navigation: NativeStackNavigationProp<RouteParameters, ScreenName>,
   showAlert: (alert: Alert) => void
 ): Promise<void> => {
+  // FIXME: Can't use translation in this file
   let waitingInstance: pronote.Instance | undefined;
   if (!pronoteURL.startsWith("https://") && !pronoteURL.startsWith("http://")) {
     pronoteURL = `https://${pronoteURL}`;

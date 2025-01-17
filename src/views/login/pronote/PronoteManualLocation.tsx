@@ -10,6 +10,7 @@ import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { Search, X } from "lucide-react-native";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 
@@ -36,6 +37,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
 
   const insets = useSafeAreaInsets();
   const {colors} = useTheme();
+  const {t} = useTranslation();
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -123,7 +125,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
             layout={LinearTransition}
           >
             <PapillonShineBubble
-              message={"Dans quelle ville se trouve ton établissement ?"}
+              message={t("login.PronoteManualLocation.message")}
               numberOfLines={2}
               width={250}
               noFlex
@@ -149,7 +151,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
           <TextInput
             ref={searchInputRef}
             autoFocus={true}
-            placeholder="Nom d'une ville, municipalité, etc."
+            placeholder={t("login.PronoteManualLocation.placeholder")}
             placeholderTextColor={colors.text + "55"}
             value={search}
             onChangeText={setSearch}
@@ -203,7 +205,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
                     fontSize: 16,
                   }}
                 >
-                  Chargement...
+                  {t("loading")}
                 </Text>
               </Reanimated.View>
             ) : (

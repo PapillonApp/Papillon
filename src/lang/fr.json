@@ -1,6 +1,7 @@
 {
+  "loading": "Chargement...",
+  "confirm": "Confirmer",
   "welcome": {
-    "confirm": "Confirmer",
     "FirstInstallation": {
       "message": "Bienvenue sur Papillon !",
       "subtitle": "L'unique application pour gérer toute ta vie scolaire au même endroit !",
@@ -9,10 +10,14 @@
       "tos": "En continuant, vous acceptez les {{termsOfSevice}} et la {{privacyPolicy}}.",
       "terms": "conditions d'utilisation",
       "privacyPolicy": "politique de confidentialité"
-    },
+    }
+  },
+  "login": {
     "ServiceSelector": {
       "message": "Pour commencer, quel est ton service scolaire ?",
-      "highEdu": "Enseignement supérieur"
+      "highEdu": "Enseignement supérieur",
+      "highEduSubtitle": "Universités, IUT, écoles...",
+      "importV6": "Importer mon compte"
     },
     "PronoteAuthSelector": {
       "message": "Que préfères-tu utiliser pour te connecter à Pronote ?",
@@ -25,9 +30,12 @@
     },
     "PronoteGeolocation": {
       "message": "Papillon a besoin de ton emplacement pour chercher des établissements",
+      "numberOfLines": 4,
       "ask": "Demander la permission",
-      "subtitle": "Votre position est nécessaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
-      "pending": "Localisation en cours..."
+      "terms": "Votre position est nécessaire pour trouver des instances PRONOTE à proximité. Elle sera envoyée à PRONOTE et à l'api adresse du gouvernement pour trouver les établissements. Elle n'est pas stockée.",
+      "pending": "Localisation en cours...",
+      "loadingPermissions": "Chargement des permissions",
+      "needPermission": "Papillon a besoin de ton emplacement pour chercher des établissements"
     },
     "PronoteManualLocation": {
       "message": "Dans quelle ville se trouve ton établissement ?",
@@ -43,18 +51,15 @@
     },
     "PronoteWebview": {
       "title": "Connexion à Pronote",
-      "subtitle": "Obtention des informations"
+      "preparing": "Préparation à la connexion",
+      "waitingForEtablishments": "En attente de ton établissement",
+      "obtainingInformations": "Obtention des informations"
     },
     "PronoteInstanceSelector": {
       "message": "Voici les établissements que j'ai trouvé !",
       "placeholder": "Rechercher un établissement",
       "distance": "à {{distance}} km de toi",
-      "alert": {
-        "title": "L'instance {{name}} nécessite une connexion ENT",
-        "subtitle": "Vous serez redirigé vers le portail de connexion de votre ENT.",
-        "login": "Identifiants",
-        "ent": "Utiliser l'ENT"
-      }
+      "notFound": "Aucun établissement trouvé"
     },
     "GenericLogin": {
       "title": "Connexion à {{name}}",
@@ -66,6 +71,12 @@
       "password": "Mot de passe",
       "passwordPlaceholder": "Mot de passe",
       "login": "Se connecter"
+    },
+    "ENTAlert": {
+      "title": "L'instance {{name}} nécessite une connexion ENT",
+      "subtitle": "Vous serez redirigé vers le portail de connexion de votre ENT.",
+      "login": "Identifiants",
+      "ent": "Utiliser l'ENT"
     },
     "SkolengoAuthSelector": {
       "message": "Que préfères-tu utiliser pour te connecter à Skolengo ?",
@@ -85,6 +96,16 @@
       "services": "Services universitaires",
       "limited": "Fonctionnalités limitées",
       "callout": "Les fournisseurs d'identité ne fournissent pas de données (calendrier, notes...) mais permettent de te connecter à l'application"
+    },
+    "AccountCreated": {
+      "message": "Enchanté {{name}} ! On va personnaliser ton expérience.",
+      "noNameMessage": "Bienvenue sur Papillon !",
+      "customize": "Personnaliser Papillon",
+      "skip": "Passer"
+    },
+    "ColorSelector": {
+      "message": "Quelle est ta couleur préférée ?",
+      "done": "C'est parti !"
     }
   },
   "home": {

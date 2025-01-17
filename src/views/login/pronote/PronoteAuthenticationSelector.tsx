@@ -6,6 +6,7 @@ import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
@@ -16,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   type Methods = "geolocation" | "manual-location" | "manual-url" | "qr-code";
   const [method, setMethod] = useState<Methods | null>(null);
@@ -63,7 +65,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
       <MaskStars />
 
       <PapillonShineBubble
-        message="Que préfères-tu utiliser pour te connecter à Pronote ?"
+        message={t("login.PronoteAuthSelector.message")}
         numberOfLines={2}
         width={260}
         offsetTop={"16%"}
@@ -123,8 +125,8 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
                   color={method === "geolocation" ? theme.colors.primary : (theme.colors.text + "88")}
                 />
               }
-              text="Utiliser ma position"
-              subtext="Trouver un étab. autour de moi"
+              text={t("login.PronoteAuthSelector.locate")}
+              subtext={t("login.PronoteAuthSelector.locateSubtitle")}
               enabled={method === "geolocation"}
               onPress={() => setMethod("geolocation")}
             />
@@ -141,7 +143,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
                   color={method === "manual-location" ? theme.colors.primary : (theme.colors.text + "88")}
                 />
               }
-              text="Rechercher une ville"
+              text={t("login.PronoteAuthSelector.city")}
               enabled={method === "manual-location"}
               onPress={() => setMethod("manual-location")}
             />
@@ -158,7 +160,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
                   color={method === "qr-code" ? theme.colors.primary : (theme.colors.text + "88")}
                 />
               }
-              text="J'ai un QR Code"
+              text={t("login.PronoteAuthSelector.qr")}
               enabled={method === "qr-code"}
               onPress={() => setMethod("qr-code")}
             />
@@ -175,7 +177,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
                   color={method === "manual-url" ? theme.colors.primary : (theme.colors.text + "88")}
                 />
               }
-              text="J'ai une URL de connexion"
+              text={t("login.PronoteAuthSelector.url")}
               enabled={method === "manual-url"}
               onPress={() => setMethod("manual-url")}
             />
@@ -207,13 +209,13 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Pronote ou à Index Éducation. Tes données restent uniquement sur ton appareil de manière sécurisée.
+            {t("login.PronoteAuthSelector.affiliation")}
           </NativeText>
         </View>
 
         <ButtonCta
           primary
-          value="Confirmer"
+          value={t("confirm")}
           disabled={method === null}
           onPress={handleConfirmation}
         />

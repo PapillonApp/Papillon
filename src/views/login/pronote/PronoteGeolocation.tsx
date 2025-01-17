@@ -3,6 +3,7 @@ import { View,Text, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { getCurrentPosition } from "@/utils/native/location";
 import { useLocationPermission } from "@/hooks/location";
@@ -23,7 +24,8 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 const PronoteGeolocation: Screen<"PronoteGeolocation"> = ({ navigation }) => {
   const [permission, { loading: loadingPermission, request, refetch }] = useLocationPermission();
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const PapillonMessage = `${loadingPermission ? "Chargement des permissions..." : ""} ${loadingLocation ? "Localisation en cours..." : "Papillon a besoin de ton emplacement pour chercher des établissements"}`.trim();
+  const { t } = useTranslation();
+  const PapillonMessage = `${loadingPermission ? t("login.PronoteGeolocation.loadingPermissions") : ""} ${loadingLocation ? t("login.PronoteGeolocation.pending") : t("login.PronoteGeolocation.needPermission")}`.trim();
   const theme = useTheme();
   const { colors } = theme;
 
@@ -53,13 +55,13 @@ const PronoteGeolocation: Screen<"PronoteGeolocation"> = ({ navigation }) => {
 
       <PapillonShineBubble
         message={PapillonMessage}
-        numberOfLines={permission?.granted ? 1 : 4}
+        numberOfLines={permission?.granted ? 1 : parseInt(t("login.PronoteGeolocation.numberOfLines"))}
         width={250}
       />
       {!permission?.granted && (
         <View style={styles.buttons}>
           <ButtonCta
-            value="Demander la permission"
+            value={t("login.PronoteGeolocation.ask")}
             primary
             onPress={() => void request()}
           />
@@ -67,9 +69,7 @@ const PronoteGeolocation: Screen<"PronoteGeolocation"> = ({ navigation }) => {
       )}
 
       <Text style={[styles.terms_text, { color: colors.text + "59" }]}>
-        Ta position est nécessaire pour trouver les instances PRONOTE à proximité.
-        Elle sera envoyée à Pronote et à l'API adresse du gouvernement pour trouver les établissements.
-        Elle n'est pas stockée.
+        {t("login.PronoteGeolocation.terms")}
       </Text>
     </SafeAreaView>
   );

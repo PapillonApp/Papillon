@@ -12,6 +12,7 @@ import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 
 import Reanimated, {
@@ -37,6 +38,7 @@ import { useAlert } from "@/providers/AlertProvider";
 
 const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { showAlert } = useAlert();
 
   const [, setLoading] = useState(true);
@@ -50,7 +52,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
 
-  const [loginStep, setLoginStep] = useState("Préparation de la connexion");
+  const [loginStep, setLoginStep] = useState(t("login.PronoteWebview.preparing"));
 
   const instanceURL = route.params.instanceURL.toLowerCase();
 
@@ -226,7 +228,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 exiting={FadeOutDown.duration(100)}
                 layout={animPapillon(LinearTransition)}
               >
-                Connexion à Pronote
+                {t("login.PronoteWebview.title")}
               </Reanimated.Text>
 
               <Reanimated.View
@@ -281,7 +283,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
               setLoading(true);
 
               if (url.includes("mobile.eleve.html")) {
-                setLoginStep("En attente de ton établissement");
+                setLoginStep(t("login.PronoteWebview.waitingForEtablishments"));
                 setShowWebView(false);
               }
             }}
@@ -293,7 +295,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 if (!message.data) return;
                 if (message.data.status !== 0) return;
                 setShowWebView(false);
-                setLoginStep("Obtention des informations");
+                setLoginStep(t("login.PronoteWebview.obtainingInformations"));
                 setLoggingIn(true);
 
                 if (currentLoginStateIntervalRef.current)
