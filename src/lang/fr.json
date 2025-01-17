@@ -1,6 +1,7 @@
 {
   "loading": "Chargement...",
   "confirm": "Confirmer",
+  "cancel": "Annuler",
   "welcome": {
     "FirstInstallation": {
       "message": "Bienvenue sur Papillon !",
@@ -146,33 +147,36 @@
   "settings": {
     "sections": {
       "general": {
-      "title": "Général",
-      "notifications": "Notifications",
-      "language": "Langue",
-      "externalServices": "Services externes",
-      "reactions": "Réactions"
+        "title": "Général",
+        "notifications": "Notifications",
+        "language": "Langue",
+        "externalServices": "Services externes",
+        "reactions": "Réactions"
       },
       "customization": {
-      "title": "Personnalisation",
-      "subjects": "Sujets",
-      "colorTheme": "Thème de couleur",
-      "appearance": "Apparence"
+        "title": "Personnalisation",
+        "subjects": "Sujets",
+        "colorTheme": "Thème de couleur",
+        "appearance": "Apparence"
       },
       "advanced": {
-      "title": "Avancé",
-      "tabsAndNavigation": "Onglets & navigation",
-      "plugins": "Plugins",
-      "pluginsSubtitle": "Bientôt disponible...",
-      "magic": "Papillon Magic (Beta)",
-      "magicSubtitle": "Fonctionnalités intelligentes"
+        "title": "Avancé",
+        "tabsAndNavigation": "Onglets & navigation",
+        "plugins": "Plugins",
+        "pluginsSubtitle": "Bientôt disponible...",
+        "magic": "Papillon Magic (Beta)",
+        "magicSubtitle": "Fonctionnalités intelligentes"
       },
       "project": {
-      "title": "Projet Papillon",
-      "whatsNew": "Quoi de neuf ?",
-      "about": "À propos de Papillon",
-      "support": "Soutenir Papillon"
+        "title": "Projet Papillon",
+        "whatsNew": "Quoi de neuf ?",
+        "about": "À propos de Papillon",
+        "support": "Soutenir Papillon"
       },
-      "signOut": "Se déconnecter"
+      "logOut": {
+        "title": "Se déconnecter",
+        "confirmation": "Es-tu sûr de vouloir te déconnecter ?"
+      }
     },
     "devMode": "développeur",
     "caption": "fait avec ❤️ par les contributeurs Papillon"

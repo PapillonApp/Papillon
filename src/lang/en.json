@@ -1,7 +1,8 @@
 {
   "loading": "Loading...",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
   "welcome": {
-    "confirm": "Confirm",
     "FirstInstallation": {
       "message": "Welcome on Papillon!",
       "subtitle": "The only app to manage all your school life in one place!",
@@ -172,7 +173,10 @@
         "about": "About Papillon",
         "support": "Support Papillon"
       },
-      "signOut": "Sign out"
+      "logOut": {
+        "title": "Log out",
+        "confirmation": "Are you sure you want to log out?"
+      }
     },
     "devMode": "developer",
     "caption": "made with ❤️ by the Papillon contributors"
