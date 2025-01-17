@@ -160,7 +160,10 @@
       "general": {
         "title": "General",
         "notifications": {
-          "title": "Notifications"
+          "title": "Notifications",
+          "captionTitle": "Enable notifications",
+          "captionMessage": "Receive notifications to not miss anything from your school life.",
+          "example": "You have a class in room B03 with Mr. Perruche in 5 minutes."
         },
         "externalServices": {
           "title": "External services"
