@@ -33,7 +33,8 @@ import {
   Smile,
   SwatchBook,
   WandSparkles,
-  X
+  X,
+  Languages,
 } from "lucide-react-native";
 
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
@@ -163,6 +164,13 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: t("settings.sections.customization.appearance"),
           onPress: () => navigation.navigate("SettingsApparence"),
         },
+        {
+          icon: <Languages />,
+          color: "#5a5a5a",
+          label: t("settings.sections.customization.language"),
+          onPress: () => {},
+          disabled: true,
+        },
       ],
     },
     {
@@ -288,7 +296,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
     tabs[3].tabs.push({
       icon: <HandCoins />,
       color: "#f0a500",
-      label: "Soutenir Papillon",
+      label: t("settings.sections.project.donate"),
       onPress: () => openUrl("https://papillon.bzh/donate"),
       android: true,
       description: ""
@@ -309,6 +317,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: Platform.OS === "android",
+      headerTitle: t("settings.title"),
     });
   });
 

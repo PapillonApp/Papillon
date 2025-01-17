@@ -145,11 +145,11 @@
     }
   },
   "settings": {
+    "title": "Paramètres",
     "sections": {
       "general": {
         "title": "Général",
         "notifications": "Notifications",
-        "language": "Langue",
         "externalServices": "Services externes",
         "reactions": "Réactions"
       },
@@ -157,7 +157,8 @@
         "title": "Personnalisation",
         "subjects": "Sujets",
         "colorTheme": "Thème de couleur",
-        "appearance": "Apparence"
+        "appearance": "Apparence",
+        "language": "Langue"
       },
       "advanced": {
         "title": "Avancé",
@@ -171,7 +172,7 @@
         "title": "Projet Papillon",
         "whatsNew": "Quoi de neuf ?",
         "about": "À propos de Papillon",
-        "support": "Soutenir Papillon"
+        "donate": "Soutenir Papillon"
       },
       "logOut": {
         "title": "Se déconnecter",

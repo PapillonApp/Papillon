@@ -145,11 +145,11 @@
     }
   },
   "settings": {
+    "title": "Settings",
     "sections": {
       "general": {
         "title": "General",
         "notifications": "Notifications",
-        "language": "Language",
         "externalServices": "External services",
         "reactions": "Reactions"
       },
@@ -157,7 +157,8 @@
         "title": "Customization",
         "subjects": "Subjects",
         "colorTheme": "Color theme",
-        "appearance": "Appearance"
+        "appearance": "Appearance",
+        "language": "Language"
       },
       "advanced": {
         "title": "Advanced",
@@ -171,7 +172,7 @@
         "title": "Papillon project",
         "whatsNew": "What's new?",
         "about": "About Papillon",
-        "support": "Support Papillon"
+        "donate": "Donate to Papillon"
       },
       "logOut": {
         "title": "Log out",
