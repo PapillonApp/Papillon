@@ -2,6 +2,7 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, ChevronDown, ChevronUp, TextCursorInput, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,6 +14,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
@@ -44,6 +46,12 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
       last: newLastName.trim(),
     });
   }, [firstName, lastName]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("settings.sections.profile.title"),
+    });
+  }, [navigation]);
 
   const [profilePic, setProfilePic] = useState(account.personalization.profilePictureB64);
   const [loadingPic, setLoadingPic] = useState(false);
@@ -139,7 +147,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
       >
 
         <NativeListHeader
-          label="Photo de profil"
+          label={t("settings.sections.profile.PP")}
         />
 
         <NativeList>
@@ -164,7 +172,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             }
           >
             <NativeText variant="title">
-              {profilePic ? "Changer la photo de profil" : "Ajouter une photo de profil"}
+              {profilePic ? t("settings.sections.profile.changePP") : "Ajouter une photo de profil"}
             </NativeText>
             {!profilePic ? (
               <NativeText variant="subtitle">
@@ -172,14 +180,14 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               </NativeText>
             ) : (
               <NativeText variant="subtitle">
-                Ta photo de profil reste sur ton appareil.
+                {t("settings.sections.profile.privacy")}
               </NativeText>
             )}
           </NativeItem>
         </NativeList>
 
         <NativeListHeader
-          label="Prénom et nom"
+          label={t("settings.sections.profile.name")}
         />
 
         <NativeList>
@@ -190,7 +198,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             icon={<User2 />}
           >
             <NativeText variant="subtitle">
-              Prénom
+              {t("settings.sections.profile.firstName")}
             </NativeText>
             <TextInput
               style={{
@@ -212,7 +220,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             icon={<TextCursorInput />}
           >
             <NativeText variant="subtitle">
-              Nom de famille
+              {t("settings.sections.profile.lastName")}
             </NativeText>
             <TextInput
               style={{
@@ -231,7 +239,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
         </NativeList>
 
         <NativeListHeader
-          label="Afficher sur l'accueil"
+          label={t("settings.sections.profile.displayOnHomeScreen")}
         />
 
         <NativeList>
@@ -250,7 +258,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               fontFamily: "semibold",
               color: theme.colors.text,
             }}>
-              Nom de famille
+              {t("settings.sections.profile.lastName")}
             </NativeText>
           </NativeItem>
 
@@ -269,7 +277,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               fontFamily: "semibold",
               color: theme.colors.text,
             }}>
-              Photo de profil
+              {t("settings.sections.profile.PP")}
             </NativeText>
           </NativeItem>
         </NativeList>

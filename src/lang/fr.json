@@ -147,6 +147,16 @@
   "settings": {
     "title": "Paramètres",
     "sections": {
+      "profile": {
+        "title": "Profil",
+        "changePP": "Changer la photo de profil",
+        "privacy": "Ta photo de profil reste sur ton appareil.",
+        "name": "Prénom & nom",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "displayOnHomeScreen": "Afficher sur l'accueil",
+        "PP": "Photo de profil"
+      },
       "general": {
         "title": "Général",
         "notifications": {

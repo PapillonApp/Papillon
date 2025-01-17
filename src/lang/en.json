@@ -147,6 +147,16 @@
   "settings": {
     "title": "Settings",
     "sections": {
+      "profile": {
+        "title": "Profile",
+        "changePP": "Change profile picture",
+        "privacy": "Your profile picture stay on your device.",
+        "name": "First & last name",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "displayOnHomeScreen": "Display on home screen",
+        "PP": "Profile picture"
+      },
       "general": {
         "title": "General",
         "notifications": {
