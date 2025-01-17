@@ -7,6 +7,7 @@ import uuid from "@/utils/uuid-v4";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { AlertTriangle, Bug, Sparkles, X } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
@@ -43,6 +44,7 @@ const changelogURL = datasets.changelog.replace("[version]", currentVersion);
 
 const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [changelog, setChangelog] = useState<Version|null>(null);
@@ -120,10 +122,10 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
             leading={<PapillonSpinner color={theme.colors.primary} size={24} strokeWidth={3.5} />}
           >
             <NativeText variant="title">
-              Chargement des nouveautés...
+              {t("welcome.ChangelogScreen.pending")}
             </NativeText>
             <NativeText variant="subtitle">
-              Obtention des dernières nouveautés de l'application Papillon
+              {t("welcome.ChangelogScreen.pendingSubtitle")}
             </NativeText>
           </NativeItem>
         </NativeList>
@@ -140,10 +142,10 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
             icon={<AlertTriangle />}
           >
             <NativeText variant="title">
-              Impossible de trouver les notes de mise à jour
+              {t("welcome.ChangelogScreen.error")}
             </NativeText>
             <NativeText variant="subtitle">
-              Tu es peut-être hors-ligne ou alors une erreur est survenue...
+              {t("welcome.ChangelogScreen.errorSubtitle")}
             </NativeText>
           </NativeItem>
         </NativeList>
@@ -196,7 +198,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
           <Reanimated.View>
             <NativeListHeader
               animated
-              label="Nouveautés"
+              label={t("welcome.ChangelogScreen.features")}
               icon={<Sparkles />}
             />
 
@@ -228,7 +230,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
           <Reanimated.View>
             <NativeListHeader
               animated
-              label="Correctifs"
+              label={t("welcome.ChangelogScreen.bugfixes")}
               icon={<Bug />}
             />
 

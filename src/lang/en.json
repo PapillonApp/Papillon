@@ -10,6 +10,14 @@
       "tos": "By continuing, you accept the {{termsOfService}} and the {{privacyPolicy}}.",
       "terms": "terms of use",
       "privacyPolicy": "privacy policy"
+    },
+    "ChangelogScreen": {
+      "pending": "Loading the news...",
+      "pendingSubtitle": "Getting the latest news from Papillon",
+      "error": "Unable to load the changelog",
+      "errorSubtitle": "Please check your internet connection, or try again later...",
+      "features": "New features",
+      "fixes": "Bug fixes"
     }
   },
   "login": {
@@ -122,6 +130,10 @@
       "restaurantQRSubtitle": "Tap to display the QR Codes"
     },
     "modal": {
+      "changelog": {
+        "title": "Papillon has been updated, now on {{version}}!",
+        "subtitle": "Click here to see what's new."
+      },
       "tomorrowCourses": "Tomorrow's courses",
       "seeMore": "See more",
       "lastGrades": "Last grades",

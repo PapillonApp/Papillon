@@ -10,6 +10,14 @@
       "tos": "En continuant, vous acceptez les {{termsOfSevice}} et la {{privacyPolicy}}.",
       "terms": "conditions d'utilisation",
       "privacyPolicy": "politique de confidentialité"
+    },
+    "ChangelogScreen": {
+      "pending": "Chargement des nouveautés...",
+      "pendingSubtitle": "Obtention des dernières nouveautés de Papillon",
+      "error": "Impossible de charger les notes de mise à jour",
+      "errorSubtitle": "Veuillez vérifier votre connexion internet, ou réessayez plus tard...",
+      "features": "Nouvelles fonctionnalités",
+      "fixes": "Corrections de bugs"
     }
   },
   "login": {
@@ -122,6 +130,10 @@
       "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
     },
     "modal": {
+      "changelog": {
+        "title": "Papillon vient d'être mis à jour à la version {{version}} !",
+        "subtitle": "Clique ici pour voir les nouveautés."
+      },
       "tomorrowCourses": "Cours de demain",
       "seeMore": "Voir plus",
       "lastGrades": "Dernières notes",
