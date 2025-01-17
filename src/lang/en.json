@@ -143,6 +143,40 @@
       "homework": "Homework"
     }
   },
+  "settings": {
+    "sections": {
+      "general": {
+        "title": "General",
+        "notifications": "Notifications",
+        "language": "Language",
+        "externalServices": "External services",
+        "reactions": "Reactions"
+      },
+      "customization": {
+        "title": "Customization",
+        "subjects": "Subjects",
+        "colorTheme": "Color theme",
+        "appearance": "Appearance"
+      },
+      "advanced": {
+        "title": "Advanced",
+        "tabsAndNavigation": "Tabs & navigation",
+        "plugins": "Plugins",
+        "pluginsSubtitle": "Comming soon...",
+        "magic": "Papillon Magic (Beta)",
+        "magicSubtitle": "Intelligent features"
+      },
+      "project": {
+        "title": "Papillon project",
+        "whatsNew": "What's new?",
+        "about": "About Papillon",
+        "support": "Support Papillon"
+      },
+      "signOut": "Sign out"
+    },
+    "devMode": "developer",
+    "caption": "made with ❤️ by the Papillon contributors"
+  },
   "grades": {
     "estimated": "Estimated"
   }
