@@ -149,38 +149,65 @@
     "sections": {
       "general": {
         "title": "Général",
-        "notifications": "Notifications",
-        "externalServices": "Services externes",
-        "reactions": "Réactions"
+        "notifications": {
+          "title": "Notifications"
+        },
+        "externalServices": {
+          "title": "Services externes"
+        },
+        "reactions": {
+          "title": "Réactions"
+        }
       },
       "customization": {
         "title": "Personnalisation",
-        "subjects": "Sujets",
-        "colorTheme": "Thème de couleur",
-        "appearance": "Apparence",
-        "language": "Langue"
+        "subjects": {
+          "title": "Sujets"
+        },
+        "colorTheme": {
+          "title": "Thème de couleur"
+        },
+        "appearance": {
+          "title": "Apparence"
+        },
+        "language": {
+          "title": "Langue"
+        }
       },
       "advanced": {
         "title": "Avancé",
-        "tabsAndNavigation": "Onglets & navigation",
-        "plugins": "Plugins",
-        "pluginsSubtitle": "Bientôt disponible...",
-        "magic": "Papillon Magic (Beta)",
-        "magicSubtitle": "Fonctionnalités intelligentes"
+        "tabsAndNavigation": {
+          "title": "Onglets & navigation"
+        },
+        "plugins": {
+          "title": "Plugins",
+          "subtitle": "Bientôt disponible..."
+        },
+        "magic": {
+          "title": "Papillon Magic (Beta)",
+          "subtitle": "Fonctionnalités intelligentes"
+        }
       },
       "project": {
         "title": "Projet Papillon",
-        "whatsNew": "Quoi de neuf ?",
-        "about": "À propos de Papillon",
-        "donate": "Soutenir Papillon"
+        "whatsNew": {
+          "title": "Quoi de neuf ?"
+        },
+        "about": {
+          "title": "À propos de Papillon"
+        },
+        "donate": {
+          "title": "Soutenir Papillon"
+        }
       },
       "logOut": {
         "title": "Se déconnecter",
         "confirmation": "Es-tu sûr de vouloir te déconnecter ?"
-      }
+      },
+      "devMode": "Développeur"
     },
     "devMode": "développeur",
-    "caption": "fait avec ❤️ par les contributeurs Papillon"
+    "madeBy": "fait avec ❤️ par les contributeurs Papillon"
   },
   "grades": {
     "estimated": "Estimation"

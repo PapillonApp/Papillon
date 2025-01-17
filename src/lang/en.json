@@ -149,38 +149,65 @@
     "sections": {
       "general": {
         "title": "General",
-        "notifications": "Notifications",
-        "externalServices": "External services",
-        "reactions": "Reactions"
+        "notifications": {
+          "title": "Notifications"
+        },
+        "externalServices": {
+          "title": "External services"
+        },
+        "reactions": {
+          "title": "Reactions"
+        }
       },
       "customization": {
         "title": "Customization",
-        "subjects": "Subjects",
-        "colorTheme": "Color theme",
-        "appearance": "Appearance",
-        "language": "Language"
+        "subjects": {
+          "title": "Subjects"
+        },
+        "colorTheme": {
+          "title": "Color theme"
+        },
+        "appearance": {
+          "title": "Appearance"
+        },
+        "language": {
+          "title": "Language"
+        }
       },
       "advanced": {
         "title": "Advanced",
-        "tabsAndNavigation": "Tabs & navigation",
-        "plugins": "Plugins",
-        "pluginsSubtitle": "Comming soon...",
-        "magic": "Papillon Magic (Beta)",
-        "magicSubtitle": "Intelligent features"
+        "tabsAndNavigation": {
+          "title": "Tabs & navigation"
+        },
+        "plugins": {
+          "title": "Plugins",
+          "subtitle": "Coming soon..."
+        },
+        "magic": {
+          "title": "Papillon Magic (Beta)",
+          "subtitle": "Intelligent features"
+        }
       },
       "project": {
         "title": "Papillon project",
-        "whatsNew": "What's new?",
-        "about": "About Papillon",
-        "donate": "Donate to Papillon"
+        "whatsNew": {
+          "title": "What's new?"
+        },
+        "about": {
+          "title": "About Papillon"
+        },
+        "donate": {
+          "title": "Donate to Papillon"
+        }
       },
       "logOut": {
         "title": "Log out",
         "confirmation": "Are you sure you want to log out?"
-      }
+      },
+      "devMode": "Developer"
     },
     "devMode": "developer",
-    "caption": "made with ❤️ by the Papillon contributors"
+    "madeBy": "made with ❤️ by the Papillon contributors"
   },
   "grades": {
     "estimated": "Estimated"
