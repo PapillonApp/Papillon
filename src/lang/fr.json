@@ -2,6 +2,8 @@
   "loading": "Chargement...",
   "confirm": "Confirmer",
   "cancel": "Annuler",
+  "quit": "Quitter",
+  "errror": "Erreur",
   "welcome": {
     "FirstInstallation": {
       "message": "Bienvenue sur Papillon !",
@@ -52,10 +54,19 @@
     },
     "PronoteQRCode": {
       "title": "Connexion à PRONOTE",
-      "subtitle": "Scanne le QR Code de ton établissement pour te connecter !"
+      "subtitle": "Scanne le QR Code de ton établissement pour te connecter !",
+      "loading": "Connexion en cours...",
+      "loadingMessage": "Cela peut prendre quelques instants...",
+      "invalidCode": "Code invalide",
+      "invalidCodeMessage": "Entre un code à 4 chiffres.",
+      "errorMessage": "Une erreur est survenue lors de la connexion.",
+      "validating": "Validation du code..."
     },
     "PronoteManualURL": {
       "message": "Entrez l'URL de connexion à Pronote",
+      "messageLines": 2,
+      "clipboard": "J'ai trouvé une URL dans votre presse-papiers !",
+      "clipboardLines": 2,
       "placeholder": "URL de l'instance Pronote"
     },
     "PronoteWebview": {

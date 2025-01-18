@@ -15,10 +15,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Check, Link2, TriangleAlert, X } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTranslation } from "react-i18next";
 
 const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => {
   const theme = useTheme();
   const {colors} = theme;
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [instanceURL, setInstanceURL] = useState("");
 
@@ -91,8 +93,8 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
       <PapillonShineBubble
         message={
           !clipboardFound ?
-            "Indique moi l'adresse URL Pronote de ton établissement"
-            : "J'ai trouvé cette adresse dans ton presse-papier !"
+            t("login.PronoteManualURL.message")
+            : t("login.PronoteManualURL.clipboard")
         }
         numberOfLines={2}
         width={250}
@@ -118,7 +120,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           <TextInput
             keyboardType="url"
             autoCapitalize="none"
-            placeholder="URL de l'instance Pronote"
+            placeholder={t("login.PronoteManualURL.placeholder")}
 
             style={[styles.searchInput, { color: theme.colors.text }]}
             placeholderTextColor={theme.colors.text + "50"}
@@ -154,7 +156,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
         style={styles.buttons}
       >
         <ButtonCta
-          value="Confirmer"
+          value={t("confirm")}
           primary
           onPress={() => {
             if (instanceURL.length > 0) {
@@ -164,7 +166,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
         />
         {(route.params?.method) && (
           <ButtonCta
-            value="Quitter"
+            value={t("quit")}
             onPress={() => navigation.navigate("AccountSelector")}
           />)}
       </View>

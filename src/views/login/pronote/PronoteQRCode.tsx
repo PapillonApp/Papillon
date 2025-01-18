@@ -19,6 +19,7 @@ import { Account, AccountService } from "@/stores/account/types";
 import { Audio } from "expo-av";
 import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
+import { useTranslation } from "react-i18next";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -35,6 +36,7 @@ const makeUUID = (): string => {
 
 const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const createStoredAccount = useAccounts(store => store.create);
@@ -60,7 +62,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     setLoadingModalVisible(true);
 
     if (QRValidationCode === "" || QRValidationCode.length !== 4) {
-      Alert.alert("Code invalide", "Entre un code à 4 chiffres.");
+      Alert.alert(t("login.PronoteQRCode.invalidCode"), t("login.PronoteQRCode.invalidCodeMessage"));
       return;
     }
 
@@ -140,7 +142,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     } catch (error) {
       console.error(error);
 
-      Alert.alert("Erreur", "Une erreur est survenue lors de la connexion.");
+      Alert.alert(t("error"), t("login.PronoteQRCode.errorMessage"));
       return;
     }
   }
@@ -226,7 +228,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               marginTop: 16,
             }}
           >
-            Connexion en cours...
+            {t("login.PronoteQRCode.loading")}
           </Text>
 
           <Text
@@ -237,7 +239,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               marginTop: 4,
             }}
           >
-            Cela peut prendre quelques instants...
+            {t("login.PronoteQRCode.loadingMessage")}
           </Text>
 
           <View style={{ flex: 1 }} />
@@ -251,7 +253,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
             }}
           >
             <ButtonCta
-              value="Annuler"
+              value={t("cancel")}
               onPress={() => {
                 setLoadingModalVisible(false);
                 navigation.goBack();
@@ -298,7 +300,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
                 fontSize: 17,
               }}
             >
-              Validation du QR code
+              {t("login.PronoteQRCode.validating")}
             </Text>
           </View>
 
@@ -377,7 +379,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
             >
               <View style={{ flex: 1 }}>
                 <ButtonCta
-                  value="Annuler"
+                  value={t("cancel")}
                   onPress={() => {
                     setPinModalVisible(false);
                   }}
@@ -385,7 +387,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
               </View>
               <View style={{ flex: 1 }}>
                 <ButtonCta
-                  value="Confirmer"
+                  value={t("login.PronoteQRCode.validate")}
                   primary
                   onPress={() => {
                     setPinModalVisible(false);
@@ -403,10 +405,10 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
       ]}>
         <QrCode size={32} color={"#fff"} />
         <Text style={styles.title}>
-          Connexion à PRONOTE
+          {t("login.PronoteQRCode.title")}
         </Text>
         <Text style={styles.text}>
-          Scanne le QR code de ton établissement pour te connecter.
+          {t("login.PronoteQRCode.subtitle")}
         </Text>
       </View>
 
