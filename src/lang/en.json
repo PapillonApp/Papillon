@@ -128,33 +128,6 @@
       "done": "Take me in!"
     }
   },
-  "home": {
-    "addAccount": "Add an account",
-    "localAccount": "Local account",
-    "settings": "Settings",
-    "widgets": {
-      "nextCourse": "Next course",
-      "grades": "Grades",
-      "gradesSubtitle": "Overall average",
-      "lastGrade": "Last grade",
-      "restaurantBalance": "Cafeteria balance",
-      "restaurantBalanceSubtitleOne": "meal remaining",
-      "restaurantBalanceSubtitle": "meals remaining",
-      "restaurantQR": "School cafeteria",
-      "restaurantQRSubtitleOne": "Tap to display the QR Code",
-      "restaurantQRSubtitle": "Tap to display the QR Codes"
-    },
-    "modal": {
-      "changelog": {
-        "title": "Papillon has been updated, now on {{version}}!",
-        "subtitle": "Click here to see what's new."
-      },
-      "tomorrowCourses": "Tomorrow's courses",
-      "seeMore": "See more",
-      "lastGrades": "Last grades",
-      "homework": "Homework"
-    }
-  },
   "settings": {
     "title": "Settings",
     "sections": {
@@ -232,6 +205,33 @@
     },
     "devMode": "developer",
     "madeBy": "made with ❤️ by the Papillon contributors"
+  },
+  "home": {
+    "addAccount": "Add an account",
+    "localAccount": "Local account",
+    "settings": "Settings",
+    "widgets": {
+      "nextCourse": "Next course",
+      "grades": "Grades",
+      "generalAverage": "General average",
+      "latestGrade": "Last grade",
+      "restaurantBalance": "Cafeteria balance",
+      "restaurantBalanceSubtitleOne": "meal remaining",
+      "restaurantBalanceSubtitle": "meals remaining",
+      "restaurantQR": "School cafeteria",
+      "restaurantQRSubtitleOne": "Tap to display the QR Code",
+      "restaurantQRSubtitle": "Tap to display the QR Codes"
+    },
+    "modal": {
+      "changelog": {
+        "title": "Papillon has been updated, now on {{version}}!",
+        "subtitle": "Click here to see what's new."
+      },
+      "tomorrowCourses": "Tomorrow's courses",
+      "seeMore": "See more",
+      "lastGrades": "Last grades",
+      "homework": "Homework"
+    }
   },
   "grades": {
     "estimated": "Estimated"

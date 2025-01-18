@@ -18,11 +18,13 @@ import {
 import { useCurrentAccount } from "@/stores/account";
 import { useGradesStore } from "@/stores/grades";
 import { getPronoteAverage } from "@/utils/grades/getAverages";
+import { useTranslation } from "react-i18next";
 
 const GeneralAverageWidget = forwardRef(
   ({ setLoading, setHidden }: WidgetProps, ref) => {
     const theme = useTheme();
     const { colors } = theme;
+    const { t } = useTranslation();
 
     const account = useCurrentAccount((store) => store.account);
 
@@ -90,7 +92,7 @@ const GeneralAverageWidget = forwardRef(
               fontSize: 16,
             }}
           >
-            Notes
+            {t("home.widgets.grades")}
           </Text>
         </View>
 
@@ -112,7 +114,7 @@ const GeneralAverageWidget = forwardRef(
             }}
             layout={LinearTransition}
           >
-            Moyenne générale
+            {t("home.widgets.generalAverage")}
           </Reanimated.Text>
 
           <Reanimated.View

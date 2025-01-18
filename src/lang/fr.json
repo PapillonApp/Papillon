@@ -128,33 +128,6 @@
       "done": "C'est parti !"
     }
   },
-  "home": {
-    "addAccount": "Ajouter un compte",
-    "localAccount": "Compte local",
-    "settings": "Paramètres",
-    "widgets": {
-      "nextCourse": "Prochain cours",
-      "grades": "Notes",
-      "gradesSubtitle": "Moyenne générale",
-      "lastGrade": "Dernière note",
-      "restaurantBalance": "Solde du self",
-      "restaurantBalanceSubtitleOne": "repas restant",
-      "restaurantBalanceSubtitle": "repas restants",
-      "restaurantQR": "Cantine scolaire",
-      "restaurantQRSubtitleOne": "Toucher pour afficher le QR Code",
-      "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
-    },
-    "modal": {
-      "changelog": {
-        "title": "Papillon vient d'être mis à jour à la version {{version}} !",
-        "subtitle": "Clique ici pour voir les nouveautés."
-      },
-      "tomorrowCourses": "Cours de demain",
-      "seeMore": "Voir plus",
-      "lastGrades": "Dernières notes",
-      "homework": "Travail à faire"
-    }
-  },
   "settings": {
     "title": "Paramètres",
     "sections": {
@@ -232,6 +205,33 @@
     },
     "devMode": "développeur",
     "madeBy": "fait avec ❤️ par les contributeurs Papillon"
+  },
+  "home": {
+    "addAccount": "Ajouter un compte",
+    "localAccount": "Compte local",
+    "settings": "Paramètres",
+    "widgets": {
+      "nextCourse": "Prochain cours",
+      "grades": "Notes",
+      "gradesSubtitle": "Moyenne générale",
+      "generalAverage": "Dernière note",
+      "restaurantBalance": "Solde du self",
+      "restaurantBalanceSubtitleOne": "repas restant",
+      "restaurantBalanceSubtitle": "repas restants",
+      "restaurantQR": "Cantine scolaire",
+      "restaurantQRSubtitleOne": "Toucher pour afficher le QR Code",
+      "restaurantQRSubtitle": "Toucher pour afficher les QR Codes"
+    },
+    "modal": {
+      "changelog": {
+        "title": "Papillon vient d'être mis à jour à la version {{version}} !",
+        "subtitle": "Clique ici pour voir les nouveautés."
+      },
+      "tomorrowCourses": "Cours de demain",
+      "seeMore": "Voir plus",
+      "lastGrades": "Dernières notes",
+      "homework": "Travail à faire"
+    }
   },
   "grades": {
     "estimated": "Estimation"

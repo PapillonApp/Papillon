@@ -12,12 +12,14 @@ import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
+import { useTranslation } from "react-i18next";
 
 const lz = (num: number) => (num < 10 ? `0${num}` : num);
 
 const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }: WidgetProps, ref) => {
   const account = useCurrentAccount(store => store.account!);
   const timetables = useTimetableStore(store => store.timetables);
+  const { t } = useTranslation();
 
   const [nextCourse, setNextCourse] = useState<TimetableClass | null>(null);
   const [widgetTitle, setWidgetTitle] = useState("Prochain cours");
@@ -88,7 +90,7 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
         <View style={{ width: "100%", height: "88%", justifyContent: "center", alignItems: "center", gap: 8 }}>
           {loading && <ActivityIndicator />}
           <Text style={{ color: "gray", fontSize: 15, fontFamily: "medium" }}>
-            {loading ? "Chargement..." : "Aucun cours"}
+            {loading ? t("loading") : t("home.modal.noNextCourse")}
           </Text>
         </View>
       )}
