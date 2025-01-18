@@ -24,6 +24,8 @@ import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import { AccountService } from "@/stores/account/types";
+import { getTimetableForWeek } from "@/services/pronote/timetable";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -134,7 +136,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {JSON.stringify(account).includes("pronote") && (
+          {account.service === AccountService.Pronote && (
             <TouchableOpacity
               onPress={() => {
                 Alert.alert(
@@ -144,7 +146,42 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     { text: "Annuler", style: "cancel" },
                     {
                       text: "Importer", onPress: () => {
-                        console.log(timetables);
+                        console.log("Press")
+                        getTimetableForWeek(account, 1).then((timetable1) => {
+                          getTimetableForWeek(account, 2).then((timetable2) => {
+                            var mysubjects = [...timetable1, ...timetable2];
+                            mysubjects = mysubjects.map(subject => ({
+                              backgroundColor: subject.backgroundColor,
+                              subject: subject.subject
+                            }));
+                            mysubjects = mysubjects.reduce((acc, current) => {
+                              const x = acc.find(item => item.subject === current.subject);
+                              if (!x) {
+                                return acc.concat([current]);
+                              } else {
+                                return acc;
+                              }
+                            }, []);
+                            const mapping = Object.fromEntries(
+                              subjects.map(([subject, info]) => [subject.split(" > ")[0], info])
+                            );
+
+                            const mergedList = mysubjects.map(item => {
+                              const additionalInfo = mapping[item.subject];
+                              return additionalInfo
+                                ? { ...item, ...additionalInfo }
+                                : item;
+                            });
+
+                            console.log("Avant le setOn");
+                            setSubjects(mergedList);
+                            mutateProperty("personalization", {
+                              ...account.personalization,
+                              subjects: Object.fromEntries(mergesList),
+                            });
+                            console.log("Apres le setOn");
+                          })
+                        })
                       }
                     },
                   ]
