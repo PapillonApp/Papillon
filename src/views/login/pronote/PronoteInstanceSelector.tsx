@@ -333,7 +333,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                     subtext={
                       prevRoute.name === "PronoteManualLocation"
                         ? undefined
-                        : `à ${instance.distance.toFixed(2)}km de ta position`
+                        : t("login.PronoteInstanceSelector.distance", {distance: instance.distance.toFixed(2)})
                     }
                   />
                 </Reanimated.View>
