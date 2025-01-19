@@ -147,14 +147,24 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     {
                       text: "Importer", onPress: () => {
                         console.log("Press")
+                        console.log(subjects)
                         getTimetableForWeek(account, 1).then((timetable1) => {
+                          console.log("first timetable check")
                           getTimetableForWeek(account, 2).then((timetable2) => {
+                            console.log("second timetable check")
                             var mysubjects = [...timetable1, ...timetable2];
-                            mysubjects = mysubjects.map(subject => ({
+
+                            type SubjectInfo = {
+                              backgroundColor: string | undefined;
+                              subject: string;
+                            };
+
+                            var filteredsInfos: SubjectInfo[] = mysubjects.map(subject => ({
                               backgroundColor: subject.backgroundColor,
                               subject: subject.subject
                             }));
-                            mysubjects = mysubjects.reduce((acc, current) => {
+
+                            filteredsInfos = filteredsInfos.reduce<SubjectInfo[]>((acc, current) => {
                               const x = acc.find(item => item.subject === current.subject);
                               if (!x) {
                                 return acc.concat([current]);
@@ -162,24 +172,28 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                                 return acc;
                               }
                             }, []);
-                            const mapping = Object.fromEntries(
-                              subjects.map(([subject, info]) => [subject.split(" > ")[0], info])
-                            );
 
-                            const mergedList = mysubjects.map(item => {
-                              const additionalInfo = mapping[item.subject];
-                              return additionalInfo
-                                ? { ...item, ...additionalInfo }
-                                : item;
-                            });
+                            console.log(subjects)
+                            var othersubjects = subjects;
 
-                            console.log("Avant le setOn");
-                            setSubjects(mergedList);
-                            mutateProperty("personalization", {
-                              ...account.personalization,
-                              subjects: Object.fromEntries(mergesList),
-                            });
-                            console.log("Apres le setOn");
+                            for (let i = 0; i < othersubjects.length; i++) {
+                              othersubjects[i][1].color = filteredsInfos.find(info => info.subject === othersubjects[i][0])?.backgroundColor || othersubjects[i][1].color;
+                            }
+
+                            // const itemSubjects = filteredsInfos.map(item => {
+                            //   const additionalInfo = mapping[item.subject];
+                            //   return additionalInfo
+                            //     ? { ...item, ...additionalInfo }
+                            //     : item;
+                            // });
+
+                            console.log(othersubjects)
+                            console.log(subjects)
+                            console.log(filteredsInfos)
+
+                            // console.log("Avant le setOn");
+                            // setOnSubjects(othersubjects);
+                            // console.log("Apres le setOn");
                           })
                         })
                       }
