@@ -146,12 +146,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     { text: "Annuler", style: "cancel" },
                     {
                       text: "Importer", onPress: () => {
-                        console.log("Press")
-                        console.log(subjects)
                         getTimetableForWeek(account, 1).then((timetable1) => {
-                          console.log("first timetable check")
                           getTimetableForWeek(account, 2).then((timetable2) => {
-                            console.log("second timetable check")
                             var mysubjects = [...timetable1, ...timetable2];
 
                             type SubjectInfo = {
@@ -173,27 +169,13 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                               }
                             }, []);
 
-                            console.log(subjects)
-                            var othersubjects = subjects;
+                            var othersubjects = account.personalization.subjects ? Object.entries(account.personalization.subjects) : [];
 
                             for (let i = 0; i < othersubjects.length; i++) {
                               othersubjects[i][1].color = filteredsInfos.find(info => info.subject === othersubjects[i][0])?.backgroundColor || othersubjects[i][1].color;
                             }
 
-                            // const itemSubjects = filteredsInfos.map(item => {
-                            //   const additionalInfo = mapping[item.subject];
-                            //   return additionalInfo
-                            //     ? { ...item, ...additionalInfo }
-                            //     : item;
-                            // });
-
-                            console.log(othersubjects)
-                            console.log(subjects)
-                            console.log(filteredsInfos)
-
-                            // console.log("Avant le setOn");
-                            // setOnSubjects(othersubjects);
-                            // console.log("Apres le setOn");
+                            setOnSubjects(othersubjects);
                           })
                         })
                       }
