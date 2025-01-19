@@ -21,6 +21,7 @@ import {
 import { AlertTriangle, Eye, EyeOff, Info } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import ButtonCta from "../FirstInstallation/ButtonCta";
+import { useTranslation } from "react-i18next";
 
 export interface LoginViewCustomInput {
   identifier: string;
@@ -57,14 +58,15 @@ const LoginView: React.FC<{
   autoCapitalize = "none",
   onLogin,
   customFields = [],
-  usernameLabel = "Identifiant",
-  usernamePlaceholder = "Nom d'utilisateur",
-  passwordLabel = "Mot de passe",
-  passwordPlaceholder = "Mot de passe",
+  usernameLabel,
+  usernamePlaceholder,
+  passwordLabel,
+  passwordPlaceholder,
   usernameKeyboardType = "default",
   passwordKeyboardType = "default",
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [username, setUsername] = useState("");
@@ -78,6 +80,14 @@ const LoginView: React.FC<{
       value: "",
     }))
   );
+
+
+  if (!usernameLabel) usernameLabel = t("login.GenericLogin.username");
+  if (!usernamePlaceholder)
+    usernamePlaceholder = t("login.GenericLogin.usernamePlaceholder");
+  if (!passwordLabel) passwordLabel = t("login.GenericLogin.password");
+  if (!passwordPlaceholder)
+    passwordPlaceholder = t("login.GenericLogin.passwordPlaceholder");
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -135,7 +145,7 @@ const LoginView: React.FC<{
                 opacity: 0.5,
               }}
             >
-              Se connecter au service
+              {t("login.GenericLogin.upper")}
             </NativeText>
             <NativeText
               style={{
@@ -152,8 +162,7 @@ const LoginView: React.FC<{
         <NativeList inline>
           <NativeItem icon={<Info />}>
             <NativeText variant="subtitle">
-              Papillon n'est pas affilié à {serviceName}. La politique de
-              confidentialité de {serviceName} s'applique.
+              {t("login.GenericLogin.privacy", { name: serviceName })}
             </NativeText>
           </NativeItem>
         </NativeList>
@@ -266,7 +275,7 @@ const LoginView: React.FC<{
 
         <ButtonCta
           primary
-          value="Se connecter"
+          value={t("login.GenericLogin.login")}
           onPress={actionLogin}
           style={{
             marginTop: 24,
