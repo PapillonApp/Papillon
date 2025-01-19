@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Keyboard,
   KeyboardEvent,
-  Text,
 } from "react-native";
 import pronote from "pawnote";
 import Reanimated, {

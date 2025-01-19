@@ -26,6 +26,7 @@ import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
 import { AccountService } from "@/stores/account/types";
 import { getTimetableForWeek } from "@/services/pronote/timetable";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -47,6 +48,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [opened, setOpened] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
   const [currentEmoji, setCurrentEmoji] = useState(""); // New state for unsynced text input
+  const [spinning, setSpinning] = useState(false);
 
   const emojiInput = React.useRef<TextInput>(null);
 
@@ -146,6 +148,9 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     { text: "Annuler", style: "cancel" },
                     {
                       text: "Importer", onPress: () => {
+                        console.log(spinning);
+                        setSpinning(true);
+                        console.log(spinning);
                         getTimetableForWeek(account, 1).then((timetable1) => {
                           getTimetableForWeek(account, 2).then((timetable2) => {
                             var mysubjects = [...timetable1, ...timetable2];
@@ -176,18 +181,32 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                             }
 
                             setOnSubjects(othersubjects);
-                          })
-                        })
+                            setSpinning(false);
+                          });
+                        });
                       }
                     },
                   ]
                 );
               }}
             >
-              <Image
-                source={require("../../../assets/images/service_pronote.png")}
-                style={{ width: 22, height: 22, borderRadius: 11 }}
-              />
+              {!spinning && (
+                <Image
+                  source={require("../../../assets/images/service_pronote.png")}
+                  style={{ width: 22, height: 22, borderRadius: 11 }}
+                />
+              )}
+
+              {spinning && (
+                <PapillonSpinner
+                  size={18}
+                  color={colors.primary}
+                  strokeWidth={2.8}
+                  style={{
+                    marginLeft: 5,
+                  }}
+                />
+              )}
             </TouchableOpacity>
           )}
           <TouchableOpacity

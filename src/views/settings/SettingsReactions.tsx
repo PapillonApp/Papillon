@@ -1,11 +1,10 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
 import { useGradesStore } from "@/stores/grades";
 import ReelGallery from "@/components/Settings/ReelGallery";
 import MissingItem from "@/components/Global/MissingItem";
-import AnimatedEmoji from "@/components/Grades/AnimatedEmoji";
 
 const SettingsReactions: Screen<"SettingsReactions"> = () => {
   const theme = useTheme();
