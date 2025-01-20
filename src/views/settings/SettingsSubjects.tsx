@@ -19,7 +19,7 @@ import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Download, Trash2, X } from "lucide-react-native";
+import { ArrowDownToLine, Trash2, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
@@ -158,7 +158,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     },
                     {
                       title: "Importer",
-                      icon: <Download />,
+                      icon: <ArrowDownToLine />,
                       primary: true,
                       onPress: () => {
                         updateSpinning();
