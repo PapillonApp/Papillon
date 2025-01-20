@@ -9,7 +9,6 @@ import {
 } from "@/components/Global/NativeComponents";
 import React, { useEffect, useState } from "react";
 import {
-  get_brute_logs,
   get_logs,
   Log,
   delete_logs,
@@ -30,14 +29,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PressableScale } from "react-native-pressable-scale";
 import {
   FadeInDown,
-  FadeInUp,
-  FadeOutDown,
   FadeOutUp,
 } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
-import News from "../account/News/News";
 import { useTheme } from "@react-navigation/native";
-import Reanimated from "react-native-reanimated";
 
 const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
   const theme = useTheme();

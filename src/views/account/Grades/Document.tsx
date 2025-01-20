@@ -7,18 +7,14 @@ import {
 import { getSubjectData } from "@/services/shared/Subject";
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { Image, ScrollView, Text, View, Platform, TouchableOpacity, Modal } from "react-native";
+import { Image, ScrollView, Text, View, Platform, TouchableOpacity } from "react-native";
 import * as StoreReview from "expo-store-review";
 import {
   Asterisk,
   Calculator,
-  Download,
-  Expand,
   Maximize2,
   Scale,
   School,
-  SmilePlus,
-  Trash,
   UserMinus,
   UserPlus,
   Users,

@@ -10,7 +10,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as Clipboard from "expo-clipboard";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { th } from "date-fns/locale";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();

@@ -1,8 +1,7 @@
 import { BottomTabView } from "@react-navigation/bottom-tabs";
 import { createNavigatorFactory, TabRouter, useNavigationBuilder } from "@react-navigation/native";
 import PapillonNavigatorTabs from "./tabs";
-import { memo, useEffect, useMemo, useState } from "react";
-import { Dimensions, View } from "react-native";
+import { View } from "react-native";
 import PapillonNavigatorMenu from "./menu";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
