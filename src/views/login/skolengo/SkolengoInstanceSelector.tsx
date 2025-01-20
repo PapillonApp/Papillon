@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator, Keyboard, KeyboardEvent } from "react-native";
+import { TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator, Keyboard, KeyboardEvent, SafeAreaView } from "react-native";
 import Reanimated, { LinearTransition, FlipInXDown, FadeInUp, FadeOutUp, ZoomIn, ZoomOut, Easing, ZoomInEasyDown } from "react-native-reanimated";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -120,17 +120,10 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
   }, [search, geoInstances]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-        }
-      ]}
-    >
+    <SafeAreaView style={styles.container}>
       <MaskStars />
 
-      <View style={{height: insets.top}} />
+      <View style={{ height: insets.top, marginTop: "10%" }} />
 
       {!keyboardOpen &&
         <Reanimated.View
@@ -297,7 +290,7 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
         </Reanimated.View>
 
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -305,9 +298,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
     gap: 20,
-    paddingTop: -40,
   },
 
   overScrollContainer: {

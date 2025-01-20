@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { useCurrentAccount } from "@/stores/account";
 import { useNavigationBuilder, useTheme } from "@react-navigation/native";
-import { StyleSheet, Platform, Image, Text, StatusBar } from "react-native";
+import { StyleSheet, Platform, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Reanimated from "react-native-reanimated";
 import MenuItem from "./atoms/MenuItem";
 import ContextMenu from "@/components/Home/AccountSwitcherContextMenu";
-import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import AccountSwitcher from "@/components/Home/AccountSwitcher";
 
 const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "NavigationContent">> = ({ state, descriptors, navigation }) => {
   const theme = useTheme();
@@ -48,7 +48,6 @@ const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilde
       >
         <ContextMenu
           shouldOpenContextMenu={shouldOpenContextMenu}
-          transparent={true}
           menuStyles={{
             position: "absolute",
             top: 40,
@@ -59,37 +58,7 @@ const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilde
             }
           ]}
         >
-          <Reanimated.View
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              gap: 12,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              source={(account?.personalization.profilePictureB64 && account?.personalization.profilePictureB64.trim() !== "") ? { uri: account.personalization.profilePictureB64 } : account ? defaultProfilePicture(account.service, account?.identityProvider?.name || "") : undefined}
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 20,
-              }}
-            />
-
-            <Text
-              style={{
-                color: theme.colors.text,
-                fontFamily: Platform.OS !== "android" ? "semibold" : undefined,
-                fontWeight: "600",
-                fontSize: 16,
-              }}
-            >
-              {account?.studentName ? (
-                account.studentName?.first + " " + account.studentName.last
-              ) : "Mon compte"}
-            </Text>
-          </Reanimated.View>
+          <AccountSwitcher loading={!account?.instance} />
         </ContextMenu>
 
         {tabs.map((route, index) => (
