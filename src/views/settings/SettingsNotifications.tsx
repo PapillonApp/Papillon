@@ -9,10 +9,16 @@ import NotificationContainerCard from "@/components/Settings/NotificationContain
 import { requestNotificationPermission } from "@/background/Notifications";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useCurrentAccount } from "@/stores/account";
+import { useTranslation } from "react-i18next";
 
-const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
+const SettingsNotifications: Screen<"SettingsNotifications"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
+
+  navigation.setOptions({
+    headerTitle: t("settings.sections.general.notifications.title"),
+  });
 
   // User data
   const account = useCurrentAccount(store => store.account!);
