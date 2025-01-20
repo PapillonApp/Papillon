@@ -198,7 +198,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
               {!spinning ? (
                 <Image
                   source={require("../../../assets/images/service_pronote.png")}
-                  style={{ width: 22, height: 22, borderRadius: 11 }}
+                  style={{ width: 22, height: 22, borderRadius: 11, marginRight: 20 }}
                 />
               ) : (
                 <PapillonSpinner
