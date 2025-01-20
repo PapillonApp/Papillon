@@ -213,39 +213,39 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
             </TouchableOpacity>
           )}
           <TouchableOpacity
-          onPress={() => {
-            showAlert({
-              title: "Réinitialiser les matières",
-              message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
-              actions: [
-                {
-                  title: "Annuler",
-                  icon: <X />,
-                },
-                {
-                  title: "Réinitialiser",
-                  icon: <Trash2 />,
-                  primary: true,
-                  danger: true,
-                  onPress: () => {
-                    setSubjects([]);
-                    setLocalSubjects([]);
-                    setCurrentTitle("");
-                    setCurrentEmoji("");
-
-                    mutateProperty("personalization", {
-                      ...account.personalization,
-                      subjects: {},
-                    });
+            onPress={() => {
+              showAlert({
+                title: "Réinitialiser les matières",
+                message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
+                actions: [
+                  {
+                    title: "Annuler",
+                    icon: <X />,
                   },
-                },
-              ],
-            });
-          }}
-          style={{ marginRight: 2 }}
-        >
-          <Trash2 size={22} color={colors.primary} />
-        </TouchableOpacity>
+                  {
+                    title: "Réinitialiser",
+                    icon: <Trash2 />,
+                    primary: true,
+                    danger: true,
+                    onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+                      setCurrentEmoji("");
+
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    },
+                  },
+                ],
+              });
+            }}
+            style={{ marginRight: 2 }}
+          >
+            <Trash2 size={22} color={colors.primary} />
+          </TouchableOpacity>
         </View>
       ),
     });
