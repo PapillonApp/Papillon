@@ -15,6 +15,7 @@
       "privacyPolicy": "politique de confidentialité"
     },
     "ChangelogScreen": {
+      "title": "Quoi de neuf ?",
       "pending": "Chargement des nouveautés...",
       "pendingSubtitle": "Obtention des dernières nouveautés de Papillon",
       "error": "Impossible de charger les notes de mise à jour",

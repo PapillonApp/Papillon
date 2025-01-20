@@ -15,6 +15,7 @@
       "privacyPolicy": "privacy policy"
     },
     "ChangelogScreen": {
+      "title": "What's new?",
       "pending": "Loading the news...",
       "pendingSubtitle": "Getting the latest news from Papillon",
       "error": "Unable to load the changelog",

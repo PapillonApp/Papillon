@@ -55,6 +55,10 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
     AsyncStorage.setItem("changelog.lastUpdate", PackageJSON.version);
   };
 
+  navigation.setOptions({
+    headerTitle: t("welcome.ChangelogScreen.title"),
+  });
+
   useEffect(() => {
     if(!changelog) {
       setLoading(true);
