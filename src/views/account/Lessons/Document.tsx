@@ -42,14 +42,7 @@ import { useClassSubjectStore } from "@/stores/classSubject";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
-
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
-const getDuration = (minutes: number): string => {
-  const durationHours = Math.floor(minutes / 60);
-  const durationRemainingMinutes = minutes % 60;
-  return `${durationHours}h ${lz(durationRemainingMinutes)} min`;
-};
+import { getDuration } from "@/utils/format/course_duration";
 
 const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const theme = useTheme();

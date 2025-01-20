@@ -53,6 +53,7 @@ export const screens = [
   createScreen("Menu", Menu, {
     headerTitle: "Cantine",
     tabBarLabel: "Cantine",
+    headerShown: false,
     tabBarLottie: require("@/../assets/lottie/tab_pizza.json"),
   }),
   createScreen("Evaluation", Evaluation, {

@@ -10,61 +10,81 @@ function parse_homeworks (content: string): string {
 
   const ignoredTags: Set<string> = new Set(["div", "span", "style", "script", "footer", "header"]);
 
-  const tagRegex: RegExp = /<\/?([a-zA-Z]+)(?:\s[^>]*)?>|([^<]+)/g;
+  const tagRegex = /<\/?([a-zA-Z]+)(?:\s[^>]*)?>|([^<]+)/g;
 
-  const htmlEntities: { [key: string]: string } = {
+  const htmlEntities: Record<string, string> = {
     "&nbsp;": " ",
     "&quot;": "\"",
-    "&#039;": "'"
+    "&#039;": "'",
   };
 
+  // Décodage des entités HTML
   function decodeHtmlEntities (text: string): string {
-    return text.replace(/&#(\d+);/g, (match: string, dec: string) => String.fromCharCode(parseInt(dec, 10)))
-      .replace(/&([a-zA-Z]+);/g, (match: string) => htmlEntities[match] || match);
+    return text
+      .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+      .replace(/&([a-zA-Z]+);/g, (_, entity) => htmlEntities[entity] || `&${entity};`);
   }
 
-  let result: string = "";
-  let match: RegExpExecArray | null;
+  let result = "";
+  const stack: Array<{ tag: string; children: string[] }> = [];
 
+  let match: RegExpExecArray | null;
   while ((match = tagRegex.exec(content)) !== null) {
     const [fullMatch, tagName, text] = match;
 
     if (text) {
-      // Remplace les entités HTML dans le texte
-      result += decodeHtmlEntities(text);
+      // Texte brut entre balises
+      const decodedText = decodeHtmlEntities(text);
+      if (stack.length > 0) {
+        stack[stack.length - 1].children.push(decodedText);
+      } else {
+        result += decodedText;
+      }
     } else if (tagName) {
-      const isClosingTag: boolean = fullMatch.startsWith("</");
-      const tag: string = tagName.toLowerCase();
+      const tag = tagName.toLowerCase();
+      const isClosingTag = fullMatch.startsWith("</");
 
-      if (!isClosingTag) {
+      if (isClosingTag) {
+        // Balise fermante
+        if (stack.length > 0 && stack[stack.length - 1].tag === tag) {
+          const { tag: currentTag, children } = stack.pop()!;
+          const processedContent = children.join("");
+
+          if (supportedTags[currentTag]) {
+            if (typeof supportedTags[currentTag] === "string") {
+              result += supportedTags[currentTag];
+            } else {
+              result += (supportedTags[currentTag] as (text: string) => string)(processedContent);
+            }
+          }
+        }
+      } else {
+        // Balise ouvrante ou auto-fermante
         if (ignoredTags.has(tag)) {
           continue; // Ignore les balises non supportées
-        } else if (supportedTags[tag]) {
-          // Balise ouvrante supportée
+        }
+
+        if (supportedTags[tag]) {
           if (typeof supportedTags[tag] === "string") {
-            result += supportedTags[tag] as string;
+            result += supportedTags[tag];
           } else {
-            const children: string[] = [];
-            let innerMatch: RegExpExecArray | null;
-            while ((innerMatch = tagRegex.exec(content)) !== null) {
-              const [innerFullMatch, innerTagName, innerText] = innerMatch;
-              if (innerText) {
-                children.push(innerText);
-              } else if (innerTagName && innerFullMatch.startsWith("</") && innerTagName.toLowerCase() === tag) {
-                break;
-              }
-            }
-            result += (supportedTags[tag] as (text: string) => string)(decodeHtmlEntities(children.join("")));
+            stack.push({ tag, children: [] });
           }
         }
       }
     }
   }
 
-  // if there are multiple spaces, replace them with a single space
-  result = result.replace(/\s{2,}/g , " ");
+  // Traite les balises non fermées restantes
+  while (stack.length > 0) {
+    const { tag, children } = stack.pop()!;
+    if (supportedTags[tag] && typeof supportedTags[tag] === "function") {
+      result += (supportedTags[tag] as (text: string) => string)(children.join(""));
+    }
+  }
 
-  return result;
+  // Nettoyage des sauts de ligne en excès
+  return result.replace(/\n{2,}/g, "").trim();
 }
 
 export default parse_homeworks;

@@ -49,6 +49,7 @@ import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
 import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
 import AccountButton from "@/components/Restaurant/AccountButton";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import PapillonHeader from "@/components/Global/PapillonHeader";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -85,8 +86,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   };
 
-  const onDatePickerSelect =async  (date?: Date) => {
-    if(!date) {
+  const onDatePickerSelect = async (date?: Date) => {
+    if (!date) {
       return;
     }
 
@@ -94,7 +95,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
     newDate.setHours(0, 0, 0, 0);
 
-    if(newDate.valueOf() === pickerDate.valueOf()) {
+    if (newDate.valueOf() === pickerDate.valueOf()) {
       return;
     }
 
@@ -260,7 +261,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   };
 
   function renderAllergens (allergens: ReadonlyArray<FoodAllergen>) {
-    if(allergens.length === 0) {
+    if (allergens.length === 0) {
       return null;
     }
 
@@ -279,14 +280,14 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   }
 
   function renderLabels (labels: ReadonlyArray<FoodLabel>) {
-    if(labels.length === 0) {
+    if (labels.length === 0) {
       return null;
     }
 
     return (
       <View style={styles.labelsContainer}>
         {labels.map((label, k) => (
-          <View key={"label-" + k} style={[styles.label, { backgroundColor: label.color ?? "#888888" }]}>
+          <View key={"label-" + k} style={[styles.label, { backgroundColor: label.color ?? "#888888" }]}>
             {getLabelIcon(label.name)}
             <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "bold" }}>
               {getLabelName(label.name)}
@@ -298,237 +299,237 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
-      showsHorizontalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => {
-            refreshData();
-          }}
-        />
-      }
-    >
-      {!isInitialised ? (
-        <ActivityIndicator size="large" style={{ padding: 50 }} />
-      ) : (
-        <>
-          {allBalances?.length === 0 ? (
-            <View style={{ height: 10 }} />
-          ) : (
-            <>
-              <View style={styles.accountButtonContainer}>
-                {allBalances!.length > 1 && allBalances?.map((account, index) => (
-                  <AccountButton
-                    key={index}
-                    account={account}
-                    isSelected={selectedIndex === index}
-                    onPress={() => setSelectedIndex(index)}
-                    colors={colors}
-                  />
-                ))}
-              </View>
+    <>
+      <PapillonHeader route={route} navigation={navigation} />
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              refreshData();
+            }}
+          />
+        }
+      >
+        {!isInitialised ? (
+          <ActivityIndicator size="large" style={{ padding: 50 }} />
+        ) : (
+          <>
+            {allBalances?.length === 0 ? (
+              <View style={{ height: 10 }} />
+            ) : (
+              <>
+                <View style={styles.accountButtonContainer}>
+                  {allBalances!.length > 1 && allBalances?.map((account, index) => (
+                    <AccountButton
+                      key={index}
+                      account={account}
+                      isSelected={selectedIndex === index}
+                      onPress={() => setSelectedIndex(index)}
+                      colors={colors}
+                    />
+                  ))}
+                </View>
 
-              {selectedIndex !== null && allBalances?.[selectedIndex] && (
-                <Reanimated.View
-                  entering={FadeInUp}
-                  exiting={FadeOutDown}
-                  layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
-                >
-                  <RestaurantCard
-                    solde={allBalances[selectedIndex].amount}
-                    repas={
-                      allBalances?.[selectedIndex]?.remaining != null
-                        ? Math.max(0, allBalances[selectedIndex].remaining || 0)
-                        : null
-                    }
-                  />
-                </Reanimated.View>
-              )}
-            </>
-          )}
-
-          <HorizontalList style={styles.horizontalList}>
-            <Item
-              title="Historique"
-              icon={<Clock2 color={colors.text} />}
-              onPress={() => navigation.navigate("RestaurantHistory", { histories: allHistories ?? [] })}
-              enable={allHistories?.length !== 0}
-            />
-            <Item
-              title="QR-Code"
-              icon={<QrCode color={colors.text} />}
-              onPress={() => navigation.navigate("RestaurantQrCode", { QrCodes: allQRCodes ?? [] })}
-              enable={allQRCodes?.length !== 0}
-            />
-          </HorizontalList>
-
-          {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
-            <View style={styles.calendarContainer}>
-              <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
-                <Reanimated.View layout={animPapillon(LinearTransition)}>
+                {selectedIndex !== null && allBalances?.[selectedIndex] && (
                   <Reanimated.View
-                    key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
-                    entering={FadeIn.duration(150)}
-                    exiting={FadeOut.duration(150)}
+                    entering={FadeInUp}
+                    exiting={FadeOutDown}
+                    layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
                   >
-                    <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
-                      {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
-                    </Reanimated.Text>
+                    <RestaurantCard
+                      solde={allBalances[selectedIndex].amount}
+                      repas={
+                        allBalances?.[selectedIndex]?.remaining != null
+                          ? Math.max(0, allBalances[selectedIndex].remaining || 0)
+                          : null
+                      }
+                    />
                   </Reanimated.View>
-                </Reanimated.View>
-                <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
-                <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
-                  {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
-                </Reanimated.Text>
-              </PapillonHeaderSelector>
-            </View>
-          }
+                )}
+              </>
+            )}
 
-          {allBookings && pickerDate.getTime() > currentDate.getTime() && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
-            <>
-              <NativeListHeader label="Réservations disponibles" />
-              <NativeList>
-                {allBookings.map((terminal, index) => (
-                  <React.Fragment key={index}>
-                    {terminal.days.map((bookingDay, dayIndex) =>
-                      bookingDay.date?.toDateString() === pickerDate.toDateString() ? (
-                        <NativeItem
-                          separator
-                          disabled={!bookingDay.canBook}
-                          icon={<Utensils />}
-                          key={dayIndex}
-                          trailing={
-                            <Switch
-                              value={bookingDay.booked}
-                              disabled={!bookingDay.canBook || allBalances?.every((balance) => balance.remaining === 0)}
-                              onValueChange={() => handleBookTogglePress(terminal, bookingDay)}
-                            />
-                          }
-                        >
-                          <NativeText style={{ fontSize: 16, fontFamily: "semibold", color: theme.colors.text }}>Réserver mon repas</NativeText>
-                          <NativeText variant="subtitle">Borne "{terminal.terminalLabel}"</NativeText>
-                        </NativeItem>
-                      ) : null
+            <HorizontalList style={styles.horizontalList}>
+              <Item
+                title="Historique"
+                icon={<Clock2 color={colors.text} />}
+                onPress={() => navigation.navigate("RestaurantHistory", { histories: allHistories ?? [] })}
+                enable={allHistories?.length !== 0}
+              />
+              <Item
+                title="QR-Code"
+                icon={<QrCode color={colors.text} />}
+                onPress={() => navigation.navigate("RestaurantQrCode", { QrCodes: allQRCodes ?? [] })}
+                enable={allQRCodes?.length !== 0}
+              />
+            </HorizontalList>
+
+            {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
+              <View style={styles.calendarContainer}>
+                <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
+                  <Reanimated.View layout={animPapillon(LinearTransition)}>
+                    <Reanimated.View
+                      key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+                      entering={FadeIn.duration(150)}
+                      exiting={FadeOut.duration(150)}
+                    >
+                      <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
+                        {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
+                      </Reanimated.Text>
+                    </Reanimated.View>
+                  </Reanimated.View>
+                  <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
+                  <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
+                    {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
+                  </Reanimated.Text>
+                </PapillonHeaderSelector>
+              </View>
+            }
+
+            {allBookings && pickerDate.getTime() > currentDate.getTime() && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
+              <>
+                <NativeListHeader label="Réservations disponibles" />
+                <NativeList>
+                  {allBookings.map((terminal, index) => (
+                    <React.Fragment key={index}>
+                      {terminal.days.map((bookingDay, dayIndex) =>
+                        bookingDay.date?.toDateString() === pickerDate.toDateString() ? (
+                          <NativeItem
+                            separator
+                            disabled={!bookingDay.canBook}
+                            icon={<Utensils />}
+                            key={dayIndex}
+                            trailing={
+                              <Switch
+                                value={bookingDay.booked}
+                                disabled={!bookingDay.canBook || allBalances?.every((balance) => balance.remaining === 0)}
+                                onValueChange={() => handleBookTogglePress(terminal, bookingDay)}
+                              />
+                            }
+                          >
+                            <NativeText style={{ fontSize: 16, fontFamily: "semibold", color: theme.colors.text }}>Réserver mon repas</NativeText>
+                            <NativeText variant="subtitle">Borne "{terminal.terminalLabel}"</NativeText>
+                          </NativeItem>
+                        ) : null
+                      )}
+                    </React.Fragment>
+                  ))}
+                </NativeList>
+              </>
+            )}
+
+            <View style={{ height: 16 }} />
+
+            {currentMenu ?
+              <>
+                {isMenuLoading ? (
+                  <ActivityIndicator size="large" style={{ padding: 50 }} />
+                ) : currentMenu?.lunch || currentMenu?.dinner ? (
+                  <>
+                    {currentMenu?.lunch?.main && (
+                      <>
+                        <NativeListHeader label="Menu du jour" />
+                        <NativeList>
+                          {[
+                            { title: "Entrée", items: currentMenu.lunch.entry },
+                            { title: "Plat", items: currentMenu.lunch.main },
+                            { title: "Accompagnement", items: currentMenu.lunch.side },
+                            { title: "Fromage", items: currentMenu.lunch.fromage },
+                            { title: "Dessert", items: currentMenu.lunch.dessert },
+                            { title: "Boisson", items: currentMenu.lunch.drink },
+                          ].map(({ title, items }, index) =>
+                            items && (
+                              <NativeItem key={index}>
+                                <NativeText variant="subtitle">{title}</NativeText>
+                                {items.map((food, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <NativeText variant="title">
+                                      {food.name ?? ""}
+                                    </NativeText>
+                                    {renderAllergens(food.allergens)}
+                                    {renderLabels(food.labels)}
+                                  </React.Fragment>
+                                ))}
+                              </NativeItem>
+                            )
+                          )}
+                        </NativeList>
+                      </>
                     )}
-                  </React.Fragment>
-                ))}
-              </NativeList>
-            </>
-          )}
-
-          <View style={{ height: 16 }} />
-
-          {currentMenu ?
-            <>
-              {isMenuLoading ? (
-                <ActivityIndicator size="large" style={{ padding: 50 }} />
-              ) : currentMenu?.lunch || currentMenu?.dinner ? (
-                <>
-                  {currentMenu?.lunch?.main && (
-                    <>
-                      <NativeListHeader label="Menu du jour" />
-                      <NativeList>
-                        {[
-                          { title: "Entrée", items: currentMenu.lunch.entry },
-                          { title: "Plat", items: currentMenu.lunch.main },
-                          { title: "Accompagnement", items: currentMenu.lunch.side },
-                          { title: "Fromage", items: currentMenu.lunch.fromage },
-                          { title: "Dessert", items: currentMenu.lunch.dessert },
-                          { title: "Boisson", items: currentMenu.lunch.drink },
-                        ].map(({ title, items }, index) =>
-                          items && (
-                            <NativeItem key={index}>
-                              <NativeText variant="subtitle">{title}</NativeText>
-                              {items.map((food, idx) => (
-                                <>
-                                  <NativeText key={idx} variant="title">
-                                    {food.name ?? ""}
-                                  </NativeText>
-                                  {renderAllergens(food.allergens)}
-                                  {renderLabels(food.labels)}
-                                </>
-                              ))}
-                            </NativeItem>
-                          )
-                        )}
-                      </NativeList>
-                    </>
-                  )}
-
-                  {currentMenu?.dinner?.main && (
-                    <>
-                      <NativeListHeader label="Menu du soir" />
-                      <NativeList>
-                        {[
-                          { title: "Entrée", items: currentMenu.dinner.entry },
-                          { title: "Plat", items: currentMenu.dinner.main },
-                          { title: "Accompagnement", items: currentMenu.dinner.side },
-                          { title: "Fromage", items: currentMenu.dinner.fromage },
-                          { title: "Dessert", items: currentMenu.dinner.dessert },
-                          { title: "Boisson", items: currentMenu.dinner.drink },
-                        ].map(({ title, items }, index) =>
-                          items && (
-                            <NativeItem key={index}>
-                              <NativeText variant="subtitle">{title}</NativeText>
-                              {items.map((food, idx) => (
-                                <>
-                                  <NativeText key={idx} variant="title">
-                                    {food.name ?? ""}
-                                  </NativeText>
-                                  {renderAllergens(food.allergens)}
-                                  {renderLabels(food.labels)}
-                                </>
-                              ))}
-                            </NativeItem>
-                          )
-                        )}
-                      </NativeList>
-                    </>
-                  )}
-                </>
-              ) : (
+                    {currentMenu?.dinner?.main && (
+                      <>
+                        <NativeListHeader label="Menu du soir" />
+                        <NativeList>
+                          {[
+                            { title: "Entrée", items: currentMenu.dinner.entry },
+                            { title: "Plat", items: currentMenu.dinner.main },
+                            { title: "Accompagnement", items: currentMenu.dinner.side },
+                            { title: "Fromage", items: currentMenu.dinner.fromage },
+                            { title: "Dessert", items: currentMenu.dinner.dessert },
+                            { title: "Boisson", items: currentMenu.dinner.drink },
+                          ].map(({ title, items }, index) =>
+                            items && (
+                              <NativeItem key={index}>
+                                <NativeText variant="subtitle">{title}</NativeText>
+                                {items.map((food, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <NativeText variant="title">
+                                      {food.name ?? ""}
+                                    </NativeText>
+                                    {renderAllergens(food.allergens)}
+                                    {renderLabels(food.labels)}
+                                  </React.Fragment>
+                                ))}
+                              </NativeItem>
+                            )
+                          )}
+                        </NativeList>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <MissingItem
+                    emoji="🍽️"
+                    title="Aucun menu prévu"
+                    description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString(
+                      "fr-FR",
+                      {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}.`}
+                    entering={animPapillon(FadeInDown)}
+                    exiting={animPapillon(FadeOut)}
+                    style={{ marginTop: 16 }}
+                  />
+                )}
+              </>
+              : <>
                 <MissingItem
                   emoji="🍽️"
-                  title="Aucun menu prévu"
-                  description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString(
-                    "fr-FR",
-                    {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  )}.`}
+                  title="Aucun menu disponible"
+                  description={"Aucun service de cantine fournissant un menu n'est enregistré."}
                   entering={animPapillon(FadeInDown)}
                   exiting={animPapillon(FadeOut)}
                   style={{ marginTop: 16 }}
                 />
-              )}
-            </>
-            : <>
-              <MissingItem
-                emoji="🍽️"
-                title="Aucun menu disponible"
-                description={"Aucun service de cantine fournissant un menu n'est enregistré."}
-                entering={animPapillon(FadeInDown)}
-                exiting={animPapillon(FadeOut)}
-                style={{ marginTop: 16 }}
-              />
-            </>}
-
-          <LessonsDateModal
-            showDatePicker={showDatePicker}
-            setShowDatePicker={setShowDatePicker}
-            currentDate={pickerDate}
-            onDateSelect={onDatePickerSelect}
-          />
-        </>
-      )}
-
-      <InsetsBottomView />
-    </ScrollView>
+              </>}
+            <LessonsDateModal
+              showDatePicker={showDatePicker}
+              setShowDatePicker={setShowDatePicker}
+              currentDate={pickerDate}
+              onDateSelect={onDatePickerSelect}
+            />
+          </>
+        )}
+        <InsetsBottomView />
+      </ScrollView>
+    </>
   );
 };
 
