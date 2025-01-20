@@ -13,6 +13,7 @@ import {
 } from "@/components/Global/NativeComponents";
 import { AccountService } from "@/stores/account/types";
 import { useAccounts } from "@/stores/account";
+import { useTranslation } from "react-i18next";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },
@@ -35,6 +36,11 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   const theme = useTheme();
   const accounts = useAccounts((state) => state.accounts);
   const removeAccount = useAccounts((state) => state.remove);
+  const { t } = useTranslation();
+
+  navigation.setOptions({
+    headerTitle: t("settings.sections.general.externalServices.title"),
+  });
 
   const getServiceIcon = (service: AccountService) => {
     const IconComponent = serviceConfig[service]?.icon || GraduationCap;
@@ -70,9 +76,9 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
       "Supprimer le compte",
       "Es-tu sûr de vouloir supprimer ce compte ?",
       [
-        { text: "Annuler", style: "cancel" },
+        { text: t("cancel"), style: "cancel" },
         {
-          text: "Supprimer",
+          text: t("delete"),
           style: "destructive",
           onPress: () => removeAccount(account.localID)
         }
@@ -107,7 +113,9 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
                 color={"#006B6B"}
               />}
           >
-            <NativeText variant="title">Ajouter une cantine</NativeText>
+            <NativeText variant="title">
+              {t("settings.sections.general.externalServices.addService")}
+            </NativeText>
           </NativeItem>
         </NativeList>
       </View>

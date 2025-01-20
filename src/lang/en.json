@@ -2,6 +2,7 @@
   "loading": "Loading...",
   "confirm": "Confirm",
   "cancel": "Cancel",
+  "delete": "Supprimer",
   "quit": "Quit",
   "errror": "Error",
   "welcome": {
@@ -151,7 +152,10 @@
           "example": "You have a class in room B03 with Mr. Perruche in 5 minutes."
         },
         "externalServices": {
-          "title": "External services"
+          "title": "External services",
+          "captionTitle": "External services",
+          "captionMessage": "Connect your favorite school services and enjoy the Papillon interface wherever you go.",
+          "addService": "Add a service"
         },
         "reactions": {
           "title": "Reactions"

@@ -2,6 +2,7 @@
   "loading": "Chargement...",
   "confirm": "Confirmer",
   "cancel": "Annuler",
+  "delete": "Supprimer",
   "quit": "Quitter",
   "errror": "Erreur",
   "welcome": {
@@ -151,7 +152,10 @@
           "example": "Tu as cours en salle B03 avec M. Perruche dans 5 minutes."
         },
         "externalServices": {
-          "title": "Services externes"
+          "title": "Services externes",
+          "captionTitle": "Services externes",
+          "captionMessage": "Connecte tes services scolaires préférés et profite de l’interface de Papillon partout où tu vas.",
+          "addService": "Ajouter une cantine"
         },
         "reactions": {
           "title": "Réactions"

@@ -3,9 +3,11 @@ import React from "react";
 import { View } from "react-native";
 import LottieView from "lottie-react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import { useTranslation } from "react-i18next";
 
 const ExternalServicesContainerCard = ({ theme }: { theme: any }) => {
   const { colors } = theme;
+  const { t } = useTranslation();
 
   return (
     <NativeList>
@@ -29,10 +31,10 @@ const ExternalServicesContainerCard = ({ theme }: { theme: any }) => {
       </View>
       <NativeItem>
         <NativeText variant="title">
-          Services externes
+          {t("settings.sections.general.externalServices.captionTitle")}
         </NativeText>
         <NativeText variant="subtitle">
-          Connecte tes services scolaires préférés et profite de l’interface de Papillon partout où tu vas.
+          {t("settings.sections.general.externalServices.captionMessage")}
         </NativeText>
       </NativeItem>
     </NativeList>
