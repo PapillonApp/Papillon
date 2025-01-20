@@ -66,8 +66,8 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
   let grades: Grade[] = [];
   let averages: AverageOverview = {
     subjects: [],
-    overall: { value: null, disabled: true },
-    classOverall: { value: null, disabled: true }
+    overall: { value: null, disabled: true, status: null },
+    classOverall: { value: null, disabled: true, status: null}
   };
 
   try {
@@ -100,8 +100,8 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
           grades = [];
           averages = {
             subjects: [],
-            overall: { value: 0, disabled: true },
-            classOverall: { value: 0, disabled: true }
+            overall: { value: 0, disabled: true, status: null },
+            classOverall: { value: 0, disabled: true, status: null }
           };
         }
 

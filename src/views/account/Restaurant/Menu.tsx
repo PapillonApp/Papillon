@@ -6,13 +6,18 @@ import {
   Switch,
   Alert,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Text
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import {
   AlertTriangle,
+  ChefHat,
   Clock2,
+  CookingPot,
+  MapPin,
   QrCode,
+  Sprout,
   Utensils,
 } from "lucide-react-native";
 
@@ -36,7 +41,7 @@ import { reservationHistoryFromExternal } from "@/services/reservation-history";
 import { qrcodeFromExternal } from "@/services/qrcode";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import { getMenu } from "@/services/menu";
-import type { Menu as PawnoteMenu } from "pawnote";
+import type { FoodAllergen, FoodLabel, Menu as PawnoteMenu } from "pawnote";
 import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { LessonsDateModal } from "../Lessons/LessonsHeader";
@@ -55,9 +60,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshCount, setRefreshCount] = useState(0);
 
+  const currentDate = new Date();
+
   const [allBalances, setAllBalances] = useState<Balance[] | null>(null);
   const [allHistories, setAllHistories] = useState<ReservationHistory[] | null>(null);
-  const [allQRCodes, setAllQRCodes] = useState<string[] | null>(null);
+  const [allQRCodes, setAllQRCodes] = useState<Array<string | Blob> | null>(null);
   const [allBookings, setAllBookings] = useState<BookingTerminal[] | null>(null);
   const [currentMenu, setCurrentMenu] = useState<PawnoteMenu | null>(null);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
@@ -78,22 +85,41 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   };
 
-  const updateDatePicker = async (date: Date) => {
+  const onDatePickerSelect =async  (date?: Date) => {
+    if(!date) {
+      return;
+    }
+
+    const newDate = new Date(date);
+
+    newDate.setHours(0, 0, 0, 0);
+
+    if(newDate.valueOf() === pickerDate.valueOf()) {
+      return;
+    }
+
+    setPickerDate(newDate);
+
     setMenuLoading(true);
+
     const newWeek = getWeekNumber(date);
 
     if (currentWeek !== newWeek) {
       setCurrentWeek(newWeek);
+
       const allBookings: BookingTerminal[] = [];
+
       for (const account of linkedAccounts) {
         const bookingsForAccount = await getBookingsAvailableFromExternal(account, newWeek);
         allBookings.push(...bookingsForAccount);
       }
+
       setAllBookings(allBookings);
     }
 
     const dailyMenu = account ? await getMenu(account, date).catch(() => null) : null;
     setCurrentMenu(dailyMenu);
+
     setMenuLoading(false);
   };
 
@@ -140,7 +166,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
       try {
         const newBalances: Balance[] = [];
         const newHistories: ReservationHistory[] = [];
-        const newQRCodes: string[] = [];
+        const newQRCodes: Array<string | Blob> = [];
         const newBookings: BookingTerminal[] = [];
 
         const dailyMenu = account ? await getMenu(account, pickerDate).catch(() => null) : null;
@@ -203,6 +229,74 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     return unsub;
   }, []);
 
+  const getLabelIcon = (label: string) => {
+    switch (label) {
+      case "Assemblé sur place":
+        return <CookingPot size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Issu de l'Agriculture Biologique":
+        return <Sprout size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Fait maison - Recette du chef":
+        return <ChefHat size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Produits locaux":
+        return <MapPin size={12} strokeWidth={3} color="#FFFFFF" />;
+      default:
+        return null;
+    }
+  };
+
+  const getLabelName = (label: string) => {
+    switch (label) {
+      case "Assemblé sur place":
+        return "Assemblé sur place";
+      case "Issu de l'Agriculture Biologique":
+        return "Agriculture Biologique";
+      case "Fait maison - Recette du chef":
+        return "Fait maison";
+      case "Produits locaux":
+        return "Produits locaux";
+      default:
+        return label;
+    }
+  };
+
+  function renderAllergens (allergens: ReadonlyArray<FoodAllergen>) {
+    if(allergens.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.allergensContainer}>
+        <AlertTriangle
+          size={16}
+          color={colors.text}
+          opacity={0.6}
+        />
+        <NativeText variant="subtitle">
+          Allergènes : {allergens.map(allergen => allergen.name).join(", ")}
+        </NativeText>
+      </View>
+    );
+  }
+
+  function renderLabels (labels: ReadonlyArray<FoodLabel>) {
+    if(labels.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.labelsContainer}>
+        {labels.map((label, k) => (
+          <View key={"label-" + k} style={[styles.label, { backgroundColor: label.color ?? "#888888" }]}>
+            {getLabelIcon(label.name)}
+            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "bold" }}>
+              {getLabelName(label.name)}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -221,7 +315,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
       ) : (
         <>
           {allBalances?.length === 0 ? (
-            <View style={{height: 10}} />
+            <View style={{ height: 10 }} />
           ) : (
             <>
               <View style={styles.accountButtonContainer}>
@@ -271,28 +365,28 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
           </HorizontalList>
 
           {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
-          <View style={styles.calendarContainer}>
-            <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
-              <Reanimated.View layout={animPapillon(LinearTransition)}>
-                <Reanimated.View
-                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
-                  entering={FadeIn.duration(150)}
-                  exiting={FadeOut.duration(150)}
-                >
-                  <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
-                    {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
-                  </Reanimated.Text>
+            <View style={styles.calendarContainer}>
+              <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
+                <Reanimated.View layout={animPapillon(LinearTransition)}>
+                  <Reanimated.View
+                    key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+                    entering={FadeIn.duration(150)}
+                    exiting={FadeOut.duration(150)}
+                  >
+                    <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
+                      {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
+                    </Reanimated.Text>
+                  </Reanimated.View>
                 </Reanimated.View>
-              </Reanimated.View>
-              <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
-              <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
-                {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
-              </Reanimated.Text>
-            </PapillonHeaderSelector>
-          </View>
+                <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
+                <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
+                  {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
+                </Reanimated.Text>
+              </PapillonHeaderSelector>
+            </View>
           }
 
-          {allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
+          {allBookings && pickerDate.getTime() > currentDate.getTime() && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
             <>
               <NativeListHeader label="Réservations disponibles" />
               <NativeList>
@@ -352,18 +446,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                                   <NativeText key={idx} variant="title">
                                     {food.name ?? ""}
                                   </NativeText>
-                                  {food.allergens.length > 0 && (
-                                    <View style={styles.allergensContainer}>
-                                      <AlertTriangle
-                                        size={16}
-                                        color={colors.text}
-                                        opacity={0.6}
-                                      />
-                                      <NativeText key={"allergens-" + idx} variant="subtitle">
-                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
-                                      </NativeText>
-                                    </View>
-                                  )}
+                                  {renderAllergens(food.allergens)}
+                                  {renderLabels(food.labels)}
                                 </>
                               ))}
                             </NativeItem>
@@ -393,18 +477,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                                   <NativeText key={idx} variant="title">
                                     {food.name ?? ""}
                                   </NativeText>
-                                  {food.allergens.length > 0 && (
-                                    <View style={styles.allergensContainer}>
-                                      <AlertTriangle
-                                        size={16}
-                                        color={colors.text}
-                                        opacity={0.6}
-                                      />
-                                      <NativeText key={"allergens-" + idx} variant="subtitle">
-                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
-                                      </NativeText>
-                                    </View>
-                                  )}
+                                  {renderAllergens(food.allergens)}
+                                  {renderLabels(food.labels)}
                                 </>
                               ))}
                             </NativeItem>
@@ -448,14 +522,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             showDatePicker={showDatePicker}
             setShowDatePicker={setShowDatePicker}
             currentDate={pickerDate}
-            onDateSelect={(date: Date | undefined) => {
-              if (!date) return;
-              const newDate = new Date(date);
-              newDate.setHours(0, 0, 0, 0);
-              setPickerDate(newDate);
-              updateDatePicker(newDate);
-              setShowDatePicker(false);
-            }}
+            onDateSelect={onDatePickerSelect}
           />
         </>
       )}
@@ -471,7 +538,9 @@ const styles = StyleSheet.create({
   horizontalList: { marginTop: 10 },
   calendarContainer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16, marginBottom: -10, gap: 10 },
   weekPickerText: { zIndex: 10000, fontSize: 14.5, fontFamily: "medium", opacity: 0.7 },
-  allergensContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }
+  allergensContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5 },
+  labelsContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4 },
+  label: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }
 });
 
 export default Menu;

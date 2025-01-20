@@ -10,17 +10,18 @@ import { NativeText } from "./NativeComponents";
 import { BlurView } from "expo-blur";
 import { Check } from "lucide-react-native";
 
-type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown }[];
+export type PickerDataItem = { index?: number, label: string, icon?: JSX.Element, onPress?: () => unknown };
+export type PickerData = string[] | PickerDataItem[];
 
 interface PapillonPickerProps {
   children: React.ReactNode
   data: PickerData
-  selected?: string
+  selected?: string | PickerDataItem
   contentContainerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
   delay?: number,
   direction?: "left" | "right",
   animated?: boolean,
-  onSelectionChange?: (item: string) => unknown
+  onSelectionChange?: any
 }
 
 const PapillonPicker: React.FC<PapillonPickerProps> = ({

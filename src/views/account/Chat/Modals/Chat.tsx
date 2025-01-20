@@ -328,7 +328,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                 <MissingItem
                   emoji="💬"
                   title="C'est le début de la conversation"
-                  description="Envoyez un message pour commencer la discussion."
+                  description="Envoie un message pour commencer la discussion."
                   entering={animPapillon(FadeInDown)}
                   exiting={animPapillon(FadeOut)}
                   style={{paddingVertical: 26}}

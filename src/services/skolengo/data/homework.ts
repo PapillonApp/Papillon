@@ -14,7 +14,7 @@ const decodeHomework = (h: HomeworkAssignment): Homework => {
     subject: h.subject?.label || "",
     attachments: h.attachments?.map(decodeSkoAttachment) || [],
     color: h.subject?.color || "#000000",
-    content:htmlToText(h.html||""),
+    content: (h.html && htmlToText(h.html || "") !== "") ? htmlToText(h.html) : h.title ?? "",
     due: h.dueDateTime ? new Date(h.dueDateTime).getTime() : -1,
     done: h.done,
     returnType: h.deliverWorkOnline ? HomeworkReturnType.FileUpload : HomeworkReturnType.Paper

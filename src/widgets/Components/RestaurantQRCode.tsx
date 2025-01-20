@@ -27,7 +27,7 @@ const RestaurantQRCodeWidget = forwardRef(({
 
   const account = useCurrentAccount((store) => store.account);
   const linkedAccounts = useCurrentAccount(store => store.linkedAccounts);
-  const [qrcode, setQRCodes] = useState<string[] | null>(null);
+  const [qrcode, setQRCodes] = useState<Array<string | Blob> | null>(null);
   const navigation = useNavigation<NavigationProps>();
 
   useImperativeHandle(ref, () => ({
@@ -40,7 +40,7 @@ const RestaurantQRCodeWidget = forwardRef(({
     void async function () {
       setHidden(true);
       setLoading(true);
-      const qrcodes: string[] = [];
+      const qrcodes: Array<string | Blob> = [];
       const currentHour = new Date().getHours();
       for (const account of linkedAccounts) {
         if (account.service === AccountService.Turboself || account.service === AccountService.ARD) {

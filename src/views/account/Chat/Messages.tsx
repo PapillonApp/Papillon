@@ -153,14 +153,14 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
                 opacity: 0.5,
               }}
             >
-              Vos conversations arrivent...
+              Tes conversations arrivent...
             </Text>
           </Reanimated.View>
         ) : chats.length === 0 ? (
           <MissingItem
             emoji="💬"
             title="Aucune discussion"
-            description="Commencez une nouvelle discussion pour les afficher ici."
+            description="Commence une nouvelle discussion pour les afficher ici."
             entering={animPapillon(FadeInDown)}
             exiting={animPapillon(FadeOut)}
             style={{ paddingVertical: 26 }}

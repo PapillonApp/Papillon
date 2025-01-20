@@ -60,7 +60,7 @@ export const defaultTabs = [
   {
     tab: "Evaluation",
     label: "Compétences",
-    description: "Vos compétences et évaluations",
+    description: "Tes compétences et évaluations",
     icon: require("@/../assets/lottie/tab_evaluations.json"),
     enabled: true,
   }

@@ -152,7 +152,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
           <MissingItem
             emoji="🌴"
             title="C'est le week-end !"
-            description="Profitez de votre week-end, il n'y a pas de cours aujourd'hui."
+            description="Profite de ton week-end, il n'y a pas de cours aujourd'hui."
           />
         </NativeItem>
       </NativeList>
@@ -171,7 +171,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
           <MissingItem
             emoji={emoji}
             title="C'est les vacances !"
-            description="Profitez de vos vacances, à bientôt."
+            description="Profite de tes vacances, à bientôt."
           />
         </NativeItem>
       </NativeList>
@@ -188,7 +188,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
       >
         <NativeItem animated style={{ paddingVertical: 10 }}>
           <MissingItem
-            emoji="📚"
+            emoji="📆"
             title="Aucun cours à venir"
             description="Il n'y a pas de cours à venir pour les prochains jours."
           />

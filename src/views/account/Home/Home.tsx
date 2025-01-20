@@ -113,7 +113,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   }));
 
   const modalAnimatedStyle = useAnimatedStyle(() => ({
-    borderCurve: "continuous",
+    ...(Platform.OS === "android" ? {} : { borderCurve: "continuous" }),
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
       [0, 100, 265 + insets.top - 0.1, 265 + insets.top],
@@ -128,10 +128,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     ),
 
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    ...(Platform.OS === "android" ? {} : {
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      }
+    }),
     shadowOpacity: 0.2,
     shadowRadius: 10,
 
@@ -250,15 +252,16 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           }
         }}
         onScroll={(e) => {
-          if (e.nativeEvent.contentOffset.y > 125 && canHaptics) {
+          const scrollY = e.nativeEvent.contentOffset.y;
+          if (scrollY > 125 && canHaptics) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCanHaptics(false);
-          } else if (e.nativeEvent.contentOffset.y < 125 && !canHaptics) {
+          } else if (scrollY < 125 && !canHaptics) {
             setCanHaptics(true);
           }
 
-          setModalOpen(e.nativeEvent.contentOffset.y >= 195 + insets.top);
-          setModalFull(e.nativeEvent.contentOffset.y >= 265 + insets.top);
+          setModalOpen(scrollY >= 195 + insets.top);
+          setModalFull(scrollY >= 265 + insets.top);
         }}
         refreshControl={<RefreshControl
           refreshing={refreshing}

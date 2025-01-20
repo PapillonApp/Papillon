@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView, Platform,
   AppState,
+  Image
 } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -170,16 +171,31 @@ const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => 
             scrollEnabled={qrcodes?.length > 1}
             onScroll={handleScroll}
           >
-            { qrcodes && qrcodes?.map((code, index) => (
-              <View key={index} style={styles.qrCodeInnerContainer}>
-                <QRCode
-                  value={code.toString()}
-                  size={250}
-                  color="#000000"
-                  backgroundColor="#FFFFFF"
-                />
-              </View>
-            ))}
+            { qrcodes && qrcodes.map((code, index) => {
+              if (typeof code === "string") {
+                return (
+                  <View key={index} style={styles.qrCodeInnerContainer}>
+                    <QRCode
+                      value={code}
+                      size={250}
+                      color="#000000"
+                      backgroundColor="#FFFFFF"
+                    />
+                  </View>
+                );
+              } else if (code instanceof Blob) {
+                const imageUrl = URL.createObjectURL(code);
+
+                return (
+                  <View key={index} style={styles.qrCodeInnerContainer}>
+                    <Image
+                      source={{ uri: imageUrl }}
+                      style={styles.barcodeImage}
+                    />
+                  </View>
+                );
+              }
+            })}
           </ScrollView>
         </View>
         { qrcodes && qrcodes.length > 1 && (
@@ -216,19 +232,20 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   qrCodeContainer: {
-    height: 300,
-    width: 300,
-    borderRadius: 15,
-    marginTop: 75,
-    alignSelf: "center",
-    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginTop: 75
   },
   qrCodeInnerContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     width: 300,
+    padding: 15,
+    borderRadius: 15,
     alignSelf: "center",
+    backgroundColor: "#FFFFFF"
   },
   instructionContainer: {
     marginTop: 60,
@@ -261,6 +278,11 @@ const styles = StyleSheet.create({
   },
   inactiveDot: {
     backgroundColor: "#ffffff25",
+  },
+  barcodeImage: {
+    width: "100%",
+    height: 50,
+    resizeMode: "cover",
   },
 });
 

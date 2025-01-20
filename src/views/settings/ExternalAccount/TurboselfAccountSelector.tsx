@@ -109,7 +109,7 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
               textAlign: "center",
             }}
           >
-            Papillon ne donnera jamais vos informations d'authentification à des tiers.
+            Papillon ne donnera jamais tes informations d'authentification à des tiers.
           </NativeText>
 
           <View style={styles.buttons}>

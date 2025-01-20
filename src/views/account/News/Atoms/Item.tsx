@@ -35,23 +35,26 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
       <View style={{
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        flex: 1,
+        gap: 10,
+        marginBottom: 2,
       }}>
         {!message.read && !isED && (
           <View style={{
-            width: 8,
-            height: 8,
+            width: 9,
+            height: 9,
             borderRadius: 5,
+            marginTop: 1,
             backgroundColor: theme.colors.primary,
           }} />
         )}
+        {message.title !== "" && <NativeText
+          numberOfLines={1}
+          variant="title"
+        >
+          {message.title}
+        </NativeText>}
       </View>
-      {message.title !== "" && <NativeText
-        numberOfLines={1}
-        variant="title"
-      >
-        {message.title}
-      </NativeText>}
 
       {message.content && (
         <NativeText
@@ -72,14 +75,12 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
+          marginTop: 5,
         }}
       >
         <NativeText
           numberOfLines={1}
           variant="subtitle"
-          style={{
-            marginTop: 6,
-          }}
         >
           {formatDate(message.date)}
         </NativeText>

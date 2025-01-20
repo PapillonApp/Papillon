@@ -44,7 +44,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
       await FileSystem.writeAsStringAsync(fileUri, imageBase64, { encoding: FileSystem.EncodingType.Base64 });
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync("Download", asset, false);
-      Alert.alert("Image sauvegardée", "L'image a été sauvegardée dans votre galerie.");
+      Alert.alert("Image sauvegardée", "L'image a été sauvegardée dans ta galerie.");
     } catch (error) {
       console.error("Failed to save image:", error);
     }

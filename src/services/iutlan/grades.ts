@@ -34,10 +34,12 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       classOverall: {
         value: null,
         disabled: true,
+        status: null,
       },
       overall: {
         value: null,
         disabled: true,
+        status: null,
       },
       subjects: []
     };
@@ -63,24 +65,29 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
           student: {
             value: parseFloat(note.note.value),
             disabled: parsedStudent === null || isNaN(parsedStudent),
+            status: null,
           },
           min: {
             value: parseFloat(note.note.min),
             disabled: parsedMin === null || isNaN(parsedMin),
+            status: null,
           },
           max: {
             value: parseFloat(note.note.max),
             disabled: parsedMax === null || isNaN(parsedMax),
+            status: null,
           },
           average: {
             value: parseFloat(note.note.moy),
             disabled: parsedAverage === null || isNaN(parsedAverage),
+            status: null,
           },
 
           id: uuid(),
           outOf: {
             value: 20,
             disabled: false,
+            status: null,
           },
           description: note.description,
           timestamp: new Date(note.date).getTime(),
@@ -112,24 +119,29 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
         classAverage: {
           value: classAverage,
           disabled: false,
+          status: null,
         },
         color: "#888888",
         max: {
           value: max,
           disabled: false,
+          status: null,
         },
         subjectName: subject.name,
         min: {
           value: min,
           disabled: false,
+          status: null,
         },
         average: {
           value: average,
           disabled: false,
+          status: null,
         },
         outOf: {
           value: 20,
           disabled: false,
+          status: null,
         },
       });
     });
@@ -144,10 +156,12 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
         classOverall: {
           value: null,
           disabled: true,
+          status: null,
         },
         overall: {
           value: null,
           disabled: true,
+          status: null,
         },
         subjects: []
       }
