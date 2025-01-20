@@ -9,6 +9,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { Sparkles, WifiOff, X} from "lucide-react-native";
 import {useTheme} from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import PackageJSON from "../../../../package.json";
 import {Dimensions, View} from "react-native";
 import NetInfo from "@react-native-community/netinfo";
@@ -32,11 +33,12 @@ interface ModalContentProps {
 
 const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRefresh }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
-  const [updatedRecently, setUpdatedRecently] = useState(false);
+  const [updatedRecently, setUpdatedRecently] = useState(true);
   const defined = useFlagsStore(state => state.defined);
 
   const [isOnline, setIsOnline] = useState(false);
@@ -176,7 +178,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
                 color={colors.text}
               />
               <NativeText variant="title" style={{ flex: 1}}>
-                Papillon vient d'être mis à jour à la version {PackageJSON.version} !
+                {t("home.modal.changelog.title", { version: PackageJSON.version })}
               </NativeText>
 
               <TouchableOpacity
@@ -198,7 +200,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
               </TouchableOpacity>
             </View>
             <NativeText variant="subtitle">
-              Clique ici pour voir tous les changements et les dernières nouveautés.
+              {t("home.modal.changelog.subtitle")}
             </NativeText>
           </TouchableOpacity>
         </NativeList>

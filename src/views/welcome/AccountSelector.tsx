@@ -41,6 +41,8 @@ import datasets from "@/consts/datasets.json";
 import Animated from "react-native-reanimated";
 import {PrimaryAccount} from "@/stores/account/types";
 
+import { useTranslation } from "react-i18next";
+
 
 // https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json
 type Illustration = {
@@ -51,6 +53,7 @@ type Illustration = {
 const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const isFocused = useIsFocused();
 

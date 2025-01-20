@@ -28,6 +28,7 @@ import Reanimated, {
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import {SvgFromXml} from "react-native-svg";
 import LoginView from "@/components/Templates/LoginView";
+import { useTranslation } from "react-i18next";
 
 const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -39,9 +40,14 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
   const scrollY = useSharedValue(0);
 
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const createStoredAccount = useAccounts(store => store.create);
   const switchTo = useCurrentAccount(store => store.switchTo);
+
+  navigation.setOptions({
+    headerTitle: t("login.GenericLogin.title", { name: "École Directe" }),
+  });
 
   const handleLogin = async (username: string, password: string, currentSession = session) => {
     try {

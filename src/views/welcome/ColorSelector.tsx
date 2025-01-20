@@ -9,22 +9,32 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
-import Reanimated, { ZoomIn, ZoomOut, LinearTransition, FadeIn, FadeOut, FlipInXDown, FadeOutUp } from "react-native-reanimated";
+import Reanimated, {
+  ZoomIn,
+  ZoomOut,
+  LinearTransition,
+  FadeIn,
+  FadeOut,
+  FlipInXDown,
+  FadeOutUp,
+} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { getIconName, setIconName } from "@candlefinance/app-icon";
 
 import colorsList from "@/utils/data/colors.json";
 import { removeColor } from "../settings/SettingsIcons";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { useTranslation } from "react-i18next";
 
-type Color = typeof colorsList[number];
+type Color = (typeof colorsList)[number];
 
 const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const theme = useTheme();
+  const { t, i18n } = useTranslation();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const settings = route.params?.settings || false;
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -75,9 +85,15 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
     }
   };
 
-  const messages = colorsList.map((color) => ({
-    [color.hex.primary]: color.description
-  })).reduce((acc, cur) => ({ ...acc, ...cur }), {} as { [key: string]: string });
+  const messages = colorsList
+    .map((color) => ({
+      [color.hex.primary]:
+        color.description[i18n.language as keyof typeof color.description] || color.description.en,
+    }))
+    .reduce(
+      (acc, cur) => ({ ...acc, ...cur }),
+      {} as { [key: string]: string }
+    );
 
   const selectColor = (color: Color) => {
     mutateProperty("personalization", { color });
@@ -88,10 +104,13 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
       getIconName().then((currentIcon) => {
         if (currentIcon.includes("_Dynamic_")) {
           const mainColor = color.hex.primary;
-          const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
+          const colorItem = colorsList.find(
+            (color) => color.hex.primary === mainColor
+          );
           const nameIcon = removeColor(currentIcon);
 
-          const iconConstructName = nameIcon + (colorItem ? "_" + colorItem.id : "");
+          const iconConstructName =
+            nameIcon + (colorItem ? "_" + colorItem.id : "");
 
           setIconName(iconConstructName);
         }
@@ -106,7 +125,9 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         style={({ pressed }) => [
           styles.button,
           {
-            backgroundColor: pressed ? color.hex.primary + "44" : color.hex.primary,
+            backgroundColor: pressed
+              ? color.hex.primary + "44"
+              : color.hex.primary,
           },
         ]}
       />
@@ -125,7 +146,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               borderRadius: 200,
               borderColor: color.hex.primary,
               zIndex: -99,
-            }
+            },
           ]}
           entering={ZoomIn.springify().mass(1).stiffness(150)}
           exiting={ZoomOut}
@@ -156,23 +177,32 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
             width: "100%",
             height: "100%",
           }}
-          colors={[account?.personalization?.color?.hex.primary + "22", colors.background]}
+          colors={[
+            account?.personalization?.color?.hex.primary + "22",
+            colors.background,
+          ]}
           locations={[0, 0.5]}
         />
       </Reanimated.View>
 
       <PapillonShineBubble
-        message={"Quelle est ta couleur préférée ?"}
+        message={t("login.ColorSelector.message")}
         numberOfLines={1}
         width={280}
       />
-      <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text}/>
+      <MaskStarsColored
+        color={account?.personalization?.color?.hex.primary || colors.text}
+      />
       <View style={styles.colors}>
         <View style={styles.row}>
-          {colorsList.slice(0, 3).map((color) => <ColorButton key={color.id} color={color} />)}
+          {colorsList.slice(0, 3).map((color) => (
+            <ColorButton key={color.id} color={color} />
+          ))}
         </View>
         <View style={styles.row}>
-          {colorsList.slice(3, 6).map((color) => <ColorButton key={color.id} color={color} />)}
+          {colorsList.slice(3, 6).map((color) => (
+            <ColorButton key={color.id} color={color} />
+          ))}
         </View>
 
         <Reanimated.View
@@ -180,12 +210,17 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           entering={FlipInXDown.springify().delay(50)}
           exiting={FadeOutUp.springify()}
           key={account?.personalization?.color?.hex.primary || ""}
-          style={[styles.message, {
-            backgroundColor: account?.personalization?.color?.hex.primary + "33",
-            overflow: "hidden",
-            alignItems: "center",
-            justifyContent: "center",
-            alignSelf: "center"}]}
+          style={[
+            styles.message,
+            {
+              backgroundColor:
+                account?.personalization?.color?.hex.primary + "33",
+              overflow: "hidden",
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+            },
+          ]}
         >
           <Reanimated.Text
             layout={LinearTransition.springify().stiffness(150)}
@@ -197,7 +232,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               alignItems: "center",
               justifyContent: "center",
               alignSelf: "center",
-              width: "100%"
+              width: "100%",
             }}
           >
             {messages[account?.personalization?.color?.hex.primary || ""]}
@@ -213,17 +248,17 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
       >
         <ButtonCta
           primary
-          value="Finaliser"
+          value={t("login.ColorSelector.done")}
           onPress={async () => {
             if (!settings) {
               await playSound();
             }
-            navigation.navigate("AccountStack", {onboard: true});
+            navigation.navigate("AccountStack", { onboard: true });
           }}
           disabled={!account?.personalization?.color}
           style={{
             marginBottom: insets.bottom + 20,
-            backgroundColor: account?.personalization?.color?.hex.primary
+            backgroundColor: account?.personalization?.color?.hex.primary,
           }}
         />
       </Reanimated.View>

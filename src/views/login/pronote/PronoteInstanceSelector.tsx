@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Keyboard,
   KeyboardEvent,
-  Text,
 } from "react-native";
 import pronote from "pawnote";
 import Reanimated, {
@@ -28,6 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Search, X, GraduationCap } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
@@ -47,6 +47,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   >(null);
 
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const { showAlert } = useAlert();
@@ -185,7 +186,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
           layout={LinearTransition}
         >
           <PapillonShineBubble
-            message={"Voici les établissements que j'ai trouvé !"}
+            message={t("login.PronoteInstanceSelector.message")}
             numberOfLines={2}
             width={250}
             noFlex
@@ -210,7 +211,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
 
         <TextInput
           ref={searchInputRef}
-          placeholder="Rechercher un établissement"
+          placeholder={t("login.PronoteInstanceSelector.placeholder")}
           placeholderTextColor={colors.text + "55"}
           value={search}
           onChangeText={setSearch}
@@ -282,7 +283,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                 entering={FadeInUp.springify()}
                 exiting={FadeOutUp.springify()}
               >
-                Aucun établissement trouvé.
+                {t("login.PronoteInstanceSelector.notFound")}
               </Reanimated.Text>
             )}
 
@@ -332,7 +333,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                     subtext={
                       prevRoute.name === "PronoteManualLocation"
                         ? undefined
-                        : `à ${instance.distance.toFixed(2)}km de ta position`
+                        : t("login.PronoteInstanceSelector.distance", {distance: instance.distance.toFixed(2)})
                     }
                   />
                 </Reanimated.View>

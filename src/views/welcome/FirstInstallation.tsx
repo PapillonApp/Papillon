@@ -7,12 +7,14 @@ import type { Screen } from "@/router/helpers/types";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import ChangeLanguage from "@/components/FirstInstallation/ChangeLanguage";
 
 import { useTheme } from "@react-navigation/native";
 
 import * as WebBrowser from "expo-web-browser";
 import { Audio } from "expo-av";
 import * as SplashScreen from "expo-splash-screen";
+import { useTranslation } from "react-i18next";
 
 const PRIVACY_POLICY_URL = "https://docs.papillon.bzh/legal/privacy";
 const TERMS_OF_SERVICE_URL = "https://docs.papillon.bzh/legal/terms";
@@ -20,6 +22,7 @@ const TERMS_OF_SERVICE_URL = "https://docs.papillon.bzh/legal/terms";
 const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const openUrl = async (url: string) => {
@@ -56,9 +59,10 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <MaskStars />
+      <ChangeLanguage />
 
       <PapillonShineBubble
-        message="Bienvenue sur Papillon !"
+        message={t("welcome.FirstInstallation.message")}
         numberOfLines={1}
         width={220}
       />
@@ -76,7 +80,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
         <Text
           style={[styles.presentation_text, { color: colors.text + "79" }]}
         >
-          L’unique application pour gérer toute ta vie scolaire au même endroit !
+          {t("welcome.FirstInstallation.subtitle")}
         </Text>
       </View>
 
@@ -84,19 +88,20 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
         style={styles.buttons}
       >
         <ButtonCta
-          value="Commençons !"
+          value={t("welcome.FirstInstallation.getStarted")}
           primary
           onPress={() => navigation.navigate("ServiceSelector")}
         />
 
         <ButtonCta
-          value="Besoin d'aide ?"
+          value={t("welcome.FirstInstallation.help")}
           onPress={() => openUrl("https://support.getpapillon.xyz/")}
         />
       </View>
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
+        {/* TODO: Terms of Service. Je ne vois pas trop comment le faire pour que ça marche dans n'importe quelle langue */}
         En continuant, tu acceptes les&nbsp;
         <Text
           style={{ textDecorationLine: "underline" }}

@@ -8,7 +8,10 @@
       "lighter": "#9CC9BE",
       "dark": "#1F705C"
     },
-    "description": "Du Vert ! C'est ma couleur préférée !"
+    "description": {
+      "fr": "Du Vert ! C'est ma couleur préférée !",
+      "en": "Green! It's my favorite color!"
+    }
   },
   {
     "id": "blue",
@@ -19,7 +22,10 @@
       "lighter": "#9CB6C9",
       "dark": "#0A578F"
     },
-    "description": "Du Bleu ! Comme l'eau de la mer !"
+    "description": {
+      "fr": "Du Bleu ! Comme l'eau de la mer !",
+      "en": "Blue! Like the sea water!"
+    }
   },
   {
     "id": "purple",
@@ -30,7 +36,10 @@
       "lighter": "#BB9CC9",
       "dark": "#5B107F"
     },
-    "description": "Du Violet ! Comme une aubergine !"
+    "description": {
+      "fr": "Du Violet ! Comme une aubergine !",
+      "en": "Purple! Like an eggplant!"
+    }
   },
   {
     "id": "pink",
@@ -41,7 +50,10 @@
       "lighter": "#C99CB4",
       "dark": "#810E4C"
     },
-    "description": "Du Rose ! Comme un bonbon géant !"
+    "description": {
+      "fr": "Du Rose ! Comme un bonbon géant !",
+      "en": "Pink! Like a giant candy!"
+    }
   },
   {
     "id": "red",
@@ -52,7 +64,10 @@
       "lighter": "#C99E9C",
       "dark": "#8F0800"
     },
-    "description": "Du Rouge ! Comme une fraise !"
+    "description": {
+      "fr": "Du Rouge ! Comme une fraise !",
+      "en": "Red! Like a strawberry!"
+    }
   },
   {
     "id": "orange",
@@ -63,6 +78,9 @@
       "lighter": "#C9B29C",
       "dark": "#85450A"
     },
-    "description": "Du Orange ! Comme une carotte !"
+    "description": {
+      "fr": "De l'Orange ! Comme une carotte !",
+      "en": "Orange! Like a carrot!"
+    }
   }
 ]

@@ -12,6 +12,7 @@ import MaskStars from "@/components/FirstInstallation/MaskStars";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import GetV6Data from "@/utils/login/GetV6Data";
 import { School } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +20,7 @@ import { LinearGradient } from "expo-linear-gradient";
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const { showAlert } = useAlert();
@@ -74,8 +76,8 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
     },
     {
       name: "university",
-      title: "Enseignement supérieur",
-      subtitle: "Universités, IUT, écoles, etc.",
+      title: t("login.ServiceSelector.highEdu"),
+      subtitle: t("login.ServiceSelector.highEduSubtitle"),
       image: require("../../../assets/images/service_skolengo.png"),
       icon: <School />,
       login: () => {
@@ -117,7 +119,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <MaskStars />
 
       <PapillonShineBubble
-        message="Pour commencer, quel est ton service scolaire ?"
+        message={t("login.ServiceSelector.message")}
         numberOfLines={2}
         width={260}
         offsetTop={"20%"}
@@ -204,14 +206,14 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <View style={styles.buttons}>
         <ButtonCta
           primary
-          value="Confirmer"
+          value={t("confirm")}
           disabled={service === null}
           onPress={services.find((srv) => srv.name === service)?.login}
         />
 
         {v6Data && v6Data.restore && (
           <ButtonCta
-            value="Importer mon compte"
+            value={t("login.ServiceSelector.importV6")}
             onPress={() => navigation.navigate("PronoteV6Import", { data: v6Data.data })}
           />
         )}

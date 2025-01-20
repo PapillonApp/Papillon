@@ -33,13 +33,15 @@ import {
   Smile,
   SwatchBook,
   WandSparkles,
-  X
+  X,
+  Languages,
 } from "lucide-react-native";
 
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import {get_settings_widgets} from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AddonPlacementManifest} from "@/addons/types";
@@ -53,6 +55,7 @@ import { WebBrowserPresentationStyle } from "expo-web-browser";
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account!);
   const [ addons, setAddons ] = useState<Array<AddonPlacementManifest>>([]);
@@ -103,49 +106,49 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const tabs = [
     {
       icon: <SettingsLucide />,
-      label: "Général",
+      label: t("settings.sections.general.title"),
       tabs: [
         {
           icon: <Bell />,
           color: "#CF0029",
-          label: "Notifications",
+          label: t("settings.sections.general.notifications.title"),
           onPress: () => navigation.navigate("SettingsNotifications"),
         },
         {
           icon: <Cable />,
           color: "#D79400",
-          label: "Services externes",
+          label: t("settings.sections.general.externalServices.title"),
           onPress: () => navigation.navigate("SettingsExternalServices"),
         },
         {
           icon: <Smile />,
           color: "#136B00",
-          label: "Réactions",
+          label: t("settings.sections.general.reactions.title"),
           onPress: () => navigation.navigate("SettingsReactions"),
         },
       ],
     },
     {
       icon: <Palette />,
-      label: "Personnalisation",
+      label: t("settings.sections.customization.title"),
       tabs: [
         {
           icon: <SwatchBook />,
           color: "#5C9441",
-          label: "Matières",
+          label: t("settings.sections.customization.subjects.title"),
           onPress: () => navigation.navigate("SettingsSubjects"),
         },
         {
           icon: <Sparkles />,
           color: "#295787",
-          label: "Icône de l'application",
+          label: t("settings.sections.customization.appIcon.title"),
           onPress: () => navigation.navigate("SettingsIcons"),
           android: false,
         },
         {
           icon: <Palette />,
           color: "#3B117E",
-          label: "Thème de couleur",
+          label: t("settings.sections.customization.colorTheme.title"),
           onPress: async () => {
             if (Platform.OS === "ios") {
               navigation.goBack();
@@ -158,14 +161,21 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         {
           icon: <SunMoon />,
           color: "#1e316a",
-          label: "Mode d'affichage",
+          label: t("settings.sections.customization.appearance.title"),
           onPress: () => navigation.navigate("SettingsApparence"),
+        },
+        {
+          icon: <Languages />,
+          color: "#5a5a5a",
+          label: t("settings.sections.customization.language.title"),
+          onPress: () => {},
+          disabled: true,
         },
       ],
     },
     {
       icon: <Laptop />,
-      label: "Avancé",
+      label: t("settings.sections.advanced.title"),
       tabs: [
         {
           icon: click ? (
@@ -177,7 +187,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               exiting={animPapillon(ZoomOut)}
             />) : <Route />,
           color: "#7E1174",
-          label: "Onglets & Navigation",
+          label: t("settings.sections.advanced.tabsAndNavigation.title"),
           onPress: async () => {
             setClick(true);
             setTimeout(() => {
@@ -192,34 +202,34 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         {
           icon: <Puzzle />,
           color: "#bf547d",
-          label: "Extensions",
-          description: "Disponible prochainement",
+          label: t("settings.sections.advanced.plugins.title"),
+          description: t("settings.sections.advanced.plugins.subtitle"),
           onPress: () => navigation.navigate("SettingsAddons"),
           disabled: !defined("enable_addons"),
         },
         {
           icon: <WandSparkles />,
           color: "#58A3C3",
-          label: "Papillon Magic (Bêta)",
-          description: "Fonctionnalités intelligentes",
+          label: t("settings.sections.advanced.magic.title"),
+          description: t("settings.sections.advanced.magic.subtitle"),
           onPress: () => navigation.navigate("SettingsMagic"),
         },
       ],
     },
     {
       icon: <Laptop />,
-      label: "Projet Papillon",
+      label: t("settings.sections.project.title"),
       tabs: [
         {
           icon: <Scroll />,
           color: "#c75110",
-          label: "Quoi de neuf ?",
+          label: t("settings.sections.project.whatsNew.title"),
           onPress: () => navigation.navigate("ChangelogScreen"),
         },
         {
           icon: <Info />,
           color: "#888888",
-          label: "À propos de Papillon",
+          label: t("settings.sections.project.about.title"),
           onPress: () => navigation.navigate("SettingsAbout"),
         }
       ],
@@ -229,16 +239,16 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         {
           icon: <LogOut />,
           color: "#CF0029",
-          label: "Se déconnecter",
+          label: t("settings.sections.logOut.title"),
           onPress: () => {
             if (Platform.OS === "ios") {
-              Alert.alert("Se déconnecter", "Es-tu sûr de vouloir te déconnecter ?", [
+              Alert.alert(t("settings.sections.logOut.title"), t("settings.sections.logOut.confirmation"), [
                 {
-                  text: "Annuler",
+                  text: t("cancel"),
                   style: "cancel",
                 },
                 {
-                  text: "Se déconnecter",
+                  text: t("confirm"),
                   style: "destructive",
                   onPress: () => {
                     removeAccount(account.localID);
@@ -251,17 +261,17 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               ]);
             } else {
               showAlert({
-                title: "Se déconnecter",
-                message: "Es-tu sûr de vouloir te déconnecter ?",
+                title: t("settings.sections.logOut.title"),
+                message: t("settings.sections.logOut.confirmation"),
                 actions: [
                   {
-                    title: "Annuler",
+                    title: t("cancel"),
                     onPress: () => {},
                     backgroundColor: colors.card,
                     icon: <X color={colors.text} />,
                   },
                   {
-                    title: "Se déconnecter",
+                    title: t("confirm"),
                     onPress: () => {
                       removeAccount(account.localID);
                       navigation.reset({
@@ -286,7 +296,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
     tabs[3].tabs.push({
       icon: <HandCoins />,
       color: "#f0a500",
-      label: "Soutenir Papillon",
+      label: t("settings.sections.project.donate.title"),
       onPress: () => openUrl("https://papillon.bzh/donate"),
       android: true,
       description: ""
@@ -307,6 +317,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: Platform.OS === "android",
+      headerTitle: t("settings.title"),
     });
   });
 
@@ -409,7 +420,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
         {devModeEnabled && (
           <View>
-            <NativeListHeader label={"Développeur"}/>
+            <NativeListHeader label={t("settings.sections.devMode")}/>
             <NativeList>
               <NativeItem
                 onPress={() => navigation.navigate("SettingsDevLogs")}
@@ -440,8 +451,8 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
             marginTop: 24,
           }}
         >
-          version {AppJSON.expo.version} {Platform.OS} {__DEV__ ? "(développeur)" : ""} {"\n"}
-          fabriqué avec ❤️ par les contributeurs Papillon
+          version {AppJSON.expo.version} {Platform.OS} {__DEV__ ? `(${t("settings.devMode")})` : ""} {"\n"}
+          {t("settings.madeBy")}
         </Text>
       </Reanimated.ScrollView>
     </>

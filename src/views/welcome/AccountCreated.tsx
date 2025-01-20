@@ -15,9 +15,12 @@ import * as Haptics from "expo-haptics";
 import { useCurrentAccount } from "@/stores/account";
 import { Audio } from "expo-av";
 
+import { useTranslation } from "react-i18next";
+
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
+  const { t } = useTranslation();
 
   const account = useCurrentAccount((state) => state.account!);
 
@@ -114,8 +117,10 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
       )}
 
       <PapillonShineBubble
-        message={name ? `Enchanté, ${name} ! On va personnaliser ton expérience !` : "Bienvenue sur Papillon !"}
-        numberOfLines={name ? 2 : 1}
+        message={name ? t("login.AccountCreated.message", {
+          name: name,
+        }) : t("login.AccountCreated.noNameMessage")}
+        numberOfLines={name ? 3 : 1}
         width={260}
         style={{
           zIndex: 10,
@@ -126,7 +131,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
         style={styles.buttons}
       >
         <ButtonCta
-          value="Personnaliser Papillon"
+          value={t("login.AccountCreated.customize")}
           primary
           onPress={() => {
             navigation.navigate("ColorSelector");
@@ -134,7 +139,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
           }}
         />
         <ButtonCta
-          value="Ignorer cette étape"
+          value={t("login.AccountCreated.skip")}
           onPress={() => {
             navigation.navigate("AccountStack", { onboard: true });
             playSound2();

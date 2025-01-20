@@ -3,6 +3,7 @@ import { View, StyleSheet, DimensionValue, Switch } from "react-native";
 import LottieView from "lottie-react-native";
 import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import { useTranslation } from "react-i18next";
 
 type NotificationContainerCardProps = {
   theme: any;
@@ -12,6 +13,7 @@ type NotificationContainerCardProps = {
 
 const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: NotificationContainerCardProps) => {
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const opacity = useSharedValue(0);
   const borderRadius = useSharedValue(20);
@@ -85,7 +87,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
                 <Reanimated.Text
                   numberOfLines={2}
                   style={[styles.message, textAnimatedStyle]}>
-                  Tu as cours en salle B03 avec M. Perruche dans 5 minutes.
+                  {t("settings.sections.general.notifications.example")}
                 </Reanimated.Text>
               </View>
             </View>
@@ -110,10 +112,10 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
         }
       >
         <NativeText variant="title">
-          Activer les notifications
+          {t("settings.sections.general.notifications.captionTitle")}
         </NativeText>
         <NativeText variant="subtitle">
-          Reçois des notifications pour ne rien rater de ta vie scolaire.
+          {t("settings.sections.general.notifications.captionMessage")}
         </NativeText>
       </NativeItem>
     </NativeList>

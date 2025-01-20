@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import GradeItem from "../../Grades/Subject/GradeItem";
 import type { Grade } from "@/services/shared/Grade";
 import RedirectButton from "@/components/Home/RedirectButton";
+import { useTranslation } from "react-i18next";
 
 interface GradesElementProps {
   onImportance: (value: number) => unknown
@@ -14,6 +15,7 @@ interface GradesElementProps {
 
 const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
   const account = useCurrentAccount((store) => store.account);
+  const { t } = useTranslation();
 
   const defaultPeriod = useGradesStore(store => store.defaultPeriod);
   const grades = useGradesStore((store) => store.grades);

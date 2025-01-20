@@ -6,6 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { Info } from "lucide-react-native";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import { useTranslation } from "react-i18next";
 
 const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigation }) => {
   const universityProviders = [
@@ -73,12 +74,20 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
     },
   ];
 
+  const { t } = useTranslation();
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("login.IdentityProviderSelector.title"),
+    });
+  }, [navigation]);
+
   return (
     <ScrollView
       style={{ flex: 1 }}
       contentContainerStyle={{ padding: 16, paddingTop: 0 }}
     >
-      <NativeListHeader label="Services universitaires" />
+      <NativeListHeader label={t("login.IdentityProviderSelector.services")} />
 
       <NativeList>
         {universityProviders.map((identityProvider) => (
@@ -95,14 +104,14 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
         ))}
       </NativeList>
 
-      <NativeListHeader label="Fonctionnalités limitées" />
+      <NativeListHeader label={t("login.IdentityProviderSelector.limited")} />
 
       <NativeList>
         <NativeItem
           icon={<Info />}
         >
           <NativeText variant="subtitle">
-            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de vous connecter à l'application.
+            {t("login.IdentityProviderSelector.callout")}
           </NativeText>
         </NativeItem>
       </NativeList>
@@ -127,7 +136,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
           icon={<Info />}
         >
           <NativeText variant="subtitle">
-            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de te connecter à l'application.
+            {t("login.IdentityProviderSelector.callout")}
           </NativeText>
         </NativeItem>
       </NativeList>

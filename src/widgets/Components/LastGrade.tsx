@@ -11,6 +11,7 @@ import { updateGradesAndAveragesInCache } from "@/services/grades";
 import { getSubjectData } from "@/services/shared/Subject";
 import { useCurrentAccount } from "@/stores/account";
 import { useGradesStore } from "@/stores/grades";
+import { useTranslation } from "react-i18next";
 
 const LastGradeWidget = forwardRef(({
   setLoading,
@@ -19,6 +20,7 @@ const LastGradeWidget = forwardRef(({
 }: WidgetProps, ref) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const account = useCurrentAccount((store) => store.account);
   const grades = useGradesStore((store) => store.grades);
@@ -88,7 +90,7 @@ const LastGradeWidget = forwardRef(({
             fontSize: 16,
           }}
         >
-          Dernière note
+          {t("home.widgets.latestGrade")}
         </Text>
       </View>
 
