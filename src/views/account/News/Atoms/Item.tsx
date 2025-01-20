@@ -1,12 +1,13 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import parse_news_resume from "@/utils/format/format_pronote_news";
 import formatDate from "@/utils/format/format_date_complets";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
 import { Information } from "@/services/shared/Information";
+import { AttachmentType } from "@/services/shared/Attachment";
 
 type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
@@ -20,6 +21,16 @@ interface NewsListItemProps {
 
 const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation, parentMessages, isED }) => {
   const theme = useTheme();
+  const newsImage = message.attachments.find((attachment) => {
+    if (attachment.type !== AttachmentType.File) {
+      return;
+    }
+    const extension = attachment.name.split(".").pop()?.split("?")[0].toLowerCase();
+    if (!extension) {
+      return;
+    }
+    return ["jpg", "jpeg", "png"].includes(extension);
+  });
   return (
     <NativeItem
       onPress={() => {
@@ -32,6 +43,13 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
       chevron={false}
       separator={index !== parentMessages.length - 1}
     >
+      {newsImage && (
+        <Image
+          source={{ uri: newsImage.url }}
+          style={styles.newsImage}
+          resizeMode="cover"
+        />
+      )}
       <View style={{
         flexDirection: "row",
         alignItems: "center",
@@ -72,14 +90,12 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
+          marginTop: 6,
         }}
       >
         <NativeText
           numberOfLines={1}
           variant="subtitle"
-          style={{
-            marginTop: 6,
-          }}
         >
           {formatDate(message.date)}
         </NativeText>
@@ -93,5 +109,14 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
     </NativeItem>
   );
 };
+
+const styles = StyleSheet.create({
+  newsImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+});
 
 export default NewsListItem;
