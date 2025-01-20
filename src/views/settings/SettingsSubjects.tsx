@@ -98,6 +98,10 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     }
   }, [selectedSubject, currentTitle, debouncedUpdateSubject]);
 
+  const updateSpinning = useCallback(() => {
+    setSpinning((spin) => !spin);
+  }, []);
+
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
     let emoji = "";
     if (newEmoji.length >= 1) {
@@ -148,9 +152,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     { text: "Annuler", style: "cancel" },
                     {
                       text: "Importer", onPress: () => {
-                        console.log(spinning);
-                        setSpinning(spin => true);
-                        console.log(spinning);
+                        updateSpinning();
                         getTimetableForWeek(account, 1).then((timetable1) => {
                           getTimetableForWeek(account, 2).then((timetable2) => {
                             var mysubjects = [...timetable1, ...timetable2];
@@ -181,7 +183,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                             }
 
                             setOnSubjects(othersubjects);
-                            setSpinning(spin => false);
+                            updateSpinning();
                           });
                         });
                       }
