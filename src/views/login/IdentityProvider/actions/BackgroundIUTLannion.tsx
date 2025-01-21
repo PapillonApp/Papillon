@@ -12,6 +12,8 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import { animPapillon } from "@/utils/ui/animations";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 
+const providers = ["scodoc", "moodle", "ical"];
+
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -81,6 +83,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         rawData: data,
       });
 
+      // @ts-ignore
+      mutateProperty("providers", providers);
       mutateProperty("identity", buildIdentity(data));
 
       navigation.goBack();
@@ -97,6 +101,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         name: "IUT de Lannion",
         rawData: data,
       },
+
+      providers: providers,
 
       identity: buildIdentity(data),
 

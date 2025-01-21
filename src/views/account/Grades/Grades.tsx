@@ -32,6 +32,7 @@ import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import GradesScodocUE from "./Atoms/GradesScodocUE";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -234,6 +235,10 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                   navigation={navigation}
                   allGrades={grades[selectedPeriod] || []}
                 />
+              )}
+
+              {"providers" in account && account.providers && account.providers.includes("scodoc") && (
+                <GradesScodocUE account={account} navigation={navigation} />
               )}
 
               {gradesPerSubject.length > 0 && (
