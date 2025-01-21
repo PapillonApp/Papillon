@@ -12,9 +12,11 @@ import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimat
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { Audio } from "expo-av";
 import { NativeText } from "@/components/Global/NativeComponents";
+import { useTranslation } from "react-i18next";
 
 const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   type Methods = "geolocation" | "manual-location" | "manual-url" | "qr-code";
   const [method, setMethod] = useState<Methods | null>(null);
@@ -56,7 +58,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
       <MaskStars />
 
       <PapillonShineBubble
-        message="Que préfères-tu pour te connecter à Skolengo ?"
+        message={t("login.SkolengoAuthSelector.message")}
         numberOfLines={2}
         width={260}
         offsetTop={"16%"}
@@ -78,7 +80,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
                 color={method === "geolocation" ? theme.colors.primary : (theme.colors.text + "88")}
               />
             }
-            text="Utiliser ma position"
+            text={t("login.SkolengoAuthSelector.locate")}
             enabled={method === "geolocation"}
             onPress={() => setMethod("geolocation")}
           />
@@ -95,7 +97,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
                 color={method === "manual-location" ? theme.colors.primary : (theme.colors.text + "88")}
               />
             }
-            text="Rechercher manuellement"
+            text={t("login.SkolengoAuthSelector.manual")}
             enabled={method === "manual-location"}
             onPress={() => setMethod("manual-location")}
           />
@@ -126,13 +128,13 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
               lineHeight: 16,
             }}
           >
-            Papillon n'est pas affilié à Skolengo. Tes données restent uniquement sur ton appareil de manière sécurisée.
+            {t("login.SkolengoAuthSelector.privacy")}
           </NativeText>
         </View>
 
         <ButtonCta
           primary
-          value="Confirmer"
+          value={t("confirm")}
           disabled={method === null}
           onPress={handleConfirmation}
         />

@@ -104,8 +104,17 @@
       "message": "Que préfères-tu utiliser pour te connecter à Skolengo ?",
       "locate": "Utiliser ma position",
       "locateSubtitle": "Trouver un étab. autour de moi",
-      "city": "Rechercher une ville",
+      "city": "Rechercher manuellement",
       "privacy": "Papillon n'est pas affilié à Skolengo. Vos données restent uniquement sur votre appareil de manière sécurisée."
+    },
+    "SkolengoGeolocation": {
+      "message": "Papillon a besoin de ton emplacement pour chercher des établissements",
+      "numberOfLines": 4,
+      "ask": "Demander la permission",
+      "terms": "Ta position est nécessaire pour trouver les instances SKOLENGO à proximité. Elle n'est pas stockée et ne sera pas partagée.",
+      "pending": "Localisation en cours...",
+      "loadingPermissions": "Chargement des permissions",
+      "needPermission": "Papillon a besoin de ton emplacement pour chercher des établissements"
     },
     "SkolengoInstanceSelector": {
       "message": "Voici les établissements que j'ai trouvé !",

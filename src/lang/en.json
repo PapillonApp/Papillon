@@ -104,8 +104,17 @@
       "message": "What do you prefer to use to connect to Skolengo?",
       "locate": "Use my location",
       "locateSubtitle": "Find a school around me",
-      "city": "Search for a city",
+      "manual": "Search manually",
       "privacy": "Papillon is not affiliated with Skolengo. Your data remains securely on your device only."
+    },
+    "SkolengoGeolocation": {
+      "message": "Papillon needs your location to search for establishments",
+      "numberOfLines": 3,
+      "ask": "Ask for permission",
+      "terms": "Your location is needed to find nearby SKOLENGO instances. It is not stored and will not be shared.",
+      "pending": "Locating...",
+      "loadingPermissions": "Loading permissions",
+      "needPermission": "Papillon needs your location to find establishments"
     },
     "SkolengoInstanceSelector": {
       "message": "Here are the establishments I found!",

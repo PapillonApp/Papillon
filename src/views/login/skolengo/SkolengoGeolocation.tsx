@@ -3,6 +3,7 @@ import { View,Text, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { getCurrentPosition } from "@/utils/native/location";
 import { useLocationPermission } from "@/hooks/location";
@@ -23,9 +24,10 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 const SkolengoGeolocation: Screen<"SkolengoGeolocation"> = ({ navigation }) => {
   const [permission, { loading: loadingPermission, request, refetch }] = useLocationPermission();
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const PapillonMessage = `${loadingPermission ? "Chargement des permissions..." : ""} ${loadingLocation ? "Localisation en cours..." : "Papillon a besoin de ton emplacement pour chercher des établissements"}`.trim();
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
+  const PapillonMessage = `${loadingPermission ? t("login.SkolengoGeolocation.loadingPermissions") : ""} ${loadingLocation ? t("login.SkolengoGeolocation.pending") : t("login.SkolengoGeolocation.needPermission")}`.trim();
 
   useEffect(() => {
     if (!permission?.granted) return;
@@ -53,13 +55,13 @@ const SkolengoGeolocation: Screen<"SkolengoGeolocation"> = ({ navigation }) => {
 
       <PapillonShineBubble
         message={PapillonMessage}
-        numberOfLines={permission?.granted ? 1 : 4}
+        numberOfLines={permission?.granted ? 1 : parseInt(t("login.SkolengoGeolocation.numberOfLines"))}
         width={250}
       />
       {!permission?.granted && (
         <View style={styles.buttons}>
           <ButtonCta
-            value="Demander la permission"
+            value={t("login.SkolengoGeolocation.ask")}
             primary
             onPress={() => void request()}
           />
@@ -69,8 +71,7 @@ const SkolengoGeolocation: Screen<"SkolengoGeolocation"> = ({ navigation }) => {
       <Text
         style={[styles.terms_text, { color: colors.text + "59" }]}
       >
-        Ta position est nécessaire pour trouver les instances SKOLENGO à proximité.
-        Elle n'est pas stockée et ne sera pas partagée.
+        {t("login.SkolengoGeolocation.terms")}
       </Text>
     </SafeAreaView>
   );
