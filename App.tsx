@@ -101,7 +101,8 @@ export default function App () {
       "VirtualizedLists should never be nested",
       "TNodeChildrenRenderer: Support for defaultProps",
       "Service not implemented",
-      "Linking found multiple possible"
+      "Linking found multiple possible",
+      "[Reanimated] Property ",
     ]);
 
     expoGoWrapper(async () => {

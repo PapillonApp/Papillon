@@ -103,7 +103,6 @@
     "pretty": "Éducation civique",
     "formats": {
       "default": [
-        "education civique",
         "education civique"
       ]
     }
@@ -125,7 +124,6 @@
       "default": [
         "education physique et sportive",
         "ed physique sport",
-        "education physique et sportive",
         "eps"
       ]
     }
@@ -136,7 +134,8 @@
     "formats": {
       "default": [
         "education musicale",
-        "education musicale"
+        "educ musicale",
+        "musique"
       ]
     }
   },
@@ -158,7 +157,6 @@
         "histoire geographie",
         "histoire geo",
         "histoire geograph",
-        "histoire-geographie",
         "histoire-geographie"
       ]
     }
@@ -199,9 +197,10 @@
     "formats": {
       "default": [
         "mathematiques",
-        "mathematiques",
         "mathematiques 1ere",
-        "math 1ere"
+        "math 1ere",
+        "math",
+        "maths"
       ]
     }
   },
@@ -221,7 +220,10 @@
     "formats": {
       "default": [
         "physique chimie",
-        "phys chim"
+        "physique chim",
+        "phys chim",
+        "phys chimie",
+        "physique-chimie"
       ]
     }
   },
@@ -231,8 +233,7 @@
     "formats": {
       "default": [
         "sciences economiques et sociales",
-        "sc econo sociales",
-        "sciences economiques et sociales"
+        "sc econo sociales"
       ]
     }
   },
@@ -242,8 +243,8 @@
     "formats": {
       "default": [
         "sciences de la vie et de la terre",
-        "sciences de la vie et de la terre",
-        "sciences vie terre"
+        "sciences vie terre",
+        "svt"
       ]
     }
   },
@@ -374,6 +375,27 @@
     "formats": {
       "default": [
         "eco et droit du numerique"
+      ]
+    }
+  },
+  {
+    "label": "special",
+    "pretty": "Cours exceptionnel obligatoire",
+    "formats": {
+      "default": [
+        "action intervention sortie examen"
+      ]
+    }
+  },
+  {
+    "label": "art",
+    "pretty": "Arts Plastiques",
+    "formats": {
+      "default": [
+        "arts plastiques",
+        "arts",
+        "arts plast",
+        "arts pla"
       ]
     }
   }

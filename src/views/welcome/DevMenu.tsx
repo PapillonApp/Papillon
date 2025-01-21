@@ -100,13 +100,14 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
               </NativeText>
             </NativeItem>
 
-            <NativeItem
+            // TODO : create NoteReaction screen
+            {/* <NativeItem
               onPress={() => navigation.navigate("NoteReaction")}
             >
               <NativeText>
                 NoteReaction
               </NativeText>
-            </NativeItem>
+            </NativeItem> */}
 
             <NativeItem
               onPress={() => navigation.navigate("ColorSelector")}

@@ -6,7 +6,7 @@ import type {Screen} from "@/router/helpers/types";
 import { NativeText,} from "@/components/Global/NativeComponents";
 import {useCurrentAccount} from "@/stores/account";
 import type {ChatMessage, ChatRecipient} from "@/services/shared/Chat";
-import {ChevronLeft, File, Link, Send} from "lucide-react-native";
+import {ChevronLeft, Send} from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import InitialIndicator from "@/components/News/InitialIndicator";
 import {PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
@@ -328,7 +328,7 @@ const Chat: Screen<"Chat"> = ({ navigation, route }) => {
                 <MissingItem
                   emoji="💬"
                   title="C'est le début de la conversation"
-                  description="Envoyez un message pour commencer la discussion."
+                  description="Envoie un message pour commencer la discussion."
                   entering={animPapillon(FadeInDown)}
                   exiting={animPapillon(FadeOut)}
                   style={{paddingVertical: 26}}

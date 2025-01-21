@@ -1,5 +1,3 @@
-import { NativeText } from "@/components/Global/NativeComponents";
-import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import defaultPersonalization from "@/services/local/default-personalization";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
@@ -9,8 +7,10 @@ import React from "react";
 import { Alert, View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
-import { FadeInDown, FadeOutUp } from "react-native-reanimated";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { NativeText } from "@/components/Global/NativeComponents";
 import { animPapillon } from "@/utils/ui/animations";
+import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 
 const capitalizeFirst = (str: string) => {
   str = str.toLowerCase();
@@ -216,11 +216,11 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
         onLoad={(data) => {
           const url = data.nativeEvent.url;
 
-          if(url.startsWith("https://sso-cas.univ-rennes1.fr//login?")) {
+          if(url.startsWith("https://sso-cas.univ-rennes.fr//login?")) {
             injectPassword();
           }
 
-          if(url.startsWith("https://notes9.iutlan.univ-rennes.fr/") && canExtractJSON) {
+          if(url.startsWith("https://notes9.iutlan.univ-rennes1.fr/") && canExtractJSON) {
             redirectToData();
             setCanExtractJSON(false);
           }
@@ -230,6 +230,16 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
                 window.ReactNativeWebView.postMessage(document.body.innerText);
               `);
           }
+        }}
+
+        onError={(data) => {
+          console.error(data);
+          Alert.alert(
+            "Erreur",
+            "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie ta connexion internet et réessaye.",
+            [{ text: "OK", onPress: () => navigation.goBack() }]
+          );
+          navigation.goBack();
         }}
 
         onMessage={(event) => {

@@ -17,11 +17,12 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { useCurrentAccount } from "@/stores/account";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2 } from "lucide-react-native";
+import { Trash2, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import { useAlert } from "@/providers/AlertProvider";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -35,6 +36,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const insets = useSafeAreaInsets();
   const colors = useTheme().colors;
+
+  const { showAlert } = useAlert();
 
   const [subjects, setSubjects] = useState<Array<Item>>([]);
   const [localSubjects, setLocalSubjects] = useState<Array<Item>>([]);
@@ -132,24 +135,33 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            Alert.alert(
-              "Réinitialiser les matières",
-              "Veux-tu vraiment réinitialiser les matières ?",
-              [
-                { text: "Annuler", style: "cancel" },
-                { text: "Réinitialiser", style: "destructive", onPress: () => {
-                  setSubjects([]);
-                  setLocalSubjects([]);
-                  setCurrentTitle("");
-                  setCurrentEmoji("");
+            showAlert({
+              title: "Réinitialiser les matières",
+              message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
+              actions: [
+                {
+                  title: "Annuler",
+                  icon: <X />,
+                },
+                {
+                  title: "Réinitialiser",
+                  icon: <Trash2 />,
+                  primary: true,
+                  danger: true,
+                  onPress: () => {
+                    setSubjects([]);
+                    setLocalSubjects([]);
+                    setCurrentTitle("");
+                    setCurrentEmoji("");
 
-                  mutateProperty("personalization", {
-                    ...account.personalization,
-                    subjects: {},
-                  });
-                }},
-              ]
-            );
+                    mutateProperty("personalization", {
+                      ...account.personalization,
+                      subjects: {},
+                    });
+                  },
+                },
+              ],
+            });
           }}
           style={{ marginRight: 2 }}
         >

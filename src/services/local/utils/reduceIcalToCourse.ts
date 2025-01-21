@@ -73,6 +73,15 @@ export const reduceIcalToCourse = (course: any, identityProvider: any, url: stri
       title = title.replace(cmSRegex, "");
     }
 
+    // if ends with "Autonomie', move to beginning
+    if (title.trim().endsWith("Autonomie")) {
+      title = "Autonomie " + title.replace("Autonomie", "");
+    }
+
+    if (title.trim().endsWith("Suivi")) {
+      title = "Suivi " + title.replace("Suivi", "");
+    }
+
     returnCourse = {
       ...returnCourse,
       title: title,

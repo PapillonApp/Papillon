@@ -7,6 +7,7 @@ import GradesLatestItem from "./LatestGradesItem";
 import { Grade } from "@/services/shared/Grade";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
+import * as Haptics from "expo-haptics";
 
 interface GradesLatestListProps {
   latestGrades: Grade[]
@@ -52,6 +53,12 @@ const GradesLatestList = (props: GradesLatestListProps) => {
         maxToRenderPerBatch={6}
         initialNumToRender={4}
         windowSize={3}
+        snapToAlignment="start"
+        snapToInterval={240}
+        decelerationRate="fast"
+        onScroll={({ nativeEvent }) => {
+          if (nativeEvent.contentOffset.x % 240 === 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }}
       />
 
     </Reanimated.View>

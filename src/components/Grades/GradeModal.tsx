@@ -5,13 +5,11 @@ import {
   Image,
   TouchableOpacity,
   Text,
-  Platform,
   Alert
 } from "react-native";
-import { Download, Trash, Maximize2, Share, Delete } from "lucide-react-native";
+import { Download, Trash, Share } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import { ScrollView } from "react-native-gesture-handler";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
@@ -46,7 +44,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
       await FileSystem.writeAsStringAsync(fileUri, imageBase64, { encoding: FileSystem.EncodingType.Base64 });
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync("Download", asset, false);
-      Alert.alert("Image sauvegardée", "L'image a été sauvegardée dans votre galerie.");
+      Alert.alert("Image sauvegardée", "L'image a été sauvegardée dans ta galerie.");
     } catch (error) {
       console.error("Failed to save image:", error);
     }

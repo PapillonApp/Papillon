@@ -108,6 +108,10 @@ const LastGradeWidget = forwardRef(({
             backgroundColor: subjectColor + "22",
             borderRadius: 50,
             padding: 6,
+            width: 40,
+            height: 40,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <Text style={{ fontSize: 18 }}>{subjectEmoji}</Text>

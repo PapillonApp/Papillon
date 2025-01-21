@@ -186,7 +186,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                   J'ai lu et pris connaissance
                 </NativeText>
                 <NativeText variant="subtitle">
-                  Vous confirmez avoir lu et votre établissement peut en être notifié.
+                  Tu confirmes avoir lu et ton établissement peut en être notifié.
                 </NativeText>
               </NativeItem>
             </NativeList>

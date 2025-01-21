@@ -23,7 +23,7 @@ const ApparenceContainerCard = () => {
           Mode d'affichage
         </NativeText>
         <NativeText variant="subtitle">
-          Par défaut, Papillon s'adapte à votre thème système. Mais vous pouvez choisir un thème clair ou sombre.
+          Par défaut, Papillon s'adapte à ton thème système. Mais tu peux choisir un thème clair ou sombre.
         </NativeText>
       </NativeItem>
     </NativeList>

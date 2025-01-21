@@ -1,4 +1,4 @@
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useHomeworkStore } from "@/stores/homework";
@@ -11,6 +11,8 @@ import RedirectButton from "@/components/Home/RedirectButton";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RouteParameters} from "@/router/helpers/types";
+import { FadeInDown, FadeOut } from "react-native-reanimated";
+import MissingItem from "@/components/Global/MissingItem";
 
 interface HomeworksElementProps {
   onImportance: (value: number) => unknown
@@ -58,23 +60,33 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
     [account, updateHomeworks]
   );
 
-  if (
-    !homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
-      (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-    ) &&
-    !homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
-      (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
-    )
-  ) {
-    return null;
-  }
-  const startTime = Date.now() / 1000; // Convertir en millisecondes
-  const endTime = startTime + 7 * 24 * 60 * 60 * 1000; // Ajouter 7 jours en millisecondes
+  const startTime = Date.now() / 1000;
+  const endTime = startTime + 7 * 24 * 60 * 60 * 1000;
 
-  const hwFinalList = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime);
+  const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
+    (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
+  ) ?? [];
+  const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
+    (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
+  ) ?? [];
 
-  if(hwFinalList.length === 0) {
-    return null;
+  if (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0) {
+    return (
+      <NativeList
+        animated
+        key="emptyHomeworks"
+        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+        exiting={FadeOut.duration(300)}
+      >
+        <NativeItem animated style={{ paddingVertical: 10 }}>
+          <MissingItem
+            emoji="📚"
+            title="Aucun devoir"
+            description="Tu n'as aucun devoir pour cette semaine et la semaine prochaine."
+          />
+        </NativeItem>
+      </NativeList>
+    );
   }
 
   return (
@@ -85,7 +97,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
         )}
       />
       <NativeList>
-        {hwFinalList.map((hw, index) => (
+        {hwSemaineActuelle.map((hw, index) => (
           <HomeworkItem
             navigation={navigation}
             homework={hw}
@@ -97,7 +109,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
             }}
           />
         ))}
-        {new Date().getDay() >= 2 && homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(hw => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime).map((hw, index) => (
+        {new Date().getDay() >= 2 && hwSemaineProchaine.map((hw, index) => (
           <HomeworkItem
             homework={hw}
             key={index}

@@ -16,6 +16,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
 import { getHolidayEmoji } from "@/utils/format/holidayEmoji";
+import { getDuration } from "@/utils/format/course_duration";
 
 const emoji = getHolidayEmoji();
 
@@ -23,14 +24,6 @@ const RefreshControl = createNativeWrapper(RNRefreshControl, {
   disallowInterruption: true,
   shouldCancelWhenOutside: false,
 });
-
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
-const getDuration = (minutes: number): string => {
-  const durationHours = Math.floor(minutes / 60);
-  const durationRemainingMinutes = minutes % 60;
-  return `${durationHours} h ${lz(durationRemainingMinutes)} min`;
-};
 
 interface PageProps {
   current: boolean

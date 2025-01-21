@@ -6,13 +6,18 @@ import {
   Switch,
   Alert,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Text
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import {
   AlertTriangle,
+  ChefHat,
   Clock2,
+  CookingPot,
+  MapPin,
   QrCode,
+  Sprout,
   Utensils,
 } from "lucide-react-native";
 
@@ -36,7 +41,7 @@ import { reservationHistoryFromExternal } from "@/services/reservation-history";
 import { qrcodeFromExternal } from "@/services/qrcode";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import { getMenu } from "@/services/menu";
-import type { Menu as PawnoteMenu } from "pawnote";
+import type { FoodAllergen, FoodLabel, Menu as PawnoteMenu } from "pawnote";
 import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { LessonsDateModal } from "../Lessons/LessonsHeader";
@@ -44,6 +49,7 @@ import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
 import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
 import AccountButton from "@/components/Restaurant/AccountButton";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import PapillonHeader from "@/components/Global/PapillonHeader";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -55,9 +61,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshCount, setRefreshCount] = useState(0);
 
+  const currentDate = new Date();
+
   const [allBalances, setAllBalances] = useState<Balance[] | null>(null);
   const [allHistories, setAllHistories] = useState<ReservationHistory[] | null>(null);
-  const [allQRCodes, setAllQRCodes] = useState<string[] | null>(null);
+  const [allQRCodes, setAllQRCodes] = useState<Array<string | Blob> | null>(null);
   const [allBookings, setAllBookings] = useState<BookingTerminal[] | null>(null);
   const [currentMenu, setCurrentMenu] = useState<PawnoteMenu | null>(null);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
@@ -78,22 +86,41 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   };
 
-  const updateDatePicker = async (date: Date) => {
+  const onDatePickerSelect = async (date?: Date) => {
+    if (!date) {
+      return;
+    }
+
+    const newDate = new Date(date);
+
+    newDate.setHours(0, 0, 0, 0);
+
+    if (newDate.valueOf() === pickerDate.valueOf()) {
+      return;
+    }
+
+    setPickerDate(newDate);
+
     setMenuLoading(true);
+
     const newWeek = getWeekNumber(date);
 
     if (currentWeek !== newWeek) {
       setCurrentWeek(newWeek);
+
       const allBookings: BookingTerminal[] = [];
+
       for (const account of linkedAccounts) {
         const bookingsForAccount = await getBookingsAvailableFromExternal(account, newWeek);
         allBookings.push(...bookingsForAccount);
       }
+
       setAllBookings(allBookings);
     }
 
     const dailyMenu = account ? await getMenu(account, date).catch(() => null) : null;
     setCurrentMenu(dailyMenu);
+
     setMenuLoading(false);
   };
 
@@ -140,7 +167,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
       try {
         const newBalances: Balance[] = [];
         const newHistories: ReservationHistory[] = [];
-        const newQRCodes: string[] = [];
+        const newQRCodes: Array<string | Blob> = [];
         const newBookings: BookingTerminal[] = [];
 
         const dailyMenu = account ? await getMenu(account, pickerDate).catch(() => null) : null;
@@ -203,265 +230,306 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
     return unsub;
   }, []);
 
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
-      showsHorizontalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => {
-            refreshData();
-          }}
+  const getLabelIcon = (label: string) => {
+    switch (label) {
+      case "Assemblé sur place":
+        return <CookingPot size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Issu de l'Agriculture Biologique":
+        return <Sprout size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Fait maison - Recette du chef":
+        return <ChefHat size={12} strokeWidth={3} color="#FFFFFF" />;
+      case "Produits locaux":
+        return <MapPin size={12} strokeWidth={3} color="#FFFFFF" />;
+      default:
+        return null;
+    }
+  };
+
+  const getLabelName = (label: string) => {
+    switch (label) {
+      case "Assemblé sur place":
+        return "Assemblé sur place";
+      case "Issu de l'Agriculture Biologique":
+        return "Agriculture Biologique";
+      case "Fait maison - Recette du chef":
+        return "Fait maison";
+      case "Produits locaux":
+        return "Produits locaux";
+      default:
+        return label;
+    }
+  };
+
+  function renderAllergens (allergens: ReadonlyArray<FoodAllergen>) {
+    if (allergens.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.allergensContainer}>
+        <AlertTriangle
+          size={16}
+          color={colors.text}
+          opacity={0.6}
         />
-      }
-    >
-      {!isInitialised ? (
-        <ActivityIndicator size="large" style={{ padding: 50 }} />
-      ) : (
-        <>
-          {allBalances?.length === 0 ? (
-            <View style={{height: 10}} />
-          ) : (
-            <>
-              <View style={styles.accountButtonContainer}>
-                {allBalances!.length > 1 && allBalances?.map((account, index) => (
-                  <AccountButton
-                    key={index}
-                    account={account}
-                    isSelected={selectedIndex === index}
-                    onPress={() => setSelectedIndex(index)}
-                    colors={colors}
-                  />
-                ))}
-              </View>
+        <NativeText variant="subtitle">
+          Allergènes : {allergens.map(allergen => allergen.name).join(", ")}
+        </NativeText>
+      </View>
+    );
+  }
 
-              {selectedIndex !== null && allBalances?.[selectedIndex] && (
-                <Reanimated.View
-                  entering={FadeInUp}
-                  exiting={FadeOutDown}
-                  layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
-                >
-                  <RestaurantCard
-                    solde={allBalances[selectedIndex].amount}
-                    repas={
-                      allBalances?.[selectedIndex]?.remaining != null
-                        ? Math.max(0, allBalances[selectedIndex].remaining || 0)
-                        : null
-                    }
-                  />
-                </Reanimated.View>
-              )}
-            </>
-          )}
+  function renderLabels (labels: ReadonlyArray<FoodLabel>) {
+    if (labels.length === 0) {
+      return null;
+    }
 
-          <HorizontalList style={styles.horizontalList}>
-            <Item
-              title="Historique"
-              icon={<Clock2 color={colors.text} />}
-              onPress={() => navigation.navigate("RestaurantHistory", { histories: allHistories ?? [] })}
-              enable={allHistories?.length !== 0}
-            />
-            <Item
-              title="QR-Code"
-              icon={<QrCode color={colors.text} />}
-              onPress={() => navigation.navigate("RestaurantQrCode", { QrCodes: allQRCodes ?? [] })}
-              enable={allQRCodes?.length !== 0}
-            />
-          </HorizontalList>
-
-          {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
-          <View style={styles.calendarContainer}>
-            <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
-              <Reanimated.View layout={animPapillon(LinearTransition)}>
-                <Reanimated.View
-                  key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
-                  entering={FadeIn.duration(150)}
-                  exiting={FadeOut.duration(150)}
-                >
-                  <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
-                    {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
-                  </Reanimated.Text>
-                </Reanimated.View>
-              </Reanimated.View>
-              <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
-              <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
-                {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
-              </Reanimated.Text>
-            </PapillonHeaderSelector>
+    return (
+      <View style={styles.labelsContainer}>
+        {labels.map((label, k) => (
+          <View key={"label-" + k} style={[styles.label, { backgroundColor: label.color ?? "#888888" }]}>
+            {getLabelIcon(label.name)}
+            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "bold" }}>
+              {getLabelName(label.name)}
+            </Text>
           </View>
-          }
+        ))}
+      </View>
+    );
+  }
 
-          {allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
-            <>
-              <NativeListHeader label="Réservations disponibles" />
-              <NativeList>
-                {allBookings.map((terminal, index) => (
-                  <React.Fragment key={index}>
-                    {terminal.days.map((bookingDay, dayIndex) =>
-                      bookingDay.date?.toDateString() === pickerDate.toDateString() ? (
-                        <NativeItem
-                          separator
-                          disabled={!bookingDay.canBook}
-                          icon={<Utensils />}
-                          key={dayIndex}
-                          trailing={
-                            <Switch
-                              value={bookingDay.booked}
-                              disabled={!bookingDay.canBook || allBalances?.every((balance) => balance.remaining === 0)}
-                              onValueChange={() => handleBookTogglePress(terminal, bookingDay)}
-                            />
-                          }
-                        >
-                          <NativeText style={{ fontSize: 16, fontFamily: "semibold", color: theme.colors.text }}>Réserver mon repas</NativeText>
-                          <NativeText variant="subtitle">Borne "{terminal.terminalLabel}"</NativeText>
-                        </NativeItem>
-                      ) : null
+  return (
+    <>
+      <PapillonHeader route={route} navigation={navigation} />
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        showsHorizontalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              refreshData();
+            }}
+          />
+        }
+      >
+        {!isInitialised ? (
+          <ActivityIndicator size="large" style={{ padding: 50 }} />
+        ) : (
+          <>
+            {allBalances?.length === 0 ? (
+              <View style={{ height: 10 }} />
+            ) : (
+              <>
+                <View style={styles.accountButtonContainer}>
+                  {allBalances!.length > 1 && allBalances?.map((account, index) => (
+                    <AccountButton
+                      key={index}
+                      account={account}
+                      isSelected={selectedIndex === index}
+                      onPress={() => setSelectedIndex(index)}
+                      colors={colors}
+                    />
+                  ))}
+                </View>
+
+                {selectedIndex !== null && allBalances?.[selectedIndex] && (
+                  <Reanimated.View
+                    entering={FadeInUp}
+                    exiting={FadeOutDown}
+                    layout={LinearTransition.springify().mass(1).damping(20).stiffness(300)}
+                  >
+                    <RestaurantCard
+                      solde={allBalances[selectedIndex].amount}
+                      repas={
+                        allBalances?.[selectedIndex]?.remaining != null
+                          ? Math.max(0, allBalances[selectedIndex].remaining || 0)
+                          : null
+                      }
+                    />
+                  </Reanimated.View>
+                )}
+              </>
+            )}
+
+            <HorizontalList style={styles.horizontalList}>
+              <Item
+                title="Historique"
+                icon={<Clock2 color={colors.text} />}
+                onPress={() => navigation.navigate("RestaurantHistory", { histories: allHistories ?? [] })}
+                enable={allHistories?.length !== 0}
+              />
+              <Item
+                title="QR-Code"
+                icon={<QrCode color={colors.text} />}
+                onPress={() => navigation.navigate("RestaurantQrCode", { QrCodes: allQRCodes ?? [] })}
+                enable={allQRCodes?.length !== 0}
+              />
+            </HorizontalList>
+
+            {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
+              <View style={styles.calendarContainer}>
+                <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
+                  <Reanimated.View layout={animPapillon(LinearTransition)}>
+                    <Reanimated.View
+                      key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
+                      entering={FadeIn.duration(150)}
+                      exiting={FadeOut.duration(150)}
+                    >
+                      <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]}>
+                        {pickerDate.toLocaleDateString("fr-FR", { weekday: "long" })}
+                      </Reanimated.Text>
+                    </Reanimated.View>
+                  </Reanimated.View>
+                  <AnimatedNumber value={pickerDate.getDate().toString()} style={[styles.weekPickerText, { color: theme.colors.text }]} />
+                  <Reanimated.Text style={[styles.weekPickerText, { color: theme.colors.text }]} layout={animPapillon(LinearTransition)}>
+                    {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
+                  </Reanimated.Text>
+                </PapillonHeaderSelector>
+              </View>
+            }
+
+            {allBookings && pickerDate.getTime() > currentDate.getTime() && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())) && (
+              <>
+                <NativeListHeader label="Réservations disponibles" />
+                <NativeList>
+                  {allBookings.map((terminal, index) => (
+                    <React.Fragment key={index}>
+                      {terminal.days.map((bookingDay, dayIndex) =>
+                        bookingDay.date?.toDateString() === pickerDate.toDateString() ? (
+                          <NativeItem
+                            separator
+                            disabled={!bookingDay.canBook}
+                            icon={<Utensils />}
+                            key={dayIndex}
+                            trailing={
+                              <Switch
+                                value={bookingDay.booked}
+                                disabled={!bookingDay.canBook || allBalances?.every((balance) => balance.remaining === 0)}
+                                onValueChange={() => handleBookTogglePress(terminal, bookingDay)}
+                              />
+                            }
+                          >
+                            <NativeText style={{ fontSize: 16, fontFamily: "semibold", color: theme.colors.text }}>Réserver mon repas</NativeText>
+                            <NativeText variant="subtitle">Borne "{terminal.terminalLabel}"</NativeText>
+                          </NativeItem>
+                        ) : null
+                      )}
+                    </React.Fragment>
+                  ))}
+                </NativeList>
+              </>
+            )}
+
+            <View style={{ height: 16 }} />
+
+            {currentMenu ?
+              <>
+                {isMenuLoading ? (
+                  <ActivityIndicator size="large" style={{ padding: 50 }} />
+                ) : currentMenu?.lunch || currentMenu?.dinner ? (
+                  <>
+                    {currentMenu?.lunch?.main && (
+                      <>
+                        <NativeListHeader label="Menu du jour" />
+                        <NativeList>
+                          {[
+                            { title: "Entrée", items: currentMenu.lunch.entry },
+                            { title: "Plat", items: currentMenu.lunch.main },
+                            { title: "Accompagnement", items: currentMenu.lunch.side },
+                            { title: "Fromage", items: currentMenu.lunch.fromage },
+                            { title: "Dessert", items: currentMenu.lunch.dessert },
+                            { title: "Boisson", items: currentMenu.lunch.drink },
+                          ].map(({ title, items }, index) =>
+                            items && (
+                              <NativeItem key={index}>
+                                <NativeText variant="subtitle">{title}</NativeText>
+                                {items.map((food, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <NativeText variant="title">
+                                      {food.name ?? ""}
+                                    </NativeText>
+                                    {renderAllergens(food.allergens)}
+                                    {renderLabels(food.labels)}
+                                  </React.Fragment>
+                                ))}
+                              </NativeItem>
+                            )
+                          )}
+                        </NativeList>
+                      </>
                     )}
-                  </React.Fragment>
-                ))}
-              </NativeList>
-            </>
-          )}
-
-          <View style={{ height: 16 }} />
-
-          {currentMenu ?
-            <>
-              {isMenuLoading ? (
-                <ActivityIndicator size="large" style={{ padding: 50 }} />
-              ) : currentMenu?.lunch || currentMenu?.dinner ? (
-                <>
-                  {currentMenu?.lunch?.main && (
-                    <>
-                      <NativeListHeader label="Menu du jour" />
-                      <NativeList>
-                        {[
-                          { title: "Entrée", items: currentMenu.lunch.entry },
-                          { title: "Plat", items: currentMenu.lunch.main },
-                          { title: "Accompagnement", items: currentMenu.lunch.side },
-                          { title: "Fromage", items: currentMenu.lunch.fromage },
-                          { title: "Dessert", items: currentMenu.lunch.dessert },
-                          { title: "Boisson", items: currentMenu.lunch.drink },
-                        ].map(({ title, items }, index) =>
-                          items && (
-                            <NativeItem key={index}>
-                              <NativeText variant="subtitle">{title}</NativeText>
-                              {items.map((food, idx) => (
-                                <>
-                                  <NativeText key={idx} variant="title">
-                                    {food.name ?? ""}
-                                  </NativeText>
-                                  {food.allergens.length > 0 && (
-                                    <View style={styles.allergensContainer}>
-                                      <AlertTriangle
-                                        size={16}
-                                        color={colors.text}
-                                        opacity={0.6}
-                                      />
-                                      <NativeText key={"allergens-" + idx} variant="subtitle">
-                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
-                                      </NativeText>
-                                    </View>
-                                  )}
-                                </>
-                              ))}
-                            </NativeItem>
-                          )
-                        )}
-                      </NativeList>
-                    </>
-                  )}
-
-                  {currentMenu?.dinner?.main && (
-                    <>
-                      <NativeListHeader label="Menu du soir" />
-                      <NativeList>
-                        {[
-                          { title: "Entrée", items: currentMenu.dinner.entry },
-                          { title: "Plat", items: currentMenu.dinner.main },
-                          { title: "Accompagnement", items: currentMenu.dinner.side },
-                          { title: "Fromage", items: currentMenu.dinner.fromage },
-                          { title: "Dessert", items: currentMenu.dinner.dessert },
-                          { title: "Boisson", items: currentMenu.dinner.drink },
-                        ].map(({ title, items }, index) =>
-                          items && (
-                            <NativeItem key={index}>
-                              <NativeText variant="subtitle">{title}</NativeText>
-                              {items.map((food, idx) => (
-                                <>
-                                  <NativeText key={idx} variant="title">
-                                    {food.name ?? ""}
-                                  </NativeText>
-                                  {food.allergens.length > 0 && (
-                                    <View style={styles.allergensContainer}>
-                                      <AlertTriangle
-                                        size={16}
-                                        color={colors.text}
-                                        opacity={0.6}
-                                      />
-                                      <NativeText key={"allergens-" + idx} variant="subtitle">
-                                        Allergènes : {food.allergens.map(allergen => allergen.name).join(", ")}
-                                      </NativeText>
-                                    </View>
-                                  )}
-                                </>
-                              ))}
-                            </NativeItem>
-                          )
-                        )}
-                      </NativeList>
-                    </>
-                  )}
-                </>
-              ) : (
+                    {currentMenu?.dinner?.main && (
+                      <>
+                        <NativeListHeader label="Menu du soir" />
+                        <NativeList>
+                          {[
+                            { title: "Entrée", items: currentMenu.dinner.entry },
+                            { title: "Plat", items: currentMenu.dinner.main },
+                            { title: "Accompagnement", items: currentMenu.dinner.side },
+                            { title: "Fromage", items: currentMenu.dinner.fromage },
+                            { title: "Dessert", items: currentMenu.dinner.dessert },
+                            { title: "Boisson", items: currentMenu.dinner.drink },
+                          ].map(({ title, items }, index) =>
+                            items && (
+                              <NativeItem key={index}>
+                                <NativeText variant="subtitle">{title}</NativeText>
+                                {items.map((food, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <NativeText variant="title">
+                                      {food.name ?? ""}
+                                    </NativeText>
+                                    {renderAllergens(food.allergens)}
+                                    {renderLabels(food.labels)}
+                                  </React.Fragment>
+                                ))}
+                              </NativeItem>
+                            )
+                          )}
+                        </NativeList>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <MissingItem
+                    emoji="🍽️"
+                    title="Aucun menu prévu"
+                    description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString(
+                      "fr-FR",
+                      {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}.`}
+                    entering={animPapillon(FadeInDown)}
+                    exiting={animPapillon(FadeOut)}
+                    style={{ marginTop: 16 }}
+                  />
+                )}
+              </>
+              : <>
                 <MissingItem
                   emoji="🍽️"
-                  title="Aucun menu prévu"
-                  description={`Malheureusement, aucun menu n'est prévu pour le ${pickerDate.toLocaleDateString(
-                    "fr-FR",
-                    {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  )}.`}
+                  title="Aucun menu disponible"
+                  description={"Aucun service de cantine fournissant un menu n'est enregistré."}
                   entering={animPapillon(FadeInDown)}
                   exiting={animPapillon(FadeOut)}
                   style={{ marginTop: 16 }}
                 />
-              )}
-            </>
-            : <>
-              <MissingItem
-                emoji="🍽️"
-                title="Aucun menu disponible"
-                description={"Aucun service de cantine fournissant un menu n'est enregistré."}
-                entering={animPapillon(FadeInDown)}
-                exiting={animPapillon(FadeOut)}
-                style={{ marginTop: 16 }}
-              />
-            </>}
-
-          <LessonsDateModal
-            showDatePicker={showDatePicker}
-            setShowDatePicker={setShowDatePicker}
-            currentDate={pickerDate}
-            onDateSelect={(date: Date | undefined) => {
-              if (!date) return;
-              const newDate = new Date(date);
-              newDate.setHours(0, 0, 0, 0);
-              setPickerDate(newDate);
-              updateDatePicker(newDate);
-              setShowDatePicker(false);
-            }}
-          />
-        </>
-      )}
-
-      <InsetsBottomView />
-    </ScrollView>
+              </>}
+            <LessonsDateModal
+              showDatePicker={showDatePicker}
+              setShowDatePicker={setShowDatePicker}
+              currentDate={pickerDate}
+              onDateSelect={onDatePickerSelect}
+            />
+          </>
+        )}
+        <InsetsBottomView />
+      </ScrollView>
+    </>
   );
 };
 
@@ -471,7 +539,9 @@ const styles = StyleSheet.create({
   horizontalList: { marginTop: 10 },
   calendarContainer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16, marginBottom: -10, gap: 10 },
   weekPickerText: { zIndex: 10000, fontSize: 14.5, fontFamily: "medium", opacity: 0.7 },
-  allergensContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }
+  allergensContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5 },
+  labelsContainer: { display: "flex", flexDirection: "row", alignItems: "center", gap: 5, marginTop: 4 },
+  label: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }
 });
 
 export default Menu;

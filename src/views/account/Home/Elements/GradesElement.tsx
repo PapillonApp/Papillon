@@ -1,4 +1,4 @@
-import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
+import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { PapillonNavigation } from "@/router/refs";
 import { updateGradesAndAveragesInCache, updateGradesPeriodsInCache } from "@/services/grades";
 import { useCurrentAccount } from "@/stores/account";
@@ -7,6 +7,8 @@ import React, { useEffect, useState } from "react";
 import GradeItem from "../../Grades/Subject/GradeItem";
 import type { Grade } from "@/services/shared/Grade";
 import RedirectButton from "@/components/Home/RedirectButton";
+import { FadeInDown, FadeOut } from "react-native-reanimated";
+import MissingItem from "@/components/Global/MissingItem";
 
 interface GradesElementProps {
   onImportance: (value: number) => unknown
@@ -69,7 +71,27 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
   }, [grades]);
 
   if (!grades || lastThreeGrades.length === 0) {
-    return null;
+    return (
+      <NativeList
+        animated
+        key="emptyGrades"
+        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+        exiting={FadeOut.duration(300)}
+      >
+        <NativeItem animated style={{ paddingVertical: 10 }}>
+          <MissingItem
+            style={{ marginHorizontal: 16 }}
+            emoji="📚"
+            title="Aucune note disponible"
+            description={
+              defaultPeriod
+                ? `Tu n'as aucune note au ${defaultPeriod}.`
+                : "Tu n'as aucune note pour cette période."
+            }
+          />
+        </NativeItem>
+      </NativeList>
+    );
   }
 
   return (
@@ -90,7 +112,7 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
             navigation={PapillonNavigation.current}
             index={index}
             totalItems={lastThreeGrades.length}
-            allGrades={[]}
+            allGrades={grades[defaultPeriod] || []}
           />
         ))}
       </NativeList>

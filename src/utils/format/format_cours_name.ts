@@ -76,6 +76,7 @@ function getCourseSpeciality (pronoteString = ""): string | null {
   newPrnString = newPrnString.replace("expression", "expr.");
   newPrnString = newPrnString.replace("compréhension", "comp.");
   newPrnString = newPrnString.replace("ecrit", "écrit");
+  newPrnString = newPrnString.replace("sae", "saé");
   newPrnString = formatPretty(newPrnString);
 
   return newPrnString;

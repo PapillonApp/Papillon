@@ -17,14 +17,7 @@ import Reanimated, {
 import NativeTouchable from "@/components/Global/NativeTouchable";
 import { getSubjectData } from "@/services/shared/Subject";
 import { animPapillon } from "@/utils/ui/animations";
-
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
-const getDuration = (minutes: number): string => {
-  const durationHours = Math.floor(minutes / 60);
-  const durationRemainingMinutes = minutes % 60;
-  return `${durationHours} h ${lz(durationRemainingMinutes)} min`;
-};
+import { getDuration } from "@/utils/format/course_duration";
 
 export const TimetableItem: React.FC<{
   item: TimetableClass

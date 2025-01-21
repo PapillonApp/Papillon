@@ -10,6 +10,7 @@ import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, {FadeInDown, FadeOutDown} from "react-native-reanimated";
 import ApparenceContainerCard from "@/components/Settings/ApparenceContainerCard";
+import * as Brightness from "expo-brightness";
 
 const SettingsApparence: Screen<"SettingsApparence"> = () => {
   const theme = useTheme();
@@ -18,6 +19,7 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
   const [selectedTheme, setSelectedTheme] = useState<number>(0);
   const [hasUserChangedTheme, setHasUserChangedTheme] = useState<boolean>(false);
   const [defaultTheme, setDefaultTheme] = useState<number>(0);
+  const [pressedLightMode, setPressedLightMode] = useState<number>(0);
 
   useEffect(() => {
     AsyncStorage.getItem("theme").then((value) => {
@@ -33,6 +35,15 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
     setHasUserChangedTheme(selectedTheme !== defaultTheme);
     AsyncStorage.setItem("theme", selectedTheme.toString());
   }, [selectedTheme]);
+
+  useEffect(() => {
+    if (pressedLightMode === 7) {
+      Brightness.setBrightnessAsync(1);
+    } else if (pressedLightMode > 7) {
+      setPressedLightMode(0);
+      Brightness.restoreSystemBrightnessAsync();
+    }
+  }, [pressedLightMode]);
 
   return (
     <ScrollView
@@ -54,7 +65,7 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
           leading={<SunMoon color={theme.colors.text} />}
           trailing={
             <PapillonCheckbox
-              color={"#1e316a"}
+              color={"#1E316A"}
               checked={selectedTheme === 0}
               onPress={() => {
                 setSelectedTheme(0);
@@ -72,7 +83,7 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
           leading={<Sun color={theme.colors.text} />}
           trailing={
             <PapillonCheckbox
-              color={"#1e316a"}
+              color={"#1E316A"}
               checked={selectedTheme === 1}
               onPress={() => {
                 setSelectedTheme(1);
@@ -80,7 +91,10 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
               style={{marginRight: 5}}
             />
           }
-          onPress={() => {setSelectedTheme(1);}}
+          onPress={() => {
+            setSelectedTheme(1);
+            setPressedLightMode(pressedLightMode + 1);
+          }}
           chevron={false}
         >
           <NativeText variant="title">Mode clair</NativeText>
@@ -90,7 +104,7 @@ const SettingsApparence: Screen<"SettingsApparence"> = () => {
           leading={<Moon color={theme.colors.text} />}
           trailing={
             <PapillonCheckbox
-              color={"#1e316a"}
+              color={"#1E316A"}
               checked={selectedTheme === 2}
               onPress={() => {
                 setSelectedTheme(2);

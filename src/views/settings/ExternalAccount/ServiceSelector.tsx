@@ -10,7 +10,6 @@ import { AccountService } from "@/stores/account/types";
 import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { LinearGradient } from "expo-linear-gradient";
 
 const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
   const theme = useTheme();

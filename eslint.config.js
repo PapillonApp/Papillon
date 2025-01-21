@@ -3,6 +3,14 @@ const unusedImports = require("eslint-plugin-unused-imports");
 const typescript = require("@typescript-eslint/parser");
 
 module.exports = [
+  { // Ignored directory
+    ignores: [
+      "**/node_modules/",
+      "**/android/",
+      "**/ios/",
+      "**/.*"
+    ]
+  },
   { // Apply to `cjs`, `.mjs` and `.js` files.
     files: ["**/*.?([cm])js?(x)"]
   },

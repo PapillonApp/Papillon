@@ -9,7 +9,7 @@ import type { RouteParameters } from "@/router/helpers/types";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface PapillonHeaderProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   route: RouteProp<RouteParameters, keyof RouteParameters>
   navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
 }

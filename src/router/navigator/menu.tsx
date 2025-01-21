@@ -1,17 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useCurrentAccount } from "@/stores/account";
 import { useNavigationBuilder, useTheme } from "@react-navigation/native";
-import { StyleSheet, View, ScrollView, Platform, Image, Text, StatusBar } from "react-native";
+import { StyleSheet, Platform, Image, Text, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import TabItem from "./atoms/TabItem";
 
-import Reanimated, { LinearTransition, useSharedValue } from "react-native-reanimated";
+import Reanimated from "react-native-reanimated";
 import MenuItem from "./atoms/MenuItem";
-import AccountSwitcher from "@/components/Home/AccountSwitcher";
 import ContextMenu from "@/components/Home/AccountSwitcherContextMenu";
-import { NativeText } from "@/components/Global/NativeComponents";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
-import { he } from "date-fns/locale";
 
 const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilder>, "NavigationContent">> = ({ state, descriptors, navigation }) => {
   const theme = useTheme();

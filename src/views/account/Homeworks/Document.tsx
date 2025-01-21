@@ -30,6 +30,7 @@ import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { Paperclip, CircleAlert } from "lucide-react-native";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { timestampToString } from "@/utils/format/DateHelper";
+import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 
 const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
@@ -47,7 +48,9 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   });
 
   const homework: Homework = route.params.homework || {};
+
   const account = useCurrentAccount((store) => store.account!);
+
 
   const openUrl = (url: string) => {
     if (
@@ -171,7 +174,7 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
 
           <NativeItem>
             <HTMLView
-              value={`<body>${homework.content.replaceAll("<br>", " ")}</body>`}
+              value={`<body>${parse_homeworks(homework.content)}</body>`}
               stylesheet={stylesText}
               onLinkPress={(url) => openUrl(url)}
             />

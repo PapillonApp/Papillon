@@ -8,24 +8,24 @@ const SKOLENGO_DEFAULT_SCALE = 20;
 
 const decodeGradeNumber = (value?:number | null): GradeValue =>
   typeof value === "number" ?
-    { value, disabled: false }
-    : { value: null, disabled: true };
+    { value, disabled: false, status: null}
+    : { value: null, disabled: true, status: null };
 
 const getSubjectMinMax = (evalSubj: Evaluation): {min: GradeValue, max:GradeValue, outOf: GradeValue} => {
   const outOf = decodeGradeNumber(evalSubj.scale || SKOLENGO_DEFAULT_SCALE);
-  if(evalSubj.evaluations.filter(e=>e.evaluationResult.mark !== null && !e.evaluationResult.nonEvaluationReason).length === 0) return {min: { value: null, disabled: true } , max: { value: null, disabled: true }, outOf};
+  if(evalSubj.evaluations.filter(e=>e.evaluationResult.mark !== null && !e.evaluationResult.nonEvaluationReason).length === 0) return {min: { value: null, disabled: true, status: null } , max: { value: null, disabled: true, status: null }, outOf};
   const [minimum, maximum] = evalSubj.evaluations.filter(e=>e.evaluationResult.mark !== null)
     .map(e=>((e.evaluationResult.mark!)/(e.scale || SKOLENGO_DEFAULT_SCALE)) * (evalSubj.scale || SKOLENGO_DEFAULT_SCALE))
     .reduce(([minAcc, maxAcc], e) => [Math.min(minAcc, e), Math.max(maxAcc, e)], [evalSubj.scale || SKOLENGO_DEFAULT_SCALE, 0]);
-  return {min: { value: minimum, disabled: false } , max: { value: maximum, disabled: false }, outOf};
+  return {min: { value: minimum, disabled: false, status: null } , max: { value: maximum, disabled: false, status: null }, outOf};
 };
 
 const getOverall = (evals: Evaluation[]): GradeValue =>{
   if(evals.filter(e=>e.average !== null).length === 0)
-    return { value: null, disabled: true };
+    return { value: null, disabled: true, status: null };
   const sum = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.average! * (e.coefficient || 1)), 0);
   const sumCoef = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.coefficient || 1), 0);
-  return { value: sum / sumCoef, disabled: false };
+  return { value: sum / sumCoef, disabled: false, status: null };
 };
 
 export const getGradesAndAverages = async (account: SkolengoAccount, periodName: string): Promise<{
@@ -43,8 +43,8 @@ export const getGradesAndAverages = async (account: SkolengoAccount, periodName:
   const evals = await account.instance.getEvaluation(undefined, period.id);
 
   const averages: AverageOverview = {
-    classOverall: { value: 0, disabled: true },
-    overall: { value: 0, disabled: true },
+    classOverall: { value: 0, disabled: true, status: null },
+    overall: { value: 0, disabled: true, status: null },
     subjects: evals.map((s) => ({
       classAverage: decodeGradeNumber(s.average),
       color: s.subject.color || "#888",

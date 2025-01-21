@@ -1,6 +1,6 @@
 import { AccountService, type ExternalAccount } from "@/stores/account/types";
 
-export const qrcodeFromExternal = async (account: ExternalAccount): Promise<string | null> => {
+export const qrcodeFromExternal = async (account: ExternalAccount): Promise<string | Blob | null> => {
   switch (account.service) {
     case AccountService.Turboself: {
       const { getQRCode } = await import("./turboself/qrcode");
@@ -12,6 +12,10 @@ export const qrcodeFromExternal = async (account: ExternalAccount): Promise<stri
     }
     case AccountService.Izly: {
       const { getQRCode } = await import("./izly/qrcode");
+      return getQRCode(account);
+    }
+    case AccountService.Alise: {
+      const { getQRCode } = await import("./alise/qrcode");
       return getQRCode(account);
     }
     default:

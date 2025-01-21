@@ -1,13 +1,11 @@
 import * as React from "react";
-import { useCurrentAccount } from "@/stores/account";
-import { useNavigationBuilder, useTheme } from "@react-navigation/native";
-import { StyleSheet, View, Text, Platform } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@react-navigation/native";
+import { StyleSheet, Platform } from "react-native";
 import LottieView from "lottie-react-native";
 import colorsList from "@/utils/data/colors.json";
 import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
-import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { anim2Papillon } from "@/utils/ui/animations";
 
 const MenuItem: React.FC<{

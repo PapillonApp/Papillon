@@ -9,7 +9,6 @@ import React, { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import Reanimated, {
   FadeInDown,
-  FadeInUp,
   FadeOutUp,
 } from "react-native-reanimated";
 import SubjectTitle from "./SubjectTitle";
@@ -21,12 +20,14 @@ interface SubjectItemProps {
   subject: GradesPerSubject;
   allGrades: Grade[];
   navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>;
+  index?: number;
 }
 
 const SubjectItem: React.FC<SubjectItemProps> = ({
   subject,
   allGrades,
   navigation,
+  index,
 }) => {
   const [subjectData, setSubjectData] = useState({
     color: "#888888",
@@ -43,11 +44,15 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     fetchSubjectData();
   }, [subject.average.subjectName]);
 
+  if (!subjectData) {
+    return null;
+  }
+
   return (
     <NativeList
       animated
-      entering={animPapillon(FadeInUp)}
-      exiting={animPapillon(FadeOutUp)}
+
+
     >
       <SubjectTitle
         navigation={navigation}
@@ -68,7 +73,12 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
             }}
           />
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => {
+          if (!item.description) {
+            return item.id + "_" + Math.random();
+          }
+          return item.id;
+        }}
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={8}
@@ -88,7 +98,7 @@ interface SubjectGradeItemProps {
 const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, index, onPress }) => {
   return (
     <Reanimated.View
-      key={grade.id + index}
+      key={grade.id + index + "subjectlistname"}
       entering={animPapillon(FadeInDown).delay(50 * index + 100)}
       exiting={animPapillon(FadeOutUp).delay(50 * index)}
     >
@@ -135,9 +145,7 @@ const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, ind
                 fontFamily: "medium",
               }}
             >
-              {grade.student.disabled === true ? "N. not" : (typeof grade.student.value === "number"
-                ? grade.student.value.toFixed(2)
-                : "N. not")}
+              {grade.student.disabled ? (grade.student.status === null ? "N. Not" : grade.student.status) : grade.student.value?.toFixed(2)}
             </NativeText>
             <NativeText
               style={{

@@ -102,7 +102,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
           icon={<Info />}
         >
           <NativeText variant="subtitle">
-            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de vous connecter à l'application.
+            Les founisseurs d'identité ne fournissent pas de données (calendrier, notes, etc...) mais permettent de te connecter à l'application.
           </NativeText>
         </NativeItem>
       </NativeList>

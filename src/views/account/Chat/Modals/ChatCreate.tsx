@@ -78,7 +78,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
             <NativeText variant="subtitle">Sujet</NativeText>
             <TextInput
               style={[styles.textInput, { color: theme.colors.text }]}
-              placeholder="Sujet de votre message"
+              placeholder="Sujet de ton message"
               placeholderTextColor={theme.colors.text + "80"}
               value={subject}
               onChangeText={setSubject}
@@ -92,7 +92,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
                 fontFamily: "semibold",
                 color: theme.colors.text,
               }}
-              placeholder="Entrez votre texte"
+              placeholder="Entre ton texte"
               placeholderTextColor={theme.colors.text + "80"}
               value={content}
               multiline={true}
@@ -176,8 +176,8 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
           console.log("onPress");
           if (!subject) {
             Alert.alert(
-              "Voulez-vous continuer sans objet ?",
-              "Vous êtes sur le point de créer une discussion sans objet. Voulez-vous continuer ?",
+              "Veux-tu continuer sans objet ?",
+              "Tu es sur le point de créer une discussion sans objet. Veux-tu continuer ?",
               [
                 {
                   text: "Annuler",
