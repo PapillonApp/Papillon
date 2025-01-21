@@ -574,7 +574,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         >
           <TouchableOpacity
             onPress={() => {
-              mutateProperty("personalization", { KeepCheckActivated: !hideDone })
+              mutateProperty("personalization", { KeepCheckActivated: !hideDone });
               setHideDone(!hideDone);
             }}
             onLongPress={() => navigation.navigate("SettingStack", {view: "SettingsTabs"})}
