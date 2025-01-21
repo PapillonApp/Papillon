@@ -23,6 +23,8 @@ export const defaultProfilePicture = (service: AccountService, accountProvider: 
       return require("../../../assets/images/service_skolengo.png");
     case AccountService.Local:
       return require("../../../assets/images/service_unknown.png");
+    case AccountService.PapillonMultiService:
+      return require("../../../assets/images/multiservice.png");
   }
 
   return require("../../../assets/images/service_unknown.png");

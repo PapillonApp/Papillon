@@ -1,12 +1,14 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import { useHomeworkStore } from "@/stores/homework";
 import type { Homework } from "./shared/Homework";
-import { error } from "@/utils/logger/logger";
+import {error, log} from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
+import {MultiServiceFeature} from "@/stores/multiService/types";
+import {getFeatureAccount} from "@/utils/multiservice";
 
 /**
  * Updates the state and cache for the homework of given week number.
@@ -44,6 +46,14 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
         homeworks = [];
         break;
       }
+      case AccountService.PapillonMultiService: {
+        const service = getFeatureAccount(MultiServiceFeature.Homeworks, account.localID);
+        if (!service) {
+          log("No service set in multi-service space for feature \"Homeworks\"", "multiservice");
+          break;
+        }
+        return updateHomeworkForWeekInCache(service, date);
+      }
       default:
         console.info(`[updateHomeworkForWeekInCache]: updating to empty since ${account.service} not implemented.`);
     }
@@ -69,6 +79,14 @@ export async function toggleHomeworkState <T extends Account> (account: T, homew
     }
     case AccountService.Local: {
       break;
+    }
+    case AccountService.PapillonMultiService: {
+      const service = getFeatureAccount(MultiServiceFeature.Homeworks, account.localID);
+      if (!service) {
+        log("No service set in multi-service space for feature \"Homeworks\"", "multiservice");
+        break;
+      }
+      return toggleHomeworkState(service, homework);
     }
     default: {
       throw new Error("Service not implemented");

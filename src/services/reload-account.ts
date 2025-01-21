@@ -1,4 +1,5 @@
 import {type Account, AccountService} from "@/stores/account/types";
+import {warn} from "@/utils/logger/logger";
 export interface Reconnected<T extends Account> {
   instance: T["instance"]
   authentication: T["authentication"]
@@ -60,6 +61,9 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
     case AccountService.Multi: {
       const { reloadInstance } = await import("./multi/reload-multi");
       return await reloadInstance(account.authentication) as Reconnected<T>;
+    }
+    case AccountService.PapillonMultiService: {
+      warn("PapillonMultiService space should never be reloaded.", "multiservice");
     }
     default: {
       console.warn("Service not implemented");

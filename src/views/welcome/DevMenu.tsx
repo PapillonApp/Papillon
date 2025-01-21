@@ -100,14 +100,31 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
               </NativeText>
             </NativeItem>
 
-            // TODO : create NoteReaction screen
-            {/* <NativeItem
-              onPress={() => navigation.navigate("NoteReaction")}
-            >
-              <NativeText>
-                NoteReaction
-              </NativeText>
-            </NativeItem> */}
+            <NativeItem
+              onPress={() => navigation.navigate("GradeReaction", {
+                grade: {
+                  id: "mmmhm",
+                  subjectName: "Éval TS avec Armand",
+                  description: "Note de test",
+                  timestamp: 1735996215000,
+                  average: {
+                    value: 0.2
+                  },
+                  coefficient: 40,
+                  min: {
+                    value: 0
+                  },
+                  max: {
+                    value: 20
+                  },
+                  student: {
+                    value: 0
+                  },
+                  outOf: {
+                    value: 20
+                  }
+                }
+              })}
 
             <NativeItem
               onPress={() => navigation.navigate("ColorSelector")}

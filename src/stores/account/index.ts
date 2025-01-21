@@ -17,7 +17,9 @@ import { useHomeworkStore } from "../homework";
 import { useGradesStore } from "../grades";
 import { useNewsStore } from "../news";
 import { useAttendanceStore } from "../attendance";
-import { info, log } from "@/utils/logger/logger";
+import {error, info, log} from "@/utils/logger/logger";
+import {useMultiService} from "@/stores/multiService";
+import {MultiServiceFeature, MultiServiceSpace} from "@/stores/multiService/types";
 
 /**
  * Store for the currently selected account.
@@ -26,9 +28,16 @@ import { info, log } from "@/utils/logger/logger";
 export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
   account: null,
   linkedAccounts: [],
+  // For multi service, to not mix Primary & External accounts
+  associatedAccounts: [],
 
-  mutateProperty: <T extends keyof PrimaryAccount>(key: T, value: PrimaryAccount[T]) => {
+  mutateProperty: <T extends keyof PrimaryAccount>(key: T, value: PrimaryAccount[T], forceMutation = false) => {
     log(`mutate property ${key} in storage`, "current:update");
+
+    // Special case to keep Papillon Space custom image
+    if (get().account?.service === AccountService.PapillonMultiService && key === "personalization" && !forceMutation) {
+      delete (value as PrimaryAccount["personalization"]).profilePictureB64;
+    }
 
     // Since "instance" is a runtime only key,
     // we mutate the property only in this memory store and not in the persisted one.
@@ -81,8 +90,12 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       return store.persist.rehydrate();
     }));
 
-    // Account is currently not authenticated,
-    if (typeof account.instance === "undefined") {
+    const accounts = useAccounts.getState().accounts;
+
+    // Special case for spaces
+    if (account.service === AccountService.PapillonMultiService) {
+      log("switching to virtual space, skipping main account reload and reloading associated accounts...", "[switchTo]");
+    } else if (typeof account.instance === "undefined") { // Account is currently not authenticated,
       log("instance undefined, reloading...", "[switchTo]");
       // Automatically reconnect the main instance.
       const { instance, authentication } = await reload(account);
@@ -91,12 +104,15 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       log("instance reload done !", "[switchTo]");
     }
 
-    const accounts = useAccounts.getState().accounts;
     const linkedAccounts = account.linkedExternalLocalIDs.map((linkedID) => {
       return {...accounts.find((acc) => acc.localID === linkedID)};
     }).filter(Boolean) as ExternalAccount[] ?? [];
 
-    info(`found ${linkedAccounts.length} external accounts`, "switchTo");
+    const associatedAccounts = account.associatedAccountsLocalIDs?.map((associatedID) => {
+      return {...accounts.find((acc) => acc.localID === associatedID)};
+    }).filter(Boolean) as PrimaryAccount[] ?? [];
+
+    info(`found ${linkedAccounts.length} external accounts and ${associatedAccounts.length} associated accounts`, "switchTo");
 
     for (const linkedAccount of linkedAccounts) {
       const { instance, authentication } = await reload(linkedAccount);
@@ -105,9 +121,28 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       log("reloaded external", "[switchTo]");
     }
 
-    log("reloaded all external accounts", "[switchTo]");
+    for (const associatedAccount of associatedAccounts) {
+      if (!(typeof associatedAccount.instance === "undefined"))
+        continue;
+      const { instance, authentication } = await reload(associatedAccount).catch(err => {
+        error(`failed to reload associated account: ${err} !`, "[switchTo]");
+        return {
+          instance: associatedAccount.instance,
+          authentication: associatedAccount.authentication
+        };
+      });
+      associatedAccount.instance = instance;
+      associatedAccount.authentication = authentication;
+      log("reloaded associated account", "[switchTo]");
+    }
 
-    set({ linkedAccounts });
+    // Setting instance to a non-null value after associated accounts reload, to keep the loading icon while instances are reloading...
+    if (account.service === AccountService.PapillonMultiService)
+      account.instance = "PapillonPrime"; // A random string, so the instance is not "undefined" or "null", to prevent creating infinite loading (an undefined instance is interpreted as a loading or disconnected account...)
+
+    log("reloaded all external and associated accounts", "[switchTo]");
+
+    set({ linkedAccounts, associatedAccounts });
     log(`done reading ${account.name} and rehydrating stores.`, "[switchTo]");
   },
 
@@ -173,6 +208,48 @@ export const useAccounts = create<AccountsStore>()(
             (account) => account.localID !== localID
           )
         }));
+
+        // Update of multi-service environments to prevent :
+        // 1. If the deleted account was associated to a space : its reference need to be removed from this space
+        // 2. If a multi-service has no more associated accounts, it must be deleted (because a space is like a "group" of accounts, and without any associated accounts it does not work anymore⁾
+
+        // Fetching the accounts corresponding to spaces
+        const spacesAccounts  = get().accounts.filter(account => account.service === AccountService.PapillonMultiService);
+        for (const spaceAccount of spacesAccounts) {
+
+          // The account deleted above is associated to this space
+          if (spaceAccount.associatedAccountsLocalIDs.includes(localID)) {
+            log(`found ${localID} in PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+
+            // Remove the link to the account (and to every feature to which it is linked)
+            spaceAccount.associatedAccountsLocalIDs.splice(spaceAccount.associatedAccountsLocalIDs.indexOf(localID), 1);
+            const space = useMultiService.getState().spaces.find(space => space.accountLocalID === spaceAccount.localID) as MultiServiceSpace;
+            Object.entries(space.featuresServices).map(([key, value]) => {
+              if (value === localID) {
+                space.featuresServices[key as MultiServiceFeature] = undefined;
+              }
+            });
+            useMultiService.getState().update(spaceAccount.localID, "featuresServices", space.featuresServices);
+            set((state) => ({
+              accounts: state.accounts.map(account =>
+                account.localID === spaceAccount.localID ? spaceAccount : account
+              )
+            }));
+            log(`removed ${localID} from PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+          }
+
+          // If the space is now empty; deleting it
+          if (spaceAccount.associatedAccountsLocalIDs.length === 0) {
+            log(`PapillonMultiServiceSpace ${spaceAccount.name} is now empty, removing it`, "accounts:remove");
+            useMultiService.getState().remove(spaceAccount.localID);
+            set((state) => ({
+              accounts: state.accounts.filter(
+                (account) => account.localID !== spaceAccount.localID
+              )
+            }));
+            log(`deleted PapillonMultiServiceSpace ${spaceAccount.name}`, "accounts:remove");
+          }
+        }
 
         log(`removed ${localID}`, "accounts:remove");
       },

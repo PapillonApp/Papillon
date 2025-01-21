@@ -3,10 +3,10 @@ import { Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 
-const BetaIndicator = () => {
+const BetaIndicator: React.FC<{ colors?: string[] }> = (props) => {
   return (
     <LinearGradient
-      colors={["#00AADC", "#A6FFC4"]}
+      colors={props.colors || ["#00AADC", "#A6FFC4"]}
       start={[0, 0]}
       end={[0, 2]}
       style={{ borderRadius: 8, paddingHorizontal: 6, paddingVertical: 4 }}
