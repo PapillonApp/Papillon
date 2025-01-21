@@ -2,7 +2,7 @@ import createScreen from "@/router/helpers/create-screen";
 import Settings from "@/views/settings/Settings";
 import SettingsNotifications from "@/views/settings/SettingsNotifications";
 import SettingsProfile from "@/views/settings/SettingsProfile";
-import SettingsTrophies  from "@/views/settings/SettingsTrophies";
+import SettingsTrophies from "@/views/settings/SettingsTrophies";
 import SettingsAbout from "@/views/settings/SettingsAbout";
 import SettingsIcons from "@/views/settings/SettingsIcons";
 import SettingsSubjects from "@/views/settings/SettingsSubjects";
@@ -28,6 +28,7 @@ import SettingsReactions from "@/views/settings/SettingsReactions";
 import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
+import SettingsLanguage from "@/views/settings/SettingsLanguage";
 
 const settingsScreens = [
   createScreen("Settings", Settings, {
@@ -116,14 +117,12 @@ const settingsScreens = [
     presentation: "modal",
     headerBackVisible: false,
     gestureEnabled: false,
-
   }),
   createScreen("TurboselfAccountSelector", TurboselfAccountSelector, {
     headerTitle: "Configuration de Turboself",
     presentation: "modal",
     headerBackVisible: false,
     gestureEnabled: false,
-
   }),
 
   createScreen("SettingsDevLogs", SettingsDevLogs, {
@@ -135,7 +134,11 @@ const settingsScreens = [
   }),
   createScreen("SettingsApparence", SettingsApparence, {
     headerTitle: "Mode d'affichage",
-  })
+  }),
+  createScreen("SettingsLanguage", SettingsLanguage, {
+    headerTitle: "Langue",
+  }
+  )
 ] as const;
 
 export default settingsScreens;
