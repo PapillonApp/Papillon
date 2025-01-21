@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader } from "@/components/Global/NativeComponents";
 import { NativeIcon } from "@/components/Global/NativeComponents";
 import { NativeText } from "@/components/Global/NativeComponents";
-import AppJSON from "../../../app.json";
 import PackageJSON from "../../../package.json";
 import AboutContainerCard from "@/components/Settings/AboutContainerCard";
 import * as Linking from "expo-linking";
@@ -190,7 +189,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             Version de l'application
           </NativeText>
           <NativeText variant="subtitle">
-            ver. {AppJSON.expo.version} {Constants.appOwnership === "expo" ? "(Expo Go)" : ""} {__DEV__ ? "(debug)" : ""}
+            ver. {PackageJSON.version} {Constants.appOwnership === "expo" ? "(Expo Go)" : ""} {__DEV__ ? "(debug)" : ""}
           </NativeText>
         </NativeItem>
         <NativeItem
@@ -201,7 +200,12 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             Version des dépendances
           </NativeText>
           <NativeText variant="subtitle">
-            RN : {PackageJSON.dependencies["react-native"].split("^")[1]} | Expo : {(PackageJSON.devDependencies["expo"] || PackageJSON.dependencies["expo"]).split(/[~^]/)[1] || (PackageJSON.devDependencies["expo"] || PackageJSON.dependencies["expo"])}
+            RN : {PackageJSON.dependencies["react-native"].split("^")[1]} |
+            Expo :{" "}
+            {(
+              PackageJSON.devDependencies.expo ||
+              PackageJSON.dependencies.expo
+            ).replace("^", "").replace("~", "")}
           </NativeText>
         </NativeItem>
       </NativeList>

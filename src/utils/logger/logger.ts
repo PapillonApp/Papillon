@@ -38,19 +38,31 @@ function get_file_from_stacktrace (stack: string): string
   return (res);
 }
 
-function save_logs_to_memory (log: string)
-{
-  AsyncStorage.getItem("logs")
-    .then((result) => {
-      let logs = [];
-      if (result != null)
-        logs = JSON.parse(result);
-      logs.push(log);
-      if (logs.length > 800) {
-        logs = logs.splice(0, 100);
+function save_logs_to_memory (log: string) {
+  AsyncStorage.getItem("logs").then((result) => {
+    const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    let logs: string[] = [];
+
+    if (result != null) {
+      logs = JSON.parse(result) as string[];
+    }
+    logs.push(log);
+
+    logs = logs.filter((element) => {
+      const match = element.split("]")[1].replace("[", "");
+      if (match) {
+        const logDate = new Date(match).getTime();
+        return logDate >= twoWeeksAgo;
       }
-      AsyncStorage.setItem("logs", JSON.stringify(logs));
+      return false;
     });
+
+    if (logs.length > 800) {
+      logs = logs.splice(0, 100);
+    }
+
+    AsyncStorage.setItem("logs", JSON.stringify(logs));
+  });
 }
 
 function log (message: string, from: string): void {
