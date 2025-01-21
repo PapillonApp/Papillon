@@ -102,7 +102,13 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [selectedSubject, currentTitle, debouncedUpdateSubject]);
 
   const updateSpinning = useCallback(() => {
-    setSpinning((spin) => !spin);
+    console.log(spinning);
+    setSpinning((spin) => {
+      console.log(spin);
+      console.log(!spin);
+      return !spin;
+    });
+    console.log(spinning);
   }, []);
 
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
