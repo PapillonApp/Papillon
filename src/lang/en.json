@@ -2,7 +2,7 @@
   "loading": "Loading...",
   "confirm": "Confirm",
   "cancel": "Cancel",
-  "delete": "Supprimer",
+  "delete": "Delete",
   "quit": "Quit",
   "errror": "Error",
   "welcome": {
@@ -33,7 +33,7 @@
       "importV6": "Import my account"
     },
     "PronoteAuthSelector": {
-      "message": "What do you prefer to connect to Pronote?",
+      "message": "What do you prefer to use to connect to Pronote?",
       "locate": "Use my location",
       "locateSubtitle": "Find a school around me",
       "city": "Search for a city",
@@ -45,7 +45,7 @@
       "message": "Papillon needs your location to search for establishments",
       "numberOfLines": 3,
       "ask": "Ask for permission",
-      "terms": "Your location is needed to find nearby PRONOTE instances. It will be sent to PRONOTE and to the government's address api to find establishments. It is not stored.",
+      "terms": "Your location is needed to find nearby PRONOTE instances. It will be sent to PRONOTE and to the government's address API to find establishments. It is not stored.",
       "pending": "Locating...",
       "loadingPermissions": "Loading permissions",
       "needPermission": "Papillon needs your location to find establishments"
@@ -60,14 +60,14 @@
       "loading": "Connecting...",
       "loadingMessage": "It may take a few moments...",
       "invalidCode": "Invalid code",
-      "invalidCodeMessage": "Enter a 4 digit code.",
+      "invalidCodeMessage": "Enter a 4-digit code.",
       "errorMessage": "An error occurred while connecting.",
       "validating": "Validating the code..."
     },
     "PronoteManualURL": {
       "message": "Enter the Pronote connection URL",
       "messageLines": 2,
-      "clipboard": "I have found a URL in your clipboard!",
+      "clipboard": "I found a URL in your clipboard!",
       "clipboardLines": 2,
       "placeholder": "Pronote instance URL"
     },
@@ -92,7 +92,7 @@
       "usernamePlaceholder": "Username",
       "password": "Password",
       "passwordPlaceholder": "Password",
-      "login": "Login"
+      "login": "Log in"
     },
     "ENTAlert": {
       "title": "The {{name}} instance requires an ENT connection",
@@ -149,7 +149,7 @@
         "name": "First & last name",
         "firstName": "First name",
         "lastName": "Last name",
-        "displayOnHomeScreen": "Display on home screen",
+        "displayOnHomeScreen": "Display on the home screen",
         "PP": "Profile picture"
       },
       "general": {
@@ -157,7 +157,7 @@
         "notifications": {
           "title": "Notifications",
           "captionTitle": "Enable notifications",
-          "captionMessage": "Receive notifications to not miss anything from your school life.",
+          "captionMessage": "Receive notifications so you won't miss anything from your school life.",
           "example": "You have a class in room B03 with Mr. Perruche in 5 minutes."
         },
         "externalServices": {
@@ -238,7 +238,7 @@
     },
     "modal": {
       "changelog": {
-        "title": "Papillon has been updated, now on {{version}}!",
+        "title": "Papillon has been updated to version {{version}}!",
         "subtitle": "Click here to see what's new."
       },
       "tomorrowCourses": "Tomorrow's courses",
