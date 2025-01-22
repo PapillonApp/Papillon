@@ -145,7 +145,7 @@
       "profile": {
         "title": "Profile",
         "changePP": "Change profile picture",
-        "privacy": "Your profile picture stay on your device.",
+        "privacy": "Your profile picture stays on your device.",
         "name": "First & last name",
         "firstName": "First name",
         "lastName": "Last name",
@@ -196,7 +196,7 @@
         },
         "magic": {
           "title": "Papillon Magic (Beta)",
-          "subtitle": "Intelligent features"
+          "subtitle": "Smart features"
         }
       },
       "project": {
@@ -228,7 +228,7 @@
       "nextCourse": "Next course",
       "grades": "Grades",
       "generalAverage": "General average",
-      "latestGrade": "Last grade",
+      "latestGrade": "Latest grade",
       "restaurantBalance": "Cafeteria balance",
       "restaurantBalanceSubtitleOne": "meal remaining",
       "restaurantBalanceSubtitle": "meals remaining",
