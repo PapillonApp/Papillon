@@ -54,6 +54,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
 
   const handleDonePress = useCallback(
     async (homework: Homework) => {
+      // Ici je pense
       await toggleHomeworkState(account, homework);
       await updateHomeworks();
     },
