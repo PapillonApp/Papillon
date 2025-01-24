@@ -1,3 +1,5 @@
+import "@/background/BackgroundTasks";
+import notifee, { EventType } from "@notifee/react-native";
 import Router from "@/router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -7,8 +9,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import {AccountService, PrimaryAccount} from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
-import { expoGoWrapper } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
+import { registerBackgroundTasks } from "@/background/BackgroundTasks";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,6 +23,38 @@ const BACKGROUND_LIMITS: Partial<Record<AccountService, number>> = {
 };
 
 export default function App () {
+  useEffect(() => {
+    // Gestion des notifs quand app en premier plan
+    const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+      const { notification, pressAction } = detail;
+
+      switch (type) {
+        case EventType.ACTION_PRESS:
+          console.log(`[Notifee] Action press: ${pressAction?.id}`);
+          /*
+          Ici on va gérer les redirections vers une page de l'app
+          par exemple quand on clique sur une notification
+
+          if (pressAction?.id === "open_lessons") {
+            console.log("Open lessons screen");
+          }
+          */
+          break;
+
+        case EventType.DISMISSED:
+          console.log(`[Notifee] Notification dismissed: ${notification?.id}`);
+          break;
+
+        default:
+          console.log(`[Notifee] Foreground event type: ${type}`);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const backgroundStartTime = useRef<number | null>(null);
   const switchTo = useCurrentAccount((store) => store.switchTo);
@@ -105,10 +139,7 @@ export default function App () {
       "[Reanimated] Property ",
     ]);
 
-    expoGoWrapper(async () => {
-      const { registerBackgroundTasks } = await import("@/background/BackgroundTasks");
-      registerBackgroundTasks();
-    });
+    registerBackgroundTasks();
   }, []);
 
   const applyGlobalPolyfills = useCallback(() => {

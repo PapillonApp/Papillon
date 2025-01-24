@@ -77,6 +77,7 @@ export default (): ExpoConfig => ({
     ],
   },
   plugins: [
+    "./plugins/notifee-mod.js",
     [
       "expo-font",
       {

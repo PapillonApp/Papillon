@@ -1,52 +1,118 @@
+import notifee, { EventType } from "@notifee/react-native";
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
 import { BackgroundFetchResult } from "expo-background-fetch";
-import { expoGoWrapper } from "@/utils/native/expoGoAlert";
-import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
+import Constants from "expo-constants";
 
 import { fetchNews } from "./data/News";
-import {PrimaryAccount} from "@/stores/account/types";
+import { log, error, warn } from "@/utils/logger/logger";
+import { getAccounts, getSwitchToFunction } from "./utils/accounts";
+import { fetchHomeworks } from "./data/Homeworks";
+import { fetchGrade } from "./data/Grades";
+import { fetchLessons } from "./data/Lessons";
+import { fetchAttendance } from "./data/Attendance";
+import { fetchEvaluation } from "./data/Evaluation";
 
-/**
- * Background fetch function that fetches all the data
- * @warning This task should not last more than 30 seconds
- * @returns BackgroundFetchResult.NewData
- */
-const backgroundFetch = async () => {
-  console.log("[background fetch] Running background fetch");
+// Gestion des notifs quand app en arrière-plan
+notifee.onBackgroundEvent(async ({ type, detail }) => {
+  const { notification, pressAction } = detail;
 
-  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal) as PrimaryAccount[]; // Get all primary accounts
-  const switchTo = useCurrentAccount(store => store.switchTo); // Get the switchTo function
+  switch (type) {
+    case EventType.ACTION_PRESS:
+      console.log(`[Notifee] Action press: ${pressAction?.id}`);
+      /*
+      Ici on va gérer les redirections vers une page de l'app
+      par exemple quand on clique sur une notification
 
-  for (const account of accounts) {
-    await switchTo(account);
-    await Promise.all([fetchNews()]);
+      if (pressAction?.id === "open_lessons") {
+        console.log("Open lessons screen");
+      }
+      */
+      break;
+
+    case EventType.DISMISSED:
+      console.log(`[Notifee] Notification dismissed: ${notification?.id}`);
+      break;
+
+    default:
+      console.log(`[Notifee] Background event type: ${type}`);
   }
-  return BackgroundFetchResult.NewData;
+});
+
+let isBackgroundFetchRunning = false;
+
+const backgroundFetch = async () => {
+  if (isBackgroundFetchRunning) {
+    log("⚠️ Background fetch already running. Skipping...", "BackgroundEvent");
+    return BackgroundFetchResult.NoData;
+  }
+
+  isBackgroundFetchRunning = true;
+  log("Running background fetch", "BackgroundEvent");
+
+  try {
+    const accounts = getAccounts();
+    const switchTo = getSwitchToFunction();
+
+    for (const account of accounts) {
+      await switchTo(account);
+
+      await fetchNews();
+      await fetchHomeworks();
+      await fetchGrade();
+      await fetchLessons();
+      await fetchAttendance();
+      await fetchEvaluation();
+    }
+
+    log("✅ Finish background fetch", "BackgroundEvent");
+    return BackgroundFetchResult.NewData;
+  } catch (ERRfatal) {
+    error(`❌ Task failed: ${ERRfatal}`, "BackgroundEvent");
+    return BackgroundFetchResult.Failed;
+  } finally {
+    isBackgroundFetchRunning = false;
+  }
+};
+
+TaskManager.defineTask("background-fetch", backgroundFetch);
+
+const unsetBackgroundFetch = async () => {
+  await BackgroundFetch.unregisterTaskAsync("background-fetch");
+  log("✅ Background task unregistered", "BackgroundEvent");
 };
 
 const registerBackgroundTasks = async () => {
-  expoGoWrapper(async () => {
-    TaskManager.defineTask("background-fetch", () => backgroundFetch());
+  const isRegistered = await TaskManager.isTaskRegisteredAsync(
+    "background-fetch"
+  );
 
-    BackgroundFetch?.registerTaskAsync("background-fetch", {
-      minimumInterval: 60 * 15, // 15 minutes
-      stopOnTerminate: false, // android only,
-      startOnBoot: true, // android only
-    });
+  if (isRegistered) {
+    warn(
+      "⚠️ Background task already registered. Unregister background task...",
+      "BackgroundEvent"
+    );
+    await unsetBackgroundFetch();
+  }
 
-    backgroundFetch();
-
-    console.log("[background fetch] Registered background fetch");
-  });
+  if (!isExpoGo()) {
+    try {
+      await BackgroundFetch.registerTaskAsync("background-fetch", {
+        minimumInterval: 60 * 15,
+        stopOnTerminate: false,
+        startOnBoot: true,
+      });
+      log("✅ Background task registered", "BackgroundEvent");
+    } catch (err) {
+      error(`❌ Failed to register background task: ${err}`, "BackgroundEvent");
+    }
+  } else {
+    error(
+      `🚨 Running in Expo Go (Constants => ${Constants.appOwnership}). Skipping background task registration...`,
+      "BackgroundEvent"
+    );
+  }
 };
 
-const unsetBackgroundFetch = async () => {
-  BackgroundFetch.unregisterTaskAsync("background-fetch");
-  console.log("[background fetch] Unregistered background fetch");
-};
-
-export {
-  registerBackgroundTasks,
-  unsetBackgroundFetch,
-};
+export { registerBackgroundTasks, unsetBackgroundFetch };

@@ -39,15 +39,18 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
 }) => {
   return (
     <Reanimated.View
-      style={[{
-        flexDirection: "row",
-        alignItems: "flex-end",
-        overflow: "hidden",
-        paddingHorizontal: 3,
-        marginHorizontal: -5,
-        paddingVertical: 2,
-        marginVertical: -2,
-      }, contentContainerStyle]}
+      style={[
+        {
+          flexDirection: "row",
+          alignItems: "flex-end",
+          overflow: "hidden",
+          paddingHorizontal: 3,
+          marginHorizontal: -5,
+          paddingVertical: 2,
+          marginVertical: -2,
+        },
+        contentContainerStyle
+      ]}
       layout={animPapillon(LinearTransition)}
     >
       {value.toString().split("").map((n:number, i:number) => (
