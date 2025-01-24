@@ -1,0 +1,90 @@
+name: 🐛 Signaler un bug
+description: Signaler des bugs nous permet à améliorer Papillon !
+title: "[Bug]: "
+
+body:
+  - type: textarea
+    attributes:
+      label: Description du bug
+      description: Plus de détails nous permettent de trouver plus vite le bug !
+      placeholder: La connexion à mon établissement ne fonctionne pas, j'ai un chargement infini lors de la connexion
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Étapes à reproduire
+      description: Comment pouvons-nous reproduire le bug ?
+      placeholder: |
+        1. Ouvrir l'application
+        2. Se connecter à l'établissement
+        3. Observer le comportement
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Comportement attendu
+      description: Ce que Papillon doit faire
+      placeholder: Que la connexion à mon établissement fonctionne et qu'il n'y ait pas de chargement infini
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Appareil
+      description: Sur quel appareil tu as rencontré ce bug ?
+      placeholder: iPhone 13, Samsung Galaxy S23...
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Version du système d'exploitation
+      description: Paramètres (du Téléphone) -> À propos (Android)/Général (Apple)
+      placeholder: iOS 18, Android 15...
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Papillon testé depuis
+      description: Tu as testé/installé Papillon depuis...
+      options:
+        - Play/Apple Store (Version Stable)
+        - Play Store/TestFlight (Version Bêta)
+        - Expo Go (Version Dev)
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Version utilisée
+      description: Paramètres (de Papillon) -> Version affichée en bas de la page
+      placeholder: "7.7.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Service scolaire/cantine
+      description: Chaque personne dans l'équipe de Papillon gère un service (🎒 = Service scolaire et 🍽️ = Service de cantine)
+      options:
+        - 🎒🦋 Pronote
+        - 🎒🟦 ÉcoleDirecte
+        - 🎒🟡 Skolengo
+        - 🎒🏫 Universités et autres (à préciser dans la description du bug)
+        - 🍽️🔴 Turboself
+        - 🍽️🟣 ARD
+        - 🍽️🔵 Izly
+        - 🍽️🟤 Alise
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Capture(s) d'écran / vidéo"
+      description: Cela permettra que le bug soit trouvé et résolu encore plus vite
+      placeholder: Il faut cliquer sur l'icône 📎 pour pouvoir importer une/des photo(s)/vidéo(s)
+    validations:
+      required: false
