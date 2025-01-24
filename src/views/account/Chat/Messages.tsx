@@ -57,7 +57,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
 
   const supported = account.service === AccountService.Pronote;
 
-  const enabled = supported && account.instance?.user.resources[0].tabs.get(TabLocation.Discussions);
+  const enabled = supported && account.instance?.user.authorizations.tabs.includes(TabLocation.Discussions);
 
   useLayoutEffect(() => {
     navigation.setOptions({
