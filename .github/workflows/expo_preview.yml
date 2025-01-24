@@ -1,0 +1,116 @@
+name: expo_preview.yml
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  preview:
+    name: Preview with ExpoGo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Create dist folder
+        run: |
+          mkdir dist
+          mkdir dist/expo
+
+      - name: Export AppEntry
+        run: npx expo export --dev --platform ios --output-dir build_ios & npx expo export --dev --platform android --output-dir build_android
+
+      - name: Move iOS AppEntry
+        run: |
+          cd build_ios
+          PATH_TO_ENTRY="$(find . | grep 'AppEntry.js')"
+          mv $PATH_TO_ENTRY ./../dist/expo/AppEntry_ios.js
+          cd ..
+
+      - name: Move Android AppEntry
+        run: |
+          cd build_android
+          PATH_TO_ENTRY="$(find . | grep 'AppEntry.js')"
+          mv $PATH_TO_ENTRY ./../dist/expo/AppEntry_android.js
+          cd ..
+
+      - name: Move assets
+        run: |
+          mv build_ios/assets dist/assets
+
+      - name: Copy app.json
+        run: cp app.json dist/app.json
+
+      - name: Cleanup
+        run: rm -rf build_ios build_android
+
+      - name: Cloning the PR repository
+        run: |
+          git clone "https://github.com/-- !!! REPO USER / REPO NAME !!! --.git" pr_repo
+
+      - name: Transfering the build to PR repository
+        run: |
+          mkdir pr_repo/${{ github.event.pull_request.number }}
+          cp -r dist/* pr_repo/${{ github.event.pull_request.number }}
+          cd pr_repo
+          git config --global user.email "-- !!! COMMIT MAIL !!! --"
+          git config --global user.name "-- !!! COMMIT NAME !!! --"
+          git add .
+          git commit -m "Build PR#${{ github.event.pull_request.number }}"
+          git push https://${{ secrets.GH_TOKEN }}@github.com/-- !!! REPO USER / REPO NAME !!! --.git
+          cd ..
+
+      - name: Commenting on PR
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `
+              <h1 align="center">🎉 La preview est prête 🎉</h1>
+            
+              ![iOS](https://raw.githubusercontent.com/PapillonApp/chat-themes/refs/heads/main/.github/assets/ios_light.png#gh-light-mode-only)
+              ![iOS](https://raw.githubusercontent.com/PapillonApp/chat-themes/refs/heads/main/.github/assets/ios_dark.png#gh-dark-mode-only)
+            
+              <img
+              src="http://api.qrserver.com/v1/create-qr-code/?data=exp://-- !!! EXPO SERVER !!! --/${{ github.event.pull_request.number }}?platform=ios&size=150x150&margin=5"
+              align="left"
+              />
+              Pour exécuter cette preview sur ton iPhone, tu auras besoin de l'application ExpoGo.
+              Une fois installée, scanne ce QR code à l'aide de l'appareil photo ou entre cette url dans Expo :
+              \`exp://-- !!! EXPO SERVER !!! --/${{ github.event.pull_request.number }}?platform=ios\`
+            
+              <br><br><br>
+              <hr>
+            
+              ![Android](https://raw.githubusercontent.com/PapillonApp/chat-themes/refs/heads/main/.github/assets/android_light.png#gh-light-mode-only)
+              ![Android](https://raw.githubusercontent.com/PapillonApp/chat-themes/refs/heads/main/.github/assets/android_dark.png#gh-dark-mode-only)
+            
+              <img
+              src="http://api.qrserver.com/v1/create-qr-code/?data=exp://-- !!! EXPO SERVER !!! --/${{ github.event.pull_request.number }}?platform=android&size=150x150&margin=5"
+              align="left"
+              />
+              Pour exécuter cette preview sur ton téléphone, tu auras besoin de l'application ExpoGo.
+              Télécharge-la depuis le Google PlayStore, puis une fois installée, scanne ce QR code à l'aide du scanneur de QR code
+              de ton mobile ou entre cette url dans Expo :
+              \`exp://-- !!! EXPO SERVER !!! --/${{ github.event.pull_request.number }}?platform=android\`
+            
+              <br>
+              `
+            });
