@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { View, StyleSheet, Pressable, Platform } from "react-native";
 import MaskStarsColored from "@/components/FirstInstallation/MaskStarsColored";
 import { useTheme } from "@react-navigation/native";
@@ -8,7 +8,6 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { LinearGradient } from "expo-linear-gradient";
-import { Audio } from "expo-av";
 import Reanimated, { ZoomIn, ZoomOut, LinearTransition, FadeIn, FadeOut, FlipInXDown, FadeOutUp } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { getIconName, setIconName } from "@candlefinance/app-icon";
@@ -16,6 +15,7 @@ import { getIconName, setIconName } from "@candlefinance/app-icon";
 import colorsList from "@/utils/data/colors.json";
 import { removeColor } from "../settings/SettingsIcons";
 import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 type Color = typeof colorsList[number];
 
@@ -26,9 +26,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const account = useCurrentAccount(store => store.account);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const settings = route.params?.settings || false;
-
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [sound2, setSound2] = useState<Audio.Sound | null>(null);
+  const { playHaptics, playSound } = useSoundHapticsWrapper();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -38,51 +36,16 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("@/../assets/sound/6.wav")
-      );
-      setSound(sound);
-
-      const sound2 = await Audio.Sound.createAsync(
-        require("@/../assets/sound/click_003.wav")
-      );
-      setSound2(sound2.sound);
-    };
-
-    loadSound();
-
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-      if (sound2) {
-        sound2.unloadAsync();
-      }
-    };
-  }, []);
-
-  const playSound = async () => {
-    if (sound) {
-      await sound.replayAsync();
-    }
-  };
-
-  const playSound2 = async () => {
-    if (sound) {
-      await sound2?.replayAsync();
-    }
-  };
-
   const messages = colorsList.map((color) => ({
     [color.hex.primary]: color.description
   })).reduce((acc, cur) => ({ ...acc, ...cur }), {} as { [key: string]: string });
 
   const selectColor = (color: Color) => {
     mutateProperty("personalization", { color });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    playSound2();
+    playHaptics("notification", {
+      notification: Haptics.NotificationFeedbackType.Success,
+    });
+    playSound(require("@/../assets/sound/click_003.wav"));
 
     expoGoWrapper(() => {
       getIconName().then((currentIcon) => {
@@ -216,7 +179,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           value="Finaliser"
           onPress={async () => {
             if (!settings) {
-              await playSound();
+              playSound(require("@/../assets/sound/6.wav"));
             }
             navigation.navigate("AccountStack", {onboard: true});
           }}

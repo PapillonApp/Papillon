@@ -26,6 +26,7 @@ import ExternalIzlyLogin from "@/views/settings/ExternalAccount/Izly";
 import IzlyActivation from "@/views/settings/ExternalAccount/IzlyActivation";
 import SettingsReactions from "@/views/settings/SettingsReactions";
 import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
+import SettingsSoundHaptics from "@/views/settings/SettingsSoundHaptics";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
 
@@ -135,7 +136,10 @@ const settingsScreens = [
   }),
   createScreen("SettingsApparence", SettingsApparence, {
     headerTitle: "Mode d'affichage",
-  })
+  }),
+  createScreen("SettingsSoundHaptics", SettingsSoundHaptics, {
+    headerTitle: "Son et vibrations",
+  }),
 ] as const;
 
 export default settingsScreens;

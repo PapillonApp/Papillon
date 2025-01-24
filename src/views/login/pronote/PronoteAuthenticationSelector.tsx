@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { QrCodeIcon, LinkIcon, MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
@@ -10,34 +10,17 @@ import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
-import { Audio } from "expo-av";
 import { NativeText } from "@/components/Global/NativeComponents";
 import { LinearGradient } from "expo-linear-gradient";
+import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = ({ navigation }) => {
   const theme = useTheme();
 
   type Methods = "geolocation" | "manual-location" | "manual-url" | "qr-code";
   const [method, setMethod] = useState<Methods | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-  const loadSound = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require("@/../assets/sound/2.wav")
-    );
-
-    setSound(sound);
-  };
-
-  useEffect(() => {
-    loadSound();
-
-    return () => {
-      sound?.unloadAsync();
-    };
-  }, []);
-
-  const playSound = () => void sound?.replayAsync();
+  const { playSound } = useSoundHapticsWrapper();
 
   const handleConfirmation = () => {
     switch (method) {
@@ -55,7 +38,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         break;
     }
 
-    playSound();
+    playSound(require("@/../assets/sound/2.wav"));
   };
 
   return (

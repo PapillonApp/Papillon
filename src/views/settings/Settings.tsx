@@ -32,6 +32,7 @@ import {
   SunMoon,
   Smile,
   SwatchBook,
+  Volume2,
   WandSparkles,
   X
 } from "lucide-react-native";
@@ -154,6 +155,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               navigation.navigate("ColorSelector", { settings: true });
             }, 10);
           }
+        },
+        {
+          icon: <Volume2 />,
+          color: "#800077",
+          label: "Son et vibrations",
+          onPress: () => navigation.navigate("SettingsSoundHaptics"),
         },
         {
           icon: <SunMoon />,

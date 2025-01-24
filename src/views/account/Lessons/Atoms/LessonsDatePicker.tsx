@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {Theme} from "@react-navigation/native/src/types";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
+import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ITEM_WIDTH = 104;
@@ -109,6 +110,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
   const flatListRef = useRef<FlatList | null>(null);
   const scrollX = useSharedValue(0);
   const lastItemIndex = useSharedValue(0);
+  const { playHaptics } = useSoundHapticsWrapper();
 
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -162,10 +164,6 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
     index,
   }), []);
 
-  const triggerHaptic = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
-
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
@@ -174,7 +172,9 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
         lastItemIndex.value = currentItemIndex;
         runOnJS(setIsProgrammaticScroll)(false);
         if (!isProgrammaticScroll) {
-          runOnJS(triggerHaptic)();
+          runOnJS(playHaptics)("impact", {
+            impact: Haptics.ImpactFeedbackStyle.Light,
+          });
         }
       }
     },

@@ -3,6 +3,7 @@ import { Text, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "rea
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
+import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const ButtonCta: React.FC<{
   value: string
@@ -21,6 +22,7 @@ const ButtonCta: React.FC<{
   backgroundColor,
   icon,
 }) => {
+  const { playHaptics } = useSoundHapticsWrapper();
   const { colors } = useTheme();
 
   const [pressed, setPressed] = useState(false);
@@ -41,7 +43,9 @@ const ButtonCta: React.FC<{
       scale.value = withTiming(1, { duration: 0, easing: Easing.linear });
       scale.value = withTiming(0.95, { duration: 50, easing: Easing.linear });
       opacity.value = withTiming(0.7, { duration: 10, easing: Easing.linear });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      playHaptics("impact", {
+        impact: Haptics.ImpactFeedbackStyle.Heavy,
+      });
     }
     else {
       scale.value = withTiming(1, { duration: 100, easing: Easing.linear });
