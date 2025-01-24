@@ -74,6 +74,15 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     setMainLoaded(true);
   }, [homework.done]);
 
+  const truncateContent = (content: string) => {
+    if (content.length <= 120) {
+      return content;
+    }
+    const truncated = content.slice(0, 120);
+    const lastSpaceIndex = truncated.lastIndexOf(" ");
+    return `${truncated.slice(0, lastSpaceIndex)}...`;
+  };
+
   const contentLines = homework.content.split("\n");
 
   const renderCategoryOrReturnType = () => {
@@ -190,7 +199,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
           >
 
             <View style={{ position: "relative" }}>
-              <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
+              <HTMLView value={`<body>${parse_homeworks(truncateContent(homework.content)).replace("\n", "")}</body>`} stylesheet={stylesText} />
               {contentLines.length > 5 && (
                 <LinearGradient
                   colors={[theme.colors.background + "00", theme.colors.background + "80"]}
