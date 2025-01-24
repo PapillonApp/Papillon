@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {NavigationContainer, NavigationState, PartialState, Theme} from "@react-navigation/native";
-import {Platform, StatusBar, View, useColorScheme } from "react-native";
+import { NavigationContainer, NavigationState, PartialState, Theme } from "@react-navigation/native";
+import { Platform, StatusBar, View, useColorScheme } from "react-native";
 import * as Linking from "expo-linking";
 import screens from "@/router/screens";
 import type { RouteParameters } from "@/router/helpers/types";
@@ -13,7 +13,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useCurrentAccount } from "@/stores/account";
 import { navigatorScreenOptions } from "./helpers/create-screen";
-import {navigate} from "@/utils/logger/logger";
+import { navigate } from "@/utils/logger/logger";
 import { PapillonNavigation } from "./refs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -74,9 +74,9 @@ const Router: React.FC = () => {
 
 
   const account = useCurrentAccount(store => store.account!);
-  if (account && account.personalization?.color !== undefined) {
+  if (account?.personalization?.color) {
 
-    if (account.personalization?.color?.hex?.primary !== undefined) {
+    if (account.personalization?.color?.hex?.primary) {
       theme.colors.primary = account.personalization.color.hex.primary;
     }
   }

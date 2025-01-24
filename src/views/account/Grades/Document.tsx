@@ -16,7 +16,7 @@ import {
   School,
   UserMinus,
   UserPlus,
-  Users,
+  Users
 } from "lucide-react-native";
 import { getAverageDiffGrade } from "@/utils/grades/getAverages";
 import type { AverageDiffGrade } from "@/utils/grades/getAverages";
@@ -101,12 +101,12 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
       [grade],
       allGrades,
       "student"
-    ) as AverageDiffGrade;
+    );
     const cD = getAverageDiffGrade(
       [grade],
       allGrades,
       "average"
-    ) as AverageDiffGrade;
+    );
 
     setGradeDiff(gD);
     setClassDiff(cD);
@@ -164,7 +164,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
               : "??",
           bareme: "/" + grade.outOf.value,
         },
-      ].filter(Boolean),
+      ].filter(Boolean).filter((value) => value.value != "??"),
     },
     {
       title: "Influence",

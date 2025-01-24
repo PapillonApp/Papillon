@@ -6,12 +6,12 @@ import {
 } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import { getCourseSpeciality } from "@/utils/format/format_cours_name";
-import {AverageDiffGrade, getAverageDiffGrade} from "@/utils/grades/getAverages";
+import { AverageDiffGrade, getAverageDiffGrade } from "@/utils/grades/getAverages";
 import { useTheme } from "@react-navigation/native";
 import { Trophy, User, UserMinus, UserPlus, Users } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 
 const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
   const { subject, allGrades } = route.params;
@@ -32,30 +32,33 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
     fetchSubjectData();
   }, [subject.average.subjectName]);
 
+  const studentAverage = parseFloat((subject.average?.average?.value || -1).toString()).toFixed(2);
+  const classAverage = parseFloat((subject.average?.classAverage?.value || -1).toString()).toFixed(2);
+  const highAverage = parseFloat((subject.average?.max?.value || -1).toString()).toFixed(2);
+  const lowAverage = parseFloat((subject.average?.min?.value || -1).toString()).toFixed(2);
+
   const averages = [
     {
       icon: <User />,
       label: "Ta moyenne",
-      value: parseFloat((subject.average?.average?.value || -1).toString()).toFixed(2),
+      value: studentAverage !== "-1.00" ? studentAverage : "N.Not",
     },
     {
       icon: <Users />,
       label: "Moy. de classe",
-      value: parseFloat((subject.average?.classAverage?.value || -1).toString()).toFixed(2),
+      value: classAverage !== "-1.00" ? classAverage : "??",
     },
     {
       icon: <UserPlus />,
       label: "Moy. la plus haute",
-      value: parseFloat((subject.average?.max?.value || -1).toString()).toFixed(2),
+      value: highAverage !== "-1.00" ? highAverage : "??",
     },
     {
       icon: <UserMinus />,
       label: "Moy. la plus basse",
-      value: parseFloat((subject.average?.min?.value || -1).toString()).toFixed(2) !== "-1.00"
-        ? parseFloat((subject.average?.min?.value || -1).toString()).toFixed(2)
-        : "??",
+      value: lowAverage !== "-1.00" ? lowAverage : "??",
     },
-  ];
+  ].filter((value) => value.value != "??");
 
   const subjectOutOf = subject.average?.outOf?.value || 20;
 
