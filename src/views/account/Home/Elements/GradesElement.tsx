@@ -81,7 +81,7 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
         <NativeItem animated style={{ paddingVertical: 10 }}>
           <MissingItem
             style={{ marginHorizontal: 16 }}
-            emoji="📚"
+            emoji="📊"
             title="Aucune note disponible"
             description={
               defaultPeriod
