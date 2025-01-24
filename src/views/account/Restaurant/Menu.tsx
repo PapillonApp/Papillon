@@ -36,7 +36,7 @@ import { Balance } from "@/services/shared/Balance";
 import { balanceFromExternal } from "@/services/balance";
 import MissingItem from "@/components/Global/MissingItem";
 import { animPapillon } from "@/utils/ui/animations";
-import Reanimated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeInDown, FadeInUp, FadeOut, FadeOutDown, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { reservationHistoryFromExternal } from "@/services/reservation-history";
 import { qrcodeFromExternal } from "@/services/qrcode";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
@@ -50,6 +50,9 @@ import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/service
 import AccountButton from "@/components/Restaurant/AccountButton";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import PapillonHeader from "@/components/Global/PapillonHeader";
+import { PressableScale } from "react-native-pressable-scale";
+import { BlurView } from "expo-blur";
+import { ChevronLeft, ChevronRight} from "lucide-react-native";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -367,8 +370,36 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               />
             </HorizontalList>
 
-            {(currentMenu || (allBookings && allBookings.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
+            {(currentMenu || (allBookings && allBookings?.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
               <View style={styles.calendarContainer}>
+                <Reanimated.View
+                  layout={animPapillon(LinearTransition)}
+                  entering={animPapillon(ZoomIn)}
+                  exiting={animPapillon(ZoomOut)}
+                >
+                  <PressableScale
+                    onPress={() => {
+                      onDatePickerSelect(new Date(pickerDate.setDate(pickerDate.getDate() - 1)));
+                      setRefreshCount(refreshCount + 1);
+                    }}
+                    activeScale={0.8}
+                  >
+                    <BlurView
+                      style={[styles.weekPickerText, {
+                        backgroundColor: theme.colors.border,
+                        padding: 8,
+                        borderRadius: 100,
+                      }]}
+                      tint={theme.dark ? "dark" : "light"}
+                    >
+                      <ChevronLeft
+                        size={24}
+                        color={theme.colors.text}
+                        strokeWidth={2.5}
+                      />
+                    </BlurView>
+                  </PressableScale>
+                </Reanimated.View>
                 <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
                   <Reanimated.View layout={animPapillon(LinearTransition)}>
                     <Reanimated.View
@@ -386,6 +417,33 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                     {pickerDate.toLocaleDateString("fr-FR", { month: "long" })}
                   </Reanimated.Text>
                 </PapillonHeaderSelector>
+                <Reanimated.View
+                  layout={animPapillon(LinearTransition)}
+                  entering={animPapillon(ZoomIn)}
+                  exiting={animPapillon(ZoomOut)}
+                >
+                  <PressableScale
+                    onPress={() => {
+                      onDatePickerSelect(new Date(pickerDate.setDate(pickerDate.getDate() + 1)));
+                      setRefreshCount(refreshCount + 1);
+                    }}
+                    activeScale={0.8}
+                  >
+                    <BlurView
+                      style={[styles.weekPickerText, {
+                        backgroundColor: theme.colors.border,
+                        padding: 8,
+                        borderRadius: 100,
+                      }]}
+                    >
+                      <ChevronRight
+                        size={24}
+                        color={theme.colors.text}
+                        strokeWidth={2.5}
+                      />
+                    </BlurView>
+                  </PressableScale>
+                </Reanimated.View>
               </View>
             }
 
