@@ -1,5 +1,5 @@
 import type { PronoteAccount } from "@/stores/account/types";
-import { TimetableClassStatus, type Timetable, type TimetableClass } from "../shared/Timetable";
+import { TimetableClassStatus, WeekFrequency, type Timetable, type TimetableClass } from "../shared/Timetable";
 import { ErrorServiceUnauthenticated } from "../shared/errors";
 import pronote from "pawnote";
 import { info } from "@/utils/logger/logger";
@@ -107,4 +107,25 @@ const category_match = {
   8: "Enseignements Pratiques Interdisciplinaires",
   9: "Accompagnement personnalisé",
   12: "Visioconférence",
+};
+
+export const getWeekFrequency = (account: PronoteAccount, weekNumber: number): WeekFrequency | null => {
+  if (!account.instance)
+    throw new ErrorServiceUnauthenticated("pronote");
+
+  if (weekNumber < 1 || weekNumber > 62) {
+    info("PRONOTE->getTimetableForWeek(): Le numéro de semaine est en dehors des bornes (1<>62), null est retourné.", "pronote");
+    return null;
+  }
+
+  const frequency = pronote.frequency(account.instance, weekNumber);
+
+  if (!frequency)
+    return null;
+
+  return {
+    textLabel: "Semaine",
+    freqLabel: frequency.label,
+    num: frequency.fortnight
+  };
 };

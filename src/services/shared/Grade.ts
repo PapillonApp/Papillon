@@ -73,4 +73,8 @@ export interface AverageOverview {
 export interface GradesPerSubject {
   average: SubjectAverage
   grades: Array<Grade>
+  rank?: {
+    value: number;
+    outOf: number;
+  }
 }

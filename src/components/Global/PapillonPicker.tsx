@@ -10,18 +10,17 @@ import { NativeText } from "./NativeComponents";
 import { BlurView } from "expo-blur";
 import { Check } from "lucide-react-native";
 
-export type PickerDataItem = { index?: number, label: string, icon?: JSX.Element, onPress?: () => unknown };
-export type PickerData = string[] | PickerDataItem[];
+type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown, checked?: boolean }[];
 
 interface PapillonPickerProps {
   children: React.ReactNode
   data: PickerData
-  selected?: string | PickerDataItem
+  selected?: string
   contentContainerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
   delay?: number,
   direction?: "left" | "right",
   animated?: boolean,
-  onSelectionChange?: any
+  onSelectionChange?: (item: string) => unknown
 }
 
 const PapillonPicker: React.FC<PapillonPickerProps> = ({
@@ -70,10 +69,8 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             styles.picker,
             direction === "left" ? {
               left: 0,
-              transformOrigin: "top left",
             } : {
               right: 0,
-              transformOrigin: "top right",
             },
             {
               backgroundColor: Platform.OS === "ios" ? theme.colors.card + 50 : theme.colors.card,
@@ -94,7 +91,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             }}
             tint={theme.dark ? "dark" : "light"}
           >
-            {data.map((item, index) => {
+            {data.filter((item) => item !== null).map((item, index) => {
               // check if item is a string or a component
               const isNotString = typeof item !== "string";
 
@@ -139,7 +136,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
 
                     <View style={{ flex: 1 }} />
 
-                    {item === selected && (
+                    {item === selected || (isNotString && item.checked) && (
                       <Check
                         size={20}
                         strokeWidth={2.5}

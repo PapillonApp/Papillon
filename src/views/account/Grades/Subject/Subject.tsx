@@ -2,7 +2,7 @@ import type { RouteParameters } from "@/router/helpers/types";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
-import { animPapillon } from "@/utils/ui/animations";
+import { anim2Papillon, animPapillon } from "@/utils/ui/animations";
 import Reanimated, { FadeInRight, FadeOutLeft, LinearTransition } from "react-native-reanimated";
 import { FlatList, View } from "react-native";
 import SubjectItem from "./SubjectList";
@@ -138,7 +138,7 @@ const Subject: React.FC<SubjectProps> = ({
 
   return (
     <Reanimated.View
-      layout={animPapillon(LinearTransition)}
+      layout={anim2Papillon(LinearTransition)}
     >
       <FlatList
         data={sortedData}

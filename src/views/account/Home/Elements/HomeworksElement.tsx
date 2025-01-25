@@ -66,6 +66,17 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
   const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
   ) ?? [];
+  const truncateContent = (content: string) => {
+    if (content.length <= 120) {
+      return content;
+    }
+    const truncated = content.slice(0, 120);
+    const lastSpaceIndex = truncated.lastIndexOf(" ");
+    return `${truncated.slice(0, lastSpaceIndex)}...`;
+  };
+  hwSemaineActuelle.forEach(hw => {
+    hw.content = truncateContent(hw.content);
+  });
   const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
   ) ?? [];

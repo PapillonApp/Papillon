@@ -36,3 +36,9 @@ export enum TimetableClassStatus {
   ONLINE = "En ligne",
   TEST = "ds",
 }
+
+export interface WeekFrequency {
+  textLabel: string,
+  freqLabel: string,
+  num: number
+}

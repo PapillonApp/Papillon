@@ -1,6 +1,6 @@
 import React, { type ReactNode, isValidElement, Children } from "react";
 import { View, Text, Pressable, StyleSheet, type StyleProp, type ViewStyle, type TextStyle, Platform, TouchableNativeFeedback } from "react-native";
-import Reanimated, { type AnimatedProps, LinearTransition } from "react-native-reanimated";
+import Reanimated, { type AnimatedProps, LayoutAnimation, LinearTransition } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import { ChevronRight } from "lucide-react-native";
 import { animPapillon } from "@/utils/ui/animations";
@@ -18,6 +18,7 @@ interface NativeListProps {
   style?: StyleProp<ViewStyle>;
   inline?: boolean;
   animated?: boolean;
+  layout?: LayoutAnimation;
   entering?: EntryOrExitLayoutType;
   exiting?: EntryOrExitLayoutType;
 }
@@ -27,6 +28,7 @@ export const NativeList: React.FC<NativeListProps> = ({
   style,
   inline,
   animated,
+  layout,
   entering,
   exiting
 }) => {
@@ -43,7 +45,7 @@ export const NativeList: React.FC<NativeListProps> = ({
     return (
       <Reanimated.View
         style={list_styles.item}
-        layout={animated && animPapillon(LinearTransition)}
+        layout={animated && (layout ?? animPapillon(LinearTransition))}
         key={newChild.props.identifier || null}
       >
         {newChild}
