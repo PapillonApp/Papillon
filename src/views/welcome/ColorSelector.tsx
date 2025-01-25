@@ -124,7 +124,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               height: 60,
               borderRadius: 200,
               borderColor: color.hex.primary,
-              zIndex: -99,
+              zIndex: 99,
             }
           ]}
           entering={ZoomIn.springify().mass(1).stiffness(150)}
