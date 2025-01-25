@@ -14,7 +14,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Screen} from "@/router/helpers/types";

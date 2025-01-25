@@ -86,7 +86,6 @@
     "react-native-infinite-pager": "^0.3.16",
     "react-native-pager-view": "6.5.1",
     "react-native-parsed-text": "^0.0.22",
-    "react-native-pressable-scale": "^2.1.0",
     "react-native-qrcode-svg": "^6.3.1",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",

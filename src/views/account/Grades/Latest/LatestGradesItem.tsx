@@ -2,7 +2,7 @@ import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import type { Grade } from "@/services/shared/Grade";
 
 type GradeLatestItemProps = {

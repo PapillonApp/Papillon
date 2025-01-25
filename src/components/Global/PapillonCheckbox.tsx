@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 
 import Reanimated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { Check } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import PapillonSpinner from "./PapillonSpinner";

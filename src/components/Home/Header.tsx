@@ -18,7 +18,7 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import { defaultTabs } from "@/consts/DefaultTabs";
 import { Widgets } from "@/widgets";
 import LottieView from "lottie-react-native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import Widget from "./Widget";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";

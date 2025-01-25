@@ -35,7 +35,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import {animPapillon} from "@/utils/ui/animations";
 import {Screen} from "@/router/helpers/types";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import {PressableScale} from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 import datasets from "@/consts/datasets.json";
 import Animated from "react-native-reanimated";

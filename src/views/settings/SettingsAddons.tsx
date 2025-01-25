@@ -32,7 +32,7 @@ import {
   UserCog,
 } from "lucide-react-native";
 import {get_addons_list} from "@/addons/addons";
-import {PressableScale} from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import * as Linking from "expo-linking";
 import * as FileSystem from "expo-file-system";
 import {AddonManifest} from "@/addons/types";

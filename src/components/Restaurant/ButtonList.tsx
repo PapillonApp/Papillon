@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 
 interface ItemProps {
   title: string;

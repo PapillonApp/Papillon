@@ -19,7 +19,7 @@ import { dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
 import * as StoreReview from "expo-store-review";
 
 import HomeworkItem from "./Atoms/Item";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Book, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, Search, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

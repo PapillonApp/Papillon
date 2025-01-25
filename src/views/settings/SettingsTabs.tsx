@@ -22,7 +22,7 @@ import {
   NestableScrollContainer,
   ShadowDecorator,
 } from "react-native-draggable-flatlist";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import Reanimated, {
   FadeIn,
   FadeOut,

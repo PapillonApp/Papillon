@@ -12,7 +12,7 @@ import { BlurView } from "expo-blur";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import {PressableScale} from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import {NativeText} from "@/components/Global/NativeComponents";
 import {Reel} from "@/services/shared/Reel";
 import {captureRef} from "react-native-view-shot";

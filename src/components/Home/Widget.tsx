@@ -11,7 +11,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 
 import { animPapillon } from "@/utils/ui/animations";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
