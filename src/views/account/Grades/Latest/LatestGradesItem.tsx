@@ -96,14 +96,14 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
             }: undefined}
           >
             {grade.description ||
-							`Note renseignée le ${new Date(
-							  grade.timestamp
-							).toLocaleDateString("fr-FR", {
-							  weekday: "long",
-							  month: "long",
-							  day: "numeric",
-							  year: "numeric",
-							})}`}
+              `Note renseignée le ${new Date(
+                grade.timestamp
+              ).toLocaleDateString("fr-FR", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}`}
           </NativeText>
         </View>
 

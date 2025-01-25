@@ -16,8 +16,7 @@ import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
-import React from "react";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Platform,

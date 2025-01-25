@@ -1,6 +1,6 @@
-import {AddonLogs as AddonLog, AddonPlacementManifest} from "@/addons/types";
+import { AddonLogs as AddonLog, AddonPlacementManifest } from "@/addons/types";
 import type { Chat, ChatRecipient } from "@/services/shared/Chat";
-import type {Grade, GradesPerSubject} from "@/services/shared/Grade";
+import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { Homework } from "@/services/shared/Homework";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import type { AccountService } from "@/stores/account/types";
@@ -8,11 +8,11 @@ import type { CurrentPosition } from "@/utils/native/location";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type pronote from "pawnote";
 import type React from "react";
-import type { School as SkolengoSchool} from "scolengo-api/types/models/School";
+import type { School as SkolengoSchool } from "scolengo-api/types/models/School";
 import { ImageSourcePropType } from "react-native";
-import {Client} from "pawrd";
+import { Client } from "pawrd";
 import { Host } from "turboself-api";
-import {Evaluation} from "@/services/shared/Evaluation";
+import { Evaluation } from "@/services/shared/Evaluation";
 import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
 
 export type RouteParameters = {
@@ -137,7 +137,7 @@ export type RouteParameters = {
 
   Menu?: undefined;
   RestaurantQrCode: {
-    QrCodes: Array<string | Blob>;
+    QrCodes: Array<string | Blob>;
   };
   RestaurantHistory: {
     histories: ReservationHistory[];

@@ -4,19 +4,24 @@ import {
   View,
   Image,
   Text,
-  Alert, ScrollView, StyleSheet, Dimensions
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Share
 } from "react-native";
-import {Download, Trash2, Ellipsis} from "lucide-react-native";
+import { Download, Trash2, Ellipsis } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import {PressableScale} from "react-native-pressable-scale";
-import {NativeText} from "@/components/Global/NativeComponents";
-import {Reel} from "@/services/shared/Reel";
-import {captureRef} from "react-native-view-shot";
+import { PressableScale } from "react-native-pressable-scale";
+import { NativeText } from "@/components/Global/NativeComponents";
+import { Reel } from "@/services/shared/Reel";
+import { captureRef } from "react-native-view-shot";
 import Constants from "expo-constants";
+import { Social, type ShareSingleOptions } from "react-native-share";
+
 interface GradeModalProps {
   isVisible: boolean;
   reel: Reel;
@@ -44,7 +49,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
   const insets = useSafeAreaInsets();
   const stickersRef = React.useRef<View>(null);
 
-  const shareToSocial = async (option) => {
+  const shareToSocial = async (option: ShareSingleOptions) => {
     const isExpoGo = Constants.appOwnership === "expo";
     if (isExpoGo) {
       Alert.alert("Fonctionnalité indisponible", "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.");
@@ -167,7 +172,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
                 appId: "497734022878553",
                 stickerImage: `data:image/png;base64,${stickers}`,
                 backgroundImage: `data:image/png;base64,${reel.imagewithouteffect}`,
-                social: "instagramstories",
+                social: Social.InstagramStories,
               });
             }}
           >
@@ -188,10 +193,10 @@ const GradeModal: React.FC<GradeModalProps> = ({
               gap: 8,
             }}
             onPress={async () => {
-              await Share.open({
-                url: `data:image/png;base64,${reel.image}`,
-                type: "image/png",
+              await Share.share({
                 message: "Voici ma note de " + reel.grade.value + "/" + reel.grade.outOf + " en " + reel.subjectdata.pretty + " ! Qu'en penses-tu ?",
+                url: `data:image/png;base64,${reel.image}`,
+                title: "Partager ma note",
               });
             }}
           >

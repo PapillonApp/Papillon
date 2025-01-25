@@ -32,23 +32,11 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import {Homework} from "@/services/shared/Homework";
-import {Account} from "@/stores/account/types";
-import {Screen} from "@/router/helpers/types";
-import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
-import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
+import { Homework } from "@/services/shared/Homework";
+import { Screen } from "@/router/helpers/types";
+import { NativeSyntheticEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import { NativeScrollEvent, ScrollViewProps } from "react-native/Libraries/Components/ScrollView/ScrollView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -96,8 +84,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [direction, setDirection] = useState<"left" | "right">("right");
-  const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
 
@@ -142,14 +128,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
   // on page change, load the homeworks
   useEffect(() => {
-    if (selectedWeek > oldSelectedWeek) {
-      setDirection("right");
-    } else if (selectedWeek < oldSelectedWeek) {
-      setDirection("left");
-    }
-
     setTimeout(() => {
-      setOldSelectedWeek(selectedWeek);
       updateHomeworks(false, false);
     }, 0);
   }, [selectedWeek]);

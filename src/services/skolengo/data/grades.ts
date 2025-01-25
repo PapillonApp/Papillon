@@ -20,14 +20,6 @@ const getSubjectMinMax = (evalSubj: Evaluation): {min: GradeValue, max:GradeValu
   return {min: { value: minimum, disabled: false, status: null } , max: { value: maximum, disabled: false, status: null }, outOf};
 };
 
-const getOverall = (evals: Evaluation[]): GradeValue =>{
-  if(evals.filter(e=>e.average !== null).length === 0)
-    return { value: null, disabled: true, status: null };
-  const sum = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.average! * (e.coefficient || 1)), 0);
-  const sumCoef = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.coefficient || 1), 0);
-  return { value: sum / sumCoef, disabled: false, status: null };
-};
-
 export const getGradesAndAverages = async (account: SkolengoAccount, periodName: string): Promise<{
   grades: Grade[],
   averages: AverageOverview

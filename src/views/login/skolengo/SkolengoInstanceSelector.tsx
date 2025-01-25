@@ -10,7 +10,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 
 import { Search, X, GraduationCap, } from "lucide-react-native";
-import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import type { School } from "scolengo-api/types/models/School";
 import { Skolengo } from "scolengo-api";
@@ -23,12 +22,9 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
   // `null` when loading, `[]` when no instances found.
   const [instances, setInstances] = useState<School[]>([]);
   const [geoInstances, setGeoInstances] = useState<School[]|null>(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
-
-  const { showAlert } = useAlert();
 
   const [search, setSearch] = useState("");
   const searchInputRef = React.createRef<TextInput>();
@@ -77,19 +73,15 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
     };
   }, []);
 
-  const playSound = () => sound?.replayAsync();
-
   useEffect(() => {
     if (params && params.pos && params.pos !== null) {
       void async function () {
-        setIsSearchLoading(true);
         const instances = await Skolengo.searchSchool({ lon: params.pos!.longitude, lat: params.pos!.latitude }, 20);
         // On limite à 20 instances.
         instances.splice(20);
 
         setInstances(instances);
         setGeoInstances(instances);
-        setIsSearchLoading(false);
       }();
     } else {
       setInstances([]);
@@ -107,11 +99,9 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
         setInstances(newInstances);
         setHasSearched(true);
       } else {
-        setIsSearchLoading(true);
         const newInstances = await Skolengo.searchSchool({ text: search }, 20);
         // On limite à 20 instances.
         newInstances.splice(20);
-        setIsSearchLoading(false);
         if(_debSearch !== debouncedSearch) return; // if the search has changed, we don't update the instances.
         setInstances(newInstances);
         setHasSearched(true);

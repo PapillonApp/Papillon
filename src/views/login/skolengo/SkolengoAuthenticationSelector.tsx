@@ -36,7 +36,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
     };
   }, []);
 
-  const playSound = () => void sound?.replayAsync();
+  const playSound = () => sound?.replayAsync();
 
   const handleConfirmation = () => {
     switch (method) {

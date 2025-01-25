@@ -128,7 +128,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
             onSubmitEditing={() => {
               if (instanceURL.length > 0) {
                 checkForDemoInstance(instanceURL, navigation, showAlert);
-              };
+              }
             }}
           />
 
@@ -159,7 +159,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           onPress={() => {
             if (instanceURL.length > 0) {
               checkForDemoInstance(instanceURL, navigation, showAlert);
-            };
+            }
           }}
         />
         {(route.params?.method) && (

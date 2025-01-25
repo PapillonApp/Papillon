@@ -182,8 +182,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                 }
               >
                 <NativeText variant="title">{icon.name}</NativeText>
-                {(icon.author && icon.author.trim() !== "") &&
-                <NativeText variant="subtitle">{icon.author}</NativeText>
+                {(icon.author?.trim() !== "") &&
+                  <NativeText variant="subtitle">{icon.author}</NativeText>
                 }
               </NativeItem>
             ))}

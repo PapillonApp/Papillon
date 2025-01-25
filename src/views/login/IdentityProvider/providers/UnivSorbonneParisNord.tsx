@@ -61,6 +61,7 @@ const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ na
 
       const studentInfo = await fetchStudentInfo(studentId, token);
       // Exclude INE from rawData
+      // eslint-disable-next-line
       const { INE, ...safeStudentInfo } = studentInfo;
 
       const localAccount: LocalAccount = {

@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { useTheme } from "@react-navigation/native";
@@ -26,13 +26,13 @@ const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) =
       onImportance(2);
   };
 
-  if (account.personalization?.popupRestauration === false) {
-    return null;
-  }
-
   useEffect(() => {
     ImportanceHandler();
   }, []);
+
+  if (account.personalization?.popupRestauration === false) {
+    return null;
+  }
 
   return (
     <NativeList

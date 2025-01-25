@@ -17,8 +17,8 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
-  const [oldFirstName, setOldFirstName] = useState(account.studentName?.first ?? "");
-  const [oldLastName, setOldLastName] = useState(account.studentName?.last ?? "");
+  const oldFirstName = account.studentName?.first ?? "";
+  const oldLastName = account.studentName?.last ?? "";
 
   const firstNameRef = useRef<TextInput>(null);
   const lastNameRef = useRef<TextInput>(null);

@@ -16,8 +16,8 @@ import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
-import {Information} from "@/services/shared/Information";
-import {AccountService} from "@/stores/account/types";
+import { Information } from "@/services/shared/Information";
+import { AccountService } from "@/stores/account/types";
 
 type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
@@ -29,7 +29,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
-  const [isED, setIsED] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -44,7 +43,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   }, [account]);
 
   useEffect(() => {
-    if (account.service === AccountService.EcoleDirecte) setIsED(true);
     if (sortedMessages.length === 0) {
       navigation.addListener("focus", () => fetchData(true));
       fetchData();

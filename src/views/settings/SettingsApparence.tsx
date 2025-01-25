@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import {Moon, RefreshCw, Sun, SunMoon} from "lucide-react-native";
+import { Moon, RefreshCw, Sun, SunMoon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NativeList, NativeItem, NativeListHeader } from "@/components/Global/NativeComponents";
-import { NativeText } from "@/components/Global/NativeComponents";
+import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Animated, {FadeInDown, FadeOutDown} from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import ApparenceContainerCard from "@/components/Settings/ApparenceContainerCard";
 import * as Brightness from "expo-brightness";
 

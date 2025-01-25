@@ -108,9 +108,9 @@ export const epochWMToCalendarWeekNumber = (epochWeekNumber: number): number => 
   // Set Day to Sunday and make it the 7th day of the week
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
   // Get first day of year
-  var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  let yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
   // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil(( ( (date.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
+  let weekNo = Math.ceil(( ( (date.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
   // Return array of year and week number
   return weekNo;
 };

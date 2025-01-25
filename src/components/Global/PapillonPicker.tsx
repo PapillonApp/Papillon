@@ -10,17 +10,19 @@ import { NativeText } from "./NativeComponents";
 import { BlurView } from "expo-blur";
 import { Check } from "lucide-react-native";
 
-type PickerData = string[] | { label: string, icon?: JSX.Element, onPress: () => unknown, checked?: boolean }[];
+export type PickerDataItem = string | { label: string, icon?: JSX.Element, onPress?: () => unknown, checked?: boolean };
+
+type PickerData = PickerDataItem[];
 
 interface PapillonPickerProps {
   children: React.ReactNode
   data: PickerData
-  selected?: string
+  selected?: PickerDataItem
   contentContainerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>
   delay?: number,
   direction?: "left" | "right",
   animated?: boolean,
-  onSelectionChange?: (item: string) => unknown
+  onSelectionChange?: any
 }
 
 const PapillonPicker: React.FC<PapillonPickerProps> = ({
@@ -37,7 +39,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
   const [contentHeight, setContentHeight] = useState(0);
   const [opened, setOpened] = useState(false);
 
-  const handleSelectionChange = (item: string) => {
+  const handleSelectionChange = (item: PickerDataItem) => {
     if (onSelectionChange) {
       setTimeout(() => {
         onSelectionChange(item);
@@ -96,7 +98,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               const isNotString = typeof item !== "string";
 
               const label = isNotString ? item.label : item;
-              const icon: null | React.ReactNode = isNotString ? (item.icon ? item.icon: null) : null;
+              const icon: null | React.ReactNode = isNotString ? (item.icon ?? null) : null;
 
               const onPressItem = isNotString ? item.onPress : null;
 
@@ -115,7 +117,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
                       onPressItem();
                     } : () => {
                       setOpened(false);
-                      handleSelectionChange(item as string);
+                      handleSelectionChange(item);
                     }}
                     style={[
                       styles.item

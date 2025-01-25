@@ -20,7 +20,7 @@ function extractStudentDataFromHTML (htmlString: string) {
 
     // Helper function to extract section data
     function extractSectionData (sectionName: string, dataObject: any) {
-      const sectionRegex = new RegExp(`<h3 class="section-h3">${sectionName}[\\s\\S]*?<dl class="well">[\\s\\S]*?<\/dl>`);
+      const sectionRegex = new RegExp(`<h3 class="section-h3">${sectionName}[\\s\\S]*?<dl class="well">[\\s\\S]*?</dl>`);
       const sectionMatch = htmlString.match(sectionRegex);
       if (sectionMatch) {
         const divRegex = /<div class="information-dl-div">[\s\S]*?<dt[^>]*>(.*?)<\/dt>[\s\S]*?<dd[^>]*>(.*?)<\/dd>[\s\S]*?<\/div>/g;

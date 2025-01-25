@@ -18,7 +18,6 @@ const RestaurantBalanceWidget = forwardRef(({
   const theme = useTheme();
   const { colors } = theme;
 
-  const account = useCurrentAccount((store) => store.account);
   const linkedAccounts = useCurrentAccount(store => store.linkedAccounts);
   const [balances, setBalances] = useState<Balance[] | null>(null);
   const [currentBalanceIndex, setCurrentBalanceIndex] = useState(0);

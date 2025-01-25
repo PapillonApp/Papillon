@@ -31,12 +31,12 @@
 // |                                                          |
 // +——————————————————————————————————————————————————————————+
 
-import {protectScreenComponent} from "@/router/helpers/protected-screen";
-import type {Screen} from "@/router/helpers/types";
-import {useCurrentAccount} from "@/stores/account";
+import { protectScreenComponent } from "@/router/helpers/protected-screen";
+import type { Screen } from "@/router/helpers/types";
+import { useCurrentAccount } from "@/stores/account";
 import getCorners from "@/utils/ui/corner-radius";
-import {useIsFocused, useTheme} from "@react-navigation/native";
-import React, {useCallback, useMemo, useState} from "react";
+import { useIsFocused, useTheme } from "@react-navigation/native";
+import React, { useMemo, useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -44,7 +44,6 @@ import {
   StatusBar,
   View
 } from "react-native";
-import Reanimated from "react-native-reanimated";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -52,14 +51,14 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AccountSwitcher from "@/components/Home/AccountSwitcher";
 import ContextMenu from "@/components/Home/AccountSwitcherContextMenu";
 import Header from "@/components/Home/Header";
-import {useBottomTabBarHeight} from "@react-navigation/bottom-tabs";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import * as Haptics from "expo-haptics";
 import ModalContent from "@/views/account/Home/ModalContent";
-import {AnimatedScrollView} from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
+import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const Home: Screen<"HomeScreen"> = ({ navigation }) => {
@@ -75,20 +74,11 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
 
   let account = useCurrentAccount(store => store.account!);
 
-  const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFull, setModalFull] = useState(false);
 
   const [canHaptics, setCanHaptics] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const openAccSwitcher = useCallback(() => {
-    setShouldOpenContextMenu(false);
-    setTimeout(() => {
-      setShouldOpenContextMenu(true);
-    }, 150);
-  }, []);
 
   const windowHeight = Dimensions.get("window").height;
   const tabbarHeight = useBottomTabBarHeight();
@@ -149,23 +139,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
         Extrapolation.CLAMP
       )}
     ],
-  }));
-
-  const navigationBarAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: scrollOffset.value - 270 - insets.top,
-    left: 0,
-    right: 0,
-    height: interpolate(
-      scrollOffset.value,
-      [125, 265],
-      [0, insets.top + 60],
-      Extrapolation.CLAMP
-    ),
-    zIndex: 100,
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderBottomWidth: 0.5,
   }));
 
   const modalContentAnimatedStyle = useAnimatedStyle(() => ({
@@ -230,7 +203,6 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           left: 16,
           zIndex: 1000,
         }]}
-        shouldOpenContextMenu={shouldOpenContextMenu}
       >
         <AccountSwitcher
           translationY={scrollOffset}
@@ -238,7 +210,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           loading={!account.instance}
         />
       </ContextMenu>
-      <Reanimated.ScrollView
+      <Animated.ScrollView
         ref={scrollRef}
         snapToEnd={false}
         snapToStart={false}
@@ -293,7 +265,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
             />
           </Animated.View>
         </Animated.View>
-      </Reanimated.ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };

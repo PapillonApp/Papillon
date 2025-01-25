@@ -16,7 +16,7 @@ import {
   MoreHorizontal,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Linking, TouchableOpacity, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -65,25 +65,9 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
     }));
   }, [account.instance]);
 
-  const tagsStyles = {
-    body: {
-      color: theme.colors.text,
-    },
-    a: {
-      color: theme.colors.primary,
-      textDecorationColor: theme.colors.primary,
-    },
-  };
-
-  function onPress (event: GestureResponderEvent, href: string) {
+  function onPress (href: string) {
     Linking.openURL(href);
   }
-
-  const renderersProps = {
-    a: {
-      onPress: onPress,
-    },
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -196,6 +180,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
           <HTMLView
             value={`<body>${message.content.replaceAll("<p>", "").replaceAll("</p>", "")}</body>`}
             stylesheet={stylesText}
+            onLinkPress={onPress}
           />
         </View>
 

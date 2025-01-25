@@ -28,7 +28,7 @@ const PapillonHeader: React.FC<PapillonHeaderProps> = ({
   return (
     <View
       style={{
-        height: (largeHeader ? 56 : 44) + (topPadding ? topPadding : 0),
+        height: (largeHeader ? 56 : 44) + (topPadding ?? 0),
         backgroundColor: theme.colors.card,
         borderColor: theme.colors.border,
         borderBottomWidth: 0.5,
@@ -38,7 +38,7 @@ const PapillonHeader: React.FC<PapillonHeaderProps> = ({
         alignItems: "center",
         paddingHorizontal: 16,
         zIndex: 10000,
-        paddingTop: topPadding ?( topPadding ) : 0,
+        paddingTop: topPadding ?? 0,
       }}
     >
       {route.params?.outsideNav && Platform.OS !== "ios" && (

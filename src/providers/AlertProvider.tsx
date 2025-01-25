@@ -194,7 +194,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                       styles.button,
                       primary && styles.primaryButton,
                       primary && {
-                        backgroundColor: backgroundColor ? backgroundColor : colors.primary,
+                        backgroundColor: backgroundColor ?? colors.primary,
                       },
                       danger && {
                         backgroundColor: "#b62000",
@@ -204,7 +204,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                       }
                     ]}
                   >
-                    {icon ? icon : null}
+                    {icon ?? null}
 
                     <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
                       {title}

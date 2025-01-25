@@ -12,8 +12,7 @@ import {
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+  SafeAreaView
 } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
@@ -33,7 +32,6 @@ import { wait } from "@/services/skolengo/data/utils";
 const SkolengoWebview: Screen<"SkolengoWebview"> = ({ route, navigation }) => {
   const { showAlert } = useAlert();
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
 
   const [showWebView, setShowWebView] = useState(false);
 
@@ -307,6 +305,7 @@ const getSkolengoURL =  async (school: School) => {
 };
 
 //! This function is not used in the current codebase but will be used in the future
+// eslint-disable-next-line
 const loginSkolengoWorkflow = async (school: School) => {
   const skolengoUrl = await getSkolengoURL(school);
   if(!skolengoUrl) return;

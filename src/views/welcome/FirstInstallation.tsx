@@ -47,12 +47,6 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
     };
   }, []);
 
-  const playSound = async () => {
-    if (sound) {
-      await sound.replayAsync();
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <MaskStars />

@@ -1,17 +1,16 @@
-import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";
-import {getSubjectData} from "@/services/shared/Subject";
-import {useTheme} from "@react-navigation/native";
-import React, {useCallback, useEffect, useLayoutEffect, useState} from "react";
-import {Image, Platform, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import { NativeItem, NativeList, NativeListHeader, NativeText, } from "@/components/Global/NativeComponents";
+import { getSubjectData } from "@/services/shared/Subject";
+import { useTheme } from "@react-navigation/native";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { Image, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as StoreReview from "expo-store-review";
-import {Asterisk, Calculator, Maximize2, Scale, School, UserMinus, UserPlus, Users,} from "lucide-react-native";
-import type {AverageDiffGrade} from "@/utils/grades/getAverages";
-import {getAverageDiffGrade} from "@/utils/grades/getAverages";
-import {Screen} from "@/router/helpers/types";
+import { Asterisk, Calculator, Scale, School, UserMinus, UserPlus, Users, Maximize2 } from "lucide-react-native";
+import { getAverageDiffGrade, type AverageDiffGrade } from "@/utils/grades/getAverages";
+import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useGradesStore} from "@/stores/grades";
-import {LinearGradient} from "expo-linear-gradient";
+import { useGradesStore } from "@/stores/grades";
+import { LinearGradient } from "expo-linear-gradient";
 import AnimatedEmoji from "@/components/Grades/AnimatedEmoji";
 import GradeModal from "@/components/Grades/GradeModal";
 

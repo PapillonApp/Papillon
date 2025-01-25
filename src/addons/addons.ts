@@ -1,6 +1,6 @@
 import * as FileSystem from "expo-file-system";
-import {error, log } from "@/utils/logger/logger";
-import {AddonDomain, AddonManifest, AddonPermission, AddonPlacement, AddonPlacementManifest} from "@/addons/types";
+import { error, log } from "@/utils/logger/logger";
+import { AddonDomain, AddonManifest, AddonPermission, AddonPlacement, AddonPlacementManifest } from "@/addons/types";
 
 async function init_addons_folder () {
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + "addons")).exists) {
@@ -207,9 +207,9 @@ async function get_home_widgets (): Promise<AddonManifest[]> {
 
 async function get_settings_widgets (): Promise<AddonPlacementManifest[]> {
   let addons = await get_addons_list();
-  var res: Array<AddonPlacementManifest> = [];
+  let res: Array<AddonPlacementManifest> = [];
   addons.forEach((addon) => {
-    for (var i = 0; i < addon.placement.length; i++) {
+    for (let i = 0; i < addon.placement.length; i++) {
       if (addon.placement[i].placement == "PLACE_SETTINGS_PAGE")
         res.push({
           index: i,

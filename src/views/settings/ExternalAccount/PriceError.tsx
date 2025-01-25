@@ -2,23 +2,16 @@ import React from "react";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
 import { CircleHelp } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {View, StyleSheet, Text, Alert} from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAccounts } from "@/stores/account";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import {ExternalAccount} from "@/stores/account/types";
-import {detectMealPrice as ARDPriceDetector} from "@/views/settings/ExternalAccount/ARD";
-
-type Props = {
-  navigation: any;
-  route: { params: { accountID: string } };
-};
+import { ExternalAccount } from "@/stores/account/types";
+import { detectMealPrice as ARDPriceDetector } from "@/views/settings/ExternalAccount/ARD";
 
 const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const insets = useSafeAreaInsets();
   const update = useAccounts(store => store.update);
   const account = route.params?.account;
   const accountId = route.params?.accountId;

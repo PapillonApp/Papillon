@@ -66,7 +66,6 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
 
   useEffect(() => {
     if (nextCourse) {
-      setNextCourse(nextCourse);
       setHidden(false);
     }
     setLoading(false);
