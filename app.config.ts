@@ -77,6 +77,7 @@ export default (): ExpoConfig => ({
     ],
   },
   plugins: [
+    "expo-asset",
     [
       "expo-font",
       {
