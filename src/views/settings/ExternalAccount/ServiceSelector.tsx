@@ -10,11 +10,12 @@ import { AccountService } from "@/stores/account/types";
 import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account!);
 
@@ -102,7 +103,7 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
       <View style={styles.buttons}>
         <ButtonCta
           primary
-          value="Confirmer"
+          value={t("confirm")}
           disabled={!service || service === "Other"}
           onPress={() => {
             if (service) {

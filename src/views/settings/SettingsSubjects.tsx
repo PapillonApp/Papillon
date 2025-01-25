@@ -1,40 +1,58 @@
-import React, { useEffect, useState, useCallback, useLayoutEffect, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import Reanimated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import debounce from "lodash/debounce";
-import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeItem,
+  NativeList,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2 } from "lucide-react-native";
+import { X, Trash2 } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import { useTranslation } from "react-i18next";
+import { useAlert } from "@/providers/AlertProvider";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
 const MemoizedNativeText = React.memo(NativeText);
 const MemoizedSubjectContainerCard = React.memo(SubjectContainerCard);
 
-type Item = [key: string, value: { color: string; pretty: string; emoji: string; }];
+type Item = [
+  key: string,
+  value: { color: string; pretty: string; emoji: string }
+];
 
 const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
-  const account = useCurrentAccount(store => store.account!);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const insets = useSafeAreaInsets();
-  const colors = useTheme().colors;
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const alert = useAlert();
 
   const [subjects, setSubjects] = useState<Array<Item>>([]);
   const [localSubjects, setLocalSubjects] = useState<Array<Item>>([]);
@@ -60,19 +78,25 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     }
   }, [selectedSubject]);
 
-  const updateSubject = useCallback((subjectKey: string, updates: Partial<Item[1]>) => {
-    setSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
-        subject[0] === subjectKey ? [subject[0], { ...subject[1], ...updates }] : subject
-      )
-    );
-  }, []);
+  const updateSubject = useCallback(
+    (subjectKey: string, updates: Partial<Item[1]>) => {
+      setSubjects((prevSubjects) =>
+        prevSubjects.map((subject) =>
+          subject[0] === subjectKey
+            ? [subject[0], { ...subject[1], ...updates }]
+            : subject
+        )
+      );
+    },
+    []
+  );
 
   const debouncedUpdateSubject = useMemo(
-    () => debounce((subjectKey: string, updates: Partial<Item[1]>) => {
-      updateSubject(subjectKey, updates);
-      setOnSubjects(localSubjects);
-    }, 1000),
+    () =>
+      debounce((subjectKey: string, updates: Partial<Item[1]>) => {
+        updateSubject(subjectKey, updates);
+        setOnSubjects(localSubjects);
+      }, 1000),
     [updateSubject, localSubjects]
   );
 
@@ -82,74 +106,131 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
 
   const handleSubjectTitleBlur = useCallback(() => {
     if (selectedSubject && currentTitle.trim() !== "") {
-      setLocalSubjects(prevSubjects =>
-        prevSubjects.map(subject =>
-          subject[0] === selectedSubject[0] ? [subject[0], { ...subject[1], pretty: currentTitle }] : subject
+      setLocalSubjects((prevSubjects) =>
+        prevSubjects.map((subject) =>
+          subject[0] === selectedSubject[0]
+            ? [subject[0], { ...subject[1], pretty: currentTitle }]
+            : subject
         )
       );
       debouncedUpdateSubject(selectedSubject[0], { pretty: currentTitle });
     }
   }, [selectedSubject, currentTitle, debouncedUpdateSubject]);
 
-  const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
-    let emoji = "";
-    if(newEmoji.length >= 1) {
-      var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
-      const emojiMatch = newEmoji.match(regexp);
-      if(emojiMatch) {
-        emoji = emojiMatch[emojiMatch.length - 1];
+  const handleSubjectEmojiChange = useCallback(
+    (subjectKey: string, newEmoji: string) => {
+      let emoji = "";
+      if (newEmoji.length >= 1) {
+        var regexp =
+          /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
+        const emojiMatch = newEmoji.match(regexp);
+        if (emojiMatch) {
+          emoji = emojiMatch[emojiMatch.length - 1];
+        }
       }
-    }
-    setLocalSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
-        subject[0] === subjectKey ? [subject[0], { ...subject[1], emoji }] : subject
-      )
-    );
-    setCurrentEmoji(emoji);
-    debouncedUpdateSubject(subjectKey, { emoji });
-  }, [debouncedUpdateSubject]);
+      setLocalSubjects((prevSubjects) =>
+        prevSubjects.map((subject) =>
+          subject[0] === subjectKey
+            ? [subject[0], { ...subject[1], emoji }]
+            : subject
+        )
+      );
+      setCurrentEmoji(emoji);
+      debouncedUpdateSubject(subjectKey, { emoji });
+    },
+    [debouncedUpdateSubject]
+  );
 
-  const handleSubjectColorChange = useCallback((subjectKey: string, newColor: string) => {
-    setLocalSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
-        subject[0] === subjectKey ? [subject[0], { ...subject[1], color: newColor }] : subject
-      )
-    );
-    debouncedUpdateSubject(subjectKey, { color: newColor });
-    setCustomColor(newColor);
-  }, [debouncedUpdateSubject]);
+  const handleSubjectColorChange = useCallback(
+    (subjectKey: string, newColor: string) => {
+      setLocalSubjects((prevSubjects) =>
+        prevSubjects.map((subject) =>
+          subject[0] === subjectKey
+            ? [subject[0], { ...subject[1], color: newColor }]
+            : subject
+        )
+      );
+      debouncedUpdateSubject(subjectKey, { color: newColor });
+      setCustomColor(newColor);
+    },
+    [debouncedUpdateSubject]
+  );
 
-  const setOnSubjects = useCallback((newSubjects: Item[]) => {
-    setSubjects(newSubjects);
-    mutateProperty("personalization", {
-      ...account.personalization,
-      subjects: Object.fromEntries(newSubjects),
-    });
-  }, [account.personalization, mutateProperty]);
+  const setOnSubjects = useCallback(
+    (newSubjects: Item[]) => {
+      setSubjects(newSubjects);
+      mutateProperty("personalization", {
+        ...account.personalization,
+        subjects: Object.fromEntries(newSubjects),
+      });
+    },
+    [account.personalization, mutateProperty]
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: t("settings.sections.customization.subjects.title"),
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            Alert.alert(
-              "Réinitialiser les matières",
-              "Veux-tu vraiment réinitialiser les matières ?",
-              [
-                { text: "Annuler", style: "cancel" },
-                { text: "Réinitialiser", style: "destructive", onPress: () => {
-                  setSubjects([]);
-                  setLocalSubjects([]);
-                  setCurrentTitle("");
-                  setCurrentEmoji("");
+            if (Platform.OS === "android") {
+              alert.showAlert({
+                title: t(
+                  "settings.sections.customization.subjects.reset.title"
+                ),
+                message: t(
+                  "settings.sections.customization.subjects.reset.description"
+                ),
+                actions: [
+                  {
+                    title: t("cancel"),
+                    onPress: () => {},
+                    backgroundColor: colors.background,
+                    icon: <X color={colors.text} />,
+                  },
+                  {
+                    title: t("reset"),
+                    onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+                      setCurrentEmoji("");
 
-                  mutateProperty("personalization", {
-                    ...account.personalization,
-                    subjects: {},
-                  });
-                }},
-              ]
-            );
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    },
+                    primary: true,
+                    backgroundColor: "#CF0029",
+                    icon: <Trash2 color={colors.background} />,
+                  },
+                ],
+              });
+            } else {
+              Alert.alert(
+                t("settings.sections.customization.subjects.reset.title"),
+                t("settings.sections.customization.subjects.reset.description"),
+                [
+                  { text: t("cancel"), style: "cancel" },
+                  {
+                    text: t("reset"),
+                    style: "destructive",
+                    onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+                      setCurrentEmoji("");
+
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    },
+                  },
+                ]
+              );
+            }
           }}
           style={{ marginRight: 2 }}
         >
@@ -161,43 +242,56 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
 
   const [customColor, setCustomColor] = useState("");
 
-  const renderSubjectItem = useCallback(({ item: subject, index }: { item: Item, index: number }) => {
-    if (!subject[0] || !subject[1] || !subject[1].emoji || !subject[1].pretty || !subject[1].color)
-      return null;
+  const renderSubjectItem = useCallback(
+    ({ item: subject, index }: { item: Item; index: number }) => {
+      if (
+        !subject[0] ||
+        !subject[1] ||
+        !subject[1].emoji ||
+        !subject[1].pretty ||
+        !subject[1].color
+      )
+        return null;
 
-    return (
-      <MemoizedNativeItem
-        onPress={() => {
-          setSelectedSubject(subject);
-          setCustomColor(subject[1].color);
-          setCurrentTitle(subject[1].pretty);
-          setCurrentEmoji(subject[1].emoji);
-          setOpened(true);
-        }}
-        separator={index !== localSubjects.length - 1}
-        leading={
-          <View style={{ flexDirection: "row", gap: 14, alignItems: "center" }}>
+      return (
+        <MemoizedNativeItem
+          onPress={() => {
+            setSelectedSubject(subject);
+            setCustomColor(subject[1].color);
+            setCurrentTitle(subject[1].pretty);
+            setCurrentEmoji(subject[1].emoji);
+            setOpened(true);
+          }}
+          separator={index !== localSubjects.length - 1}
+          leading={
             <View
-              style={{
-                width: 4,
-                height: 40,
-                borderRadius: 8,
-                backgroundColor: subject[1].color || "#000000",
-              }}
-            />
-            <Text style={{ fontSize: 26 }}>{subject[1].emoji || "🎨"}</Text>
-          </View>
-        }
-      >
-        <MemoizedNativeText variant="title" numberOfLines={2}>
-          {subject[1].pretty || "Matière"}
-        </MemoizedNativeText>
-        <MemoizedNativeText variant="subtitle" numberOfLines={2}>
-          {subject[1].color || "Sans couleur"}
-        </MemoizedNativeText>
-      </MemoizedNativeItem>
-    );
-  }, []);
+              style={{ flexDirection: "row", gap: 14, alignItems: "center" }}
+            >
+              <View
+                style={{
+                  width: 4,
+                  height: 40,
+                  borderRadius: 8,
+                  backgroundColor: subject[1].color || "#000000",
+                }}
+              />
+              <Text style={{ fontSize: 26 }}>{subject[1].emoji || "🎨"}</Text>
+            </View>
+          }
+        >
+          <MemoizedNativeText variant="title" numberOfLines={2}>
+            {subject[1].pretty ||
+              t("settings.sections.customization.subjects.noName")}
+          </MemoizedNativeText>
+          <MemoizedNativeText variant="subtitle" numberOfLines={2}>
+            {subject[1].color ||
+              t("settings.sections.customization.subjects.noColor")}
+          </MemoizedNativeText>
+        </MemoizedNativeItem>
+      );
+    },
+    []
+  );
 
   return (
     <KeyboardAvoidingView
@@ -215,14 +309,36 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
           <BottomSheet
             opened={opened}
             setOpened={(bool: boolean) => {
-              if (localSubjects.find((subject) => subject[0] === selectedSubject[0])?.[1].emoji != "") {
+              if (
+                localSubjects.find(
+                  (subject) => subject[0] === selectedSubject[0]
+                )?.[1].emoji != ""
+              ) {
                 setOpened(bool);
                 if (!bool) {
                   handleSubjectTitleBlur(); // Update subject title when closing the bottom sheet
                 }
               } else {
-                Alert.alert("Aucun émoji défini", "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page.");
-                emojiInput.current?.focus();
+                if (Platform.OS === "android") {
+                  alert.showAlert({
+                    title: "Aucun émoji défini",
+                    message:
+                      "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page.",
+                    actions: [
+                      {
+                        title: "OK",
+                        onPress: () => emojiInput.current?.focus(),
+                        backgroundColor: colors.background,
+                      },
+                    ],
+                  });
+                } else {
+                  Alert.alert(
+                    "Aucun émoji défini",
+                    "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page."
+                  );
+                  emojiInput.current?.focus();
+                }
               }
             }}
             contentContainerStyle={{ paddingHorizontal: 16 }}
@@ -291,7 +407,9 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           width: 42,
                         }}
                         value={currentEmoji}
-                        onChangeText={(newEmoji) => handleSubjectEmojiChange(selectedSubject[0], newEmoji)}
+                        onChangeText={(newEmoji) =>
+                          handleSubjectEmojiChange(selectedSubject[0], newEmoji)
+                        }
                       />
                     </MemoizedNativeItem>
                   </MemoizedNativeList>
@@ -335,7 +453,9 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       renderItem={({ item }) => {
                         return (
                           <TouchableOpacity
-                            onPress={() => handleSubjectColorChange(selectedSubject[0], item)}
+                            onPress={() =>
+                              handleSubjectColorChange(selectedSubject[0], item)
+                            }
                           >
                             <View
                               style={{
@@ -358,8 +478,14 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                                     borderColor: colors.background,
                                     borderWidth: 3,
                                   }}
-                                  entering={ZoomIn.springify().mass(1).damping(20).stiffness(300)}
-                                  exiting={ZoomOut.springify().mass(1).damping(20).stiffness(300)}
+                                  entering={ZoomIn.springify()
+                                    .mass(1)
+                                    .damping(20)
+                                    .stiffness(300)}
+                                  exiting={ZoomOut.springify()
+                                    .mass(1)
+                                    .damping(20)
+                                    .stiffness(300)}
                                 />
                               )}
                             </View>
@@ -372,20 +498,24 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                     <MemoizedNativeText variant="subtitle" numberOfLines={1}>
                       Code hexadécimal personnalisé
                     </MemoizedNativeText>
-                    <View style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      height: 36,
-                    }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        height: 36,
+                      }}
+                    >
                       <View
                         style={{
                           width: 26,
                           height: 26,
-                          backgroundColor: /^#[0-9A-F]{6}$/i.test(customColor) ? customColor : colors.text,
+                          backgroundColor: /^#[0-9A-F]{6}$/i.test(customColor)
+                            ? customColor
+                            : colors.text,
                           borderWidth: 1,
                           borderColor: colors.border,
                           marginRight: 8,
-                          borderRadius: 80
+                          borderRadius: 80,
                         }}
                       />
                       <TextInput
@@ -436,7 +566,9 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
             style={{ marginTop: 16 }}
             emoji={"🎨"}
             title={"Une matière manque ?"}
-            description={"Essaye d'ouvrir quelques journées dans ton emploi du temps"}
+            description={
+              "Essaye d'ouvrir quelques journées dans ton emploi du temps"
+            }
           />
         )}
       </ScrollView>

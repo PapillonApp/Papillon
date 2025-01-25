@@ -2,9 +2,11 @@ import React from "react";
 
 import { Image, View } from "react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import { useTranslation } from "react-i18next";
 
 const SubjectContainerCard = ({ theme }: { theme: any }) => {
   const { colors } = theme;
+  const { t } = useTranslation();
 
   return (
     <NativeList>
@@ -26,10 +28,10 @@ const SubjectContainerCard = ({ theme }: { theme: any }) => {
       </View>
       <NativeItem>
         <NativeText variant="title">
-          Personnalise tes matières
+          {t("settings.sections.customization.subjects.captionTitle")}
         </NativeText>
         <NativeText variant="subtitle">
-          Personnalise le nom, l'émoji et la couleur des matières de ton emploi du temps
+          {t("settings.sections.customization.subjects.captionMessage")}
         </NativeText>
       </NativeItem>
     </NativeList>

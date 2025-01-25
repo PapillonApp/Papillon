@@ -5,6 +5,7 @@
   "confirm": "Confirmer",
   "cancel": "Annuler",
   "delete": "Supprimer",
+  "reset": "Réinitialiser",
   "quit": "Quitter",
   "errror": "Erreur",
   "welcome": {
@@ -177,7 +178,15 @@
       "customization": {
         "title": "Personnalisation",
         "subjects": {
-          "title": "Sujets"
+          "title": "Matières",
+          "noName": "Matière",
+          "noColor": "Sans couleur",
+          "reset": {
+            "title": "Réinitialiser les couleurs",
+            "description": "Veux-tu vraiment réinitialiser les matières ?"
+          },
+          "captionTitle": "Personnalise tes matières",
+          "captionMessage": "Personnalise le nom, l'émoji et la couleur des matières de ton emploi du temps."
         },
         "colorTheme": {
           "title": "Thème de couleur"

@@ -5,6 +5,7 @@
   "confirm": "Confirm",
   "cancel": "Cancel",
   "delete": "Delete",
+  "reset": "Reset",
   "quit": "Quit",
   "errror": "Error",
   "welcome": {
@@ -171,13 +172,21 @@
         "reactions": {
           "title": "Reactions",
           "noReactionsTitle": "No reactions",
-            "noReactionsSubtitle": "Go to the 'Notes' tab to add reactions."
+          "noReactionsSubtitle": "Go to the 'Notes' tab to add reactions."
         }
       },
       "customization": {
         "title": "Customization",
         "subjects": {
-          "title": "Subjects"
+          "title": "Subjects",
+          "noName": "Subject",
+          "noColor": "No color",
+          "reset": {
+            "title": "Reset colors",
+            "description": "Do you really want to reset the subjects?"
+          },
+            "captionTitle": "Customize your subjects",
+            "captionMessage": "Customize the name, emoji, and color of the subjects in your timetable."
         },
         "colorTheme": {
           "title": "Color theme"
