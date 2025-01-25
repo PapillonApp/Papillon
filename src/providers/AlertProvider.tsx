@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import { Check } from "lucide-react-native";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { Modal, View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import { BlurView } from "expo-blur";
@@ -44,7 +44,6 @@ type AlertProviderProps = {
 const AlertProvider = ({ children }: AlertProviderProps) => {
   const [alert, setAlert] = useState<Alert>({ title: "", message: "", icon: null, actions: [] });
   const [visible, setVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -88,7 +87,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
     });
 
     setVisible(true);
-    setModalVisible(true);
 
     setAlert({ title, message, icon, actions });
   };
@@ -96,10 +94,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
   const hideAlert = () => {
     setVisible(false);
     setAlert({ title: "", message: "", actions: [] });
-
-    setTimeout(() => {
-      setModalVisible(false);
-    }, 100);
   };
 
   const finalIcon = alert.icon ?
@@ -110,112 +104,113 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
     <AlertContext.Provider value={{ showAlert }}>
       {children}
 
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={hideAlert}
-        animationType="none"
-      >
-        {visible && (
-          <Reanimated.View
-            entering={FadeIn.duration(150)}
-            exiting={FadeOut.duration(150)}
-            style={{
-              zIndex: -199,
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-            pointerEvents={"none"}
+      {visible && (
+        <SafeAreaView>
+          <Modal
+            transparent={true}
+            onRequestClose={hideAlert}
+            animationType="none"
           >
-            <BlurView
-              intensity={10}
+            <Reanimated.View
+              entering={FadeIn.duration(150)}
+              exiting={FadeOut.duration(150)}
               style={{
+                zIndex: -199,
                 position: "absolute",
                 top: 0,
                 left: 0,
                 width: "100%",
                 height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
               }}
-            />
-          </Reanimated.View>
-        )}
-
-        <Reanimated.View
-          style={styles.modalContainer}
-          layout={LinearTransition}
-        >
-          <Pressable
-            style={{ flex: 1, width: "100%" }}
-            onPress={hideAlert}
-            onTouchEnd={hideAlert}
-          />
-
-          {visible && (
-            <Reanimated.View
-              style={[
-                styles.alertBox,
-                {
-                  backgroundColor: colors.card,
-                  marginBottom: 10 + insets.bottom,
-                  width: Dimensions.get("window").width - 20,
-                  maxWidth: 600,
-                  transformOrigin: "bottom",
-                }
-              ]}
-              entering={PapillonContextEnter}
-              exiting={PapillonContextExit}
+              pointerEvents={"none"}
             >
-              <View style={styles.contentContainer}>
-                <View style={[styles.titleContainer]}>
-                  {finalIcon}
-                  <Text style={[styles.title, { color: colors.text }]}>
-                    {alert.title}
-                  </Text>
-                </View>
-
-                <Text style={[styles.message, { color: colors.text }]}>
-                  {alert.message}
-                </Text>
-              </View>
-
-              <View style={[styles.buttons, { borderColor: colors.border, backgroundColor: colors.text + "0a" }]}>
-                {(alert.actions ?? []).map(({ title, onPress, icon, primary, danger, backgroundColor }) => (
-                  <Pressable
-                    key={title}
-                    onPress={() => {
-                      onPress?.();
-                      hideAlert();
-                    }}
-                    style={({ pressed }) => [
-                      styles.button,
-                      primary && styles.primaryButton,
-                      primary && {
-                        backgroundColor: backgroundColor ? backgroundColor : colors.primary,
-                      },
-                      danger && {
-                        backgroundColor: "#b62000",
-                      },
-                      {
-                        opacity: primary ? (pressed ? 0.6 : 1) : (pressed ? 0.3 : 0.6),
-                      }
-                    ]}
-                  >
-                    {icon ? icon : null}
-
-                    <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
-                      {title}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
+              <BlurView
+                intensity={10}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
             </Reanimated.View>
-          )}
-        </Reanimated.View>
-      </Modal>
+
+            <Reanimated.View
+              style={styles.modalContainer}
+              layout={LinearTransition}
+            >
+              <Pressable
+                style={{ flex: 1, width: "100%" }}
+                onPress={hideAlert}
+                onTouchEnd={hideAlert}
+              />
+
+              {visible && (
+                <Reanimated.View
+                  style={[
+                    styles.alertBox,
+                    {
+                      backgroundColor: colors.card,
+                      marginBottom: 10 + insets.bottom,
+                      width: Dimensions.get("window").width - 20,
+                      maxWidth: 600,
+                      transformOrigin: "bottom",
+                    }
+                  ]}
+                  entering={PapillonContextEnter}
+                  exiting={PapillonContextExit}
+                >
+                  <View style={styles.contentContainer}>
+                    <View style={[styles.titleContainer]}>
+                      {finalIcon}
+                      <Text style={[styles.title, { color: colors.text }]}>
+                        {alert.title}
+                      </Text>
+                    </View>
+
+                    <Text style={[styles.message, { color: colors.text }]}>
+                      {alert.message}
+                    </Text>
+                  </View>
+
+                  <View style={[styles.buttons, { borderColor: colors.border, backgroundColor: colors.text + "0a" }]}>
+                    {(alert.actions ?? []).map(({ title, onPress, icon, primary, danger, backgroundColor }) => (
+                      <Pressable
+                        key={title}
+                        onPress={() => {
+                          onPress?.();
+                          hideAlert();
+                        }}
+                        style={({ pressed }) => [
+                          styles.button,
+                          primary && styles.primaryButton,
+                          primary && {
+                            backgroundColor: backgroundColor ? backgroundColor : colors.primary,
+                          },
+                          danger && {
+                            backgroundColor: "#b62000",
+                          },
+                          {
+                            opacity: primary ? (pressed ? 0.6 : 1) : (pressed ? 0.3 : 0.6),
+                          }
+                        ]}
+                      >
+                        {icon ? icon : null}
+
+                        <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
+                          {title}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </Reanimated.View>
+              )}
+            </Reanimated.View>
+          </Modal>
+        </SafeAreaView>
+      )}
     </AlertContext.Provider>
   );
 };
