@@ -29,7 +29,7 @@
     "cal-parser": "^1.0.2",
     "date-fns": "^3.6.0",
     "esup-multi.js": "^1.0.2",
-    "expo": "~51.0.28",
+    "expo": "~52.0.27",
     "expo-asset": "^10.0.10",
     "expo-auth-session": "~5.5.2",
     "expo-av": "~14.0.6",
@@ -118,7 +118,6 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-native": "^4.1.0",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "expo": "~51.0.17",
     "react-native-svg-transformer": "^1.5.0",
     "typescript": "^5.3.3"
   },
