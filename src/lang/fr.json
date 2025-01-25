@@ -169,7 +169,9 @@
           "addService": "Ajouter une cantine"
         },
         "reactions": {
-          "title": "Réactions"
+          "title": "Réactions",
+          "noReactionsTitle": "Aucune réaction",
+          "noReactionsSubtitle": "Rendez-vous dans l'onglet 'Notes' afin d'ajouter des réactions."
         }
       },
       "customization": {

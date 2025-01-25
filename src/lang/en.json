@@ -169,7 +169,9 @@
           "addService": "Add a service"
         },
         "reactions": {
-          "title": "Reactions"
+          "title": "Reactions",
+          "noReactionsTitle": "No reactions",
+            "noReactionsSubtitle": "Go to the 'Notes' tab to add reactions."
         }
       },
       "customization": {
