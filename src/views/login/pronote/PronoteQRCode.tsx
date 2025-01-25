@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, View, StyleSheet, Modal, Alert, KeyboardAvoidi
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { CameraView, Camera } from "expo-camera";
 import MaskedView from "@react-native-masked-view/masked-view";
 import * as Haptics from "expo-haptics";
 
@@ -170,7 +170,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     };
     getBarCodeScannerPermissions();
@@ -422,10 +422,13 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           style={styles.maskContainer}
         />
         {hasPermission === true && (
-          <BarCodeScanner
-            onBarCodeScanned={
+          <CameraView
+            onBarcodeScanned={
               scanned ? undefined : handleBarCodeScanned
             }
+            barcodeScannerSettings={{
+              barcodeTypes: ["qr", "pdf417"],
+            }}
             style={StyleSheet.absoluteFillObject}
           />
         )}
