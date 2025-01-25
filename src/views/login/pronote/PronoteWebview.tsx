@@ -279,11 +279,6 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
               setCurrentURL(url);
 
               setLoading(true);
-
-              if (url.includes("mobile.eleve.html")) {
-                setLoginStep("En attente de ton établissement");
-                setShowWebView(false);
-              }
             }}
             onMessage={async ({ nativeEvent }) => {
               const message = JSON.parse(nativeEvent.data);
