@@ -166,8 +166,9 @@
         "externalServices": {
           "title": "Services externes",
           "captionTitle": "Services externes",
-          "captionMessage": "Connecte tes services scolaires préférés et profite de l’interface de Papillon partout où tu vas.",
-          "addService": "Ajouter une cantine"
+          "captionMessage": "Connecte tes services scolaires préférés et profite de l'interface de Papillon partout où tu vas.",
+          "addService": "Ajouter une cantine",
+          "listHeader": "Comptes externes"
         },
         "reactions": {
           "title": "Réactions",

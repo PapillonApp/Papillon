@@ -120,7 +120,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
 
       {filteredAccounts.length > 0 && (
         <View>
-          <NativeListHeader label="Comptes externes" />
+          <NativeListHeader label={t("settings.sections.general.externalServices.listHeader")} />
           <NativeList>
             {filteredAccounts.map((account) => (
               <NativeItem
