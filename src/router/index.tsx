@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {NavigationContainer, NavigationState, PartialState, Theme} from "@react-navigation/native";
-import {Platform, StatusBar, View, useColorScheme } from "react-native";
+import {
+  NavigationContainer,
+  NavigationState,
+  PartialState,
+  Theme,
+} from "@react-navigation/native";
+import { Platform, StatusBar, View, useColorScheme } from "react-native";
 import * as Linking from "expo-linking";
 import screens from "@/router/screens";
 import type { RouteParameters } from "@/router/helpers/types";
@@ -13,7 +18,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useCurrentAccount } from "@/stores/account";
 import { navigatorScreenOptions } from "./helpers/create-screen";
-import {navigate} from "@/utils/logger/logger";
+import { navigate } from "@/utils/logger/logger";
 import { PapillonNavigation } from "./refs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -49,12 +54,13 @@ const Router: React.FC = () => {
 
   const [themeValue, setThemeValue] = React.useState<number>(0);
 
-  const [theme, setTheme] = React.useState<Theme>(scheme === "dark" ? PapillonDark : PapillonLight);
+  const [theme, setTheme] = React.useState<Theme>(
+    scheme === "dark" ? PapillonDark : PapillonLight
+  );
 
   useEffect(() => {
     AsyncStorage.getItem("theme").then((value) => {
-      if (value)
-        setThemeValue(parseInt(value));
+      if (value) setThemeValue(parseInt(value));
     });
   }, []);
 
@@ -72,42 +78,48 @@ const Router: React.FC = () => {
     }
   }, [scheme, themeValue]);
 
-
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   if (account && account.personalization?.color !== undefined) {
-
     if (account.personalization?.color?.hex?.primary !== undefined) {
       theme.colors.primary = account.personalization.color.hex.primary;
     }
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: scheme === "dark" ? "#151515" : "#fff" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: scheme === "dark" ? "#151515" : "#fff",
+      }}
+    >
       {Platform.OS === "android" && (
         <StatusBar
           backgroundColor={"transparent"}
           translucent={true}
           barStyle={
-            themeValue == 0 ?
-              scheme === "dark" ?
-                "light-content"
-                :
-                "dark-content"
-              :
-              themeValue == 1 ?
-                "dark-content"
-                :
-                "light-content"
+            themeValue == 0
+              ? scheme === "dark"
+                ? "light-content"
+                : "dark-content"
+              : themeValue == 1
+                ? "dark-content"
+                : "light-content"
           }
         />
       )}
 
       <SafeAreaProvider>
         <GestureHandlerRootView>
-          <NavigationContainer linking={linking} theme={theme} ref={PapillonNavigation}
+          <NavigationContainer
+            linking={linking}
+            theme={theme}
+            ref={PapillonNavigation}
             onStateChange={(state) => {
               let str = "";
-              let view: NavigationState | PartialState<NavigationState> | undefined = state;
+              let view:
+                | NavigationState
+                | PartialState<NavigationState>
+                | undefined = state;
               while (view?.routes) {
                 // @ts-expect-error (view is not undefined here bc of while condition, but ts think it can be)
                 str += "/" + view.routes[view.index].name;
@@ -118,10 +130,13 @@ const Router: React.FC = () => {
             }}
           >
             <AlertProvider>
-              <Stack.Navigator initialRouteName="AccountSelector" screenOptions={navigatorScreenOptions}>
+              <Stack.Navigator
+                initialRouteName="AccountSelector"
+                screenOptions={navigatorScreenOptions}
+              >
                 {screens.map((screen) => (
                   // @ts-expect-error : type not compatible, but it works fine.
-                  <Stack.Screen key={screen.name} {...screen}/>
+                  <Stack.Screen key={screen.name} {...screen} />
                 ))}
               </Stack.Navigator>
             </AlertProvider>
@@ -131,7 +146,5 @@ const Router: React.FC = () => {
     </View>
   );
 };
-
-
 
 export default Router;
