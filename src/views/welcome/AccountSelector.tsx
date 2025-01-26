@@ -113,7 +113,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
       if (accounts.filter((account) => !account.isExternal).length === 1) {
         const selectedAccount = accounts.find((account) => !account.isExternal) as PrimaryAccount | undefined;
         if (selectedAccount && currentAccount?.localID !== selectedAccount.localID) {
-          switchTo(selectedAccount);
+          await switchTo(selectedAccount);
 
           navigation.reset({
             index: 0,
