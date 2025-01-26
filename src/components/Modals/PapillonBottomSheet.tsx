@@ -8,9 +8,7 @@ import Reanimated, {
   useAnimatedStyle,
   withTiming,
   runOnJS,
-  SlideInDown,
-  SlideOutDown,
-  Easing
+  SlideOutDown
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -94,7 +92,6 @@ const BottomSheet = ({ children, opened, setOpened, ...props }: BottomSheetProps
                 animatedStyle,
                 props.contentContainerStyle,
               ]}
-              entering={SlideInDown.easing(Easing.bezier(0.5, 0, 0, 1).factory()).duration(300)}
               exiting={SlideOutDown}
             >
               {children}
