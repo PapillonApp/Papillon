@@ -1,0 +1,267 @@
+{
+  "languageName": "Español",
+  "localLanguageName": "Espagnol",
+  "loading": "Cargando...",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "reset": "Reiniciar",
+  "quit": "Salir",
+  "errror": "Error",
+  "welcome": {
+    "FirstInstallation": {
+      "message": "¡Bienvenido a Papillon!",
+      "subtitle": "¡La única aplicación para gestionar toda tu vida escolar en un solo lugar!",
+      "getStarted": "¡Comencemos!",
+      "help": "¿Necesitas ayuda?",
+      "tos": "Al continuar, aceptas los {{termsOfSevice}} y la {{privacyPolicy}}.",
+      "terms": "términos de servicio",
+      "privacyPolicy": "política de privacidad"
+    },
+    "ChangelogScreen": {
+      "title": "¿Qué hay de nuevo?",
+      "pending": "Cargando novedades...",
+      "pendingSubtitle": "Obteniendo las últimas novedades de Papillon",
+      "error": "No se pudieron cargar las notas de la versión",
+      "errorSubtitle": "Por favor verifica tu conexión a internet o inténtalo más tarde...",
+      "features": "Nuevas funciones",
+      "fixes": "Correcciones de errores"
+    }
+  },
+  "login": {
+    "ServiceSelector": {
+      "message": "Para empezar, ¿cuál es tu servicio escolar?",
+      "highEdu": "Educación superior",
+      "highEduSubtitle": "Universidades, IUT, escuelas...",
+      "importV6": "Importar mi cuenta"
+    },
+    "PronoteAuthSelector": {
+      "message": "¿Qué prefieres usar para iniciar sesión en Pronote?",
+      "locate": "Usar mi ubicación",
+      "locateSubtitle": "Buscar una institución cerca de mí",
+      "city": "Buscar una ciudad",
+      "qr": "Tengo un código QR",
+      "url": "Tengo una URL de inicio de sesión",
+      "affiliation": "Papillon no está afiliado a PRONOTE ni a Index Éducation. Tus datos permanecen únicamente en tu dispositivo de forma segura."
+    },
+    "PronoteGeolocation": {
+      "message": "Papillon necesita tu ubicación para buscar instituciones",
+      "numberOfLines": 4,
+      "ask": "Solicitar permiso",
+      "terms": "Tu ubicación es necesaria para encontrar instancias PRONOTE cercanas. Será enviada a PRONOTE y a la API de direcciones del gobierno para buscar instituciones. No será almacenada.",
+      "pending": "Localizando...",
+      "loadingPermissions": "Cargando permisos",
+      "needPermission": "Papillon necesita tu ubicación para buscar instituciones"
+    },
+    "PronoteManualLocation": {
+      "message": "¿En qué ciudad está tu institución?",
+      "placeholder": "Buscar una ciudad, un código postal..."
+    },
+    "PronoteQRCode": {
+      "title": "Inicio de sesión en PRONOTE",
+      "subtitle": "¡Escanea el código QR de tu institución para iniciar sesión!",
+      "loading": "Iniciando sesión...",
+      "loadingMessage": "Esto puede tomar unos instantes...",
+      "invalidCode": "Código no válido",
+      "invalidCodeMessage": "Ingresa un código de 4 dígitos.",
+      "errorMessage": "Ocurrió un error durante el inicio de sesión.",
+      "validating": "Validando el código..."
+    },
+    "PronoteManualURL": {
+      "message": "Introduce la URL de inicio de sesión en Pronote",
+      "messageLines": 2,
+      "clipboard": "¡Encontré una URL en tu portapapeles!",
+      "clipboardLines": 2,
+      "placeholder": "URL de la instancia Pronote"
+    },
+    "PronoteWebview": {
+      "title": "Inicio de sesión en Pronote",
+      "preparing": "Preparando inicio de sesión",
+      "waitingForEtablishments": "Esperando a tu institución",
+      "obtainingInformations": "Obteniendo información"
+    },
+    "PronoteInstanceSelector": {
+      "message": "¡Aquí están las instituciones que encontré!",
+      "placeholder": "Buscar una institución",
+      "distance": "a {{distance}} km de ti",
+      "notFound": "No se encontró ninguna institución"
+    },
+    "GenericLogin": {
+      "title": "Iniciar sesión en {{name}}",
+      "upper": "Iniciar sesión en el servicio",
+      "service": "{{name}}",
+      "privacy": "Papillon no está afiliado a {{name}}. Se aplica la política de privacidad de {{name}}.",
+      "username": "Usuario",
+      "usernamePlaceholder": "Nombre de usuario",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Contraseña",
+      "login": "Iniciar sesión"
+    },
+    "ENTAlert": {
+      "title": "La instancia {{name}} requiere una conexión ENT",
+      "subtitle": "Serás redirigido al portal de conexión de tu ENT.",
+      "login": "Credenciales",
+      "ent": "Usar ENT"
+    },
+    "SkolengoAuthSelector": {
+      "message": "¿Qué prefieres usar para iniciar sesión en Skolengo?",
+      "locate": "Usar mi ubicación",
+      "locateSubtitle": "Buscar una institución cerca de mí",
+      "city": "Buscar manualmente",
+      "privacy": "Papillon no está afiliado a Skolengo. Tus datos permanecen únicamente en tu dispositivo de forma segura."
+    },
+    "SkolengoGeolocation": {
+      "message": "Papillon necesita tu ubicación para buscar instituciones",
+      "numberOfLines": 4,
+      "ask": "Solicitar permiso",
+      "terms": "Tu ubicación es necesaria para encontrar instancias SKOLENGO cercanas. No será almacenada ni compartida.",
+      "pending": "Localizando...",
+      "loadingPermissions": "Cargando permisos",
+      "needPermission": "Papillon necesita tu ubicación para buscar instituciones"
+    },
+    "SkolengoInstanceSelector": {
+      "message": "¡Aquí están las instituciones que encontré!",
+      "placeholder": "Buscar una ciudad, una institución...",
+      "subtitle": "Busca una institución",
+      "distance": "a {{distance}} km de ti"
+    },
+    "IdentityProviderSelector": {
+      "title": "Universidades y otros",
+      "services": "Servicios universitarios",
+      "limited": "Funciones limitadas",
+      "callout": "Los proveedores de identidad no proporcionan datos (calendario, notas...) pero permiten iniciar sesión en la aplicación"
+    },
+    "AccountCreated": {
+      "message": "Encantado, {{name}}. Vamos a personalizar tu experiencia.",
+      "noNameMessage": "¡Bienvenido a Papillon!",
+      "customize": "Personalizar Papillon",
+      "skip": "Omitir"
+    },
+    "ColorSelector": {
+      "message": "¿Cuál es tu color favorito?",
+      "done": "¡Vamos allá!"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "sections": {
+      "profile": {
+        "title": "Perfil",
+        "changePP": "Cambiar foto de perfil",
+        "privacy": "Tu foto de perfil permanece en tu dispositivo.",
+        "name": "Nombre y apellido",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "displayOnHomeScreen": "Mostrar en la pantalla de inicio",
+        "PP": "Foto de perfil"
+      },
+      "general": {
+        "title": "General",
+        "notifications": {
+          "title": "Notificaciones",
+          "captionTitle": "Activar notificaciones",
+          "captionMessage": "Recibe notificaciones para no perderte nada de tu vida escolar.",
+          "example": "Tienes clase en la sala B03 con el Sr. Perruche en 5 minutos."
+        },
+        "externalServices": {
+          "title": "Servicios externos",
+          "captionTitle": "Servicios externos",
+          "captionMessage": "Conecta tus servicios escolares favoritos y disfruta de la interfaz de Papillon dondequiera que vayas.",
+          "addService": "Agregar una cantina",
+          "listHeader": "Cuentas externas"
+        },
+        "reactions": {
+          "title": "Reacciones",
+          "noReactionsTitle": "Sin reacciones",
+          "noReactionsSubtitle": "Ve a la pestaña 'Notas' para añadir reacciones."
+        }
+      },
+      "customization": {
+        "title": "Personalización",
+        "subjects": {
+          "title": "Asignaturas",
+          "noName": "Asignatura",
+          "noColor": "Sin color",
+          "reset": {
+            "title": "Restablecer colores",
+            "description": "¿Realmente quieres restablecer las asignaturas?"
+          },
+          "captionTitle": "Personaliza tus asignaturas",
+          "captionMessage": "Personaliza el nombre, emoji y color de las asignaturas de tu horario."
+        },
+        "colorTheme": {
+          "title": "Tema de color"
+        },
+        "appearance": {
+          "title": "Apariencia"
+        },
+        "language": {
+          "title": "Idioma"
+        }
+      },
+      "advanced": {
+        "title": "Avanzado",
+        "tabsAndNavigation": {
+          "title": "Pestañas y navegación"
+        },
+        "plugins": {
+          "title": "Plugins",
+          "subtitle": "Próximamente..."
+        },
+        "magic": {
+          "title": "Papillon Magic (Beta)",
+          "subtitle": "Funciones inteligentes"
+        }
+      },
+      "project": {
+        "title": "Proyecto Papillon",
+        "whatsNew": {
+          "title": "¿Qué hay de nuevo?"
+        },
+        "about": {
+          "title": "Acerca de Papillon"
+        },
+        "donate": {
+          "title": "Apoyar Papillon"
+        }
+      },
+      "logOut": {
+        "title": "Cerrar sesión",
+        "confirmation": "¿Estás seguro de que quieres cerrar sesión?"
+      },
+      "devMode": "Desarrollador"
+    },
+    "devMode": "desarrollador",
+    "madeBy": "hecho con ❤️ por los colaboradores de Papillon"
+  },
+  "home": {
+    "addAccount": "Agregar una cuenta",
+    "localAccount": "Cuenta local",
+    "settings": "Configuración",
+    "widgets": {
+      "nextCourse": "Próxima clase",
+      "grades": "Notas",
+      "gradesSubtitle": "Promedio general",
+      "generalAverage": "Promedio general",
+      "restaurantBalance": "Saldo del comedor",
+      "restaurantBalanceSubtitleOne": "comida restante",
+      "restaurantBalanceSubtitle": "comidas restantes",
+      "restaurantQR": "Comedor escolar",
+      "restaurantQRSubtitleOne": "Toca para mostrar el código QR",
+      "restaurantQRSubtitle": "Toca para mostrar los códigos QR"
+    },
+    "modal": {
+      "changelog": {
+        "title": "¡Papillon acaba de actualizarse a la versión {{version}}!",
+        "subtitle": "Haz clic aquí para ver las novedades."
+      },
+      "tomorrowCourses": "Clases de mañana",
+      "seeMore": "Ver más",
+      "lastGrades": "Últimas notas",
+      "homework": "Tareas"
+    }
+  },
+  "grades": {
+    "estimated": "Estimado"
+  }
+}

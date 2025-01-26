@@ -7,6 +7,7 @@ import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { NativeItem, NativeList, NativeText, NativeListHeader } from "@/components/Global/NativeComponents";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
   const theme = useTheme();
@@ -37,6 +38,7 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
               key={lng}
               onPress={() => {
                 i18n.changeLanguage(lng);
+                AsyncStorage.setItem("lang", lng);
               }}
               leading={
                 <Reanimated.View
@@ -45,7 +47,10 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
                 >
                   <PapillonCheckbox
                     checked={i18n.language === lng}
-                    onPress={() => i18n.changeLanguage(lng)}
+                    onPress={() => {
+                      i18n.changeLanguage(lng);
+                      AsyncStorage.setItem("lang", lng);
+                    }}
                     style={{ marginRight: 1 }}
                   />
                 </Reanimated.View>
