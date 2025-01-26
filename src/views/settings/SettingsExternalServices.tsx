@@ -2,7 +2,14 @@ import React from "react";
 import { ScrollView, View, Alert } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass } from "lucide-react-native";
+import {
+  GraduationCap,
+  Utensils,
+  BookOpen,
+  School,
+  BookmarkMinus,
+  Compass,
+} from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
   NativeList,
@@ -27,7 +34,10 @@ const serviceConfig = {
   [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
   [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
   [AccountService.Local]: { icon: GraduationCap, name: "Local" },
-  [AccountService.Multi]: { icon: GraduationCap, name: "Polytechnique Hauts-de-France" }
+  [AccountService.Multi]: {
+    icon: GraduationCap,
+    name: "Polytechnique Hauts-de-France",
+  },
 };
 
 const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
@@ -56,19 +66,14 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
     info += `Identifiant : ${account.username || "N. not"}\n`;
     info += `Établissement : ${account.authentication.schoolID || "N. not"}\n`;
 
-
-    Alert.alert(
-      "Informations du compte",
-      info,
-      [
-        { text: "OK", style: "cancel" },
-        {
-          text: "Supprimer",
-          style: "destructive",
-          onPress: () => confirmDeleteAccount(account)
-        }
-      ]
-    );
+    Alert.alert("Informations du compte", info, [
+      { text: "OK", style: "cancel" },
+      {
+        text: "Supprimer",
+        style: "destructive",
+        onPress: () => confirmDeleteAccount(account),
+      },
+    ]);
   };
 
   const confirmDeleteAccount = (account: any) => {
@@ -80,17 +85,14 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
         {
           text: t("delete"),
           style: "destructive",
-          onPress: () => removeAccount(account.localID)
-        }
+          onPress: () => removeAccount(account.localID),
+        },
       ]
     );
   };
 
   const filteredAccounts = accounts.filter((acc, index) => {
-    if (acc.isExternal) {
-      return true;
-    }
-    return false;
+    return acc.isExternal ? true : false;
   });
 
   return (
@@ -107,11 +109,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
             onPress={() => {
               navigation.navigate("ExternalAccountSelector");
             }}
-            leading={
-              <NativeIcon
-                icon={<Utensils />}
-                color={"#006B6B"}
-              />}
+            leading={<NativeIcon icon={<Utensils />} color={"#006B6B"} />}
           >
             <NativeText variant="title">
               {t("settings.sections.general.externalServices.addService")}
@@ -122,9 +120,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
 
       {filteredAccounts.length > 0 && (
         <View>
-          <NativeListHeader
-            label="Comptes externes"
-          />
+          <NativeListHeader label="Comptes externes" />
           <NativeList>
             {filteredAccounts.map((account) => (
               <NativeItem
@@ -138,9 +134,13 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
                 }
               >
                 <View>
-                  <NativeText variant="title">{getServiceName(account.service)}</NativeText>
+                  <NativeText variant="title">
+                    {getServiceName(account.service)}
+                  </NativeText>
                   <NativeText variant="subtitle">
-                    {account.isExternal ? account.username : `${account.studentName?.first} ${account.studentName?.last}`}
+                    {account.isExternal
+                      ? account.username
+                      : `${account.studentName?.first} ${account.studentName?.last}`}
                   </NativeText>
                 </View>
               </NativeItem>
