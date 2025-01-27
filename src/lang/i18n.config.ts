@@ -15,11 +15,11 @@ const resources = {
   en: {
     translation: en,
   },
-  es: {
-    translation: es,
-  },
   fr: {
     translation: fr,
+  },
+  es: {
+    translation: es,
   },
 };
 

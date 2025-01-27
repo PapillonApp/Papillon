@@ -1,14 +1,15 @@
 {
   "en": {
     "name": "Anglais",
-    "nativeName": "English"
-  },
-  "fr": {
-    "name": "Français",
-    "nativeName": "Français"
+    "nativeName": "English",
+    "countryCode": "US"
   },
   "es": {
     "name": "Espagnol",
     "nativeName": "Español"
+  },
+  "fr": {
+    "name": "Français",
+    "nativeName": "Français"
   }
 }

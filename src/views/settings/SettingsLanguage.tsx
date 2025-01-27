@@ -1,13 +1,21 @@
 import React from "react";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
-import { ScrollView, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { NativeItem, NativeList, NativeText, NativeListHeader } from "@/components/Global/NativeComponents";
+import {
+  NativeItem,
+  NativeList,
+  NativeText,
+  NativeListHeader,
+} from "@/components/Global/NativeComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import languageList from "@/lang/languagesList.json";
+
+const typedLanguageList:any = languageList;
 
 const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
   const theme = useTheme();
@@ -18,10 +26,13 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
     headerTitle: t("settings.sections.customization.language.title"),
   });
 
-  const languages = Object.keys(i18n.services.resourceStore.data).reduce((acc, lng) => {
-    acc[lng] = i18n.getResource(lng, "translation", "languageName");
-    return acc;
-  }, {} as Record<string, string>);
+  const languages = Object.keys(i18n.services.resourceStore.data).reduce(
+    (acc, lng) => {
+      acc[lng] = i18n.getResource(lng, "translation", "languageName");
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   return (
     <ScrollView
@@ -31,9 +42,11 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
       }}
     >
       <View>
-        <NativeListHeader label={t("settings.sections.customization.language.title")} />
+        <NativeListHeader
+          label={t("settings.sections.customization.language.title")}
+        />
         <NativeList>
-          {Object.entries(languages).map(([lng, name]) => (
+          {Object.entries(languages).map(([lng]) => (
             <NativeItem
               key={lng}
               onPress={() => {
@@ -43,7 +56,11 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
               leading={
                 <Reanimated.View
                   layout={animPapillon(LinearTransition)}
-                  style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
                   <PapillonCheckbox
                     checked={i18n.language === lng}
@@ -63,7 +80,29 @@ const SettingsLanguage: Screen<"SettingsLanguage"> = ({ navigation }) => {
               }}
               chevron={false}
             >
-              <NativeText>{name}</NativeText>
+              <View
+                style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
+              >
+                <Image
+                  source={{
+                    uri: `https://flagsapi.com/${
+                      typedLanguageList[lng]?.countryCode
+                        ? (typedLanguageList[lng]?.countryCode).toUpperCase()
+                        : lng.toUpperCase()
+                    }/shiny/64.png`,
+                  }}
+                  style={{ width: 32, height: 32 }}
+                />
+                <NativeText>{typedLanguageList[lng].nativeName}</NativeText>
+                <NativeText style={{ color: colors.text + "80" }}>|</NativeText>
+                <NativeText
+                  style={{
+                    color: colors.text + "80",
+                  }}
+                >
+                  {typedLanguageList[lng].name}
+                </NativeText>
+              </View>
             </NativeItem>
           ))}
         </NativeList>
