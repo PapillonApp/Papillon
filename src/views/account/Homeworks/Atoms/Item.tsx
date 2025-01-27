@@ -39,13 +39,14 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
 
   const route = useRoute();
 
+  const MAX_LENGTH = 120;
+
   const stylesText = StyleSheet.create({
     body: {
       color: homework.done ? theme.colors.text + "80" : theme.colors.text,
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22,
-      maxHeight: 22 * 5,
     },
   });
 
@@ -74,7 +75,19 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     setMainLoaded(true);
   }, [homework.done]);
 
-  const contentLines = homework.content.split("\n");
+  const truncateContent = (content: string): string => {
+    if (content.length <= MAX_LENGTH) {
+      return content;
+    }
+
+    const sanitized = content.replace(/(\n|<br>)/g, "");
+
+    const truncated = sanitized.slice(0, MAX_LENGTH);
+
+    const lastSpaceIndex = truncated.lastIndexOf(" ");
+
+    return `${truncated.slice(0, lastSpaceIndex)}…`;
+  };
 
   const renderCategoryOrReturnType = () => {
     if (category) {
@@ -104,7 +117,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
               fill={"#FFF"}
               color="#FFF"
             />
-
             <NativeText style={{
               color: "#FFF",
               fontFamily: "semibold",
@@ -115,7 +127,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             >
               {category}
             </NativeText>
-
           </View>
         </LinearGradient>
       );
@@ -188,23 +199,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200).delay(50)}
           >
-
-            <View style={{ position: "relative" }}>
-              <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
-              {contentLines.length > 5 && (
-                <LinearGradient
-                  colors={[theme.colors.background + "00", theme.colors.background + "80"]}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "100%",
-                    zIndex: 1,
-                  }}
-                />
-              )}
-            </View>
+            <HTMLView value={`<body>${parse_homeworks(truncateContent(homework.content))}</body>`} stylesheet={stylesText} />
             {route.name === "HomeScreen" && (
               <View style={{ flex: 1, flexDirection: "row", gap: 4, paddingBottom: 4, paddingTop: 8, alignItems: "center", alignSelf: "flex-start" }}>
                 <Clock
