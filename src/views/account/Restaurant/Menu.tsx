@@ -50,7 +50,7 @@ import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/service
 import AccountButton from "@/components/Restaurant/AccountButton";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import PapillonHeader from "@/components/Global/PapillonHeader";
-import { PressableScale } from "react-native-pressable-scale";
+import { PressableScale } from "@/components/Global/PressableScale";
 import { BlurView } from "expo-blur";
 import { ChevronLeft, ChevronRight} from "lucide-react-native";
 
