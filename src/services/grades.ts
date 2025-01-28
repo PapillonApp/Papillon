@@ -32,15 +32,25 @@ export async function updateGradesPeriodsInCache <T extends Account> (account: T
       break;
     }
     case AccountService.Local: {
-      periods = [
-        {
-          name: "Toutes",
-          startTimestamp: 1609459200,
-          endTimestamp: 1622505600
-        },
-      ];
-      defaultPeriod = "Toutes";
-      break;
+      if (account.identityProvider.identifier == "iut-lannion") {
+        const { saveIUTLanPeriods } = await import("./iutlan/grades");
+        const data = await saveIUTLanPeriods(account);
+
+        periods = data.periods;
+        defaultPeriod = data.defaultPeriod;
+        break;
+      }
+      else {
+        periods = [
+          {
+            name: "Toutes",
+            startTimestamp: 1609459200,
+            endTimestamp: 1622505600
+          },
+        ];
+        defaultPeriod = "Toutes";
+        break;
+      }
     }
     case AccountService.Skolengo: {
       if(!checkIfSkoSupported(account, "Grades")) {
@@ -91,7 +101,7 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
       case AccountService.Local: {
         if (account.identityProvider.identifier == "iut-lannion") {
           const { saveIUTLanGrades } = await import("./iutlan/grades");
-          const data = await saveIUTLanGrades(account);
+          const data = await saveIUTLanGrades(account, periodName);
 
           grades = data.grades;
           averages = data.averages;

@@ -2,6 +2,7 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useAlert } from "@/providers/AlertProvider";
 import { PrimaryAccount } from "@/stores/account/types";
+import { animPapillon } from "@/utils/ui/animations";
 
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
@@ -10,7 +11,7 @@ import { useState } from "react";
 import { Image, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 
 const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navigation: any }) => {
   try {
@@ -38,7 +39,11 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
     });
 
     return (
-      <>
+      <Reanimated.View
+        layout={animPapillon(LinearTransition)}
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+      >
         <NativeListHeader
           animated
           label="Unités d'enseignement"
@@ -117,9 +122,8 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
             }
 
             return (
-              <>
+              <View key={ue.name = "-ue"}>
                 <NativeItem
-                  key={ue.name}
                   chevron={false}
                   style={{
                     backgroundColor: (ue.color || colors.primary) + "26",
@@ -286,11 +290,11 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
                     </NativeText>
                   </NativeItem>
                 ))}
-              </>
+              </View>
             );
           })}
         </NativeList>
-      </>
+      </Reanimated.View>
     );
   }
   catch (e) {

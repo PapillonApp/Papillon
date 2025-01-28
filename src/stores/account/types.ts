@@ -139,31 +139,37 @@ interface BaseExternalAccount {
 }
 
 export interface PronoteAccount extends BaseAccount {
-  service: AccountService.Pronote
+  service: AccountService.Pronote;
   instance?: pronote.SessionHandle;
 
   authentication: pronote.RefreshInformation & {
-    deviceUUID: string
-  }
-  identityProvider?: undefined
+    deviceUUID: string;
+  };
+  identityProvider?: undefined;
+  providers: string[];
+  serviceData: Record<string, unknown>;
 }
 
 export interface EcoleDirecteAccount extends BaseAccount {
-  service: AccountService.EcoleDirecte
-  instance: {}
+  service: AccountService.EcoleDirecte;
+  instance: {};
   authentication: {
-    session: PawdirecteSession
-    account: PawdirecteAccount
-  }
-  identityProvider?: undefined
+    session: PawdirecteSession;
+    account: PawdirecteAccount;
+  };
+  identityProvider?: undefined;
+  providers: string[];
+  serviceData: Record<string, unknown>;
 }
 
 export interface SkolengoAccount extends BaseAccount {
-  service: AccountService.Skolengo
-  instance?: ScolengoAPI.Skolengo
-  authentication: SkolengoAuthConfig
-  userInfo: ScolengoAPIUser
-  identityProvider?: undefined
+  service: AccountService.Skolengo;
+  instance?: ScolengoAPI.Skolengo;
+  authentication: SkolengoAuthConfig;
+  userInfo: ScolengoAPIUser;
+  identityProvider?: undefined;
+  providers: string[];
+  serviceData: Record<string, unknown>;
 }
 
 export interface MultiAccount extends BaseAccount {
@@ -174,27 +180,30 @@ export interface MultiAccount extends BaseAccount {
     refreshAuthToken: string
   }
   identityProvider?: undefined
+  providers: string[]
+  serviceData: Record<string, unknown>
 }
 
 export interface LocalAccount extends BaseAccount {
-  service: AccountService.Local
+  service: AccountService.Local;
 
   // Both are useless for local accounts.
-  instance: undefined | Record<string, unknown>
-  authentication: undefined | boolean
+  instance: undefined | Record<string, unknown>;
+  authentication: undefined | boolean;
 
   identityProvider: {
-    identifier: string
-    name: string,
-    rawData: Record<string, unknown>
-  }
+    identifier: string;
+    name: string;
+    rawData: Record<string, unknown>;
+  };
 
   credentials?: {
-    username: string
-    password: string
-  }
+    username: string;
+    password: string;
+  };
 
-  providers?: string[]
+  providers?: string[];
+  serviceData: Record<string, unknown>;
 }
 
 export interface TurboselfAccount extends BaseExternalAccount {

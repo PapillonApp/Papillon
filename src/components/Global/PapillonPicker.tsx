@@ -136,7 +136,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
 
                     <View style={{ flex: 1 }} />
 
-                    {item === selected || (isNotString && item.checked) && (
+                    {isNotString ? item.checked : item === selected && (
                       <Check
                         size={20}
                         strokeWidth={2.5}

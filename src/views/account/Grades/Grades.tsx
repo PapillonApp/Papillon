@@ -237,7 +237,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
                 />
               )}
 
-              {"providers" in account && account.providers && account.providers.includes("scodoc") && (
+              {gradesPerSubject.length > 0 && "providers" in account && account.providers && account.providers.includes("scodoc") && (
                 <GradesScodocUE account={account} navigation={navigation} />
               )}
 
