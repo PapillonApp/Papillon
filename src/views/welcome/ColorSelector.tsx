@@ -27,6 +27,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const settings = route.params?.settings || false;
 
+  const [THEcolor, setTHEColor] = useState<Color>(account?.personalization?.color!);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [sound2, setSound2] = useState<Audio.Sound | null>(null);
 
@@ -79,7 +80,9 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
     [color.hex.primary]: color.description
   })).reduce((acc, cur) => ({ ...acc, ...cur }), {} as { [key: string]: string });
 
-  const selectColor = (color: Color) => {
+  useEffect(() => {
+    const color = {... THEcolor};
+
     mutateProperty("personalization", { color });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     playSound2();
@@ -97,12 +100,12 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         }
       });
     };
-  };
+  }, [THEcolor]);
 
   const ColorButton: React.FC<{ color: Color }> = ({ color }) => (
     <View style={styles.colorButtonContainer}>
       <Pressable
-        onPress={() => selectColor(color)}
+        onPress={() => setTHEColor(color)}
         style={({ pressed }) => [
           styles.button,
           {
@@ -111,7 +114,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         ]}
       />
 
-      {account?.personalization?.color?.hex.primary === color.hex.primary && (
+      {THEcolor.hex.primary === color.hex.primary && (
         <Reanimated.View
           pointerEvents="none"
           style={[
@@ -139,7 +142,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
       <Reanimated.View
         entering={Platform.OS === "ios" ? FadeIn.duration(400) : void 0}
         exiting={Platform.OS === "ios" ? FadeOut.duration(2000) : void 0}
-        key={account?.personalization?.color?.hex.primary || ""}
+        key={(THEcolor.hex.primary ?? "") + "_bg"}
         style={{
           position: "absolute",
           top: 0,
@@ -156,7 +159,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
             width: "100%",
             height: "100%",
           }}
-          colors={[account?.personalization?.color?.hex.primary + "22", colors.background]}
+          colors={[THEcolor.hex.primary + "22", colors.background]}
           locations={[0, 0.5]}
         />
       </Reanimated.View>
@@ -166,7 +169,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         numberOfLines={1}
         width={280}
       />
-      <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text}/>
+      <MaskStarsColored color={THEcolor.hex.primary ?? colors.text} />
       <View style={styles.colors}>
         <View style={styles.row}>
           {colorsList.slice(0, 3).map((color) => <ColorButton key={color.id} color={color} />)}
@@ -179,9 +182,9 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           layout={LinearTransition}
           entering={FlipInXDown.springify().delay(50)}
           exiting={FadeOutUp.springify()}
-          key={account?.personalization?.color?.hex.primary || ""}
+          key={(THEcolor.hex.primary ?? "") + "_message"}
           style={[styles.message, {
-            backgroundColor: account?.personalization?.color?.hex.primary + "33",
+            backgroundColor: THEcolor.hex.primary + "33",
             overflow: "hidden",
             alignItems: "center",
             justifyContent: "center",
@@ -190,7 +193,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           <Reanimated.Text
             layout={LinearTransition.springify().stiffness(150)}
             style={{
-              color: account?.personalization?.color?.hex.primary || "",
+              color: THEcolor.hex.primary ?? "",
               fontFamily: "semibold",
               fontSize: 15,
               textAlign: "center",
@@ -200,7 +203,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
               width: "100%"
             }}
           >
-            {messages[account?.personalization?.color?.hex.primary || ""]}
+            {messages[THEcolor.hex.primary ?? ""]}
           </Reanimated.Text>
         </Reanimated.View>
       </View>
@@ -209,7 +212,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         style={styles.done}
         entering={Platform.OS === "ios" ? FadeIn.duration(200) : void 0}
         exiting={Platform.OS === "ios" ? FadeOut.duration(1000) : void 0}
-        key={(account?.personalization?.color?.hex.primary || "") + "_btn"}
+        key={(THEcolor.hex.primary ?? "") + "_btn"}
       >
         <ButtonCta
           primary
@@ -223,7 +226,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           disabled={!account?.personalization?.color}
           style={{
             marginBottom: insets.bottom + 20,
-            backgroundColor: account?.personalization?.color?.hex.primary
+            backgroundColor: THEcolor.hex.primary
           }}
         />
       </Reanimated.View>
