@@ -5,7 +5,6 @@ import { useRoute, useTheme} from "@react-navigation/native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
-import { FadeIn, FadeOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import HTMLView from "react-native-htmlview";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -150,8 +149,8 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
       onPress={() => navigation.navigate("HomeworksDocument", { homework })}
       chevron={false}
       key={homework.content}
-      entering={FadeIn}
-      exiting={FadeOut}
+      // entering={FadeIn}
+      // exiting={FadeOut}
       separator={index !== total - 1}
       style={{ backgroundColor: category ? (subjectData.color + "15") : undefined }}
       leading={
@@ -184,8 +183,8 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
           <Reanimated.View
             layout={animPapillon(LinearTransition)}
             key={homework.content}
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200).delay(50)}
+            // entering={FadeIn.duration(200)}
+            // exiting={FadeOut.duration(200).delay(50)}
           >
 
             <View

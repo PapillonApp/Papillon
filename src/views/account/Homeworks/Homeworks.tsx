@@ -25,7 +25,7 @@ import { Book, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, Search, X }
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
-import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, { Easing, FadeIn, FadeInLeft, FadeOut, FadeOutLeft, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
@@ -254,8 +254,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View
             key={day}
-            entering={animPapillon(FadeInUp)}
-            exiting={animPapillon(FadeOutDown)}
+            // entering={animPapillon(FadeInUp)}
+            // exiting={animPapillon(FadeOutDown)}
             layout={animPapillon(LinearTransition)}
           >
             <NativeListHeader animated label={day} />
