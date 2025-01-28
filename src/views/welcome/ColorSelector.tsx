@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import MaskStarsColored from "@/components/FirstInstallation/MaskStarsColored";
 import { useTheme } from "@react-navigation/native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCurrentAccount } from "@/stores/account";
 import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
-import Reanimated, { ZoomIn, ZoomOut, LinearTransition, FadeIn, FadeOut, FlipInXDown, FadeOutUp } from "react-native-reanimated";
+import Reanimated, { ZoomIn, ZoomOut, LinearTransition } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { getIconName, setIconName } from "@candlefinance/app-icon";
 
@@ -140,8 +140,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Reanimated.View
-        entering={Platform.OS === "ios" ? FadeIn.duration(400) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(2000) : void 0}
         key={(THEcolor.hex.primary ?? "") + "_bg"}
         style={{
           position: "absolute",
@@ -180,8 +178,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
 
         <Reanimated.View
           layout={LinearTransition}
-          entering={FlipInXDown.springify().delay(50)}
-          exiting={FadeOutUp.springify()}
           key={(THEcolor.hex.primary ?? "") + "_message"}
           style={[styles.message, {
             backgroundColor: THEcolor.hex.primary + "33",
@@ -210,8 +206,6 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
 
       <Reanimated.View
         style={styles.done}
-        entering={Platform.OS === "ios" ? FadeIn.duration(200) : void 0}
-        exiting={Platform.OS === "ios" ? FadeOut.duration(1000) : void 0}
         key={(THEcolor.hex.primary ?? "") + "_btn"}
       >
         <ButtonCta
