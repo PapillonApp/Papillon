@@ -254,8 +254,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View
             key={day}
-            // entering={animPapillon(FadeInUp)}
-            // exiting={animPapillon(FadeOutDown)}
             layout={animPapillon(LinearTransition)}
           >
             <NativeListHeader animated label={day} />

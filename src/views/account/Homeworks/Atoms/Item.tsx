@@ -149,8 +149,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
       onPress={() => navigation.navigate("HomeworksDocument", { homework })}
       chevron={false}
       key={homework.content}
-      // entering={FadeIn}
-      // exiting={FadeOut}
       separator={index !== total - 1}
       style={{ backgroundColor: category ? (subjectData.color + "15") : undefined }}
       leading={
@@ -183,8 +181,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
           <Reanimated.View
             layout={animPapillon(LinearTransition)}
             key={homework.content}
-            // entering={FadeIn.duration(200)}
-            // exiting={FadeOut.duration(200).delay(50)}
           >
 
             <View
