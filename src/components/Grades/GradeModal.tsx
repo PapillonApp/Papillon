@@ -9,7 +9,6 @@ import {
 import {Download, Trash2, Ellipsis} from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { PressableScale } from "@/components/Global/PressableScale";
@@ -17,6 +16,9 @@ import {NativeText} from "@/components/Global/NativeComponents";
 import {Reel} from "@/services/shared/Reel";
 import {captureRef} from "react-native-view-shot";
 import Constants from "expo-constants";
+import Animated, {Easing, FadeInRight, ZoomIn} from "react-native-reanimated";
+import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
+import {useTheme} from "@react-navigation/native";
 interface GradeModalProps {
   isVisible: boolean;
   reel: Reel;
@@ -43,6 +45,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const stickersRef = React.useRef<View>(null);
+  const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 
   const shareToSocial = async (option) => {
     const isExpoGo = Constants.appOwnership === "expo";
@@ -72,6 +75,89 @@ const GradeModal: React.FC<GradeModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
+      <PapillonBottomSheet opened={showDeleteWarning} setOpened={setShowDeleteWarning} contentContainerStyle={{overflow: "hidden"}}>
+        <View style={{height: 180, justifyContent: "center", alignItems: "center", flexDirection: "row"}}>
+          <Image
+            source={{uri: `data:image/jpeg;base64,${reel.image}`}}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            blurRadius={200}
+          />
+          <Image
+            source={{uri: `data:image/jpeg;base64,${reel.image}`}}
+            style={{
+              width: 150,
+              height: 150,
+              objectFit: "contain",
+              transform: [{rotate: "-10deg"}],
+              shadowColor: "#000",
+              shadowOffset: {width: 0, height: 0},
+              shadowOpacity: 0.5,
+              shadowRadius: 10,
+            }}
+          />
+        </View>
+        <View style={{padding: 16, paddingBottom: 0}}>
+          <NativeText variant={"titleLarge"}>Veux-tu vraiment supprimer cette réaction ?</NativeText>
+          <NativeText variant={"subtitle"}>Cette action est irréversible.</NativeText>
+          <View style={{flexDirection: "row", gap: 10, height: 46, marginTop: 20 }}>
+            <PressableScale
+              style={{
+                flex: 1,
+                borderWidth: 2,
+                borderColor: useTheme().colors.text + "30",
+                borderRadius: 120,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => setShowDeleteWarning(false)}
+            >
+              <NativeText
+                style={{
+                  fontSize: 15,
+                  fontFamily: "semibold",
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                  alignSelf: "center",
+                  textAlign: "center",
+                  color: useTheme().colors.text + "80",
+                }}
+              >
+                ANNULER
+              </NativeText>
+            </PressableScale>
+            <PressableScale
+              style={{
+                flex: 1,
+                backgroundColor: "#BE0B00",
+                borderRadius: 120,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={DeleteGrade}
+            >
+              <NativeText
+                style={{
+                  fontSize: 15,
+                  fontFamily: "semibold",
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                  alignSelf: "center",
+                  textAlign: "center",
+                  color: "#FFF",
+                }}
+              >
+                SUPPRIMER
+              </NativeText>
+            </PressableScale>
+          </View>
+        </View>
+      </PapillonBottomSheet>
       <View ref={stickersRef} style={{
         width: 300,
         height: 650,
@@ -109,14 +195,23 @@ const GradeModal: React.FC<GradeModalProps> = ({
           gap: 20,
         }}
       >
-        <Image
-          source={{ uri: `data:image/jpeg;base64,${reel.image}` }}
-          style={{
-            flex: 1,
-            objectFit: "contain",
-            paddingHorizontal: 20,
-          }}
-        />
+        <Animated.View
+          style={{flex: 1}}
+          entering={
+            ZoomIn
+              .easing(Easing.bezierFn(0, 0.5, 0.1, 1.15))
+              .duration(300)
+          }
+        >
+          <Image
+            source={{ uri: `data:image/jpeg;base64,${reel.image}` }}
+            style={{
+              flex: 1,
+              objectFit: "contain",
+              paddingHorizontal: 20,
+            }}
+          />
+        </Animated.View>
         <ScrollView
           horizontal={true}
           style={{
@@ -129,86 +224,117 @@ const GradeModal: React.FC<GradeModalProps> = ({
             gap: 16,
           }}
         >
-          <PressableScale
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-            onPress={saveimage}
+          <Animated.View
+            entering={
+              FadeInRight
+                .easing(Easing.bezierFn(0, 0.5, 0.1, 1.5))
+                .duration(300)
+                .delay(50)
+            }
           >
-            <View
+            <PressableScale
               style={{
-                width: 60,
-                height: 60,
-                backgroundColor: "#000",
-                justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 100,
+                justifyContent: "center",
+                gap: 8,
+              }}
+              onPress={saveimage}
+            >
+              <View
+                style={{
+                  width: 60,
+                  height: 60,
+                  backgroundColor: "#000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                }}
+              >
+                <Download color="white" size={24} />
+              </View>
+              <NativeText style={{color: "#FFF", fontSize: 15}}>Enregistrer</NativeText>
+            </PressableScale>
+          </Animated.View>
+          <Animated.View
+            entering={
+              FadeInRight
+                .easing(Easing.bezierFn(0, 0.5, 0.1, 1.5))
+                .duration(300)
+                .delay(100)
+            }
+          >
+            <PressableScale
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+              onPress={async () => {
+                const compositeUri = await captureRef(stickersRef, {
+                  format: "png",
+                  quality: 1,
+                });
+                const stickers = await convertToBase64(compositeUri);
+                await shareToSocial({
+                  appId: "497734022878553",
+                  stickerImage: `data:image/png;base64,${stickers}`,
+                  backgroundImage: `data:image/png;base64,${reel.imagewithouteffect}`,
+                  social: "instagramstories",
+                });
               }}
             >
-              <Download color="white" size={24} />
-            </View>
-            <NativeText style={{color: "#FFF", fontSize: 15}}>Enregistrer</NativeText>
-          </PressableScale>
-          <PressableScale
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-            onPress={async () => {
-              const compositeUri = await captureRef(stickersRef, {
-                format: "png",
-                quality: 1,
-              });
-              const stickers = await convertToBase64(compositeUri);
-              await shareToSocial({
-                appId: "497734022878553",
-                stickerImage: `data:image/png;base64,${stickers}`,
-                backgroundImage: `data:image/png;base64,${reel.imagewithouteffect}`,
-                social: "instagramstories",
-              });
-            }}
+              <Image
+                source={require("assets/images/export_instagram.png")}
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 100,
+                }}
+              />
+              <NativeText style={{color: "#FFF", fontSize: 15}}>Instagram</NativeText>
+            </PressableScale>
+          </Animated.View>
+          <Animated.View
+            entering={
+              FadeInRight
+                .easing(Easing.bezierFn(0, 0.5, 0.1, 1.5))
+                .duration(300)
+                .delay(150)
+            }
           >
-            <Image
-              source={require("assets/images/export_instagram.png")}
+            <PressableScale
               style={{
-                width: 60,
-                height: 60,
-                borderRadius: 100,
-              }}
-            />
-            <NativeText style={{color: "#FFF", fontSize: 15}}>Instagram</NativeText>
-          </PressableScale>
-          <PressableScale
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-            onPress={async () => {
-              await Share.open({
-                url: `data:image/png;base64,${reel.image}`,
-                type: "image/png",
-                message: "Voici ma note de " + reel.grade.value + "/" + reel.grade.outOf + " en " + reel.subjectdata.pretty + " ! Qu'en penses-tu ?",
-              });
-            }}
-          >
-            <View
-              style={{
-                width: 60,
-                height: 60,
-                backgroundColor: "#FFF",
-                justifyContent: "center",
                 alignItems: "center",
-                borderRadius: 100,
+                justifyContent: "center",
+                gap: 8,
+              }}
+              onPress={async () => {
+                if (Constants.appOwnership === "expo") {
+                  Alert.alert("Fonctionnalité indisponible", "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.");
+                  return;
+                }
+                await require("react-native-share").default.open({
+                  url: `data:image/png;base64,${reel.image}`,
+                  type: "image/png",
+                  message: "Voici ma note de " + reel.grade.value + "/" + reel.grade.outOf + " en " + reel.subjectdata.pretty + " ! Qu'en penses-tu ?",
+                });
               }}
             >
-              <Ellipsis color="#000" size={24} />
-            </View>
-            <NativeText style={{color: "#FFF", fontSize: 15}}>Autre</NativeText>
-          </PressableScale>
+              <View
+                style={{
+                  width: 60,
+                  height: 60,
+                  backgroundColor: "#FFF",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 100,
+                }}
+              >
+                <Ellipsis color="#000" size={24} />
+              </View>
+              <NativeText style={{color: "#FFF", fontSize: 15}}>Autre</NativeText>
+            </PressableScale>
+          </Animated.View>
         </ScrollView>
         <View
           style={{
@@ -229,7 +355,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
               alignItems: "center",
               borderRadius: 100,
             }}
-            onPress={DeleteGrade}
+            onPress={() => setShowDeleteWarning(true)}
           >
             <Trash2 color="white" size={24} />
           </PressableScale>

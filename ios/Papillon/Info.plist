@@ -19,7 +19,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>7.7.2</string>
+    <string>7.8.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -36,6 +36,13 @@
     <string>1</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>fb</string>
+      <string>instagram</string>
+      <string>twitter</string>
+      <string>tiktoksharesdk</string>
+    </array>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NSAppTransportSecurity</key>
@@ -46,7 +53,7 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réaction.</string>
+    <string>Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réactions.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Autoriser $(PRODUCT_NAME) à utiliser ta localisation.</string>
     <key>NSLocationAlwaysUsageDescription</key>

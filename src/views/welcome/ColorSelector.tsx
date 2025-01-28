@@ -15,7 +15,7 @@ import { getIconName, setIconName } from "@candlefinance/app-icon";
 
 import colorsList from "@/utils/data/colors.json";
 import { removeColor } from "../settings/SettingsIcons";
-import { expoGoWrapper } from "@/utils/native/expoGoAlert";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
 
 type Color = typeof colorsList[number];
 
@@ -84,7 +84,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     playSound2();
 
-    expoGoWrapper(() => {
+    if (!isExpoGo()) {
       getIconName().then((currentIcon) => {
         if (currentIcon.includes("_Dynamic_")) {
           const mainColor = color.hex.primary;
@@ -96,7 +96,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           setIconName(iconConstructName);
         }
       });
-    });
+    };
   };
 
   const ColorButton: React.FC<{ color: Color }> = ({ color }) => (

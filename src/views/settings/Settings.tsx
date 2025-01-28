@@ -33,7 +33,7 @@ import {
   Smile,
   SwatchBook,
   WandSparkles,
-  X
+  X, HelpCircle
 } from "lucide-react-native";
 
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
@@ -215,6 +215,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#c75110",
           label: "Quoi de neuf ?",
           onPress: () => navigation.navigate("ChangelogScreen"),
+        },
+        {
+          icon: <HelpCircle />,
+          color: "#0E7CCB",
+          label: "Besoin d'aide ?",
+          onPress: () => openUrl("https://support.papillon.bzh/"),
         },
         {
           icon: <Info />,

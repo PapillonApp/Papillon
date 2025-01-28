@@ -92,24 +92,31 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
 
   if (!totalMissed || totalMissed.absences.length === 0) {
     return (
-      <NativeList
-        animated
-        key="emptyAttendance"
-        entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
-        exiting={FadeOut.duration(300)}
-      >
-        <NativeItem animated style={{ paddingVertical: 10 }}>
-          <MissingItem
-            title="Aucune absence"
-            description={
-              defaultPeriod
-                ? `Tu n'as pas d'absences au ${defaultPeriod}.`
-                : "Tu n'as pas d'absences pour cette période."
-            }
-            emoji="🎉"
-          />
-        </NativeItem>
-      </NativeList>
+      <>
+        <NativeListHeader label={"Vie scolaire"}
+          trailing={(
+            <RedirectButton navigation={PapillonNavigation.current} redirect="Attendance" />
+          )}
+        />
+        <NativeList
+          animated
+          key="emptyAttendance"
+          entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+          exiting={FadeOut.duration(300)}
+        >
+          <NativeItem animated style={{ paddingVertical: 10 }}>
+            <MissingItem
+              title="Aucune absence"
+              description={
+                defaultPeriod
+                  ? `Tu n'as pas d'absences au ${defaultPeriod}.`
+                  : "Tu n'as pas d'absences pour cette période."
+              }
+              emoji="🎉"
+            />
+          </NativeItem>
+        </NativeList>
+      </>
     );
   }
 

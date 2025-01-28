@@ -60,21 +60,41 @@ export default [
   }),
   createScreen("LessonDocument", LessonDocument, {
     headerTitle: "Cours",
-    presentation: "modal",
+    presentation: "formSheet",
+    gestureDirection: "vertical",
+    animation: "slide_from_bottom",
+    sheetGrabberVisible: false,
+    sheetInitialDetentIndex: 0,
+    sheetAllowedDetents: [0.5, 1.0],
     headerShown: false,
   }),
   createScreen("HomeworksDocument", HomeworksDocument, {
     headerTitle: "Devoir",
-    presentation: "modal",
+    presentation: "formSheet",
+    gestureDirection: "vertical",
+    animation: "slide_from_bottom",
+    sheetGrabberVisible: false,
+    sheetInitialDetentIndex: 0,
+    sheetAllowedDetents: [0.5, 1.0],
     headerShown: false,
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",
-    presentation: "modal",
+    presentation: "formSheet",
+    gestureDirection: "vertical",
+    animation: "slide_from_bottom",
+    sheetGrabberVisible: true,
+    sheetInitialDetentIndex: 0,
+    sheetAllowedDetents: [0.5, 1.0],
   }),
   createScreen("GradeDocument", GradeDocument, {
     headerTitle: "Détail de la note",
-    presentation: "modal",
+    presentation: "formSheet",
+    gestureDirection: "vertical",
+    animation: "slide_from_bottom",
+    sheetGrabberVisible: false,
+    sheetInitialDetentIndex: 0,
+    sheetAllowedDetents: [0.5, 1.0],
     headerShown: Platform.OS !== "ios",
   }),
   createScreen("ChatCreate", ChatCreate, {
@@ -90,12 +110,12 @@ export default [
   createScreen("ChatDetails", ChatDetails, {
     headerTitle: "Discussions",
     headerShown: false,
-    presentation: "modal"
+    presentation: "modal",
   }),
   createScreen("ChatThemes", ChatThemes, {
     headerTitle: "Thèmes",
     headerShown: true,
-    presentation: "modal"
+    presentation: "modal",
   }),
   createScreen("BackgroundIUTLannion", BackgroundIUTLannion, {
     headerTitle: "IUT de Lannion",

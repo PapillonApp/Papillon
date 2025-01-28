@@ -1,21 +1,26 @@
-import { expoGoWrapper } from "@/utils/native/expoGoAlert";
-import {Notification} from "@notifee/react-native";
+import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
+import { Notification } from "@notifee/react-native";
 
-const requestNotificationPermission = async () => {
-  return expoGoWrapper(async () => {
-    const notifee = (await import("@notifee/react-native")).default;
-    await notifee.requestPermission();
-  }, true);
+const requestNotificationPermission = () => {
+  return async () => {
+    if (!isExpoGo()) {
+      const notifee = (await import("@notifee/react-native")).default;
+      await notifee.requestPermission();
+    } else {
+      alertExpoGo();
+      return false;
+    }
+  };
 };
 
 const papillonNotify = async (props: Notification) => {
-  expoGoWrapper(async () => {
+  if (!isExpoGo()) {
     const notifee = (await import("@notifee/react-native")).default;
     await notifee.displayNotification({
       ...props,
       title: props.title || "Coucou, c'est Papillon 👋",
     });
-  });
+  }
 };
 
 export {

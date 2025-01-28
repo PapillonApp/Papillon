@@ -1,6 +1,6 @@
 {
   "name": "papillonvex",
-  "version": "7.8.0",
+  "version": "7.9.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "update": "ncu -u && npm install",

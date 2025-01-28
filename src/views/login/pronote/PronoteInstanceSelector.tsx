@@ -28,10 +28,12 @@ import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 
-import { Search, X, GraduationCap } from "lucide-react-native";
+import {Search, X, GraduationCap, SearchX} from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
+import {openURL} from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 
 const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   route: { params },
@@ -336,6 +338,33 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                   />
                 </Reanimated.View>
               ))}
+              <Reanimated.View
+                style={{ width: "100%" }}
+                layout={LinearTransition.springify()
+                  .mass(1)
+                  .stiffness(150)
+                  .damping(20)}
+                entering={
+                  instances.length < 10 && !hasSearched
+                    ? FlipInXDown.springify().delay(100 * instances.length)
+                  // @ts-expect-error
+                    : ZoomInEasyDown.duration(400).easing(Easing.bezier(0.25, 0.1, 0.25, 1)).delay(30 * instances.length)
+                }
+                exiting={instances.length < 10 ? FadeOutUp : void 0}
+              >
+                <DuoListPressable
+                  leading={
+                    <SearchX size={24} color={colors.text + "88"} />
+                  }
+                  onPress={async () => {
+                    await WebBrowser.openBrowserAsync("https://support.papillon.bzh//articles/351104-frequency-asked-questions#etab-not-found", {
+                      controlsColor: "#0E7CCB",
+                      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+                    });
+                  }}
+                  text={"Je ne trouve pas mon établissement..."}
+                />
+              </Reanimated.View>
             </Reanimated.View>
           </Reanimated.ScrollView>
         </Reanimated.View>

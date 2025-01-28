@@ -35,6 +35,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
   const [category, setCategory] = useState<string | null>(null);
+  const [shouldShowMoreGradient, setShouldShowMoreGradient] = useState(false);
   const account = useCurrentAccount((store) => store.account!);
 
   const route = useRoute();
@@ -73,8 +74,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     setIsLoading(false);
     setMainLoaded(true);
   }, [homework.done]);
-
-  const contentLines = homework.content.split("\n");
 
   const renderCategoryOrReturnType = () => {
     if (category) {
@@ -189,17 +188,24 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             exiting={FadeOut.duration(200).delay(50)}
           >
 
-            <View style={{ position: "relative" }}>
+            <View
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                if (height >= 22 * 5) {
+                  setShouldShowMoreGradient(true);
+                }
+              }}
+            >
               <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
-              {contentLines.length > 5 && (
+              {shouldShowMoreGradient && (
                 <LinearGradient
-                  colors={[theme.colors.background + "00", theme.colors.background + "80"]}
+                  colors={[theme.colors.background + "40", theme.colors.background]}
                   style={{
                     position: "absolute",
-                    top: 0,
                     left: 0,
                     right: 0,
-                    height: "100%",
+                    bottom: 0,
+                    height: 44,
                     zIndex: 1,
                   }}
                 />
