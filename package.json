@@ -3,7 +3,7 @@
   "version": "7.9.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "update": "ncu -u -x @types/react,react,react-native && npm install",
+    "update": "ncu -i -x @types/react,react,react-native && npm install",
     "start": "expo start",
     "lint": "tsc && eslint .",
     "prebuild": "expo prebuild && cp -a ./AppIcon.appiconset.backup/. ios/Papillon/Images.xcassets/AppIcon.appiconset/",
