@@ -260,6 +260,8 @@
     }
   },
   "grades": {
-    "estimated": "Estimation"
+    "estimated": "Estimation",
+    "latestGrades": "Dernières notes",
+    "myGrades": "Mes notes"
   }
 }
