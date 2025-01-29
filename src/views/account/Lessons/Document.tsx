@@ -232,7 +232,6 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
           paddingTop: 70 + 16,
           paddingBottom: useSafeAreaInsets().bottom + 16,
         }}
-        style={{ flex: 1 }}
       >
         {informations.map((info, index) => {
           if (info.informations.filter((item) => item.enabled).length === 0) {

@@ -237,7 +237,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   }, [navigation, handleFocus]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       {reels[grade.id] &&
             <GradeModal
               isVisible={modalOpen}
@@ -457,7 +457,6 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         style={{
-          flex: 1,
           width: "100%",
           maxWidth: 500,
           backgroundColor: theme.colors.background,
@@ -522,7 +521,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         </View>
         <InsetsBottomView />
       </ScrollView>
-    </View>
+    </>
   );
 };
 

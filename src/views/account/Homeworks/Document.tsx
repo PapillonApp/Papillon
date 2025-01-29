@@ -83,7 +83,7 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
 
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <PapillonModernHeader native outsideNav={true}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <View
@@ -161,7 +161,6 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
           paddingTop: 70 + 16,
           paddingBottom: useSafeAreaInsets().bottom + 16,
         }}
-        style={{ flex: 1 }}
       >
         <NativeList>
           {homework.exam ? (
@@ -204,7 +203,7 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
           </View>
         )}
       </ScrollView>
-    </View>
+    </>
   );
 };
 
