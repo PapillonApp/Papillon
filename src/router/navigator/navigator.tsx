@@ -37,6 +37,7 @@ const BottomTabNavigator: React.ComponentType<any> = ({
             state={state}
             descriptors={descriptors}
             navigation={navigation}
+            describe={screenOptions}
           />
         )}
 
@@ -52,6 +53,7 @@ const BottomTabNavigator: React.ComponentType<any> = ({
             state={state}
             descriptors={descriptors}
             navigation={navigation}
+            describe={screenOptions}
           />
         )}
       </View>

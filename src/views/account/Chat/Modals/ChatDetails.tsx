@@ -81,7 +81,7 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
           <NativeItem onPress={() => navigation.navigate("ChatThemes", {
             handle: chat,
             themes: availableThemes,
-            onGoBack: (selectedThemePath) => updateTheme(selectedThemePath),
+            onGoBack: (selectedThemePath: ThemesMeta) => updateTheme(selectedThemePath),
           })}>
             <View style={styles.themeItem}>
               <View style={{ flex: 1, flexDirection: "row", gap: 10, alignItems: "center" }}>
