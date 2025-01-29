@@ -352,8 +352,8 @@ export const NativeIcon: React.FC<NativeIconProps> = ({ icon, color, style }) =>
 
 interface NativeIconGradientprops {
   icon: ReactNode;
-  colors?: string[];
-  locations?: number[];
+  colors?: readonly [string, string];
+  locations?: readonly [number, number];
   style?: StyleProp<ViewStyle>;
 }
 

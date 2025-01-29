@@ -117,7 +117,9 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
         authentication: { ...refresh, deviceUUID: accountID },
         personalization: await defaultPersonalization(session),
 
-        identity: {}
+        identity: {},
+        providers: [],
+        serviceData: {},
       };
 
       pronote.startPresenceInterval(session);

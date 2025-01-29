@@ -126,7 +126,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
   const processSemestre = async (data: any) => {
     // ajouter le semestre ici
-    const newServiceData = account?.serviceData || {};
+    const newServiceData: { [key: string]: any } = account?.serviceData || {};
 
     if (!newServiceData["semestres"]) {
       newServiceData["semestres"] = {};
@@ -197,7 +197,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       className: data["relevé"].etudiant.dept_acronym,
       schoolName: "IUT de Lannion - Université de Rennes",
 
-      personalization: await defaultPersonalization()
+      personalization: await defaultPersonalization(),
+      serviceData: {},
     };
 
     createStoredAccount(local_account);

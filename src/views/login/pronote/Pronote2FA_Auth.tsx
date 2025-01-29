@@ -152,7 +152,9 @@ export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
       authentication: { ...refresh, deviceUUID: accountID },
       personalization: await defaultPersonalization(session),
 
-      identity: {}
+      identity: {},
+      providers: [],
+      serviceData: {},
     };
 
     pronote.startPresenceInterval(session);

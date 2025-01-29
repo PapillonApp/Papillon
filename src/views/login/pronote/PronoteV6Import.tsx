@@ -72,7 +72,9 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
         authentication: { ...refresh, deviceUUID: data.deviceUUID },
         personalization: await defaultPersonalization(session),
 
-        identity: {}
+        identity: {},
+        providers: [],
+        serviceData: {},
       };
 
       pronote.startPresenceInterval(session);
