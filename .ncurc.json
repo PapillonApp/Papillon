@@ -1,0 +1,11 @@
+{
+  "reject": [
+    "expo-*",
+    "lottie-react-native",
+    "react",
+    "react-native",
+    "react-native-*",
+    "@react-native-*",
+    "@types/react"
+  ]
+}
