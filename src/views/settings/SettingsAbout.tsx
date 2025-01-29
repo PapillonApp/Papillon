@@ -200,11 +200,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
           </NativeText>
           <NativeText variant="subtitle">
             RN : {PackageJSON.dependencies["react-native"].split("^")[1]} |
-            Expo :{" "}
-            {(
-              PackageJSON.devDependencies.expo ||
-              PackageJSON.dependencies.expo
-            ).replace("^", "").replace("~", "")}
+            Expo : {PackageJSON.dependencies.expo.replace("^", "").replace("~", "")}
           </NativeText>
         </NativeItem>
       </NativeList>
