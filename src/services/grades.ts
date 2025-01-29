@@ -2,7 +2,7 @@ import { type Account, AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import type { Period } from "./shared/Period";
 import type { AverageOverview, Grade } from "./shared/Grade";
-import {error } from "@/utils/logger/logger";
+import { error } from "@/utils/logger/logger";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 
 const getDefaultPeriod = (periods: Period[]): string => {
@@ -136,6 +136,6 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
     useGradesStore.getState().updateGradesAndAverages(periodName, grades, averages);
   }
   catch (err) {
-    error(`not updated, see:${err}`, "updateGradesAndAveragesInCache");
+    error(`grades not updated, see:${err}`, "updateGradesAndAveragesInCache");
   }
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { FlatList } from "react-native";
 import { NativeListHeader } from "@/components/Global/NativeComponents";
-import { animPapillon } from "@/utils/ui/animations";
+import { anim2Papillon } from "@/utils/ui/animations";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import GradesLatestItem from "./LatestGradesItem";
 import { Grade } from "@/services/shared/Grade";
@@ -30,7 +30,7 @@ const GradesLatestList = (props: GradesLatestListProps) => {
 
   return (
     <Reanimated.View
-      layout={animPapillon(LinearTransition)}
+      layout={anim2Papillon(LinearTransition)}
     >
       <NativeListHeader animated label="Dernières notes" />
 

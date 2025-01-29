@@ -1,16 +1,16 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
-import {Alert, Image, Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {CameraView, PermissionStatus, useCameraPermissions} from "expo-camera";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Text, View, Linking, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { CameraView, useCameraPermissions, PermissionStatus } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import {Check, X} from "lucide-react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {captureRef} from "react-native-view-shot";
-import {Screen} from "@/router/helpers/types";
-import {getSubjectData} from "@/services/shared/Subject";
-import {useGradesStore} from "@/stores/grades";
-import {Reel} from "@/services/shared/Reel";
+import { Check, X } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { captureRef } from "react-native-view-shot";
+import { Screen } from "@/router/helpers/types";
+import { getSubjectData } from "@/services/shared/Subject";
+import { useGradesStore } from "@/stores/grades";
+import { Reel } from "@/services/shared/Reel";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import {NativeText} from "@/components/Global/NativeComponents";
+import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import Constants from "expo-constants";
 
@@ -84,8 +84,8 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
   const [isCameraPermissionGranted, setIsCameraPermissionGranted] = useState(PermissionStatus.UNDETERMINED);
 
   const setupPermissions = async () => {
-    setIsMediaLibraryPermissionGranted(mediaLibraryPermission?.status);
-    setIsCameraPermissionGranted(cameraPermission?.status);
+    setIsMediaLibraryPermissionGranted(mediaLibraryPermission?.status ?? PermissionStatus.UNDETERMINED);
+    setIsCameraPermissionGranted(cameraPermission?.status ?? PermissionStatus.UNDETERMINED);
     if (isMediaLibraryPermissionGranted !== PermissionStatus.GRANTED) {
       await requestMediaLibraryPermission();
     }
@@ -176,14 +176,14 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
           value={"Accès à ta caméra"}
           backgroundColor={"#000"}
           primary={true}
-          icon={isCameraPermissionGranted == PermissionStatus.GRANTED ? <Check/> : null}
+          icon={isCameraPermissionGranted == PermissionStatus.GRANTED ? <Check/> : undefined}
           onPress={() => {isCameraPermissionGranted != PermissionStatus.GRANTED && Linking.openSettings();}}
         />
         <ButtonCta
           value={"Accès à ta librairie photo"}
           backgroundColor={"#000"}
           primary={true}
-          icon={isMediaLibraryPermissionGranted == PermissionStatus.GRANTED ? <Check/> : null}
+          icon={isMediaLibraryPermissionGranted == PermissionStatus.GRANTED ? <Check/> : undefined}
           onPress={() => {isMediaLibraryPermissionGranted != PermissionStatus.GRANTED && Linking.openSettings();}}
         />
       </View>

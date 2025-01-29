@@ -4,26 +4,49 @@ import {
   View,
   Image,
   Text,
-  Alert, ScrollView, StyleSheet, Dimensions
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Dimensions
 } from "react-native";
-import {Download, Trash2, Ellipsis} from "lucide-react-native";
+import { Download, Trash2, Ellipsis } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import { PressableScale } from "@/components/Global/PressableScale";
-import {NativeText} from "@/components/Global/NativeComponents";
-import {Reel} from "@/services/shared/Reel";
-import {captureRef} from "react-native-view-shot";
+import {  PressableScale  } from "@/components/Global/PressableScale";
+import { NativeText } from "@/components/Global/NativeComponents";
+import { Reel } from "@/services/shared/Reel";
+import { captureRef } from "react-native-view-shot";
 import Constants from "expo-constants";
-import Animated, {Easing, FadeInRight, ZoomIn} from "react-native-reanimated";
+import Animated, { Easing, FadeInRight, ZoomIn } from "react-native-reanimated";
 import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
-import {useTheme} from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 interface GradeModalProps {
   isVisible: boolean;
   reel: Reel;
   onClose: () => void;
   DeleteGrade: () => void;
+}
+
+interface ShareOptions {
+  appId: string;
+  urls?: string[];
+  url?: string;
+  type?: string;
+  filename?: string;
+  message?: string;
+  title?: string;
+  subject?: string;
+  email?: string;
+  recipient?: string;
+  social: "facebook"|"facebookstories"|"pagesmanager"|"twitter"|"whatsapp"
+          |"whatsappbusiness" |"instagram"|"instagramstories"|"googleplus"
+          |"email"|"pinterest"|"linkedin"|"sms" |"telegram"|"snapchat"
+          |"messenger"|"viber"|"discord";
+  forceDialog?: boolean;
+  stickerImage?: string;
+  backgroundImage?: string;
 }
 
 const convertToBase64 = async (uri: string): Promise<string> => {
@@ -47,7 +70,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
   const stickersRef = React.useRef<View>(null);
   const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 
-  const shareToSocial = async (option) => {
+  const shareToSocial = async (option: ShareOptions) => {
     const isExpoGo = Constants.appOwnership === "expo";
     if (isExpoGo) {
       Alert.alert("Fonctionnalité indisponible", "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.");

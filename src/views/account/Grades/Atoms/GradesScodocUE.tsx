@@ -2,24 +2,26 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useAlert } from "@/providers/AlertProvider";
 import { PrimaryAccount } from "@/stores/account/types";
-import { animPapillon } from "@/utils/ui/animations";
+import { anim2Papillon } from "@/utils/ui/animations";
 
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown, ChevronUp, Info } from "lucide-react-native";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Image, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeInDown, FadeOut, FadeOutUp, LinearTransition } from "react-native-reanimated";
 
-const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navigation: any }) => {
+const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: PrimaryAccount, navigation: any, selectedPeriod: string }) => {
   try {
     const { colors } = useTheme();
     const { showAlert } = useAlert();
 
+    const grades = account.serviceData.semestres[selectedPeriod];
+
     // @ts-expect-error
-    const ues = account.identityProvider?.rawData["relevé"]["ues"];
+    const ues = grades["relevé"]["ues"];
     const uekeys = Object.keys(ues);
 
     if (uekeys.length === 0) {
@@ -27,9 +29,9 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
     }
 
     // @ts-expect-error
-    const ressources = account.identityProvider?.rawData["relevé"]["ressources"];
+    const ressources = grades["relevé"]["ressources"];
     // @ts-expect-error
-    const saes = account.identityProvider?.rawData["relevé"]["saes"];
+    const saes = grades["relevé"]["saes"];
 
     const finalUes = uekeys.map((ue) => {
       return {
@@ -40,9 +42,9 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
 
     return (
       <Reanimated.View
-        layout={animPapillon(LinearTransition)}
-        entering={FadeIn.duration(200)}
-        exiting={FadeOut.duration(200)}
+        layout={anim2Papillon(LinearTransition)}
+        entering={anim2Papillon(FadeInDown).duration(300)}
+        exiting={anim2Papillon(FadeOutUp).duration(100)}
       >
         <NativeListHeader
           animated
@@ -70,7 +72,7 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
           }
         />
 
-        <NativeList animated>
+        <NativeList animated layout={anim2Papillon(LinearTransition)}>
           {finalUes.map((ue) => {
             interface ueGrade {
               key: string,
@@ -298,8 +300,9 @@ const GradesScodocUE = ({ account, navigation }: { account: PrimaryAccount, navi
     );
   }
   catch (e) {
+    console.error(e);
     return null;
   }
 };
 
-export default GradesScodocUE;
+export default memo(GradesScodocUE);
