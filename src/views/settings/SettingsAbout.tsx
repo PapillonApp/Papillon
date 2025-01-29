@@ -199,7 +199,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             Version des dépendances
           </NativeText>
           <NativeText variant="subtitle">
-            RN : {PackageJSON.dependencies["react-native"].split("^")[1]} |
+            RN : {PackageJSON.dependencies["react-native"].replace("^", "").replace("~", "")} |
             Expo : {PackageJSON.dependencies.expo.replace("^", "").replace("~", "")}
           </NativeText>
         </NativeItem>
