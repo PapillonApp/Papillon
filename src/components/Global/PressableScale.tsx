@@ -36,7 +36,7 @@ export interface PressableScaleProps
  * A Pressable that scales down when pressed. Uses the JS Pressability API.
  */
 export const PressableScale = forwardRef<View, PressableScaleProps>(
-  (props) => {
+  (props, _ref) => {
     const {
       activeScale = 0.95,
       weight = "heavy",
