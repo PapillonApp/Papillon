@@ -33,7 +33,9 @@ import {
   Smile,
   SwatchBook,
   WandSparkles,
-  X, HelpCircle
+  X,
+  Blocks,
+  HelpCircle
 } from "lucide-react-native";
 
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
@@ -203,6 +205,13 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           label: "Papillon Magic (Bêta)",
           description: "Fonctionnalités intelligentes",
           onPress: () => navigation.navigate("SettingsMagic"),
+        },
+        {
+          icon: <Blocks />,
+          color: "#cb7712",
+          label: "Multiservice (Bêta)",
+          description: "Connecte plusieurs services en un seul espace de travail",
+          onPress: () => navigation.navigate("SettingsMultiService"),
         },
       ],
     },
