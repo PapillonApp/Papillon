@@ -9,19 +9,24 @@ import {
   View
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import Reanimated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import debounce from "lodash/debounce";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
+import { useTimetableStore } from "@/stores/timetable";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2, X } from "lucide-react-native";
+import { ArrowDownToLine, Trash2, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
+import { AccountService } from "@/stores/account/types";
+import { getTimetableForWeek } from "@/services/pronote/timetable";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { useAlert } from "@/providers/AlertProvider";
 
 const MemoizedNativeItem = React.memo(NativeItem);
@@ -33,6 +38,7 @@ type Item = [key: string, value: { color: string; pretty: string; emoji: string;
 
 const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const account = useCurrentAccount(store => store.account!);
+  const timetables = useTimetableStore(store => store.timetables);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
   const insets = useSafeAreaInsets();
   const colors = useTheme().colors;
@@ -45,6 +51,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [opened, setOpened] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(""); // New state for unsynced text input
   const [currentEmoji, setCurrentEmoji] = useState(""); // New state for unsynced text input
+  const [spinning, setSpinning] = useState(false);
 
   const emojiInput = React.useRef<TextInput>(null);
 
@@ -94,12 +101,22 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
     }
   }, [selectedSubject, currentTitle, debouncedUpdateSubject]);
 
+  const updateSpinning = useCallback(() => {
+    console.log(spinning);
+    setSpinning((spin) => {
+      console.log(spin);
+      console.log(!spin);
+      return !spin;
+    });
+    console.log(spinning);
+  }, []);
+
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
     let emoji = "";
-    if(newEmoji.length >= 1) {
+    if (newEmoji.length >= 1) {
       var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
       const emojiMatch = newEmoji.match(regexp);
-      if(emojiMatch) {
+      if (emojiMatch) {
         emoji = emojiMatch[emojiMatch.length - 1];
       }
     }
@@ -133,40 +150,115 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            showAlert({
-              title: "Réinitialiser les matières",
-              message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
-              actions: [
-                {
-                  title: "Annuler",
-                  icon: <X />,
-                },
-                {
-                  title: "Réinitialiser",
-                  icon: <Trash2 />,
-                  primary: true,
-                  danger: true,
-                  onPress: () => {
-                    setSubjects([]);
-                    setLocalSubjects([]);
-                    setCurrentTitle("");
-                    setCurrentEmoji("");
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {account.service === AccountService.Pronote && (
+            <TouchableOpacity
+              onPress={() => {
+                showAlert({
+                  title: "Importer les couleurs",
+                  message: "Tu es sûr de vouloir importer les couleurs des matières depuis Pronote ?",
+                  actions: [
+                    {
+                      title: "Annuler",
+                      icon: <X />,
+                    },
+                    {
+                      title: "Importer",
+                      icon: <ArrowDownToLine />,
+                      primary: true,
+                      onPress: () => {
+                        updateSpinning();
+                        getTimetableForWeek(account, 1).then((timetable1) => {
+                          getTimetableForWeek(account, 2).then((timetable2) => {
+                            var mysubjects = [...timetable1, ...timetable2];
 
-                    mutateProperty("personalization", {
-                      ...account.personalization,
-                      subjects: {},
-                    });
+                            type SubjectInfo = {
+                              backgroundColor: string | undefined;
+                              subject: string;
+                            };
+
+                            var filteredsInfos: SubjectInfo[] = mysubjects.map(subject => ({
+                              backgroundColor: subject.backgroundColor,
+                              subject: subject.subject
+                            }));
+
+                            filteredsInfos = filteredsInfos.reduce<SubjectInfo[]>((acc, current) => {
+                              const x = acc.find(item => item.subject === current.subject);
+                              if (!x) {
+                                return acc.concat([current]);
+                              } else {
+                                return acc;
+                              }
+                            }, []);
+
+                            var othersubjects = account.personalization.subjects ? Object.entries(account.personalization.subjects) : [];
+
+                            for (let i = 0; i < othersubjects.length; i++) {
+                              othersubjects[i][1].color = filteredsInfos.find(info => info.subject === othersubjects[i][0])?.backgroundColor || othersubjects[i][1].color;
+                            }
+
+                            setOnSubjects(othersubjects);
+                            updateSpinning();
+                          });
+                        });
+                      },
+                    },
+                  ],
+                });
+              }}
+            >
+              {!spinning ? (
+                <Image
+                  source={require("../../../assets/images/service_pronote.png")}
+                  style={{ width: 22, height: 22, borderRadius: 11, marginRight: 20 }}
+                />
+              ) : (
+                <PapillonSpinner
+                  size={18}
+                  color={colors.primary}
+                  strokeWidth={2.8}
+                  style={{
+                    marginLeft: 5,
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              showAlert({
+                title: "Réinitialiser les matières",
+                message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
+                actions: [
+                  {
+                    title: "Annuler",
+                    icon: <X />,
                   },
-                },
-              ],
-            });
-          }}
-          style={{ marginRight: 2 }}
-        >
-          <Trash2 size={22} color={colors.primary} />
-        </TouchableOpacity>
+                  {
+                    title: "Réinitialiser",
+                    icon: <Trash2 />,
+                    primary: true,
+                    danger: true,
+                    onPress: () => {
+                      setSubjects([]);
+                      setLocalSubjects([]);
+                      setCurrentTitle("");
+                      setCurrentEmoji("");
+
+                      mutateProperty("personalization", {
+                        ...account.personalization,
+                        subjects: {},
+                      });
+                    },
+                  },
+                ],
+              });
+            }}
+            style={{ marginRight: 2 }}
+          >
+            <Trash2 size={22} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation, colors.primary]);
