@@ -18,9 +18,10 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
     const { colors } = useTheme();
     const { showAlert } = useAlert();
 
-    const grades = account.serviceData.semestres[selectedPeriod];
+    const grades = (
+      account.serviceData as { semestres: { [key: string]: any } }
+    ).semestres[selectedPeriod];
 
-    // @ts-expect-error
     const ues = grades["relevé"]["ues"];
     const uekeys = Object.keys(ues);
 
@@ -28,9 +29,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
       return null;
     }
 
-    // @ts-expect-error
     const ressources = grades["relevé"]["ressources"];
-    // @ts-expect-error
     const saes = grades["relevé"]["saes"];
 
     const finalUes = uekeys.map((ue) => {

@@ -83,7 +83,8 @@ const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ na
         className: "",
         schoolName: "Université Sorbonne Paris Nord",
         personalization: await defaultPersonalization(),
-        identity: {}
+        identity: {},
+        serviceData: {},
       };
 
       createStoredAccount(localAccount);

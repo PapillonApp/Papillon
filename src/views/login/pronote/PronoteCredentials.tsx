@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { StyleSheet } from "react-native";
 
 import pronote from "pawnote";
 import uuid from "@/utils/uuid-v4";
@@ -69,7 +68,9 @@ const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation })
         authentication: { ...refresh, deviceUUID: accountID },
         personalization: await defaultPersonalization(session),
 
-        identity: {}
+        identity: {},
+        providers: [],
+        serviceData: {},
       };
 
       pronote.startPresenceInterval(session);

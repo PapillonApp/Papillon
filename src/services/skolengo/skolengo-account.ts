@@ -107,7 +107,9 @@ export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInf
     className: userInfo?.className,
     personalization: await defaultSkolengoPersonalization(skolengoAccount),
     userInfo,
-    identity: {}
+    identity: {},
+    serviceData: {},
+    providers: [],
   };
   return account;
 };
