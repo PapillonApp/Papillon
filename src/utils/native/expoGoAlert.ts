@@ -1,8 +1,8 @@
 import { Alert } from "react-native";
-import Constants from "expo-constants";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 
 export const isExpoGo = () => {
-  return Constants.expoConfig?.extra?.EXPO_ENV === "expo";
+  return Constants.executionEnvironment !== ExecutionEnvironment.Bare;
 };
 
 export const alertExpoGo = async () => {
