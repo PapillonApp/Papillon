@@ -3,6 +3,7 @@ import { Text, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "rea
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
+import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const ButtonCta: React.FC<{
   value: string
@@ -22,6 +23,8 @@ const ButtonCta: React.FC<{
   icon,
 }) => {
   const { colors } = useTheme();
+
+  const { isTablet } = useScreenDimensions();
 
   const [pressed, setPressed] = useState(false);
   const scale = useSharedValue(1);
@@ -58,6 +61,7 @@ const ButtonCta: React.FC<{
     >
       <Pressable
         style={[
+          isTablet ? { width: "50%" } : { width: "100%" },
           styles.button,
           (primary && !disabled) ? styles.primary : styles.secondary,
           { backgroundColor: backgroundColor },
@@ -83,12 +87,11 @@ const ButtonCta: React.FC<{
 
 const styles = StyleSheet.create({
   button: {
-    minWidth: "100%",
     height: 46,
     borderRadius: 120,
     borderCurve: "continuous",
     justifyContent: "center",
-    alignItems: "center",
+    alignSelf: "center",
     gap: 8,
     flexDirection: "row",
   },
