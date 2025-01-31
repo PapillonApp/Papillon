@@ -25,6 +25,7 @@ import {
   Calendar,
   Folder,
   X,
+  SunMoon,
 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -174,7 +175,9 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                   leading={
                     <NativeIcon
                       icon={
-                        log.type === "ERROR" ? (
+                        log.from === "BACKGROUND" ? (
+                          <SunMoon />
+                        ) : log.type === "ERROR" ? (
                           <CircleX />
                         ) : log.type === "WARN" ? (
                           <TriangleAlert />
@@ -195,23 +198,25 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                         )
                       }
                       color={
-                        log.type === "ERROR"
-                          ? "#BE0B00"
-                          : log.type === "WARN"
-                            ? "#CF6B0F"
-                            : log.type === "INFO"
-                              ? "#0E7CCB"
-                              : log.message.startsWith("User navigate into /")
-                                ? "#28B463"
-                                : log.message === "App in background"
-                                  ? "#1F618D"
-                                  : log.message.toLowerCase().includes("read")
-                                    ? "#D4AC02"
-                                    : log.message === "[timetable:updateClasses"
-                                      ? "#884EA0"
-                                      : log.message.toLowerCase().includes("folder")
-                                        ? "#CA6F1E"
-                                        : "#AAA"
+                        log.from === "BACKGROUND"
+                          ? "#34495E"
+                          : log.type === "ERROR"
+                            ? "#BE0B00"
+                            : log.type === "WARN"
+                              ? "#CF6B0F"
+                              : log.type === "INFO"
+                                ? "#0E7CCB"
+                                : log.message.startsWith("User navigate into /")
+                                  ? "#28B463"
+                                  : log.message === "App in background"
+                                    ? "#1F618D"
+                                    : log.message.toLowerCase().includes("read")
+                                      ? "#D4AC02"
+                                      : log.message === "[timetable:updateClasses"
+                                        ? "#884EA0"
+                                        : log.message.toLowerCase().includes("folder")
+                                          ? "#CA6F1E"
+                                          : "#AAA"
                       }
                       style={{
                         marginLeft: -6,

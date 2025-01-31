@@ -1,16 +1,51 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet, DimensionValue, Switch } from "react-native";
+import {
+  View,
+  StyleSheet,
+  DimensionValue,
+  Switch,
+  Pressable,
+  Platform,
+  Alert,
+  Linking,
+} from "react-native";
 import LottieView from "lottie-react-native";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Reanimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import { Settings, X } from "lucide-react-native";
+import { useAlert } from "@/providers/AlertProvider";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteParameters } from "@/router/helpers/types";
 
 type NotificationContainerCardProps = {
   theme: any;
-  isEnable?: boolean;
-  setEnabled?: (value: boolean) => void;
+  isEnable: boolean | null;
+  setEnabled: (value: boolean) => void;
+  navigation: NativeStackNavigationProp<
+    RouteParameters,
+    "SettingsNotifications",
+    undefined
+  >;
 };
 
-const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: NotificationContainerCardProps) => {
+const openNotificationSettings = () => {
+  if (Platform.OS === "ios") {
+    Linking.openURL("app-settings:");
+  } else {
+    Linking.openSettings();
+  }
+};
+
+const NotificationContainerCard = ({
+  theme,
+  isEnable,
+  setEnabled,
+  navigation
+}: NotificationContainerCardProps) => {
   const { colors } = theme;
 
   const opacity = useSharedValue(0);
@@ -49,6 +84,8 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
     opacity: invertedOpacity.value,
   }));
 
+  const { showAlert } = useAlert();
+
   return (
     <NativeList>
       <View style={[styles.notificationView, {backgroundColor: colors.primary + "22"}]}>
@@ -85,7 +122,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
                 <Reanimated.Text
                   numberOfLines={2}
                   style={[styles.message, textAnimatedStyle]}>
-                  Tu as cours en salle B03 avec M. Perruche dans 5 minutes.
+                  Le cours de géographie (16:00-17:00) a un changement de salle ! Tu dois aller en salle B106
                 </Reanimated.Text>
               </View>
             </View>
@@ -96,22 +133,92 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
       </View>
       <NativeItem
         trailing={
-          <Switch
-            trackColor={{
-              false: colors.border,
-              true: colors.primary,
-            }}
-            style={{
-              marginRight: 10,
-            }}
-            value={isEnable}
-            onValueChange={setEnabled}
-          />
+          isEnable !== null ? (
+            <Switch
+              trackColor={{
+                false: colors.border,
+                true: colors.primary,
+              }}
+              style={{
+                marginRight: 10,
+              }}
+              value={isEnable}
+              onValueChange={setEnabled}
+            />
+          ) : (
+            <Pressable
+              onPress={() => {
+                if (Platform.OS === "ios") {
+                  Alert.alert(
+                    "Notifications désactivées",
+                    "Il faut activer les notifications dans les paramètres du téléphone pour pouvoir les activer dans Papillon.",
+                    [
+                      {
+                        text: "Annuler",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Paramètres système",
+                        style: "default",
+                        onPress: () => {
+                          openNotificationSettings();
+                          setTimeout(() => {
+                            navigation.reset({
+                              index: 0,
+                              routes: [{ name: "SettingsNotifications" }],
+                            });
+                          }, 1000);
+                        },
+                      },
+                    ]
+                  );
+                } else {
+                  showAlert({
+                    title: "Notifications désactivées",
+                    message:
+                      "Il faut activer les notifications dans les paramètres du téléphone pour pouvoir les activer dans Papillon.",
+                    actions: [
+                      {
+                        title: "Annuler",
+                        onPress: () => {},
+                        backgroundColor: colors.card,
+                        icon: <X size={24} color={colors.text} />,
+                      },
+                      {
+                        title: "Paramètres système",
+                        onPress: () => {
+                          openNotificationSettings();
+                          setTimeout(() => {
+                            navigation.reset({
+                              index: 0,
+                              routes: [{ name: "SettingsNotifications" }],
+                            });
+                          }, 1000);
+                        },
+                        primary: true,
+                        backgroundColor: "#888",
+                        icon: <Settings size={24} color={colors.text} />,
+                      },
+                    ],
+                  });
+                }
+              }}
+            >
+              <Switch
+                trackColor={{
+                  false: colors.border,
+                }}
+                style={{
+                  marginRight: 10,
+                }}
+                value={false}
+                disabled
+              />
+            </Pressable>
+          )
         }
       >
-        <NativeText variant="title">
-          Activer les notifications
-        </NativeText>
+        <NativeText variant="title">Activer les notifications</NativeText>
         <NativeText variant="subtitle">
           Reçois des notifications pour ne rien rater de ta vie scolaire.
         </NativeText>
