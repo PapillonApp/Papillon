@@ -15,12 +15,13 @@ import { useCurrentAccount } from "@/stores/account";
 import { navigatorScreenOptions } from "./helpers/create-screen";
 import { navigate } from "@/utils/logger/logger";
 import { PapillonNavigation } from "./refs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 
 export const Stack = createNativeStackNavigator<RouteParameters>();
 
 const Router: React.FC = () => {
   const scheme = useColorScheme();
+  const { whatTheme } = useThemeSoundHaptics();
 
   useEffect(() => {
     async function setNavigationBar () {
@@ -47,19 +48,10 @@ const Router: React.FC = () => {
     config,
   };
 
-  const [themeValue, setThemeValue] = React.useState<number>(0);
-
   const [theme, setTheme] = React.useState<Theme>(scheme === "dark" ? PapillonDark : PapillonLight);
 
   useEffect(() => {
-    AsyncStorage.getItem("theme").then((value) => {
-      if (value)
-        setThemeValue(parseInt(value));
-    });
-  }, []);
-
-  useEffect(() => {
-    switch (themeValue) {
+    switch (whatTheme) {
       case 0:
         setTheme(scheme === "dark" ? PapillonDark : PapillonLight);
         break;
@@ -70,7 +62,7 @@ const Router: React.FC = () => {
         setTheme(PapillonDark);
         break;
     }
-  }, [scheme, themeValue]);
+  }, [scheme, whatTheme]);
 
 
   const account = useCurrentAccount(store => store.account!);
@@ -88,13 +80,13 @@ const Router: React.FC = () => {
           backgroundColor={"transparent"}
           translucent={true}
           barStyle={
-            themeValue == 0 ?
+            whatTheme === 0 ?
               scheme === "dark" ?
                 "light-content"
                 :
                 "dark-content"
               :
-              themeValue == 1 ?
+              whatTheme === 1 ?
                 "dark-content"
                 :
                 "light-content"

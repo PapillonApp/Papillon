@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Image, Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,8 +11,6 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useTheme } from "@react-navigation/native";
 
 import * as WebBrowser from "expo-web-browser";
-import { Audio } from "expo-av";
-import * as SplashScreen from "expo-splash-screen";
 
 const PRIVACY_POLICY_URL = "https://support.papillon.bzh/articles/352402-privacy-policy";
 const TERMS_OF_SERVICE_URL = "https://support.papillon.bzh/articles/352401-terms-of-service";
@@ -20,37 +18,12 @@ const TERMS_OF_SERVICE_URL = "https://support.papillon.bzh/articles/352401-terms
 const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const openUrl = async (url: string) => {
     await WebBrowser.openBrowserAsync(url, {
       controlsColor: colors.primary,
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
     });
-  };
-
-  React.useEffect(() => {
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("@/../assets/sound/5.wav")
-      );
-      setSound(sound);
-    };
-
-    loadSound();
-    SplashScreen.hideAsync();
-
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
-
-  const playSound = async () => {
-    if (sound) {
-      await sound.replayAsync();
-    }
   };
 
   return (

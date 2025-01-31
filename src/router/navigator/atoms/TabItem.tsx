@@ -6,6 +6,7 @@ import colorsList from "@/utils/data/colors.json";
 import * as Haptics from "expo-haptics";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from "react-native-reanimated";
 import { anim2Papillon } from "@/utils/ui/animations";
+import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const TabItem: React.FC<{
   route: any;
@@ -15,6 +16,7 @@ const TabItem: React.FC<{
   settings: any;
 }> = ({ route, descriptor, navigation, isFocused, settings }) => {
   const theme = useTheme();
+  const { playHaptics } = useSoundHapticsWrapper();
 
   const { options } = descriptor;
   const label: string = options.tabBarLabel ?? options.title ?? route.name;
@@ -34,7 +36,9 @@ const TabItem: React.FC<{
       lottieRef.current.play();
     }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    playHaptics("impact", {
+      impact: Haptics.ImpactFeedbackStyle.Light,
+    });
   };
 
   const onLongPress = () => {

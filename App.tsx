@@ -10,6 +10,7 @@ import { log } from "@/utils/logger/logger";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
 import { registerBackgroundTasks } from "@/background/BackgroundTasks";
+import { SoundHapticsProvider } from "@/hooks/Theme_Sound_Haptics";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -129,5 +130,9 @@ export default function App () {
     return null;
   }
 
-  return <Router />;
+  return (
+    <SoundHapticsProvider>
+      <Router />
+    </SoundHapticsProvider>
+  );
 }
