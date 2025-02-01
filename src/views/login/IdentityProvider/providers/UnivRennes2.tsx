@@ -94,7 +94,8 @@ const UnivRennes2_Login: Screen<"UnivRennes2_Login"> = ({ navigation }) => {
 
         personalization: await defaultPersonalization(),
 
-        identity: {}
+        identity: {},
+        serviceData: {},
       };
 
       createStoredAccount(local_account);

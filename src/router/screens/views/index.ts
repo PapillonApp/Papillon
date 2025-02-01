@@ -65,6 +65,7 @@ export default [
     animation: "slide_from_bottom",
     sheetGrabberVisible: false,
     sheetInitialDetentIndex: 0,
+    // @ts-expect-error
     sheetAllowedDetents: [0.5, 1.0],
     headerShown: false,
   }),
@@ -75,6 +76,7 @@ export default [
     animation: "slide_from_bottom",
     sheetGrabberVisible: false,
     sheetInitialDetentIndex: 0,
+    // @ts-expect-error
     sheetAllowedDetents: [0.5, 1.0],
     headerShown: false,
   }),
@@ -85,6 +87,7 @@ export default [
     animation: "slide_from_bottom",
     sheetGrabberVisible: true,
     sheetInitialDetentIndex: 0,
+    // @ts-expect-error
     sheetAllowedDetents: [0.5, 1.0],
   }),
   createScreen("GradeDocument", GradeDocument, {
@@ -94,6 +97,7 @@ export default [
     animation: "slide_from_bottom",
     sheetGrabberVisible: false,
     sheetInitialDetentIndex: 0,
+    // @ts-expect-error
     sheetAllowedDetents: [0.5, 1.0],
     headerShown: Platform.OS !== "ios",
   }),

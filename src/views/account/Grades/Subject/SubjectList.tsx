@@ -49,8 +49,8 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     <NativeList
       animated
       key={subject.average.subjectName+"subjectItem"}
-      entering={index < 3 && anim2Papillon(FadeInDown).duration(300).delay(80 * index)}
-      exiting={index < 3 && anim2Papillon(FadeOutUp).duration(100).delay(80 * index)}
+      entering={index && index < 3 && anim2Papillon(FadeInDown).duration(300).delay(80 * index)}
+      exiting={index && index < 3 && anim2Papillon(FadeOutUp).duration(100).delay(80 * index)}
     >
       <SubjectTitle
         navigation={navigation}

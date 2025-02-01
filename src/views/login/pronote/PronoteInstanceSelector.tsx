@@ -32,7 +32,6 @@ import {Search, X, GraduationCap, SearchX} from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
-import {openURL} from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 
 const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
