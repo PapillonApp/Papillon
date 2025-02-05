@@ -1,6 +1,6 @@
 import * as React from "react";
 import { memo, useCallback, useMemo } from "react";
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Linking, Text, TouchableOpacity, View } from "react-native";
 import CalendarKit from "@howljs/calendar-kit";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
@@ -17,7 +17,6 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { TimetableClassStatus } from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { Screen } from "@/router/helpers/types";
 
 const LOCALES = {
   en: {
@@ -32,91 +31,100 @@ const LOCALES = {
   },
 } as const;
 
-interface EventItemProps {
-  event: {
-    event: {
-      title: string;
-      status: string;
-      statusText?: string;
-      room: string;
-    };
-  };
-}
-
-const EventItem = memo(({ event }: EventItemProps) => {
-  const theme = useTheme();
-
-  const subjectData = useMemo(
-    () => getSubjectData(event.event.title),
-    [event.event.title] // Optimized dependency array
-  );
-
+const EventItem = memo(({ event }) => {
+  const subjectData = useMemo(() => getSubjectData(event.event.title), [event.event]);
   const [layout, setLayout] = React.useState({ width: 0, height: 0 });
-
-  const isCanceled = event.event.status === TimetableClassStatus.CANCELED;
-  const isWide = layout.width > 100;
-
-  const handlePress = () => {
-    PapillonNavigation.current.navigate("LessonDocument", { lesson: event.event });
-  };
-
-  const containerStyle = [
-    styles.container,
-    { backgroundColor: subjectData.color },
-    isCanceled && styles.canceledContainer
-  ];
-
-  const contentStyle = [
-    styles.contentContainer,
-    { backgroundColor: subjectData.color + "22", borderColor: theme.colors.border },
-    isCanceled && styles.canceledContent
-  ];
-
-  const titleStyle = [
-    styles.title,
-    isWide && styles.wideTitleVariant,
-    { color: "#ffffff" }
-  ];
-
-  const roomStyle = [
-    styles.room,
-    { color: "#ffffff" }
-  ];
 
   return (
     <TouchableOpacity
       onLayout={(e) => setLayout(e.nativeEvent.layout)}
-      style={containerStyle}
+      style={[
+        {
+          flex: 1,
+          borderRadius: 5,
+          overflow: "hidden",
+          borderCurve: "continuous",
+        },
+        event.event.status == TimetableClassStatus.CANCELED && {
+          borderColor: "red",
+          borderWidth: 2,
+        }
+      ]}
       activeOpacity={0.7}
-      onPress={handlePress}
+      onPress={() => {
+        PapillonNavigation.current.navigate("LessonDocument", { lesson: event.event });
+      }}
     >
       {event.event.statusText && (
-        <View style={styles.alertBadge}>
+        <View
+          style={{
+            position: "absolute",
+            top: -8,
+            right: -8,
+            backgroundColor: "#00000099",
+            zIndex: 1000,
+            borderRadius: 30,
+            borderColor: "#ffffff99",
+            borderWidth: 2,
+            padding: 4,
+            paddingBottom: 2,
+            paddingLeft: 2,
+          }}
+        >
           <AlertTriangle
             size={18}
-            color="#ffffff"
+            color={"#ffffff"}
             strokeWidth={2}
-            style={styles.alertIcon}
+            style={{ margin: 4 }}
           />
         </View>
       )}
-      <View style={{
-        height: 6,
-        backgroundColor: "#00000042",
-        overflow: "hidden",
-      }}>
-        <Image
-          source={require("../../../../assets/images/mask_stripes_long.png")}
-          resizeMode="cover"
 
-          style={{ width: 2000, height: 16, tintColor: "#000000", opacity: 0.3 }}
-        />
-      </View>
-      <View style={contentStyle}>
-        <Text numberOfLines={3} style={titleStyle}>
+      <View
+        style={[
+          {
+            flex: 1,
+            backgroundColor: subjectData.color,
+            borderRadius: 0,
+            padding: 4,
+            flexDirection: "column",
+            gap: 2
+          },
+          event.event.status == TimetableClassStatus.CANCELED && {
+            opacity: 0.3,
+            backgroundColor: "grey",
+          },
+        ]}
+      >
+        <Text
+          numberOfLines={3}
+          style={[
+            {
+              color: "white",
+              fontSize: 13,
+              letterSpacing: 0.2,
+              fontFamily: "semibold",
+              textTransform: "uppercase",
+            },
+            layout.width > 100 && {
+              fontSize: 15,
+              letterSpacing: 0.1,
+              textTransform: "none",
+            },
+          ]}
+        >
           {subjectData.pretty}
         </Text>
-        <Text numberOfLines={2} style={roomStyle}>
+        <Text
+          numberOfLines={2}
+          style={{
+            color: "white",
+            fontSize: 13,
+            letterSpacing: 0.2,
+            fontFamily: "medium",
+            opacity: 0.6,
+          }}
+        >
           {event.event.room}
         </Text>
       </View>
@@ -124,16 +132,7 @@ const EventItem = memo(({ event }: EventItemProps) => {
   );
 });
 
-interface HeaderItemProps {
-  header: {
-    extra: {
-      columns: number;
-    };
-    startUnix: number;
-  };
-}
-
-const HeaderItem = memo(({ header }: HeaderItemProps) => {
+const HeaderItem = memo(({ header }) => {
   const theme = useTheme();
 
   const cols = header.extra.columns;
@@ -223,7 +222,7 @@ const HeaderItem = memo(({ header }: HeaderItemProps) => {
 
 const displayModes = ["Semaine", "3 jours", "Journée"];
 
-const Week: Screen<"Week"> = ({ route, navigation }) => {
+const Week = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -262,12 +261,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
   [timetables]
   );
 
-  interface LoadTimetableWeekParams {
-    weekNumber: number;
-    force?: boolean;
-  }
-
-  const loadTimetableWeek = useCallback(async ({ weekNumber, force = false }: LoadTimetableWeekParams) => {
+  const loadTimetableWeek = useCallback(async (weekNumber, force = false) => {
     if (!force) {
       if (timetables[weekNumber]) return;
     }
@@ -275,60 +269,36 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     setIsLoading(true);
     requestAnimationFrame(async () => {
       try {
-        await updateTimetableForWeekInCache(account!, weekNumber, force);
+        await updateTimetableForWeekInCache(account, weekNumber, force);
       } finally {
         setIsLoading(false);
       }
     });
   }, [account, timetables]);
 
-  interface HandleDateChangeParams {
-    date: Date;
-  }
-
-  const handleDateChange = useCallback(async ({ date }: HandleDateChangeParams) => {
-    const weekNumber: number = dateToEpochWeekNumber(new Date(date));
-    await loadTimetableWeek({ weekNumber });
+  const handleDateChange = useCallback(async (date) => {
+    const weekNumber = dateToEpochWeekNumber(new Date(date));
+    await loadTimetableWeek(weekNumber);
   }, [loadTimetableWeek]);
 
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
   React.useEffect(() => {
     navigation.addListener("focus", async () => {
-      if(Object.values(timetables).flat().length === 0) {
+      if(openedIcalModal) {
         setIsLoading(true);
         requestAnimationFrame(async () => {
           const weekNumber = dateToEpochWeekNumber(new Date());
-          await loadTimetableWeek({ weekNumber, force: true });
+          await loadTimetableWeek(weekNumber, true);
           setOpenedIcalModal(false);
         });
       }
     });
 
     return () => {
-      navigation.removeListener("focus", async () => {
-        if (Object.values(timetables).flat().length === 0) {
-          setIsLoading(true);
-          requestAnimationFrame(async () => {
-            const weekNumber = dateToEpochWeekNumber(new Date());
-            await loadTimetableWeek({ weekNumber, force: true });
-            setOpenedIcalModal(false);
-          });
-        }
-      });
+      navigation.removeListener("focus");
     };
-  }, [openedIcalModal, timetables]);
-
-  React.useEffect(() => {
-    if(Object.values(timetables).flat().length === 0) {
-      setIsLoading(true);
-      requestAnimationFrame(async () => {
-        const weekNumber = dateToEpochWeekNumber(new Date());
-        await loadTimetableWeek(weekNumber, true);
-        setOpenedIcalModal(false);
-      });
-    }
-  }, [account?.personalization?.icalURLs]);
+  }, [openedIcalModal]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -463,67 +433,5 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     </View>
   );
 };
-
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderRadius: 5,
-    overflow: "hidden",
-    borderCurve: "continuous",
-  },
-  canceledContainer: {
-    borderColor: "red",
-    borderWidth: 2,
-  },
-  alertBadge: {
-    position: "absolute",
-    top: -8,
-    right: -8,
-    backgroundColor: "#00000099",
-    zIndex: 1000,
-    borderRadius: 30,
-    borderColor: "#ffffff99",
-    borderWidth: 2,
-    padding: 4,
-    paddingBottom: 2,
-    paddingLeft: 2,
-  },
-  alertIcon: {
-    margin: 4,
-  },
-  contentContainer: {
-    flex: 1,
-    borderRadius: 0,
-    padding: 4,
-    flexDirection: "column",
-    gap: 2,
-    borderWidth: 0,
-  },
-  canceledContent: {
-    opacity: 0.3,
-    backgroundColor: "grey",
-  },
-  title: {
-    fontSize: 13,
-    letterSpacing: 0.2,
-    fontFamily: "semibold",
-    textTransform: "uppercase",
-    zIndex: 100,
-  },
-  wideTitleVariant: {
-    fontSize: 15,
-    letterSpacing: 0.1,
-    textTransform: "none",
-  },
-  room: {
-    fontSize: 13,
-    letterSpacing: 0.2,
-    fontFamily: "medium",
-    opacity: 0.6,
-    zIndex: 100,
-  },
-});
 
 export default memo(Week);
