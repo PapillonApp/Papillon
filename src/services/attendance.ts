@@ -33,17 +33,24 @@ export async function updateAttendancePeriodsInCache <T extends Account> (accoun
       break;
     }
     case AccountService.Local: {
-      periods = [
-        {
-          name: "Toutes",
-          startTimestamp: new Date("2021-09-01").getTime(), //not relevant to ED
-          endTimestamp: new Date("2022-06-30").getTime(),
-        },
-      ];
+      if (account.identityProvider.identifier == "iut-lannion") {
+        const { saveIUTLanPeriods } = await import("./iutlan/grades");
+        const data = await saveIUTLanPeriods(account);
 
-      defaultPeriod = "Toutes";
-
-      break;
+        periods = data.periods;
+        defaultPeriod = data.defaultPeriod;
+        break;
+      } else {
+        periods = [
+          {
+            name: "Toutes",
+            startTimestamp: 1609459200,
+            endTimestamp: 1622505600,
+          },
+        ];
+        defaultPeriod = "Toutes";
+        break;
+      }
     }
     case AccountService.Skolengo: {
       const { getPeriod } = await import("./skolengo/data/period");
@@ -86,7 +93,7 @@ export async function updateAttendanceInCache <T extends Account> (account: T, p
     case AccountService.Local: {
       if (account.identityProvider.identifier == "iut-lannion") {
         const { saveIUTLanAttendance } = await import("./iutlan/attendance");
-        const data = await saveIUTLanAttendance(account);
+        const data = await saveIUTLanAttendance(account, periodName);
 
         attendance = {
           delays: data.delays,

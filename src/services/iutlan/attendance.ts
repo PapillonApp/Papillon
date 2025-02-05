@@ -14,9 +14,12 @@ interface scodocData {
   [key: string]: Array<scodocAbsence>;
 }
 
-export const saveIUTLanAttendance = async (account: LocalAccount): Promise<Attendance> => {
+export const saveIUTLanAttendance = async (
+  account: LocalAccount,
+  periodName: string
+): Promise<Attendance> => {
   try {
-    const scodocData = account.identityProvider.rawData.absences as scodocData;
+    const scodocData = account.serviceData.semestres[periodName].absences as scodocData;
     const allAbsences: Array<Absence> = [];
 
     if (scodocData && Object.keys(scodocData).length > 0) {
@@ -35,7 +38,7 @@ export const saveIUTLanAttendance = async (account: LocalAccount): Promise<Atten
             fromTimestamp: from ? new Date(from).getTime() : 0,
             toTimestamp: to ? new Date(to).getTime() : 0,
             justified: absence.justifie ?? false,
-            hours: (parseInt(absence.fin) - parseInt(absence.debut)) + "h 00",
+            hours: parseInt(absence.fin) - parseInt(absence.debut) + "h 00",
             administrativelyFixed: absence.justifie ?? false,
             reasons: undefined,
           });

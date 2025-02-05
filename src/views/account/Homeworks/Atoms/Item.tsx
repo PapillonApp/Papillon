@@ -19,6 +19,7 @@ import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 
 interface HomeworkItemProps {
@@ -196,20 +197,23 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
                 }
               }}
             >
-              <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
-              {shouldShowMoreGradient && (
-                <LinearGradient
-                  colors={[theme.colors.background + "40", theme.colors.background]}
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    height: 44,
-                    zIndex: 1,
-                  }}
-                />
-              )}
+              <MaskedView
+                maskElement={
+                  <LinearGradient
+                    colors={shouldShowMoreGradient ? ["#000000", "#00000000"] : ["#000000", "#000000"]}
+                    locations={[0.5, 1]}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                    }}
+                  />
+                }
+              >
+                <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
+              </MaskedView>
             </View>
             {route.name === "HomeScreen" && (
               <View style={{ flex: 1, flexDirection: "row", gap: 4, paddingBottom: 4, paddingTop: 8, alignItems: "center", alignSelf: "flex-start" }}>

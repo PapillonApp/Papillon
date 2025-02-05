@@ -23,6 +23,17 @@ export const useTimetableStore = create<TimetableStore>()(
 
         log(`[timetable:updateClasses]: updated classes for week ${weekNumber}`, "timetable:updateClasses");
       },
+      injectClasses: (data) => {
+        log("replacing classes", "timetable:replaceClasses");
+
+        set((state) => {
+          return {
+            timetables: data,
+          };
+        });
+
+        log(`[timetable:replaceClasses]: replaced classes for week ${data.weekNumber}`, "timetable:replaceClasses");
+      },
       removeClasses: (weekNumber) => {
         log(`removing classes for week ${weekNumber}`, "timetable:removeClasses");
 

@@ -136,8 +136,10 @@ const ContextMenu: React.FC<{
                   key={index}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-                    switchTo(account).then(() => {
-                      setOpened(false);
+                    setOpened(false);
+
+                    requestAnimationFrame(() => {
+                      switchTo(account);
                     });
                   }}
                   style={({ pressed }) => [

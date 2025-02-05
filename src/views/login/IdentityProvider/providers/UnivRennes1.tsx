@@ -37,6 +37,8 @@ const UnivRennes1_Login: Screen<"UnivRennes1_Login"> = ({ navigation }) => {
           rawData: data
         },
 
+        providers: ["ical", "moodle"],
+
         localID: uuid(),
         service: AccountService.Local,
 

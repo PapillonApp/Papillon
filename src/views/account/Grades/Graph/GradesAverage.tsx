@@ -103,7 +103,6 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
     setMinAvg(minAvg);
 
     hst = hst.filter((p) => isNaN(p.value) === false);
-    console.log(hst.map((p) => p.value));
 
     graphRef.current?.updateData({
       xAxis: hst.map((p, i) => new Date(p.date).getTime()),
