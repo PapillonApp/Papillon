@@ -17,6 +17,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { TimetableClassStatus } from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import { Screen } from "@/router/helpers/types";
 
 const LOCALES = {
   en: {
@@ -31,7 +32,18 @@ const LOCALES = {
   },
 } as const;
 
-const EventItem = memo(({ event }) => {
+interface EventItemProps {
+  event: {
+    event: {
+      title: string;
+      status: string;
+      statusText?: string;
+      room: string;
+    };
+  };
+}
+
+const EventItem = memo(({ event }: EventItemProps) => {
   const theme = useTheme();
 
   const subjectData = useMemo(
@@ -112,7 +124,16 @@ const EventItem = memo(({ event }) => {
   );
 });
 
-const HeaderItem = memo(({ header }) => {
+interface HeaderItemProps {
+  header: {
+    extra: {
+      columns: number;
+    };
+    startUnix: number;
+  };
+}
+
+const HeaderItem = memo(({ header }: HeaderItemProps) => {
   const theme = useTheme();
 
   const cols = header.extra.columns;
@@ -202,7 +223,7 @@ const HeaderItem = memo(({ header }) => {
 
 const displayModes = ["Semaine", "3 jours", "Journée"];
 
-const Week = ({ route, navigation }) => {
+const Week: Screen<"Week"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -241,7 +262,12 @@ const Week = ({ route, navigation }) => {
   [timetables]
   );
 
-  const loadTimetableWeek = useCallback(async (weekNumber, force = false) => {
+  interface LoadTimetableWeekParams {
+    weekNumber: number;
+    force?: boolean;
+  }
+
+  const loadTimetableWeek = useCallback(async ({ weekNumber, force = false }: LoadTimetableWeekParams) => {
     if (!force) {
       if (timetables[weekNumber]) return;
     }
@@ -249,16 +275,20 @@ const Week = ({ route, navigation }) => {
     setIsLoading(true);
     requestAnimationFrame(async () => {
       try {
-        await updateTimetableForWeekInCache(account, weekNumber, force);
+        await updateTimetableForWeekInCache(account!, weekNumber, force);
       } finally {
         setIsLoading(false);
       }
     });
   }, [account, timetables]);
 
-  const handleDateChange = useCallback(async (date) => {
-    const weekNumber = dateToEpochWeekNumber(new Date(date));
-    await loadTimetableWeek(weekNumber);
+  interface HandleDateChangeParams {
+    date: Date;
+  }
+
+  const handleDateChange = useCallback(async ({ date }: HandleDateChangeParams) => {
+    const weekNumber: number = dateToEpochWeekNumber(new Date(date));
+    await loadTimetableWeek({ weekNumber });
   }, [loadTimetableWeek]);
 
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
@@ -269,14 +299,23 @@ const Week = ({ route, navigation }) => {
         setIsLoading(true);
         requestAnimationFrame(async () => {
           const weekNumber = dateToEpochWeekNumber(new Date());
-          await loadTimetableWeek(weekNumber, true);
+          await loadTimetableWeek({ weekNumber, force: true });
           setOpenedIcalModal(false);
         });
       }
     });
 
     return () => {
-      navigation.removeListener("focus");
+      navigation.removeListener("focus", async () => {
+        if (Object.values(timetables).flat().length === 0) {
+          setIsLoading(true);
+          requestAnimationFrame(async () => {
+            const weekNumber = dateToEpochWeekNumber(new Date());
+            await loadTimetableWeek({ weekNumber, force: true });
+            setOpenedIcalModal(false);
+          });
+        }
+      });
     };
   }, [openedIcalModal, timetables]);
 

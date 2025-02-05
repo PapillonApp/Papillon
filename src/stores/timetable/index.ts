@@ -23,7 +23,7 @@ export const useTimetableStore = create<TimetableStore>()(
 
         log(`[timetable:updateClasses]: updated classes for week ${weekNumber}`, "timetable:updateClasses");
       },
-      injectClasses: (data) => {
+      injectClasses: (data: { [weekNumber: string]: any[] }) => {
         log("replacing classes", "timetable:replaceClasses");
 
         set((state) => {

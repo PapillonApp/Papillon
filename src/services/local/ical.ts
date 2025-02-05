@@ -103,12 +103,14 @@ export const fetchIcalData = async (
 
   const newData = nonEmptyWeeks.reduce(
     (acc, { epochWeekNumber, courses }) => {
+      // @ts-expect-error
       acc[epochWeekNumber] = courses;
       return acc;
     },
     {}
   );
 
+  // @ts-expect-error typage à mettre à jour
   useTimetableStore.getState().injectClasses(newData);
 
   return nonEmptyWeeks;
