@@ -1,7 +1,7 @@
 import * as React from "react";
 import { memo, useCallback, useMemo, useEffect } from "react";
-import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import CalendarKit from "@howljs/calendar-kit";
+import { Linking, Text, TouchableOpacity, View } from "react-native";
+import CalendarKit, { EventItem, HeaderItemProps } from "@howljs/calendar-kit";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
@@ -17,6 +17,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { TimetableClassStatus } from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import { Screen } from "@/router/helpers/types";
 
 const LOCALES = {
   en: {
@@ -31,8 +32,12 @@ const LOCALES = {
   },
 } as const;
 
-const EventItem = memo(({ event }) => {
-  const subjectData = useMemo(() => getSubjectData(event.event.title), [event.event]);
+interface eventType {
+  event: EventItem;
+}
+
+const EventItem = memo(({ event }: eventType) => {
+  const subjectData = useMemo(() => getSubjectData(event.event.title ?? ""), [event.event]);
   const [layout, setLayout] = React.useState({ width: 0, height: 0 });
 
   return (
@@ -132,7 +137,11 @@ const EventItem = memo(({ event }) => {
   );
 });
 
-const HeaderItem = memo(({ header }) => {
+interface headerType {
+  header: HeaderItemProps;
+}
+
+const HeaderItem = memo(({ header }: headerType) => {
   const theme = useTheme();
 
   const cols = header.extra.columns;
@@ -222,7 +231,7 @@ const HeaderItem = memo(({ header }) => {
 
 const displayModes = ["Semaine", "3 jours", "Journée"];
 
-const Week = ({ route, navigation }) => {
+const Week: Screen<"Week"> = ({ route }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -248,7 +257,8 @@ const Week = ({ route, navigation }) => {
     }
   }), [theme.colors]);
 
-  const [events, setEvents] = React.useState([]);
+  // à changer pour éviter un type any
+  const [events, setEvents] = React.useState<any[]>([]);
 
   useEffect(() => {
     const nevts = Object.values(timetables)
@@ -264,7 +274,7 @@ const Week = ({ route, navigation }) => {
     setEvents(nevts);
   }, [timetables]);
 
-  const loadTimetableWeek = useCallback(async (weekNumber, force = false) => {
+  const loadTimetableWeek = useCallback(async (weekNumber: number, force: boolean = false) => {
     if (!force) {
       if (timetables[weekNumber]) return;
     }
@@ -272,14 +282,14 @@ const Week = ({ route, navigation }) => {
     setIsLoading(true);
     requestAnimationFrame(async () => {
       try {
-        await updateTimetableForWeekInCache(account, weekNumber, force);
+        await updateTimetableForWeekInCache(account!, weekNumber, force);
       } finally {
         setIsLoading(false);
       }
     });
   }, [account, timetables]);
 
-  const handleDateChange = useCallback(async (date) => {
+  const handleDateChange = useCallback(async (date: string) => {
     const weekNumber = dateToEpochWeekNumber(new Date(date));
     await loadTimetableWeek(weekNumber);
   }, [loadTimetableWeek]);
@@ -287,7 +297,10 @@ const Week = ({ route, navigation }) => {
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
   React.useEffect(() => {
-    if(events.length === 0 && account?.personalization?.icalURLs?.length > 0) {
+    if (
+      events.length === 0 &&
+      (account?.personalization?.icalURLs ?? []).length > 0
+    ) {
       setIsLoading(true);
       requestAnimationFrame(async () => {
         const weekNumber = dateToEpochWeekNumber(new Date());
@@ -307,7 +320,7 @@ const Week = ({ route, navigation }) => {
         />
       )}
 
-      {account.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
+      {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
         <View
           style={{
             zIndex: 100000,
@@ -386,7 +399,7 @@ const Week = ({ route, navigation }) => {
           direction="left"
           delay={0}
           selected={displayMode}
-          onSelectionChange={(mode) => {
+          onSelectionChange={( mode: string ) => {
             setIsLoading(true);
             requestAnimationFrame(() => {
 
