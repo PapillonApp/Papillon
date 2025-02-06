@@ -601,7 +601,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                 )}
               </>
               : <>
-                {allBalances?.length > 0 && (
+                {(allBalances ?? []).length > 0 && (
                   <MissingItem
                     emoji="🍽️"
                     title="Aucun menu disponible"
