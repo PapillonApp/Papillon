@@ -1,16 +1,21 @@
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { Notification } from "@notifee/react-native";
 
-const requestNotificationPermission = () => {
-  return async () => {
+const requestNotificationPermission = async () => {
+  try {
     if (!isExpoGo()) {
+      console.log("Requesting notification permission...");
       const notifee = (await import("@notifee/react-native")).default;
-      await notifee.requestPermission();
+      return notifee.requestPermission();
     } else {
       alertExpoGo();
       return false;
     }
-  };
+  }
+  catch (error) {
+    console.error("Error requesting notification permission:", error);
+    return false;
+  }
 };
 
 const papillonNotify = async (props: Notification) => {

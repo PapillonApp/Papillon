@@ -71,6 +71,7 @@
     "lodash": "^4.17.21",
     "lottie-react-native": "^6.7.0",
     "lucide-react-native": "^0.378.0",
+    "notifee": "^0.0.1",
     "openid-client": "^5.7.0",
     "pawdirecte": "^1.7.1",
     "pawnilim": "^0.2.0",

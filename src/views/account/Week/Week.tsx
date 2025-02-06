@@ -1,6 +1,6 @@
 import * as React from "react";
-import { memo, useCallback, useMemo } from "react";
-import { Linking, Text, TouchableOpacity, View } from "react-native";
+import { memo, useCallback, useMemo, useEffect } from "react";
+import { Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CalendarKit from "@howljs/calendar-kit";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
@@ -248,8 +248,10 @@ const Week = ({ route, navigation }) => {
     }
   }), [theme.colors]);
 
-  const events = useMemo(() =>
-    Object.values(timetables)
+  const [events, setEvents] = React.useState([]);
+
+  useEffect(() => {
+    const nevts = Object.values(timetables)
       .flat()
       .map(event => ({
         id: event.id,
@@ -257,9 +259,10 @@ const Week = ({ route, navigation }) => {
         start: { dateTime: new Date(event.startTimestamp) },
         end: { dateTime: new Date(event.endTimestamp) },
         event: event,
-      })),
-  [timetables]
-  );
+      }));
+
+    setEvents(nevts);
+  }, [timetables]);
 
   const loadTimetableWeek = useCallback(async (weekNumber, force = false) => {
     if (!force) {
@@ -284,21 +287,15 @@ const Week = ({ route, navigation }) => {
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
   React.useEffect(() => {
-    navigation.addListener("focus", async () => {
-      if(openedIcalModal) {
-        setIsLoading(true);
-        requestAnimationFrame(async () => {
-          const weekNumber = dateToEpochWeekNumber(new Date());
-          await loadTimetableWeek(weekNumber, true);
-          setOpenedIcalModal(false);
-        });
-      }
-    });
-
-    return () => {
-      navigation.removeListener("focus");
-    };
-  }, [openedIcalModal]);
+    if(events.length === 0 && account?.personalization?.icalURLs?.length > 0) {
+      setIsLoading(true);
+      requestAnimationFrame(async () => {
+        const weekNumber = dateToEpochWeekNumber(new Date());
+        await loadTimetableWeek(weekNumber, true);
+        setOpenedIcalModal(false);
+      });
+    }
+  }, [account?.personalization?.icalURLs]);
 
   return (
     <View style={{ flex: 1 }}>
