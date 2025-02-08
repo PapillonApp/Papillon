@@ -647,7 +647,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           >
             <TextInput
               placeholder={
-                (hideDone && !searchHasFocus) ? "Non terminé" : "Rechercher"
+                "Rechercher"
               }
               value={searchTerms}
               onChangeText={setSearchTerms}
