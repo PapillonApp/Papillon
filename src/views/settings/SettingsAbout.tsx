@@ -25,7 +25,6 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const fetchContributors = async () => {
     const fetchedContributors = await getContributors();
     setContributors(fetchedContributors);
-    console.log(fetchedContributors[0]);
   };
 
   useEffect(() => {

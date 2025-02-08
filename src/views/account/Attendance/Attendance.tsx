@@ -231,7 +231,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             refreshing={isRefreshing}
             onRefresh={() => {
               setIsRefreshing(true);
-              if(account.identityProvider?.identifier !== undefined) {
+              if(account.identityProvider?.identifier) {
                 navigation.navigate("BackgroundIdentityProvider");
                 updateAttendanceInCache(account, selectedPeriod).then(() => setIsRefreshing(false));
               }

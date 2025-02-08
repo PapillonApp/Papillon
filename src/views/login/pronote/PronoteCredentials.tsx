@@ -91,7 +91,23 @@ const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation })
       setLoading(false);
 
       if (error instanceof Error) {
-        setError(error.message);
+        switch (error.name) {
+          case "BadCredentialsError":
+            setError("Nom d'utilisateur ou mot de passe incorrect");
+            break;
+          case "AuthenticateError":
+            setError("Impossible de s'authentifier : " + error.message);
+            break;
+          case "AccessDeniedError":
+            setError("Vous n'êtes pas autorisé à vous connecter à cet établissement");
+            break;
+          case "AccountDisabledError":
+            setError("Votre compte a été désactivé. Contactez votre établissement.");
+            break;
+          default:
+            setError(error.message);
+            break;
+        }
       }
       else {
         setError("Erreur inconnue");
@@ -109,58 +125,5 @@ const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation })
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    alignItems: "center",
-  },
-
-  serviceContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-    gap: 4,
-  },
-
-  serviceLogo: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    marginBottom: 10,
-  },
-
-  serviceName: {
-    fontSize: 15,
-    fontFamily: "medium",
-    opacity: 0.6,
-    textAlign: "center",
-  },
-
-  serviceSchool: {
-    fontSize: 18,
-    fontFamily: "semibold",
-    textAlign: "center",
-  },
-
-  textInputContainer: {
-    width: "100%",
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    marginBottom: 9,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
-
-  textInput: {
-    fontFamily: "medium",
-    fontSize: 16,
-    flex: 1,
-  },
-});
 
 export default PronoteCredentials;

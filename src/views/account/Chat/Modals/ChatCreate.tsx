@@ -173,7 +173,6 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
       </ScrollView>
       <View style={[styles.fixedButtonContainer, {backgroundColor: colors.background}]}>
         <ButtonCta primary value={"Créer la discussion"} disabled={!(content && selectedRecipients.length > 0)} onPress={() => {
-          console.log("onPress");
           if (!subject) {
             Alert.alert(
               "Veux-tu continuer sans objet ?",

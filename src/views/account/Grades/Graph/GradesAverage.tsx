@@ -26,13 +26,13 @@ import { animPapillon } from "@/utils/ui/animations";
 import * as Haptics from "expo-haptics";
 import { PressableScale } from "react-native-pressable-scale";
 import { ReanimatedGraphProps, ReanimatedGraphPublicMethods } from "@birdwingo/react-native-reanimated-graph/src/core/dto/graphDTO";
-// Using require to set custom types bc module types are broken
-const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & React.RefAttributes<ReanimatedGraphPublicMethods>> = require("@birdwingo/react-native-reanimated-graph").default;
 import { useCurrentAccount } from "@/stores/account";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import type { Grade } from "@/services/shared/Grade";
 import { AlertTriangle, Check, ExternalLink, PieChart, TrendingUp } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
+// Using require to set custom types bc module types are broken
+const ReanimatedGraph: React.ForwardRefExoticComponent<ReanimatedGraphProps & React.RefAttributes<ReanimatedGraphPublicMethods>> = require("@birdwingo/react-native-reanimated-graph").default;
 
 interface GradesAverageGraphProps {
   grades: Grade[];
@@ -101,6 +101,8 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
     setMaxAvg(maxAvg);
     setMinAvg(minAvg);
+
+    hst = hst.filter((p) => isNaN(p.value) === false);
 
     graphRef.current?.updateData({
       xAxis: hst.map((p, i) => new Date(p.date).getTime()),
@@ -229,7 +231,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                   xAxis={gradesHistory.map((p, i) =>
                     new Date(p.date).getTime()
                   )}
-                  yAxis={gradesHistory.map((p) => p.value)}
+                  yAxis={gradesHistory.map((p) => !isNaN(p.value) ? p.value : (currentAvg ?? 10))}
                   color={theme.colors.primary}
                   showXAxisLegend={false}
                   showYAxisLegend={false}

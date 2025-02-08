@@ -91,7 +91,6 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
             subjectName: evaluation.subjectName,
             evaluations: [evaluation],
           });
-          console.log(evaluation.name);
         }
       }
 

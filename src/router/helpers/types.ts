@@ -87,6 +87,7 @@ export type RouteParameters = {
     autoAdd?: boolean;
   };
   LessonDocument: { lesson: Homework };
+  Week: { outsideNav?: boolean };
 
   Homeworks?: { outsideNav?: boolean };
   HomeworksDocument: { homework: Homework };

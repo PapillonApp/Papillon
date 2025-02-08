@@ -19,6 +19,7 @@ import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
+import MaskedView from "@react-native-masked-view/masked-view";
 
 
 interface HomeworkItemProps {
@@ -35,6 +36,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
   const [category, setCategory] = useState<string | null>(null);
+  const [shouldShowMoreGradient, setShouldShowMoreGradient] = useState(false);
   const account = useCurrentAccount((store) => store.account!);
 
   const route = useRoute();
@@ -73,8 +75,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
     setIsLoading(false);
     setMainLoaded(true);
   }, [homework.done]);
-
-  const contentLines = homework.content.split("\n");
 
   const renderCategoryOrReturnType = () => {
     if (category) {
@@ -189,21 +189,31 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
             exiting={FadeOut.duration(200).delay(50)}
           >
 
-            <View style={{ position: "relative" }}>
-              <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
-              {contentLines.length > 5 && (
-                <LinearGradient
-                  colors={[theme.colors.background + "00", theme.colors.background + "80"]}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "100%",
-                    zIndex: 1,
-                  }}
-                />
-              )}
+            <View
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                if (height >= 22 * 5) {
+                  setShouldShowMoreGradient(true);
+                }
+              }}
+            >
+              <MaskedView
+                maskElement={
+                  <LinearGradient
+                    colors={shouldShowMoreGradient ? ["#000000", "#00000000"] : ["#000000", "#000000"]}
+                    locations={[0.5, 1]}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                    }}
+                  />
+                }
+              >
+                <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
+              </MaskedView>
             </View>
             {route.name === "HomeScreen" && (
               <View style={{ flex: 1, flexDirection: "row", gap: 4, paddingBottom: 4, paddingTop: 8, alignItems: "center", alignSelf: "flex-start" }}>

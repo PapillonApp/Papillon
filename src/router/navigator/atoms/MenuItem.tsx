@@ -17,7 +17,7 @@ const MenuItem: React.FC<{
   const theme = useTheme();
 
   const { options } = descriptor;
-  const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
+  const label = options.tabBarLabel ?? options.title ?? route.name;
 
   const onPress = () => {
     const event = navigation.emit({

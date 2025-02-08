@@ -165,7 +165,7 @@ const LoginView: React.FC<{
             }}
           >
             <NativeItem icon={<AlertTriangle />}>
-              <NativeText variant="subtitle">{error}</NativeText>
+              <NativeText variant="subtitle">Impossible de se connecter, vérifie tes identifiants ou utilise le portail de ton ENT pour te connecter.</NativeText>
             </NativeItem>
           </NativeList>
         )}

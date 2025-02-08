@@ -85,8 +85,33 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
         }
 
         const timestamp = "fromTimestamp" in item ? item.fromTimestamp : item.timestamp;
+        const toTimestamp = "toTimestamp" in item ? item.toTimestamp : null;
         const not_justified = "justified" in item && !item.justified;
         const justification = "reasons" in item ? item.reasons || NO_JUSTICATION : "reason" in item ? item.reason.text : NO_JUSTICATION;
+        const dateString = toTimestamp
+          ? `Du ${new Date(timestamp).toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: new Date(timestamp).getFullYear() !== new Date().getFullYear() ? "2-digit" : undefined,
+          })} à ${new Date(timestamp).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}\nAu ${new Date(toTimestamp).toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: new Date(toTimestamp).getFullYear() !== new Date().getFullYear() ? "2-digit" : undefined,
+          })} à ${new Date(toTimestamp).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`
+          : `${new Date(timestamp).toLocaleDateString("fr-FR", {
+            weekday: "long",
+            day: "2-digit",
+            month: "short",
+          })} à ${new Date(timestamp).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`;
 
         return (
           <NativeItem
@@ -120,13 +145,7 @@ const AttendanceItem: React.FC<AttendanceItemProps> = ({
             )}
 
             <NativeText variant="subtitle">
-              {new Date(timestamp).toLocaleDateString("fr-FR", {
-                weekday: "long",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {dateString}
             </NativeText>
           </NativeItem>
         );

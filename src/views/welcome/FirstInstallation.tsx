@@ -14,8 +14,8 @@ import * as WebBrowser from "expo-web-browser";
 import { Audio } from "expo-av";
 import * as SplashScreen from "expo-splash-screen";
 
-const PRIVACY_POLICY_URL = "https://docs.papillon.bzh/legal/privacy";
-const TERMS_OF_SERVICE_URL = "https://docs.papillon.bzh/legal/terms";
+const PRIVACY_POLICY_URL = "https://support.papillon.bzh/articles/352402-privacy-policy";
+const TERMS_OF_SERVICE_URL = "https://support.papillon.bzh/articles/352401-terms-of-service";
 
 const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
   const theme = useTheme();
@@ -91,7 +91,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
 
         <ButtonCta
           value="Besoin d'aide ?"
-          onPress={() => openUrl("https://support.getpapillon.xyz/")}
+          onPress={() => openUrl("https://support.papillon.bzh/")}
         />
       </View>
       <Text

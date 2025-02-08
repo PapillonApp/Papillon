@@ -1,9 +1,8 @@
 import * as React from "react";
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet, Platform, Pressable } from "react-native";
 import LottieView from "lottie-react-native";
 import colorsList from "@/utils/data/colors.json";
-import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from "react-native-reanimated";
 import { anim2Papillon } from "@/utils/ui/animations";
@@ -18,7 +17,7 @@ const TabItem: React.FC<{
   const theme = useTheme();
 
   const { options } = descriptor;
-  const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
+  const label: string = options.tabBarLabel ?? options.title ?? route.name;
 
   const onPress = () => {
     const event = navigation.emit({

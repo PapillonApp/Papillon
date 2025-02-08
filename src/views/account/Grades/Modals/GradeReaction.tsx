@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { Text, View, Linking, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { CameraView, useCameraPermissions, PermissionStatus } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { X } from "lucide-react-native";
+import { Check, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 import { Screen } from "@/router/helpers/types";
@@ -10,6 +10,9 @@ import { getSubjectData } from "@/services/shared/Subject";
 import { useGradesStore } from "@/stores/grades";
 import { Reel } from "@/services/shared/Reel";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { NativeText } from "@/components/Global/NativeComponents";
+import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import Constants from "expo-constants";
 
 // Types
 interface SubjectData {
@@ -77,24 +80,35 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
     pretty: "Matière inconnue",
     emoji: "❓",
   });
+  const [isMediaLibraryPermissionGranted, setIsMediaLibraryPermissionGranted] = useState(PermissionStatus.UNDETERMINED);
+  const [isCameraPermissionGranted, setIsCameraPermissionGranted] = useState(PermissionStatus.UNDETERMINED);
+
+  const setupPermissions = async () => {
+    setIsMediaLibraryPermissionGranted(mediaLibraryPermission?.status ?? PermissionStatus.UNDETERMINED);
+    setIsCameraPermissionGranted(cameraPermission?.status ?? PermissionStatus.UNDETERMINED);
+    if (isMediaLibraryPermissionGranted !== PermissionStatus.GRANTED) {
+      await requestMediaLibraryPermission();
+    }
+    if (isCameraPermissionGranted !== PermissionStatus.GRANTED) {
+      await requestCameraPermission();
+    }
+  };
 
   // Setup permissions
   useEffect(() => {
-    const setupPermissions = async () => {
-      if (mediaLibraryPermission?.status !== PermissionStatus.GRANTED) {
-        await requestMediaLibraryPermission();
-      }
-      if (cameraPermission?.status !== PermissionStatus.GRANTED) {
-        await requestCameraPermission();
-      }
-    };
     setupPermissions();
-  }, [mediaLibraryPermission, cameraPermission, requestMediaLibraryPermission, requestCameraPermission]);
+  }, [mediaLibraryPermission?.status, cameraPermission?.status]);
 
   // Fetch subject data
   useEffect(() => {
     setSubjectData(getSubjectData(grade.subjectName));
   }, [grade.subjectName]);
+
+  // Volume button to take picture
+  useEffect(() => {
+    if (Constants.appOwnership === "expo") return;
+
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -151,55 +165,80 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View ref={composerRef} style={[styles.cameraContainer, { marginTop: inset.top + 10 }]}>
-        <Image
-          source={require("../../../../../assets/images/mask_logotype.png")}
-          tintColor={"#FFFFFF50"}
-          resizeMode="contain"
-          style={styles.logo}
+  return (isCameraPermissionGranted == PermissionStatus.DENIED || isMediaLibraryPermissionGranted == PermissionStatus.DENIED) ? (
+    <View style={[styles.container, {alignItems: "center", justifyContent: "center", padding: 16}]}>
+      <NativeText style={{fontSize: 100, lineHeight: 115, marginTop: -20}}>🫣</NativeText>
+      <NativeText variant={"titleLarge2"} color={"#FFF"} style={{textAlign: "center"}}>On ne te voit pas…</NativeText>
+      <NativeText color={"#FFF"} style={{textAlign: "center"}}>Pour réagir à tes notes, Papillon a besoin d'un accès à ta caméra et à ta librairie photo.</NativeText>
+
+      <View style={{position: "absolute", bottom: 16 + inset.bottom, left: 16, right: 16, gap: 10}}>
+        <ButtonCta
+          value={"Accès à ta caméra"}
+          backgroundColor={"#000"}
+          primary={true}
+          icon={isCameraPermissionGranted == PermissionStatus.GRANTED ? <Check/> : undefined}
+          onPress={() => {isCameraPermissionGranted != PermissionStatus.GRANTED && Linking.openSettings();}}
         />
-        {capturedImage ? (
-          <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
-        ) : (
-          <CameraView ref={cameraRef} style={styles.cameraView} facing="front" />
-        )}
-        <View style={styles.infoNoteContainer}>
-          <View style={styles.infoNote}>
-            <View style={styles.emojiContainer}>
-              <Text style={styles.emoji}>{subjectData.emoji}</Text>
-            </View>
-            <View>
-              <Text style={styles.subjectText} numberOfLines={1} ellipsizeMode="tail">
-                {subjectData.pretty}
-              </Text>
-              <Text style={styles.dateText}>
-                {new Date(grade.timestamp).toLocaleDateString()}
-              </Text>
-            </View>
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreText}>{grade.student.value}</Text>
-              <Text style={styles.maxScoreText}>/{grade.outOf.value}</Text>
+        <ButtonCta
+          value={"Accès à ta librairie photo"}
+          backgroundColor={"#000"}
+          primary={true}
+          icon={isMediaLibraryPermissionGranted == PermissionStatus.GRANTED ? <Check/> : undefined}
+          onPress={() => {isMediaLibraryPermissionGranted != PermissionStatus.GRANTED && Linking.openSettings();}}
+        />
+      </View>
+    </View>
+  )
+    :
+    (
+      <View style={styles.container}>
+        <View ref={composerRef} style={[styles.cameraContainer, { marginTop: inset.top + 10 }]}>
+          <Image
+            source={require("../../../../../assets/images/mask_logotype.png")}
+            tintColor={"#FFFFFF50"}
+            resizeMode="contain"
+            style={styles.logo}
+          />
+          {capturedImage ? (
+            <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+          ) : (
+            <CameraView ref={cameraRef} style={styles.cameraView} facing="front" />
+          )}
+          <View style={styles.infoNoteContainer}>
+            <View style={styles.infoNote}>
+              <View style={styles.emojiContainer}>
+                <Text style={styles.emoji}>{subjectData.emoji}</Text>
+              </View>
+              <View>
+                <Text style={styles.subjectText} numberOfLines={1} ellipsizeMode="tail">
+                  {subjectData.pretty}
+                </Text>
+                <Text style={styles.dateText}>
+                  {new Date(grade.timestamp).toLocaleDateString()}
+                </Text>
+              </View>
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreText}>{grade.student.value}</Text>
+                <Text style={styles.maxScoreText}>/{grade.outOf.value}</Text>
+              </View>
             </View>
           </View>
         </View>
+
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <PapillonSpinner size={30} color="#FFF"/>
+            <Text style={styles.loadingText}>Enregistrement en cours...</Text>
+          </View>
+        )}
+
+        {!capturedImage && !isLoading && (
+          <TouchableOpacity style={styles.captureButton} onPress={handleCapture}>
+            <View style={styles.captureButtonInner} />
+          </TouchableOpacity>
+        )}
       </View>
-
-      {isLoading && (
-        <View style={styles.loadingContainer}>
-          <PapillonSpinner size={30} color="#FFF"/>
-          <Text style={styles.loadingText}>Enregistrement en cours...</Text>
-        </View>
-      )}
-
-      {!capturedImage && !isLoading && (
-        <TouchableOpacity style={styles.captureButton} onPress={handleCapture}>
-          <View style={styles.captureButtonInner} />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+    );
 };
 
 const styles = StyleSheet.create({

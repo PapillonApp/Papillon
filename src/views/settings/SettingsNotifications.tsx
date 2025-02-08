@@ -44,10 +44,13 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
       return;
     }
 
-    if (await requestNotificationPermission()) return;
+    requestNotificationPermission().then((result) => {
+      console.log("Notification permission requested:", result);
+    });
 
-    await mutateProperty("personalization", { notifications: { ...notifications, enabled: newValue } });
-    setEnabled(newValue);
+
+    // await mutateProperty("personalization", { notifications: { ...notifications, enabled: newValue } });
+    // setEnabled(newValue);
   };
 
   // Schoolary notifications

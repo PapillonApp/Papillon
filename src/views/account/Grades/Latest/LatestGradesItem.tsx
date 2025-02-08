@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PressableScale } from "react-native-pressable-scale";
 import type { Grade } from "@/services/shared/Grade";
+import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
+import { anim2Papillon } from "@/utils/ui/animations";
 
 type GradeLatestItemProps = {
   grade: Grade;
@@ -43,6 +45,8 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
         style={{
           width: 230,
         }}
+        entering={i < 3 && anim2Papillon(FadeInRight).duration(300).delay(i * 50)}
+        exiting={i < 3 && anim2Papillon(FadeOutLeft).duration(100).delay(i * 50)}
       >
         <View
           style={{

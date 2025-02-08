@@ -24,13 +24,13 @@ const getPronoteAverage = (
   useMath: boolean = false
 ): number => {
   try {
-  // Si aucune note n'est fournie ou que la liste est vide, on retourne -1
+    // Si aucune note n'est fournie ou que la liste est vide, on retourne -1
     if (!grades || grades.length === 0) return -1;
 
     // Grouper les notes par matière
     const groupedBySubject = grades.reduce(
       (acc: Record<string, Grade[]>, grade) => {
-        (acc[grade.subjectId || grade.subjectName] ||= []).push(grade); // Ajouter la note à la liste des notes pour la matière correspondante
+        (acc[grade.subjectId ?? grade.subjectName] ||= []).push(grade); // Ajouter la note à la liste des notes pour la matière correspondante
         return acc;
       },
       {}
@@ -43,10 +43,9 @@ const getPronoteAverage = (
       (acc, subjectGrades) => {
         const nAvg = getSubjectAverage(subjectGrades, target, useMath);
 
-        if(nAvg !== -1) {
+        if (nAvg !== -1) {
           countedSubjects++;
-        }
-        else {
+        } else {
           return acc;
         }
 
@@ -57,8 +56,7 @@ const getPronoteAverage = (
 
     // Retourner la moyenne globale en divisant par le nombre de matières
     return totalAverage / countedSubjects;
-  }
-  catch(e) {
+  } catch (e) {
     return -1;
   }
 };
@@ -73,83 +71,75 @@ export const getSubjectAverage = (
   try {
     let calcGradesSum = 0; // Somme cumulée des notes pondérées
     let calcOutOfSum = 0; // Somme cumulée des coefficients pondérés
-
     let countedGrades = 0;
 
-    // Parcourir chaque note de la matière
     for (const grade of subject) {
-      const targetGrade = grade[target]; // Sélectionner la note selon la cible choisie
+      const targetGrade = grade[target];
 
-      // Vérifier si la note est invalide ou si le coefficient est nul, et passer à la suivante si c'est le cas
       if (
         !targetGrade ||
-      targetGrade.disabled ||
-      targetGrade.value === null ||
-      targetGrade.value < 0 ||
-      grade.coefficient === 0 ||
-      typeof targetGrade.value !== "number"
-      )
+        targetGrade.disabled ||
+        targetGrade.value === null ||
+        targetGrade.value < 0 ||
+        grade.coefficient === 0 ||
+        typeof targetGrade.value !== "number"
+      ) {
         continue;
+      }
 
-      const coefficient = grade.coefficient; // Coefficient de la note
-      const outOfValue = grade.outOf.value!; // Valeur maximale possible pour la note
+      const coefficient = grade.coefficient;
+      const outOfValue = grade.outOf.value!;
 
-      if(grade.isOptional && !loop) {
-      // get average without this grade (WARNING: this is a recursive call)
-        const avgWithout = getSubjectAverage(subject.filter((g) => JSON.stringify(g) !== JSON.stringify(grade)), target, useMath, true);
+      if (grade.isOptional && !loop) {
+        const avgWithout = getSubjectAverage(
+          subject.filter((g) => JSON.stringify(g) !== JSON.stringify(grade)),
+          target,
+          useMath,
+          true
+        );
 
-        // get average with this grade
         const avgWith = getSubjectAverage(subject, target, useMath, true);
 
-        if(avgWithout > avgWith) {
+        if (avgWithout > avgWith) {
           continue;
         }
       }
 
-      // Si la note est un bonus
       if (grade.isBonus) {
-        const averageMoy = outOfValue / 2; // Calculer la moitié de la valeur maximale comme seuil de bonus
-        const newGradeValue = targetGrade.value - averageMoy; // Ajuster la note en soustrayant la moitié de la valeur maximale
+        const averageMoy = outOfValue / 2;
+        const newGradeValue = targetGrade.value - averageMoy;
 
-        if (newGradeValue < 0) continue; // Si la note ajustée est négative, passer à la suivante
+        if (newGradeValue < 0) continue;
 
-        calcGradesSum += newGradeValue; // Ajouter la note ajustée à la somme
-        calcOutOfSum += 1; // Incrémenter la somme de pondération (compte comme 1 ici)
-      } else if(useMath) {
+        calcGradesSum += newGradeValue;
+        calcOutOfSum += 1;
+      } else if (useMath) {
         calcGradesSum += targetGrade.value * coefficient;
       } else if (
-        targetGrade.value > 20 || (coefficient < 1 && ((outOfValue - 20) >= -5) || outOfValue > 20)
+        targetGrade.value > 20 ||
+        (coefficient < 1 && outOfValue - 20 >= -5) ||
+        outOfValue > 20
       ) {
-      // Si la note est supérieure à 20 ou si le coefficient est inférieur à 1, ajuster pour une base sur 20
-        const gradeOn20 = (targetGrade.value / outOfValue) * 20; // Ajuster la note pour une base sur 20
-        calcGradesSum += gradeOn20 * coefficient; // Ajouter la note ajustée et pondérée
-        calcOutOfSum += 20 * coefficient; // Ajouter le coefficient ajusté à la somme
+        const gradeOn20 = (targetGrade.value / outOfValue) * 20;
+        calcGradesSum += gradeOn20 * coefficient;
+        calcOutOfSum += 20 * coefficient;
       } else {
-      // Cas général pour une note normale
-        calcGradesSum += targetGrade.value * coefficient; // Ajouter la note pondérée à la somme
-        calcOutOfSum += outOfValue * coefficient; // Ajouter le coefficient pondéré à la somme
+        calcGradesSum += targetGrade.value * coefficient;
+        calcOutOfSum += outOfValue * coefficient;
       }
 
-      if(!useMath) {
-        countedGrades++;
-      }
-      else {
-        countedGrades = countedGrades + 1 * coefficient;
-      }
+      countedGrades += useMath ? 1 * coefficient : 1;
     }
 
-    if(useMath) {
+    if (useMath) {
       return calcGradesSum / countedGrades;
     }
 
-    // Si aucune somme de pondération n'est calculée, retourner 0 pour éviter la division par zéro
     if (calcOutOfSum === 0) return -1;
 
-    // Calculer la moyenne de la matière en ajustant pour s'assurer qu'elle ne dépasse pas 20
     const subjectAverage = Math.min((calcGradesSum / calcOutOfSum) * 20, 20);
-    return isNaN(subjectAverage) ? -1 : subjectAverage; // Retourner la moyenne calculée
-  }
-  catch(e) {
+    return isNaN(subjectAverage) ? -1 : subjectAverage;
+  } catch (e) {
     return -1;
   }
 };
@@ -164,22 +154,28 @@ const getAverageDiffGrade = (
   try {
     const baseAverage = getSubjectAverage(list, target); // Calculer la moyenne de base avec toutes les notes
     const baseWithoutGradeAverage = getSubjectAverage(
-      list.filter((grade) => JSON.stringify(grades[0]) !== JSON.stringify(grade)),
+      list.filter(
+        (grade) =>
+          !grades.some(
+            (g) =>
+              g.student.value === grade.student.value &&
+              g.coefficient === grade.coefficient
+          )
+      ),
       target,
       useMath
-    ); // Calculer la moyenne sans certaines notes
+    ); // Calculer la moyenne sans toutes les notes de `grades`
 
     return {
       difference: baseWithoutGradeAverage - baseAverage, // Calculer la différence entre les deux moyennes
       with: baseAverage, // Moyenne avec toutes les notes
       without: baseWithoutGradeAverage, // Moyenne sans certaines notes
     };
-  }
-  catch(e) {
+  } catch (e) {
     return {
       difference: 0,
       with: 0,
-      without: 0
+      without: 0,
     };
   }
 };
@@ -192,7 +188,7 @@ const getAveragesHistory = (
   useMath: boolean = false
 ): GradeHistory[] => {
   try {
-  // Générer l'historique des moyennes jusqu'à la date de chaque note
+    // Générer l'historique des moyennes jusqu'à la date de chaque note
     const history = grades.map((grade, index) => ({
       value: getPronoteAverage(grades.slice(0, index + 1), target), // Moyenne jusqu'à ce point
       date: new Date(grade.timestamp).toISOString(), // Date de la note au format ISO
@@ -208,11 +204,8 @@ const getAveragesHistory = (
     });
 
     // remove NaN values
-    return history.filter((x) => !isNaN(x.value));
-
-    return history; // Retourner l'historique généré
-  }
-  catch(e) {
+    return history.filter((x) => !isNaN(x.value) || x.value !== -1);
+  } catch (e) {
     return [];
   }
 };

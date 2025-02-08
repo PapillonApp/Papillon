@@ -105,7 +105,7 @@ export const getGradesAndAverages = async (
     isOptional: g.isOptional,
 
     outOf: decodeGradeValue(g.outOf),
-    coefficient: g.coefficient,
+    coefficient: g.coefficient ?? 1,
 
     student: decodeGradeValue(g.value),
     average: decodeGradeValue(g.average),

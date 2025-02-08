@@ -10,7 +10,7 @@ function parse_homeworks (content: string): string {
 
   const ignoredTags: Set<string> = new Set(["div", "span", "style", "script", "footer", "header"]);
 
-  const tagRegex = /<\/?([a-zA-Z]+)(?:\s[^>]*)?>|([^<]+)/g;
+  const tagRegex = /<\/?([a-zA-Z]+)(?:\s[^>]*)?>|([^<]+)/gm;
 
   const htmlEntities: Record<string, string> = {
     "&nbsp;": " ",

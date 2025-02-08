@@ -65,7 +65,7 @@ export const getGradesAndAverages = async (account: SkolengoAccount, periodName:
     isOptional: false,
 
     outOf: decodeGradeNumber(g.scale),
-    coefficient: g.coefficient || 1,
+    coefficient: g.coefficient ?? 1,
 
     student: decodeGradeNumber(g.evaluationResult.mark),
     average: decodeGradeNumber(g.average),

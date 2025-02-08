@@ -25,7 +25,7 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
       onPress={() => {
         navigation.navigate("NewsItem", {
           message: JSON.stringify(message),
-          important: message.important !== undefined,
+          important: !!message.important,
           isED
         });
       }}

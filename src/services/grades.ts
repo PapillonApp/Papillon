@@ -2,7 +2,7 @@ import { type Account, AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import type { Period } from "./shared/Period";
 import type { AverageOverview, Grade } from "./shared/Grade";
-import {error } from "@/utils/logger/logger";
+import { error } from "@/utils/logger/logger";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 
 const getDefaultPeriod = (periods: Period[]): string => {
@@ -32,15 +32,25 @@ export async function updateGradesPeriodsInCache <T extends Account> (account: T
       break;
     }
     case AccountService.Local: {
-      periods = [
-        {
-          name: "Toutes",
-          startTimestamp: 1609459200,
-          endTimestamp: 1622505600
-        },
-      ];
-      defaultPeriod = "Toutes";
-      break;
+      if (account.identityProvider.identifier == "iut-lannion") {
+        const { saveIUTLanPeriods } = await import("./iutlan/grades");
+        const data = await saveIUTLanPeriods(account);
+
+        periods = data.periods;
+        defaultPeriod = data.defaultPeriod;
+        break;
+      }
+      else {
+        periods = [
+          {
+            name: "Toutes",
+            startTimestamp: 1609459200,
+            endTimestamp: 1622505600
+          },
+        ];
+        defaultPeriod = "Toutes";
+        break;
+      }
     }
     case AccountService.Skolengo: {
       if(!checkIfSkoSupported(account, "Grades")) {
@@ -91,7 +101,7 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
       case AccountService.Local: {
         if (account.identityProvider.identifier == "iut-lannion") {
           const { saveIUTLanGrades } = await import("./iutlan/grades");
-          const data = await saveIUTLanGrades(account);
+          const data = await saveIUTLanGrades(account, periodName);
 
           grades = data.grades;
           averages = data.averages;
@@ -126,6 +136,6 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
     useGradesStore.getState().updateGradesAndAverages(periodName, grades, averages);
   }
   catch (err) {
-    error(`not updated, see:${err}`, "updateGradesAndAveragesInCache");
+    error(`grades not updated, see:${err}`, "updateGradesAndAveragesInCache");
   }
 }

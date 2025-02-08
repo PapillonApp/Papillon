@@ -5,13 +5,34 @@ import  {
 } from "@/services/shared/Grade";
 import uuid from "@/utils/uuid-v4";
 
-export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
+export const saveIUTLanGrades = async (account: LocalAccount, periodName: string): Promise<{
   grades: Grade[];
   averages: AverageOverview;
 }> => {
   try {
+    // console.log(periodName);
+
     // Il faudrait peut-être penser à typer cette partie, tous les types sont any :(
-    const scodocData = account.identityProvider.rawData;
+    const scodocData = account.serviceData.semestres[periodName];
+
+    if (!scodocData) {
+      return {
+        grades: [],
+        averages: {
+          classOverall: {
+            value: null,
+            disabled: true,
+            status: null,
+          },
+          overall: {
+            value: null,
+            disabled: true,
+            status: null,
+          },
+          subjects: []
+        }
+      };
+    }
 
     const ressources = (scodocData["relevé"] as any).ressources;
     const saes = (scodocData["relevé"] as any).saes;
@@ -167,4 +188,29 @@ export const saveIUTLanGrades = async (account: LocalAccount): Promise<{
       }
     };
   }
+};
+
+export const saveIUTLanPeriods = async (account: LocalAccount): Promise<any> => {
+  const scodocData = account.identityProvider.rawData;
+
+  const semestres = (scodocData["semestres"] as any).map((semestre: any) => {
+    return {
+      name: "Semestre " + semestre.semestre_id,
+      startTimestamp: 1609459200,
+      endTimestamp: 1622505600
+    };
+  });
+
+  const finalData = {
+    periods: semestres.length > 0 ? semestres : [
+      {
+        name: "Toutes",
+        startTimestamp: 1609459200,
+        endTimestamp: 1622505600
+      },
+    ],
+    defaultPeriod: semestres.length > 0 ? semestres[semestres.length - 1].name : "Toutes"
+  };
+
+  return finalData;
 };
