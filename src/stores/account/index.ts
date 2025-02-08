@@ -83,12 +83,12 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
 
     // Account is currently not authenticated,
     if (typeof account.instance === "undefined") {
-      log("instance undefined, reloading...", "[switchTo]");
+      log("instance undefined, reloading...", "switchTo");
       // Automatically reconnect the main instance.
       const { instance, authentication } = await reload(account);
       get().mutateProperty("authentication", authentication);
       get().mutateProperty("instance", instance);
-      log("instance reload done !", "[switchTo]");
+      log("instance reload done !", "switchTo");
     }
 
     const accounts = useAccounts.getState().accounts;
@@ -102,13 +102,13 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       const { instance, authentication } = await reload(linkedAccount);
       linkedAccount.instance = instance;
       linkedAccount.authentication = authentication;
-      log("reloaded external", "[switchTo]");
+      log("reloaded external", "switchTo");
     }
 
-    log("reloaded all external accounts", "[switchTo]");
+    log("reloaded all external accounts", "switchTo");
 
     set({ linkedAccounts });
-    log(`done reading ${account.name} and rehydrating stores.`, "[switchTo]");
+    log(`done reading ${account.name} and rehydrating stores.`, "switchTo");
   },
 
   linkExistingExternalAccount: (account) => {

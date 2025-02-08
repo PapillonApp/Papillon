@@ -186,7 +186,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                           <Moon />
                         ) : log.message.toLowerCase().includes("read") ? (
                           <Newspaper />
-                        ) : log.message === "[timetable:updateClasses" ? (
+                        ) : log.message.startsWith("[timetable:updateClasses") ? (
                           <Calendar />
                         ) : log.message.toLowerCase().includes("folder") ? (
                           <Folder />
@@ -207,7 +207,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                                   ? "#1F618D"
                                   : log.message.toLowerCase().includes("read")
                                     ? "#D4AC02"
-                                    : log.message === "[timetable:updateClasses"
+                                    : log.message.startsWith("[timetable:updateClasses")
                                       ? "#884EA0"
                                       : log.message.toLowerCase().includes("folder")
                                         ? "#CA6F1E"
