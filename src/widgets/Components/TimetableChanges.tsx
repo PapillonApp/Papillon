@@ -148,8 +148,9 @@ const LessonItem: React.FC<{
                   fontFamily: "semibold",
                 }}
               >
-                {/* TODO: un avis là dessus ? j'affiche la dernière salle de liste, mais est-ce que la nouvelle salle est toujours la dernière de la liste ? */}
-                {nextCourse.room?.split(",").at(-1)}
+                {nextCourse.room?.includes(",")
+                  ? "Plusieurs salles dispo."
+                  : nextCourse.room}
               </Text>
             </View>
             {nextCourse.statusText && (
