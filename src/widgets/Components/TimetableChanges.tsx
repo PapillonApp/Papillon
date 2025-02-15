@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState, useCallback, useMemo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { Clock, ClockAlert } from "lucide-react-native";
+import {Clock, CalendarClock} from "lucide-react-native";
 
 import { WidgetProps } from "@/components/Home/Widget";
 import WidgetHeader from "@/components/Home/WidgetHeader";
@@ -12,6 +12,7 @@ import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
+import {NativeText} from "@/components/Global/NativeComponents";
 
 const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }: WidgetProps, ref) => {
   const account = useCurrentAccount(store => store.account!);
@@ -49,7 +50,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
       .filter(c => c.endTimestamp > today)
       .sort((a, b) => a.startTimestamp - b.startTimestamp);
 
-    todayCourses.splice(0, 1); // Deleting next course, because it is already showed by next course widget
+    todayCourses.splice(0, 1); // Deleting next course (if it starts today), because it is already showed by next course widget
 
     let updatedChangedCourse = todayCourses
       .find(course => course.status != undefined || course.statusText != undefined); // Status is undefined if course is "normal"
@@ -78,15 +79,15 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
 
   return !hidden && (
     <View style={{ width: "100%", height: "100%" }}>
-      <WidgetHeader icon={<ClockAlert />} title="Changement EDT" />
+      <WidgetHeader icon={<CalendarClock />} title="Changement EDT" />
       {changedCourse ? (
         <LessonItem nextCourse={changedCourse} />
       ) : (
         <View style={{ width: "100%", height: "88%", justifyContent: "center", alignItems: "center", gap: 8 }}>
           {loading && <ActivityIndicator />}
-          <Text style={{ color: "gray", fontSize: 15, fontFamily: "medium" }}>
+          <NativeText variant="subtitle">
             {loading ? "Chargement..." : "Aucun cours"}
-          </Text>
+          </NativeText>
         </View>
       )}
     </View>
@@ -136,6 +137,7 @@ const LessonItem: React.FC<{
               backgroundColor: subjectData.color + "33",
               borderRadius: 8,
               borderCurve: "continuous",
+              width: "50%",
               alignSelf: "flex-start",
             }}>
               <Text
@@ -146,11 +148,8 @@ const LessonItem: React.FC<{
                   fontFamily: "semibold",
                 }}
               >
-                {nextCourse.room
-                  ? nextCourse.room.includes(",")
-                    ? "Plusieurs salles dispo."
-                    : nextCourse.room
-                  : "Salle inconnue"}
+                {/* TODO: un avis là dessus ? j'affiche la dernière salle de liste, mais est-ce que la nouvelle salle est toujours la dernière de la liste ? */}
+                {nextCourse.room?.split(",").at(-1)}
               </Text>
             </View>
             {nextCourse.statusText && (
