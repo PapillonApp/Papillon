@@ -154,7 +154,6 @@ const LastAttendanceEventWidget = forwardRef(({
             flexDirection: "row",
             alignItems: "flex-end",
             justifyContent: "flex-start",
-            // marginTop: 15,
             gap: 4,
           }}>
 
