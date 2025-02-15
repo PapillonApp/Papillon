@@ -11,6 +11,7 @@ import {updateHomeworkForWeekInCache} from "@/services/homework";
 import {getSubjectData} from "@/services/shared/Subject";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import {timestampToString} from "@/utils/format/DateHelper";
+import {error as log_error} from "@/utils/logger/logger";
 
 const NextHomeworksWidget = forwardRef(({
   setLoading,
@@ -50,7 +51,7 @@ const NextHomeworksWidget = forwardRef(({
       try {
         await updateHomeworkForWeekInCache(account, new Date());
       } catch (error) {
-        console.error("Erreur lors de la mise à jour des devoirs :", error);
+        log_error(`Erreur lors de la mise à jour des devoirs : ${error}`, "Widget:NextHomeworks");
       } finally {
         setLoading(false);
       }

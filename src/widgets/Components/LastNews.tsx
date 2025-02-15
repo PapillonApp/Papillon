@@ -8,6 +8,7 @@ import { useCurrentAccount } from "@/stores/account";
 import {useNewsStore} from "@/stores/news";
 import {updateNewsInCache} from "@/services/news";
 import formatDate from "@/utils/format/format_date_complets";
+import {error as log_error} from "@/utils/logger/logger";
 
 const LastNewsWidget = forwardRef(({
   setLoading,
@@ -40,7 +41,7 @@ const LastNewsWidget = forwardRef(({
       try {
         await updateNewsInCache(account);
       } catch (error) {
-        console.error("Erreur lors de la mise à jour des actualités :", error);
+        log_error(`Erreur lors de la mise à jour des actualités : ${error}`, "Widget:LastNews");
       } finally {
         setLoading(false);
       }

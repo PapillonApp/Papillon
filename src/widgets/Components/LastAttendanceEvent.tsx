@@ -3,6 +3,7 @@ import {UserX, Timer, Eye, Scale, LucideIcon, Clock8} from "lucide-react-native"
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";
 
+import { error as log_error } from "@/utils/logger/logger";
 import { NativeText } from "@/components/Global/NativeComponents";
 import { WidgetProps } from "@/components/Home/Widget";
 import { useCurrentAccount } from "@/stores/account";
@@ -101,7 +102,7 @@ const LastAttendanceEventWidget = forwardRef(({
       try {
         await updateAttendanceInCache(account, defaultPeriod);
       } catch (error) {
-        console.error("Erreur lors de la mise à jour de la vie scolaire :", error);
+        log_error(`Erreur lors de la mise à jour de la vie scolaire : ${error}`, "Widget:LastAttendanceEvent");
       } finally {
         setLoading(false);
       }

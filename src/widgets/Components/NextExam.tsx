@@ -14,6 +14,7 @@ import {timestampToString} from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import {Homework} from "@/services/shared/Homework";
+import {error as log_error} from "@/utils/logger/logger";
 
 interface Exam {
   subject: string
@@ -63,7 +64,7 @@ const NextExamWidget = forwardRef(({
       try {
         await updateHomeworkForWeekInCache(account, new Date());
       } catch (error) {
-        console.error("Erreur lors de la mise à jour des devoirs :", error);
+        log_error(`Erreur lors de la mise à jour des devoirs : ${error}`, "Widget:LastExam");
       } finally {
         setLoading(false);
       }

@@ -11,6 +11,7 @@ import { updateGradesAndAveragesInCache } from "@/services/grades";
 import { getSubjectData } from "@/services/shared/Subject";
 import { useCurrentAccount } from "@/stores/account";
 import { useGradesStore } from "@/stores/grades";
+import {error as log_error} from "@/utils/logger/logger";
 
 const LastGradeWidget = forwardRef(({
   setLoading,
@@ -48,7 +49,7 @@ const LastGradeWidget = forwardRef(({
       try {
         await updateGradesAndAveragesInCache(account, defaultPeriod);
       } catch (error) {
-        console.error("Erreur lors de la mise à jour des notes :", error);
+        log_error(`Erreur lors de la mise à jour des notes : ${error}`, "Widget:LastGrade");
       } finally {
         setLoading(false);
       }
