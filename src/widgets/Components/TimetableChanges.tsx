@@ -30,7 +30,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
     if (!timetables[currentWeekNumber] && account.instance) {
       setLoading(true);
       try {
-        await updateTimetableForWeekInCache(account, currentWeekNumber);
+        await updateTimetableForWeekInCache(account, currentWeekNumber, true);
       } finally {
         setLoading(false);
       }
