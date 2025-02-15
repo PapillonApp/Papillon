@@ -117,7 +117,7 @@ const LastAttendanceEventWidget = forwardRef(({
     const eventAge = Math.round((new Date().getTime() - (lastEvent?.date.getTime() || 0)) / (24 * 60 * 60 * 1000));
     const shouldHide = !lastEvent || !account?.personalization.widgets?.lastAttendanceEvent || eventAge > maxEventAge;
     setHidden(shouldHide);
-  }, [lastEvent, setHidden]);
+  }, [lastEvent, setHidden, account?.personalization.widgets]);
 
   return (
     <>

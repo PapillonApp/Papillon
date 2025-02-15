@@ -64,7 +64,7 @@ const NextHomeworksWidget = forwardRef(({
   useEffect(() => {
     const shouldHide = !nextHomework || !account?.personalization.widgets?.nextHomeworks;
     setHidden(shouldHide);
-  }, [nextHomework, setHidden]);
+  }, [nextHomework, setHidden, account?.personalization.widgets]);
 
   const [subjectData, setSubjectData] = useState({ color: "#888888", pretty: "Matière inconnue" });
 

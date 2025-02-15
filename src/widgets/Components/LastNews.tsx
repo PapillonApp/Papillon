@@ -61,7 +61,7 @@ const LastNewsWidget = forwardRef(({
     const eventAge = Math.round((new Date().getTime() - lastNewsDate) / (24 * 60 * 60 * 1000));
     const shouldHide = !lastNews || !account?.personalization.widgets?.lastNews || eventAge > maxEventAge;
     setHidden(shouldHide);
-  }, [lastNews, setHidden]);
+  }, [lastNews, setHidden, account?.personalization.widgets]);
 
   return (
     <>

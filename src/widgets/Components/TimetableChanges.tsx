@@ -70,7 +70,7 @@ const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }:
       setHidden(false);
     }
     setLoading(false);
-  }, [account, timetables]);
+  }, [account.personalization.widgets, timetables]);
 
   useEffect(() => {
     setLoading(true);

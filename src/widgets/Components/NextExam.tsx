@@ -77,7 +77,7 @@ const NextExamWidget = forwardRef(({
   useEffect(() => {
     const shouldHide = !nextExam || !account?.personalization.widgets?.nextTest;
     setHidden(shouldHide);
-  }, [nextExam, setHidden]);
+  }, [nextExam, setHidden, account?.personalization.widgets]);
 
   if (!nextExam) {
     return null;
