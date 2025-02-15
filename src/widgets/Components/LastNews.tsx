@@ -9,6 +9,7 @@ import {useNewsStore} from "@/stores/news";
 import {updateNewsInCache} from "@/services/news";
 import formatDate from "@/utils/format/format_date_complets";
 import {error as log_error} from "@/utils/logger/logger";
+import parse_news_resume from "@/utils/format/format_pronote_news";
 
 const LastNewsWidget = forwardRef(({
   setLoading,
@@ -129,7 +130,9 @@ const LastNewsWidget = forwardRef(({
           }}
           numberOfLines={2}
         >
-          {lastNews?.content}
+          {!lastNews?.content.includes("<img")
+            ? parse_news_resume(lastNews?.content ?? "")
+            : "Contient une image"}
         </NativeText>
       </View>
 
