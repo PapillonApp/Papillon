@@ -145,7 +145,7 @@ const SettingsWidgets: Screen<"SettingsWidgets"> = ({ navigation }) => {
           }
         >
           <NativeText variant="title">
-            Masquer les évènements trop vieux
+            Masquer les évènements obsolètes
           </NativeText>
           <NativeText variant="subtitle">
             Affiche uniquement les évènements des {eventMaxAge} derniers jours.
