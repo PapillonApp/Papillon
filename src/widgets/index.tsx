@@ -21,13 +21,8 @@ function isDateInTimeRange (date: Date, startHour: number, endHour: number) {
   return date.getHours() > startHour && date.getHours() < endHour;
 }
 
-// TODO: add importance function to each widget which calculates in real-time an importance number between 1 and 5, to sort on home page
-// It will be very useful; f.e, show Restaurant widgets first around noon, or homeworks at the end of the day...
-// Ideas:
-// Grades widgets mid if last grade is lt one or two day old
-// Same for attendance event
-// Same for news
-// Next exam: 4 if exam is in one day
+// Maybe it would be nice to add more precise "importance" functions !
+
 export const Widgets: Widget[] = [
   {
     component: RestaurantQRCodeWidget,
