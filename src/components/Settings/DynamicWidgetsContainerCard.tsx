@@ -51,7 +51,7 @@ const DynamicWidgetsContainerCard = ({ theme }: { theme: any }) => {
           />
         </View>
         <NativeText variant="subtitle">
-          Choisi les widgets à afficher sur ton écran d'accueil.
+          Choisis les widgets à afficher sur ton écran d'accueil.
         </NativeText>
       </NativeItem>
     </NativeList>
