@@ -65,7 +65,7 @@ export interface Personalization {
     timetable?: boolean
     attendance?: boolean
   },
-  widgets?: WidgetsSettings
+  widgets?: WidgetsSettings,
   icalURLs: PapillonIcalURL[],
   tabs: Tab[],
   subjects: {
