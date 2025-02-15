@@ -171,7 +171,7 @@ const NextHomeworksWidget = forwardRef(({
             {timestampToString(nextHomework?.due || 0)}
           </NativeText>
         </View>
-        {undoneHomeworks > 0 && <View
+        {(undoneHomeworks - 1) > 0 && <View
           style={{
             display: "flex",
             flexDirection: "row",

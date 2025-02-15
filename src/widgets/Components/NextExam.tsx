@@ -177,7 +177,7 @@ const NextExamWidget = forwardRef(({
             {timestampToString(nextExam.due)}
           </NativeText>
         </View>
-        {totalExams > 0 && <View
+        {(totalExams - 1) > 0 && <View
           style={{
             display: "flex",
             flexDirection: "row",
