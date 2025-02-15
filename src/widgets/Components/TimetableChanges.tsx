@@ -13,8 +13,6 @@ import { useTimetableStore } from "@/stores/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
 
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
 const TimetableChanges = forwardRef(({ hidden, setHidden, loading, setLoading }: WidgetProps, ref) => {
   const account = useCurrentAccount(store => store.account!);
   const timetables = useTimetableStore(store => store.timetables);
@@ -101,7 +99,7 @@ const LessonItem: React.FC<{
   const [subjectData, setSubjectData] = useState({ color: "#888888", pretty: "Matière inconnue" });
   const colors = useTheme().colors;
   const startDate = new Date(nextCourse.startTimestamp);
-  const prettyTime = `${lz(startDate.getHours())}:${lz(startDate.getMinutes())}`;
+  const prettyTime = `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`;
 
   useEffect(() => {
     const fetchSubjectData = async () => {

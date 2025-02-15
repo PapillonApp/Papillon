@@ -13,8 +13,6 @@ import { useTimetableStore } from "@/stores/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { updateTimetableForWeekInCache } from "@/services/timetable";
 
-const lz = (num: number) => (num < 10 ? `0${num}` : num);
-
 const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }: WidgetProps, ref) => {
   const account = useCurrentAccount(store => store.account!);
   const timetables = useTimetableStore(store => store.timetables);
@@ -126,7 +124,7 @@ const NextCourseLesson: React.FC<{
         if (days > 0) {
           setPrettyTime(`dans ${days} jour(s)`);
         } else if (hours > 0) {
-          setPrettyTime(`dans ${hours}h ${lz(minutes)}min`);
+          setPrettyTime(`dans ${hours}h ${minutes.toString().padStart(2, "0")}min`);
         } else {
           setPrettyTime(`dans ${minutes}min`);
         }
@@ -134,7 +132,7 @@ const NextCourseLesson: React.FC<{
       } else if (end > 0) {
         const hours = Math.floor((end % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((end % (1000 * 60 * 60)) / (1000 * 60));
-        setPrettyTime(`reste ${hours}h ${lz(minutes)}min`);
+        setPrettyTime(`reste ${hours}h ${minutes.toString().padStart(2, "0")}min`);
         setWidgetTitle("En classe");
       } else {
         setPrettyTime("Terminé");
