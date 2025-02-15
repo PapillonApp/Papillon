@@ -210,8 +210,8 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
               <MissingItem
                 style={{ marginTop: 24, marginHorizontal: 16 }}
                 emoji="📚"
-                title="Aucune note disponible"
-                description="La période sélectionnée ne contient aucune note."
+                title={`Aucune note pour le ${selectedPeriod.toLowerCase()}`}
+                description={"La période ne contient pas de notes pour le moment."}
               />
             )}
 

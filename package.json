@@ -10,7 +10,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@birdwingo/react-native-reanimated-graph": "^1.1.3",
+    "@birdwingo/react-native-reanimated-graph": "^1.1.4",
     "@candlefinance/app-icon": "^0.4.5",
     "@howljs/calendar-kit": "^2.2.1",
     "@notifee/react-native": "^7.8.2",

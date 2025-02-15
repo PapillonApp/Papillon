@@ -21,7 +21,7 @@ import Reanimated, {
   FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
-import { animPapillon } from "@/utils/ui/animations";
+import { anim2Papillon } from "@/utils/ui/animations";
 
 import * as Haptics from "expo-haptics";
 import { PressableScale } from "react-native-pressable-scale";
@@ -166,9 +166,9 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
       onPress={() => setShowDetails(!showDetails)}
     >
       {hLength > 0 && (
-        <NativeList animated>
+        <NativeList animated layout={anim2Papillon(LinearTransition)}>
           <Reanimated.View
-            layout={animPapillon(LinearTransition)}
+            layout={anim2Papillon(LinearTransition)}
             key={theme.colors.primary + account.instance}
           >
             {((showDetails && !overall) || selectedDate) && (
@@ -200,8 +200,8 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                     borderCurve: "continuous",
                     zIndex: 100,
                   }}
-                  entering={animPapillon(FadeInLeft)}
-                  exiting={animPapillon(FadeOutLeft)}
+                  entering={anim2Papillon(FadeInLeft)}
+                  exiting={anim2Papillon(FadeOutLeft)}
                 >
                   <Reanimated.Text
                     style={{
@@ -218,7 +218,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
             {hLength > 1 ? (
               <Reanimated.View
-                layout={animPapillon(LinearTransition)}
+                layout={anim2Papillon(LinearTransition)}
                 entering={FadeIn}
                 exiting={FadeOut}
                 style={{
@@ -264,14 +264,14 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                   marginTop: 0,
                 },
               ]}
-              layout={animPapillon(LinearTransition)}
+              layout={anim2Papillon(LinearTransition)}
             >
               <View style={[styles.gradeInfo]}>
                 {selectedDate ? (
                   <Reanimated.View
                     key={"sDateG"}
-                    entering={animPapillon(FadeInDown)}
-                    exiting={animPapillon(FadeOutUp)}
+                    entering={anim2Papillon(FadeInDown)}
+                    exiting={anim2Papillon(FadeOutUp)}
                   >
                     <NativeText
                       style={{ color: theme.colors.primary }}
@@ -287,8 +287,8 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                 ) : (
                   <Reanimated.View
                     key={"cAvgG"}
-                    entering={animPapillon(FadeInDown)}
-                    exiting={animPapillon(FadeOutUp)}
+                    entering={anim2Papillon(FadeInDown)}
+                    exiting={anim2Papillon(FadeOutUp)}
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
@@ -317,7 +317,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
                 <Reanimated.View
                   style={[styles.gradeValue]}
-                  layout={animPapillon(LinearTransition)}
+                  layout={anim2Papillon(LinearTransition)}
                 >
                   <AnimatedNumber
                     value={currentAvg.toFixed(2)}
@@ -325,7 +325,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                     contentContainerStyle={{ marginLeft: -2 }}
                   />
 
-                  <Reanimated.View layout={animPapillon(LinearTransition)}>
+                  <Reanimated.View layout={anim2Papillon(LinearTransition)}>
                     <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
                   </Reanimated.View>
                 </Reanimated.View>
@@ -334,7 +334,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                 <NativeText numberOfLines={1}>Moyenne classe</NativeText>
                 <Reanimated.View
                   style={[styles.gradeValue]}
-                  layout={animPapillon(LinearTransition)}
+                  layout={anim2Papillon(LinearTransition)}
                 >
                   { !Number.isNaN(classAvg) ? (
                     <>
@@ -342,7 +342,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                         value={classAvg.toFixed(2)}
                         style={styles.gradeNumberClass}
                       />
-                      <Reanimated.View layout={animPapillon(LinearTransition)}>
+                      <Reanimated.View layout={anim2Papillon(LinearTransition)}>
                         <NativeText style={[styles.gradeOutOf]}>/20</NativeText>
                       </Reanimated.View>
                     </>
@@ -355,17 +355,18 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
 
             {showDetails && maxAvg > 0 && minAvg > 0 ? (
               <Reanimated.View
-                layout={animPapillon(LinearTransition)}
-                entering={FadeIn}
+                layout={anim2Papillon(LinearTransition)}
                 exiting={FadeOut}
                 key={"detailsG"}
                 style={{
                   borderTopColor: theme.colors.border,
-                  borderTopWidth: 0.5,
+                  borderTopWidth: 0,
                   paddingTop: 0,
+                  marginTop: -4,
                 }}
               >
                 <NativeItem
+                  entering={anim2Papillon(FadeInDown).delay(100)}
                   trailing={
                     <View
                       style={{
@@ -388,6 +389,7 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
                   <NativeText variant="subtitle">Moyenne théorique max.</NativeText>
                 </NativeItem>
                 <NativeItem
+                  entering={anim2Papillon(FadeInDown).delay(200)}
                   trailing={
                     <View
                       style={{

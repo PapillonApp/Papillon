@@ -85,7 +85,7 @@ const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
             title="Aucune note disponible"
             description={
               defaultPeriod
-                ? `Tu n'as aucune note au ${defaultPeriod}.`
+                ? `Tu n'as aucune note au ${defaultPeriod.toLowerCase()}.`
                 : "Tu n'as aucune note pour cette période."
             }
           />

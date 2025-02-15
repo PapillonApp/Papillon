@@ -3,6 +3,7 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { useAlert } from "@/providers/AlertProvider";
 import { PrimaryAccount } from "@/stores/account/types";
 import { anim2Papillon } from "@/utils/ui/animations";
+import { adjustColor } from "@/utils/ui/colors";
 
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
@@ -47,8 +48,16 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
         <NativeListHeader
           animated
           label="Unités d'enseignement"
+          style={{
+            marginTop: 16,
+            marginBottom: -14,
+          }}
           trailing={
             <TouchableOpacity
+              style={{
+                width: 24,
+                height: 24,
+              }}
               onPress={() => showAlert({
                 icon: <Info />,
                 title: "Unités d'enseignement",
@@ -60,7 +69,6 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                   width: 24,
                   height: 24,
                   borderRadius: 8,
-                  marginVertical: -8,
                   borderColor: colors.text + "32",
                   borderWidth: 1,
                 }}
@@ -71,7 +79,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
         />
 
         <NativeList animated layout={anim2Papillon(LinearTransition)}>
-          {finalUes.map((ue) => {
+          {finalUes.map((ue, i) => {
             interface ueGrade {
               key: string,
               type: "ressources" | "saes"
@@ -122,7 +130,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
             }
 
             return (
-              <View key={ue.name = "-ue"}>
+              <View key={(ue.name ?? ue.moyenne.value) + "-ue:" + i}>
                 <NativeItem
                   chevron={false}
                   style={{
@@ -136,12 +144,17 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                         alignItems: "center",
                         justifyContent: "center",
                         borderRadius: 8,
-                        borderColor: colors.text + "32",
+                        borderColor: adjustColor(ue.color, -100) + "32",
                         borderWidth: 1,
                       }}
                       onPress={navigateToSubject}
                     >
-                      <NativeText variant="subtitle">
+                      <NativeText
+                        variant="subtitle"
+                        style={{
+                          color: adjustColor(ue.color, -100),
+                        }}
+                      >
                         {ue.name}
                       </NativeText>
                     </TouchableOpacity>
@@ -210,6 +223,9 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                     <NativeText
                       variant="body"
                       numberOfLines={2}
+                      style={{
+                        color: adjustColor(ue.color, -100)
+                      }}
                     >
                       {ue.titre}
                     </NativeText>
@@ -218,7 +234,10 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
 
                 {opened && grades.map((gra,i) => (
                   <NativeItem
+                    key={gra.key + "-grade:" + i + "-ue:" + (ue.name ?? ue.moyenne.value)}
                     separator={i !== Object.keys(grades).length - 1}
+                    entering={i < 16 ? anim2Papillon(FadeInDown).delay(40 * i) : FadeIn.duration(100)}
+                    exiting={FadeOut.duration(100)}
                     leading={
                       <NativeText
                         variant="subtitle"

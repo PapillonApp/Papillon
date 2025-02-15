@@ -48,10 +48,10 @@ const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ na
             disabled
           >
             <NativeText>
-              Connexion via PRONOTE
+              Connexion automatique via PRONOTE
             </NativeText>
             <NativeText variant="subtitle">
-              Connexion automatique via PRONOTE
+              Disponible prochainement
             </NativeText>
           </NativeItem>
         )}

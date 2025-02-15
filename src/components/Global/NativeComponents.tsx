@@ -71,7 +71,7 @@ export const NativeList: React.FC<NativeListProps> = ({
         inline && { marginTop: 16 },
         style,
       ]}
-      layout={animated && animPapillon(LinearTransition)}
+      layout={animated && (layout ?? animPapillon(LinearTransition))}
       entering={entering}
       exiting={exiting}
     >
@@ -81,7 +81,7 @@ export const NativeList: React.FC<NativeListProps> = ({
           borderCurve: "continuous",
           overflow: "hidden",
         }]}
-        layout={animated && animPapillon(LinearTransition)}
+        layout={animated && (layout ?? animPapillon(LinearTransition))}
       >
         {childrenWithProps}
       </Reanimated.View>
@@ -95,12 +95,13 @@ interface NativeListHeaderProps {
   leading?: ReactNode
   trailing?: ReactNode
   animated?: boolean
+  layout?: LayoutAnimation
   entering?: EntryOrExitLayoutType
   exiting?: EntryOrExitLayoutType
   style?: StyleProp<ViewStyle>
 }
 
-export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label, leading, trailing, animated, entering, exiting, style }) => {
+export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label, leading, trailing, animated, layout, entering, exiting, style }) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -117,7 +118,7 @@ export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label,
   return (
     <Reanimated.View
       style={[list_header_styles.container, style]}
-      layout={animated && animPapillon(LinearTransition)}
+      layout={animated && (layout ?? animPapillon(LinearTransition))}
       entering={entering}
       exiting={exiting}
     >
@@ -141,7 +142,15 @@ export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label,
         {label}
       </Text>
 
-      {trailing}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "flex-end",
+        }}
+      >
+        {trailing}
+      </View>
     </Reanimated.View>
   );
 };
