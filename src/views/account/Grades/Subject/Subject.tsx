@@ -31,14 +31,17 @@ const sortings: PickerDataItem[] = [
   {
     label: "Alphabétique",
     icon: <ArrowDownAZ />,
+    sfSymbol: "arrow.up.arrow.down",
   },
   {
     label: "Date",
     icon: <Calendar />,
+    sfSymbol: "calendar",
   },
   {
     label: "Moyenne",
     icon: <TrendingUp />,
+    sfSymbol: "chart.line.uptrend.xyaxis",
   },
 ];
 

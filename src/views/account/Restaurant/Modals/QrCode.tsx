@@ -1,289 +1,205 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StatusBar,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView, Platform,
-  AppState,
-  Image
-} from "react-native";
-import { DeviceMotion } from "expo-sensors";
-import { SafeAreaView } from "react-native-safe-area-context";
-import QRCode from "react-native-qrcode-svg";
-import * as Brightness from "expo-brightness";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
+import { balanceFromExternal } from "@/services/balance";
+import { qrcodeFromExternal } from "@/services/qrcode";
 import { useTheme } from "@react-navigation/native";
-import { X } from "lucide-react-native";
-import ScanIcon from "@/components/Restaurant/ScanIcon";
-import type { Screen } from "@/router/helpers/types";
+import { BlurView } from "expo-blur";
+import { QrCodeIcon, X } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { View, Text, Pressable } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { PressableScale } from "react-native-pressable-scale";
+import QRCode from "react-native-qrcode-svg";
+import * as Haptics from "expo-haptics";
+import { Screen } from "@/router/helpers/types";
+import { ExternalAccount } from "@/stores/account/types";
 
-const BETA_THRESHOLD_LOW = -0.2;
-const BETA_THRESHOLD_HIGH = -0.15;
-const ANIMATION_DURATION = 500;
 
-const RestaurantQrCode: Screen<"RestaurantQrCode"> = ({ route, navigation }) => {
-  const [currentState, setCurrentState] = useState<
-    "neutral" | "tiltedUp" | "tiltedDown"
-  >("neutral");
-  const opacity = useSharedValue(1);
-  const rotate = useSharedValue(0);
-  const theme = useTheme();
-  const { colors } = theme;
+const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) => {
+  const { card } = route.params;
+  const [qrCode, setQrCode] = useState<string | null>(null);
 
-  const qrcodes = route.params.QrCodes;
-  const [activeIndex, setActiveIndex] = useState(0);
-  const handleScroll = (event: { nativeEvent: { contentOffset: { x: any; }; }; }) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.floor(contentOffsetX / (100));
-    setActiveIndex(Math.max(0, Math.min(index, qrcodes ? qrcodes.length - 1 : 0)));
+  const PollingBalance = async () => {
+    balanceFromExternal(card.account as ExternalAccount).then((newBalance) => {
+      if(card.balance[0].amount !== newBalance[0].amount) {
+        const diff = newBalance[0].amount - card.balance[0].amount;
+        openFeedback();
+      }
+    });
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={navigation.goBack}
-          style={[styles.headerButton, { backgroundColor: "#ffffff30" }]}
-        >
-          <X size={24} color="white" />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
-  const [oldBrightness, setOldBrightness] = useState<number>(0.5);
+  const openFeedback = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    navigation.goBack();
+    setTimeout(() => {
+      navigation.navigate("RestaurantPaymentSuccess", { card, diff: 0 });
+    }, 1000);
+  };
 
   useEffect(() => {
-    let isActive = true;
+    // Si Izly
+    if(card.service === 10) {
+      const interval = setInterval(() => {
+        console.log("[CANTINE >> IZLY] Demande du solde");
+        PollingBalance();
+      }, 1000);
 
-    const handleAppStateChange = async (nextAppState: string) => {
-      if (nextAppState === "background" || nextAppState === "inactive") {
-        if (isActive) {
-          isActive = false;
-          await Brightness.setBrightnessAsync(oldBrightness);
-        }
-      } else if (nextAppState === "active") {
-        isActive = true;
-        await Brightness.setBrightnessAsync(1);
-      }
-    };
+      return () => {
+        clearInterval(interval);
+        console.log("[CANTINE >> IZLY] Fin du polling");
+      };
+    }
+  }, []);
 
-    const appStateSubscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
+  const theme = useTheme();
 
-    const navigationSubscription = navigation.addListener("beforeRemove", () => {
-      Brightness.setBrightnessAsync(oldBrightness);
+  const GenerateQRCode = async () => {
+    qrcodeFromExternal(card.account as ExternalAccount).then((qrCode) => {
+      // @ts-expect-error
+      setQrCode(qrCode);
     });
-
-    (async () => {
-      if (Platform.OS === "android") {
-        const { status } = await Brightness.requestPermissionsAsync();
-        if (status !== "granted") {
-          navigation.goBack();
-          return;
-        }
-      }
-      try {
-        const brightness = await Brightness.getBrightnessAsync();
-        setOldBrightness(brightness);
-        await Brightness.setBrightnessAsync(1);
-      } catch (e) { console.warn("Brightness error:", e); }
-    })();
-    return () => {
-      appStateSubscription.remove();
-      navigationSubscription();
-      Brightness.setBrightnessAsync(oldBrightness);
-    };
-  }, [navigation, oldBrightness]);
-
+  };
 
   useEffect(() => {
-    const subscription = DeviceMotion.addListener(({ rotation }) => {
-      let newState: "neutral" | "tiltedUp" | "tiltedDown" = "neutral";
-
-      if (!rotation || typeof rotation.beta === "undefined") {
-        return;
-      }
-
-      if (rotation.beta < BETA_THRESHOLD_LOW) {
-        newState = "tiltedDown";
-      } else if (rotation.beta > BETA_THRESHOLD_HIGH) {
-        newState = "tiltedUp";
-      }
-
-      if (newState !== currentState) {
-        setCurrentState(newState);
-        const finalRotation = newState === "tiltedDown" ? 180 : 0;
-
-        opacity.value = withTiming(0, {
-          duration: ANIMATION_DURATION / 2,
-          easing: Easing.out(Easing.ease),
-        }, () => {
-          rotate.value = withTiming(finalRotation, {
-            duration: ANIMATION_DURATION / 2,
-            easing: Easing.inOut(Easing.ease),
-          }, () => {
-            opacity.value = withTiming(1, {
-              duration: ANIMATION_DURATION / 2,
-              easing: Easing.in(Easing.ease),
-            });
-          });
-        });
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [currentState, opacity, rotate]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ rotate: `${rotate.value}deg` }],
-  }));
+    GenerateQRCode();
+  }, []);
 
   return (
-    <View style={[styles.safeArea, {
-      backgroundColor: colors.primary,
-    }]}>
-      <SafeAreaView
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background + "50",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <BlurView
         style={{
           flex: 1,
-          backgroundColor: "#00000055",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
         }}
+        experimentalBlurMethod="dimezisBlurView"
+        intensity={100}
+        tint={theme.dark ? "dark" : "light"}
       >
-        <StatusBar barStyle={"dark-content"} />
-        <View style={styles.qrCodeContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            snapToInterval={200}
-            decelerationRate="fast"
-            scrollEnabled={qrcodes?.length > 1}
-            onScroll={handleScroll}
-          >
-            { qrcodes && qrcodes.map((code, index) => {
-              if (typeof code === "string") {
-                return (
-                  <View key={index} style={styles.qrCodeInnerContainer}>
-                    <QRCode
-                      value={code}
-                      size={250}
-                      color="#000000"
-                      backgroundColor="#FFFFFF"
-                    />
-                  </View>
-                );
-              } else if (code instanceof Blob) {
-                const imageUrl = URL.createObjectURL(code);
 
-                return (
-                  <View key={index} style={styles.qrCodeInnerContainer}>
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={styles.barcodeImage}
-                    />
-                  </View>
-                );
-              }
-            })}
-          </ScrollView>
-        </View>
-        { qrcodes && qrcodes.length > 1 && (
-          <View style={styles.dotsContainer}>
-            {qrcodes.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  index === activeIndex ? styles.activeDot : styles.inactiveDot,
-                ]}
-              />
-            ))}
+        <Pressable
+          style={{
+            width: "100%",
+            flex: 1,
+
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          <View
+            style={{
+              marginBottom: 32,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 8,
+              maxWidth: 260,
+            }}
+          >
+            <QrCodeIcon
+              size={24}
+              color={theme.colors.text}
+            />
+
+            <Text
+              style={{
+                color: theme.colors.text,
+                fontSize: 15,
+                lineHeight: 20,
+                textAlign: "center",
+                fontFamily: "semibold",
+              }}
+            >
+              Approche le code QR du scanner de la borne afin de valider ta carte
+            </Text>
           </View>
+        </Pressable>
+
+        {qrCode && (
+          <PressableScale
+            style={{
+              padding: 16,
+              backgroundColor: "white",
+
+              borderColor: theme.colors.text + "40",
+              borderWidth: 1,
+
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.2,
+              shadowRadius: 7,
+
+              elevation: 5,
+
+              borderRadius: 16,
+              borderCurve: "continuous",
+            }}
+            onPress={() => {
+              GenerateQRCode();
+            }}
+            weight="light"
+            activeScale={0.9}
+          >
+            <QRCode
+              value={qrCode}
+              size={280}
+            />
+          </PressableScale>
         )}
-        <Animated.View style={[styles.instructionContainer, animatedStyle]}>
-          <ScanIcon color={colors.primary} />
-          <Text style={styles.instructionText}>
-            Oriente le code QR vers le scanner de la borne
-          </Text>
-        </Animated.View>
-      </SafeAreaView>
+
+        <Pressable
+          style={{
+            width: "100%",
+            flex: 1,
+
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          <TouchableOpacity
+            style={{
+              marginTop: 32,
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              backgroundColor: theme.colors.text + "20",
+              borderRadius: 50,
+              borderCurve: "continuous",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 8,
+            }}
+            onPress={() => navigation.goBack()}
+          >
+            <X strokeWidth={2.6} size={20} color={theme.colors.text} />
+
+            <Text
+              style={{
+                color: theme.colors.text,
+                fontSize: 15,
+                lineHeight: 20,
+                textAlign: "center",
+                fontFamily: "semibold",
+              }}
+            >
+              Fermer
+            </Text>
+          </TouchableOpacity>
+        </Pressable>
+
+      </BlurView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  headerButton: {
-    padding: 8,
-    borderRadius: 50,
-    margin: 5,
-  },
-  qrCodeContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    alignContent: "center",
-    marginTop: 75
-  },
-  qrCodeInnerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: 300,
-    padding: 15,
-    borderRadius: 15,
-    alignSelf: "center",
-    backgroundColor: "#FFFFFF"
-  },
-  instructionContainer: {
-    marginTop: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  instructionText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    lineHeight: 20,
-    textAlign: "center",
-    maxWidth: 200,
-    fontFamily: "medium",
-  },
-  dotsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 16,
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 5,
-    marginHorizontal: 4,
-  },
-  activeDot: {
-    backgroundColor: "#ffffff",
-  },
-  inactiveDot: {
-    backgroundColor: "#ffffff25",
-  },
-  barcodeImage: {
-    width: "100%",
-    height: 50,
-    resizeMode: "cover",
-  },
-});
 
 export default RestaurantQrCode;

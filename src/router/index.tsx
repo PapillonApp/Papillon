@@ -117,14 +117,16 @@ const Router: React.FC = () => {
               navigate(str);
             }}
           >
-            <AlertProvider>
-              <Stack.Navigator initialRouteName="AccountSelector" screenOptions={navigatorScreenOptions}>
-                {screens.map((screen) => (
+            <View style={{ flex: 1, backgroundColor: scheme === "dark" ? "#151515" : "#fff" }}>
+              <AlertProvider>
+                <Stack.Navigator initialRouteName="AccountSelector" screenOptions={navigatorScreenOptions}>
+                  {screens.map((screen) => (
                   // @ts-expect-error : type not compatible, but it works fine.
-                  <Stack.Screen key={screen.name} {...screen}/>
-                ))}
-              </Stack.Navigator>
-            </AlertProvider>
+                    <Stack.Screen key={screen.name} {...screen}/>
+                  ))}
+                </Stack.Navigator>
+              </AlertProvider>
+            </View>
           </NavigationContainer>
         </GestureHandlerRootView>
       </SafeAreaProvider>

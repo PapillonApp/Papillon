@@ -77,6 +77,14 @@ export default (): ExpoConfig => ({
     ],
   },
   plugins: [
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "deploymentTarget": "15.6"
+        }
+      }
+    ],
     "./plugins/notifee-mod.js",
     [
       "expo-font",
@@ -127,19 +135,14 @@ export default (): ExpoConfig => ({
     [
       "react-native-share",
       {
-        ios: [
-          "fb",
-          "instagram",
-          "twitter",
-          "tiktoksharesdk",
-        ],
+        ios: ["fb", "instagram", "twitter", "tiktoksharesdk"],
         android: [
           "com.facebook.katana",
           "com.instagram.android",
           "com.twitter.android",
           "com.zhiliaoapp.musically",
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   ],
 });

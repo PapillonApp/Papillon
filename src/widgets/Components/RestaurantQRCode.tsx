@@ -32,7 +32,7 @@ const RestaurantQRCodeWidget = forwardRef(({
 
   useImperativeHandle(ref, () => ({
     handlePress: () => {
-      navigation.navigate("RestaurantQrCode", { QrCodes: qrcode ?? [] });
+      // navigation.navigate("RestaurantQrCode", { QrCodes: qrcode ?? [] });
     }
   }));
 

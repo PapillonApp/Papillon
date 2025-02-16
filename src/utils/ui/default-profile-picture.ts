@@ -1,6 +1,6 @@
 import { AccountService } from "@/stores/account/types";
 
-export const defaultProfilePicture = (service: AccountService, accountProvider: string) => {
+export const defaultProfilePicture = (service: AccountService, accountProvider?: string) => {
   switch (accountProvider) {
     case "Université de Rennes":
       return require("../../../assets/images/service_rennes1.png");
@@ -23,6 +23,14 @@ export const defaultProfilePicture = (service: AccountService, accountProvider: 
       return require("../../../assets/images/service_skolengo.png");
     case AccountService.Local:
       return require("../../../assets/images/service_unknown.png");
+    case AccountService.Izly:
+      return require("../../../assets/images/service_izly.png");
+    case AccountService.Turboself:
+      return require("../../../assets/images/service_turboself.png");
+    case AccountService.ARD:
+      return require("../../../assets/images/service_ard.png");
+    case AccountService.Alise:
+      return require("../../../assets/images/service_alise.jpg");
     case AccountService.PapillonMultiService:
       return require("../../../assets/images/multiservice.png");
   }

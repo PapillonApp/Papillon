@@ -194,11 +194,19 @@ export const saveIUTLanGrades = async (account: LocalAccount, periodName: string
 export const saveIUTLanPeriods = async (account: LocalAccount): Promise<any> => {
   const scodocData = account.identityProvider.rawData;
 
+  const semestresData = account.serviceData.semestres as any;
+
   const semestres = (scodocData["semestres"] as any).map((semestre: any) => {
+    const semestreName = "Semestre " + semestre.semestre_id;
+    const innerData = semestresData[semestreName] as any;
+
+    const startTime = innerData["relevé"].semestre.date_debut ? new Date(innerData["relevé"].semestre.date_debut).getTime() : 1609459200;
+    const endTime = innerData["relevé"].semestre.date_fin ? new Date(innerData["relevé"].semestre.date_fin).getTime() : 1622505600;
+
     return {
-      name: "Semestre " + semestre.semestre_id,
-      startTimestamp: 1609459200,
-      endTimestamp: 1622505600
+      name: semestreName,
+      startTimestamp: startTime,
+      endTimestamp: endTime,
     };
   });
 

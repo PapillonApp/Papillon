@@ -155,7 +155,7 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
           }}
         >
 
-          {account.service === AccountService.Pronote && message.ref.needToAcknowledge && (
+          {account.service === AccountService.Pronote && message.ref.needToAcknowledge ? (
             <NativeList inline
               style={{
                 marginBottom: 16,
@@ -191,6 +191,8 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                 </NativeText>
               </NativeItem>
             </NativeList>
+          ) : (
+            <View style={{ marginBottom: 16 }} />
           )}
 
 

@@ -25,7 +25,7 @@ const radiuses = [
   },
   {
     devices: "14 pro, 14 pro max, 15, 15 plus, 15 pro, 15 pro max",
-    radius: 55.0,
+    radius: 57.0,
   },
   {
     devices: "16, 16 pro, 16 pro max, 16 plus",

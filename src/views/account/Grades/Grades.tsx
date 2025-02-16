@@ -19,7 +19,6 @@ import { ChevronDown } from "lucide-react-native";
 import React from "react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Platform,
   RefreshControl,
   ScrollView,
@@ -35,6 +34,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GradesScodocUE from "./Atoms/GradesScodocUE";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
+import PapillonSpinner from "@/components/Global/PapillonSpinner";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -145,7 +145,21 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
       <PapillonModernHeader outsideNav={outsideNav}>
         <PapillonPicker
           delay={0}
-          data={periods.map((period) => period.name)}
+          data={periods.map((period) => {
+            return {
+              label: period.name,
+              subtitle:
+              new Date(period.startTimestamp).toLocaleDateString(
+                "fr-FR",
+                {
+                  month: "long",
+                  day: "numeric",
+                }
+              ),
+              onPress: () => setUserSelectedPeriod(period.name),
+              checked: period.name === selectedPeriod,
+            };
+          })}
           selected={userSelectedPeriod ?? selectedPeriod}
           onSelectionChange={setUserSelectedPeriod}
         >
@@ -195,7 +209,21 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
         }}
         scrollIndicatorInsets={{ top: outsideNav ? 64 : insets.top + 16 }}
       >
-        <Suspense fallback={<ActivityIndicator />}>
+        <Suspense fallback={
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24,
+            }}
+          >
+            <PapillonSpinner
+              size={42}
+              color={theme.colors.primary}
+            />
+          </View>
+        }>
           <View
             style={{
               padding: 16,

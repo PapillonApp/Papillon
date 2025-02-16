@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 
 import { animPapillon } from "@/utils/ui/animations";
@@ -8,7 +8,6 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { PressableScale } from "react-native-pressable-scale";
 import { useTheme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
 
 interface ModernHeaderProps {
   children: React.ReactNode,
@@ -34,24 +33,76 @@ export const PapillonModernHeader: React.FC<ModernHeaderProps> = (props) => {
   );
 };
 
+import { CustomFilterView } from "react-native-ios-visual-effect-view";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
+import { LinearGradient } from "expo-linear-gradient";
+
 const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav = false, height = 70, startLocation = 0.5, tint = null }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
     <>
-      <LinearGradient
-        colors={tint && tint !== "" ? [tint + "EE", tint + "00"] : [theme.colors.background + "EE", theme.colors.background + "00"]}
-        locations={[startLocation, 1]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: outsideNav ? height : insets.top + height,
-          zIndex: 90,
-        }}
-      />
+
+      {Platform.OS === "ios" && !isExpoGo() && parseInt(Platform.Version) >= 18 ? (
+        <CustomFilterView
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              width: Dimensions.get("window").width,
+              height: (outsideNav ? height : insets.top + height) - 10,
+              zIndex: 80,
+            }
+          ]}
+          // increase quality (usually: 0.25...1)
+          backgroundLayerSamplingSizeScale={2}
+
+          // set the filters to use,
+          // accepts an array of `LayerFilterConfig`
+          currentFilters={{
+            backgroundFilters: [
+            // filter 1 of 4
+            // create variable blur filter
+              {
+                filterName: "variadicBlur",
+                radius: 8,
+                shouldNormalizeEdges: true,
+
+                // define the intensity of blur via a gradient
+                gradientMask: {
+                  type: "axial",
+                  colors: [
+                    "rgba(0,0,0,1)", // max blur
+                    "rgba(0,0,0,0)", // no blur
+                  ],
+                  startPointPreset: "topCenter",
+                  endPointPreset: "bottomCenter",
+                  size: {
+                    height: (outsideNav ? height : insets.top + height) - 10,
+                    width: Dimensions.get("window").width,
+                  },
+                }
+              }
+            ]
+          }}
+        />
+      ) : (
+        <LinearGradient
+          colors={tint && tint !== "" ? [tint + "EE", tint + "00"] : [theme.colors.background + "EE", theme.colors.background + "00"]}
+          locations={[startLocation, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: outsideNav ? height : insets.top + height,
+            zIndex: 90,
+          }}
+        />
+      )}
 
       <Reanimated.View
         style={[{
@@ -105,7 +156,7 @@ const NativeModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav 
           justifyContent: "space-between",
           alignItems: "center",
           gap: 8,
-          backgroundColor: tint ? tint : theme.colors.text + "10",
+          backgroundColor: tint ? tint : theme.colors.card + "10",
           borderBottomColor: theme.colors.border,
           borderBottomWidth: 0.5,
         }]}

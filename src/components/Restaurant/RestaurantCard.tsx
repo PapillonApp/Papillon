@@ -35,7 +35,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ solde, repas }) => {
           opacity: 0.5,
         }}
       >
-        Solde de cantine
+        Solde
       </NativeText>
       <View
         style={{

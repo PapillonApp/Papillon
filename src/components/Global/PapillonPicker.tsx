@@ -7,10 +7,20 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Reanimated, { LinearTransition, type AnimatedStyle } from "react-native-reanimated";
 import { NativeText } from "./NativeComponents";
 
+import { ContextMenuButton } from "react-native-ios-context-menu";
+
 import { BlurView } from "expo-blur";
 import { Check } from "lucide-react-native";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
 
-export type PickerDataItem = string | { label: string, icon?: JSX.Element, onPress?: () => unknown, checked?: boolean };
+export type PickerDataItem = string | {
+  label: string,
+  subtitle?: string,
+  icon?: JSX.Element,
+  sfSymbol?: string,
+  onPress?: () => unknown,
+  checked?: boolean
+};
 
 type PickerData = PickerDataItem[];
 
@@ -46,6 +56,50 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
       }, delay ?? 0);
     }
   };
+
+  if (Platform.OS === "ios" && !isExpoGo()) {
+    return (
+      <ContextMenuButton
+        style={[styles.container, contentContainerStyle]}
+        onPressMenuItem={(event) => {
+          const actionKey = event.nativeEvent.actionKey;
+          const index = parseInt(actionKey.split("-")[1]);
+
+          const item = data[index];
+          if (item !== null) {
+            if (!item.onPress) {
+              handleSelectionChange(item);
+            } else {
+              item.onPress();
+            }
+          }
+        }}
+        menuConfig={{
+          menuTitle: "",
+          menuItems: data.filter((item) => item !== null).map((item, index) => {
+            return {
+              actionKey: "action-"+index.toString(),
+              actionTitle: typeof item === "string" ? item : item.label,
+              actionSubtitle: item.subtitle,
+              menuState: (item.checked || item === selected) ? "on" : "off",
+              icon: {
+                type: typeof item !== "string" ? "IMAGE_SYSTEM" : "IMAGE_SYSTEM",
+                imageValue: {
+                  systemName: typeof item !== "string" ? (item.sfSymbol ? item.sfSymbol : "") : "",
+                },
+              }
+            };
+          }),
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {}}
+        >
+          {children}
+        </TouchableOpacity>
+      </ContextMenuButton>
+    );
+  }
 
   return (
     <Reanimated.View layout={animated && animPapillon(LinearTransition)} style={[styles.container, contentContainerStyle]}>

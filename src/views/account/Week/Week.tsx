@@ -19,6 +19,7 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import type { Screen } from "@/router/helpers/types";
 import {Account} from "@/stores/account/types";
+import { fetchIcalData } from "@/services/local/ical";
 
 const LOCALES = {
   en: {
@@ -246,8 +247,8 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
       .map(event => ({
         id: event.id.toString(),
         title: event.title,
-        start: { dateTime: new Date(event.startTimestamp).toString() },
-        end: { dateTime: new Date(event.endTimestamp).toString() },
+        start: { dateTime: new Date(event.startTimestamp) },
+        end: { dateTime: new Date(event.endTimestamp) },
         event: event,
       }));
 
@@ -263,6 +264,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     requestAnimationFrame(async () => {
       try {
         await updateTimetableForWeekInCache(account as Account, weekNumber, force);
+        await fetchIcalData(account as Account, force);
       } finally {
         setIsLoading(false);
       }

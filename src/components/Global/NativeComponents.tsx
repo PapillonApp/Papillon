@@ -1,4 +1,4 @@
-import React, { type ReactNode, isValidElement, Children } from "react";
+import React, { type ReactNode, isValidElement, Children, useMemo } from "react";
 import { View, Text, Pressable, StyleSheet, type StyleProp, type ViewStyle, type TextStyle, Platform, TouchableNativeFeedback } from "react-native";
 import Reanimated, { type AnimatedProps, LayoutAnimation, LinearTransition } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
@@ -35,7 +35,24 @@ export const NativeList: React.FC<NativeListProps> = ({
   const theme = useTheme();
   const { colors } = theme;
 
-  const childrenWithProps = Children.map(children, (child, index) => {
+  const listStyle = useMemo(() => [
+    list_styles.list,
+    {
+      borderWidth: 0.5,
+      borderColor: colors.border,
+      backgroundColor: colors.card,
+      shadowColor: "black",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      overflow: "visible",
+      elevation: 1,
+    },
+    inline && { marginTop: 16 },
+    style,
+  ], [colors, inline, style]);
+
+  const childrenWithProps = useMemo(() => Children.map(children, (child, index) => {
     if (!isValidElement(child)) return null;
 
     const newChild = child && React.cloneElement(child as React.ReactElement<any>, {
@@ -51,26 +68,11 @@ export const NativeList: React.FC<NativeListProps> = ({
         {newChild}
       </Reanimated.View>
     );
-  });
+  }), [children, animated, layout]);
 
   return (
     <Reanimated.View
-      style={[
-        list_styles.list,
-        {
-          borderWidth: 0.5,
-          borderColor: colors.border,
-          backgroundColor: colors.card,
-          shadowColor: "black",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 2,
-          overflow: "visible",
-          elevation: 1,
-        },
-        inline && { marginTop: 16 },
-        style,
-      ]}
+      style={listStyle}
       layout={animated && (layout ?? animPapillon(LinearTransition))}
       entering={entering}
       exiting={exiting}
@@ -105,15 +107,11 @@ export const NativeListHeader: React.FC<NativeListHeaderProps> = ({ icon, label,
   const theme = useTheme();
   const { colors } = theme;
 
-  let newIcon = null;
-
-  if (icon) {
-    newIcon = React.cloneElement(icon as React.ReactElement<any>, {
-      size: 20,
-      strokeWidth: 2.2,
-      color: colors.text,
-    });
-  }
+  let newIcon = useMemo(() => icon && React.cloneElement(icon as React.ReactElement<any>, {
+    size: 20,
+    strokeWidth: 2.2,
+    color: colors.text,
+  }), [icon]);
 
   return (
     <Reanimated.View

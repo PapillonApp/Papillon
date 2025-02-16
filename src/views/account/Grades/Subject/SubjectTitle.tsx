@@ -63,7 +63,7 @@ const SubjectTitle = ({ navigation, subject, subjectData, allGrades }: SubjectTi
         <NativeText
           style={{
             flex: 1,
-            color: adjustColor(subjectData.color, -100),
+            color: adjustColor(subjectData.color, theme.dark ? 180 : -100),
           }}
           numberOfLines={1}
           variant="overtitle"
@@ -77,12 +77,12 @@ const SubjectTitle = ({ navigation, subject, subjectData, allGrades }: SubjectTi
               textAlign: "right",
               paddingHorizontal: 8,
               paddingVertical: 4,
-              borderColor: adjustColor(subjectData.color, -100) + "55",
+              borderColor: adjustColor(subjectData.color, theme.dark ? 180 : -100) + "55",
               borderWidth: 1,
               borderRadius: 8,
               borderCurve: "continuous",
               maxWidth: 120,
-              color: adjustColor(subjectData.color, -100),
+              color: adjustColor(subjectData.color, theme.dark ? 180 : -100),
             }}
             numberOfLines={1}
             variant="subtitle"
@@ -104,14 +104,14 @@ const SubjectTitle = ({ navigation, subject, subjectData, allGrades }: SubjectTi
             fontSize: 18,
             lineHeight: 20,
             fontFamily: "semibold",
-            color: adjustColor(subjectData.color, -100),
+            color: adjustColor(subjectData.color, theme.dark ? 180 : -100),
           }}
         >{typeof subject.average.average?.value === "number" ? subject.average.average.value.toFixed(2) : calculatedAverage !== -1 ? calculatedAverage.toFixed(2) : "N/A"}</NativeText>
         <NativeText
           style={{
             fontSize: 15,
             lineHeight: 15,
-            color: adjustColor(subjectData.color, -100),
+            color: adjustColor(subjectData.color, theme.dark ? 180 : -100),
             opacity: 0.6,
           }}
         >

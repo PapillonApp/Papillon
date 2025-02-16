@@ -7,6 +7,7 @@ import type { Grade } from "@/services/shared/Grade";
 import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { anim2Papillon } from "@/utils/ui/animations";
 import { adjustColor } from "@/utils/ui/colors";
+import { useTheme } from "@react-navigation/native";
 
 type GradeLatestItemProps = {
   grade: Grade;
@@ -21,6 +22,8 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
   navigation,
   allGrades,
 }) => {
+  const theme = useTheme();
+
   const [subjectData, setSubjectData] = useState({
     color: "#888888",
     pretty: "Matière inconnue",
@@ -74,7 +77,7 @@ const GradesLatestItem: React.FC<GradeLatestItemProps> = ({
           <NativeText
             style={{
               flex: 1,
-              color: adjustColor(subjectData.color, -100),
+              color: adjustColor(subjectData.color, theme.dark ? 180 : -100),
             }}
             numberOfLines={1}
             variant="overtitle"

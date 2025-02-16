@@ -3,7 +3,6 @@ import { useTimetableStore } from "@/stores/timetable";
 import { epochWNToPronoteWN, weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { error, log } from "@/utils/logger/logger";
-import { fetchIcalData } from "./local/ical";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import {getFeatureAccount} from "@/utils/multiservice";
 import { WeekFrequency } from "./shared/Timetable";
@@ -60,9 +59,6 @@ export async function updateTimetableForWeekInCache <T extends Account> (account
       throw new Error("Service not implemented.");
     }
   }
-
-  // Fetch iCal data
-  await fetchIcalData(account, force);
 }
 
 /**

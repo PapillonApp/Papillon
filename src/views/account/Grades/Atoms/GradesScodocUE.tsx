@@ -16,7 +16,8 @@ import Reanimated, { FadeIn, FadeInDown, FadeOut, FadeOutUp, LinearTransition } 
 
 const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: PrimaryAccount, navigation: any, selectedPeriod: string }) => {
   try {
-    const { colors } = useTheme();
+    const theme = useTheme();
+    const colors = theme.colors as any;
     const { showAlert } = useAlert();
 
     const data = account.serviceData.semestres as any;
@@ -144,7 +145,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                         alignItems: "center",
                         justifyContent: "center",
                         borderRadius: 8,
-                        borderColor: adjustColor(ue.color, -100) + "32",
+                        borderColor: adjustColor(ue.color, theme.dark ? 180 : -100) + "32",
                         borderWidth: 1,
                       }}
                       onPress={navigateToSubject}
@@ -152,7 +153,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                       <NativeText
                         variant="subtitle"
                         style={{
-                          color: adjustColor(ue.color, -100),
+                          color: adjustColor(ue.color, theme.dark ? 180 : -100),
                         }}
                       >
                         {ue.name}
@@ -224,7 +225,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                       variant="body"
                       numberOfLines={2}
                       style={{
-                        color: adjustColor(ue.color, -100)
+                        color: adjustColor(ue.color, theme.dark ? 180 : -100)
                       }}
                     >
                       {ue.titre}
