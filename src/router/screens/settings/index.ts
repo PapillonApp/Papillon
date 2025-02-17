@@ -28,6 +28,7 @@ import SettingsReactions from "@/views/settings/SettingsReactions";
 import TurboselfAccountSelector from "@/views/settings/ExternalAccount/TurboselfAccountSelector";
 import SettingsApparence from "@/views/settings/SettingsApparence";
 import ExternalAliseLogin from "@/views/settings/ExternalAccount/Alise";
+import SettingsWidgets from "@/views/settings/SettingsWidgets";
 import SettingsMultiService from "@/views/settings/SettingsMultiService";
 import SettingsMultiServiceSpace from "@/views/settings/SettingsMultiServiceSpace";
 
@@ -143,6 +144,9 @@ const settingsScreens = [
   }),
   createScreen("SettingsApparence", SettingsApparence, {
     headerTitle: "Mode d'affichage",
+  }),
+  createScreen("SettingsWidgets", SettingsWidgets, {
+    headerTitle: "Dynamic Widgets",
   })
 ] as const;
 

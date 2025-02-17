@@ -19,6 +19,7 @@ import type { RouteParameters } from "@/router/helpers/types";
 interface WidgetContainerProps {
   widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
   navigation?: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
+  isLarge: boolean
 }
 
 export interface WidgetProps {
@@ -28,7 +29,7 @@ export interface WidgetProps {
   hidden: boolean;
 }
 
-const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigation }) => {
+const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigation, isLarge }) => {
   const theme = useTheme();
   const { colors } = theme;
   const widgetRef = useRef<FunctionComponent<WidgetProps> | null>(null);
@@ -66,7 +67,8 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
           style={[
             styles.widget,
             {
-              backgroundColor: colors.card,
+              width: isLarge ? 275 : 200,
+              backgroundColor: colors.card
             }
           ]}
         >

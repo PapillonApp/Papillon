@@ -38,7 +38,14 @@ import {
   HelpCircle
 } from "lucide-react-native";
 
-import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import {
+  NativeIcon,
+  NativeIconGradient,
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText
+} from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { useTheme } from "@react-navigation/native";
@@ -51,6 +58,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
+import DynamicWidgetsIcon from "@/components/Settings/DynamicWidgetsIcon";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -124,6 +132,12 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
           color: "#136B00",
           label: "Réactions",
           onPress: () => navigation.navigate("SettingsReactions"),
+        },
+        {
+          icon: <NativeIconGradient icon={<DynamicWidgetsIcon />} colors={["#ba00f1", "#8900f5"]}/>,
+          color: "#a500f5",
+          label: "Dynamic Widgets",
+          onPress: () => navigation.navigate("SettingsWidgets"),
         },
       ],
     },

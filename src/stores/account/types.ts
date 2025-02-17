@@ -33,6 +33,16 @@ export interface PapillonIcalURL {
   lastRefreshed?: Date
 }
 
+export interface WidgetsSettings {
+  lastNews?: boolean
+  lastAttendanceEvent?: boolean
+  timetableChangements?: boolean
+  nextTest?: boolean
+  nextHomeworks?: boolean
+  maxEventAge?: number
+  deleteAfterRead?: boolean
+}
+
 export interface Personalization {
   color: PersonalizationColor
   profilePictureB64?: string,
@@ -54,7 +64,8 @@ export interface Personalization {
     grades?: boolean
     timetable?: boolean
     attendance?: boolean
-  }
+  },
+  widgets?: WidgetsSettings,
   icalURLs: PapillonIcalURL[],
   tabs: Tab[],
   subjects: {
