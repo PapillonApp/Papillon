@@ -9,17 +9,23 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 interface RedirectButtonProps {
   navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>
   redirect: keyof RouteParameters
+  date?: Date
 }
 
-const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect }) => {
+const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect, date }) => {
   const theme = useTheme();
   const { colors } = theme;
 
+  const handlePress = () => {
+    if (date) {
+      navigation.navigate(redirect, { date });
+    } else {
+      navigation.navigate(redirect);
+    }
+  };
+
   return (
-    <TouchableOpacity
-      // @ts-expect-error : on ne prend pas le state des routes en compte ici.
-      onPress={() => navigation.navigate(redirect)}
-    >
+    <TouchableOpacity onPress={handlePress}>
       <View
         style={{
           flexDirection: "row",

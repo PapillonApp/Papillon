@@ -224,12 +224,17 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
 
   const label = nextCourses.length > 0 ? getLabelForNextCourse(nextCourses[0].startTimestamp) : "";
 
+  const handleRedirect = () => {
+    const nextCourseDate = new Date(nextCourses[0].startTimestamp);
+    PapillonNavigation.current.navigate("Lessons", { date: nextCourseDate });
+  };
+
   return (
     <>
       <NativeListHeader
         animated
         label={label}
-        trailing={<RedirectButton navigation={PapillonNavigation.current} redirect="Lessons" />}
+        trailing={<RedirectButton navigation={PapillonNavigation.current} redirect="Lessons" onPress={handleRedirect} />}
       />
       <Reanimated.View layout={LinearTransition} style={{ marginTop: 24, gap: 10 }}>
         {nextCourses.map((course, index) => (

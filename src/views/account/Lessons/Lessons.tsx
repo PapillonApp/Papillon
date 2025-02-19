@@ -280,6 +280,12 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     }, 0);
   };
 
+  useEffect(() => {
+    if (route.params?.date) {
+      onDateSelect(new Date(route.params.date));
+    }
+  }, [route.params?.date]);
+
   return (
     <View style={{ flex: 1 }}>
       <PapillonModernHeader outsideNav={outsideNav}>
