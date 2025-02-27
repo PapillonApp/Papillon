@@ -7,6 +7,7 @@ node_modules/
 .expo/
 dist/
 web-build/
+android/app/release/
 
 # Native
 *.orig.*
@@ -35,9 +36,3 @@ yarn-error.*
 *.tsbuildinfo
 
 .idea/
-
-# Expo
-.expo
-dist/
-web-build/
-android/app/release/
