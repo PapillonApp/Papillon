@@ -63,7 +63,7 @@ const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) =
         <View style={styles.buttonContainer}>
           <View style={{ flex: 1 }} >
             <TouchableOpacity style={styles.configureButton}
-              onPress={() => PapillonNavigation.current.navigate("SettingStack")}
+              onPress={() => PapillonNavigation.current?.navigate("SettingStack")}
             >
               <NativeText style={styles.configureButtonText}>Configurer</NativeText>
               <ArrowUpRight color="white" />

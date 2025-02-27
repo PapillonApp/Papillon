@@ -52,7 +52,7 @@ const EventItem = memo<EventItemProps>(({ event }) => {
   const isWide = layout.width > 100;
 
   const handlePress = () => {
-    PapillonNavigation.current.navigate("LessonDocument", { lesson: event.event });
+    PapillonNavigation.current?.navigate("LessonDocument", { lesson: event.event });
   };
 
   const containerStyle = [
@@ -350,7 +350,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
                 onPress={() => {
                   setOpenedIcalModal(true);
                   setTimeout(() => {
-                    PapillonNavigation.current.navigate("LessonsImportIcal");
+                    PapillonNavigation.current?.navigate("LessonsImportIcal", {});
                   }, 100);
                 }}
               />

@@ -3,13 +3,13 @@ import { View, Text, StyleSheet } from "react-native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import type { Grade } from "@/services/shared/Grade";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
+import { NavigationContainerRef } from "@react-navigation/native";
 
 interface GradeItemProps {
   subject: { average: { subjectName: string }; grades: any[] };
   grade: Grade;
-  navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>;
+  navigation: NavigationContainerRef<RouteParameters> | null;
   index: number;
   totalItems: number;
   allGrades: Grade[];
@@ -43,7 +43,7 @@ const GradeItem: React.FC<GradeItemProps> = ({
   return (
     <NativeItem
       separator={index < totalItems - 1}
-      onPress={() => navigation.navigate("GradeDocument", { grade, allGrades })}
+      onPress={() => navigation?.navigate("GradeDocument", { grade, allGrades })}
       chevron={false}
       animated
       leading={

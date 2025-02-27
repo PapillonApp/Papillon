@@ -50,7 +50,7 @@ export const TimetableItem: React.FC<{
         style={[styles.detailsContainer, { backgroundColor: colors.card, borderColor: colors.text + "33" }]}
         underlayColor={colors.text + "11"}
         onPress={() => {
-          PapillonNavigation.current.navigate("LessonDocument", { lesson: item });
+          PapillonNavigation.current?.navigate("LessonDocument", { lesson: item });
 
         }}
       >
