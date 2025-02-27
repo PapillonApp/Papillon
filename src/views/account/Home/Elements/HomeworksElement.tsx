@@ -99,7 +99,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
             <MissingItem
               emoji="📚"
               title="Aucun devoir"
-              description="Tu n'as aucun devoir pour cette semaine et la semaine prochaine."
+              description="Tu n'as aucun devoir pour ces deux prochaines semaines."
             />
           </NativeItem>
         </NativeList>
