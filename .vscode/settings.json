@@ -10,5 +10,6 @@
   "conventionalCommits.scopes": [
     "android",
     "lint"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
