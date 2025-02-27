@@ -10,7 +10,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import HTMLView from "react-native-htmlview";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import { StyleSheet, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
 import { Homework, HomeworkReturnType } from "@/services/shared/Homework";
 import detectCategory from "@/utils/magic/categorizeHomeworks";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,6 +20,8 @@ import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import MaskedView from "@react-native-masked-view/masked-view";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useAlert } from "@/providers/AlertProvider";
 
 
 interface HomeworkItemProps {
@@ -38,6 +40,8 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [category, setCategory] = useState<string | null>(null);
   const [shouldShowMoreGradient, setShouldShowMoreGradient] = useState(false);
   const account = useCurrentAccount((store) => store.account!);
+  const { isOnline } = useOnlineStatus();
+  const { showAlert } = useAlert();
 
   const route = useRoute();
 
@@ -65,8 +69,30 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePress = useCallback(() => {
-    setIsLoading(true);
-    onDonePressHandler();
+    if (isOnline) {
+      setIsLoading(true);
+      onDonePressHandler();
+    } else {
+      if (Platform.OS === "ios") {
+        Alert.alert("Information", "Tu es hors ligne. Vérifie ta connexion Internet et réessaie", [
+          {
+            text: "OK",
+          },
+        ]);
+      } else {
+        showAlert({
+          title: "Information",
+          message: "Tu es hors ligne. Vérifie ta connexion Internet et réessaie",
+          actions: [
+            {
+              title: "OK",
+              onPress: () => {},
+              backgroundColor: theme.colors.card,
+            },
+          ],
+        });
+      }
+    }
   }, [onDonePressHandler]);
 
   const [mainLoaded, setMainLoaded] = useState(false);
