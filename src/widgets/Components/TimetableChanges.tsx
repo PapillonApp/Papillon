@@ -127,7 +127,7 @@ const LessonItem: React.FC<{
           <View style={{
             display: "flex",
             flexDirection: "row",
-            paddingRight: 15,
+            paddingRight: 5,
             gap: 5
           }}>
             <View style={{
@@ -137,7 +137,7 @@ const LessonItem: React.FC<{
               backgroundColor: subjectData.color + "33",
               borderRadius: 8,
               borderCurve: "continuous",
-              width: "50%",
+              maxWidth: "50%",
               alignSelf: "flex-start",
             }}>
               <Text
@@ -160,7 +160,8 @@ const LessonItem: React.FC<{
                 paddingHorizontal: 7,
                 paddingVertical: 3,
                 borderRadius: 8,
-                width: "50%",
+                minWidth: "50%",
+                flex: 1,
                 borderCurve: "continuous",
                 alignSelf: "flex-start",
               }}>
