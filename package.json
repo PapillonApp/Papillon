@@ -105,7 +105,7 @@
     "reanimated-color-picker": "^3.0.4",
     "scolengo-api": "^3.0.5",
     "text-encoding": "^0.7.0",
-    "turboself-api": "^2.1.7",
+    "turboself-api": "^2.1.8",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
