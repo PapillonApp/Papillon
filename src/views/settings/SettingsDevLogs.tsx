@@ -1,5 +1,5 @@
 import type { Screen } from "@/router/helpers/types";
-import { ActivityIndicator, Alert, Platform, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Alert, Platform, ScrollView, TouchableOpacity } from "react-native";
 import {
   NativeIcon,
   NativeItem,
@@ -36,6 +36,7 @@ import { useTheme } from "@react-navigation/native";
 import { useAlert } from "@/providers/AlertProvider";
 import MissingItem from "@/components/Global/MissingItem";
 import formatDate from "@/utils/format/format_date_complets";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -65,7 +66,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
         paddingTop: 0,
       }}
     >
-      <TextInput
+      <ResponsiveTextInput
         placeholder={"Rechercher"}
         value={searchTerms}
         onChangeText={setSearchTerms}

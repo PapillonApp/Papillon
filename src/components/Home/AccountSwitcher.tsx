@@ -89,6 +89,7 @@ const AccountSwitcher: React.FC<{
         tint={theme.dark ? "dark" : "light"}
         experimentalBlurMethod="dimezisBlurView"
         style={{
+          backgroundColor: colors.primary + "85",
           paddingHorizontal: 2,
           paddingVertical: 0,
           alignSelf: "flex-start",

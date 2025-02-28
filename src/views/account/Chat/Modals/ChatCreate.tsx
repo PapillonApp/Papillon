@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,
-  TextInput,
   View,
   StyleSheet,
   ActivityIndicator,
@@ -28,6 +27,7 @@ import InitialIndicator from "@/components/News/InitialIndicator";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
   const theme = useTheme();
@@ -76,7 +76,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
         <NativeList>
           <NativeItem chevron={false} icon={<Tag />}>
             <NativeText variant="subtitle">Sujet</NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={[styles.textInput, { color: theme.colors.text }]}
               placeholder="Sujet de ton message"
               placeholderTextColor={theme.colors.text + "80"}
@@ -86,7 +86,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
           </NativeItem>
           <NativeItem chevron={false} icon={<PenTool />}>
             <NativeText variant="subtitle">Contenu</NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",

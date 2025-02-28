@@ -18,6 +18,7 @@ import uuid from "@/utils/uuid-v4";
 import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
 import {defaultTabs} from "@/consts/DefaultTabs";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) => {
   const theme = useTheme();
@@ -265,7 +266,7 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
                     <NativeText>
                       Titre de l'espace
                     </NativeText>
-                    <TextInput
+                    <ResponsiveTextInput
                       style={{
                         fontSize: 16,
                         fontFamily: "semibold",

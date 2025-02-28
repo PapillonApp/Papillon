@@ -170,7 +170,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
       <View style={styles.buttons}>
         <View
           style={{
-            flexDirection: "row",
+            // flexDirection: "row",
             gap: 12,
             alignItems: "center",
             marginBottom: 9,
@@ -184,7 +184,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
           />
           <NativeText
             style={{
-              flex: 1,
+              flex: 0,
               color: theme.colors.text,
               opacity: 0.5,
               fontSize: 13,

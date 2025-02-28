@@ -7,7 +7,6 @@ import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/ho
 import {
   View,
   FlatList,
-  Dimensions,
   ScrollView,
   RefreshControl,
   StyleSheet,
@@ -33,7 +32,7 @@ import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import {Homework} from "@/services/shared/Homework";
-import {Account, AccountService} from "@/stores/account/types";
+import { AccountService } from "@/stores/account/types";
 import {Screen} from "@/router/helpers/types";
 import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
 import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
@@ -41,17 +40,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
+import useScreenDimensions from "@/hooks/useScreenDimensions";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -62,11 +52,22 @@ const formatDate = (date: string | number | Date): string => {
 
 const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const flatListRef: React.MutableRefObject<FlatList> = useRef(null) as any as React.MutableRefObject<FlatList>;
-  const { width } = Dimensions.get("window");
-  const finalWidth = width - (width > 600 ? (
-    320 > width * 0.35 ? width * 0.35 :
-      320
-  ) : 0);
+
+  const { width, height, isTablet } = useScreenDimensions();
+
+  const finalWidth = isTablet
+    ? width - Math.min(320, width * 0.35)
+    : width;
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index: data.indexOf(selectedWeek),
+        animated: false,
+      });
+    }
+  }, [width, height]);
+
   const insets = useSafeAreaInsets();
   const { playHaptics } = useSoundHapticsWrapper();
 
@@ -110,7 +111,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     length: finalWidth,
     offset: finalWidth * index,
     index,
-  }), [width]);
+  }), [finalWidth]);
 
   const keyExtractor = useCallback((item: any) => item.toString(), []);
 
@@ -333,7 +334,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
     const firstWeek = data[0];
     const newWeeks = Array.from({ length: 50 }, (_, i) => firstWeek - 50 + i);
     setData(prevData => [...newWeeks, ...prevData]);
-    flatListRef.current?.scrollToIndex({ index: 50, animated: false });
+    // flatListRef.current?.scrollToIndex({ index: 50, animated: false });
   };
 
   const onScroll: ScrollViewProps["onScroll"] = useCallback(({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -359,7 +360,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       const distance = Math.abs(index - currentIndex);
       const animated = distance <= 10; // Animate if the distance is 10 weeks or less
 
-      flatListRef.current?.scrollToIndex({ index, animated });
+      flatListRef.current.scrollToIndex({ index, animated });
       setSelectedWeek(weekNumber);
     } else {
       // If the week is not in the current data, update the data and scroll
@@ -368,9 +369,9 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
       // Use a timeout to ensure the FlatList has updated before scrolling
       setTimeout(() => {
-        flatListRef.current?.scrollToIndex({ index: 50, animated: false });
+        flatListRef.current.scrollToIndex({ index: 50, animated: false });
         setSelectedWeek(weekNumber);
-      }, 0);
+      }, 100);
     }
   }, [data, finalWidth]);
 
@@ -643,7 +644,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             entering={FadeIn.duration(250).delay(20)}
             exiting={FadeOut.duration(100)}
           >
-            <TextInput
+            <ResponsiveTextInput
               placeholder={
                 (hideDone && !searchHasFocus) ? "Non terminé" :
                   "Rechercher"

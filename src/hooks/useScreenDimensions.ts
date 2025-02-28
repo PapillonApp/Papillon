@@ -29,6 +29,6 @@ export default function useScreenDimensions () {
   return {
     width: screenDimensions.width,
     height: screenDimensions.height,
-    isTablet: (screenDimensions.width / screenDimensions.height) * 10 >= 6.9,
+    isTablet: screenDimensions.width > screenDimensions.height,
   };
 }

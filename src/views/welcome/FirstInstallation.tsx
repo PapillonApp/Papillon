@@ -34,6 +34,7 @@ const FirstInstallation: Screen<"FirstInstallation"> = ({ navigation }) => {
         message="Bienvenue sur Papillon !"
         numberOfLines={1}
         width={220}
+        offsetTop={"15%"}
       />
 
       <View

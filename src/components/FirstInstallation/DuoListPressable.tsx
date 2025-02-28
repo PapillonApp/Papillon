@@ -6,6 +6,7 @@ import * as Haptics from "expo-haptics";
 
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const DuoListPressable: React.FC<{
   children?: JSX.Element,
@@ -26,6 +27,8 @@ const DuoListPressable: React.FC<{
 }) => {
   const theme = useTheme();
   const { colors } = theme;
+
+  const { isTablet } = useScreenDimensions();
 
   const [pressed, setPressed] = useState(false);
   const scale = useSharedValue(1);
@@ -56,11 +59,11 @@ const DuoListPressable: React.FC<{
       style={{
         transform: [{ scale: scale }],
         opacity: opacity,
-        width: "100%",
       }}
     >
       <Pressable
         style={[
+          isTablet ? { width: "50%" } : { width: "100%" },
           styles.pressable,
           enabled ? {
             borderColor: colors.primary,
@@ -87,18 +90,21 @@ const DuoListPressable: React.FC<{
         <View
           style={{
             flex: 1,
+            justifyContent: "center",
           }}
         >
           {children}
 
           {text && (
-            <Text style={[
-              styles.text,
-              enabled && styles.text_enabled,
-              enabled ? { color: colors.primary } : { color: colors.text + "88" },
-            ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
+            <Text
+              style={[
+                styles.text,
+                enabled && styles.text_enabled,
+                enabled ? { color: colors.primary } : { color: colors.text + "88" },
+                subtext ? { marginBottom: 2 } : { marginTop: 0 },
+              ]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
               {text}
             </Text>
@@ -130,7 +136,6 @@ const DuoListPressable: React.FC<{
 
 const styles = StyleSheet.create({
   pressable: {
-    width: "100%",
     borderWidth: 1.5,
     paddingHorizontal: 18,
     paddingVertical: 12,
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     flexDirection: "row",
     gap: 18,
-    alignItems: "center",
+    alignSelf: "center",
   },
 
   text: {

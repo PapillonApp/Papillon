@@ -5,7 +5,7 @@ import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
 import { Calendar, Info, QrCode, X } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Alert, Modal, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import * as Clipboard from "expo-clipboard";
@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
 import {Screen} from "@/router/helpers/types";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const ical = require("cal-parser");
 
@@ -184,7 +185,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
             </TouchableOpacity>
           }
         >
-          <TextInput
+          <ResponsiveTextInput
             value={url}
             onChangeText={setUrl}
             placeholder="Adresse URL du calendrier"
