@@ -37,6 +37,7 @@ import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { TabLocation } from "pawnote";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
+import { timestampToString } from "@/utils/format/DateHelper";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -243,7 +244,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
                     <NativeText variant={"subtitle"}>{getChatCreator(chat)}</NativeText>
                   </View>
                   <NativeText>{chat.subject || "Aucun sujet"}</NativeText>
-                  <NativeText variant={"subtitle"}>Il y a {Math.floor((new Date().getTime() - new Date(chat.date).getTime()) / (1000 * 60 * 60 * 24))} jours</NativeText>
+                  <NativeText variant={"subtitle"}>{timestampToString(chat.date.getTime())}</NativeText>
                 </NativeItem>
               ))}
             </NativeList>
