@@ -30,6 +30,7 @@ yarn-error.*
 
 # local env files
 .env*.local
+.idx/secrets.nix
 
 # typescript
 *.tsbuildinfo

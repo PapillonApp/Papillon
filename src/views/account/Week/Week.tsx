@@ -291,15 +291,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
   }, [account?.personalization?.icalURLs]);
 
   return (
-    <View style={{ flex: 1 }}>
-      {!outsideNav && (
-        <View
-          style={{
-            height: insets.top,
-          }}
-        />
-      )}
-
+    <View style={{ flex: 1, marginTop: insets.top }}>
       {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
         <View
           style={{
@@ -371,7 +363,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
           overflow: "visible",
           position: "absolute",
           left: 12,
-          top: !outsideNav ? (insets.top + 3) : 6,
+          top: 3,
         }}
       >
         <PapillonPicker

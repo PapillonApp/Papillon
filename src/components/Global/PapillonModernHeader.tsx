@@ -44,7 +44,7 @@ const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, out
   const enableBlur = Platform.OS === "ios" && !isExpoGo() && parseInt(Platform.Version) >= 18;
 
   return (
-    <>
+    <View style={{marginTop: (Platform.OS === "android" && outsideNav) ? insets.top : undefined}}>
       {enableBlur ? (
         <CustomFilterView
           style={[
@@ -139,7 +139,7 @@ const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, out
           }}
         />
       }
-    </>
+    </View>
   );
 };
 
@@ -159,7 +159,7 @@ const NativeModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav 
           justifyContent: "space-between",
           alignItems: "center",
           gap: 8,
-          backgroundColor: tint ? tint : theme.colors.card + "10",
+          backgroundColor: tint ?? theme.colors.card + "10",
           borderBottomColor: theme.colors.border,
           borderBottomWidth: 0.5,
         }]}

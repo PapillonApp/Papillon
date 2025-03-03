@@ -9,8 +9,7 @@ export const navigatorScreenOptions: NativeStackNavigationOptions = {
   headerTitleStyle: {
     fontFamily: "semibold",
   },
-  headerBackTitle: "Retour",
-  animation: Platform.OS === "android" ? "default" : "default",
+  headerBackTitle: "Retour"
 };
 
 const createScreen = <ScreenName extends keyof RouteParameters>(
@@ -21,10 +20,15 @@ const createScreen = <ScreenName extends keyof RouteParameters>(
     tabBarLottie?: any
     tabEnabled?: boolean
   }) = {}
-) => ({
-  name,
-  component,
-  options
-});
+) => {
+  if (!options.animation && Platform.OS === "android") {
+    options.animation = options.presentation === "modal" ? "slide_from_bottom" : "slide_from_right";
+  }
+  return {
+    name,
+    component,
+    options
+  };
+};
 
 export default createScreen;
