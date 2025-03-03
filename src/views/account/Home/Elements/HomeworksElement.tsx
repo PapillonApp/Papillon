@@ -127,18 +127,19 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
             }}
           />
         ))}
-        {new Date().getDay() >= 2 && hwSemaineProchaine.map((hw, index) => (
-          <HomeworkItem
-            homework={hw}
-            key={index}
-            index={index}
-            navigation={navigation}
-            total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}
-            onDonePressHandler={() => {
-              handleDonePress(hw);
-            }}
-          />
-        ))}
+        {(hwSemaineActuelle.length === 0 || new Date().getDay() >= 2) &&
+          hwSemaineProchaine.map((hw, index) => (
+            <HomeworkItem
+              homework={hw}
+              key={index}
+              index={index}
+              navigation={navigation}
+              total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}
+              onDonePressHandler={() => {
+                handleDonePress(hw);
+              }}
+            />
+          ))}
       </NativeList>
     </>
   );
