@@ -1,25 +1,39 @@
 import { useTheme } from "@react-navigation/native";
 import { Check } from "lucide-react-native";
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import { Modal, View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
+import { Modal, View, Text, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
-import { PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
+import Reanimated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
+import {
+  PapillonContextEnter,
+  PapillonContextExit,
+} from "@/utils/ui/animations";
 import { BlurView } from "expo-blur";
 
 type AlertAction = {
   title: string;
   onPress?: () => void;
-  icon?: React.ReactElement;
+  icon: React.ReactElement;
   primary?: boolean;
   danger?: boolean;
   backgroundColor?: string;
+  delayDisable?: number;
 };
 
 export type Alert = {
   title: string;
   message: string;
-  icon? : React.ReactElement | null;
+  icon: React.ReactElement;
   actions?: AlertAction[];
 };
 
@@ -42,273 +56,256 @@ type AlertProviderProps = {
 };
 
 const AlertProvider = ({ children }: AlertProviderProps) => {
-  const [alert, setAlert] = useState<Alert>({ title: "", message: "", icon: null, actions: [] });
+  const [alert, setAlert] = useState<Alert | null>(null);
   const [visible, setVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [delays, setDelays] = useState<{ [key: string]: number }>({});
 
-  const { colors } = useTheme();
+  const { dark, colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const showAlert = ({
-    title = "",
-    message = "",
-    icon = null,
+    title,
+    message,
+    icon,
     actions = [
       {
         title: "Compris !",
-        onPress: () => hideAlert(),
+        onPress: hideAlert,
         icon: <Check />,
         primary: true,
       },
     ],
-  }: Partial<Alert>) => {
-    actions.forEach(action => {
-      let mainColor = colors.text;
+  }: Alert) => {
+    setAlert({ title, message, icon, actions });
+    setVisible(true);
 
-      if (action.primary) {
-        mainColor = "#ffffff";
-      }
-
-      // for each action icon, create a new component and change color to primary
-      if (action.icon) {
-        action.icon = React.cloneElement(action.icon, { color: mainColor, size: 24 });
+    const initialDelays: { [key: string]: number } = {};
+    actions.forEach((action) => {
+      if (action.delayDisable) {
+        initialDelays[action.title] = action.delayDisable;
       } else {
-        action.icon = React.cloneElement(<Check />, { color: mainColor, size: 24 });
-      }
-
-      // if no onPress function is provided, hide the alert
-      if (!action.onPress) {
-        action.onPress = () => hideAlert();
-      }
-
-      // if action has no primary prop, set it to false
-      if (action.primary === undefined) {
-        action.primary = false;
+        initialDelays[action.title] = 0;
       }
     });
-
-    setVisible(true);
-    setModalVisible(true);
-
-    setAlert({ title, message, icon, actions });
+    setDelays(initialDelays);
   };
 
-  const hideAlert = () => {
+  function hideAlert () {
+    setAlert(null);
     setVisible(false);
-    setAlert({ title: "", message: "", actions: [] });
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDelays((prevDelays) => {
+        const newDelays = { ...prevDelays };
+        Object.keys(newDelays).forEach((key) => {
+          if (newDelays[key] > 0) {
+            newDelays[key] -= 1;
+          }
+        });
+        return newDelays;
+      });
+    }, 1000);
 
     setTimeout(() => {
-      setModalVisible(false);
-    }, 100);
-  };
-
-  const finalIcon = alert.icon ?
-    React.cloneElement(alert.icon, { color: colors.text, size: 24 }) :
-    null;
+      return () => clearInterval(interval);
+    }, 1000);
+  }, []);
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
       {children}
 
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={hideAlert}
-        animationType="none"
-      >
-        {visible && (
+      {visible && alert && (
+        <Modal transparent onRequestClose={hideAlert} animationType="none">
           <Reanimated.View
             entering={FadeIn.duration(150)}
             exiting={FadeOut.duration(150)}
-            style={{
-              zIndex: -199,
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-            pointerEvents={"none"}
+            style={styles.overlay}
           >
-            <BlurView
-              intensity={10}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-              }}
-            />
+            <BlurView intensity={10} style={styles.blur} />
           </Reanimated.View>
-        )}
 
-        <Reanimated.View
-          style={styles.modalContainer}
-          layout={LinearTransition}
-        >
-          <Pressable
-            style={{ flex: 1, width: "100%" }}
-            onPress={hideAlert}
-            onTouchEnd={hideAlert}
-          />
-
-          {visible && (
+          <Reanimated.View
+            style={styles.modalContainer}
+            layout={LinearTransition}
+          >
+            <Pressable style={styles.pressable} onPress={hideAlert} />
             <Reanimated.View
               style={[
                 styles.alertBox,
                 {
-                  backgroundColor: colors.card,
+                  backgroundColor: dark ? "#333" : colors.card,
                   marginBottom: 10 + insets.bottom,
-                  width: Dimensions.get("window").width - 20,
-                  maxWidth: 600,
-                  transformOrigin: "bottom",
-                }
+                },
               ]}
               entering={PapillonContextEnter}
               exiting={PapillonContextExit}
             >
               <View style={styles.contentContainer}>
-                <View style={[styles.titleContainer]}>
-                  {finalIcon}
+                <View style={styles.titleContainer}>
+                  {alert.icon &&
+                    React.cloneElement(alert.icon, {
+                      color: colors.text,
+                      size: 24,
+                    })}
                   <Text style={[styles.title, { color: colors.text }]}>
                     {alert.title}
                   </Text>
                 </View>
-
                 <Text style={[styles.message, { color: colors.text }]}>
                   {alert.message}
                 </Text>
               </View>
 
-              <View style={[styles.buttons, { borderColor: colors.border, backgroundColor: colors.text + "0a" }]}>
-                {(alert.actions ?? []).map(({ title, onPress, icon, primary, danger, backgroundColor }) => (
-                  <Pressable
-                    key={title}
-                    onPress={() => {
-                      onPress?.();
-                      hideAlert();
-                    }}
-                    style={({ pressed }) => [
-                      styles.button,
-                      primary && styles.primaryButton,
-                      primary && {
-                        backgroundColor: backgroundColor ? backgroundColor : colors.primary,
-                      },
-                      danger && {
-                        backgroundColor: "#b62000",
-                      },
-                      {
-                        opacity: primary ? (pressed ? 0.6 : 1) : (pressed ? 0.3 : 0.6),
-                      }
-                    ]}
-                  >
-                    {icon ? icon : null}
-
-                    <Text style={[styles.buttonText, { color: colors.text }, primary && styles.primaryButtonText]}>
-                      {title}
-                    </Text>
-                  </Pressable>
-                ))}
+              <View
+                style={[
+                  styles.buttons,
+                  {
+                    borderColor: colors.border,
+                    flexDirection:
+                      (alert.actions ?? []).length > 2 ? "column" : "row",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                {alert.actions?.map(
+                  ({
+                    title,
+                    onPress,
+                    icon,
+                    primary,
+                    danger,
+                    backgroundColor,
+                  }) => (
+                    <Pressable
+                      key={title}
+                      onPress={() => {
+                        hideAlert();
+                        onPress?.();
+                      }}
+                      disabled={delays[title] > 0}
+                      style={({ pressed }) => [
+                        styles.button,
+                        {
+                          width:
+                            (alert.actions ?? []).length > 2 ? "100%" : "auto",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          opacity: pressed
+                            ? 0.6
+                            : delays[title] === 0
+                              ? 1
+                              : 0.5,
+                        },
+                        primary
+                          ? {
+                            backgroundColor:
+                                backgroundColor ?? colors.primary,
+                          }
+                          : danger
+                            ? { backgroundColor: "#FC1E0D" }
+                            : { borderColor: "#CCC", borderWidth: 1 },
+                      ]}
+                    >
+                      {icon &&
+                        React.cloneElement(icon, {
+                          color: primary || danger ? "#ffffff" : colors.text,
+                          size: 24,
+                        })}
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          { color: danger ? "#ffffff" : colors.text },
+                          primary && styles.primaryButtonText,
+                        ]}
+                      >
+                        {title}
+                        {delays[title] !== undefined && delays[title] > 0
+                          ? ` (${delays[title]})`
+                          : ""}
+                      </Text>
+                    </Pressable>
+                  )
+                )}
               </View>
             </Reanimated.View>
-          )}
-        </Reanimated.View>
-      </Modal>
+          </Reanimated.View>
+        </Modal>
+      )}
     </AlertContext.Provider>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  blur: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0)",
   },
-
+  pressable: {
+    flex: 1,
+    width: "100%",
+  },
   alertBox: {
     borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 6,
+    padding: 20,
+    paddingBottom: 5,
+    maxWidth: "90%",
   },
-
   contentContainer: {
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    paddingBottom: 0,
     gap: 6,
   },
-
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
-
   title: {
     fontSize: 18,
-    lineHeight: 20,
     fontFamily: "semibold",
   },
-
   message: {
     fontSize: 16,
-    lineHeight: 21,
     fontFamily: "medium",
     opacity: 0.6,
   },
-
   buttons: {
     flexDirection: "row",
     justifyContent: "flex-end",
     paddingVertical: 12,
-    paddingHorizontal: 14,
+    paddingHorizontal: 5,
     marginTop: 16,
     paddingTop: 10,
     gap: 10,
     borderTopWidth: 1,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
   },
-
   button: {
     flexDirection: "row",
-    gap: 8,
+    gap: 5,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 300,
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    opacity: 0.6,
+    paddingVertical: 10,
+    width: "100%",
+    paddingHorizontal: 14,
   },
-
   buttonText: {
     fontSize: 16,
-    lineHeight: 20,
     fontFamily: "medium",
   },
-
-  primaryButton: {
-    opacity: 1,
-    paddingHorizontal: 14,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-
   primaryButtonText: {
     color: "#ffffff",
     fontFamily: "semibold",

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { View, Switch, Platform, Alert } from "react-native";
+import { View, Switch } from "react-native";
 import {
   NativeItem,
   NativeList,
@@ -16,6 +16,8 @@ import {
   Equal,
   SendToBack,
   Gift,
+  Undo2,
+  BadgeInfo,
 } from "lucide-react-native";
 import {
   NestableDraggableFlatList,
@@ -438,25 +440,18 @@ const SettingsTabs = () => {
                                 checked={item.enabled}
                                 onPress={() => {
                                   if (!item.enabled && tabs.filter(t => t.enabled).length === 5) {
-                                    if (Platform.OS === "ios") {
-                                      Alert.alert("Information", "Tu ne peux pas ajouter plus de 5 onglets sur la page d'accueil.", [
+                                    showAlert({
+                                      title: "Information",
+                                      message: "Tu ne peux pas ajouter plus de 5 onglets sur la page d'accueil.",
+                                      icon: <BadgeInfo />,
+                                      actions: [
                                         {
-                                          text: "OK",
+                                          title: "OK",
+                                          primary: true,
+                                          icon: <Undo2 />,
                                         },
-                                      ]);
-                                    } else {
-                                      showAlert({
-                                        title: "Information",
-                                        message: "Tu ne peux pas ajouter plus de 5 onglets sur la page d'accueil.",
-                                        actions: [
-                                          {
-                                            title: "OK",
-                                            onPress: () => {},
-                                            backgroundColor: theme.colors.card,
-                                          },
-                                        ],
-                                      });
-                                    }
+                                      ],
+                                    });
                                   }
                                   toggleTab(item.tab);
                                 }}

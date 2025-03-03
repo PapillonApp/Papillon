@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Text, View, Linking, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { Text, View, Linking, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { CameraView, useCameraPermissions, PermissionStatus } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { Check, X } from "lucide-react-native";
+import { BadgeX, CameraOff, Check, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 import { Screen } from "@/router/helpers/types";
@@ -12,7 +12,8 @@ import { Reel } from "@/services/shared/Reel";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import Constants from "expo-constants";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
+import { useAlert } from "@/providers/AlertProvider";
 
 // Types
 interface SubjectData {
@@ -94,6 +95,8 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
     }
   };
 
+  const { showAlert } = useAlert();
+
   // Setup permissions
   useEffect(() => {
     setupPermissions();
@@ -106,8 +109,7 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
 
   // Volume button to take picture
   useEffect(() => {
-    if (Constants.appOwnership === "expo") return;
-
+    if (isExpoGo()) return;
   }, []);
 
   useLayoutEffect(() => {
@@ -125,7 +127,11 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
 
   const handleCapture = async () => {
     if (cameraPermission?.status !== PermissionStatus.GRANTED) {
-      Alert.alert("Permission Error", "Camera permission not granted");
+      showAlert({
+        title: "Accès à la caméra",
+        message: "L'autorisation d'accès à la caméra n'a pas été acceptée.",
+        icon: <CameraOff />,
+      });
       return;
     }
 
@@ -154,14 +160,22 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
           navigation.goBack();
         } catch (error) {
           console.error("Failed to save image:", error);
-          Alert.alert("Erreur", "Erreur lors de l'enregistrement de l'image");
+          showAlert({
+            title: "Erreur",
+            message: "Erreur lors de l'enregistrement de l'image",
+            icon: <BadgeX />
+          });
         } finally {
           setIsLoading(false);
         }
       }, 1000);
     } catch (error) {
       console.error("Failed to take picture:", error);
-      Alert.alert("Error", "Failed to capture image");
+      showAlert({
+        title: "Erreur",
+        message: "Impossible de capturer l'image.",
+        icon: <BadgeX />,
+      });
     }
   };
 

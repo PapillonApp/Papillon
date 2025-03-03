@@ -4,16 +4,19 @@ import { DiscoveryDocument } from "expo-auth-session";
 import { SkolengoAccount, AccountService } from "@/stores/account/types";
 import axios, { type AxiosResponse } from "axios";
 import { decode as b64decode, encode as b64encode} from "js-base64";
-import { Alert } from "react-native";
 import { decode as htmlDecode } from "html-entities";
 import { useCurrentAccount } from "@/stores/account";
 import defaultSkolengoPersonalization from "./default-personalization";
 import { User } from "scolengo-api/types/models/Common";
+import { useAlert } from "@/providers/AlertProvider";
+import { BadgeX } from "lucide-react-native";
 
 const getSkolengoAxiosInstance = () => {
   const axioss = axios.create({
     baseURL: BASE_URL
   });
+
+  const { showAlert } = useAlert();
 
   axioss.interceptors.response.use((r: AxiosResponse) => r, (error)=>{
     if(error.response?.data?.errors?.find((e:any)=>e.title.includes("PRONOTE_RESOURCES"))) return Promise.resolve(error);
@@ -29,10 +32,11 @@ const getSkolengoAxiosInstance = () => {
       // if unknown error, don't display the error message
       if(!e["title"] || e["title"] === "FORBIDDEN") return;
 
-      Alert.alert(
-        "Skolengo - " + (e["title"].toString() || "Erreur"),
-        htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue")+"\n\nSi cette erreur persiste, contacte les équipes de Papillon.",
-      );
+      showAlert({
+        title: "Skolengo - " + (e["title"].toString() || "Erreur"),
+        message: htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue")+"\n\nSi cette erreur persiste, contacte les équipes de Papillon.",
+        icon: <BadgeX />,
+      });
     });
     return Promise.reject(error);
   });

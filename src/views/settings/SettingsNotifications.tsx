@@ -9,6 +9,7 @@ import NotificationContainerCard from "@/components/Settings/NotificationContain
 import { requestNotificationPermission } from "@/background/Notifications";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useCurrentAccount } from "@/stores/account";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
   const theme = useTheme();
@@ -21,6 +22,7 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
 
   // Global state
   const [enabled, setEnabled] = useState(notifications?.enabled || false);
+  const { showAlert } = useAlert();
 
   // Animation states
   const opacity = useSharedValue(0);
@@ -40,7 +42,7 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
 
   const askEnabled = async (newValue: boolean) => {
     if (isExpoGo()) {
-      alertExpoGo();
+      alertExpoGo(showAlert);
       return;
     }
 

@@ -1,6 +1,6 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
-import { KeyRound, LockKeyhole } from "lucide-react-native";
+import { BadgeX, KeyRound, LockKeyhole, PlugZap } from "lucide-react-native";
 import pronote from "pawnote";
 import {info, warn} from "@/utils/logger/logger";
 import type { Alert } from "@/providers/AlertProvider";
@@ -38,6 +38,7 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
       showAlert({
         title: "Erreur",
         message: "Impossible de récupérer les informations de l'instance PRONOTE.",
+        icon: <BadgeX />,
       });
 
       return;
@@ -60,6 +61,7 @@ const determinateAuthenticationView = async <ScreenName extends keyof RouteParam
     showAlert({
       title: `L'instance ${instance.name} nécessite une connexion ENT.`,
       message: "Tu seras redirigé vers le portail de connexion de ton ENT.",
+      icon: <PlugZap />,
       actions: [
         {
           title: "Identifiants",

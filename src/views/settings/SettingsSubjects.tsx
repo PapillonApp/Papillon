@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback, useLayoutEffect, useMemo } from "react";
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Text,
@@ -17,7 +16,7 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { useCurrentAccount } from "@/stores/account";
 import MissingItem from "@/components/Global/MissingItem";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { Trash2, X } from "lucide-react-native";
+import { BadgeHelp, BadgeX, Trash2, X } from "lucide-react-native";
 import ColorIndicator from "@/components/Lessons/ColorIndicator";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
@@ -138,6 +137,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
             showAlert({
               title: "Réinitialiser les matières",
               message: "Tu es sûr de vouloir réinitialiser toutes les matières ?",
+              icon: <BadgeHelp />,
               actions: [
                 {
                   title: "Annuler",
@@ -148,6 +148,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                   icon: <Trash2 />,
                   primary: true,
                   danger: true,
+                  delayDisable: 3,
                   onPress: () => {
                     setSubjects([]);
                     setLocalSubjects([]);
@@ -233,7 +234,11 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                   handleSubjectTitleBlur(); // Update subject title when closing the bottom sheet
                 }
               } else {
-                Alert.alert("Aucun émoji défini", "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page.");
+                showAlert({
+                  title: "Aucun émoji défini",
+                  message: "Tu dois définir un émoji pour cette matière avant de pouvoir quitter cette page.",
+                  icon: <BadgeX />,
+                });
                 emojiInput.current?.focus();
               }
             }}

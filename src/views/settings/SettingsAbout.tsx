@@ -11,8 +11,8 @@ import PackageJSON from "../../../package.json";
 import AboutContainerCard from "@/components/Settings/AboutContainerCard";
 import * as Linking from "expo-linking";
 import teams from "@/utils/data/teams.json";
-import Constants from "expo-constants";
 import { getContributors, Contributor } from "@/utils/GetRessources/GetContribs";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
 
 const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
   const theme = useTheme();
@@ -188,7 +188,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
             Version de l'application
           </NativeText>
           <NativeText variant="subtitle">
-            ver. {PackageJSON.version} {Constants.appOwnership === "expo" ? "(Expo Go)" : ""} {__DEV__ ? "(debug)" : ""}
+            ver. {PackageJSON.version} {isExpoGo() ? "(Expo Go)" : ""} {__DEV__ ? "(debug)" : ""}
           </NativeText>
         </NativeItem>
         <NativeItem

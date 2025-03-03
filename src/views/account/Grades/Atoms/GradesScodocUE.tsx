@@ -60,9 +60,9 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
                 height: 24,
               }}
               onPress={() => showAlert({
-                icon: <Info />,
                 title: "Unités d'enseignement",
-                message: `Les données, rangs et notes sont fournies par les services de ${account.identityProvider?.name}.`
+                message: `Les données, rangs et notes sont fournies par les services de ${account.identityProvider?.name}.`,
+                icon: <Info />,
               })}
             >
               <Image
