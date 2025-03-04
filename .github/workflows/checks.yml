@@ -1,30 +1,61 @@
-name: Checks
+name: 🛠️ Checks (TypeScript + ESLint)
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
 
 jobs:
-  eslint:
-    name: Typescript build & ESlint scanning
+  lint-main:
+    name: 🛠️ TypeScript and ESLint on Main
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    if: github.ref == 'refs/remotes/origin/main'
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: NPM setup
-        uses: actions/setup-node@v2
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          version: 20
+          node-version: 20
+          cache: 'npm'
 
-      - name: Environnement setup
-        run: npm install
+      - name: 💾 Install dependencies
+        run: npm ci
 
-      - name: Typescript and Eslint scanning
+      - name: 🛠️ Commit and Push Fixes ESLint (Main)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          npx eslint . --fix
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add .
+            git commit -m "🔧 Auto-fix ESLint issues"
+            git push
+          fi
+
+      - name: 🔍 Run TypeScript and ESLint checks
+        run: npm run lint
+
+  lint-development:
+    name: 🛠️ TypeScript and ESLint on Pull Request
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/remotes/origin/main'
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 💾 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run TypeScript and ESLint checks
         run: npm run lint

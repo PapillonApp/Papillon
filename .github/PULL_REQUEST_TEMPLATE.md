@@ -1,29 +1,37 @@
-# 🚀 Nouvelle Pull Request
+# ✨ Nouvelle Pull Request
 
-Proposez vos modifications pour améliorer Papillon
+Merci de contribuer à l'amélioration de Papillon !
 
-## Informations importantes
+Tu te poses des questions sur les pull requests (PR) ? Une documentation a spécialement été créée ici => https://gitbook.getpapillon.xyz/organisation/outils-internes/github
 
-Merci de vous référer à la documentation sur la contribution si vous avez des questions à propos des pull requests (https://gitbook.getpapillon.xyz/organisation/outils-internes/github)
+## Avant toute chose...
 
-## Checklist d'avant pull request
+Tu t'assures avoir respecté les points suivants (_en rajoutant un `x` dans les crochets_) :
 
-Veuillez cocher toutes les cases applicables en remplaçant [ ] par [x].
+- [ ] 📲 J'ai testé l'application via Expo Go et/ou Build et **elle fonctionne correctement**
+- [ ] 🗣️ J'utilise le **langage informel** (tutoiement)
+- [ ] 📃 Cette PR [**n'est pas un duplicata**](https://github.com/PapillonApp/Papillon/pulls) et **est prête à être review et merge**
+- [ ] ❌ Je n'ai pas fait **d'erreurs TypeScript et ESLint** dans le code
+- [ ] 📝 J'ai fait **une description des changement effectués** ci-dessous
 
-- [ ] Vous avez testé de build le projet avec vos modifications et ce build **a réussi**
-- [ ] Vous respectez les conventions de codage et de nommage du projet
-- [ ] Vous utilisez la **tabulation** pour l'indentation afin de maintenir un code lisible
-- [ ] Cette pull request **n'est pas un duplicata** d'une autre
-- [ ] Cette pull request est prête à être **revue** (review) et **fusionnée** (merge)
-- [ ] Il n'y a pas de **`TODO`** (aka des annotations pour du code manquant) dans vos modifications
-- [ ] Il n'y a pas **d'erreurs de langue** dans votre code (grammaire, vocabulaire, conjugaison, orthographe)
-- [ ] Les détails des changements ont été décrits ci-dessous
-- [ ] Cette pull-request n'est pas une **"breaking-change"** (des modifications qui vont entraîner la modification du fonctionnement de certaines fonctionnalités déjà existantes)
 
-## Changelogs proposés
+## Résumé des changements effectués
 
-Décrivez les modifications que vous avez effectuées.
+_Les modifications_
 
-## Informations supplémentaires
+## Capture(s) d'écran (pour rendre le test de ta PR rapide)
 
-Ajoutez ici toute information supplémentaire si nécessaire.
+_Le(s) capture(s) d'écran_
+
+## Issue(s) en rapport
+
+> [!NOTE]
+>
+> Cette section te permet de référencer des issues en lien avec ta PR. Pour que les issues soient fermées automatiquement au merge, utilise les "[closing keywords](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests)" de Github (exemples ci-dessous).
+
+- Closed #(_le numéro de l'issue_)
+
+_S'il y en a plusieurs, continuer à les lister_
+
+- Closed #(_le numéro de l'issue_)
+
