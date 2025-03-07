@@ -47,7 +47,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
       fontFamily: "medium",
       fontSize: 16,
       lineHeight: 22,
-      maxHeight: 22 * 5,
+      maxHeight: shouldShowMoreGradient ? 20 * 5 : 25 * 5,
     },
   });
 
@@ -212,7 +212,10 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
                   />
                 }
               >
-                <HTMLView value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`} stylesheet={stylesText} />
+                <HTMLView
+                  value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`}
+                  stylesheet={stylesText}
+                />
               </MaskedView>
             </View>
             {route.name === "HomeScreen" && (

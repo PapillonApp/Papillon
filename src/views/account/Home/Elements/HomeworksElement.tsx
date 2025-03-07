@@ -66,17 +66,6 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
   const hwSemaineActuelle = homeworks[dateToEpochWeekNumber(actualDay)]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
   ) ?? [];
-  const truncateContent = (content: string) => {
-    if (content.length <= 120) {
-      return content;
-    }
-    const truncated = content.slice(0, 120);
-    const lastSpaceIndex = truncated.lastIndexOf(" ");
-    return `${truncated.slice(0, lastSpaceIndex)}...`;
-  };
-  hwSemaineActuelle.forEach(hw => {
-    hw.content = truncateContent(hw.content);
-  });
   const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
   ) ?? [];
@@ -107,38 +96,38 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
     );
   }
 
+  const hw2Semaines = hwSemaineActuelle
+    .concat(hwSemaineProchaine)
+    .filter((element) => !element.done);
+
   return (
     <>
-      <NativeListHeader animated label="Travail à faire"
+      <NativeListHeader
+        animated
+        label={
+          hw2Semaines.length > 7
+            ? `7 / ${hw2Semaines.length} Devoirs à faire`
+            : "Devoirs à faire"
+        }
         trailing={(
           <RedirectButton navigation={PapillonNavigation.current} redirect="Homeworks" />
         )}
       />
       <NativeList>
-        {hwSemaineActuelle.map((hw, index) => (
-          <HomeworkItem
-            navigation={navigation}
-            homework={hw}
-            key={index}
-            index={index}
-            total={homeworks[dateToEpochWeekNumber(actualDay) + 1]?.length || 0}
-            onDonePressHandler={() => {
-              handleDonePress(hw);
-            }}
-          />
-        ))}
-        {new Date().getDay() >= 2 && hwSemaineProchaine.map((hw, index) => (
-          <HomeworkItem
-            homework={hw}
-            key={index}
-            index={index}
-            navigation={navigation}
-            total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}
-            onDonePressHandler={() => {
-              handleDonePress(hw);
-            }}
-          />
-        ))}
+        {hw2Semaines
+          .slice(0, 7)
+          .map((hw, index) => (
+            <HomeworkItem
+              homework={hw}
+              key={index}
+              index={index}
+              navigation={navigation}
+              total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}
+              onDonePressHandler={() => {
+                handleDonePress(hw);
+              }}
+            />
+          ))}
       </NativeList>
     </>
   );
