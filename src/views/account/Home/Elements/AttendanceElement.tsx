@@ -128,7 +128,7 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
         )}
       />
       <PressableScale
-        onPress={() => PapillonNavigation.current.navigate("Attendance")}
+        onPress={() => PapillonNavigation.current?.navigate("Attendance")}
       >
         {totalMissed && <TotalMissed totalMissed={formatTotalMissed(totalMissed)} />}
       </PressableScale>
