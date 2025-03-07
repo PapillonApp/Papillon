@@ -130,6 +130,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         message={"Quelle est ta couleur préférée ?"}
         numberOfLines={1}
         width={280}
+        offsetTop={"10%"}
       />
       <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text}/>
       <View style={styles.colors}>

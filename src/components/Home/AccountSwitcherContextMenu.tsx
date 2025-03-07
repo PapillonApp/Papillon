@@ -384,15 +384,14 @@ const ContextMenu: React.FC<{
                   bottom: 0,
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "#00000050"
                 },
               ]}
               entering={FadeIn.duration(200)}
               exiting={FadeOut.duration(200)}
             >
               <BlurView
-                tint="dark"
-                intensity={60}
+                tint={theme.dark ? "dark" : "light"}
+                intensity={50}
                 style={{
                   width: "100%",
                   height: "100%",

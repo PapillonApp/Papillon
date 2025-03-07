@@ -29,6 +29,7 @@ import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, PronoteAccount } from "@/stores/account/types";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import defaultPersonalization from "@/services/pronote/default-personalization";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
   navigation,
@@ -254,7 +255,7 @@ export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
                   }}
                   key={index}
                 >
-                  <TextInput
+                  <ResponsiveTextInput
                     placeholder="0"
                     placeholderTextColor={theme.colors.text + "55"}
                     style={{
@@ -285,7 +286,7 @@ export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
         <NativeListHeader label="Nom de l'appareil" />
         <NativeList>
           <NativeItem>
-            <TextInput
+            <ResponsiveTextInput
               placeholder="Nom de l'appareil"
               placeholderTextColor={theme.colors.text + "55"}
               value={deviceName}

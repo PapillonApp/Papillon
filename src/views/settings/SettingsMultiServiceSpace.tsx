@@ -27,6 +27,7 @@ import * as Haptics from "expo-haptics";
 import AccountItem from "@/components/Global/AccountItem";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -239,7 +240,7 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
             <NativeText variant="subtitle">
               Titre
             </NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",
@@ -278,7 +279,7 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
             <NativeText variant="subtitle">
               Prénom
             </NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",
@@ -308,7 +309,7 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
             <NativeText variant="subtitle">
               Nom de famille
             </NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",

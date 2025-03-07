@@ -51,6 +51,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
+import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -61,6 +62,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const [devModeEnabled, setDevModeEnabled] = useState(false);
   const defined = useFlagsStore(state => state.defined);
   const [click, setClick] = useState<true | false>(false);
+  const { isTablet } = useScreenDimensions();
 
   const removeAccount = useAccounts((store) => store.remove);
 
@@ -163,28 +165,6 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       icon: <Laptop />,
       label: "Avancé",
       tabs: [
-        {
-          icon: click ? (
-            <PapillonSpinner
-              size={18}
-              color="white"
-              strokeWidth={2.8}
-              entering={animPapillon(ZoomIn)}
-              exiting={animPapillon(ZoomOut)}
-            />) : <Route />,
-          color: "#7E1174",
-          label: "Onglets & Navigation",
-          onPress: async () => {
-            setClick(true);
-            setTimeout(() => {
-              if (Platform.OS === "ios") {
-                navigation.goBack();
-              }
-              navigation.navigate("SettingsTabs");
-              setClick(false);
-            }, 10);
-          },
-        },
         {
           icon: <PersonStanding />,
           color: "#bf547d",
@@ -305,6 +285,32 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       onPress: () => openUrl("https://papillon.bzh/donate"),
       android: true,
       description: ""
+    });
+  }
+
+  if (!isTablet) {
+    tabs[2].tabs.unshift({
+      icon: click ? (
+        <PapillonSpinner
+          size={18}
+          color="white"
+          strokeWidth={2.8}
+          entering={animPapillon(ZoomIn)}
+          exiting={animPapillon(ZoomOut)}
+        />) : <Route />,
+      color: "#7E1174",
+      label: "Onglets & Navigation",
+      onPress: async () => {
+        setClick(true);
+        setTimeout(() => {
+          if (Platform.OS === "ios") {
+            navigation.goBack();
+          }
+          navigation.navigate("SettingsTabs");
+          setClick(false);
+        }, 10);
+      },
+      description: "",
     });
   }
 

@@ -29,7 +29,7 @@ const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ na
         message={`Sélectionne ta méthode de connexion au service ${route.params.service === "Other" ? "(autre)" : AccountService[route.params.service]}`}
         width={300}
         numberOfLines={2}
-        offsetTop={insets.top}
+        offsetTop={"15%"}
       />
 
       <NativeList>

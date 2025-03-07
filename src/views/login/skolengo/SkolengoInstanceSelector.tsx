@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator, Keyboard, KeyboardEvent } from "react-native";
+import { TextInput, TouchableOpacity, View, StyleSheet, ActivityIndicator, Keyboard, KeyboardEvent, SafeAreaView } from "react-native";
 import Reanimated, { LinearTransition, FlipInXDown, FadeInUp, FadeOutUp, ZoomIn, ZoomOut, Easing, ZoomInEasyDown } from "react-native-reanimated";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -14,6 +14,7 @@ import { useAlert } from "@/providers/AlertProvider";
 import type { School } from "scolengo-api/types/models/School";
 import { Skolengo } from "scolengo-api";
 import { useDebounce } from "@/hooks/debounce";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
   route: { params },
@@ -99,17 +100,10 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
   }, [search, geoInstances]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-        }
-      ]}
-    >
+    <SafeAreaView style={styles.container}>
       <MaskStars />
 
-      <View style={{height: insets.top}} />
+      <View style={{ height: insets.top, marginTop: "10%" }} />
 
       {!keyboardOpen &&
         <Reanimated.View
@@ -142,7 +136,7 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
       >
         <Search size={24} color={colors.text + "55"} />
 
-        <TextInput
+        <ResponsiveTextInput
           ref={searchInputRef}
           placeholder={params.pos ? "Recherche parmis ceux-là" : "Une ville, un établissement..."}
           placeholderTextColor={colors.text + "55"}
@@ -276,7 +270,7 @@ const SkolengoInstanceSelector: Screen<"SkolengoInstanceSelector"> = ({
         </Reanimated.View>
 
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -284,9 +278,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
     gap: 20,
-    paddingTop: -40,
   },
 
   overScrollContainer: {

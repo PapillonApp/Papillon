@@ -43,7 +43,7 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
         message="Que préfères-tu pour te connecter à Skolengo ?"
         numberOfLines={2}
         width={260}
-        offsetTop={"16%"}
+        offsetTop={"20%"}
       />
 
       <Reanimated.View
@@ -89,7 +89,6 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
       <View style={styles.buttons}>
         <View
           style={{
-            flexDirection: "row",
             gap: 12,
             alignItems: "center",
             marginBottom: 9,
@@ -103,7 +102,6 @@ const SkolengoAuthenticationSelector: Screen<"SkolengoAuthenticationSelector"> =
           />
           <NativeText
             style={{
-              flex: 1,
               color: theme.colors.text,
               opacity: 0.5,
               fontSize: 13,

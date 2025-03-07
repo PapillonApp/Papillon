@@ -1,37 +1,25 @@
 import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Image, View, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { AccountService } from "@/stores/account/types";
-import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 
-const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
-  const theme = useTheme();
-  const { colors } = theme;
-  const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account!);
-
+const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation }) => {
   type Service = AccountService | "Other";
 
   const [service, setService] = useState<Service | null>(null);
 
   return (
-    <SafeAreaView
-      style={styles.container}
-    >
+    <SafeAreaView style={styles.container}>
       <PapillonShineBubble
-        noFlex
-        message={"Pour commencer, quel est ton service de cantine ?"}
-        width={250}
+        message="Pour commencer, quel est ton service de cantine ?"
         numberOfLines={2}
-        style={{
-          height: 180,
-        }}
+        width={260}
+        offsetTop={"15%"}
       />
 
       <Reanimated.ScrollView
