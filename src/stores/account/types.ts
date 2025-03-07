@@ -46,6 +46,8 @@ export interface Personalization {
   popupRestauration?: boolean,
   magicEnabled?: boolean,
   MagicNews?: boolean,
+  KeepCheckActivated?: boolean,
+  KeepCheckVisible?: boolean,
   MagicHomeworks?: boolean,
   notifications?: {
     enabled?: boolean
