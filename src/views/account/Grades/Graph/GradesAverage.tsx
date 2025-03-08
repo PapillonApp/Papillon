@@ -109,8 +109,8 @@ const GradesAverageGraph: React.FC<GradesAverageGraphProps> = ({
     hst = hst.filter((p) => isNaN(p.value) === false);
 
     graphRef.current?.updateData({
-      xAxis: hst.map((p, i) => new Date(p.date).getTime()),
-      yAxis: hst.map((p) => p.value),
+      xAxis: hst.length > 0 ? hst.map((p, i) => new Date(p.date).getTime()) : [Date.now()],
+      yAxis: hst.length > 0 ? hst.map((p) => p.value) : [10],
     });
   }, [grades, account.instance]);
 

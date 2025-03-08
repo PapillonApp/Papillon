@@ -253,7 +253,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
             )}
 
             {grades[selectedPeriod] &&
-							grades[selectedPeriod].length > 1 && (
+							grades[selectedPeriod].filter((grade) => grade.student.value !== null && !isNaN(grade.student.value)).length > 1 && (
               <Reanimated.View
                 layout={animPapillon(LinearTransition)}
                 entering={FadeInUp.duration(200)}
