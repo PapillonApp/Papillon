@@ -4,13 +4,15 @@ import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";
 import { animPapillon } from "@/utils/ui/animations";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
+import { useAlert } from "@/providers/AlertProvider";
+import { BadgeX, Undo2 } from "lucide-react-native";
 
 const providers = ["scodoc", "moodle", "ical"];
 
@@ -72,6 +74,8 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
   const switchTo = useCurrentAccount(store => store.switchTo);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
+  const { showAlert } = useAlert();
+
   const useData = async (data: any) => {
     if(firstLogin) {
       await actionFirstLogin(data);
@@ -106,12 +110,19 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     }
     catch (e) {
       console.error(e);
-      Alert.alert(
-        "Erreur",
-        "Impossible de récupérer les notes de l'IUT de Lannion. Vérifie ta connexion internet et réessaye.",
-        [{ text: "OK", onPress: () => navigation.goBack() }]
-      );
-      navigation.goBack();
+      showAlert({
+        title: "Erreur",
+        message: "Impossible de récupérer les notes du l'IUT de Lannion. Vérifie ta connexion Internet et réessaye.",
+        icon: <BadgeX />,
+        actions: [
+          {
+            title: "OK",
+            icon: <Undo2 />,
+            onPress: () => navigation.goBack(),
+            primary: true,
+          }
+        ]
+      });
     }
   };
 
@@ -222,11 +233,19 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
   const injectPassword = () => {
     if(redirectCount >= 2) {
-      Alert.alert(
-        "Erreur",
-        "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie tes identifiants et réessaye.",
-        [{ text: "OK", onPress: () => navigation.goBack() }]
-      );
+      showAlert({
+        title: "Erreur",
+        message: "Impossible de se connecter au portail du l'IUT de Lannion. Vérifie tes identifiants et réessaye.",
+        icon: <BadgeX />,
+        actions: [
+          {
+            title: "OK",
+            icon: <Undo2 />,
+            onPress: () => navigation.goBack(),
+            primary: true,
+          }
+        ]
+      });
       navigation.goBack();
       return;
     }
@@ -318,12 +337,19 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
 
         onError={(data) => {
           console.error(data);
-          Alert.alert(
-            "Erreur",
-            "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie ta connexion internet et réessaye.",
-            [{ text: "OK", onPress: () => navigation.goBack() }]
-          );
-          navigation.goBack();
+          showAlert({
+            title: "Erreur",
+            message: "Impossible de se connecter au portail du l'IUT de Lannion. Vérifie ta connexion Internet et réessaye.",
+            icon: <BadgeX />,
+            actions: [
+              {
+                title: "OK",
+                icon: <Undo2 />,
+                onPress: () => navigation.goBack(),
+                primary: true,
+              }
+            ]
+          });
         }}
 
         onMessage={(event) => {

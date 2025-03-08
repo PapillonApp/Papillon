@@ -12,8 +12,8 @@ import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Check, Link2, TriangleAlert, X } from "lucide-react-native";
-import { useAlert } from "@/providers/AlertProvider";
+import { BadgeInfo, Link2, TriangleAlert, Undo2, X } from "lucide-react-native";
+import { Alert, useAlert } from "@/providers/AlertProvider";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => {
@@ -53,24 +53,25 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
   const checkForDemoInstance = async <ScreenName extends keyof RouteParameters>(
     instanceURL: string,
     navigation: NativeStackNavigationProp<RouteParameters, ScreenName>,
-    showAlert: any
+    showAlert: (alert: Alert) => void,
   ): Promise<void> => {
     if (!instanceURL.includes("demo.index-education.net")) return determinateAuthenticationView(instanceURL.trim(), navigation, showAlert);
     showAlert({
       title: "Instance non prise en charge",
       message: "Désolé, les instances de démonstration ne sont pas prises en charge, elles peuvent être instables ou ne pas fonctionner correctement.",
+      icon: <BadgeInfo />,
       actions: [
         {
           title: "Continuer",
-          primary: false,
           icon: <TriangleAlert />,
-          onPress: () => determinateAuthenticationView(instanceURL, navigation, showAlert)
+          onPress: () => determinateAuthenticationView(instanceURL, navigation, showAlert),
+          danger: false,
+          delayDisable: 5,
         },
         {
           title: "Annuler",
-          icon: <Check />,
+          icon: <Undo2 />,
           primary: true,
-          backgroundColor: "#29947A",
         }
       ]
     });

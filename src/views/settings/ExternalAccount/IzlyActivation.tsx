@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import type {Screen} from "@/router/helpers/types";
 import {useTheme} from "@react-navigation/native";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import {Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import { Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { NativeText,} from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
@@ -12,6 +12,8 @@ import {useAccounts, useCurrentAccount} from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
 
 import * as Linking from "expo-linking";
+import { useAlert } from "@/providers/AlertProvider";
+import { ArrowRightFromLine, BadgeHelp, BadgeX, Undo2 } from "lucide-react-native";
 
 const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -24,6 +26,8 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
 
   const secret = route.params?.password;
   const username = route.params?.username;
+
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const handleDeepLink = (event: { url: string }) => {
@@ -68,11 +72,20 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
       navigation.pop();
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Erreur", error.message);
+        showAlert({
+          title: "Erreur",
+          message: error.message,
+          icon: <BadgeX />,
+        });
       }
       else {
-        Alert.alert("Erreur", "Une erreur est survenue lors de l'activation.");
-      }    }
+        showAlert({
+          title: "Erreur",
+          message: "Une erreur est survenue lors de l'activation.",
+          icon: <BadgeX />,
+        });
+      }
+    }
     finally {
       setLoading(false);
     }
@@ -115,10 +128,26 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
             <ButtonCta
               value="Annuler"
               disabled={loading}
-              onPress={() => (Alert.alert("Annuler", "Es-tu sûr de vouloir annuler l'activation ?", [
-                { text: "Continuer l'activation", style: "cancel" },
-                { text: "Confirmer", style: "destructive", onPress: () => navigation.pop() }
-              ]))}
+              onPress={() => {
+                showAlert({
+                  title: "Annuler",
+                  message: "Es-tu sûr de vouloir annuler l'activation ?",
+                  icon: <BadgeHelp />,
+                  actions: [
+                    {
+                      title: "Continuer l'activation",
+                      icon: <ArrowRightFromLine />,
+                      primary: false,
+                    },
+                    {
+                      title: "Confirmer",
+                      icon: <Undo2 />,
+                      onPress: () => navigation.pop(),
+                      danger: true,
+                    }
+                  ]
+                });
+              }}
             />
           </View>
         </SafeAreaView>

@@ -2,10 +2,9 @@ import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components
 import {useAccounts, useCurrentAccount} from "@/stores/account";
 import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
 import {useIsFocused, useTheme} from "@react-navigation/native";
-import {PlusIcon} from "lucide-react-native";
+import {BadgeHelp, PlusIcon, Trash2, Undo2} from "lucide-react-native";
 import {useEffect, useState} from "react";
 import {
-  Alert,
   Dimensions,
   Image,
   RefreshControl,
@@ -40,6 +39,7 @@ import {PressableScale} from "react-native-pressable-scale";
 import datasets from "@/consts/datasets.json";
 import Animated from "react-native-reanimated";
 import {PrimaryAccount} from "@/stores/account/types";
+import { useAlert } from "@/providers/AlertProvider";
 
 
 // https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/illustrations/index.json
@@ -81,6 +81,8 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
   let headerOpacity = useAnimatedStyle(() => ({
     opacity: interpolate(scrollOffset.value, [0, 100], [0, 0.75], Extrapolation.CLAMP),
   }));
+
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     if(!downloadedIllustrations) {
@@ -388,39 +390,47 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                     }
                     onLongPress={async () => {
                       // delete account
-                      Alert.alert(
-                        "Supprimer le compte",
-                        "Es-tu sûr de vouloir supprimer ce compte ?",
-                        [
+                      showAlert({
+                        title: "Supprimer le compte",
+                        message: "Es-tu sûr de vouloir supprimer ce compte ?",
+                        icon: <BadgeHelp />,
+                        actions: [
                           {
-                            text: "Annuler",
-                            style: "cancel",
+                            title: "Annuler",
+                            icon: <Undo2 />,
+                            primary: true,
                           },
                           {
-                            text: "Supprimer",
-                            style: "destructive",
+                            title: "Supprimer",
+                            icon: <Trash2 />,
                             onPress: () => {
-                              Alert.alert(
-                                "Es-tu sûr ?",
-                                "Veux-tu supprimer définitivement " + account.studentName.first + " " + account.studentName.last + " ?",
-                                [
-                                  {
-                                    text: "Annuler",
-                                    style: "cancel",
-                                  },
-                                  {
-                                    text: "Supprimer",
-                                    style: "destructive",
-                                    onPress: () => {
-                                      removeAccount(account.localID);
+                              // setTimeout pour laisser le temps à la précédente alerte de s'enlever
+                              setTimeout(() => {
+                                showAlert({
+                                  title: "Es-tu sûr ?",
+                                  message: `Veux-tu supprimer définitivement ${account.studentName.first} ${account.studentName.last} ?`,
+                                  icon: <BadgeHelp />,
+                                  actions: [
+                                    {
+                                      title: "Annuler",
+                                      icon: <Undo2 />,
+                                      primary: false,
                                     },
-                                  },
-                                ]
-                              );
+                                    {
+                                      title: "Supprimer",
+                                      icon: <Trash2 />,
+                                      onPress: () => removeAccount(account.localID),
+                                      danger: true,
+                                      delayDisable: 5,
+                                    }
+                                  ]
+                                });
+                              }, 500);
                             },
-                          },
+                            danger: true,
+                          }
                         ]
-                      );
+                      });
                     }}
                     onPress={async () => {
                       if (currentAccount?.localID !== account.localID) {

@@ -1,14 +1,16 @@
 import { useTheme } from "@react-navigation/native";
-import { ChevronRight } from "lucide-react-native";
+import { BadgeHelp, ChevronRight, Eraser, Undo2 } from "lucide-react-native";
 import React, { useLayoutEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAlert } from "@/providers/AlertProvider";
 
 const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { showAlert } = useAlert();
 
   // add button to header
   useLayoutEffect(() => {
@@ -179,24 +181,28 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
 
           <NativeItem
             onPress={() => {
-              Alert.alert(
-                "Réinitialisation de Papillon",
-                "Es-tu sûr de vouloir réinitialiser toutes les données de l'application ?",
-                [
+              showAlert({
+                title: "Réinitialisation de Papillon",
+                message: "Es-tu sûr de vouloir réinitialiser toutes les données de l'application ?",
+                icon: <BadgeHelp />,
+                actions: [
                   {
-                    text: "Annuler",
-                    style: "cancel",
+                    title: "Annuler",
+                    icon: <Undo2 />,
+                    primary: false,
                   },
                   {
-                    text: "Réinitialiser",
-                    style: "destructive",
+                    title: "Réinitialiser",
+                    icon: <Eraser />,
                     onPress: () => {
                       AsyncStorage.clear();
                       navigation.popToTop();
                     },
-                  },
-                ],
-              );
+                    danger: true,
+                    delayDisable: 10,
+                  }
+                ]
+              });
             }}
           >
             <NativeText

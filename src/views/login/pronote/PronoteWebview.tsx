@@ -5,7 +5,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
 
 import { WebView } from "react-native-webview";
@@ -33,6 +32,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import { useAlert } from "@/providers/AlertProvider";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { BadgeInfo, Undo2 } from "lucide-react-native";
 
 const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -354,31 +354,19 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                 setLoading(false);
                 if (url.includes("pronote/mobile.eleve.html")) {
                   if (!url.includes("identifiant")) {
-                    if (Platform.OS === "ios") {
-                      Alert.alert(
-                        "Attention",
-                        "Désolé, seuls les comptes élèves sont compatibles pour le moment.",
-                        [
-                          {
-                            text: "OK",
-                            onPress: () => navigation.goBack(),
-                          },
-                        ]
-                      );
-                    } else {
-                      showAlert({
-                        title: "Attention",
-                        message:
-                          "Désolé, seuls les comptes élèves sont compatibles pour le moment.",
-                        actions: [
-                          {
-                            title: "OK",
-                            onPress: () => navigation.goBack(),
-                            backgroundColor: theme.colors.card,
-                          },
-                        ],
-                      });
-                    }
+                    showAlert({
+                      title: "Attention",
+                      message: "Désolé, seuls les comptes élèves sont compatibles pour le moment.",
+                      icon: <BadgeInfo />,
+                      actions: [
+                        {
+                          title: "OK",
+                          primary: true,
+                          icon: <Undo2 />,
+                          onPress: () => navigation.goBack(),
+                        },
+                      ],
+                    });
                   } else {
                     webViewRef.current?.injectJavaScript(
                       INJECT_PRONOTE_INITIAL_LOGIN_HOOK

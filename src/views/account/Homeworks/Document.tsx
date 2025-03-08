@@ -11,7 +11,6 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  Alert,
   Platform,
   StyleSheet,
 } from "react-native";
@@ -27,10 +26,11 @@ import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
 import { AutoFileIcon } from "@/components/Global/FileIcon";
-import { Paperclip, CircleAlert } from "lucide-react-native";
+import { Paperclip, CircleAlert, FileUp, School } from "lucide-react-native";
 import LinkFavicon, { getURLDomain } from "@/components/Global/LinkFavicon";
 import { timestampToString } from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
+import { useAlert } from "@/providers/AlertProvider";
 
 const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
   const theme = useTheme();
@@ -81,6 +81,7 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
     fetchSubjectData();
   }, [homework.subject]);
 
+  const { showAlert } = useAlert();
 
   return (
     <View style={{ flex: 1 }}>
@@ -124,18 +125,29 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
               >
                 <TouchableOpacity
                   onPress={() => {
-                    Alert.alert(
-                      homework.returnType === "file_upload"
-                        ? "Tu dois rendre ce devoir sur ton ENT"
-                        : homework.returnType === "paper"
-                          ? "Tu dois rendre ce devoir en classe"
-                          : "Ce devoir est à rendre",
-                      homework.returnType === "file_upload"
-                        ? "Papillon ne permet pas de rendre des devoirs sur l'ENT. Tu dois le faire sur l'ENT de ton établissement"
-                        : homework.returnType === "paper"
-                          ? "Ton professeur t'indiquera comment rendre ce devoir"
-                          : "Ton professeur t'indiquera comment rendre ce devoir",
-                    );
+                    switch (homework.returnType) {
+                      case "file_upload":
+                        showAlert({
+                          title: "Tu dois rendre ce devoir sur ton ENT",
+                          message: "Papillon ne permet pas de rendre des devoirs sur l'ENT. Tu dois le faire sur l'ENT de ton établissement",
+                          icon: <FileUp />,
+                        });
+                        break;
+                      case "paper":
+                        showAlert({
+                          title: "Tu dois rendre ce devoir en classe",
+                          message: "Ton professeur t'indiquera comment rendre ce devoir",
+                          icon: <School />,
+                        });
+                        break;
+                      default:
+                        showAlert({
+                          title: "Ce devoir est à rendre",
+                          message: "Ton professeur t'indiquera comment rendre ce devoir.",
+                          icon: <School />,
+                        });
+                        break;
+                    }
                   }}
                 >
                   <NativeText

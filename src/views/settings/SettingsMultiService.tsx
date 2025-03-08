@@ -1,10 +1,10 @@
 import React, {useRef, useState} from "react";
-import {Alert, Image, ScrollView, Switch, TextInput, View} from "react-native";
+import { Image, ScrollView, Switch, TextInput, View} from "react-native";
 import {useTheme} from "@react-navigation/native";
 import type {Screen} from "@/router/helpers/types";
 import MultiServiceContainerCard from "@/components/Settings/MultiServiceContainerCard";
 import {NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {ImageIcon, PlugZap, Plus, Type} from "lucide-react-native";
+import {BadgeInfo, Check, ImageIcon, PlugZap, Plus, ShieldAlert, Type, Undo2} from "lucide-react-native";
 import {useAccounts, useCurrentAccount} from "@/stores/account";
 import {useMultiService} from "@/stores/multiService";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
@@ -18,6 +18,7 @@ import uuid from "@/utils/uuid-v4";
 import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
 import {defaultTabs} from "@/consts/DefaultTabs";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) => {
   const theme = useTheme();
@@ -35,6 +36,9 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
 
   const [loadingImage, setLoadingImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<null | string>(null);
+
+  const { showAlert } = useAlert();
+
   const selectPicture = async () => {
     setLoadingImage(true);
 
@@ -56,7 +60,11 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
 
   const createSpace = () => {
     if (spaceName == "") {
-      Alert.alert("Aucun titre défini", "Vous devez définir un titre à l'environnement multi service pour pouvoir le créer.");
+      showAlert({
+        title: "Aucun titre défini",
+        message: "Tu dois définir un titre à l'environnement multi service pour pouvoir le créer.",
+        icon: <BadgeInfo />,
+      });
       return;
     }
 
@@ -146,23 +154,28 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
               value={multiServiceEnabled ?? false}
               onValueChange={() => {
                 if (multiServiceEnabled) {
-                  Alert.alert(
-                    "Attention",
-                    "La désactivation du multi-service entrainera la suppression de vos environnement multi-services créés.",
-                    [
+                  showAlert({
+                    title: "Attention",
+                    message: "La désactivation du multi-service entrainera la suppression de tes environnement multi-services créés.",
+                    icon: <ShieldAlert />,
+                    actions: [
                       {
-                        text: "Annuler",
-                        style: "cancel"
+                        title: "Annuler",
+                        icon: <Undo2 />,
+                        primary: false,
                       },
                       {
-                        text: "Confirmer",
-                        style: "destructive",
+                        title: "Confirmer",
+                        icon: <Check />,
                         onPress: () => {
                           deleteAllSpaces();
                           toggleMultiService();
-                        }
+                        },
+                        danger: true,
+                        delayDisable: 5,
                       }
-                    ]);
+                    ]
+                  });
                 } else {
                   toggleMultiService();
                 }

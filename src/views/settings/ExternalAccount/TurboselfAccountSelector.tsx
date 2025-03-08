@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type {Screen} from "@/router/helpers/types";
 import {useTheme} from "@react-navigation/native";
 import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import {Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import { Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
@@ -13,6 +13,8 @@ import uuid from "@/utils/uuid-v4";
 
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { authenticateWithCredentials } from "turboself-api";
+import { useAlert } from "@/providers/AlertProvider";
+import { ArrowRightFromLine, BadgeHelp, BadgeX, Undo2 } from "lucide-react-native";
 
 const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -27,6 +29,8 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
   const username = route.params.username;
   const password = route.params.password;
   const [choosenHostId, setChoosenHostId] = useState(account[0].id);
+
+  const { showAlert } = useAlert();
 
   const handleLogin = async (): Promise<void> => {
     try {
@@ -52,11 +56,20 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
       navigation.pop();
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert("Erreur", error.message);
+        showAlert({
+          title: "Erreur",
+          message: error.message,
+          icon: <BadgeX />,
+        });
       }
       else {
-        Alert.alert("Erreur", "Une erreur est survenue lors de la connexion.");
-      }    }
+        showAlert({
+          title: "Erreur",
+          message: "Une erreur est survenue lors de la connexion.",
+          icon: <BadgeX />,
+        });
+      }
+    }
     finally {
       setLoading(false);
     }
@@ -123,10 +136,26 @@ const TurboselfAccountSelector: Screen<"TurboselfAccountSelector"> = ({ navigati
               primary={false}
               value="Annuler"
               disabled={loading}
-              onPress={() => (Alert.alert("Annuler", "Es-tu sûr de vouloir annuler la connexion ?", [
-                { text: "Continuer la connexion", style: "cancel" },
-                { text: "Confirmer", style: "destructive", onPress: () => navigation.pop() }
-              ]))}
+              onPress={() => {
+                showAlert({
+                  title: "Annuler",
+                  message: "Es-tu sûr de vouloir annuler la connexion ?",
+                  icon: <BadgeHelp />,
+                  actions: [
+                    {
+                      title: "Continuer la connexion",
+                      icon: <ArrowRightFromLine />,
+                      primary: false,
+                    },
+                    {
+                      title: "Confirmer",
+                      icon: <Undo2 />,
+                      onPress: () => navigation.pop(),
+                      danger: true,
+                    }
+                  ]
+                });
+              }}
             />
           </View>
         </SafeAreaView>

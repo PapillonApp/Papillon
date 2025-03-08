@@ -1,7 +1,6 @@
 import React, {useRef, useState} from "react";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Pressable,
@@ -12,7 +11,7 @@ import {
 import {useTheme} from "@react-navigation/native";
 import type {Screen} from "@/router/helpers/types";
 import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, User2} from "lucide-react-native";
+import {BadgeHelp, Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, Undo2, User2} from "lucide-react-native";
 import {useAccounts} from "@/stores/account";
 import {AccountService, PrimaryAccount} from "@/stores/account/types";
 import * as ImagePicker from "expo-image-picker";
@@ -27,6 +26,7 @@ import * as Haptics from "expo-haptics";
 import AccountItem from "@/components/Global/AccountItem";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ navigation, route }) => {
   const theme = useTheme();
@@ -80,24 +80,32 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
   const [featureSelection, setFeatureSelection] = useState<MultiServiceFeature>(MultiServiceFeature.Grades);
   const [featureSelectionName, setFeatureSelectionName] = useState<string>("");
 
+  const { showAlert } = useAlert();
+
   const deleteSpace = () => {
-    Alert.alert(
-      "Êtes-vous sur ?",
-      "Cette action entrainera la suppression de votre espace multi-service.",
-      [
+    showAlert({
+      title: "Es-tu sûr ?",
+      message: "Cette action entrainera la suppression de ton espace multi-service.",
+      icon: <BadgeHelp />,
+      actions: [
         {
-          text: "Annuler",
-          style: "cancel"
+          title: "Annuler",
+          icon: <Undo2 />,
+          primary: false,
         },
-        { text: "Confirmer",
-          style: "destructive",
+        {
+          title: "Confirmer",
+          icon: <Trash2 />,
           onPress: () => {
             accounts.remove(space.accountLocalID);
             deleteMultiServiceSpace(space.accountLocalID);
             navigation.goBack();
-          }
+          },
+          danger: true,
+          delayDisable: 5,
         }
-      ]);
+      ]
+    });
   };
 
   const openAccountSelector = (feature: MultiServiceFeature, name: string) => {

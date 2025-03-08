@@ -4,12 +4,11 @@ import {
   View,
   Image,
   Text,
-  Alert,
   ScrollView,
   StyleSheet,
   Dimensions
 } from "react-native";
-import { Download, Trash2, Ellipsis } from "lucide-react-native";
+import { Download, Trash2, Ellipsis, OctagonX, ImageDown } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import * as FileSystem from "expo-file-system";
@@ -18,10 +17,11 @@ import { PressableScale } from "react-native-pressable-scale";
 import { NativeText } from "@/components/Global/NativeComponents";
 import { Reel } from "@/services/shared/Reel";
 import { captureRef } from "react-native-view-shot";
-import Constants from "expo-constants";
 import Animated, { Easing, FadeInRight, ZoomIn } from "react-native-reanimated";
 import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
 import { useTheme } from "@react-navigation/native";
+import { useAlert } from "@/providers/AlertProvider";
+import { isExpoGo } from "@/utils/native/expoGoAlert";
 interface GradeModalProps {
   isVisible: boolean;
   reel: Reel;
@@ -70,10 +70,15 @@ const GradeModal: React.FC<GradeModalProps> = ({
   const stickersRef = React.useRef<View>(null);
   const [showDeleteWarning, setShowDeleteWarning] = React.useState(false);
 
+  const { showAlert } = useAlert();
+
   const shareToSocial = async (option: ShareOptions) => {
-    const isExpoGo = Constants.appOwnership === "expo";
-    if (isExpoGo) {
-      Alert.alert("Fonctionnalité indisponible", "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.");
+    if (isExpoGo()) {
+      showAlert({
+        title: "Fonctionnalité indisponible",
+        message: "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.",
+        icon: <OctagonX />,
+      });
       return;
     }
     await require("react-native-share").default.shareSingle(option);
@@ -85,7 +90,11 @@ const GradeModal: React.FC<GradeModalProps> = ({
       await FileSystem.writeAsStringAsync(fileUri, reel.image, { encoding: FileSystem.EncodingType.Base64 });
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync("Download", asset, false);
-      Alert.alert("Image sauvegardée", "L'image a été sauvegardée dans ta galerie.");
+      showAlert({
+        title: "Image sauvegardée",
+        message: "L'image a été sauvegardée dans ta galerie.",
+        icon: <ImageDown />,
+      });
     } catch (error) {
       console.error("Failed to save image:", error);
     }
@@ -332,8 +341,12 @@ const GradeModal: React.FC<GradeModalProps> = ({
                 gap: 8,
               }}
               onPress={async () => {
-                if (Constants.appOwnership === "expo") {
-                  Alert.alert("Fonctionnalité indisponible", "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.");
+                if (isExpoGo()) {
+                  showAlert({
+                    title: "Fonctionnalité indisponible",
+                    message: "Cette fonctionnalité n'est pas disponible dans Expo Go. Pour l'utiliser, tu peux tester l'application sur ton propre appareil.",
+                    icon: <OctagonX />,
+                  });
                   return;
                 }
                 await require("react-native-share").default.open({

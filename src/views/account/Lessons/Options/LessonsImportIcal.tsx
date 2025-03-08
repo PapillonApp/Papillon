@@ -3,9 +3,9 @@ import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/componen
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
 import { useTheme } from "@react-navigation/native";
-import { Calendar, Info, QrCode, X } from "lucide-react-native";
+import { BadgeInfo, BadgeX, Calendar, CalendarOff, ClipboardCopy, Info, QrCode, Undo2, X } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Alert, Modal, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, TextInput, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import * as Clipboard from "expo-clipboard";
@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
 import {Screen} from "@/router/helpers/types";
+import { useAlert } from "@/providers/AlertProvider";
 
 const ical = require("cal-parser");
 
@@ -58,6 +59,8 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
     }
   }, [defaultIcal]);
 
+  const { showAlert } = useAlert();
+
   const saveIcal = async () => {
     setLoading(true);
     const oldUrls = account.personalization.icalURLs || [];
@@ -82,7 +85,11 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         fetchIcalData(account);
       })
       .catch(() => {
-        Alert.alert("Erreur", "Impossible de récupérer les données du calendrier. Vérifie l'URL et réessaye.");
+        showAlert({
+          title: "Erreur",
+          message: "Impossible de récupérer les données du calendrier. Vérifie l'URL et réessaye.",
+          icon: <BadgeX />,
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -228,32 +235,46 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
               key={index}
               icon={<Calendar />}
               onPress={() => {
-                Alert.alert(url.name, url.url, [
-                  {
-                    text: "Annuler",
-                    style: "cancel",
-                  },
-                  {
-                    text: "Copier l'URL",
-                    onPress: () => {
-                      Clipboard.setString(url.url);
-                      Alert.alert("Copié", "L'URL a été copiée dans le presse-papiers.");
+                showAlert({
+                  title: url.name,
+                  message: url.url,
+                  icon: <BadgeInfo />,
+                  actions: [
+                    {
+                      title: "Annuler",
+                      icon: <Undo2 />,
                     },
-                  },
-                  {
-                    text: "Supprimer le calendrier",
-                    style: "destructive",
-                    onPress: () => {
-                      useTimetableStore.getState().removeClassesFromSource("ical://"+url.url);
-                      const urls = account.personalization.icalURLs || [];
-                      urls.splice(index, 1);
-                      mutateProperty("personalization", {
-                        ...account.personalization,
-                        icalURLs: urls,
-                      });
+                    {
+                      title: "Copier l'URL",
+                      icon: <ClipboardCopy />,
+                      onPress: () => {
+                        Clipboard.setString(url.url);
+                        showAlert({
+                          title: "Copié",
+                          message: "L'URL a été copiée dans le presse-papiers.",
+                          icon: <ClipboardCopy />,
+                        });
+                      },
+                      primary: true,
+                      backgroundColor: theme.colors.primary,
                     },
-                  },
-                ]);
+                    {
+                      title: "Supprimer le calendrier",
+                      icon: <CalendarOff />,
+                      onPress: () => {
+                        useTimetableStore.getState().removeClassesFromSource("ical://"+url.url);
+                        const urls = account.personalization.icalURLs || [];
+                        urls.splice(index, 1);
+                        mutateProperty("personalization", {
+                          ...account.personalization,
+                          icalURLs: urls,
+                        });
+                      },
+                      danger: true,
+                      delayDisable: 3,
+                    }
+                  ]
+                });
               }}
             >
               <NativeText variant="title">{url.name}</NativeText>

@@ -1,8 +1,8 @@
 import React from "react";
-import { ScrollView, View, Alert } from "react-native";
+import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass } from "lucide-react-native";
+import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass, Check, Trash2, Undo2, BadgeInfo, BadgeHelp } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
   NativeList,
@@ -13,6 +13,7 @@ import {
 } from "@/components/Global/NativeComponents";
 import { AccountService } from "@/stores/account/types";
 import { useAccounts } from "@/stores/account";
+import { useAlert } from "@/providers/AlertProvider";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },
@@ -36,6 +37,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   const theme = useTheme();
   const accounts = useAccounts((state) => state.accounts);
   const removeAccount = useAccounts((state) => state.remove);
+  const { showAlert } = useAlert();
 
   const getServiceIcon = (service: AccountService) => {
     const IconComponent = serviceConfig[service]?.icon || GraduationCap;
@@ -52,33 +54,46 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
     info += `Établissement : ${account.authentication.schoolID || "N. not"}\n`;
 
 
-    Alert.alert(
-      "Informations du compte",
-      info,
-      [
-        { text: "OK", style: "cancel" },
+    showAlert({
+      title: "Informations du compte",
+      message: info,
+      icon: <BadgeInfo />,
+      actions: [
         {
-          text: "Supprimer",
-          style: "destructive",
-          onPress: () => confirmDeleteAccount(account)
-        }
+          title: "OK",
+          icon: <Check />,
+          primary: false,
+        },
+        {
+          title: "Supprimer",
+          icon: <Trash2 />,
+          onPress: () => confirmDeleteAccount(account),
+          danger: true,
+        },
       ]
-    );
+    });
   };
 
   const confirmDeleteAccount = (account: any) => {
-    Alert.alert(
-      "Supprimer le compte",
-      "Es-tu sûr de vouloir supprimer ce compte ?",
-      [
-        { text: "Annuler", style: "cancel" },
+    showAlert({
+      title: "Supprimer le compte",
+      message: "Es-tu sûr de vouloir supprimer ce compte ?",
+      icon: <BadgeHelp />,
+      actions: [
         {
-          text: "Supprimer",
-          style: "destructive",
-          onPress: () => removeAccount(account.localID)
+          title: "Annuler",
+          icon: <Undo2 />,
+          primary: false,
+        },
+        {
+          title: "Confirmer",
+          icon: <Trash2 />,
+          onPress: () => removeAccount(account.localID),
+          danger: true,
+          delayDisable: 5,
         }
       ]
-    );
+    });
   };
 
   const filteredAccounts = accounts.filter((acc, index) => {

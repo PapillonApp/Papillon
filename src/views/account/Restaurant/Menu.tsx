@@ -4,7 +4,6 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Alert,
   ActivityIndicator,
   RefreshControl,
   Text,
@@ -13,6 +12,7 @@ import {
 import { useTheme } from "@react-navigation/native";
 import {
   AlertTriangle,
+  BadgeX,
   ChefHat,
   CookingPot,
   MapPin,
@@ -54,6 +54,7 @@ import { Balance } from "@/services/shared/Balance";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
 import { STORE_THEMES, StoreTheme } from "./Cards/StoreThemes";
 import MenuCard from "./Cards/Card";
+import { useAlert } from "@/providers/AlertProvider";
 
 export const formatCardIdentifier = (identifier: string, dots: number = 4, separator: string = " ") => {
   if(!identifier) {
@@ -96,6 +97,8 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [isInitialised, setIsInitialised] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
   const [allCards, setAllCards] = useState<Array<ServiceCard> | null>(null);
+
+  const { showAlert } = useAlert();
 
   const refreshData = async () => {
     setIsRefreshing(true);
@@ -174,7 +177,11 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
           : term
       );
       setAllBookings(revertedBookings ?? null);
-      Alert.alert("Erreur", "Une erreur est survenue lors de la réservation du repas");
+      showAlert({
+        title: "Erreur",
+        message: "Une erreur est survenue lors de la réservation du repas",
+        icon: <BadgeX />,
+      });
     }
   };
 

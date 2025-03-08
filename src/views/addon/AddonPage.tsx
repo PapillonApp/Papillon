@@ -1,15 +1,19 @@
 import AddonsWebview from "@/components/Addons/AddonsWebview";
-import {Alert, View} from "react-native";
+import { View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import React from "react";
 import {AddonPlacementManifest} from "@/addons/types";
 import {Screen} from "@/router/helpers/types";
+import { useAlert } from "@/providers/AlertProvider";
+import { BadgeX } from "lucide-react-native";
 
 const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
   const addon: AddonPlacementManifest = route.params?.addon;
   let from = route.params.from;
   let data = route.params.data;
   const insets = useSafeAreaInsets();
+
+  const { showAlert } = useAlert();
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -41,7 +45,11 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
             }
           }
           if (index == -1) {
-            Alert.alert("Error", "The requested page was not found."); //TODO: transfer error to webview
+            showAlert({
+              title: "Erreur",
+              message: "La page accédée n'a pas été trouvée.",
+              icon: <BadgeX />,
+            }); //TODO: transfer error to webview
             return;
           } else {
             let newAddon: AddonPlacementManifest = {manifest: addon.manifest, index: index};
