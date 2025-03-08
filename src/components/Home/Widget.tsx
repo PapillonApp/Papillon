@@ -1,4 +1,4 @@
-import React, { type FunctionComponent, RefAttributes, useRef, useState } from "react";
+import React, { type FunctionComponent, RefAttributes, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 
 import { useTheme } from "@react-navigation/native";
@@ -15,6 +15,7 @@ import { PressableScale } from "react-native-pressable-scale";
 import { NativeText } from "../Global/NativeComponents";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface WidgetContainerProps {
   widget: React.ForwardRefExoticComponent<WidgetProps & RefAttributes<unknown>>
@@ -32,9 +33,16 @@ const Widget: React.FC<WidgetContainerProps> = ({ widget: DynamicWidget, navigat
   const theme = useTheme();
   const { colors } = theme;
   const widgetRef = useRef<FunctionComponent<WidgetProps> | null>(null);
+  const { isOnline } = useOnlineStatus();
 
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    if (!isOnline && loading) {
+      setLoading(false);
+    }
+  }, [isOnline, loading]);
 
   const handlePress = () => {
     const location = (widgetRef.current as any)?.handlePress();

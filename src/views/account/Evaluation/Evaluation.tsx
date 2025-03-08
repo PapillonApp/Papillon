@@ -18,10 +18,12 @@ import EvaluationsLatestList from "@/views/account/Evaluation/Latest/LatestEvalu
 import {AccountService} from "@/stores/account/types";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { isOnline } = useOnlineStatus();
 
   const outsideNav = route.params?.outsideNav;
 
@@ -47,6 +49,12 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isOnline && isLoading) {
+      setIsLoading(false);
+    }
+  }, [isOnline, isLoading]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -176,6 +184,8 @@ const Evaluation: Screen<"Evaluation"> = ({ route, navigation }) => {
                 paddingBottom: 16 + insets.bottom,
               }}
             >
+              {!isOnline && <OfflineWarning cache={true} />}
+
               {(!evaluations[selectedPeriod] || evaluations[selectedPeriod].length === 0) &&
                   !isLoading &&
                   !isRefreshing && hasServiceSetup && (

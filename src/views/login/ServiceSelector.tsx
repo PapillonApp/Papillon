@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import { Image, View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
@@ -15,10 +15,12 @@ import GetV6Data from "@/utils/login/GetV6Data";
 import { School } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { isOnline } = useOnlineStatus();
 
   const { showAlert } = useAlert();
 
@@ -188,7 +190,36 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
           primary
           value="Confirmer"
           disabled={service === null}
-          onPress={services.find((srv) => srv.name === service)?.login}
+          onPress={
+            isOnline
+              ? services.find((srv) => srv.name === service)?.login
+              : () => {
+                if (Platform.OS === "ios") {
+                  Alert.alert(
+                    "Information",
+                    "Pour poursuivre la connexion, tu dois être connecté à Internet. Vérifie ta connexion Internet et réessaie",
+                    [
+                      {
+                        text: "OK",
+                      },
+                    ]
+                  );
+                } else {
+                  showAlert({
+                    title: "Information",
+                    message:
+                        "Pour poursuivre la connexion, tu dois être connecté à Internet. Vérifie ta connexion Internet et réessaie",
+                    actions: [
+                      {
+                        title: "OK",
+                        onPress: () => {},
+                        backgroundColor: theme.colors.card,
+                      },
+                    ],
+                  });
+                }
+              }
+          }
         />
 
         {v6Data && v6Data.restore && (
