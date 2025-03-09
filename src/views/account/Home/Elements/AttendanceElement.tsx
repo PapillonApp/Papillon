@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
-import { updateGradesPeriodsInCache } from "@/services/grades";
 import { useCurrentAccount } from "@/stores/account";
 import { useAttendanceStore } from "@/stores/attendance";
 import TotalMissed from "../../Attendance/Atoms/TotalMissed";
@@ -12,6 +11,7 @@ import { log } from "@/utils/logger/logger";
 import type { Attendance } from "@/services/shared/Attendance";
 import { FadeInDown, FadeOut } from "react-native-reanimated";
 import MissingItem from "@/components/Global/MissingItem";
+import { updateAttendanceInCache, updateAttendancePeriodsInCache } from "@/services/attendance";
 
 
 interface AttendanceElementProps {
@@ -22,6 +22,8 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
   const account = useCurrentAccount((store) => store.account);
   const defaultPeriod = useAttendanceStore((store) => store.defaultPeriod) as string | null;
   const attendances = useAttendanceStore((store) => store.attendances) as Record<string, Attendance> | null;
+
+  const [loading, setLoading] = useState(false);
 
   const ImportanceHandler = () => {
     if (attendances && defaultPeriod) {
@@ -38,9 +40,12 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
 
   useEffect(() => {
     void (async () => {
-      log("update grades periods in cache", "attendance:updateGradesPeriodsInCache");
+      log("update attendance periods in cache", "attendance:updateAttendancePeriodsInCache");
       if (account?.instance) {
-        await updateGradesPeriodsInCache(account);
+        await updateAttendancePeriodsInCache(account);
+        if (defaultPeriod) {
+          await updateAttendanceInCache(account, defaultPeriod);
+        }
       }
       ImportanceHandler();
     })();
@@ -89,6 +94,34 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
       },
     };
   };
+
+  if (loading) {
+    return (
+      <>
+        <>
+          <NativeListHeader animated label="Vie scolaire"
+            trailing={(
+              <RedirectButton navigation={PapillonNavigation.current} redirect="Attendance" />
+            )}
+          />
+          <NativeList
+            animated
+            key="emptyAttendance"
+            entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOut.duration(300)}
+          >
+            <NativeItem animated style={{ paddingVertical: 10 }}>
+              <MissingItem
+                emoji="⏳"
+                title="Chargement de la Vie Scolaire"
+                description="Patiente, s'il te plaît..."
+              />
+            </NativeItem>
+          </NativeList>
+        </>
+      </>
+    );
+  }
 
   if (!totalMissed || totalMissed.absences.length === 0) {
     return (
