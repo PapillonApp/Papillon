@@ -36,7 +36,7 @@ export const getChats = async (account: PronoteAccount): Promise<Array<Chat>> =>
   }));
 };
 
-export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Promise<ChatRecipient[]> => {
+export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Promise<ChatRecipient[]> => {
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
@@ -52,7 +52,7 @@ export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Pr
   });
 };
 
-export const sendMessageInChat = async (account: PronoteAccount, chat: Chat, content: string): Promise<void> => {
+export const sendMessageInChat = async (account: PronoteAccount, chat: Chat, content: string): Promise<void> => {
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 

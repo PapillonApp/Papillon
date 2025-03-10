@@ -14,11 +14,11 @@ import {
 } from "lucide-react-native";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {Skill} from "@/services/shared/Evaluation";
-import {SkillLevelBadge} from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
+import { Skill } from "@/services/shared/Evaluation";
+import { SkillLevelBadge } from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
 
 const EvaluationDocument: Screen<"EvaluationDocument"> = ({ route, navigation }) => {
-  const { evaluation, allEvaluations = [] } = route.params;
+  const { evaluation } = route.params;
   const theme = useTheme();
 
   const [subjectData, setSubjectData] = useState({

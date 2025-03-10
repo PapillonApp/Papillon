@@ -102,8 +102,6 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
     let totalDelayMinutes = 0;
 
     attendances[selectedPeriod]?.absences.forEach(absence => {
-      const missed = getAbsenceTime(absence.fromTimestamp, absence.toTimestamp);
-
       if (!absence.justified)  {
         totalUnJustifiedHours += parseInt(absence.hours.split("h")[0]);
         totalUnJustifiedMinutes += parseInt(absence.hours.split("h")[1]);

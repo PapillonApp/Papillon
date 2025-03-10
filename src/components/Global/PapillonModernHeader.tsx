@@ -16,12 +16,9 @@ interface ModernHeaderProps {
   startLocation?: number,
   native? : boolean,
   tint?: string,
-};
+}
 
 export const PapillonModernHeader: React.FC<ModernHeaderProps> = (props) => {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-
   if (props.native) {
     return (
       <NativeModernHeader {...props} />
@@ -229,8 +226,8 @@ export const PapillonHeaderAction: React.FC<{
   return (
     <Reanimated.View
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering && entering}
-      exiting={exiting && exiting}
+      entering={entering}
+      exiting={exiting}
     >
       <PressableScale
         activeScale={0.85}

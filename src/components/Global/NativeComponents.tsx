@@ -235,8 +235,8 @@ export const NativeItem: React.FC<NativeItemProps> = ({
   return (
     <Reanimated.View
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering && entering}
-      exiting={exiting && exiting}
+      entering={entering}
+      exiting={exiting}
       pointerEvents={pointerEvents}
     >
       <NativePressable

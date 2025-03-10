@@ -58,9 +58,11 @@ export const sendMessageInChat = async <T extends Account> (account: T, chat: Ch
     case AccountService.Pronote: {
       const { sendMessageInChat } = await import("./pronote/chats");
       await sendMessageInChat(account, chat, content);
+      break;
     }
     case AccountService.EcoleDirecte: {
       // TODO
+      break;
     }
     case AccountService.PapillonMultiService: {
       const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);

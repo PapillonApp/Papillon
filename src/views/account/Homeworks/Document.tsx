@@ -125,16 +125,14 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
                 <TouchableOpacity
                   onPress={() => {
                     Alert.alert(
-                      homework.returnType === "file_upload"
+                      homework.returnType === HomeworkReturnType.FileUpload
                         ? "Tu dois rendre ce devoir sur ton ENT"
-                        : homework.returnType === "paper"
+                        : homework.returnType === HomeworkReturnType.Paper
                           ? "Tu dois rendre ce devoir en classe"
                           : "Ce devoir est à rendre",
-                      homework.returnType === "file_upload"
+                      homework.returnType === HomeworkReturnType.FileUpload
                         ? "Papillon ne permet pas de rendre des devoirs sur l'ENT. Tu dois le faire sur l'ENT de ton établissement"
-                        : homework.returnType === "paper"
-                          ? "Ton professeur t'indiquera comment rendre ce devoir"
-                          : "Ton professeur t'indiquera comment rendre ce devoir",
+                        : "Ton professeur t'indiquera comment rendre ce devoir",
                     );
                   }}
                 >
@@ -144,9 +142,8 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ route }) => {
                   >
                     {homework.returnType === HomeworkReturnType.FileUpload
                       ? "A rendre sur l'ENT"
-                      : homework.returnType === HomeworkReturnType.Paper
-                        ? "A rendre en classe"
-                        : null}
+                      : homework.returnType === HomeworkReturnType.Paper && "A rendre en classe"
+                    }
                   </NativeText>
                 </TouchableOpacity>
               </View>

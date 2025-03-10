@@ -1,9 +1,9 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { View } from "react-native";
 import MissingItem from "@/components/Global/MissingItem";
 import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 
 const PlaceholderScreen: Screen<"Discussions" | "Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -13,16 +13,6 @@ const PlaceholderScreen: Screen<"Discussions" | "Menu"> = ({ route, navigation }
       ...TabAnimatedTitle({ route, navigation }),
     });
   }, [navigation, route.params, theme.colors.text]);
-
-  const [isFocused, setIsFocused] = React.useState(false);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      setIsFocused(true);
-    });
-
-    return unsubscribe;
-  }, [navigation]);
 
   return (
     <View

@@ -32,7 +32,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
-  const [isED, setIsED] = useState(false);
 
   const fetchData = useCallback(async (hidden: boolean = false) => {
     if (!hidden) setIsLoading(true);
@@ -41,7 +40,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   }, [account]);
 
   useEffect(() => {
-    if (account.service === AccountService.EcoleDirecte) setIsED(true);
     if (sortedMessages.length === 0) {
       navigation.addListener("focus", () => fetchData(true));
       fetchData();

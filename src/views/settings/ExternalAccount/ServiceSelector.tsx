@@ -6,7 +6,6 @@ import { Image, View, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { AccountService } from "@/stores/account/types";
-import { useCurrentAccount } from "@/stores/account";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 
@@ -16,6 +15,7 @@ const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation
   const insets = useSafeAreaInsets();
   const account = useCurrentAccount(store => store.account!);
 
+const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
   type Service = AccountService | "Other";
 
   const [service, setService] = useState<Service | null>(null);

@@ -1,9 +1,9 @@
 import AddonsWebview from "@/components/Addons/AddonsWebview";
-import {Alert, View} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { Alert, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
-import {AddonPlacementManifest} from "@/addons/types";
-import {Screen} from "@/router/helpers/types";
+import { AddonPlacementManifest } from "@/addons/types";
+import { Screen } from "@/router/helpers/types";
 
 const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
   const addon: AddonPlacementManifest = route.params?.addon;
@@ -33,8 +33,8 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
         data={data}
         requestNavigate={(url, data) => {
           //find the placement
-          var index = -1;
-          for(var i = 0; i < addon.manifest.placement.length; i++){
+          let index = -1;
+          for(let i = 0; i < addon.manifest.placement.length; i++){
             if(addon.manifest.placement[i].name == url){
               index = i;
               break;
@@ -42,7 +42,6 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
           }
           if (index == -1) {
             Alert.alert("Error", "The requested page was not found."); //TODO: transfer error to webview
-            return;
           } else {
             let newAddon: AddonPlacementManifest = {manifest: addon.manifest, index: index};
             // @ts-ignore "Very hard to type, need to think about"

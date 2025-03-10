@@ -44,7 +44,7 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
         setError(error.message);
         if (error.message == "401: {\"statusCode\":401,\"message\":\"Accès interdit\"}") {
           setError("Nom d'utilisateur ou mot de passe incorrect");
-        };
+        }
       }
       else {
         setError("Une erreur est survenue lors de la connexion.");

@@ -11,27 +11,22 @@ import { ScrollView } from "react-native-gesture-handler";
 import * as Clipboard from "expo-clipboard";
 
 import { CameraView } from "expo-camera";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 
 const ical = require("cal-parser");
 
 const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
 
   const defaultIcal = route.params?.ical || "";
-  const defaultTitle = route.params?.title || "";
   const autoAdd = route.params?.autoAdd || false;
 
   const account = useCurrentAccount(store => store.account!);
-  const timetables = useTimetableStore(store => store.timetables);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
   const [url, setUrl] = React.useState(defaultIcal);
-  const [title, setTitle] = React.useState(defaultTitle);
 
   const [cameraVisible, setCameraVisible] = React.useState(false);
 
@@ -74,7 +69,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         mutateProperty("personalization", {
           ...account.personalization,
           icalURLs: [...oldUrls, {
-            name: title.trim().length > 0 ? title : defaultTitle,
+            name: defaultTitle,
             url,
           }]
         });

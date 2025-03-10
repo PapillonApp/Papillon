@@ -42,17 +42,6 @@ import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
-
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -101,8 +90,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [direction, setDirection] = useState<"left" | "right">("right");
-  const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
 
@@ -147,14 +134,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
   // on page change, load the homeworks
   useEffect(() => {
-    if (selectedWeek > oldSelectedWeek) {
-      setDirection("right");
-    } else if (selectedWeek < oldSelectedWeek) {
-      setDirection("left");
-    }
-
     setTimeout(() => {
-      setOldSelectedWeek(selectedWeek);
       updateHomeworks(false, false);
     }, 0);
   }, [selectedWeek]);

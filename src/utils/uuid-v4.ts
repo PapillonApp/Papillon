@@ -14,4 +14,4 @@ export default function uuid (): string {
   );
 
   return uuid;
-};
+}

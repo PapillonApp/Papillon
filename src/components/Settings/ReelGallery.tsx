@@ -13,12 +13,6 @@ import { useGradesStore } from "@/stores/grades";
 import GradeModal from "../Grades/GradeModal";
 import { Reel } from "@/services/shared/Reel";
 
-interface ReelModalProps {
-  reel: Reel;
-  visible: boolean;
-  onClose: () => void;
-}
-
 // Components
 const GradeIndicator = ({ value, outOf, color }: { value: number; outOf: number; color: string }) => (
   <View style={{ flexDirection: "row", alignItems: "flex-end" }}>

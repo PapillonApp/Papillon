@@ -11,8 +11,6 @@ import Reanimated, {
 import { epochWMToCalendarWeekNumber } from "@/utils/epochWeekNumber";
 
 const HeaderCalendar: React.FC<{ epochWeekNumber: number, oldPageIndex: number, showPicker: () => void, changeIndex: (index: number) => void }> = ({ epochWeekNumber, oldPageIndex, showPicker, changeIndex }) => {
-  const { colors } = useTheme();
-
   const dims = Dimensions.get("window");
   const tablet = dims.width > 600;
 

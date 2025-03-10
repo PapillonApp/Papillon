@@ -35,8 +35,8 @@ const MissingItem: React.FC<MissingItemProps> = ({
         gap: 8,
         paddingHorizontal: 20,
       }, style]}
-      entering={entering ? entering : FadeInUp}
-      exiting={exiting ? exiting : FadeOutDown}
+      entering={entering ?? FadeInUp}
+      exiting={exiting ?? FadeOutDown}
     >
       {leading && leading}
 

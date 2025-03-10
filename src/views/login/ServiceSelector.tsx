@@ -3,7 +3,7 @@ import { Image, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 
-import {RouteParameters, Screen} from "@/router/helpers/types";
+import { RouteParameters, Screen } from "@/router/helpers/types";
 
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
@@ -19,8 +19,6 @@ import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
-
-  const { showAlert } = useAlert();
 
   type Services = "pronote" | "ed" | "skolengo";
   const [service, setService] = useState<Services | null>(null);

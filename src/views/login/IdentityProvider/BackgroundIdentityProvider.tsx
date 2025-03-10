@@ -13,7 +13,7 @@ const BackgroundIdentityProvider: Screen<"BackgroundIdentityProvider"> = ({ rout
     const identityProvider = account!.identityProvider;
 
     if(identityProvider) {
-      const { identifier, rawData } = identityProvider;
+      const { identifier } = identityProvider;
 
       if(identifier === "iut-lannion") {
         navigation.goBack();

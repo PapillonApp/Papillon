@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useCurrentAccount } from "@/stores/account";
 import { useNavigationBuilder, useTheme } from "@react-navigation/native";
 import { StyleSheet, Platform, Image, Text, StatusBar } from "react-native";
@@ -18,8 +18,6 @@ const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilde
   const tabs = account?.personalization.tabs
     ?.map((tab) => allTabs.find((route) => route.name === tab.name))
     .filter(Boolean) || allTabs;
-
-  const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
 
   return (
     <Reanimated.View
@@ -47,7 +45,6 @@ const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilde
         }}
       >
         <ContextMenu
-          shouldOpenContextMenu={shouldOpenContextMenu}
           transparent={true}
           menuStyles={{
             position: "absolute",

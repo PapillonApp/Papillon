@@ -2,7 +2,6 @@ import { CopyPlus } from "lucide-react-native";
 import React, { forwardRef, useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { useTheme } from "@react-navigation/native";
 
 import { useCurrentAccount } from "@/stores/account";
 import Reanimated, {
@@ -306,8 +305,6 @@ const HeaderButton: React.FC<{
   scrolled: boolean,
   onPress: () => void
 }> = ({icon, index, text, scrolled, onPress}) => {
-  const theme = useTheme();
-  const { colors } = theme;
 
   const newIcon = React.cloneElement(icon, {
     size: 24,

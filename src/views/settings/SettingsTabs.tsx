@@ -44,16 +44,6 @@ interface Tab {
   icon: any; // Should be updated if Lottie icon types are more specific
 }
 
-interface Personalization {
-  tabs: Array<{ name: string; enabled: boolean; installed: boolean }>;
-  hideTabTitles?: boolean;
-  showTabBackground?: boolean;
-}
-
-interface Account {
-  personalization: Personalization;
-}
-
 const SettingsTabs = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
