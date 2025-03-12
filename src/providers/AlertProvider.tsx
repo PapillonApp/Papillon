@@ -121,7 +121,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
 
       {alert && (
         <Modal transparent onRequestClose={hideAlert} animationType="none">
-          {visible &&
+          {visible && (
             <View style={{ flex: 1 }}>
               <Reanimated.View
                 entering={FadeIn.duration(150)}
@@ -150,10 +150,10 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                   <View style={styles.contentContainer}>
                     <View style={styles.titleContainer}>
                       {alert.icon &&
-                      React.cloneElement(alert.icon, {
-                        color: colors.text,
-                        size: 24,
-                      })}
+                        React.cloneElement(alert.icon, {
+                          color: colors.text,
+                          size: 24,
+                        })}
                       <Text style={[styles.title, { color: colors.text }]}>
                         {alert.title}
                       </Text>
@@ -170,7 +170,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                         borderColor: colors.text + "20",
                         backgroundColor: colors.text + "06",
                         flexDirection:
-                      (alert.actions ?? []).length > 2 ? "column" : "row",
+                          (alert.actions ?? []).length > 2 ? "column" : "row",
                         alignItems: "center",
                       },
                     ]}
@@ -188,7 +188,9 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                         <Reanimated.View
                           layout={anim2Papillon(LinearTransition)}
                           style={[
-                            (alert.actions?.length === 1 || (alert.actions ?? []).length > 2) && styles.singleButtonContainer,
+                            (alert.actions?.length === 1 ||
+                              (alert.actions ?? []).length > 2) &&
+                              styles.singleButtonContainer,
                           ]}
                         >
                           <TouchableOpacity
@@ -199,7 +201,9 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                               onPress?.();
                             }}
                             style={[
-                              (alert.actions?.length === 1 || (alert.actions ?? []).length > 2) && styles.singleButtonContainer,
+                              (alert.actions?.length === 1 ||
+                                (alert.actions ?? []).length > 2) &&
+                                styles.singleButtonContainer,
                             ]}
                           >
                             <Reanimated.View
@@ -210,22 +214,33 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                   justifyContent: "center",
                                   alignItems: "center",
                                 },
-                                (alert.actions?.length === 1 || (alert.actions ?? []).length > 2) && styles.singleButton,
+                                (alert.actions?.length === 1 ||
+                                  (alert.actions ?? []).length > 2) &&
+                                  styles.singleButton,
                                 primary && !danger
                                   ? {
                                     backgroundColor:
-                                (backgroundColor ?? colors.primary) + (delays[title] > 0 ? "99" : ""),
+                                        (backgroundColor ?? colors.primary) +
+                                        (delays[title] > 0 ? "99" : ""),
                                   }
                                   : danger
-                                    ? { backgroundColor: "#BE0B00" + (delays[title] > 0 ? "99" : "") }
-                                    : { borderColor: colors.text + "44", borderWidth: 1 },
+                                    ? {
+                                      backgroundColor:
+                                        "#BE0B00" +
+                                        (delays[title] > 0 ? "99" : ""),
+                                    }
+                                    : {
+                                      borderColor: colors.text + "44",
+                                      borderWidth: 1,
+                                    },
                               ]}
                             >
                               {icon &&
-                        React.cloneElement(icon, {
-                          color: primary || danger ? "#ffffff" : colors.text,
-                          size: 24,
-                        })}
+                                React.cloneElement(icon, {
+                                  color:
+                                    primary || danger ? "#ffffff" : colors.text,
+                                  size: 24,
+                                })}
                               <Reanimated.Text
                                 layout={anim2Papillon(LinearTransition)}
                                 style={[
@@ -235,24 +250,27 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                 ]}
                               >
                                 {title}
-                                {delays[title] !== undefined && delays[title] > 0
-                                  ? ` (${delays[title]})`
-                                  : ""}
+                                {delays[title] > 0 ? ` (${delays[title]})` : ""}
                               </Reanimated.Text>
 
-                              {delays[title] !== undefined &&
-                            <Reanimated.View
-                              layout={LinearTransition}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                width: parseInt((delays[title] / (delayDisable ? (delayDisable - 1) : 2)) * 120 + "%"),
-                                height: "200%",
-                                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                              }}
-                            />
-                              }
+                              {delays[title] !== undefined && (
+                                <Reanimated.View
+                                  layout={LinearTransition}
+                                  style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 0,
+                                    width: parseInt(
+                                      (delays[title] /
+                                        (delayDisable ? delayDisable - 1 : 2)) *
+                                        120 +
+                                        "%"
+                                    ),
+                                    height: "200%",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                  }}
+                                />
+                              )}
                             </Reanimated.View>
                           </TouchableOpacity>
                         </Reanimated.View>
@@ -262,7 +280,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                 </Reanimated.View>
               </Reanimated.View>
             </View>
-          }
+          )}
         </Modal>
       )}
     </AlertContext.Provider>
