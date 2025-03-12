@@ -3,16 +3,18 @@ import { Platform, TouchableHighlight, TouchableNativeFeedback, View } from "rea
 
 type NativeTouchableProps = {
   children: React.ReactNode;
+  contentContainerStyle?: any;
   underlayColor?: string;
 } & React.ComponentProps<typeof TouchableNativeFeedback>;
 
 const NativeTouchable: React.FC<NativeTouchableProps> = ({
   children,
+  contentContainerStyle,
   ...props
 }) => {
   if(Platform.OS === "android") {
     return (
-      <TouchableNativeFeedback {...props}>
+      <TouchableNativeFeedback {...props} style={props.contentContainerStyle}>
         <View style={props.style}>
           {children}
         </View>

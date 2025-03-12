@@ -122,9 +122,13 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
               key={index}
               index={index}
               navigation={navigation}
-              total={homeworks[dateToEpochWeekNumber(actualDay) + 1].length}
+              total={homeworks[dateToEpochWeekNumber(actualDay) + 1] ?homeworks[dateToEpochWeekNumber(actualDay) + 1].length : 0}
               onDonePressHandler={() => {
-                handleDonePress(hw);
+                try {
+                  handleDonePress(hw);
+                } catch (e) {
+                  console.error(e);
+                }
               }}
             />
           ))}

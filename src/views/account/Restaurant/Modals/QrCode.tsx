@@ -109,7 +109,6 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
           justifyContent: "center",
           alignItems: "center",
         }}
-        experimentalBlurMethod="dimezisBlurView"
         intensity={100}
         tint={theme.dark ? "dark" : "light"}
       >

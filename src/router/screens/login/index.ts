@@ -12,12 +12,12 @@ export default [
     headerTitle: "",
     headerTransparent: true,
     headerBackVisible: true,
-    animation: Platform.OS === "android" ? "slide_from_bottom" : undefined,
-    animationDuration: 250
+    animation: Platform.OS === "android" ? "default" : undefined,
+    animationDuration: 250,
   }),
 
   ...pronote,
   ...ecoledirecte,
   ...skolengo,
-  ...identityProvider
+  ...identityProvider,
 ] as const;

@@ -397,7 +397,6 @@ const ContextMenu: React.FC<{
                   width: "100%",
                   height: "100%",
                 }}
-                experimentalBlurMethod="dimezisBlurView"
               />
             </Reanimated.View>
           )}

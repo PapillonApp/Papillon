@@ -33,10 +33,10 @@
 
 import {protectScreenComponent} from "@/router/helpers/protected-screen";
 import type {Screen} from "@/router/helpers/types";
-import {useCurrentAccount} from "@/stores/account";
+import {useAccounts, useCurrentAccount} from "@/stores/account";
 import getCorners from "@/utils/ui/corner-radius";
 import {useIsFocused, useTheme} from "@react-navigation/native";
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {
   Dimensions,
   Platform,
@@ -76,6 +76,22 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   let scrollOffset = useScrollViewOffset(scrollRef);
 
   let account = useCurrentAccount(store => store.account!);
+  const accounts = useAccounts((store) => store.accounts);
+
+  useEffect(() => {
+    void async function () {
+      if (!useAccounts.persist.hasHydrated()) return;
+
+      // If there are no accounts, redirect the user to the first installation page.
+      if (accounts.filter((account) => !account.isExternal).length === 0) {
+        // Use the `reset` method to clear the navigation stack.
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "FirstInstallation" }],
+        });
+      }
+    }();
+  }, [accounts]);
 
   const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
 

@@ -59,7 +59,7 @@ export default [
     headerTitle: "Item",
     presentation: "modal",
     headerShown: false,
-    animation: "slide_from_right",
+    animation: "default",
   }),
   createScreen("AddonLogs", AddonLogs, {
     headerTitle: "Logs",
