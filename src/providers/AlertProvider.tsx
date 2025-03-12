@@ -20,7 +20,6 @@ import {
   PapillonContextExit,
 } from "@/utils/ui/animations";
 import { BlurView } from "expo-blur";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 type AlertAction = {
   title: string;
@@ -194,7 +193,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                               styles.singleButtonContainer,
                           ]}
                         >
-                          <TouchableOpacity
+                          <Pressable
                             disabled={delays[title] > 0}
                             onPress={() => {
                               hideAlert();
@@ -272,7 +271,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                 />
                               )}
                             </Reanimated.View>
-                          </TouchableOpacity>
+                          </Pressable>
                         </Reanimated.View>
                       )
                     )}
