@@ -252,24 +252,22 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                 {delays[title] > 0 ? ` (${delays[title]})` : ""}
                               </Reanimated.Text>
 
-                              {delays[title] !== undefined && (
-                                <Reanimated.View
-                                  layout={LinearTransition}
-                                  style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    right: 0,
-                                    width: parseInt(
-                                      (delays[title] /
-                                        (delayDisable ? delayDisable - 1 : 2)) *
-                                        120 +
-                                        "%"
-                                    ),
-                                    height: "200%",
-                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                  }}
-                                />
-                              )}
+                              <Reanimated.View
+                                layout={LinearTransition}
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  right: 0,
+                                  width: parseInt(
+                                    (delays[title] /
+                                      (delayDisable ? delayDisable - 1 : 2)) *
+                                      120 +
+                                      "%"
+                                  ),
+                                  height: "200%",
+                                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                }}
+                              />
                             </Reanimated.View>
                           </Pressable>
                         </Reanimated.View>
