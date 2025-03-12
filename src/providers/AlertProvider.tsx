@@ -186,6 +186,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                         delayDisable,
                       }) => (
                         <Reanimated.View
+                          key={title}
                           layout={anim2Papillon(LinearTransition)}
                           style={[
                             (alert.actions?.length === 1 ||
@@ -194,7 +195,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                           ]}
                         >
                           <TouchableOpacity
-                            key={title}
                             disabled={delays[title] > 0}
                             onPress={() => {
                               hideAlert();
