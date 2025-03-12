@@ -1,4 +1,4 @@
-import { Alert, Image, Linking, Platform, ScrollView, Text, View } from "react-native";
+import { Image, Linking, Platform, ScrollView, Text, View } from "react-native";
 import MenuCard from "../Cards/Card";
 import Reanimated from "react-native-reanimated";
 import React, { useState } from "react";
@@ -12,7 +12,7 @@ import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { PressableScale } from "react-native-pressable-scale";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, ExternalAccount } from "@/stores/account/types";
-import { ExternalLink, MoreHorizontal, QrCode, Trash2 } from "lucide-react-native";
+import { BadgeHelp, ExternalLink, MoreHorizontal, QrCode, Trash2, Undo2 } from "lucide-react-native";
 import { balanceFromExternal } from "@/services/balance";
 import { reservationHistoryFromExternal } from "@/services/reservation-history";
 import { Screen } from "@/router/helpers/types";
@@ -20,6 +20,7 @@ import { formatCardIdentifier } from "../Menu";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import PapillonPicker from "@/components/Global/PapillonPicker";
+import { useAlert } from "@/providers/AlertProvider";
 
 const RestaurantCardDetail: Screen<"RestaurantCardDetail"> = ({ route, navigation }) => {
   try {
@@ -27,6 +28,7 @@ const RestaurantCardDetail: Screen<"RestaurantCardDetail"> = ({ route, navigatio
     const [cardData, setCardData] = useState(null);
 
     const theme = useTheme();
+    const { showAlert } = useAlert();
 
     const account = useCurrentAccount((store) => store.account);
     const removeAccount = useAccounts((state) => state.remove);
@@ -91,26 +93,32 @@ const RestaurantCardDetail: Screen<"RestaurantCardDetail"> = ({ route, navigatio
                 sfSymbol: "trash",
                 destructive: true,
                 onPress: () => {
-                  Alert.alert(
-                    "Supprimer la carte",
-                    "Es-tu sûr de vouloir supprimer la " + (cardName ?? "carte") + " ?",
-                    [
-                      { text: "Annuler", style: "cancel" },
+                  showAlert({
+                    title: "Supprimer la carte ?",
+                    message: `Es-tu sûr de vouloir supprimer la ${cardName ?? "carte"} ?`,
+                    icon: <BadgeHelp />,
+                    actions: [
                       {
-                        text: "Supprimer",
-                        style: "destructive",
+                        title: "Annuler",
+                        icon: <Undo2 />,
+                      },
+                      {
+                        title: "Supprimer",
+                        primary: true,
                         onPress: () => {
                           try {
                             removeAccount(card.account?.localID as string);
                             navigation.goBack();
                           }
                           catch (e) {
-                            console.log(e);
+                            console.error(e);
                           }
-                        }
-                      }
-                    ]
-                  );
+                        },
+                        backgroundColor: "#CF0029",
+                        icon: <Trash2 color="#FFFFFF" />,
+                      },
+                    ],
+                  });
                 }
               }
             ]}
