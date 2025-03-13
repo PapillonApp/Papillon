@@ -6,13 +6,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SupportContainerCard from "@/components/Settings/SupportContainerCard";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
-import { Mail, Tag, Text } from "lucide-react-native";
+import { Check, Mail, Tag, Text } from "lucide-react-native";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { get_logs, Log } from "@/utils/logger/logger";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  const { showAlert } = useAlert();
 
   const [sendLogs, setSendLogs] = useState<boolean>(false);
   const [email, setEmail] = useState<string>();
@@ -49,6 +52,15 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
     });
 
     const result = await response.json();
+    setSubject("");
+    setEmail("");
+    setDescription("");
+    setSendLogs(false);
+    showAlert({
+      title: "Merci de vos retours !",
+      message: "Nous avons reçu votre demande et allons la regarder avec la plus grande attention.",
+      icon: <Check />,
+    });
   };
 
   return (

@@ -49,6 +49,7 @@ import { PressableScale } from "react-native-pressable-scale";
 import { ChevronLeft, ChevronRight} from "lucide-react-native";
 import DrawableImportRestaurant from "@/components/Drawables/DrawableImportRestaurant";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { Account, AccountService } from "@/stores/account/types";
 import { Balance } from "@/services/shared/Balance";
 import { ReservationHistory } from "@/services/shared/ReservationHistory";
@@ -80,6 +81,7 @@ export interface ServiceCard {
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { isOnline } = useOnlineStatus();
 
   const account = useCurrentAccount((store) => store.account);
   const linkedAccounts = useCurrentAccount((store) => store.linkedAccounts);
@@ -359,7 +361,9 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
       >
         <PapillonHeaderInsetHeight route={route} />
 
-        {!isInitialised ? (
+        {!isOnline ? (
+          <OfflineWarning cache={false} />
+        ) : !isInitialised ? (
           <ActivityIndicator size="large" style={{ padding: 50 }} />
         ) : (
           <>

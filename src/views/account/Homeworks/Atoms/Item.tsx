@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {Clock, Paperclip, Sparkles} from "lucide-react-native";
+import {Check, Clock, Paperclip, Sparkles, WifiOff} from "lucide-react-native";
 import { getSubjectData } from "@/services/shared/Subject";
 import { useRoute, useTheme} from "@react-navigation/native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
@@ -20,6 +20,8 @@ import { AutoFileIcon } from "@/components/Global/FileIcon";
 import { timestampToString } from "@/utils/format/DateHelper";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 import MaskedView from "@react-native-masked-view/masked-view";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useAlert } from "@/providers/AlertProvider";
 
 
 interface HomeworkItemProps {
@@ -38,6 +40,8 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [category, setCategory] = useState<string | null>(null);
   const [shouldShowMoreGradient, setShouldShowMoreGradient] = useState(false);
   const account = useCurrentAccount((store) => store.account!);
+  const { isOnline } = useOnlineStatus();
+  const { showAlert } = useAlert();
 
   const route = useRoute();
 
@@ -65,8 +69,22 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePress = useCallback(() => {
-    setIsLoading(true);
-    onDonePressHandler();
+    if (isOnline) {
+      setIsLoading(true);
+      onDonePressHandler();
+    } else {
+      showAlert({
+        title: "Information",
+        message: "Tu es hors ligne. Vérifie ta connexion Internet et réessaie",
+        icon: <WifiOff />,
+        actions: [
+          {
+            title: "OK",
+            icon: <Check />,
+          },
+        ],
+      });
+    }
   }, [onDonePressHandler]);
 
   const [mainLoaded, setMainLoaded] = useState(false);

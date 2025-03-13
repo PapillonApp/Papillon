@@ -17,6 +17,7 @@ import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
 import { getHolidayEmoji } from "@/utils/format/holidayEmoji";
 import { getDuration } from "@/utils/format/course_duration";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const emoji = getHolidayEmoji();
 
@@ -37,6 +38,8 @@ interface PageProps {
 }
 
 export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists, hasServiceSetup }: PageProps) => {
+  const { isOnline } = useOnlineStatus();
+
   return (
     <ScrollView
       style={{
@@ -65,6 +68,8 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
             width: "100%"
           }}
         >
+          {!isOnline && <OfflineWarning cache={true} />}
+
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
             <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
               <TimetableItem key={item.startTimestamp} item={item} index={i} />

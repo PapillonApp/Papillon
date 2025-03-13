@@ -20,6 +20,7 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import type { Screen } from "@/router/helpers/types";
 import {Account} from "@/stores/account/types";
 import { fetchIcalData } from "@/services/local/ical";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const LOCALES = {
   en: {
@@ -52,7 +53,7 @@ const EventItem = memo<EventItemProps>(({ event }) => {
   const isWide = layout.width > 100;
 
   const handlePress = () => {
-    PapillonNavigation.current.navigate("LessonDocument", { lesson: event.event });
+    PapillonNavigation.current?.navigate("LessonDocument", { lesson: event.event });
   };
 
   const containerStyle = [
@@ -216,6 +217,7 @@ const displayModes = ["Semaine", "3 jours", "Journée"];
 const Week: Screen<"Week"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { isOnline } = useOnlineStatus();
 
   const outsideNav = route.params?.outsideNav;
 
@@ -294,6 +296,12 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
 
   return (
     <View style={{ flex: 1, marginTop: insets.top }}>
+      {!isOnline && (
+        <View style={{ padding: 16 }}>
+          <OfflineWarning cache={true} />
+        </View>
+      )}
+
       {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
         <View
           style={{
@@ -344,7 +352,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
                 onPress={() => {
                   setOpenedIcalModal(true);
                   setTimeout(() => {
-                    PapillonNavigation.current.navigate("LessonsImportIcal");
+                    PapillonNavigation.current?.navigate("LessonsImportIcal", {});
                   }, 100);
                 }}
               />

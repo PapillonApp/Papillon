@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, View, Dimensions, ViewToken } from "react-native";
+import { FlatList, View, ViewToken } from "react-native";
 import { StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
@@ -44,7 +44,6 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
   const timetables = useTimetableStore((store) => store.timetables);
-  const {isTablet} = useScreenDimensions();
 
   const outsideNav = route.params?.outsideNav;
   const insets = useSafeAreaInsets();
@@ -55,6 +54,12 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   const [shouldShowWeekFrequency, setShouldShowWeekFrequency] = useState(account.personalization.showWeekFrequency);
   const [weekFrequency, setWeekFrequency] = useState<WeekFrequency | null>(null);
+
+  const { width, height, isTablet } = useScreenDimensions();
+  const finalWidth = width - (isTablet ? (
+    320 > width * 0.35 ? width * 0.35 :
+      320
+  ) : 0);
 
   useEffect(() => {
     // add all week numbers in timetables to loadedWeeks
@@ -101,13 +106,11 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const finalWidth = Dimensions.get("window").width - (isTablet ? 320 : 0);
-
   const loadTimetableWeek = async (weekNumber: number, force = false) => {
     if (
       (currentlyLoadingWeeks.current.has(weekNumber) ||
-				loadedWeeks.current.has(weekNumber)) &&
-			!force
+        loadedWeeks.current.has(weekNumber)) &&
+      !force
     ) {
       return;
     }
@@ -149,6 +152,28 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
   };
 
   const flatListRef = useRef<FlatList | null>(null);
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      const normalizeDate = (date: Date) => {
+        const newDate = new Date(date);
+        newDate.setHours(0, 0, 0, 0);
+        return newDate;
+      };
+
+      const index = data.findIndex(
+        (d) => normalizeDate(d).getTime() === normalizeDate(pickerDate).getTime()
+      );
+
+      if (index >= 0) {
+        flatListRef.current.scrollToIndex({
+          index,
+          animated: false,
+        });
+      }
+    }
+  }, [width, height, pickerDate]);
+
   const [data, setData] = useState(() => {
     const today = new Date();
     return Array.from({ length: 100 }, (_, i) => {
@@ -158,52 +183,56 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
       return date;
     });
   });
-  const renderItem = useCallback(({ item: date }: { item: Date }) => {
-    const weekNumber = getWeekFromDate(date);
-    return (
-      <View style={{ width: finalWidth }}>
-        <Page
-          hasServiceSetup={hasServiceSetup}
-          paddingTop={outsideNav ? 80 : insets.top + 56}
-          current={date.getTime() === pickerDate.getTime()}
-          date={date}
-          day={getAllLessonsForDay(date)}
-          weekExists={
-            timetables[weekNumber] && timetables[weekNumber].length > 0
-          }
-          refreshAction={() => loadTimetableWeek(weekNumber, true)}
-          loading={loadingWeeks.includes(weekNumber)}
-        />
-      </View>
-    );
-  },
-  [
-    pickerDate,
-    timetables,
-    loadingWeeks,
-    outsideNav,
-    insets,
-    getAllLessonsForDay,
-    loadTimetableWeek,
-  ],
+  const renderItem = useCallback(
+    ({ item: date }: { item: Date }) => {
+      const weekNumber = getWeekFromDate(date);
+      return (
+        <View style={{ width: finalWidth, height: "100%" }}>
+          <Page
+            hasServiceSetup={hasServiceSetup}
+            paddingTop={outsideNav ? 80 : insets.top + 56}
+            current={date.getTime() === pickerDate.getTime()}
+            date={date}
+            day={getAllLessonsForDay(date)}
+            weekExists={
+              timetables[weekNumber] && timetables[weekNumber].length > 0
+            }
+            refreshAction={() => loadTimetableWeek(weekNumber, true)}
+            loading={loadingWeeks.includes(weekNumber)}
+          />
+        </View>
+      );
+    },
+    [
+      pickerDate,
+      timetables,
+      loadingWeeks,
+      outsideNav,
+      insets,
+      finalWidth,
+      getAllLessonsForDay,
+      loadTimetableWeek,
+    ]
   );
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
-    if (viewableItems.length > 0) {
-      const newDate = viewableItems[0].item;
-      setPickerDate(newDate);
-      loadTimetableWeek(getWeekFromDate(newDate), false);
-    }
-  },
-  [loadTimetableWeek],
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken<Date>[] }) => {
+      if (viewableItems.length > 0) {
+        const newDate = viewableItems[0].item;
+        setPickerDate(newDate);
+        loadTimetableWeek(getWeekFromDate(newDate), false);
+      }
+    },
+    [loadTimetableWeek]
   );
 
-  const getItemLayout = useCallback((_: any, index: number) => ({
-    length: finalWidth,
-    offset: finalWidth * index,
-    index,
-  }),
-  [],
+  const getItemLayout = useCallback(
+    (_: any, index: number) => ({
+      length: finalWidth,
+      offset: finalWidth * index,
+      index,
+    }),
+    [finalWidth]
   );
 
   const askForReview = async () => {
@@ -392,7 +421,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
                 navigation.navigate("LessonsImportIcal", {});
               }
             },
-            {
+            account.service !== AccountService.Pronote ? {
               icon: shouldShowWeekFrequency ? <EyeOff /> : <Eye />,
               label: shouldShowWeekFrequency
                 ? "Masquer alternance semaine"
@@ -405,7 +434,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
                 setShouldShowWeekFrequency(!shouldShowWeekFrequency);
               },
               checked: shouldShowWeekFrequency,
-            },
+            } : null,
           ]}
         >
           <PapillonHeaderAction

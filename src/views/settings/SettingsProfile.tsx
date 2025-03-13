@@ -11,6 +11,7 @@ import { useAlert } from "@/providers/AlertProvider";
 import * as Clipboard from "expo-clipboard";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDefaultProfilePicture } from "@/utils/GetRessources/GetDefaultProfilePicture";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const theme = useTheme();
@@ -242,7 +243,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             <NativeText variant="subtitle">
               Prénom
             </NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",
@@ -264,7 +265,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
             <NativeText variant="subtitle">
               Nom de famille
             </NativeText>
-            <TextInput
+            <ResponsiveTextInput
               style={{
                 fontSize: 16,
                 fontFamily: "semibold",

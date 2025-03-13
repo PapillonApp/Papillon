@@ -1,19 +1,15 @@
-import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import { NativeList, NativeText} from "@/components/Global/NativeComponents";
+import React, {useCallback, useEffect, useState} from "react";
 import Reanimated, {
   FadeInUp,
   FadeOutDown,
-  FadeOutUp,
-  FlipInXDown,
   LinearTransition,
 } from "react-native-reanimated";
-import { Sparkles, WifiOff, X} from "lucide-react-native";
+import { Sparkles, X} from "lucide-react-native";
 import {useTheme} from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
 import {Dimensions, View} from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 
-import {getErrorTitle} from "@/utils/format/get_papillon_error_title";
 import {Elements, type Element} from "./ElementIndex";
 import {animPapillon} from "@/utils/ui/animations";
 import {useFlagsStore} from "@/stores/flags";
@@ -23,6 +19,7 @@ import {defaultTabs} from "@/consts/DefaultTabs";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RouteParameters} from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>
@@ -32,15 +29,13 @@ interface ModalContentProps {
 
 const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRefresh }) => {
   const { colors } = useTheme();
+  const { isOnline } = useOnlineStatus();
 
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const defined = useFlagsStore(state => state.defined);
-
-  const [isOnline, setIsOnline] = useState(false);
-  const errorTitle = useMemo(() => getErrorTitle(), []);
 
   const [elements, setElements] = useState<Element[]>([]);
 
@@ -134,12 +129,6 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     });
   }, []);
 
-  useEffect(() => {
-    return NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected ?? false);
-    });
-  }, []);
-
   return (
     <View
       style={{
@@ -204,26 +193,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
         </NativeList>
       )}
 
-      {!isOnline &&
-  <Reanimated.View
-    entering={FlipInXDown.springify().mass(1).damping(20).stiffness(300)}
-    exiting={FadeOutUp.springify().mass(1).damping(20).stiffness(300)}
-    layout={animPapillon(LinearTransition)}
-  >
-    <NativeList inline>
-      <NativeItem
-        icon={<WifiOff />}
-      >
-        <NativeText variant="title" style={{ paddingVertical: 2, marginBottom: -4 }}>
-          {errorTitle.label} {errorTitle.emoji}
-        </NativeText>
-        <NativeText variant="subtitle">
-          Tu es hors ligne. Les données affichées peuvent être obsolètes.
-        </NativeText>
-      </NativeItem>
-    </NativeList>
-  </Reanimated.View>
-      }
+      {!isOnline && <OfflineWarning cache={true} />}
 
       <Reanimated.View
         layout={animPapillon(LinearTransition)}

@@ -88,8 +88,8 @@ android {
         applicationId 'xyz.getpapillon.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7920
-        versionName "7.9.2"
+        versionCode 71000
+        versionName "7.10.0"
     }
     signingConfigs {
         debug {
@@ -97,6 +97,14 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            universalApk false
         }
     }
     buildTypes {

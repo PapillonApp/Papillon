@@ -112,7 +112,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
       console.error(e);
       showAlert({
         title: "Erreur",
-        message: "Impossible de récupérer les notes du l'IUT de Lannion. Vérifie ta connexion Internet et réessaye.",
+        message: "Impossible de récupérer les notes de l'IUT de Lannion. Vérifie ta connexion Internet et réessaie.",
         icon: <BadgeX />,
         actions: [
           {
@@ -339,7 +339,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
           console.error(data);
           showAlert({
             title: "Erreur",
-            message: "Impossible de se connecter au portail du l'IUT de Lannion. Vérifie ta connexion Internet et réessaye.",
+            message: "Impossible de se connecter au portail de l'IUT de Lannion. Vérifie ta connexion Internet et réessaie.",
             icon: <BadgeX />,
             actions: [
               {

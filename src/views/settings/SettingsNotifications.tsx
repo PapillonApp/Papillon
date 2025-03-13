@@ -2,27 +2,74 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, Switch } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
-import { Newspaper } from "lucide-react-native";
-import { useSharedValue, withTiming } from "react-native-reanimated";
-import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import {
+  CalendarCheck,
+  BookCheck,
+  TrendingUp,
+  Newspaper,
+  NotepadText,
+  BookPlus,
+} from "lucide-react-native";
+import {
+  FadeInDown,
+  FadeOutUp,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  NativeIcon,
+  NativeItem,
+  NativeList,
+  NativeListHeader,
+  NativeText,
+} from "@/components/Global/NativeComponents";
 import NotificationContainerCard from "@/components/Settings/NotificationContainerCard";
-import { requestNotificationPermission } from "@/background/Notifications";
-import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
+import {
+  createChannelNotification,
+  requestNotificationPermission,
+} from "@/background/Notifications";
 import { useCurrentAccount } from "@/stores/account";
-import { useAlert } from "@/providers/AlertProvider";
+import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import { anim2Papillon } from "@/utils/ui/animations";
 
-const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
+const SettingsNotifications: Screen<"SettingsNotifications"> = ({
+  navigation,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
 
   // User data
-  const account = useCurrentAccount(store => store.account!);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const notifications = account.personalization.notifications;
 
   // Global state
-  const [enabled, setEnabled] = useState(notifications?.enabled || false);
-  const { showAlert } = useAlert();
+  const [enabled, setEnabled] = useState<boolean | null>(
+    notifications?.enabled ?? false
+  );
+
+  useEffect(() => {
+    const handleNotificationPermission = async () => {
+      const statut = await requestNotificationPermission();
+      if (!statut) {
+        setEnabled(null);
+        setTimeout(() => {
+          mutateProperty("personalization", {
+            notifications: { ...notifications, enabled: false },
+          });
+        }, 1500);
+      } else if (enabled !== null) {
+        if (enabled) createChannelNotification();
+        setTimeout(() => {
+          mutateProperty("personalization", {
+            notifications: { ...notifications, enabled },
+          });
+        }, 1500);
+      }
+    };
+
+    handleNotificationPermission();
+  }, [enabled]);
 
   // Animation states
   const opacity = useSharedValue(0);
@@ -41,45 +88,47 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
   }, [enabled]);
 
   const askEnabled = async (newValue: boolean) => {
-    if (isExpoGo()) {
-      alertExpoGo(showAlert);
-      return;
-    }
-
-    requestNotificationPermission().then((result) => {
-      console.log("Notification permission requested:", result);
-    });
-
-
-    // await mutateProperty("personalization", { notifications: { ...notifications, enabled: newValue } });
-    // setEnabled(newValue);
+    setEnabled(newValue);
   };
 
   // Schoolary notifications
   const notificationSchoolary = [
-    // {
-    //   icon: <NativeIcon icon={<CalendarCheck />} color={colors.primary} />,
-    //   title: "Modification de cours",
-    //   message: "Cours de mathématiques annulé dans 10 minutes",
-    //   personalizationValue: "timeTable",
-    // },
-    // {
-    //   icon: <NativeIcon icon={<BookCheck />} color={colors.primary} />,
-    //   title: "Travail à faire pour demain",
-    //   message: "N’oublie pas de terminer ton devoir de français pour demain",
-    //   personalizationValue: "homework",
-    // },
-    // {
-    //   icon: <NativeIcon icon={<TrendingUp />} color={colors.primary} />,
-    //   title: "Nouvelle note",
-    //   message: "Nouvelle note disponible : 18/20 en histoire",
-    //   personalizationValue: "grades",
-    // },
+    {
+      icon: <NativeIcon icon={<CalendarCheck />} color={colors.primary} />,
+      title: "Changement de cours",
+      message: "Musique (10:00-11:00) : Prof. absent",
+      personalizationValue: "timetable",
+    },
+    {
+      icon: <NativeIcon icon={<BookCheck />} color={colors.primary} />,
+      title: "Nouveau devoir",
+      message: "Un nouveau devoir en Mathématiques a été publié",
+      personalizationValue: "homeworks",
+    },
+    {
+      icon: <NativeIcon icon={<TrendingUp />} color={colors.primary} />,
+      title: "Nouvelle note",
+      message: "Une nouvelle note en Anglais a été publiée",
+      personalizationValue: "grades",
+    },
     {
       icon: <NativeIcon icon={<Newspaper />} color={colors.primary} />,
       title: "Nouvelle actualité",
-      message: "Nouvelle actualité : \"Les élèves de 3ème partent en voyage scolaire\"",
+      message:
+        "Chers élèves, chers collègues, Dans le cadre du prix \"Non au harcèlement\", 9 affiches ont été réa...",
       personalizationValue: "news",
+    },
+    {
+      icon: <NativeIcon icon={<NotepadText />} color={colors.primary} />,
+      title: "Vie Scolaire",
+      message: "Tu as été en retard de 5 min à 11:10",
+      personalizationValue: "attendance",
+    },
+    {
+      icon: <NativeIcon icon={<BookPlus />} color={colors.primary} />,
+      title: "Nouvelle compétence",
+      message: "Une nouvelle compétence en Histoire a été publiée",
+      personalizationValue: "evaluation",
     },
   ];
 
@@ -94,23 +143,39 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
         theme={theme}
         isEnable={enabled}
         setEnabled={askEnabled}
+        navigation={navigation}
       />
 
-      {notifications?.enabled && (
+      {enabled && (
         <>
-          <NativeListHeader label={"Notifications scolaires"} />
-          <NativeList>
+          <NativeListHeader
+            label="Notifications scolaires"
+            animated
+            entering={anim2Papillon(FadeInDown).delay(50)}
+            exiting={anim2Papillon(FadeOutUp)}
+          />
+          <NativeList
+            animated
+            entering={anim2Papillon(FadeInDown)}
+            exiting={anim2Papillon(FadeOutUp).delay(50)}
+          >
             {notificationSchoolary.map((notification, index) => (
               <NativeItem
                 key={index}
                 leading={notification.icon}
+                animated
+                entering={anim2Papillon(FadeInDown).delay(70 * index)}
                 trailing={
                   <Switch
                     trackColor={{
                       false: colors.border,
                       true: colors.primary,
                     }}
-                    value={account.personalization.notifications?.[notification.personalizationValue as keyof typeof notifications] ?? false}
+                    value={
+                      account.personalization.notifications?.[
+                        notification.personalizationValue as keyof typeof notifications
+                      ] ?? false
+                    }
                     onValueChange={(value) => {
                       mutateProperty("personalization", {
                         notifications: {
@@ -138,6 +203,8 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = () => {
           </NativeList>
         </>
       )}
+
+      <InsetsBottomView />
     </ScrollView>
   );
 };

@@ -11,13 +11,19 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import { useTheme } from "@react-navigation/native";
 import GetV6Data from "@/utils/login/GetV6Data";
-import { School } from "lucide-react-native";
+import { Check, School, WifiOff } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useAlert } from "@/providers/AlertProvider";
 
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+
+  const { isOnline } = useOnlineStatus();
+  const { showAlert } = useAlert();
+
   type Services = "pronote" | "ed" | "skolengo";
   const [service, setService] = useState<Services | null>(null);
 
@@ -177,7 +183,24 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
           primary
           value="Confirmer"
           disabled={service === null}
-          onPress={services.find((srv) => srv.name === service)?.login}
+          onPress={
+            isOnline
+              ? services.find((srv) => srv.name === service)?.login
+              : () => {
+                showAlert({
+                  title: "Information",
+                  message:
+                      "Pour poursuivre la connexion, tu dois être connecté à Internet. Vérifie ta connexion Internet et réessaie",
+                  icon: <WifiOff />,
+                  actions: [
+                    {
+                      title: "OK",
+                      icon: <Check />,
+                    },
+                  ],
+                });
+              }
+          }
         />
 
         {v6Data && v6Data.restore && (

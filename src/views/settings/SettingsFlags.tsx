@@ -9,6 +9,7 @@ import { useFlagsStore } from "@/stores/flags";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useAlert } from "@/providers/AlertProvider";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const { flags, remove, set } = useFlagsStore();
@@ -96,7 +97,7 @@ const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
         <NativeListHeader label="Ajouter un flag" />
         <NativeList>
           <NativeItem>
-            <TextInput
+            <ResponsiveTextInput
               style={[styles.input, { color: colors.text,
                 fontFamily: "Menlo", }]}
               placeholder="Nouveau flag"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View, StyleSheet, Modal, KeyboardAvoidingView, TextInput, Pressable } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet, Modal, KeyboardAvoidingView, TextInput, Keyboard } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
@@ -20,6 +20,7 @@ import defaultPersonalization from "@/services/pronote/default-personalization";
 import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { useAlert } from "@/providers/AlertProvider";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -45,7 +46,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
 
-  const [inputFocus, setInputFocus] = useState(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const [QRValidationCode, setQRValidationCode] = useState("");
   const [pinModalVisible, setPinModalVisible] = useState(false);
@@ -191,6 +192,19 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
     }
   }, [pinModalVisible]);
 
+  const keyboardDidShow = () => setKeyboardOpen(true);
+  const keyboardDidHide = () => setKeyboardOpen(false);
+
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", keyboardDidShow);
+    Keyboard.addListener("keyboardDidHide", keyboardDidHide);
+
+    return () => {
+      Keyboard.removeAllListeners("keyboardDidShow");
+      Keyboard.removeAllListeners("keyboardDidHide");
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Modal
@@ -296,99 +310,79 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
             </Text>
           </View>
 
-          <Reanimated.View
+          {!keyboardOpen && (
+            <Reanimated.View
+              entering={FadeInUp.duration(250)}
+              exiting={FadeOutUp.duration(150)}
+              style={{
+                zIndex: 9999,
+                paddingTop: 100,
+              }}
+              layout={LinearTransition}
+            >
+              <PapillonShineBubble
+                message="Indique le code à 4 chiffres que tu viens de créer sur PRONOTE"
+                width={250}
+                numberOfLines={3}
+                noFlex
+              />
+            </Reanimated.View>
+          )}
+
+          <View
             style={{
               flex: 1,
-              justifyContent: "center",
               alignItems: "center",
+              marginBottom: "7%",
             }}
-
-            layout={LinearTransition}
           >
-            {!inputFocus && (
-              <Reanimated.View
-                entering={FadeInUp.duration(250)}
-                exiting={FadeOutUp.duration(150)}
-                style={{ zIndex: 9999 }}
-                layout={LinearTransition}
-              >
-                <PapillonShineBubble
-                  message="Indique le code à 4 chiffres que tu viens de créer sur PRONOTE"
-                  width={250}
-                  numberOfLines={3}
-                  noFlex
-                />
-              </Reanimated.View>
-            )}
-
-            <Pressable style={{ flex: 1, width: "100%" }} onPress={() => codeInput.current?.blur()} />
-
-            <View
+            <ResponsiveTextInput
               style={{
-                width: "100%",
-                paddingHorizontal: 16,
-                marginVertical: 20,
-                borderCurve: "continuous",
+                paddingHorizontal: 75,
+                paddingVertical: 10,
+                backgroundColor: colors.card,
+                borderRadius: 12,
+                fontFamily: "medium",
+                color: colors.text,
+                fontSize: 24,
+                textAlign: "center",
+                borderColor: colors.border,
+                borderWidth: 2,
               }}
-            >
-              <TextInput
-                style={{
-                  width: "100%",
-                  paddingHorizontal: 10,
-                  paddingVertical: 10,
-                  backgroundColor: colors.card,
-                  borderRadius: 12,
-                  fontFamily: "medium",
-                  color: colors.text,
-                  fontSize: 24,
-                  textAlign: "center",
-                  borderColor: colors.border,
-                  borderWidth: 2,
-                }}
-                placeholderTextColor={colors.text + "80"}
-                placeholder="Code à 4 chiffres"
-                keyboardType="number-pad"
-                maxLength={4}
-                secureTextEntry
-                value={QRValidationCode}
-                onChangeText={(text) => setQRValidationCode(text)}
-                onFocus={() => setInputFocus(true)}
-                onBlur={() => setInputFocus(false)}
-                ref={codeInput}
-              />
-            </View>
+              placeholderTextColor={colors.text + "80"}
+              placeholder="Code à 4 chiffres"
+              keyboardType="number-pad"
+              maxLength={4}
+              secureTextEntry
+              value={QRValidationCode}
+              onChangeText={(text) => setQRValidationCode(text)}
+              ref={codeInput}
+            />
+          </View>
 
-            <Pressable style={{ flex: 1, width: "100%" }} onPress={() => codeInput.current?.blur()} />
-
-            <View
-              style={{
-                width: "100%",
-                paddingHorizontal: 16,
-                paddingBottom: insets.bottom,
-                gap: 8,
-                flexDirection: "row",
+          <View
+            style={{
+              width: "100%",
+              paddingHorizontal: 16,
+              paddingBottom: insets.bottom + 16,
+              gap: 8,
+            }}
+          >
+            <ButtonCta
+              value="Confirmer"
+              primary
+              onPress={() => {
+                setPinModalVisible(false);
+                loginQR();
               }}
-            >
-              <View style={{ flex: 1 }}>
-                <ButtonCta
-                  value="Annuler"
-                  onPress={() => {
-                    setPinModalVisible(false);
-                  }}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <ButtonCta
-                  value="Confirmer"
-                  primary
-                  onPress={() => {
-                    setPinModalVisible(false);
-                    loginQR();
-                  }}
-                />
-              </View>
-            </View>
-          </Reanimated.View>
+            />
+            <ButtonCta
+              value="Annuler"
+              onPress={() => {
+                setPinModalVisible(false);
+              }}
+            />
+          </View>
         </KeyboardAvoidingView>
       </Modal>
 

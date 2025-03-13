@@ -20,6 +20,7 @@ import {AccountService} from "@/stores/account/types";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type NewsItem = Omit<Information, "date"> & { date: string, important: boolean };
 
@@ -33,6 +34,13 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
   const [isED, setIsED] = useState(false);
+  const { isOnline } = useOnlineStatus();
+
+  useEffect(() => {
+    if (!isOnline && isLoading) {
+      setIsLoading(false);
+    }
+  }, [isOnline, isLoading]);
 
   const fetchData = useCallback(async (hidden: boolean = false) => {
     if (!hidden) setIsLoading(true);
@@ -127,6 +135,8 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
         scrollIndicatorInsets={{ top: 42 }}
       >
         <PapillonHeaderInsetHeight route={route} />
+
+        {!isOnline && <OfflineWarning cache={true} />}
 
         {importantMessages.length > 0 && (
           <Reanimated.View

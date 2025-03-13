@@ -11,7 +11,7 @@
 // |  ne contiendra pas grand-chose qui puisse t'intéresser.  |
 // |                                                          |
 // |        Heureusement pour toi, je suis magicien !         |
-// |                  ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ                  |
+// |                  ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ                    |
 // |                                                          |
 // |          Si tu souhaites modifier les widgets :          |
 // |                      ~/src/widgets                       |
@@ -241,21 +241,23 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
       {!modalOpen && focused && !isTablet && (
         <StatusBar barStyle="light-content" backgroundColor={"transparent"} translucent />
       )}
-      <ContextMenu
-        style={[{
-          position: "absolute",
-          top: insets.top + 8,
-          left: 16,
-          zIndex: 1000,
-        }]}
-        shouldOpenContextMenu={shouldOpenContextMenu}
-      >
-        <AccountSwitcher
-          translationY={scrollOffset}
-          modalOpen={modalOpen}
-          loading={!account.instance}
-        />
-      </ContextMenu>
+      {!isTablet && (
+        <ContextMenu
+          style={[{
+            position: "absolute",
+            top: insets.top + 8,
+            left: 16,
+            zIndex: 1000,
+          }]}
+          shouldOpenContextMenu={shouldOpenContextMenu}
+        >
+          <AccountSwitcher
+            translationY={scrollOffset}
+            modalOpen={modalOpen}
+            loading={!account.instance}
+          />
+        </ContextMenu>
+      )}
       <Reanimated.ScrollView
         ref={scrollRef}
         snapToEnd={false}
@@ -291,7 +293,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View
-          style={widgetAnimatedStyle}
+          style={[
+            widgetAnimatedStyle,
+            isTablet && {
+              marginTop: 2 * (0 - insets.top),
+            }
+          ]}
         >
           <Header
             scrolled={false}

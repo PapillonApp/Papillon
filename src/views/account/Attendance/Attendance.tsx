@@ -22,10 +22,12 @@ import MissingItem from "@/components/Global/MissingItem";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import {AccountService} from "@/stores/account/types";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
   const account = useCurrentAccount(store => store.account!);
+  const { isOnline } = useOnlineStatus();
 
   const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Attendance, account.localID) : true;
 
@@ -35,6 +37,12 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(hasServiceSetup);
+
+  useEffect(() => {
+    if (!isOnline && isLoading) {
+      setLoading(false);
+    }
+  }, [isOnline, isLoading]);
 
   const [userSelectedPeriod, setUserSelectedPeriod] = useState<string | null>(null);
   const selectedPeriod = useMemo(() => userSelectedPeriod ?? defaultPeriod, [userSelectedPeriod, defaultPeriod]);
@@ -246,6 +254,8 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
         }
       >
         <PapillonHeaderInsetHeight route={route} />
+
+        {!isOnline && <OfflineWarning cache={true} />}
 
         {hasServiceSetup && attendances[selectedPeriod] && attendances[selectedPeriod].absences.length === 0 && attendances[selectedPeriod].delays.length === 0 && attendances[selectedPeriod].punishments.length === 0 && Object.keys(attendances_observations_details).length === 0 &&(
           <MissingItem

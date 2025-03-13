@@ -1,5 +1,5 @@
 import type { Screen } from "@/router/helpers/types";
-import { ActivityIndicator, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import {
   NativeIcon,
   NativeItem,
@@ -26,6 +26,7 @@ import {
   Folder,
   X,
   BadgeHelp,
+  SunMoon,
 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -37,6 +38,7 @@ import { useTheme } from "@react-navigation/native";
 import { useAlert } from "@/providers/AlertProvider";
 import MissingItem from "@/components/Global/MissingItem";
 import formatDate from "@/utils/format/format_date_complets";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -66,7 +68,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
         paddingTop: 0,
       }}
     >
-      <TextInput
+      <ResponsiveTextInput
         placeholder={"Rechercher"}
         value={searchTerms}
         onChangeText={setSearchTerms}
@@ -156,7 +158,9 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                   leading={
                     <NativeIcon
                       icon={
-                        log.type === "ERROR" ? (
+                        log.from === "BACKGROUND" ? (
+                          <SunMoon />
+                        ) : log.type === "ERROR" ? (
                           <CircleX />
                         ) : log.type === "WARN" ? (
                           <TriangleAlert />
@@ -177,23 +181,25 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = ({ navigation }) => {
                         )
                       }
                       color={
-                        log.type === "ERROR"
-                          ? "#BE0B00"
-                          : log.type === "WARN"
-                            ? "#CF6B0F"
-                            : log.type === "INFO"
-                              ? "#0E7CCB"
-                              : log.message.startsWith("User navigate into /")
-                                ? "#28B463"
-                                : log.message === "App in background"
-                                  ? "#1F618D"
-                                  : log.message.toLowerCase().includes("read")
-                                    ? "#D4AC02"
-                                    : log.message.startsWith("[timetable:updateClasses")
-                                      ? "#884EA0"
-                                      : log.message.toLowerCase().includes("folder")
-                                        ? "#CA6F1E"
-                                        : "#AAA"
+                        log.from === "BACKGROUND"
+                          ? "#34495E"
+                          : log.type === "ERROR"
+                            ? "#BE0B00"
+                            : log.type === "WARN"
+                              ? "#CF6B0F"
+                              : log.type === "INFO"
+                                ? "#0E7CCB"
+                                : log.message.startsWith("User navigate into /")
+                                  ? "#28B463"
+                                  : log.message === "App in background"
+                                    ? "#1F618D"
+                                    : log.message.toLowerCase().includes("read")
+                                      ? "#D4AC02"
+                                      : log.message.startsWith("[timetable:updateClasses")
+                                        ? "#884EA0"
+                                        : log.message.toLowerCase().includes("folder")
+                                          ? "#CA6F1E"
+                                          : "#AAA"
                       }
                       style={{
                         marginLeft: -6,

@@ -22,6 +22,7 @@ import { COLORS_LIST } from "@/services/shared/Subject";
 import type { Screen } from "@/router/helpers/types";
 import SubjectContainerCard from "@/components/Settings/SubjectContainerCard";
 import { useAlert } from "@/providers/AlertProvider";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
@@ -295,7 +296,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                         width: 42,
                       }}
                     >
-                      <TextInput
+                      <ResponsiveTextInput
                         ref={emojiInput}
                         style={{
                           fontFamily: "medium",
@@ -318,7 +319,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                       <MemoizedNativeText variant="subtitle" numberOfLines={1}>
                         Nom de la matière
                       </MemoizedNativeText>
-                      <TextInput
+                      <ResponsiveTextInput
                         style={{
                           fontFamily: "medium",
                           fontSize: 16,
@@ -405,7 +406,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
                           borderRadius: 80
                         }}
                       />
-                      <TextInput
+                      <ResponsiveTextInput
                         style={{
                           fontFamily: "regular",
                           letterSpacing: 1,

@@ -9,11 +9,13 @@ import { Information } from "@/services/shared/Information";
 import formatDate from "@/utils/format/format_date_complets";
 import { useTheme } from "@react-navigation/native";
 import {
+  Check,
   Eye,
   EyeOff,
   FileIcon,
   Link,
   MoreHorizontal,
+  WifiOff,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
@@ -29,12 +31,16 @@ import { AttachmentType } from "@/services/shared/Attachment";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { newsInformationAcknowledge } from "pawnote";
 import { AccountService } from "@/stores/account/types";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useAlert } from "@/providers/AlertProvider";
 
 const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
   const [message, setMessage] = useState<Information>(JSON.parse(route.params.message) as Information);
   const important = route.params.important;
   const isED = route.params.isED;
   const account = useCurrentAccount((store) => store.account!);
+  const { isOnline } = useOnlineStatus();
+  const { showAlert } = useAlert();
 
   const theme = useTheme();
   const stylesText = StyleSheet.create({
@@ -105,11 +111,25 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                     ? "Marquer comme non lu"
                     : "Marquer comme lu",
                   onPress: () => {
-                    setNewsRead(account, message, !message.read);
-                    setMessage((prev) => ({
-                      ...prev,
-                      read: !prev.read,
-                    }));
+                    if (isOnline) {
+                      setNewsRead(account, message, !message.read);
+                      setMessage((prev) => ({
+                        ...prev,
+                        read: !prev.read,
+                      }));
+                    } else {
+                      showAlert({
+                        title: "Information",
+                        message: "Tu es hors ligne. Vérifie ta connexion Internet et réessaie",
+                        icon: <WifiOff />,
+                        actions: [
+                          {
+                            title: "OK",
+                            icon: <Check />,
+                          },
+                        ],
+                      });
+                    }
                   },
                 },
               ]}
@@ -167,16 +187,30 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
                     checked={message.acknowledged}
                     onPress={async () => {
                       if (!message.acknowledged && account.instance) {
-                        await newsInformationAcknowledge(
-                          account.instance,
-                          message.ref
-                        );
+                        if (isOnline) {
+                          await newsInformationAcknowledge(
+                            account.instance,
+                            message.ref
+                          );
 
-                        setMessage((prev) => ({
-                          ...prev,
-                          read: true,
-                          acknowledged: true,
-                        }));
+                          setMessage((prev) => ({
+                            ...prev,
+                            read: true,
+                            acknowledged: true,
+                          }));
+                        } else {
+                          showAlert({
+                            title: "Information",
+                            message: "Tu es hors ligne. Vérifie ta connexion Internet et réessaie",
+                            icon: <WifiOff />,
+                            actions: [
+                              {
+                                title: "OK",
+                                icon: <Check />,
+                              },
+                            ],
+                          });
+                        }
                       }
                     }}
                     color={theme.colors.primary}

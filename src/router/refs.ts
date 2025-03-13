@@ -1,2 +1,5 @@
+import { NavigationContainerRef } from "@react-navigation/native";
 import { createRef } from "react";
-export const PapillonNavigation = createRef<any>();
+import { RouteParameters } from "./helpers/types";
+export const PapillonNavigation =
+  createRef<NavigationContainerRef<RouteParameters>>();

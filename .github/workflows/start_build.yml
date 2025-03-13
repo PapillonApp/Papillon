@@ -1,4 +1,4 @@
-name: Build and Deploy to Beta Channels
+name: 🆕 New Release (Build + Deploy)
 
 on:
   workflow_dispatch:
@@ -7,39 +7,54 @@ jobs:
   clean:
     runs-on: ubuntu-latest
     steps:
-      - name: Clean environment (just for your comprehension but it do nothing)
+      - name: 🧹 Clean environment
         run: |
           rm -rf node_modules
           rm -rf ios/build
           rm -rf ~/Library/Developer/Xcode/DerivedData
           rm -rf android/app/build/
           rm -rf $HOME/.gradle/caches/
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 💾 Install dependencies
+        run: npm ci
+      
+      - name: 📤 Upload node_modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules
+          path: node_modules
+
+      - name: 🔄 Run Expo Prebuild
+        run: npm run prebuild
         
   build_ios:
     needs: clean
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📥 Download node_modules
+        uses: actions/download-artifact@v4
         with:
-          node-version: '18'
+          name: node_modules
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Cocoapods
+      - name: 💾 Install Cocoapods
         run: sudo gem install cocoapods
 
-      - name: Install Pods and update Hermes Engine
+      - name: 💾 Install Pods and update Hermes Engine
         run: |
           cd ios
           rm -rf Pods Podfile.lock
           pod install
           pod update hermes-engine --no-repo-update
 
-      - name: Install Apple Certificate
+      - name: 💾 Install Apple Certificate
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
@@ -83,7 +98,7 @@ jobs:
           # Clean up
           rm $CERTIFICATE_PATH
 
-      - name: Install Provisioning Profile
+      - name: 💾 Install Provisioning Profile
         env:
           PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: |
@@ -92,7 +107,7 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $RUNNER_TEMP/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Build iOS app
+      - name: 🍎 Build iOS app
         env:
           KEYCHAIN_PATH: $RUNNER_TEMP/app-signing.keychain
         run: |
@@ -118,8 +133,8 @@ jobs:
             exit 1
           fi
 
-      - name: Upload IPA
-        uses: actions/upload-artifact@v3
+      - name: 🛜 Upload IPA
+        uses: actions/upload-artifact@v4
         with:
           name: ios-app
           path: ios/build/Papillon.ipa
@@ -129,23 +144,21 @@ jobs:
     needs: clean
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 📥 Download node_modules
+        uses: actions/download-artifact@v4
         with:
-          node-version: '18'
+          name: node_modules
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup Java
+      - name: ⚙️ Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Build Android app
+      - name: 🚀 Build APKs for specific ABIs
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -154,47 +167,101 @@ jobs:
           # Decode keystore
           echo $KEYSTORE_BASE64 | base64 --decode > android/app/release.keystore
           
-          # Build APK and AAB
           cd android
-          ./gradlew assembleRelease
-          ./gradlew bundleRelease
+          ./gradlew clean assembleRelease
+          ls app/build/outputs/apk/release/
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: 🛠️ Rename APK files
+        run: |
+          cd android/app/build/outputs/apk/release/
+          for file in *.apk; do
+            mv "$file" "Papillon Dev-${file%-release.apk}.apk"
+          done
+
+      - name: 🛜 Upload split APKs
+        uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: split-apks
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
 
-      - name: Upload AAB
-        uses: actions/upload-artifact@v3
-        with:
-          name: android-aab
-          path: android/app/build/outputs/bundle/release/app-release.aab
-
-  deploy_to_beta_channels:
+  deploy_new_release:
     needs: [build_ios, build_android]
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
-      - name: Download iOS artifact
-        uses: actions/download-artifact@v3
+      - name: 🔍 Extract version from package.json
+        id: extract_version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      
+      - name: 🔍 Get pull requests since last release
+        id: get_prs
+        run: |
+          LAST_TAG=$(git tag --sort=-creatordate | head -n 1)
+          REPO=${{ github.repository }}
+          PULL_REQUESTS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$REPO/pulls?state=closed&base=main" | \
+            jq -r --arg LAST_TAG $LAST_TAG '.[] | select(.merged_at >= $LAST_TAG) | "- PR #\(.number): \(.title) by @\(.user.login)"')
+          echo "PULL_REQUESTS<<EOF" >> $GITHUB_ENV
+          echo "$PULL_REQUESTS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      
+      - name: 🔗 Generate comparison link
+        id: comparison_link
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+
+          COMPARE_URL="https://github.com/${{ github.repository }}/compare/$LAST_TAG...v${{ env.VERSION }}"
+          echo "COMPARE_URL=$COMPARE_URL" >> $GITHUB_ENV
+
+      - name: 📡 Download iOS artifact
+        uses: actions/download-artifact@v4
         with:
           name: ios-app
           path: ios-app
 
-      - name: Download Android AAB artifact
-        uses: actions/download-artifact@v3
+      - name: 📡 Download Android AAB artifact
+        uses: actions/download-artifact@v4
         with:
           name: android-aab
           path: android-aab
 
-      - name: Prepare artifacts
+      - name: 📡 Download Android APKs
+        uses: actions/download-artifact@v4
+        with:
+          name: split-apks
+          path: .
+
+      - name: 🔧 Prepare artifacts
         run: |
           mv ios-app/Papillon.ipa ./Papillon.ipa
           mv android-aab/app-release.aab ./Papillon.aab
 
-      - name: Upload to TestFlight
+      - name: 🛜 Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: "ver. ${{ env.VERSION }}"
+          body: |
+            ### What's Changed
+            ---
+
+            ${{ env.PULL_REQUESTS }}
+
+            **Full Changelog**: ${{ env.COMPARE_URL }}
+          draft: false
+          prerelease: true
+          files: |
+            *.apk 
+            Papillon.ipa
+            Papillon.aab
+
+      - name: 📥 Upload to TestFlight
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -209,7 +276,7 @@ jobs:
           
           echo "iOS build uploaded to TestFlight for beta testing"
 
-      - name: Upload Android Release to Play Store Beta
+      - name: 📥 Upload Android Release to Play Store Beta
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
@@ -218,10 +285,3 @@ jobs:
           track: beta
           status: completed
           changesNotSentForReview: false
-
-      - name: Notify successful beta deployment
-        run: |
-          echo "Both iOS and Android builds have been successfully uploaded to their respective beta channels (TestFlight and Play Store Beta)."
-          echo "To release to production:"
-          echo "- For iOS: Go to App Store Connect, test the build in TestFlight, then submit for App Store review when ready (Vince will do this)."
-          echo "- For Android: Go to the Google Play Console, test the build in the beta track, then promote to production when ready (Vince will do this)."

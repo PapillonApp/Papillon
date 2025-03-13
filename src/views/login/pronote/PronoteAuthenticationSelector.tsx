@@ -50,7 +50,7 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
         message="Que préfères-tu utiliser pour te connecter à Pronote ?"
         numberOfLines={2}
         width={260}
-        offsetTop={"16%"}
+        offsetTop={"20%"}
       />
 
       <View
@@ -170,7 +170,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
       <View style={styles.buttons}>
         <View
           style={{
-            flexDirection: "row",
             gap: 12,
             alignItems: "center",
             marginBottom: 9,
@@ -184,7 +183,6 @@ const PronoteAuthenticationSelector: Screen<"PronoteAuthenticationSelector"> = (
           />
           <NativeText
             style={{
-              flex: 1,
               color: theme.colors.text,
               opacity: 0.5,
               fontSize: 13,

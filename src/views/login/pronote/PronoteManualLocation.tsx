@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from "react";
-import { Keyboard, Text, TextInput, View, StyleSheet, KeyboardEvent, ActivityIndicator, TouchableOpacity } from "react-native";
+import { Keyboard, Text, TextInput, StyleSheet, KeyboardEvent, ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { type GeographicMunicipality, getGeographicMunicipalities } from "@/utils/external/geo-gouv-api";
 import { useDebounce } from "@/hooks/debounce";
 import type { Screen } from "@/router/helpers/types";
@@ -8,10 +8,11 @@ import Reanimated, { LinearTransition, FlipInXDown, ZoomIn, ZoomOut, FadeInDown,
 
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { Search, X } from "lucide-react-native";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 /**
  * Allows the get the location of the user manually.
@@ -96,140 +97,124 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
   }, [debouncedSearch]);
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-        }
-      ]}
-    >
+    <SafeAreaView style={styles.container}>
+      <MaskStars />
+
+      <View style={{ height: insets.top, marginTop: "10%" }} />
+
+      {!keyboardOpen && municipalities.results.length === 0 && (
+        <Reanimated.View
+          entering={FadeInUp.duration(250).delay(200)}
+          exiting={FadeOutUp.duration(150)}
+          style={{ zIndex: 9999 }}
+          layout={LinearTransition}
+        >
+          <PapillonShineBubble
+            message={"Dans quelle ville se trouve ton établissement ?"}
+            numberOfLines={2}
+            width={250}
+            noFlex
+            style={{ marginTop: 0, zIndex: 9999 }}
+          />
+        </Reanimated.View>
+      )}
+
       <Reanimated.View
-        layout={LinearTransition}
         style={[
+          styles.searchContainer,
           {
-            flex: 1,
-            paddingTop: insets.top + 44,
-            justifyContent: "center",
+            backgroundColor: colors.text + "15",
+            // @ts-expect-error
+            color: colors.text,
+            borderColor: colors.border,
           }
         ]}
+        layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
       >
-        <MaskStars />
+        <Search size={24} color={colors.text + "55"} />
 
-        {municipalities.results.length == 0 && (
-          <Reanimated.View
-            entering={FadeInUp.duration(250).delay(200)}
-            exiting={FadeOutUp.duration(150)}
-            style={{ zIndex: 9999 }}
-            layout={LinearTransition}
-          >
-            <PapillonShineBubble
-              message={"Dans quelle ville se trouve ton établissement ?"}
-              numberOfLines={2}
-              width={250}
-              noFlex
-              style={{ marginTop: 20 }}
-            />
-          </Reanimated.View>
-        )}
-
-        <Reanimated.View
+        <ResponsiveTextInput
+          ref={searchInputRef}
+          autoFocus={true}
+          placeholder="Nom d'une ville, municipalité, etc."
+          placeholderTextColor={colors.text + "55"}
+          value={search}
+          onChangeText={setSearch}
           style={[
-            styles.searchContainer,
+            styles.searchInput,
             {
-              backgroundColor: colors.text + "15",
-              // @ts-expect-error
               color: colors.text,
-              borderColor: colors.border,
             }
           ]}
-          layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+        />
+
+        {search.length > 0 && (
+          <Reanimated.View
+            layout={LinearTransition}
+            entering={ZoomIn.springify()}
+            exiting={ZoomOut.springify()}
+          >
+            <TouchableOpacity onPress={() => {
+              setSearch("");
+              searchInputRef.current?.focus();
+            }}>
+              <X size={24} color={colors.text + "55"} />
+            </TouchableOpacity>
+          </Reanimated.View>
+        )}
+      </Reanimated.View>
+
+      <Reanimated.ScrollView
+        style={styles.overScroll}
+        layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
+      >
+        <Reanimated.View
+          style={[styles.list, {
+            paddingBottom: keyboardHeight + insets.bottom,
+          }]}
+          layout={LinearTransition}
         >
-          <Search size={24} color={colors.text + "55"} />
-
-          <TextInput
-            ref={searchInputRef}
-            autoFocus={true}
-            placeholder="Nom d'une ville, municipalité, etc."
-            placeholderTextColor={colors.text + "55"}
-            value={search}
-            onChangeText={setSearch}
-            style={[
-              styles.searchInput,
-              {
-                color: colors.text,
-              }
-            ]}
-          />
-
-          { search.length > 0 && (
+          {municipalities.loading ? (
             <Reanimated.View
+              style={styles.loadingContainer}
               layout={LinearTransition}
-              entering={ZoomIn.springify()}
-              exiting={ZoomOut.springify()}
+              entering={FadeInDown.springify()}
+              exiting={FadeOutDown.springify()}
             >
-              <TouchableOpacity onPress={() => {
-                setSearch("");
-                searchInputRef.current?.focus();
-              }}>
-                <X size={24} color={colors.text + "55"} />
-              </TouchableOpacity>
+              <ActivityIndicator />
+              <Text
+                style={{
+                  color: colors.text + "88",
+                  marginTop: 10,
+                  fontSize: 16,
+                }}
+              >
+                Chargement...
+              </Text>
             </Reanimated.View>
+          ) : (
+            municipalities.results.map((municipality, index) => (
+              <Reanimated.View
+                style={{ width: "100%" }}
+                entering={FlipInXDown.springify().delay(100 * index)}
+                exiting={FadeOutDown.duration(150).delay(100 * index)}
+                layout={LinearTransition}
+                key={index}
+              >
+                <DuoListPressable
+                  text={`${municipality.properties.name} (${municipality.properties.postcode})`}
+                  onPress={() => void navigation.navigate("PronoteInstanceSelector", {
+                    longitude: municipality.geometry.coordinates[0],
+                    latitude: municipality.geometry.coordinates[1],
+                    hideDistance: true
+                  })}
+                />
+              </Reanimated.View>
+            ))
           )}
         </Reanimated.View>
-
-        <Reanimated.ScrollView
-          style={styles.overScroll}
-          layout={LinearTransition.springify().mass(1).stiffness(100).damping(40)}
-        >
-          <Reanimated.View
-            style={[styles.list, {
-
-              paddingBottom: keyboardHeight + insets.bottom,
-            }]}
-            layout={LinearTransition}
-          >
-            {municipalities.loading ? (
-              <Reanimated.View
-                style={styles.loadingContainer}
-                layout={LinearTransition}
-                entering={FadeInDown.springify()}
-                exiting={FadeOutDown.springify()}
-              >
-                <ActivityIndicator />
-                <Text
-                  style={{
-                    color: colors.text + "88",
-                    marginTop: 10,
-                    fontSize: 16,
-                  }}
-                >
-                  Chargement...
-                </Text>
-              </Reanimated.View>
-            ) : (
-              municipalities.results.map((municipality, index) => (
-                <Reanimated.View
-                  style={{ width: "100%" }}
-                  entering={FlipInXDown.springify().delay(100 * index)}
-                  exiting={FadeOutDown.duration(150).delay(100 * index)}
-                  layout={LinearTransition}
-                  key={index}
-                >
-                  <DuoListPressable
-                    text={`${municipality.properties.name} (${municipality.properties.postcode})`}
-                    onPress={() => void navigation.navigate("PronoteInstanceSelector", {
-                      longitude: municipality.geometry.coordinates[0],
-                      latitude: municipality.geometry.coordinates[1],
-                      hideDistance: true
-                    })}
-                  />
-                </Reanimated.View>
-              ))
-            )}
-          </Reanimated.View>
-        </Reanimated.ScrollView>
-      </Reanimated.View>
-    </View>
+      </Reanimated.ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -237,9 +222,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     gap: 20,
-    paddingTop: -40,
+    // paddingTop: -40,
   },
 
   overScrollContainer: {
@@ -249,6 +234,7 @@ const styles = StyleSheet.create({
 
   overScroll: {
     width: "100%",
+    marginTop: -20,
   },
 
   list: {
@@ -258,7 +244,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
     gap: 10,
-    paddingBottom: 40,
+    paddingBottom: 60,
     paddingTop: 20,
   },
 
@@ -278,7 +264,7 @@ const styles = StyleSheet.create({
 
   searchContainer: {
     marginHorizontal: 16,
-    marginTop: 10,
+    marginTop: -10,
 
     flexDirection: "row",
 
@@ -287,6 +273,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 300,
     gap: 12,
+    zIndex: 9999,
   },
 
   searchInput: {

@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   type KeyboardType,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -21,6 +20,7 @@ import {
 import { AlertTriangle, Eye, EyeOff, Info } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import ButtonCta from "../FirstInstallation/ButtonCta";
+import ResponsiveTextInput from "../FirstInstallation/ResponsiveTextInput";
 
 export interface LoginViewCustomInput {
   identifier: string;
@@ -173,7 +173,7 @@ const LoginView: React.FC<{
         <NativeListHeader label={usernameLabel} />
         <NativeList>
           <NativeItem>
-            <TextInput
+            <ResponsiveTextInput
               defaultValue={username}
               onChangeText={setUsername}
               placeholder={usernamePlaceholder}
@@ -200,7 +200,7 @@ const LoginView: React.FC<{
                 justifyContent: "space-between",
               }}
             >
-              <TextInput
+              <ResponsiveTextInput
                 defaultValue={password}
                 onChangeText={setPassword}
                 placeholder={passwordPlaceholder}
@@ -233,7 +233,7 @@ const LoginView: React.FC<{
 
             <NativeList>
               <NativeItem>
-                <TextInput
+                <ResponsiveTextInput
                   value={field.value}
                   onChangeText={(text) => {
                     setCustomFieldsInputs(

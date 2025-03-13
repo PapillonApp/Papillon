@@ -35,6 +35,7 @@ import GradesScodocUE from "./Atoms/GradesScodocUE";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const GradesAverageGraph = lazy(() => import("./Graph/GradesAverage"));
 const GradesLatestList = lazy(() => import("./Latest/LatestGrades"));
@@ -43,6 +44,7 @@ const Subject = lazy(() => import("./Subject/Subject"));
 const Grades: Screen<"Grades"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { isOnline } = useOnlineStatus();
 
   const outsideNav = route.params?.outsideNav;
 
@@ -68,6 +70,12 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isOnline && isLoading) {
+      setIsLoading(false);
+    }
+  }, [isOnline, isLoading]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -232,6 +240,8 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
               paddingBottom: 16 + insets.bottom,
             }}
           >
+            {!isOnline && <OfflineWarning cache={true} />}
+
             {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
 							!isLoading &&
 							!isRefreshing && hasServiceSetup && (

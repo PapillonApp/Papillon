@@ -41,6 +41,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 type HomeworksPageProps = {
   index: number;
@@ -69,6 +70,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   ) : 0);
   const insets = useSafeAreaInsets();
   const { playHaptics } = useSoundHapticsWrapper();
+  const { isOnline } = useOnlineStatus();
 
   const outsideNav = route.params?.outsideNav;
 
@@ -110,6 +112,12 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (!isOnline && loading) {
+      setLoading(false);
+    }
+  }, [isOnline, loading]);
 
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
 
@@ -245,6 +253,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
           />
         }
       >
+        {!isOnline && <OfflineWarning cache={true} />}
+
         {groupedHomework && Object.keys(groupedHomework).map((day, index) => (
           <Reanimated.View
             key={day}

@@ -16,6 +16,7 @@ import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import Animated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 
@@ -28,6 +29,7 @@ const AccountSwitcher: React.FC<{
 }> = ({ small, opened, modalOpen, translationY, loading }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { isOnline } = useOnlineStatus();
 
   const account = useCurrentAccount(store => store.account!);
 
@@ -88,6 +90,7 @@ const AccountSwitcher: React.FC<{
       <ReanimatedBlurView
         tint={theme.dark ? "dark" : "light"}
         style={{
+          backgroundColor: colors.primary + "85",
           paddingHorizontal: 2,
           paddingVertical: 0,
           alignSelf: "flex-start",
@@ -158,7 +161,7 @@ const AccountSwitcher: React.FC<{
               ) : "Mon compte"}
             </Reanimated.Text>
 
-            {loading && (
+            {isOnline && loading && (
               <PapillonSpinner
                 size={20}
                 strokeWidth={3}

@@ -1,6 +1,6 @@
 import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useHomeworkStore } from "@/stores/homework";
 import { toggleHomeworkState, updateHomeworkForWeekInCache } from "@/services/homework";
 import HomeworkItem from "../../Homeworks/Atoms/Item";
@@ -23,7 +23,10 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
   const account = useCurrentAccount(store => store.account!);
   const homeworks = useHomeworkStore(store => store.homeworks);
 
-  const actualDay = useMemo(()=>new Date(), []);
+  const [loading, setLoading] = useState(false);
+
+  const actualDay = useMemo(() => new Date(), []);
+  const nextWeek = useMemo(() => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), []);
 
   const ImportanceHandler = () => {
     if (!homeworks[dateToEpochWeekNumber(actualDay)]) return;
@@ -42,8 +45,13 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
   };
 
   const updateHomeworks = useCallback(async () => {
-    await updateHomeworkForWeekInCache(account, actualDay);
-    ImportanceHandler();
+    if (account.instance) {
+      setLoading(true);
+      await updateHomeworkForWeekInCache(account, actualDay);
+      await updateHomeworkForWeekInCache(account, nextWeek);
+      ImportanceHandler();
+      setLoading(false);
+    }
   }, [account, actualDay]);
 
   const debouncedUpdateHomeworks = useMemo(() => debounce(updateHomeworks, 500), [updateHomeworks]);
@@ -69,6 +77,34 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
   const hwSemaineProchaine = homeworks[dateToEpochWeekNumber(actualDay) + 1]?.filter(
     (hw) => hw.due / 1000 >= startTime && hw.due / 1000 <= endTime
   ) ?? [];
+
+  if (loading) {
+    return (
+      <>
+        <>
+          <NativeListHeader animated label="Travail à faire"
+            trailing={(
+              <RedirectButton navigation={PapillonNavigation.current} redirect="Homeworks" />
+            )}
+          />
+          <NativeList
+            animated
+            key="loadingHomeworks"
+            entering={FadeInDown.springify().mass(1).damping(20).stiffness(300)}
+            exiting={FadeOut.duration(300)}
+          >
+            <NativeItem animated style={{ paddingVertical: 10 }}>
+              <MissingItem
+                emoji="⏳"
+                title="Chargement des devoirs"
+                description="Patiente, s'il te plaît..."
+              />
+            </NativeItem>
+          </NativeList>
+        </>
+      </>
+    );
+  }
 
   if (hwSemaineActuelle.length === 0 && hwSemaineProchaine.length === 0) {
     return (
@@ -122,7 +158,7 @@ const HomeworksElement: React.FC<HomeworksElementProps> = ({ navigation, onImpor
               key={index}
               index={index}
               navigation={navigation}
-              total={homeworks[dateToEpochWeekNumber(actualDay) + 1] ?homeworks[dateToEpochWeekNumber(actualDay) + 1].length : 0}
+              total={hw2Semaines.length}
               onDonePressHandler={() => {
                 try {
                   handleDonePress(hw);

@@ -1,16 +1,53 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet, DimensionValue, Switch } from "react-native";
+import {
+  View,
+  StyleSheet,
+  DimensionValue,
+  Switch,
+  Pressable,
+  Platform,
+  Alert,
+  Linking,
+} from "react-native";
 import LottieView from "lottie-react-native";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Reanimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
+import { BellOff, Settings, X } from "lucide-react-native";
+import { useAlert } from "@/providers/AlertProvider";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteParameters } from "@/router/helpers/types";
 
 type NotificationContainerCardProps = {
   theme: any;
-  isEnable?: boolean;
-  setEnabled?: (value: boolean) => void;
+  isEnable: boolean | null;
+  setEnabled: (value: boolean) => void;
+  navigation: NativeStackNavigationProp<
+    RouteParameters,
+    "SettingsNotifications",
+    undefined
+  >;
 };
 
-const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: NotificationContainerCardProps) => {
+const openNotificationSettings = async () => {
+  if (Platform.OS === "ios") {
+    Linking.openURL("app-settings:");
+  } else {
+    const notifee = (await import("@notifee/react-native")).default;
+    notifee.openNotificationSettings();
+  }
+};
+
+const NotificationContainerCard = ({
+  theme,
+  isEnable,
+  setEnabled,
+  navigation
+}: NotificationContainerCardProps) => {
   const { colors } = theme;
 
   const opacity = useSharedValue(0);
@@ -21,7 +58,7 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
   const animationref = React.useRef<LottieView>(null);
 
   useEffect(() => {
-    const timingConfig = { duration: 250 };
+    const timingConfig = { duration: 250, easing: Easing.bezier(0.3, 0.3, 0, 1) };
     opacity.value = withTiming(isEnable ? 1 : 0, timingConfig);
     invertedOpacity.value = withTiming(isEnable ? 0 : 1, { duration: 150 });
     borderRadius.value = withTiming(isEnable ? 20 : 13, timingConfig);
@@ -48,6 +85,8 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
   const invertedTextAnimatedStyle = useAnimatedStyle(() => ({
     opacity: invertedOpacity.value,
   }));
+
+  const { showAlert } = useAlert();
 
   return (
     <NativeList>
@@ -84,8 +123,9 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
                 </View>
                 <Reanimated.Text
                   numberOfLines={2}
-                  style={[styles.message, textAnimatedStyle]}>
-                  Tu as cours en salle B03 avec M. Perruche dans 5 minutes.
+                  style={[styles.message, textAnimatedStyle]}
+                >
+                  Géographie (16:00-17:00) : Changement de salle ➡️ B106
                 </Reanimated.Text>
               </View>
             </View>
@@ -96,22 +136,91 @@ const NotificationContainerCard = ({ theme, isEnable = false, setEnabled }: Noti
       </View>
       <NativeItem
         trailing={
-          <Switch
-            trackColor={{
-              false: colors.border,
-              true: colors.primary,
-            }}
-            style={{
-              marginRight: 10,
-            }}
-            value={isEnable}
-            onValueChange={setEnabled}
-          />
+          isEnable !== null ? (
+            <Switch
+              trackColor={{
+                false: colors.border,
+                true: colors.primary,
+              }}
+              style={{
+                marginRight: 10,
+              }}
+              value={isEnable}
+              onValueChange={setEnabled}
+            />
+          ) : (
+            <Pressable
+              onPress={() => {
+                if (Platform.OS === "ios") {
+                  Alert.alert(
+                    "Notifications désactivées",
+                    "Il faut activer les notifications dans les paramètres du téléphone pour pouvoir les activer dans Papillon.",
+                    [
+                      {
+                        text: "Annuler",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Paramètres système",
+                        style: "default",
+                        onPress: () => {
+                          openNotificationSettings();
+                          setTimeout(() => {
+                            navigation.reset({
+                              index: 0,
+                              routes: [{ name: "SettingsNotifications" }],
+                            });
+                          }, 1000);
+                        },
+                      },
+                    ]
+                  );
+                } else {
+                  showAlert({
+                    title: "Notifications désactivées",
+                    message:
+                      "Il faut activer les notifications dans les paramètres du téléphone pour pouvoir les activer dans Papillon.",
+                    icon: <BellOff />,
+                    actions: [
+                      {
+                        title: "Annuler",
+                        icon: <X size={24} color={colors.text} />,
+                      },
+                      {
+                        title: "Paramètres système",
+                        onPress: () => {
+                          openNotificationSettings();
+                          setTimeout(() => {
+                            navigation.reset({
+                              index: 0,
+                              routes: [{ name: "SettingsNotifications" }],
+                            });
+                          }, 1000);
+                        },
+                        primary: true,
+                        backgroundColor: "#888",
+                        icon: <Settings size={24} color={colors.text} />,
+                      },
+                    ],
+                  });
+                }
+              }}
+            >
+              <Switch
+                trackColor={{
+                  false: colors.border,
+                }}
+                style={{
+                  marginRight: 10,
+                }}
+                value={false}
+                disabled
+              />
+            </Pressable>
+          )
         }
       >
-        <NativeText variant="title">
-          Activer les notifications
-        </NativeText>
+        <NativeText variant="title">Activer les notifications</NativeText>
         <NativeText variant="subtitle">
           Reçois des notifications pour ne rien rater de ta vie scolaire.
         </NativeText>
@@ -177,11 +286,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "95%",
-    marginBottom: 1,
+    marginBottom: -1,
   },
   title: {
     color: "#222222",
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "semibold",
   },
   time: {
@@ -194,11 +303,11 @@ const styles = StyleSheet.create({
   },
   message: {
     color: "#3F3F3F",
-    fontSize: 15,
+    fontSize: 14.5,
     maxWidth: "85%",
     minWidth: "85%",
-    lineHeight: 15,
-    letterSpacing: -0.4,
+    lineHeight: 20,
+    letterSpacing: -0.1,
     fontFamily: "medium",
   },
   overlay: {

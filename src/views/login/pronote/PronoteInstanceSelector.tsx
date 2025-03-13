@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Keyboard,
   KeyboardEvent,
+  SafeAreaView,
 } from "react-native";
 import pronote from "pawnote";
 import Reanimated, {
@@ -37,6 +38,7 @@ import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
 import * as WebBrowser from "expo-web-browser";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { anim2Papillon } from "@/utils/ui/animations";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   route: { params },
@@ -191,17 +193,10 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   }, [search, originalInstances]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-        },
-      ]}
-    >
+    <SafeAreaView style={styles.container}>
       <MaskStars />
 
-      <View style={{ height: insets.top }} />
+      <View style={{ height: insets.top, marginTop: "10%" }} />
 
       {!keyboardOpen && (
         <Reanimated.View
@@ -213,9 +208,8 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
           <PapillonShineBubble
             message={"Voici les établissements que j'ai trouvé !"}
             numberOfLines={2}
-            width={250}
+            width={260}
             noFlex
-            style={{ marginTop: 0, zIndex: 9999 }}
           />
         </Reanimated.View>
       )}
@@ -234,7 +228,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
       >
         <Search size={24} color={colors.text + "55"} />
 
-        <TextInput
+        <ResponsiveTextInput
           ref={searchInputRef}
           placeholder="Rechercher un établissement"
           placeholderTextColor={colors.text + "55"}
@@ -397,7 +391,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
           </Reanimated.ScrollView>
         </Reanimated.View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -405,9 +399,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
     gap: 20,
-    paddingTop: -40,
   },
 
   overScrollContainer: {

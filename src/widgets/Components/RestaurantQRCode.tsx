@@ -80,7 +80,7 @@ const RestaurantQRCodeWidget = forwardRef(({
 
       await Promise.all(accountPromises);
       setAllCards(newCards);
-      setHidden(allCards?.length === 0 || currentHour < 11 || currentHour > 14);
+      setHidden(!(allCards?.some(card => card.cardnumber) && currentHour >= 11 && currentHour <= 14));
       setLoading(false);
     }();
   }, [linkedAccounts, setHidden]);

@@ -117,7 +117,7 @@ const Subject: React.FC<SubjectProps> = ({
               {
                 typeof sortings[sorting] === "string"
                   ? sortings[sorting]
-                  : sortings[sorting].label
+                  : sortings[sorting]?.label
               }
             </NativeText>
             {isLoading && (
