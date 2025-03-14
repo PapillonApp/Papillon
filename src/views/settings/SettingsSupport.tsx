@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -64,86 +64,96 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        padding: 16,
-        paddingTop: 0,
-        paddingBottom: insets.bottom + 16,
+    <KeyboardAvoidingView
+      behavior="height"
+      keyboardVerticalOffset={insets.top + 64}
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background,
+        overflow: "visible",
       }}
     >
-      <SupportContainerCard
-        theme={theme}
-      />
-      <NativeListHeader
-        label="Formulaire"
-      />
-      <NativeList>
-        <NativeItem icon={<Mail />}>
-          <NativeText variant="subtitle">Adresse E-Mail</NativeText>
-          <TextInput
-            style={[{
-              fontSize: 16,
-              fontFamily: "semibold",
-            }, { color: theme.colors.text }]}
-            placeholder="exemple@acme.inc"
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholderTextColor={theme.colors.text + "80"}
-            value={email}
-            onChangeText={setEmail}
-          />
-        </NativeItem>
-        <NativeItem icon={<Tag />}>
-          <NativeText variant="subtitle">Sujet</NativeText>
-          <TextInput
-            style={[{
-              fontSize: 16,
-              fontFamily: "semibold",
-            }, { color: theme.colors.text }]}
-            placeholder="Faites court, mais faites bien"
-            placeholderTextColor={theme.colors.text + "80"}
-            value={subject}
-            multiline={false}
-            onChangeText={setSubject}
-          />
-        </NativeItem>
-        <NativeItem icon={<Text />}>
-          <NativeText variant="subtitle">Description</NativeText>
-          <TextInput
-            style={[{
-              fontSize: 16,
-              lineHeight: 22,
-              marginVertical: -4,
-              fontFamily: "semibold",
-            }, { color: theme.colors.text }]}
-            placeholder="Expliquez votre problème de manière détaillée afin de nous aider à résoudre le problème rapidement."
-            placeholderTextColor={theme.colors.text + "80"}
-            value={description}
-            multiline={true}
-            onChangeText={setDescription}
-          />
-        </NativeItem>
-      </NativeList>
-      <NativeListHeader
-        label="Consentement"
-      />
-      <NativeList>
-        <NativeItem
-          leading={
-            <PapillonCheckbox
-              checked={sendLogs}
-              onPress={() => {
-                setSendLogs(!sendLogs);
-              }}
+      <ScrollView
+        contentContainerStyle={{
+          padding: 16,
+          paddingTop: 0,
+          paddingBottom: insets.bottom + 16,
+        }}
+      >
+        <SupportContainerCard
+          theme={theme}
+        />
+        <NativeListHeader
+          label="Formulaire"
+        />
+        <NativeList>
+          <NativeItem icon={<Mail />}>
+            <NativeText variant="subtitle">Adresse E-Mail</NativeText>
+            <TextInput
+              style={[{
+                fontSize: 16,
+                fontFamily: "semibold",
+              }, { color: theme.colors.text }]}
+              placeholder="exemple@acme.inc"
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholderTextColor={theme.colors.text + "80"}
+              value={email}
+              onChangeText={setEmail}
             />
-          }>
-          <NativeText>J’accepte de transmettre les journaux d'erreurs et les données du formulaire pour le traitement de ma demande</NativeText>
-        </NativeItem>
-      </NativeList>
-      <View style={{paddingVertical: 20}}>
-        <ButtonCta primary value={"Envoyer mon message"} disabled={!(email && subject && description && sendLogs)} onPress={() => handlePress()} />
-      </View>
-    </ScrollView>
+          </NativeItem>
+          <NativeItem icon={<Tag />}>
+            <NativeText variant="subtitle">Sujet</NativeText>
+            <TextInput
+              style={[{
+                fontSize: 16,
+                fontFamily: "semibold",
+              }, { color: theme.colors.text }]}
+              placeholder="Faites court, mais faites bien"
+              placeholderTextColor={theme.colors.text + "80"}
+              value={subject}
+              multiline={false}
+              onChangeText={setSubject}
+            />
+          </NativeItem>
+          <NativeItem icon={<Text />}>
+            <NativeText variant="subtitle">Description</NativeText>
+            <TextInput
+              style={[{
+                fontSize: 16,
+                lineHeight: 22,
+                marginVertical: -4,
+                fontFamily: "semibold",
+              }, { color: theme.colors.text }]}
+              placeholder="Expliquez votre problème de manière détaillée afin de nous aider à résoudre le problème rapidement."
+              placeholderTextColor={theme.colors.text + "80"}
+              value={description}
+              multiline={true}
+              onChangeText={setDescription}
+            />
+          </NativeItem>
+        </NativeList>
+        <NativeListHeader
+          label="Consentement"
+        />
+        <NativeList>
+          <NativeItem
+            leading={
+              <PapillonCheckbox
+                checked={sendLogs}
+                onPress={() => {
+                  setSendLogs(!sendLogs);
+                }}
+              />
+            }>
+            <NativeText>J’accepte de transmettre les journaux d'erreurs et les données du formulaire pour le traitement de ma demande</NativeText>
+          </NativeItem>
+        </NativeList>
+        <View style={{paddingVertical: 20}}>
+          <ButtonCta primary value={"Envoyer mon message"} disabled={!(email && subject && description && sendLogs)} onPress={() => handlePress()} />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

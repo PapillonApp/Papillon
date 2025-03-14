@@ -246,7 +246,8 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
               fontFamily: "medium",
               fontSize: 12.5,
               lineHeight: 12,
-              color: theme.colors.text + "60"
+              color: theme.colors.text + "60",
+              textAlign: "center",
             }}
             variant="subtitle"
           >
@@ -331,8 +332,6 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
             <View
               style={{
                 flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
                 paddingTop: 25,
                 paddingBottom: 0,
                 paddingHorizontal: 0,
