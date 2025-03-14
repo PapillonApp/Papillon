@@ -8,38 +8,43 @@ import { decode as htmlDecode } from "html-entities";
 import { useCurrentAccount } from "@/stores/account";
 import defaultSkolengoPersonalization from "./default-personalization";
 import { User } from "scolengo-api/types/models/Common";
-import { useAlert } from "@/providers/AlertProvider";
-import { BadgeX } from "lucide-react-native";
+import { Alert } from "react-native";
 
 const getSkolengoAxiosInstance = () => {
   const axioss = axios.create({
     baseURL: BASE_URL
   });
 
-  const { showAlert } = useAlert();
+  axioss.interceptors.response.use(
+    (r: AxiosResponse) => r,
+    (error) => {
+      if (error.response?.data?.errors?.find((e: any) => e.title.includes("PRONOTE_RESOURCES"))) {
+        return Promise.reject(error);
+      }
 
-  axioss.interceptors.response.use((r: AxiosResponse) => r, (error)=>{
-    if(error.response?.data?.errors?.find((e:any)=>e.title.includes("PRONOTE_RESOURCES"))) return Promise.resolve(error);
+      if (__DEV__) {
+        console.warn(
+          "[SKOLENGO] ERR - ",
+          JSON.stringify(error, null, 2),
+          JSON.stringify(error.response?.data, null, 2)
+        );
+      }
 
-    if(__DEV__) {
-      console.warn(
-        "[SKOLENGO] ERR - ",
-        JSON.stringify(error, null, 2),
-        JSON.stringify(error.response?.data, null, 2)
-      );
-    }
-    error.response?.data?.errors?.forEach((e: any) => {
-      // if unknown error, don't display the error message
-      if(!e["title"] || e["title"] === "FORBIDDEN") return;
+      error.response?.data?.errors?.forEach((e: any) => {
+        if (!e["title"] || e["title"] === "FORBIDDEN") return;
 
-      showAlert({
-        title: "Skolengo - " + (e["title"].toString() || "Erreur"),
-        message: htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue")+"\n\nSi cette erreur persiste, contacte les équipes de Papillon.",
-        icon: <BadgeX />,
+        Alert.alert(
+          "Skolengo - " + (e["title"].toString() || "Erreur"),
+          htmlDecode(e["detail"]?.toString().replace(/<(\/)?([a-z0-9]+)>/g, "") || "Erreur inconnue") +
+            "\n\nSi cette erreur persiste, contacte les équipes de Papillon.",
+          [{ text: "OK" }]
+        );
       });
-    });
-    return Promise.reject(error);
-  });
+
+      return Promise.reject(error);
+    }
+  );
+
   return axioss;
 };
 
