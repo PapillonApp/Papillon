@@ -58,7 +58,7 @@ export const TimetableItem: React.FC<{
           {item.statusText && (
             <View style={[styles.statusContainer, {
               backgroundColor: item.status === TimetableClassStatus.CANCELED ? "#E8BEBF" : item.status === TimetableClassStatus.TEST ? "#f4b490" : subjectData.color + "33" }]}>
-              <Text style={[styles.statusText, { color: item.status === TimetableClassStatus.CANCELED ? "#B42828" : item.status === TimetableClassStatus.TEST ? "#d2691e" : subjectData.color}]}>{item.statusText}</Text>
+              <Text style={[styles.statusText, { color: item.status === TimetableClassStatus.CANCELED ? "#B42828" : item.status === TimetableClassStatus.TEST ? "#d2691e" : subjectData.color }]}>{item.statusText}</Text>
             </View>
           )}
 

@@ -15,4 +15,4 @@ export default async function downloadAsBase64 (url: string, headers?: Record<st
       resolve(base64data);
     };
   });
-};
+}

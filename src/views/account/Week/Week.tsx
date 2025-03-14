@@ -14,11 +14,11 @@ import { PapillonHeaderAction } from "@/components/Global/PapillonModernHeader";
 import { getSubjectData } from "@/services/shared/Subject";
 import { PapillonNavigation } from "@/router/refs";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import { TimetableClassStatus} from "@/services/shared/Timetable";
+import { TimetableClassStatus } from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import type { Screen } from "@/router/helpers/types";
-import {Account} from "@/stores/account/types";
+import { Account } from "@/stores/account/types";
 import { fetchIcalData } from "@/services/local/ical";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -172,7 +172,7 @@ const HeaderItem = memo<HeaderItemProps>(({ header }) => {
             >
               {new Date(start
               + i * 24 * 60 * 60 * 1000
-              ).toLocaleDateString("fr-FR", {weekday: "short"})}
+              ).toLocaleDateString("fr-FR", { weekday: "short" })}
             </Text>
           )}
           <Text
@@ -200,7 +200,7 @@ const HeaderItem = memo<HeaderItemProps>(({ header }) => {
             {new Date(start
               + i * 24 * 60 * 60 * 1000
             ).toLocaleDateString("fr-FR",
-              cols > 1 ? {day: "numeric"} : {
+              cols > 1 ? { day: "numeric" } : {
                 weekday: "long",
                 day: "numeric",
                 month: "long",
@@ -218,8 +218,6 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isOnline } = useOnlineStatus();
-
-  const outsideNav = route.params?.outsideNav;
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -281,6 +279,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     await loadTimetableWeek(weekNumber);
   }, [loadTimetableWeek]);
 
+  // eslint-disable-next-line no-unused-vars
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
   React.useEffect(() => {
@@ -333,13 +332,13 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
               />
               <NativeText
                 variant="title"
-                style={{textAlign: "center"}}
+                style={{ textAlign: "center" }}
               >
                 Aucun agenda externe
               </NativeText>
               <NativeText
                 variant="subtitle"
-                style={{textAlign: "center"}}
+                style={{ textAlign: "center" }}
               >
                 Importez un calendrier depuis une URL de votre agenda externe tel que ADE ou Moodle.
               </NativeText>
@@ -412,7 +411,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
         numberOfDays={displayMode === "Semaine" ? 5 : displayMode === "3 jours" ? 3 : 1}
         hideWeekDays={displayMode === "Semaine" ? [6, 7] : []}
         pagesPerSide={2}
-        scrollByDay={displayMode === "Semaine" ? false : true}
+        scrollByDay={displayMode !== "Semaine"}
         events={events}
         onDateChanged={handleDateChange}
         initialLocales={LOCALES}

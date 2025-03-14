@@ -3,8 +3,8 @@ import { useTimetableStore } from "@/stores/timetable";
 import { epochWNToPronoteWN, weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { error, log } from "@/utils/logger/logger";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 import { WeekFrequency } from "./shared/Timetable";
 
 /**

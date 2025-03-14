@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Authenticator, Client} from "pawrd";
+import { Authenticator, Client } from "pawrd";
 import { AccountService, type ARDAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useAccounts, useCurrentAccount } from "@/stores/account";

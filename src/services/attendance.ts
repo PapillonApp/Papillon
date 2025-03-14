@@ -3,9 +3,9 @@ import type { Period } from "./shared/Period";
 import { useAttendanceStore } from "@/stores/attendance";
 import { Attendance } from "./shared/Attendance";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
-import {error, log} from "@/utils/logger/logger";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { error, log } from "@/utils/logger/logger";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 export async function updateAttendancePeriodsInCache <T extends Account> (account: T): Promise<void> {
   let periods: Period[] = [];

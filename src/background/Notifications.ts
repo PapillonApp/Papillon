@@ -137,8 +137,8 @@ const papillonNotify = async (
       channelId,
       timestamp,
       badgeCount,
-      showTimestamp: channelId !== "Status" ? true : false,
-      showChronometer: channelId === "Status" ? true : false,
+      showTimestamp: channelId !== "Status",
+      showChronometer: channelId === "Status",
       smallIcon: "@mipmap/ic_launcher_foreground",
       color: AndroidColor.GREEN,
       pressAction: {

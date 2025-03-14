@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { useTheme, useNavigation } from "@react-navigation/native";
 import { Pizza } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Text, View } from "react-native";
@@ -11,7 +11,6 @@ import { useCurrentAccount } from "@/stores/account";
 import QRCode from "react-native-qrcode-svg";
 import { AccountService } from "@/stores/account/types";
 import { qrcodeFromExternal } from "@/services/qrcode";
-import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteParameters } from "./../../router/helpers/types";
 import { formatCardIdentifier, ServiceCard } from "@/views/account/Restaurant/Menu";
@@ -39,12 +38,6 @@ const RestaurantQRCodeWidget = forwardRef(({
       }
     }
   }));
-
-  const getWeekNumber = (date: Date) => {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-  };
 
   useEffect(() => {
     void async function () {

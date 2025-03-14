@@ -12,7 +12,7 @@ const BottomTabNavigator: React.ComponentType<any> = ({
   screenOptions,
   ...rest
 }) => {
-  const {isTablet} = useScreenDimensions();
+  const { isTablet } = useScreenDimensions();
 
   const {
     state,

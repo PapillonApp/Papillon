@@ -62,7 +62,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
   const [visible, setVisible] = useState(false);
   const [delays, setDelays] = useState<{ [key: string]: number }>({});
 
-  const { dark, colors } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const showAlert = ({

@@ -300,7 +300,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                 return (
                   <>
                     <NativeItem key={"res_" + index}
-                      separator={r.files?.length ?? 0 > 0 ? true : false}
+                      separator={(r.files?.length ?? 0) > 0}
                     >
                       {index > 0 &&
                         <View

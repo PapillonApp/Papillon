@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { create } from "zustand";
 import { log } from "@/utils/logger/logger";
-import {MultiServiceSpace, MultiServiceStore} from "@/stores/multiService/types";
+import { MultiServiceSpace, MultiServiceStore } from "@/stores/multiService/types";
 
 
 /**

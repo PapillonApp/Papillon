@@ -12,7 +12,7 @@ import Reanimated, {
 
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {animPapillon, PapillonContextEnter, PapillonContextExit} from "@/utils/ui/animations";
+import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 interface HeaderCalendarProps {
@@ -62,7 +62,7 @@ const LessonsDateModal: React.FC<LessonsDateModalProps> = ({
   const insets = useSafeAreaInsets();
 
   const [showModalPicker, setShowModalPicker] = React.useState(false);
-  const {isTablet} = useScreenDimensions();
+  const { isTablet } = useScreenDimensions();
 
   React.useEffect(() => {
     if (showDatePicker) {

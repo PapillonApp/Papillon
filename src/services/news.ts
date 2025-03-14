@@ -2,10 +2,10 @@ import { type Account, AccountService } from "@/stores/account/types";
 import { useNewsStore } from "@/stores/news";
 import type { Information } from "./shared/Information";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
-import {error, log} from "@/utils/logger/logger";
+import { error, log } from "@/utils/logger/logger";
 import { newsRead } from "pawnote";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 
 /**

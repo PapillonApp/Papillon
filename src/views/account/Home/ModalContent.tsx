@@ -1,23 +1,23 @@
-import { NativeList, NativeText} from "@/components/Global/NativeComponents";
-import React, {useCallback, useEffect, useState} from "react";
+import { NativeList, NativeText } from "@/components/Global/NativeComponents";
+import React, { useCallback, useEffect, useState } from "react";
 import Reanimated, {
   FadeInUp,
   FadeOutDown,
   LinearTransition,
 } from "react-native-reanimated";
-import { Sparkles, X} from "lucide-react-native";
-import {useTheme} from "@react-navigation/native";
+import { Sparkles, X } from "lucide-react-native";
+import { useTheme } from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
-import {Dimensions, View} from "react-native";
+import { Dimensions, View } from "react-native";
 
-import {Elements, type Element} from "./ElementIndex";
-import {animPapillon} from "@/utils/ui/animations";
-import {useFlagsStore} from "@/stores/flags";
-import {useCurrentAccount} from "@/stores/account";
+import { Elements, type Element } from "./ElementIndex";
+import { animPapillon } from "@/utils/ui/animations";
+import { useFlagsStore } from "@/stores/flags";
+import { useCurrentAccount } from "@/stores/account";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {defaultTabs} from "@/consts/DefaultTabs";
-import {NativeStackNavigationProp} from "@react-navigation/native-stack";
-import {RouteParameters} from "@/router/helpers/types";
+import { defaultTabs } from "@/consts/DefaultTabs";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteParameters } from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -164,7 +164,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
                 strokeWidth={2}
                 color={colors.text}
               />
-              <NativeText variant="title" style={{ flex: 1}}>
+              <NativeText variant="title" style={{ flex: 1 }}>
                 Papillon vient d'être mis à jour à la version {PackageJSON.version} !
               </NativeText>
 

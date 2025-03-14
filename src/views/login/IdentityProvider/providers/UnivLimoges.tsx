@@ -135,11 +135,11 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
             }}
           />
 
-          <NativeText variant="title" style={{textAlign: "center"}}>
+          <NativeText variant="title" style={{ textAlign: "center" }}>
             Connexion au compte Biome
           </NativeText>
 
-          <NativeText variant="subtitle" style={{textAlign: "center"}}>
+          <NativeText variant="subtitle" style={{ textAlign: "center" }}>
             Chargement de Biome...
           </NativeText>
         </View>

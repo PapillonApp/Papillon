@@ -1,8 +1,8 @@
-import {NativeItem, NativeList, NativeText} from "@/components/Global/NativeComponents";
-import {ScrollView, View} from "react-native";
-import {CircleAlert, CircleX, Code, TriangleAlert} from "lucide-react-native";
-import {Screen} from "@/router/helpers/types";
-import {AddonLogs as Logs} from "@/addons/types";
+import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
+import { ScrollView, View } from "react-native";
+import { CircleAlert, CircleX, Code, TriangleAlert } from "lucide-react-native";
+import { Screen } from "@/router/helpers/types";
+import { AddonLogs as Logs } from "@/addons/types";
 
 const AddonLogs: Screen<"AddonLogs"> = ({ navigation, route }) => {
   const logs: Logs[] = route.params.logs.map(l => {
@@ -14,7 +14,7 @@ const AddonLogs: Screen<"AddonLogs"> = ({ navigation, route }) => {
   });
   return (
     <ScrollView>
-      <View style={{paddingHorizontal: 16}}>
+      <View style={{ paddingHorizontal: 16 }}>
         <NativeList>
           {logs.map((log, index) => (
             <NativeItem
@@ -38,7 +38,7 @@ const AddonLogs: Screen<"AddonLogs"> = ({ navigation, route }) => {
             >
               <NativeText
                 variant={"title"}
-                style={{color: log.type === "error" ? "#BE0B00" : log.type === "warn" ? "#CF6B0F" : log.type === "info" ? "#0E7CCB" : "#000"}}
+                style={{ color: log.type === "error" ? "#BE0B00" : log.type === "warn" ? "#CF6B0F" : log.type === "info" ? "#0E7CCB" : "#000" }}
               >{log.message}</NativeText>
               <NativeText variant={"subtitle"}>{log.date.toISOString()}</NativeText>
             </NativeItem>

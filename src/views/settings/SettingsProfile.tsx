@@ -19,8 +19,8 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
   const account = useCurrentAccount(store => store.account!);
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
-  const [oldFirstName, setOldFirstName] = useState(account.studentName?.first ?? "");
-  const [oldLastName, setOldLastName] = useState(account.studentName?.last ?? "");
+  const oldFirstName = account.studentName?.first ?? "";
+  const oldLastName = account.studentName?.last ?? "";
 
   const firstNameRef = useRef<TextInput>(null);
   const lastNameRef = useRef<TextInput>(null);
@@ -293,7 +293,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               <Switch
                 value={!hideNameOnHomeScreen}
                 onValueChange={() => setHideNameOnHomeScreen(!hideNameOnHomeScreen)}
-                trackColor={{false: theme.colors.border, true: theme.colors.primary}}
+                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
                 thumbColor={theme.colors.background}
               />
             }
@@ -314,7 +314,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
               <Switch
                 value={!hideProfilePicOnHomeScreen}
                 onValueChange={() => setHideProfilePicOnHomeScreen(!hideProfilePicOnHomeScreen)}
-                trackColor={{false: theme.colors.border, true: theme.colors.primary}}
+                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
                 thumbColor={theme.colors.background}
               />
             }

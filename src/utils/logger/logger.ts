@@ -24,20 +24,6 @@ function get_message (type: number, date: string, from: string, message: string)
   );
 }
 
-function get_file_from_stacktrace (stack: string): string
-{
-  let res = "";
-  try {
-    res = stack
-      .split("\n")[1]
-      .split(/\/\/localhost:\d\d\d\d\//g)[1]
-      .split("//&")[0];
-  } catch (e) {
-    res = "UNKNOWN";
-  }
-  return (res);
-}
-
 function obtain_function_name (from?: string): string {
   const error = new Error(); // On génère une erreur pour obtenir la stacktrace
   const stack = error.stack?.split("\n") || [];

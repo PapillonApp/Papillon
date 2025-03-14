@@ -100,7 +100,7 @@ const AccountContainerCard = ({ account, onPress }: {
           }}
         >
           <Image
-            source={!(account.isExternal) && account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64} : defaultProfilePicture(account.service, !(account.isExternal) && account.identityProvider?.name || "")}
+            source={!(account.isExternal) && account.personalization.profilePictureB64 ? { uri: account.personalization.profilePictureB64 } : defaultProfilePicture(account.service, !(account.isExternal) && account.identityProvider?.name || "")}
             style={{
               width: 42,
               height: 42,

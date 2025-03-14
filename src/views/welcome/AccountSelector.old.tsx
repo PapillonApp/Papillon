@@ -1,9 +1,9 @@
-import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {useAccounts, useCurrentAccount} from "@/stores/account";
-import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
-import {useIsFocused, useTheme} from "@react-navigation/native";
-import {BadgeHelp, PlusIcon, Trash2, Undo2} from "lucide-react-native";
-import {useEffect, useState} from "react";
+import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import { useIsFocused, useTheme } from "@react-navigation/native";
+import { BadgeHelp, PlusIcon, Trash2, Undo2 } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -13,7 +13,7 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
 
 import PapillonAvatar from "@/components/Global/PapillonAvatar";
@@ -30,15 +30,14 @@ import Reanimated, {
   useScrollViewOffset,
   ZoomIn,
 } from "react-native-reanimated";
-import {LinearGradient} from "expo-linear-gradient";
-import {animPapillon} from "@/utils/ui/animations";
-import {Screen} from "@/router/helpers/types";
+import { LinearGradient } from "expo-linear-gradient";
+import { animPapillon } from "@/utils/ui/animations";
+import { Screen } from "@/router/helpers/types";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import {PressableScale} from "react-native-pressable-scale";
+import { PressableScale } from "react-native-pressable-scale";
 
 import datasets from "@/consts/datasets.json";
-import Animated from "react-native-reanimated";
-import {PrimaryAccount} from "@/stores/account/types";
+import { PrimaryAccount } from "@/stores/account/types";
 import { useAlert } from "@/providers/AlertProvider";
 
 
@@ -67,7 +66,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
   const [illustration, setIllustration] = useState<undefined | Illustration>(undefined);
   const [illustrationLoaded, setIllustrationLoaded] = useState(false);
 
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollRef = useAnimatedRef<Reanimated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const headerRatioHeight = 250;
   let headerAnimatedStyle = useAnimatedStyle(() => ({
@@ -122,7 +121,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
   }, [accounts]);
 
   useEffect(() => {
-    if (currentAccount && currentAccount?.localID) {
+    if (currentAccount?.localID) {
       navigation.reset({
         index: 0,
         routes: [{ name: "AccountStack" }],
@@ -351,7 +350,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
           <Reanimated.View
             entering={animPapillon(FadeInDown)}
             layout={animPapillon(LinearTransition)}
-            style={{paddingHorizontal: 16}}
+            style={{ paddingHorizontal: 16 }}
           >
             <NativeListHeader label="Comptes connectés" />
             <NativeList>
@@ -458,11 +457,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
                         {account.studentName.first} {account.studentName.last}
                       </NativeText>
                       <NativeText animated variant="subtitle" numberOfLines={1}>
-                        {account.schoolName ?
-                          account.schoolName :
-                          account.identityProvider ?
-                            account.identityProvider.name :
-                            "Compte local"
+                        {account.schoolName ?? account.identityProvider?.name ?? "Compte local"
                         }
                       </NativeText>
                     </Reanimated.View>

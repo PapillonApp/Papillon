@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from "react";
-import type {Screen} from "@/router/helpers/types";
-import {useTheme} from "@react-navigation/native";
-import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import { Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import React, { useState, useEffect } from "react";
+import type { Screen } from "@/router/helpers/types";
+import { useTheme } from "@react-navigation/native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import { NativeText,} from "@/components/Global/NativeComponents";
+import { NativeText, } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { tokenize} from "ezly";
-import {AccountService, IzlyAccount} from "@/stores/account/types";
-import {useAccounts, useCurrentAccount} from "@/stores/account";
+import { tokenize } from "ezly";
+import { AccountService, IzlyAccount } from "@/stores/account/types";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
 
 import * as Linking from "expo-linking";

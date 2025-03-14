@@ -1,5 +1,5 @@
-import {Theme} from "@/utils/chat/themes/Themes.types";
-import {DefaultTheme} from "@/consts/DefaultTheme";
+import { Theme } from "@/utils/chat/themes/Themes.types";
+import { DefaultTheme } from "@/consts/DefaultTheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 async function GetThemeForChatId (chatId: string): Promise<Theme> {

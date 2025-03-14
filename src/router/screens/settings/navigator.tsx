@@ -26,7 +26,7 @@ export const SettingsScreen: Screen<"SettingStack"> = ({ route }) => {
 const ConditionnalAlertProvider = (props: any) => {
   if(Platform.OS === "android") {
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         {props.children}
       </View>
     );

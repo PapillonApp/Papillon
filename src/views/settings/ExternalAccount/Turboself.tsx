@@ -20,7 +20,7 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
       const session = await authenticateWithCredentials(username, password);
       const siblings = await session.getSiblings();
 
-      if (siblings.length !== 0) return navigation.navigate("TurboselfAccountSelector", {accounts: [session.host!, ...siblings!], username, password});
+      if (siblings.length !== 0) return navigation.navigate("TurboselfAccountSelector", { accounts: [session.host!, ...siblings!], username, password });
       const new_account: TurboselfAccount = {
         instance: undefined,
         service: AccountService.Turboself,
@@ -44,7 +44,7 @@ const ExternalTurboselfLogin: Screen<"ExternalTurboselfLogin"> = ({ navigation }
         setError(error.message);
         if (error.message == "401: {\"statusCode\":401,\"message\":\"Accès interdit\"}") {
           setError("Nom d'utilisateur ou mot de passe incorrect");
-        };
+        }
       }
       else {
         setError("Une erreur est survenue lors de la connexion.");

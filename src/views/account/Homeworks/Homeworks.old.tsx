@@ -78,8 +78,8 @@ const HomeworksPage: React.FC<HomeworksPageProps> = React.memo(({ index, isActiv
       style={{ flex: 1, padding: 16, paddingTop: 0 }}
     >
 
-      <View style={{padding: 32}}>
-        <Text style={{color: "white", fontSize: 16, textAlign: "center"}}>
+      <View style={{ padding: 32 }}>
+        <Text style={{ color: "white", fontSize: 16, textAlign: "center" }}>
           {index}
         </Text>
       </View>
@@ -224,7 +224,7 @@ const HomeworksScreen: Screen<"Homeworks"> = ({ navigation }) => {
           initialIndex={initialIndex}
           pageBuffer={3}
           PageComponent={
-            ({index, isActive}) => (<View style={{height: "100%"}}>
+            ({ index, isActive }) => (<View style={{ height: "100%" }}>
               <HomeworksPage
                 key={index}
                 index={index}
@@ -237,7 +237,7 @@ const HomeworksScreen: Screen<"Homeworks"> = ({ navigation }) => {
                 getDayName={getDayName}
               /></View>
             )}
-          style={{ flex: 1}}
+          style={{ flex: 1 }}
           onPageChange={setEpochWeekNumber}
         />
       )}

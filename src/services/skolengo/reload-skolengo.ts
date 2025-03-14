@@ -6,8 +6,8 @@ import { Skolengo } from "scolengo-api";
 export const reload = async (account: SkolengoAccount): Promise<Reconnected<SkolengoAccount>> => {
 
   if(!account.instance || !(account.instance instanceof Skolengo)) {
-    const {instance, authentication} = await getSkolengoAccount(account.authentication, account.userInfo);
-    return {instance, authentication};
+    const { instance, authentication } = await getSkolengoAccount(account.authentication, account.userInfo);
+    return { instance, authentication };
   }
 
   return {

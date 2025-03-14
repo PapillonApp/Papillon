@@ -1,27 +1,26 @@
-import {useTheme} from "@react-navigation/native";
-import React, {useEffect, useMemo, useState} from "react";
-import {ActivityIndicator, Platform, RefreshControl, View} from "react-native";
+import { useTheme } from "@react-navigation/native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Platform, RefreshControl, View } from "react-native";
 
-import type {Screen} from "@/router/helpers/types";
-import {useCurrentAccount} from "@/stores/account";
-import {useAttendanceStore} from "@/stores/attendance";
-import {updateAttendanceInCache, updateAttendancePeriodsInCache} from "@/services/attendance";
-import {NativeText} from "@/components/Global/NativeComponents";
-import Reanimated, {FadeIn, FadeOut, LinearTransition} from "react-native-reanimated";
+import type { Screen } from "@/router/helpers/types";
+import { useCurrentAccount } from "@/stores/account";
+import { useAttendanceStore } from "@/stores/attendance";
+import { updateAttendanceInCache, updateAttendancePeriodsInCache } from "@/services/attendance";
+import { NativeText } from "@/components/Global/NativeComponents";
+import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import {ChevronDown, Eye, Scale, Timer, UserX} from "lucide-react-native";
+import { ChevronDown, Eye, Scale, Timer, UserX } from "lucide-react-native";
 import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
-import {animPapillon} from "@/utils/ui/animations";
+import { animPapillon } from "@/utils/ui/animations";
 import AttendanceItem from "./Atoms/AttendanceItem";
-import {getAbsenceTime} from "@/utils/format/attendance_time";
 import TotalMissed from "./Atoms/TotalMissed";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {protectScreenComponent} from "@/router/helpers/protected-screen";
-import {Observation} from "@/services/shared/Observation";
+import { protectScreenComponent } from "@/router/helpers/protected-screen";
+import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {AccountService} from "@/stores/account/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { AccountService } from "@/stores/account/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
@@ -110,8 +109,6 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
     let totalDelayMinutes = 0;
 
     attendances[selectedPeriod]?.absences.forEach(absence => {
-      const missed = getAbsenceTime(absence.fromTimestamp, absence.toTimestamp);
-
       if (!absence.justified)  {
         totalUnJustifiedHours += parseInt(absence.hours.split("h")[0]);
         totalUnJustifiedMinutes += parseInt(absence.hours.split("h")[1]);

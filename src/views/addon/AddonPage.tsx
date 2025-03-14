@@ -1,9 +1,9 @@
 import AddonsWebview from "@/components/Addons/AddonsWebview";
-import { View} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
-import {AddonPlacementManifest} from "@/addons/types";
-import {Screen} from "@/router/helpers/types";
+import { AddonPlacementManifest } from "@/addons/types";
+import { Screen } from "@/router/helpers/types";
 import { useAlert } from "@/providers/AlertProvider";
 import { BadgeX } from "lucide-react-native";
 
@@ -22,7 +22,7 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
   });
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <AddonsWebview
         navigation={navigation}
         addon={{
@@ -33,12 +33,12 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
         url={addon.manifest.placement[addon.index].main}
         scrollEnabled={true}
         inset={insets}
-        setTitle={(title) => navigation.setOptions({headerTitle: title})}
+        setTitle={(title) => navigation.setOptions({ headerTitle: title })}
         data={data}
         requestNavigate={(url, data) => {
           //find the placement
-          var index = -1;
-          for(var i = 0; i < addon.manifest.placement.length; i++){
+          let index = -1;
+          for(let i = 0; i < addon.manifest.placement.length; i++){
             if(addon.manifest.placement[i].name == url){
               index = i;
               break;
@@ -52,7 +52,7 @@ const AddonPage: Screen<"AddonPage"> = ({ navigation, route }) => {
             }); //TODO: transfer error to webview
             return;
           } else {
-            let newAddon: AddonPlacementManifest = {manifest: addon.manifest, index: index};
+            let newAddon: AddonPlacementManifest = { manifest: addon.manifest, index: index };
             // @ts-ignore "Very hard to type, need to think about"
             navigation.push("Addon" + from + "Page", { addon: newAddon, from: from, data: data.data });
           }

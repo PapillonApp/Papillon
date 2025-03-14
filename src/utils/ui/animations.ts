@@ -49,7 +49,7 @@ const PapillonContextEnter = () => {
   const initialValues = {
     opacity: 0,
     transform: [
-      { scaleX: EnteringScaleX},
+      { scaleX: EnteringScaleX },
       { scaleY: EnteringScaleY },
     ],
   };

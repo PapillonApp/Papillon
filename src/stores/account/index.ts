@@ -17,9 +17,9 @@ import { useHomeworkStore } from "../homework";
 import { useGradesStore } from "../grades";
 import { useNewsStore } from "../news";
 import { useAttendanceStore } from "../attendance";
-import {error, info, log} from "@/utils/logger/logger";
-import {useMultiService} from "@/stores/multiService";
-import {MultiServiceFeature, MultiServiceSpace} from "@/stores/multiService/types";
+import { error, info, log } from "@/utils/logger/logger";
+import { useMultiService } from "@/stores/multiService";
+import { MultiServiceFeature, MultiServiceSpace } from "@/stores/multiService/types";
 
 /**
  * Store for the currently selected account.
@@ -105,11 +105,11 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
     }
 
     const linkedAccounts = account.linkedExternalLocalIDs.map((linkedID) => {
-      return {...accounts.find((acc) => acc.localID === linkedID)};
+      return { ...accounts.find((acc) => acc.localID === linkedID) };
     }).filter(Boolean) as ExternalAccount[] ?? [];
 
     const associatedAccounts = account.associatedAccountsLocalIDs?.map((associatedID) => {
-      return {...accounts.find((acc) => acc.localID === associatedID)};
+      return { ...accounts.find((acc) => acc.localID === associatedID) };
     }).filter(Boolean) as PrimaryAccount[] ?? [];
 
     info(`found ${linkedAccounts.length} external accounts and ${associatedAccounts.length} associated accounts`, "switchTo");

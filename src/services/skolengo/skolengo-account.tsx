@@ -3,7 +3,7 @@ import { SkolengoAuthConfig, SkolengoJWT, SkolengoTokenSet, authTokenToSkolengoT
 import { DiscoveryDocument } from "expo-auth-session";
 import { SkolengoAccount, AccountService } from "@/stores/account/types";
 import axios, { type AxiosResponse } from "axios";
-import { decode as b64decode, encode as b64encode} from "js-base64";
+import { decode as b64decode, encode as b64encode } from "js-base64";
 import { decode as htmlDecode } from "html-entities";
 import { useCurrentAccount } from "@/stores/account";
 import defaultSkolengoPersonalization from "./default-personalization";

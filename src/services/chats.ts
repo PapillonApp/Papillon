@@ -1,9 +1,9 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import type { Chat, ChatMessage, ChatRecipient } from "./shared/Chat";
 import type { Recipient } from "./shared/Recipient";
-import {getFeatureAccount} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {log} from "@/utils/logger/logger";
+import { getFeatureAccount } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { log } from "@/utils/logger/logger";
 
 export const getChats = async <T extends Account> (account: T): Promise<Array<Chat>> => {
   switch (account.service) {
@@ -12,7 +12,7 @@ export const getChats = async <T extends Account> (account: T): Promise<Array<Ch
       return getChats(account);
     }
     case AccountService.EcoleDirecte: {
-      const {getChats} = await import("./ecoledirecte/chats");
+      const { getChats } = await import("./ecoledirecte/chats");
       return await getChats(account);
     }
     case AccountService.PapillonMultiService: {
@@ -58,9 +58,11 @@ export const sendMessageInChat = async <T extends Account> (account: T, chat: Ch
     case AccountService.Pronote: {
       const { sendMessageInChat } = await import("./pronote/chats");
       await sendMessageInChat(account, chat, content);
+      break;
     }
     case AccountService.EcoleDirecte: {
       // TODO
+      break;
     }
     case AccountService.PapillonMultiService: {
       const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);

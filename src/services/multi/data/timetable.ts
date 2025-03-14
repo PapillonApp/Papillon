@@ -1,5 +1,5 @@
 import type { MultiAccount } from "@/stores/account/types";
-import { TimetableClassStatus, type Timetable, type TimetableClass} from "../../shared/Timetable";
+import { TimetableClassStatus, type Timetable, type TimetableClass } from "../../shared/Timetable";
 import { weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import type { EventResponse } from "esup-multi.js";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
@@ -26,7 +26,7 @@ export const getTimetableForWeek = async (account: MultiAccount, weekNumber: num
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("Multi");
 
-  const timetable = await account.instance.getSchedules({startDate: weekNumberToDateRange(weekNumber).start.toISOString().split("T")[0], endDate:weekNumberToDateRange(weekNumber).end.toISOString().split("T")[0]});
+  const timetable = await account.instance.getSchedules({ startDate: weekNumberToDateRange(weekNumber).start.toISOString().split("T")[0], endDate:weekNumberToDateRange(weekNumber).end.toISOString().split("T")[0] });
   const eventsList = timetable.plannings.flatMap((planning) =>
     planning.events.map((event: EventResponse) => ({
       id: event.id,

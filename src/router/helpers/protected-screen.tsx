@@ -27,7 +27,7 @@ const ProtectedScreen: React.FC<{
 
 export const protectScreenComponent = <ScreenName extends keyof RouteParameters>(
   Component: React.ComponentType<RouterScreenProps<ScreenName>>
-): Screen<ScreenName> => ({ navigation, route}) => (
+): Screen<ScreenName> => ({ navigation, route }) => (
   <ProtectedScreen navigation={navigation}>
     <Component
       navigation={navigation}

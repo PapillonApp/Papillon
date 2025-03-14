@@ -1,14 +1,14 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import { useHomeworkStore } from "@/stores/homework";
 import type { Homework } from "./shared/Homework";
-import {error, log} from "@/utils/logger/logger";
+import { error, log } from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 /**
  * Updates the state and cache for the homework of given week number.

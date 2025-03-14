@@ -1,10 +1,10 @@
-import type {PronoteAccount} from "@/stores/account/types";
-import type {Period} from "@/services/shared/Period";
-import {info} from "@/utils/logger/logger";
-import {decodePeriod} from "@/services/pronote/period";
+import type { PronoteAccount } from "@/stores/account/types";
+import type { Period } from "@/services/shared/Period";
+import { info } from "@/utils/logger/logger";
+import { decodePeriod } from "@/services/pronote/period";
 import pronote from "pawnote";
-import {ErrorServiceUnauthenticated} from "@/services/shared/errors";
-import {Evaluation, SkillLevel} from "@/services/shared/Evaluation";
+import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
+import { Evaluation, SkillLevel } from "@/services/shared/Evaluation";
 
 const getTab = (account: PronoteAccount): pronote.Tab => {
   if (!account.instance)

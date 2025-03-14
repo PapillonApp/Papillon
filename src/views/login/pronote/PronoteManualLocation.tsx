@@ -36,7 +36,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
   });
 
   const insets = useSafeAreaInsets();
-  const {colors} = useTheme();
+  const { colors } = useTheme();
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -203,7 +203,7 @@ const PronoteManualLocation: Screen<"PronoteManualLocation"> = ({ navigation }) 
               >
                 <DuoListPressable
                   text={`${municipality.properties.name} (${municipality.properties.postcode})`}
-                  onPress={() => void navigation.navigate("PronoteInstanceSelector", {
+                  onPress={() => navigation.navigate("PronoteInstanceSelector", {
                     longitude: municipality.geometry.coordinates[0],
                     latitude: municipality.geometry.coordinates[1],
                     hideDistance: true

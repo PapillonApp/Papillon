@@ -12,7 +12,7 @@ import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-rea
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
 import { get_iso_date } from "@/utils/logger/logger";
-import {AddonLogs} from "@/addons/types";
+import { AddonLogs } from "@/addons/types";
 
 export type AddonHomePageInfo = {
   name: string,
@@ -56,8 +56,8 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
 
   function get_plugin_path () {
     let path = url.split("/");
-    var res = "";
-    for (var i = 0; i < path.length - 1; i++) {
+    let res = "";
+    for (let i = 0; i < path.length - 1; i++) {
       res += path[i] + "/";
       if (path[i] === "addons")
       {
@@ -103,7 +103,7 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
     return file;
   }
 
-  function inject_css (css: string, fonts: { bold: string, semiBold: string, medium: string, regular: string, light: string}) {
+  function inject_css (css: string, fonts: { bold: string, semiBold: string, medium: string, regular: string, light: string }) {
     css = css.replace("{{FONT_BOLD}}", fonts.bold);
     css = css.replace("{{FONT_SEMIBOLD}}", fonts.semiBold);
     css = css.replace("{{FONT_MEDIUM}}", fonts.medium);
@@ -145,9 +145,9 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
   }, [content, injectedJS, error, logs, showAuthorizations]);
 
   return (
-    <Reanimated.View style={{flex: 1, opacity}}>
+    <Reanimated.View style={{ flex: 1, opacity }}>
       <BottomSheet opened={showAuthorizations} setOpened={setShowAuthorizations}>
-        <View style={{height: 23, display: "flex", alignItems: "center", justifyContent: "center"}}>
+        <View style={{ height: 23, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <View style={{
             backgroundColor: "#00000015",
             height: 5,
@@ -155,10 +155,10 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
             borderRadius: 5,
           }}></View>
         </View>
-        <View style={{padding: 16, display: "flex", flexDirection: "row", gap: 16}}>
+        <View style={{ padding: 16, display: "flex", flexDirection: "row", gap: 16 }}>
           <View>
             <Image
-              source={addon.icon ? {uri: addon.icon}:require("../../../assets/images/addon_default_logo.png")}
+              source={addon.icon ? { uri: addon.icon }:require("../../../assets/images/addon_default_logo.png")}
               style={{
                 width: 64,
                 height: 64,
@@ -180,22 +180,22 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
               <MapPin size={24} color={"#FFF"} />
             </View>
           </View>
-          <View style={{flex: 1, display: "flex", gap: 5}}>
+          <View style={{ flex: 1, display: "flex", gap: 5 }}>
             <NativeText variant="title">{addon.name + " requiert ta position"}</NativeText>
             <NativeText variant="subtitle">L'extension indique : Nous utilisons ta position pour te manger durant ton sommeil 😈</NativeText>
           </View>
         </View>
-        <View style={{paddingHorizontal: 16, display: "flex", flexDirection: "row", gap: 10, height: 48}}>
-          <ButtonCta value={"Refuser"} onPress={() => setShowAuthorizations(false)} style={{minWidth: null, maxWidth: null, width: (Dimensions.get("window").width - 42) / 2}} />
-          <ButtonCta value={"Autoriser"} primary onPress={() => setShowAuthorizations(false)}  style={{minWidth: null, maxWidth: null, width: (Dimensions.get("window").width - 42) / 2}}/>
+        <View style={{ paddingHorizontal: 16, display: "flex", flexDirection: "row", gap: 10, height: 48 }}>
+          <ButtonCta value={"Refuser"} onPress={() => setShowAuthorizations(false)} style={{ minWidth: null, maxWidth: null, width: (Dimensions.get("window").width - 42) / 2 }} />
+          <ButtonCta value={"Autoriser"} primary onPress={() => setShowAuthorizations(false)}  style={{ minWidth: null, maxWidth: null, width: (Dimensions.get("window").width - 42) / 2 }}/>
         </View>
       </BottomSheet>
       {
         error ?
           (
-            <View style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%", gap: 10}}>
+            <View style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", gap: 10 }}>
               <Frown size={32} color={"#000"}/>
-              <NativeText variant="title" style={{textAlign: "center"}}>L'extension à planté...</NativeText>
+              <NativeText variant="title" style={{ textAlign: "center" }}>L'extension à planté...</NativeText>
             </View>
           )
           :
@@ -211,7 +211,7 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
               allowUniversalAccessFromFileURLs={true}
               webviewDebuggingEnabled={true}
               ref={webview}
-              style={{ backgroundColor:"transparent"}}
+              style={{ backgroundColor:"transparent" }}
               source={{ html: content }}
               scrollEnabled={scrollEnabled}
               onError={() => setError(true)}
@@ -278,7 +278,7 @@ const AddonsWebview: React.FC<AddonsWebviewProps> = ({
                 }
 
                 if (data.type == "navigation_navigate") {
-                  requestNavigate?.(data.to, {addon, data: data.params});
+                  requestNavigate?.(data.to, { addon, data: data.params });
                 }
 
                 if (data.type == "get_user_location") {

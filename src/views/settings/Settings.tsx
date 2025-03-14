@@ -44,9 +44,9 @@ import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { useTheme } from "@react-navigation/native";
-import {get_settings_widgets} from "@/addons/addons";
+import { get_settings_widgets } from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {AddonPlacementManifest} from "@/addons/types";
+import { AddonPlacementManifest } from "@/addons/types";
 import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
@@ -78,7 +78,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   useEffect(() => {
     AsyncStorage.getItem("devmode")
       .then((res) => {
-        let value = {enabled: false};
+        let value = { enabled: false };
         if (res)
           value = JSON.parse(res);
         setDevModeEnabled(value.enabled);
@@ -357,7 +357,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
                     onPress={() => navigation.navigate("AddonSettingsPage", { addon, from: "Settings" })}
                     leading={
                       <Image
-                        source={addon.manifest.icon == "" ? require("../../../assets/images/addon_default_logo.png"): {uri: addon.manifest.icon}}
+                        source={addon.manifest.icon == "" ? require("../../../assets/images/addon_default_logo.png"): { uri: addon.manifest.icon }}
                         style={{
                           width: 36,
                           height: 36,

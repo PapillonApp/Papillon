@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import type {Screen} from "@/router/helpers/types";
-import {useTheme} from "@react-navigation/native";
-import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import { Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import type { Screen } from "@/router/helpers/types";
+import { useTheme } from "@react-navigation/native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import Reanimated, { FlipInXDown, LinearTransition } from "react-native-reanimated";
-import {AccountService, TurboselfAccount} from "@/stores/account/types";
-import {useAccounts, useCurrentAccount} from "@/stores/account";
+import { AccountService, TurboselfAccount } from "@/stores/account/types";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
 
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";

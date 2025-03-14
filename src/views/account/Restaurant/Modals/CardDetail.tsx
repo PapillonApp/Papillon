@@ -24,6 +24,7 @@ import PapillonPicker from "@/components/Global/PapillonPicker";
 const RestaurantCardDetail: Screen<"RestaurantCardDetail"> = ({ route, navigation }) => {
   try {
     const { card } = route.params;
+    // eslint-disable-next-line no-unused-vars
     const [cardData, setCardData] = useState(null);
 
     const theme = useTheme();

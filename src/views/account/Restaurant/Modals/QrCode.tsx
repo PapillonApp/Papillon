@@ -23,7 +23,6 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
   const PollingBalance = async () => {
     balanceFromExternal(card.account as ExternalAccount).then((newBalance) => {
       if(card.balance[0].amount !== newBalance[0].amount) {
-        const diff = newBalance[0].amount - card.balance[0].amount;
         openFeedback();
       }
     });

@@ -85,15 +85,13 @@ const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
   };
 
   return (
-    <>
-      <LoginView
-        serviceIcon={route.params.image}
-        serviceName={route.params.title}
-        loading={loading}
-        error={error}
-        onLogin={(username, password) => handleLogin(username, password)}
-      />
-    </>
+    <LoginView
+      serviceIcon={route.params.image}
+      serviceName={route.params.title}
+      loading={loading}
+      error={error}
+      onLogin={(username, password) => handleLogin(username, password)}
+    />
   );
 };
 

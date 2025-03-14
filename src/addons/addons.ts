@@ -207,9 +207,9 @@ async function get_home_widgets (): Promise<AddonManifest[]> {
 
 async function get_settings_widgets (): Promise<AddonPlacementManifest[]> {
   let addons = await get_addons_list();
-  var res: Array<AddonPlacementManifest> = [];
+  let res: Array<AddonPlacementManifest> = [];
   addons.forEach((addon) => {
-    for (var i = 0; i < addon.placement.length; i++) {
+    for (let i = 0; i < addon.placement.length; i++) {
       if (addon.placement[i].placement == "PLACE_SETTINGS_PAGE")
         res.push({
           index: i,

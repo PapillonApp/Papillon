@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -8,19 +8,19 @@ import {
   TextInput,
   View
 } from "react-native";
-import {useTheme} from "@react-navigation/native";
-import type {Screen} from "@/router/helpers/types";
-import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {BadgeHelp, Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, Undo2, User2} from "lucide-react-native";
-import {useAccounts} from "@/stores/account";
-import {AccountService, PrimaryAccount} from "@/stores/account/types";
+import { useTheme } from "@react-navigation/native";
+import type { Screen } from "@/router/helpers/types";
+import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { BadgeHelp, Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, Undo2, User2 } from "lucide-react-native";
+import { useAccounts } from "@/stores/account";
+import { AccountService, PrimaryAccount } from "@/stores/account/types";
 import * as ImagePicker from "expo-image-picker";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {useMultiService} from "@/stores/multiService";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useMultiService } from "@/stores/multiService";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import LottieView from "lottie-react-native";
-import {anim2Papillon} from "@/utils/ui/animations";
-import Reanimated, {FadeOut, ZoomIn} from "react-native-reanimated";
+import { anim2Papillon } from "@/utils/ui/animations";
+import Reanimated, { FadeOut, ZoomIn } from "react-native-reanimated";
 import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
 import * as Haptics from "expo-haptics";
 import AccountItem from "@/components/Global/AccountItem";

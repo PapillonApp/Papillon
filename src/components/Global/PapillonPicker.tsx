@@ -91,9 +91,9 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               // @ts-ignore
               menuAttributes: [item.destructive ? "destructive" : "normal"],
               icon: {
-                type: typeof item !== "string" ? "IMAGE_SYSTEM" : "IMAGE_SYSTEM",
+                type: "IMAGE_SYSTEM",
                 imageValue: {
-                  systemName: typeof item !== "string" ? (item.sfSymbol ? item.sfSymbol : "") : "",
+                  systemName: typeof item !== "string" ? (item.sfSymbol ?? "") : "",
                 },
               }
             };
@@ -159,7 +159,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
               const isNotString = typeof item !== "string";
 
               const label = isNotString ? item.label : item;
-              const icon: null | React.ReactNode = isNotString ? (item.icon ? item.icon: null) : null;
+              const icon: null | React.ReactNode = isNotString ? (item.icon ?? null) : null;
 
               const onPressItem = isNotString ? item.onPress : null;
 
@@ -203,7 +203,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
                         size={20}
                         strokeWidth={2.5}
                         color={theme.colors.primary}
-                        style={{ marginRight: 10}}
+                        style={{ marginRight: 10 }}
                       />
                     )}
                   </Pressable>

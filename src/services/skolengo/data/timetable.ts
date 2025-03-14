@@ -24,7 +24,7 @@ export const getTimetableForWeek = async (account: SkolengoAccount, epochWeekNum
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("skolengo");
 
-  const {start, end} = weekNumberToDateRange(epochWeekNumber);
+  const { start, end } = weekNumberToDateRange(epochWeekNumber);
 
   const agenda = await account.instance.getAgenda(undefined, toSkolengoDate(start), toSkolengoDate(end));
   const lessons = agenda.map(e=>e.lessons).flat();

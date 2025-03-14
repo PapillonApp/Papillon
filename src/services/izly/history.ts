@@ -1,6 +1,6 @@
 import type { IzlyAccount } from "@/stores/account/types";
 import type { ReservationHistory } from "../shared/ReservationHistory";
-import { operations, OperationKind} from "ezly";
+import { operations, OperationKind } from "ezly";
 
 export const history = async (account: IzlyAccount): Promise<ReservationHistory[]> => {
   const payments = await operations(account.instance!, OperationKind.Payment, 10);
