@@ -38,22 +38,27 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ index, message, navigation,
         flex: 1,
         gap: 10,
         marginBottom: 2,
+        justifyContent: "space-between",
       }}>
+        {message.title !== "" && (
+          <NativeText
+            numberOfLines={1}
+            variant="title"
+          >
+            {message.title}
+          </NativeText>)
+        }
         {!message.read && !isED && (
-          <View style={{
-            width: 9,
-            height: 9,
-            borderRadius: 5,
-            marginTop: 1,
-            backgroundColor: theme.colors.primary,
-          }} />
+          <View
+            style={{
+              width: 9,
+              height: 9,
+              borderRadius: 5,
+              marginTop: 1,
+              backgroundColor: theme.colors.primary,
+            }}
+          />
         )}
-        {message.title !== "" && <NativeText
-          numberOfLines={1}
-          variant="title"
-        >
-          {message.title}
-        </NativeText>}
       </View>
 
       {message.content && (

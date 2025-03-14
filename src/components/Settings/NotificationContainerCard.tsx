@@ -6,7 +6,6 @@ import {
   Switch,
   Pressable,
   Platform,
-  Alert,
   Linking,
 } from "react-native";
 import LottieView from "lottie-react-native";
@@ -21,10 +20,11 @@ import { BellOff, Settings, X } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
+import { alertExpoGo } from "@/utils/native/expoGoAlert";
 
 type NotificationContainerCardProps = {
   theme: any;
-  isEnable: boolean | null;
+  isEnable: boolean | null | undefined;
   setEnabled: (value: boolean) => void;
   navigation: NativeStackNavigationProp<
     RouteParameters,
@@ -136,7 +136,7 @@ const NotificationContainerCard = ({
       </View>
       <NativeItem
         trailing={
-          isEnable !== null ? (
+          isEnable !== null && isEnable !== undefined ? (
             <Switch
               trackColor={{
                 false: colors.border,
@@ -151,30 +151,8 @@ const NotificationContainerCard = ({
           ) : (
             <Pressable
               onPress={() => {
-                if (Platform.OS === "ios") {
-                  Alert.alert(
-                    "Notifications désactivées",
-                    "Il faut activer les notifications dans les paramètres du téléphone pour pouvoir les activer dans Papillon.",
-                    [
-                      {
-                        text: "Annuler",
-                        style: "cancel",
-                      },
-                      {
-                        text: "Paramètres système",
-                        style: "default",
-                        onPress: () => {
-                          openNotificationSettings();
-                          setTimeout(() => {
-                            navigation.reset({
-                              index: 0,
-                              routes: [{ name: "SettingsNotifications" }],
-                            });
-                          }, 1000);
-                        },
-                      },
-                    ]
-                  );
+                if (isEnable === undefined) {
+                  alertExpoGo(showAlert);
                 } else {
                   showAlert({
                     title: "Notifications désactivées",

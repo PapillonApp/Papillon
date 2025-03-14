@@ -57,7 +57,7 @@ const SettingsDonorsList = () => {
             Merci à tous les donateurs qui soutiennent l'application !
           </NativeText>
           <NativeText variant="subtitle">
-            Grâce à vous, l'application peut survivre et bénéficier de meilleures conditions pour évoluer jour après jour.
+            Grâce à eux, l'application peut survivre et bénéficier de meilleures conditions pour évoluer jour après jour.
           </NativeText>
         </NativeItem>
       </NativeList>

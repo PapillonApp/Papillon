@@ -10,7 +10,7 @@ jobs:
   lint-main:
     name: 🛠️ TypeScript and ESLint on Main
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/remotes/origin/main'
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v3
@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: 💾 Install dependencies
         run: npm ci
@@ -43,7 +42,7 @@ jobs:
   lint-development:
     name: 🛠️ TypeScript and ESLint on Pull Request
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/remotes/origin/main'
+    if: github.ref != 'refs/heads/main'
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v3
@@ -52,7 +51,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: 💾 Install dependencies
         run: npm ci

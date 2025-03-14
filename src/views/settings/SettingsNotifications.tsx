@@ -31,12 +31,14 @@ import {
 import { useCurrentAccount } from "@/stores/account";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { anim2Papillon } from "@/utils/ui/animations";
+import { useAlert } from "@/providers/AlertProvider";
 
 const SettingsNotifications: Screen<"SettingsNotifications"> = ({
   navigation,
 }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { showAlert } = useAlert();
 
   // User data
   const account = useCurrentAccount((store) => store.account!);
@@ -44,20 +46,27 @@ const SettingsNotifications: Screen<"SettingsNotifications"> = ({
   const notifications = account.personalization.notifications;
 
   // Global state
-  const [enabled, setEnabled] = useState<boolean | null>(
+  const [enabled, setEnabled] = useState<boolean | null | undefined>(
     notifications?.enabled ?? false
   );
 
   useEffect(() => {
     const handleNotificationPermission = async () => {
-      const statut = await requestNotificationPermission();
+      const statut = await requestNotificationPermission(showAlert);
       if (!statut) {
-        setEnabled(null);
-        setTimeout(() => {
-          mutateProperty("personalization", {
-            notifications: { ...notifications, enabled: false },
-          });
-        }, 1500);
+        if (statut === undefined) {
+          setEnabled(undefined);
+        } else {
+          setEnabled(null);
+        }
+
+        if (notifications?.enabled) {
+          setTimeout(() => {
+            mutateProperty("personalization", {
+              notifications: { ...notifications, enabled: false },
+            });
+          }, 1500);
+        }
       } else if (enabled !== null) {
         if (enabled) createChannelNotification();
         setTimeout(() => {

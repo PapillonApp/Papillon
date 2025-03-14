@@ -100,10 +100,10 @@ const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation })
             setError("Impossible de s'authentifier : " + error.message);
             break;
           case "AccessDeniedError":
-            setError("Vous n'êtes pas autorisé à vous connecter à cet établissement");
+            setError("Tu n'es pas autorisé à te connecter à cet établissement");
             break;
           case "AccountDisabledError":
-            setError("Votre compte a été désactivé. Contactez votre établissement.");
+            setError("Ton compte a été désactivé. Contacte ton établissement.");
             break;
           default:
             setError(error.message);

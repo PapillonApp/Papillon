@@ -14,8 +14,8 @@ import { qrcodeFromExternal } from "@/services/qrcode";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteParameters } from "./../../router/helpers/types";
-import { formatCardIdentifier, ServiceCard } from "@/views/account/Restaurant/Menu";
 import { STORE_THEMES } from "@/views/account/Restaurant/Cards/StoreThemes";
+import { formatCardIdentifier, ServiceCard } from "@/utils/external/restaurant";
 
 type NavigationProps = StackNavigationProp<RouteParameters, "RestaurantQrCode">;
 

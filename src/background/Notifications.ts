@@ -3,9 +3,9 @@ import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { Notification } from "@notifee/react-native";
 import { Platform } from "react-native";
 
-const requestNotificationPermission = async () => {
-  const { showAlert } = useAlert();
-
+const requestNotificationPermission = async (
+  showAlert: ReturnType<typeof useAlert>["showAlert"]
+) => {
   if (!isExpoGo()) {
     const notifee = (await import("@notifee/react-native")).default;
     const AuthorizationStatus = (await import("@notifee/react-native")).AuthorizationStatus;
@@ -24,7 +24,7 @@ const requestNotificationPermission = async () => {
     }
   } else {
     alertExpoGo(showAlert);
-    return false;
+    return undefined;
   }
 };
 

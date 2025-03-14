@@ -29,7 +29,7 @@ const SettingsReactions: Screen<"SettingsReactions"> = () => {
           <MissingItem
             animatedEmoji
             title="Aucune réaction"
-            description="Rendez-vous dans l'onglet 'Notes' pour ajouter des réactions."
+            description="Rends-toi dans l'onglet 'Notes' pour ajouter des réactions."
           />
         </View>
       ) : (

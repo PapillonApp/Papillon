@@ -50,33 +50,11 @@ import { ChevronLeft, ChevronRight} from "lucide-react-native";
 import DrawableImportRestaurant from "@/components/Drawables/DrawableImportRestaurant";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
-import { Account, AccountService } from "@/stores/account/types";
-import { Balance } from "@/services/shared/Balance";
-import { ReservationHistory } from "@/services/shared/ReservationHistory";
+import { AccountService } from "@/stores/account/types";
 import { STORE_THEMES, StoreTheme } from "./Cards/StoreThemes";
 import MenuCard from "./Cards/Card";
 import { useAlert } from "@/providers/AlertProvider";
-
-export const formatCardIdentifier = (identifier: string, dots: number = 4, separator: string = " ") => {
-  if(!identifier) {
-    return "";
-  }
-
-  const visiblePart = identifier.slice(-4);
-  const maskedPart = identifier.slice(-(4 + dots), -4).replace(/./g, "•");
-  return maskedPart + separator + (visiblePart.match(/.{1,4}/g) ?? []).join(" ");
-};
-
-export interface ServiceCard {
-  service: string | AccountService;
-  account: Account | null;
-  identifier: string;
-  balance: never[] | Balance[];
-  history: never[] | ReservationHistory[];
-  cardnumber: string | Blob | null;
-  // @ts-ignore
-  theme: StoreTheme;
-}
+import { ServiceCard } from "@/utils/external/restaurant";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();

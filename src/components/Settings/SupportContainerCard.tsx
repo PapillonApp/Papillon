@@ -26,7 +26,7 @@ const SupportContainerCard = ({ theme }: { theme: any }) => {
           Un problème, une question ?
         </NativeText>
         <NativeText variant="subtitle">
-          Laissez-nous un message depuis cette page et nous vous répondrons dans les plus brefs délais !
+          Laisse-nous un message depuis cette page et nous te répondrons dans les plus brefs délais !
         </NativeText>
       </NativeItem>
     </NativeList>

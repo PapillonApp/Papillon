@@ -14,9 +14,9 @@ import {Client} from "pawrd";
 import { Host } from "turboself-api";
 import {Evaluation} from "@/services/shared/Evaluation";
 import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
-import { ServiceCard } from "@/views/account/Restaurant/Menu";
 import {MultiServiceSpace} from "@/stores/multiService/types";
 import { TimetableClass } from "@/services/shared/Timetable";
+import { ServiceCard } from "@/utils/external/restaurant";
 
 export type RouteParameters = {
   // welcome.index

@@ -39,7 +39,7 @@ const ReelThumbnail = ({ reel, onPress, width }: { reel: Reel; onPress: () => vo
   // Vérification de sécurité pour l'image
   const imageSource = reel.imagewithouteffect
     ? { uri: `data:image/jpeg;base64,${reel.imagewithouteffect}` }
-    : null; // Vous pouvez aussi mettre une image par défaut ici
+    : null; // Tu peux aussi mettre une image par défaut ici
 
   if (!imageSource) {
     return (
