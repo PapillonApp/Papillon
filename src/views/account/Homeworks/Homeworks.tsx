@@ -64,10 +64,7 @@ const formatDate = (date: string | number | Date): string => {
 const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const flatListRef: React.MutableRefObject<FlatList> = useRef(null) as any as React.MutableRefObject<FlatList>;
   const { width } = Dimensions.get("window");
-  const finalWidth = width - (width > 600 ? (
-    320 > width * 0.35 ? width * 0.35 :
-      320
-  ) : 0);
+  const finalWidth = width;
   const insets = useSafeAreaInsets();
   const { playHaptics } = useSoundHapticsWrapper();
   const { isOnline } = useOnlineStatus();

@@ -22,8 +22,7 @@ const createScreen = <ScreenName extends keyof RouteParameters>(
   }) = {}
 ) => {
   if (!options.animation && Platform.OS === "android") {
-    options.animation =
-      options.presentation === "modal" ? "default" : "default";
+    options.animation = options.presentation === "modal" ? "slide_from_bottom" : "slide_from_right";
   }
   return {
     name,
