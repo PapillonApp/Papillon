@@ -18,6 +18,19 @@ const getDifferences = (
   );
 };
 
+const removeHtmlTags = (content: string): string => {
+  return content
+    .replace(/<[^>]*>/g, "") // remove HTML tags
+    .replace(/&nbsp;/g, " ") // Replace HTML entities
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ") // Replace multiple spaces with a single space
+    .trim(); // Remove leading and trailing spaces
+};
+
 const fetchNews = async (): Promise<Information[]> => {
   const account = getCurrentAccount();
   const notificationsTypesPermissions = account.personalization.notifications;
@@ -61,7 +74,7 @@ const fetchNews = async (): Promise<Information[]> => {
           subtitle: differences[0].title,
           body:
               differences[0].content && !differences[0].content.includes("<img")
-                ? `${parse_news_resume(differences[0].content).slice(
+                ? `${removeHtmlTags(parse_news_resume(differences[0].content)).slice(
                   0,
                   100
                 )}...`
