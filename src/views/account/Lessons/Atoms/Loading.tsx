@@ -6,7 +6,7 @@ const LessonsLoading = () => {
 
   return (
     <PapillonLoading
-      title="Chargement de l'emlpoi du temps"
+      title="Chargement de l'emploi du temps"
     />
   );
 };
