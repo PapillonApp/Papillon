@@ -30,8 +30,8 @@ async function detectMealPrice (account: Client): Promise<number | null> {
 const ExternalAliseLogin: Screen<"ExternalAliseLogin"> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const linkExistingExternalAccount = useCurrentAccount(store => store.linkExistingExternalAccount);
-  const create = useAccounts(store => store.create);
+  const linkExistingExternalAccount = useCurrentAccount((store) => store.linkExistingExternalAccount);
+  const create = useAccounts((store) => store.create);
 
   const handleLogin = async (username: string, password: string, customFields: Record<string, string>): Promise<void> => {
     setLoading(true);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Authenticator, Client} from "pawrd";
+import { Authenticator, Client } from "pawrd";
 import { AccountService, type ARDAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
@@ -29,8 +29,8 @@ export async function detectMealPrice (account: Client): Promise<number | null> 
 }
 
 const ExternalArdLogin: Screen<"ExternalArdLogin"> = ({ navigation }) => {
-  const linkExistingExternalAccount = useCurrentAccount(store => store.linkExistingExternalAccount);
-  const create = useAccounts(store => store.create);
+  const linkExistingExternalAccount = useCurrentAccount((store) => store.linkExistingExternalAccount);
+  const create = useAccounts((store) => store.create);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

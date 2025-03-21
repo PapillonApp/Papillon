@@ -1,33 +1,33 @@
-import React, {useRef, useState} from "react";
-import { Image, ScrollView, Switch, TextInput, View} from "react-native";
-import {useTheme} from "@react-navigation/native";
-import type {Screen} from "@/router/helpers/types";
+import React, { useRef, useState } from "react";
+import { Image, ScrollView, Switch, TextInput, View } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import type { Screen } from "@/router/helpers/types";
 import MultiServiceContainerCard from "@/components/Settings/MultiServiceContainerCard";
-import {NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {BadgeInfo, Check, ImageIcon, PlugZap, Plus, ShieldAlert, Type, Undo2} from "lucide-react-native";
-import {useAccounts, useCurrentAccount} from "@/stores/account";
-import {useMultiService} from "@/stores/multiService";
+import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { BadgeInfo, Check, ImageIcon, PlugZap, Plus, ShieldAlert, Type, Undo2 } from "lucide-react-native";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { useMultiService } from "@/stores/multiService";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
 import * as ImagePicker from "expo-image-picker";
-import {animPapillon} from "@/utils/ui/animations";
-import {ZoomIn, ZoomOut} from "react-native-reanimated";
+import { animPapillon } from "@/utils/ui/animations";
+import { ZoomIn, ZoomOut } from "react-native-reanimated";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import {MultiServiceSpace} from "@/stores/multiService/types";
-import {AccountService, PapillonMultiServiceSpace} from "@/stores/account/types";
+import { MultiServiceSpace } from "@/stores/multiService/types";
+import { AccountService, PapillonMultiServiceSpace } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
-import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
-import {defaultTabs} from "@/consts/DefaultTabs";
+import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import { defaultTabs } from "@/consts/DefaultTabs";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useAlert } from "@/providers/AlertProvider";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) => {
   const theme = useTheme();
-  const toggleMultiService = useMultiService(store => store.toggleEnabledState);
-  const multiServiceEnabled = useMultiService(store => store.enabled);
-  const multiServiceSpaces = useMultiService(store => store.spaces);
-  const createMultiServiceSpace = useMultiService(store => store.create);
-  const deleteMultiServiceSpace = useMultiService(store => store.remove);
+  const toggleMultiService = useMultiService((store) => store.toggleEnabledState);
+  const multiServiceEnabled = useMultiService((store) => store.enabled);
+  const multiServiceSpaces = useMultiService((store) => store.spaces);
+  const createMultiServiceSpace = useMultiService((store) => store.create);
+  const deleteMultiServiceSpace = useMultiService((store) => store.remove);
   const accounts = useAccounts();
   const currentAccount = useCurrentAccount();
 
@@ -97,7 +97,7 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
       personalization: {
         profilePictureB64: selectedImage || undefined,
         tabs: defaultTabs
-          .filter(current => defaultSpaceTabs.includes(current.tab))
+          .filter((current) => defaultSpaceTabs.includes(current.tab))
           .map((tab, index) => ({
             name: tab.tab,
             enabled: index <= 4
@@ -145,7 +145,7 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
         paddingBottom: 25
       }}
     >
-      <MultiServiceContainerCard theme={theme} />
+      <MultiServiceContainerCard/>
 
       <NativeListHeader label="Options" />
       <NativeList>

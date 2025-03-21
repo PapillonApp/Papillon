@@ -1,6 +1,6 @@
-import type {EcoleDirecteAccount} from "@/stores/account/types";
-import {Timetable, TimetableClass, TimetableClassStatus} from "../shared/Timetable";
-import {ErrorServiceUnauthenticated} from "../shared/errors";
+import type { EcoleDirecteAccount } from "@/stores/account/types";
+import { Timetable, TimetableClass, TimetableClassStatus } from "../shared/Timetable";
+import { ErrorServiceUnauthenticated } from "../shared/errors";
 import ecoledirecte, { TimetableItemKind } from "pawdirecte";
 
 const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => {
@@ -71,7 +71,7 @@ const decodeTimetableClass = (c: ecoledirecte.TimetableItem): TimetableClass => 
   throw new Error("ecoledirecte: unknown class type");
 };
 
-export const getTimetableForWeek = async (account: EcoleDirecteAccount, rangeDate: { start: Date, end: Date}): Promise<Timetable> => {
+export const getTimetableForWeek = async (account: EcoleDirecteAccount, rangeDate: { start: Date, end: Date }): Promise<Timetable> => {
   if (!account.authentication.session)
     throw new ErrorServiceUnauthenticated("ecoledirecte");
 

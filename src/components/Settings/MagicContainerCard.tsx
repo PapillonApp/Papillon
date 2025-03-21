@@ -6,8 +6,7 @@ import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
 import { LinearGradient } from "expo-linear-gradient";
 import BetaIndicator from "../News/Beta";
 
-const MagicContainerCard = ({ theme }: { theme: any }) => {
-  const { colors } = theme;
+const MagicContainerCard = () => {
   const animationref = React.useRef<LottieView>(null);
 
   useEffect(() => {

@@ -2,9 +2,9 @@ import LoginView from "@/components/Templates/LoginView";
 import React, { useMemo, useState } from "react";
 import { View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
+import { error as error_logger } from "@/utils/logger/logger";
 
 export const UnivIUTLannion_Login: Screen<"UnivIUTLannion_Login"> = ({ navigation }) => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const login = async (username: string, password: string) => {
@@ -16,9 +16,8 @@ export const UnivIUTLannion_Login: Screen<"UnivIUTLannion_Login"> = ({ navigatio
       });
     }
     catch (e) {
-      console.error(e);
-      // setLoading(false);
-      // @ts-ignore
+      error_logger("" + e, "UnivIUTLannion_Login/login");
+      // @ts-expect-error
       setError(e.toString());
     }
   };
@@ -27,7 +26,6 @@ export const UnivIUTLannion_Login: Screen<"UnivIUTLannion_Login"> = ({ navigatio
     serviceName: "IUT de Lannion",
     serviceIcon: require("@/../assets/images/service_iutlan.png"),
     onLogin: login,
-    loading,
     error,
   }), [login]);
 

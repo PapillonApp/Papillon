@@ -1,16 +1,16 @@
 import { LocalAccount } from "@/stores/account/types";
-import  {
+import {
   type AverageOverview,
   type Grade
 } from "@/services/shared/Grade";
 import uuid from "@/utils/uuid-v4";
+import { error } from "@/utils/logger/logger";
 
 export const saveIUTLanGrades = async (account: LocalAccount, periodName: string): Promise<{
   grades: Grade[];
   averages: AverageOverview;
 }> => {
   try {
-    // console.log(periodName);
 
     // Il faudrait peut-être penser à typer cette partie, tous les types sont any :(
     const data = account.serviceData.semestres as any;
@@ -125,12 +125,12 @@ export const saveIUTLanGrades = async (account: LocalAccount, periodName: string
       });
 
       //
-      const average = grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).length > 0? grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).reduce((acc, grade) => acc + (grade.student.value as number), 0) / grades.filter(grade => grade.student.value != null && !isNaN(grade.student.value)).length: NaN;
+      const average = grades.filter((grade) => grade.student.value != null && !isNaN(grade.student.value)).length > 0? grades.filter((grade) => grade.student.value != null && !isNaN(grade.student.value)).reduce((acc, grade) => acc + (grade.student.value as number), 0) / grades.filter((grade) => grade.student.value != null && !isNaN(grade.student.value)).length: NaN;
 
-      const min = grades.filter(grade => grade.min.value != null && !isNaN(grade.min.value)).length > 0 ?grades.filter(grade => grade.min.value != null && !isNaN(grade.min.value)).reduce((acc, grade) => Math.min(acc, (grade.min.value as number)), 20): NaN;
-      const max = grades.filter(grade => grade.max.value != null && !isNaN(grade.max.value)).length > 0 ? grades.filter(grade => grade.max.value != null && !isNaN(grade.max.value)).reduce((acc, grade) => Math.max(acc, (grade.max.value as number)), 0): NaN;
+      const min = grades.filter((grade) => grade.min.value != null && !isNaN(grade.min.value)).length > 0 ?grades.filter((grade) => grade.min.value != null && !isNaN(grade.min.value)).reduce((acc, grade) => Math.min(acc, (grade.min.value as number)), 20): NaN;
+      const max = grades.filter((grade) => grade.max.value != null && !isNaN(grade.max.value)).length > 0 ? grades.filter((grade) => grade.max.value != null && !isNaN(grade.max.value)).reduce((acc, grade) => Math.max(acc, (grade.max.value as number)), 0): NaN;
 
-      const classAverage = grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).length > 0 ? grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).reduce((acc, grade) => acc + (grade.average.value as number), 0) / grades.filter(grades => grades.average.value != null && !isNaN(grades.average.value)).length: NaN;
+      const classAverage = grades.filter((grades) => grades.average.value != null && !isNaN(grades.average.value)).length > 0 ? grades.filter((grades) => grades.average.value != null && !isNaN(grades.average.value)).reduce((acc, grade) => acc + (grade.average.value as number), 0) / grades.filter((grades) => grades.average.value != null && !isNaN(grades.average.value)).length: NaN;
 
 
       if (grades.length === 0) {
@@ -170,8 +170,8 @@ export const saveIUTLanGrades = async (account: LocalAccount, periodName: string
 
     return { grades: gradesList, averages: averages };
   }
-  catch(e) {
-    console.error(e);
+  catch (e) {
+    error("" + (e as Error)?.stack, "saveIUTLanGrades");
     return {
       grades: [],
       averages: {

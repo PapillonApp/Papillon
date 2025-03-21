@@ -4,8 +4,7 @@ import { Image, View } from "react-native";
 import LottieView from "lottie-react-native";
 import { NativeItem, NativeList, NativeText } from "../Global/NativeComponents";
 
-const IconsContainerCard = ({ theme }: { theme: any }) => {
-  const { colors } = theme;
+const IconsContainerCard = () => {
   const animationref = React.useRef<LottieView>(null);
 
   useEffect(() => {

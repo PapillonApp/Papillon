@@ -16,8 +16,8 @@ import { updateTimetableForWeekInCache } from "@/services/timetable";
 const lz = (num: number) => (num < 10 ? `0${num}` : num);
 
 const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }: WidgetProps, ref) => {
-  const account = useCurrentAccount(store => store.account!);
-  const timetables = useTimetableStore(store => store.timetables);
+  const account = useCurrentAccount((store) => store.account!);
+  const timetables = useTimetableStore((store) => store.timetables);
 
   const [nextCourse, setNextCourse] = useState<TimetableClass | null>(null);
   const [widgetTitle, setWidgetTitle] = useState("Prochain cours");
@@ -52,7 +52,7 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
     const weekCourses = timetables[currentWeekNumber];
 
     let updatedNextCourse = weekCourses
-      .filter(c => c.endTimestamp > today && c.status !== TimetableClassStatus.CANCELED)
+      .filter((c) => c.endTimestamp > today && c.status !== TimetableClassStatus.CANCELED)
       .sort((a, b) => a.startTimestamp - b.startTimestamp)[0];
 
     setNextCourse(updatedNextCourse);
@@ -66,7 +66,6 @@ const NextCourseWidget = forwardRef(({ hidden, setHidden, loading, setLoading }:
 
   useEffect(() => {
     if (nextCourse) {
-      setNextCourse(nextCourse);
       setHidden(false);
     }
     setLoading(false);

@@ -5,7 +5,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import {Evaluation} from "@/services/shared/Evaluation";
+import { Evaluation } from "@/services/shared/Evaluation";
 import EvaluationLatestItem from "./LatestEvaluationsItem";
 
 interface EvaluationsLatestListProps {

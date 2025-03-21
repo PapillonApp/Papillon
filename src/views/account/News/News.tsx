@@ -15,10 +15,10 @@ import { animPapillon } from "@/utils/ui/animations";
 import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";
 import MissingItem from "@/components/Global/MissingItem";
-import {Information} from "@/services/shared/Information";
-import {AccountService} from "@/stores/account/types";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { Information } from "@/services/shared/Information";
+import { AccountService } from "@/stores/account/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -33,7 +33,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [importantMessages, setImportantMessages] = useState<NewsItem[]>([]);
   const [sortedMessages, setSortedMessages] = useState<NewsItem[]>([]);
-  const [isED, setIsED] = useState(false);
   const { isOnline } = useOnlineStatus();
 
   useEffect(() => {
@@ -49,7 +48,6 @@ const NewsScreen: Screen<"News"> = ({ route, navigation }) => {
   }, [account]);
 
   useEffect(() => {
-    if (account.service === AccountService.EcoleDirecte) setIsED(true);
     if (sortedMessages.length === 0) {
       navigation.addListener("focus", () => fetchData(true));
       fetchData();

@@ -13,6 +13,7 @@ import { Screen } from "@/router/helpers/types";
 import { ExternalAccount } from "@/stores/account/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import * as Brightness from "expo-brightness";
+import { log } from "@/utils/logger/logger";
 
 const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) => {
   const { card } = route.params;
@@ -22,8 +23,7 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
 
   const PollingBalance = async () => {
     balanceFromExternal(card.account as ExternalAccount).then((newBalance) => {
-      if(card.balance[0].amount !== newBalance[0].amount) {
-        const diff = newBalance[0].amount - card.balance[0].amount;
+      if (card.balance[0].amount !== newBalance[0].amount) {
         openFeedback();
       }
     });
@@ -67,15 +67,15 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
 
   useEffect(() => {
     // Si Izly
-    if(card.service === 10) {
+    if (card.service === 10) {
       const interval = setInterval(() => {
-        console.log("[CANTINE >> IZLY] Demande du solde");
+        log("[CANTINE >> IZLY] Demande du solde", "QrCode/Izly/PollingBalance");
         PollingBalance();
       }, 1000);
 
       return () => {
         clearInterval(interval);
-        console.log("[CANTINE >> IZLY] Fin du polling");
+        log("[CANTINE >> IZLY] Fin du polling", "QrCode/Izly/PollingBalance");
       };
     }
   }, []);

@@ -1,4 +1,5 @@
 import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
+import { error, log } from "@/utils/logger/logger";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 async function DownloadTheme (meta: ThemesMeta): Promise<boolean> {
@@ -6,24 +7,24 @@ async function DownloadTheme (meta: ThemesMeta): Promise<boolean> {
   let r_theme = await f_theme.json();
 
   let to_download: string[] = [];
-  if (r_theme.darkModifier && r_theme.darkModifier.chatBackgroundImage) {
+  if (r_theme.darkModifier?.chatBackgroundImage) {
     to_download.push(r_theme.darkModifier.chatBackgroundImage);
   }
-  if (r_theme.lightModifier && r_theme.lightModifier.chatBackgroundImage) {
+  if (r_theme.lightModifier?.chatBackgroundImage) {
     to_download.push(r_theme.lightModifier.chatBackgroundImage);
   }
-  for (let i = 0; i < to_download.length; i++) {
-    let f = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/themes/" + meta.path + "/" + to_download[i]);
+  for (const element of to_download) {
+    let f = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/themes/" + meta.path + "/" + element);
     let r = await f.blob();
     let reader = new FileReader();
     reader.readAsDataURL(r);
     reader.onloadend = function () {
       if (reader.result && typeof reader.result === "string") {
         let base64data = reader.result;
-        AsyncStorage.setItem("theme_" + meta.name + "_@" + meta.author + "_" + to_download[i], base64data);
-        console.log("Asset downloaded to " + "theme_" + meta.name + "_@" + meta.author + "_" + to_download[i]);
+        AsyncStorage.setItem("theme_" + meta.name + "_@" + meta.author + "_" + element, base64data);
+        log("Asset downloaded to " + "theme_" + meta.name + "_@" + meta.author + "_" + element, "DownloadTheme");
       } else {
-        console.error("Error: reader.result is not a string or is null.");
+        error("Error: reader.result is not a string or is null.", "DownloadTheme");
       }
     };
   }
@@ -35,7 +36,7 @@ async function DownloadTheme (meta: ThemesMeta): Promise<boolean> {
 async function SetThemeForChatId (chatId: string, meta: ThemesMeta): Promise<boolean> {
   let themeDownloaded = await DownloadTheme(meta);
   if (!themeDownloaded) {
-    console.error("Failed to download the theme for chatId: " + chatId);
+    error("Failed to download the theme for chatId: " + chatId, "SetThemeForChatId");
     return false;
   }
 

@@ -2,6 +2,7 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useAlert } from "@/providers/AlertProvider";
 import { PrimaryAccount } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 import { anim2Papillon } from "@/utils/ui/animations";
 import { adjustColor } from "@/utils/ui/colors";
 
@@ -318,7 +319,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
     );
   }
   catch (e) {
-    console.error(e);
+    error("" + (e as Error)?.stack, "GradesScodocUE");
     return null;
   }
 };

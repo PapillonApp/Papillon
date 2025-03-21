@@ -13,7 +13,7 @@ const PriceDetectionOnboarding: Screen<"PriceDetectionOnboarding"> = ({ navigati
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const accountID = route.params?.accountID;
 
   return (

@@ -3,6 +3,7 @@ import {
   AccountService,
   PrimaryAccount
 } from "@/stores/account/types";
+import { error, warn } from "@/utils/logger/logger";
 
 // Depending on your account type, download the default profile photo
 export async function getDefaultProfilePicture (
@@ -16,7 +17,7 @@ export async function getDefaultProfilePicture (
           : undefined;
       }
       case AccountService.Skolengo:
-        console.warn("Skolengo does not provide a profile picture.");
+        warn("Skolengo does not provide a profile picture.", "getDefaultProfilePicture");
         return undefined; // Skolengo does not provide profile pictures
 
       case AccountService.EcoleDirecte:
@@ -30,8 +31,8 @@ export async function getDefaultProfilePicture (
       default:
         return undefined;
     }
-  } catch (error) {
-    console.error("Error while retrieving default profile picture:", error);
+  } catch (err) {
+    error("Error while retrieving default profile picture:" + err, "getDefaultProfilePicture");
     return undefined; // Return undefined in case of error
   }
 }

@@ -1,15 +1,15 @@
-import {Image, StyleProp, Text, View, ViewStyle} from "react-native";
+import { Image, StyleProp, Text, View, ViewStyle } from "react-native";
 import { animPapillon } from "@/utils/ui/animations";
 
 import Reanimated, {
   FadeOut,
   ZoomIn
 } from "react-native-reanimated";
-import {PrimaryAccount, AccountService} from "@/stores/account/types";
-import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
-import {Check} from "lucide-react-native";
+import { PrimaryAccount, AccountService } from "@/stores/account/types";
+import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import { Check } from "lucide-react-native";
 import React from "react";
-import {useTheme} from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 
 const AccountItem: React.FC<{
   account: PrimaryAccount,

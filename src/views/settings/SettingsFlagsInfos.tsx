@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeText } from "@/components/Global/NativeComponents";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 
 const SettingsFlagsInfos: Screen<"SettingsFlagsInfos"> = ({ route, navigation }) => {
   const { title, value } = route.params;

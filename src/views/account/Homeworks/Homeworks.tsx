@@ -32,27 +32,16 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import {Homework} from "@/services/shared/Homework";
-import {Account, AccountService} from "@/stores/account/types";
-import {Screen} from "@/router/helpers/types";
-import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
-import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
+import { Homework } from "@/services/shared/Homework";
+import { AccountService } from "@/stores/account/types";
+import { Screen } from "@/router/helpers/types";
+import { NativeSyntheticEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import { NativeScrollEvent, ScrollViewProps } from "react-native/Libraries/Components/ScrollView/ScrollView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -72,9 +61,9 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const outsideNav = route.params?.outsideNav;
 
   const theme = useTheme();
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Homeworks, account.localID) : true;
-  const homeworks = useHomeworkStore(store => store.homeworks);
+  const homeworks = useHomeworkStore((store) => store.homeworks);
 
   // @ts-expect-error
   let firstDate = account?.instance?.instance?.firstDate || null;
@@ -89,8 +78,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [direction, setDirection] = useState<"left" | "right">("right");
-  const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
   const [hideDone, setHideDone] = useState(false);
 
@@ -119,7 +106,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
 
   const updateHomeworks = useCallback(async (force = false, showRefreshing = true, showLoading = true) => {
-    if(!account) return;
+    if (!account) return;
 
     if (!force && loadedWeeks.includes(selectedWeek)) {
       return;
@@ -135,20 +122,13 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       .then(() => {
         setLoading(false);
         setRefreshing(false);
-        setLoadedWeeks(prev => [...prev, selectedWeek]);
+        setLoadedWeeks((prev) => [...prev, selectedWeek]);
       });
   }, [account, selectedWeek, loadedWeeks]);
 
   // on page change, load the homeworks
   useEffect(() => {
-    if (selectedWeek > oldSelectedWeek) {
-      setDirection("right");
-    } else if (selectedWeek < oldSelectedWeek) {
-      setDirection("left");
-    }
-
     setTimeout(() => {
-      setOldSelectedWeek(selectedWeek);
       updateHomeworks(false, false);
     }, 0);
   }, [selectedWeek]);
@@ -173,7 +153,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
       // filter homeworks by search terms
       if (searchTerms.length > 0) {
-        acc[day] = acc[day].filter(homework => {
+        acc[day] = acc[day].filter((homework) => {
           const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const subject = homework.subject.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           return content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) ||
@@ -183,7 +163,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
       // if hideDone is enabled, filter out the done homeworks
       if (hideDone) {
-        acc[day] = acc[day].filter(homework => !homework.done);
+        acc[day] = acc[day].filter((homework) => !homework.done);
       }
 
       // homework completed downstairs
@@ -218,7 +198,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
             setTimeout(() => {
               AsyncStorage.getItem("review_given").then((value) => {
-                if(!value) {
+                if (!value) {
                   askForReview();
                   AsyncStorage.setItem("review_given", "true");
                 }
@@ -322,13 +302,13 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const onEndReached = () => {
     const lastWeek = data[data.length - 1];
     const newWeeks = Array.from({ length: 50 }, (_, i) => lastWeek + i + 1);
-    setData(prevData => [...prevData, ...newWeeks]);
+    setData((prevData) => [...prevData, ...newWeeks]);
   };
 
   const onStartReached = () => {
     const firstWeek = data[0];
     const newWeeks = Array.from({ length: 50 }, (_, i) => firstWeek - 50 + i);
-    setData(prevData => [...newWeeks, ...prevData]);
+    setData((prevData) => [...newWeeks, ...prevData]);
     flatListRef.current?.scrollToIndex({ index: 50, animated: false });
   };
 
@@ -348,7 +328,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   }, [finalWidth, data]);
 
   const goToWeek = useCallback((weekNumber: number) => {
-    const index = data.findIndex(week => week === weekNumber);
+    const index = data.findIndex((week) => week === weekNumber);
     if (index !== -1) {
       // @ts-expect-error
       const currentIndex = Math.round(flatListRef.current?.contentOffset?.x / finalWidth) || 0;

@@ -8,6 +8,7 @@ import Reanimated, {
   useAnimatedStyle,
   ZoomIn,
   ZoomOut,
+  SharedValue
 } from "react-native-reanimated";
 import { useCurrentAccount } from "@/stores/account";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
@@ -22,7 +23,7 @@ const AccountSwitcher: React.FC<{
   small?: boolean;
   opened?: boolean;
   modalOpen?: boolean;
-  translationY?: Reanimated.SharedValue<number>;
+  translationY?: SharedValue<number>;
   loading?: boolean;
 }> = ({ small, opened, modalOpen, translationY, loading }) => {
   const theme = useTheme();
@@ -31,32 +32,6 @@ const AccountSwitcher: React.FC<{
 
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
-
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#ffffff50", colors.border]
-    ),
-    backgroundColor: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#ffffff30", "transparent"]
-    ),
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#FFF", colors.text]
-    ),
-    fontSize: 16,
-    fontFamily: "semibold",
-    maxWidth: 140,
-  }));
 
   const iconAnimatedStyle = useAnimatedStyle(() => ({
     color: interpolateColor(

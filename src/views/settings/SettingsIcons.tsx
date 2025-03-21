@@ -40,7 +40,7 @@ export const removeColor = (icon: string) => {
 const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const {showAlert} = useAlert();
+  const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
@@ -51,7 +51,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
       getIconName().then((icon) => {
         setIcon(icon);
       });
-    };
+    }
   }, []);
 
   const setNewIcon = (icon: Icon) => {
@@ -66,7 +66,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
         setIcon(iconConstructName);
       } else {
         alertExpoGo(showAlert);
-      };
+      }
     }
     else {
       if (!isExpoGo()) {
@@ -74,7 +74,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
         setIcon(icon.id);
       } else {
         alertExpoGo(showAlert);
-      };
+      }
     }
   };
 
@@ -85,9 +85,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
         paddingTop: 0,
       }}
     >
-      <IconsContainerCard
-        theme={theme}
-      />
+      <IconsContainerCard/>
 
       {Object.keys(data).map((key, index) => (
         <View key={index}>
@@ -172,7 +170,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                           });
                         }}
                       >
-                        <Sparkles color={colors.primary} style={{ marginRight: 10}}/>
+                        <Sparkles color={colors.primary} style={{ marginRight: 10 }} />
                       </TouchableOpacity>
                     ) : null}
 
@@ -186,8 +184,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                 }
               >
                 <NativeText variant="title">{icon.name}</NativeText>
-                {(icon.author && icon.author.trim() !== "") &&
-                <NativeText variant="subtitle">{icon.author}</NativeText>
+                {(icon.author?.trim() !== "") &&
+                  <NativeText variant="subtitle">{icon.author}</NativeText>
                 }
               </NativeItem>
             ))}

@@ -2,7 +2,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";
 import { BadgeX, KeyRound, LockKeyhole, PlugZap } from "lucide-react-native";
 import pronote from "pawnote";
-import {info, warn} from "@/utils/logger/logger";
+import { info, warn } from "@/utils/logger/logger";
 import type { Alert } from "@/providers/AlertProvider";
 
 /**

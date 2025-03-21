@@ -3,7 +3,7 @@ import { getCourseSpeciality } from "@/utils/format/format_cours_name";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
-import {Grade} from "@/services/shared/Grade";
+import { Grade } from "@/services/shared/Grade";
 
 interface GradeTitleProps {
   grade: Grade

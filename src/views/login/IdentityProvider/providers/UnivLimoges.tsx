@@ -15,8 +15,8 @@ import { useAlert } from "@/providers/AlertProvider";
 import { BadgeX, Check } from "lucide-react-native";
 
 const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
   const theme = useTheme();
 
   const { showAlert } = useAlert();
@@ -135,11 +135,11 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
             }}
           />
 
-          <NativeText variant="title" style={{textAlign: "center"}}>
+          <NativeText variant="title" style={{ textAlign: "center" }}>
             Connexion au compte Biome
           </NativeText>
 
-          <NativeText variant="subtitle" style={{textAlign: "center"}}>
+          <NativeText variant="subtitle" style={{ textAlign: "center" }}>
             Chargement de Biome...
           </NativeText>
         </View>
@@ -157,7 +157,7 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
         startInLoadingState={true}
         incognito={true}
         onLoadStart={(e) => {
-          log("start " + e.nativeEvent.url, "biome-login");
+          log("Start " + e.nativeEvent.url, "biome-login");
 
           if (e.nativeEvent.url.includes(BIOME_ORIGIN))
             setLoading(true);
@@ -165,7 +165,7 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
             setLoading(false);
         }}
         onLoadEnd={(e) => {
-          log("end " + e.nativeEvent.url, "biome-login");
+          log("End " + e.nativeEvent.url, "biome-login");
 
           if (currentLoginStateIntervalRef.current)
             clearInterval(currentLoginStateIntervalRef.current);
@@ -174,7 +174,7 @@ const UnivLimoges_Login: Screen<"UnivLimoges_Login"> = ({ navigation }) => {
             setLoading(true);
 
             currentLoginStateIntervalRef.current = setInterval(() => {
-              log("injecting script...", "biome-login");
+              log("Injecting script...", "biome-login");
 
               webViewRef.current?.injectJavaScript(`
                 const tokens = sessionStorage.getItem("oidc.default:https://biome.unilim.fr/authentication/callback");

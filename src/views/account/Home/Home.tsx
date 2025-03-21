@@ -36,9 +36,8 @@ import type { Screen } from "@/router/helpers/types";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import getCorners from "@/utils/ui/corner-radius";
 import { useIsFocused, useTheme } from "@react-navigation/native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Dimensions, Linking, Platform, RefreshControl, StatusBar, View } from "react-native";
-import Reanimated from "react-native-reanimated";
 import Animated, { Extrapolation, interpolate, useAnimatedRef, useAnimatedStyle, useScrollViewOffset } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AccountSwitcher from "@/components/Home/AccountSwitcher";
@@ -66,7 +65,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
   const scrollRef = useAnimatedRef<AnimatedScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
 
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const accounts = useAccounts((store) => store.accounts);
 
   useEffect(() => {
@@ -117,18 +116,10 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     }
   };
 
-  const [shouldOpenContextMenu, setShouldOpenContextMenu] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFull, setModalFull] = useState(false);
   const [canHaptics, setCanHaptics] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  const openAccSwitcher = useCallback(() => {
-    setShouldOpenContextMenu(false);
-    setTimeout(() => {
-      setShouldOpenContextMenu(true);
-    }, 150);
-  }, []);
 
   const windowHeight = Dimensions.get("window").height;
   const tabbarHeight = useBottomTabBarHeight();
@@ -138,7 +129,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     opacity: interpolate(scrollOffset.value, [0, 265 + insets.top], [1, 0], Extrapolation.CLAMP),
     transform: [
       { translateY: scrollOffset.value },
-      { scale: interpolate(scrollOffset.value, [0, 265], [1, 0.9], Extrapolation.CLAMP) },
+      { scale: interpolate(
+        scrollOffset.value,
+        [0, 265],
+        [1, 0.9],
+        Extrapolation.CLAMP
+      ) },
     ]
   }));
 
@@ -154,19 +150,14 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     minHeight: windowHeight - tabbarHeight - 8,
     backgroundColor: colors.card,
     overflow: "hidden",
-    transform: [{ translateY: interpolate(scrollOffset.value, [-1000, 0, 125, 265], [-1000, 0, 105, 0], Extrapolation.CLAMP) }],
-  }));
-
-  const navigationBarAnimatedStyle = useAnimatedStyle(() => ({
-    position: "absolute",
-    top: scrollOffset.value - 270 - insets.top,
-    left: 0,
-    right: 0,
-    height: interpolate(scrollOffset.value, [125, 265], [0, insets.top + 60], Extrapolation.CLAMP),
-    zIndex: 100,
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderBottomWidth: 0.5,
+    transform: [
+      { translateY: interpolate(
+        scrollOffset.value,
+        [-1000, 0, 125, 265 ],
+        [-1000, 0, 105, 0],
+        Extrapolation.CLAMP
+      ) }
+    ],
   }));
 
   const modalContentAnimatedStyle = useAnimatedStyle(() => ({
@@ -179,8 +170,20 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
     position: "absolute",
     top: 10,
     left: "50%",
-    transform: [{ translateX: interpolate(scrollOffset.value, [125, 200], [-25, -2], Extrapolation.CLAMP) }],
-    width: interpolate(scrollOffset.value, [125, 200], [50, 4], Extrapolation.CLAMP),
+    transform: [
+      { translateX: interpolate(
+        scrollOffset.value,
+        [125, 200],
+        [-25, -2],
+        Extrapolation.CLAMP
+      ) }
+    ],
+    width: interpolate(
+      scrollOffset.value,
+      [125, 200],
+      [50, 4],
+      Extrapolation.CLAMP
+    ),
     height: 4,
     backgroundColor: colors.text + "20",
     zIndex: 100,
@@ -200,8 +203,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
       )}
       {!isTablet && (
         <ContextMenu
-          style={[{ position: "absolute", top: insets.top + 8, left: 16, zIndex: 1000 }]}
-          shouldOpenContextMenu={shouldOpenContextMenu}
+          style={[{
+            position: "absolute",
+            top: insets.top + 8,
+            left: 16,
+            zIndex: 1000,
+          }]}
         >
           <AccountSwitcher
             translationY={scrollOffset}
@@ -210,7 +217,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           />
         </ContextMenu>
       )}
-      <Reanimated.ScrollView
+      <Animated.ScrollView
         ref={scrollRef}
         snapToEnd={false}
         snapToStart={false}
@@ -234,7 +241,12 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
           setModalOpen(scrollY >= 195 + insets.top);
           setModalFull(scrollY >= 265 + insets.top);
         }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => setRefreshing(true)} style={{ zIndex: 100 }} progressViewOffset={285 + insets.top} />}
+        refreshControl={<RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => setRefreshing(true)}
+          style={{ zIndex: 100 }}
+          progressViewOffset={285 + insets.top}
+        />}
         showsVerticalScrollIndicator={false}
       >
         <Animated.View style={[widgetAnimatedStyle, isTablet && { marginTop: 2 * (0 - insets.top) }]}>
@@ -247,7 +259,7 @@ const Home: Screen<"HomeScreen"> = ({ navigation }) => {
             <ModalContent navigation={navigation} refresh={refreshing} endRefresh={() => setRefreshing(false)} />
           </Animated.View>
         </Animated.View>
-      </Reanimated.ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };

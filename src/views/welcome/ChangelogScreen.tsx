@@ -16,9 +16,10 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { PressableScale } from "react-native-pressable-scale";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
+import { error } from "@/utils/logger/logger";
 
 interface Feature {
   title: string;
@@ -56,7 +57,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if(!changelog) {
+    if (!changelog) {
       setLoading(true);
       fetch(changelogURL + "#update=" + uuid()) // #TODO : remove, it's for development
         .then((response) => response.json())
@@ -83,7 +84,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
           onPress={() => navigation.goBack()}
           style={{
             width: 32,
-            aspectRatio: 1 / 1,
+            aspectRatio: 1,
             backgroundColor: theme.colors.text + "18",
             alignItems: "center",
             justifyContent: "center",
@@ -316,15 +317,17 @@ const ChangelogFeature: React.FC<{ feature: Feature, navigation: any, theme: any
         </View>
         <NativeItem
           onPress={(feature.href || feature.navigation) ? () => {
-            if(feature.href) {
+            if (feature.href) {
               Linking.openURL(feature.href);
             }
-            else if(feature.navigation) {
+            else if (feature.navigation) {
               try {
                 navigation.goBack();
                 navigation.navigate(feature.navigation);
               }
-              catch {}
+              catch (err){
+                error("Fail with `feature.navigation`", "ChangelogScreen");
+              }
             }
           } : undefined}
         >

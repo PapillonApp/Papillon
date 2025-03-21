@@ -35,10 +35,11 @@ import { SquarePen } from "lucide-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { TabLocation } from "pawnote";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import { timestampToString } from "@/utils/format/DateHelper";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { error } from "@/utils/logger/logger";
 
 // Voir la documentation de `react-navigation`.
 //
@@ -92,7 +93,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
       const chats = await getChats(account);
       setChats(chats);
     } catch (e) {
-      console.error("Erreur lors du chargement des discussions :", e);
+      error("Erreur lors du chargement des discussions :" + e, "Discussions/fetchChats");
     }
   }, [enabled, supported]);
 

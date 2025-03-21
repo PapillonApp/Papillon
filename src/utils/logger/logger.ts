@@ -24,21 +24,7 @@ function get_message (type: number, date: string, from: string, message: string)
   );
 }
 
-function get_file_from_stacktrace (stack: string): string
-{
-  let res = "";
-  try {
-    res = stack
-      .split("\n")[1]
-      .split(/\/\/localhost:\d\d\d\d\//g)[1]
-      .split("//&")[0];
-  } catch (e) {
-    res = "UNKNOWN";
-  }
-  return (res);
-}
-
-function obtain_function_name (from?: string): string {
+function obtain_function_name (from: string): string {
   const error = new Error(); // On génère une erreur pour obtenir la stacktrace
   const stack = error.stack?.split("\n") || [];
 
@@ -82,25 +68,25 @@ function save_logs_to_memory (log: string) {
   });
 }
 
-function log (message: string, from?: string): void {
+function log (message: string, from: string): void {
   let log = get_message(0, get_iso_date(), obtain_function_name(from), message);
   save_logs_to_memory(log);
   console.log(log);
 }
 
-function error (message: string, from?: string): void {
+function error (message: string, from: string): void {
   let log = get_message(1, get_iso_date(), obtain_function_name(from), message);
   save_logs_to_memory(log);
   console.error(log);
 }
 
-function warn (message: string, from?: string): void {
+function warn (message: string, from: string): void {
   let log = get_message(2, get_iso_date(), obtain_function_name(from), message);
   save_logs_to_memory(log);
   console.warn(log);
 }
 
-function info (message: string, from?: string): void {
+function info (message: string, from: string): void {
   let log = get_message(3, get_iso_date(), obtain_function_name(from), message);
   save_logs_to_memory(log);
   console.info(log);
@@ -123,7 +109,7 @@ async function get_brute_logs (): Promise<string> {
 export interface Log {
   type: string;
   date: string;
-  from?: string;
+  from: string;
   message: string;
 }
 

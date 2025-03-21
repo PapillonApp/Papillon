@@ -13,7 +13,7 @@ const defaultPersonalization = async (instance: MultiAccount["instance"]): Promi
   return {
     color: colors[0],
     magicEnabled: true,
-    tabs: defaultTabs.filter(current => defaultUphfTabs.includes(current.tab)).map((tab, index) => ({
+    tabs: defaultTabs.filter((current) => defaultUphfTabs.includes(current.tab)).map((tab, index) => ({
       name: tab.tab,
       enabled: index <= 4
     }))

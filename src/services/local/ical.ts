@@ -28,7 +28,7 @@ export const fetchIcalData = async (
   const courses: Timetable = [];
   const icalURLs = account.personalization.icalURLs || [];
 
-  if(icalURLs.length === 0) {
+  if (icalURLs.length === 0) {
     return [];
   }
 
