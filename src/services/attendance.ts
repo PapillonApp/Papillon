@@ -3,9 +3,9 @@ import type { Period } from "./shared/Period";
 import { useAttendanceStore } from "@/stores/attendance";
 import { Attendance } from "./shared/Attendance";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
-import {error, log} from "@/utils/logger/logger";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { error, log } from "@/utils/logger/logger";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 export async function updateAttendancePeriodsInCache <T extends Account> (account: T): Promise<void> {
   let periods: Period[] = [];
@@ -61,8 +61,8 @@ export async function updateAttendancePeriodsInCache <T extends Account> (accoun
       periods = [
         {
           name: "Toutes",
-          startTimestamp: Math.min(...output.map(e=>e.startTimestamp)),
-          endTimestamp: Math.max(...output.map(e=>e.endTimestamp)),
+          startTimestamp: Math.min(...output.map((e) => e.startTimestamp)),
+          endTimestamp: Math.max(...output.map((e) => e.endTimestamp)),
         },
       ];
 
@@ -124,7 +124,7 @@ export async function updateAttendanceInCache <T extends Account> (account: T, p
       break;
     }
     case AccountService.Skolengo: {
-      if(!checkIfSkoSupported(account, "Attendance")) {
+      if (!checkIfSkoSupported(account, "Attendance")) {
         error("[updateAttendanceInCache]: This Skolengo instance doesn't support Homeworks.", "skolengo");
         break;
       }

@@ -5,7 +5,7 @@ import { animPapillon } from "@/utils/ui/animations";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { FlatList } from "react-native";
 import SubjectItem from "./EvaluationList";
-import {Evaluation, EvaluationsPerSubject} from "@/services/shared/Evaluation";
+import { Evaluation, EvaluationsPerSubject } from "@/services/shared/Evaluation";
 
 interface SubjectProps {
   allEvaluations: Evaluation[]

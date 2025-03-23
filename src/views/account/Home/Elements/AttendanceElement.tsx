@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useAttendanceStore } from "@/stores/attendance";
@@ -68,7 +67,7 @@ const AttendanceElement: React.FC<AttendanceElementProps> = ({ onImportance }) =
     }, 0) + data.delays.reduce((sum, delay) => {
       const [hours, minutes] = [Math.floor(delay.duration / 60), delay.duration % 60];
       return sum + hours + (minutes || 0) / 60;
-    }, 0);;
+    }, 0);
 
     const unJustifiedHours = data.absences.reduce((sum, absence) => {
       if (!absence.justified) {

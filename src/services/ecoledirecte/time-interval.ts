@@ -10,9 +10,9 @@ const months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet"
 */
 export function dateAsISO860 (str: string): string {
   const parts = str.split(" ");
-  const timeIndex = parts.findIndex(part => part.includes(":"));
+  const timeIndex = parts.findIndex((part) => part.includes(":"));
   const hour = parts[timeIndex].split(":");
-  const monthIndex = parts.findIndex(part => months.includes(part));
+  const monthIndex = parts.findIndex((part) => months.includes(part));
 
   return (new Date(
     Number(parts[monthIndex + 1]),
@@ -32,7 +32,7 @@ export function dateStringAsTimeInterval (
        * str is equal to "du mercredi 21 février 2024 au jeudi 22 février 2024"
        * or "du mercredi 27 novembre 2024 à 08:10 au vendredi 06 décembre 2024 à 08:10"
        */
-    const [startPart, endPart] = str.split("au").map(part => part.trim());
+    const [startPart, endPart] = str.split("au").map((part) => part.trim());
     let start = startPart.replace("du", "").trim();
     let end = endPart.trim();
 

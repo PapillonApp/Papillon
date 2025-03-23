@@ -4,8 +4,8 @@ import type { Period } from "./shared/Period";
 import type { AverageOverview, Grade } from "./shared/Grade";
 import { error, log } from "@/utils/logger/logger";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 const getDefaultPeriod = (periods: Period[]): string => {
   const now = Date.now();
@@ -55,7 +55,7 @@ export async function updateGradesPeriodsInCache <T extends Account> (account: T
       }
     }
     case AccountService.Skolengo: {
-      if(!checkIfSkoSupported(account, "Grades")) {
+      if (!checkIfSkoSupported(account, "Grades")) {
         error("[updateGradesPeriodsInCache]: This Skolengo instance doesn't support Grades.", "skolengo");
         break;
       }
@@ -77,8 +77,8 @@ export async function updateGradesPeriodsInCache <T extends Account> (account: T
     default:
       throw new Error("Service not implemented");
   }
-  if(periods.length === 0) return;
-  if(!defaultPeriod) defaultPeriod = getDefaultPeriod(periods);
+  if (periods.length === 0) return;
+  if (!defaultPeriod) defaultPeriod = getDefaultPeriod(periods);
   useGradesStore.getState().updatePeriods(periods, defaultPeriod);
 }
 
@@ -87,7 +87,7 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
   let averages: AverageOverview = {
     subjects: [],
     overall: { value: null, disabled: true, status: null },
-    classOverall: { value: null, disabled: true, status: null}
+    classOverall: { value: null, disabled: true, status: null }
   };
 
   try {
@@ -128,7 +128,7 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
         break;
       }
       case AccountService.Skolengo: {
-        if(!checkIfSkoSupported(account, "Grades")) {
+        if (!checkIfSkoSupported(account, "Grades")) {
           error("[updateGradesAndAveragesInCache]: This Skolengo instance doesn't support Grades.", "skolengo");
           break;
         }

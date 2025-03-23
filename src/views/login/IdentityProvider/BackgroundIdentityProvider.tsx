@@ -2,20 +2,20 @@ import { useCurrentAccount } from "@/stores/account";
 import { Screen } from "@/router/helpers/types";
 import { useEffect } from "react";
 
-const BackgroundIdentityProvider: Screen<"BackgroundIdentityProvider"> = ({ route, navigation }) => {
-  const account = useCurrentAccount(store => store.account);
+const BackgroundIdentityProvider: Screen<"BackgroundIdentityProvider"> = ({ navigation }) => {
+  const account = useCurrentAccount((store) => store.account);
 
   useEffect(() => {
-    if(!account) {
+    if (!account) {
       navigation.goBack();
     }
 
     const identityProvider = account!.identityProvider;
 
-    if(identityProvider) {
-      const { identifier, rawData } = identityProvider;
+    if (identityProvider) {
+      const { identifier } = identityProvider;
 
-      if(identifier === "iut-lannion") {
+      if (identifier === "iut-lannion") {
         navigation.goBack();
         navigation.navigate("BackgroundIUTLannion");
       }

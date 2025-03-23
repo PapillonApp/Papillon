@@ -2,6 +2,7 @@ import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useAlert } from "@/providers/AlertProvider";
 import { PrimaryAccount } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 import { anim2Papillon } from "@/utils/ui/animations";
 import { adjustColor } from "@/utils/ui/colors";
 
@@ -9,8 +10,7 @@ import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown, ChevronUp, Info } from "lucide-react-native";
 import { memo, useState } from "react";
-import { Image, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Image, View, TouchableOpacity } from "react-native";
 
 import Reanimated, { FadeIn, FadeInDown, FadeOut, FadeOutUp, LinearTransition } from "react-native-reanimated";
 
@@ -318,7 +318,7 @@ const GradesScodocUE = ({ account, navigation, selectedPeriod }: { account: Prim
     );
   }
   catch (e) {
-    console.error(e);
+    error("" + (e as Error)?.stack, "GradesScodocUE");
     return null;
   }
 };

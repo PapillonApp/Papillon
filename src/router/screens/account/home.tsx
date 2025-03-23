@@ -24,7 +24,7 @@ import { useEffect } from "react";
 const HomeStackScreen = ({ accountScreens }: {
   accountScreens: Array<ReturnType<typeof createScreen>>
 }) => {
-  const account = useCurrentAccount(store => store.account);
+  const account = useCurrentAccount((store) => store.account);
   let newAccountScreens = accountScreens;
 
   useEffect(() => {
@@ -33,10 +33,10 @@ const HomeStackScreen = ({ accountScreens }: {
 
   if (account?.personalization.tabs) {
     let newTabs = account.personalization.tabs;
-    newTabs = newTabs.filter(tab => !tab.enabled);
+    newTabs = newTabs.filter((tab) => !tab.enabled);
 
-    newAccountScreens = newTabs.map(tab => {
-      const tabData = accountScreens.find(t => t.name === tab.name);
+    newAccountScreens = newTabs.map((tab) => {
+      const tabData = accountScreens.find((t) => t.name === tab.name);
       if (tabData) {
         tabData.options = {
           ...tabData.options,

@@ -9,7 +9,7 @@ const parseInformation = (i: ActualitiesResponse): Information => ({
   title: i.title,
   date: new Date(i.pubDate),
   acknowledged: false,
-  attachments: [{"name": i.title,"type":"link" as AttachmentType, "url": i.link}],
+  attachments: [{ "name": i.title,"type":"link" as AttachmentType, "url": i.link }],
   content: i.content,
   author: "Actualités",
   category: "Actualités",

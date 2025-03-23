@@ -14,8 +14,8 @@ const PronoteCredentials: Screen<"PronoteCredentials"> = ({ route, navigation })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const handleLogin = async (username: string, password: string) => {
     try {

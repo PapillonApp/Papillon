@@ -19,7 +19,7 @@ export const getChats = async (account: PronoteAccount): Promise<Array<Chat>> =>
   const parseFrenchDate = (dateText: string): Date => {
     const days = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
     const parts = dateText.split(" ");
-    const datePart = parts.find(part => part.includes("/"));
+    const datePart = parts.find((part) => part.includes("/"));
 
     if (datePart) {
       const [day, month, year] = datePart.split("/");
@@ -52,7 +52,7 @@ export const getChats = async (account: PronoteAccount): Promise<Array<Chat>> =>
   }));
 };
 
-export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Promise<ChatRecipient[]> => {
+export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Promise<ChatRecipient[]> => {
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
@@ -68,7 +68,7 @@ export const getChatRecipients = async (account: PronoteAccount, chat: Chat): Pr
   });
 };
 
-export const sendMessageInChat = async (account: PronoteAccount, chat: Chat, content: string): Promise<void> => {
+export const sendMessageInChat = async (account: PronoteAccount, chat: Chat, content: string): Promise<void> => {
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
@@ -103,11 +103,11 @@ export const createDiscussionRecipients = async (account: PronoteAccount): Promi
     throw new ErrorServiceUnauthenticated("pronote");
 
   const recipientsALL = await Promise.all(
-    account.instance!.user!.resources.flatMap(resource =>
+    account.instance.user.resources.flatMap(() =>
       [
         pronote.EntityKind.Teacher,
         pronote.EntityKind.Personal
-      ].map(kind => pronote.newDiscussionRecipients(account.instance!, kind))
+      ].map((kind) => pronote.newDiscussionRecipients(account.instance!, kind))
     )
   );
   const recipients = recipientsALL.flat();
@@ -115,7 +115,7 @@ export const createDiscussionRecipients = async (account: PronoteAccount): Promi
   return recipients.map((recipient) => ({
     name: recipient.name,
     subject: recipient.subjects.length > 0
-      ? recipient.subjects.map(subject => subject.name).join(", ")
+      ? recipient.subjects.map((subject) => subject.name).join(", ")
       : undefined,
     _handle: recipient
   }));
@@ -125,6 +125,6 @@ export const createDiscussion = async (account: PronoteAccount, subject: string,
   if (!account.instance)
     throw new ErrorServiceUnauthenticated("pronote");
 
-  await pronote.newDiscussion(account.instance, subject, content, recipients.map(r => r._handle));
+  await pronote.newDiscussion(account.instance, subject, content, recipients.map((r) => r._handle));
   info("PRONOTE->createDiscussion(): OK", "pronote");
 };

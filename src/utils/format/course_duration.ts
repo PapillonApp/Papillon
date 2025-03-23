@@ -4,7 +4,7 @@ export const getDuration = (minutes: number): string => {
   const durationHours = Math.floor(minutes / 60);
   const durationRemainingMinutes = minutes % 60;
 
-  if(durationHours === 0) {
+  if (durationHours === 0) {
     return `${durationRemainingMinutes} min`;
   }
 

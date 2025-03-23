@@ -2,7 +2,6 @@ import { CopyPlus } from "lucide-react-native";
 import React, { forwardRef, useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { useTheme } from "@react-navigation/native";
 
 import { useCurrentAccount } from "@/stores/account";
 import Reanimated, {
@@ -34,7 +33,7 @@ const Header: React.FC<{
   scrolled,
   navigation,
 }) => {
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const [tabs, setTabs] = useState<Tab[]>([
     { name: "Attendance", enabled: true },
     { name: "Discussions", enabled: true },
@@ -83,7 +82,7 @@ const Header: React.FC<{
       />
 
       {!isTablet && (
-        tabs.filter(tab => !tab.enabled).length === 0 ?
+        tabs.filter((tab) => !tab.enabled).length === 0 ?
           <PressableScale
             style={{
               height: 38,
@@ -137,7 +136,7 @@ const Header: React.FC<{
             >
               {tabs.map((tab, index) => {
                 if (tab.name === "Home") return null;
-                const defaultTab = defaultTabs.find(curr => curr.tab === tab.name);
+                const defaultTab = defaultTabs.find((curr) => curr.tab === tab.name);
 
                 if (tab.enabled) return null;
                 if (!defaultTab) return null;
@@ -234,7 +233,7 @@ const Header: React.FC<{
             // @ts-expect-error : average Reanimated issue.
             entering={FadeInRight.easing(Easing.bezier(0, 0, 0, 1)).duration(500).delay(250).withInitialValues({
               opacity: 0,
-              transform: [{translateX: 20}]
+              transform: [{ translateX: 20 }]
             })}
             style={{
               gap: 15,
@@ -254,7 +253,7 @@ const Header: React.FC<{
               <Widget
                 key={index}
                 widget={forwardRef(() => (
-                  <View style={{flex: 1}} onLayout={() => {
+                  <View style={{ flex: 1 }} onLayout={() => {
                     let temp = addonsTitle;
                     temp[index] = addon.name;
                     setAddonsTitle(temp);
@@ -267,7 +266,7 @@ const Header: React.FC<{
                       marginBottom: 10
                     }}>
                       <Image
-                        source={addon.icon == "" ? require("../../../assets/images/addon_default_logo.png") : {uri: addon.icon}}
+                        source={addon.icon == "" ? require("../../../assets/images/addon_default_logo.png") : { uri: addon.icon }}
                         style={{
                           width: 18,
                           height: 18,
@@ -277,7 +276,7 @@ const Header: React.FC<{
                         }}
                       />
                       <NativeText variant="subtitle" numberOfLines={1}
-                        style={{flex: 1}}>{addonsTitle[index]}</NativeText>
+                        style={{ flex: 1 }}>{addonsTitle[index]}</NativeText>
                     </View>
                     <AddonsWebview addon={addon} url={addon.url}
                       navigation={navigation} setTitle={(title) => {
@@ -304,9 +303,7 @@ const HeaderButton: React.FC<{
   text: string
   scrolled: boolean,
   onPress: () => void
-}> = ({icon, index, text, scrolled, onPress}) => {
-  const theme = useTheme();
-  const { colors } = theme;
+}> = ({ icon, index, text, scrolled, onPress }) => {
 
   const newIcon = React.cloneElement(icon, {
     size: 24,
@@ -318,7 +315,7 @@ const HeaderButton: React.FC<{
           //@ts-expect-error
           entering={FadeInRight.easing(Easing.bezier(0, 0, 0, 1)).duration(300).delay((50 * index)).withInitialValues({
             opacity: 0,
-            transform: [{translateX: 20}]
+            transform: [{ translateX: 20 }]
           })}
         >
 

@@ -1,6 +1,7 @@
-import {Theme} from "@/utils/chat/themes/Themes.types";
-import {DefaultTheme} from "@/consts/DefaultTheme";
+import { Theme } from "@/utils/chat/themes/Themes.types";
+import { DefaultTheme } from "@/consts/DefaultTheme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { log } from "@/utils/logger/logger";
 
 async function GetThemeForChatId (chatId: string): Promise<Theme> {
   //Just a stupid way to clone an object
@@ -32,7 +33,7 @@ async function GetThemeForChatId (chatId: string): Promise<Theme> {
 
   if (theme_json.lightModifier.chatBackgroundImage) {
     let image = await AsyncStorage.getItem("theme_" + theme.meta.name + "_@" + theme.meta.author + "_" + theme_json.lightModifier.chatBackgroundImage);
-    console.log("theme_" + theme.meta.name + "_@" + theme.meta.author + "_" + theme_json.lightModifier.chatBackgroundImage);
+    log("Theme_" + theme.meta.name + "_@" + theme.meta.author + "_" + theme_json.lightModifier.chatBackgroundImage, "GetThemeForChatId");
     if (image !== null) {
       theme.lightModifier.chatBackgroundImage = image;
     }

@@ -77,7 +77,7 @@ const ButtonCta: React.FC<{
       >
         {icon && newIcon}
 
-        <Text style={[styles.text, { color: (primary && !disabled) ? "#ffffff" : colors.text}]}>
+        <Text style={[styles.text, { color: (primary && !disabled) ? "#ffffff" : colors.text }]}>
           {value}
         </Text>
       </Pressable>

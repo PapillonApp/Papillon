@@ -1,5 +1,5 @@
-import {AccountService, type ExternalAccount} from "@/stores/account/types";
-import type {Balance} from "./shared/Balance";
+import { AccountService, type ExternalAccount } from "@/stores/account/types";
+import type { Balance } from "./shared/Balance";
 
 export const balanceFromExternal = async (account: ExternalAccount, force = false): Promise<Balance[]> => {
   switch (account.service) {

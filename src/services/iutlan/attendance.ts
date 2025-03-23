@@ -1,6 +1,7 @@
 import { LocalAccount } from "@/stores/account/types";
 import { Attendance } from "../shared/Attendance";
 import { Absence } from "../shared/Absence";
+import { error } from "@/utils/logger/logger";
 
 export interface scodocAbsence {
   idAbs: string;
@@ -55,8 +56,8 @@ export const saveIUTLanAttendance = async (
       punishments: [],
       observations: [],
     };
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    error("" + (err as Error)?.stack, "saveIUTLanAttendance");
     throw new Error("Failed to save attendance data");
   }
 };

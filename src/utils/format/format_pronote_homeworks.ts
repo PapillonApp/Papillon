@@ -28,7 +28,7 @@ function parse_homeworks (content: string): string {
     return text
       .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
       .replace(/&([a-zA-Z]+);/g, (_, entity) => htmlEntities[entity] || `&${entity};`)
-      .replace(/[\u2200-\u22FF\u03B1-\u03C9]/g, match => latexVocabulary[match] || match);
+      .replace(/[\u2200-\u22FF\u03B1-\u03C9]/g, (match) => latexVocabulary[match] || match);
   }
 
   let result = "";

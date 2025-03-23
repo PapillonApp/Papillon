@@ -14,11 +14,11 @@ import { PapillonHeaderAction } from "@/components/Global/PapillonModernHeader";
 import { getSubjectData } from "@/services/shared/Subject";
 import { PapillonNavigation } from "@/router/refs";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import { TimetableClassStatus} from "@/services/shared/Timetable";
+import { TimetableClassStatus } from "@/services/shared/Timetable";
 import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import type { Screen } from "@/router/helpers/types";
-import {Account} from "@/stores/account/types";
+import { Account } from "@/stores/account/types";
 import { fetchIcalData } from "@/services/local/ical";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -172,7 +172,7 @@ const HeaderItem = memo<HeaderItemProps>(({ header }) => {
             >
               {new Date(start
               + i * 24 * 60 * 60 * 1000
-              ).toLocaleDateString("fr-FR", {weekday: "short"})}
+              ).toLocaleDateString("fr-FR", { weekday: "short" })}
             </Text>
           )}
           <Text
@@ -200,7 +200,7 @@ const HeaderItem = memo<HeaderItemProps>(({ header }) => {
             {new Date(start
               + i * 24 * 60 * 60 * 1000
             ).toLocaleDateString("fr-FR",
-              cols > 1 ? {day: "numeric"} : {
+              cols > 1 ? { day: "numeric" } : {
                 weekday: "long",
                 day: "numeric",
                 month: "long",
@@ -214,12 +214,10 @@ const HeaderItem = memo<HeaderItemProps>(({ header }) => {
 
 const displayModes = ["Semaine", "3 jours", "Journée"];
 
-const Week: Screen<"Week"> = ({ route, navigation }) => {
+const Week: Screen<"Week"> = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isOnline } = useOnlineStatus();
-
-  const outsideNav = route.params?.outsideNav;
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -244,11 +242,11 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
   const [events, setEvents] = React.useState<CalendarKitEventItem[]>([]);
 
   useEffect(() => {
-    if(!timetables) return;
+    if (!timetables) return;
 
     const nevts = Object.values(timetables)
       .flat()
-      .map(event => ({
+      .map((event) => ({
         id: event.id.toString(),
         title: event.title,
         start: { dateTime: new Date(event.startTimestamp) },
@@ -269,7 +267,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     requestAnimationFrame(async () => {
       try {
         await updateTimetableForWeekInCache(account as Account, weekNumber, force);
-        await fetchIcalData(account as Account, force);
+        await fetchIcalData(account as Account);
       } finally {
         setIsLoading(false);
       }
@@ -281,15 +279,12 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
     await loadTimetableWeek(weekNumber);
   }, [loadTimetableWeek]);
 
-  const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
-
   React.useEffect(() => {
-    if(events.length === 0 && (account?.personalization?.icalURLs?.length || 0) > 0) {
+    if (events.length === 0 && (account?.personalization?.icalURLs?.length || 0) > 0) {
       setIsLoading(true);
       requestAnimationFrame(async () => {
         const weekNumber = dateToEpochWeekNumber(new Date());
         await loadTimetableWeek(weekNumber, true);
-        setOpenedIcalModal(false);
       });
     }
   }, [account?.personalization?.icalURLs]);
@@ -333,13 +328,13 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
               />
               <NativeText
                 variant="title"
-                style={{textAlign: "center"}}
+                style={{ textAlign: "center" }}
               >
                 Aucun agenda externe
               </NativeText>
               <NativeText
                 variant="subtitle"
-                style={{textAlign: "center"}}
+                style={{ textAlign: "center" }}
               >
                 Importez un calendrier depuis une URL de votre agenda externe tel que ADE ou Moodle.
               </NativeText>
@@ -350,7 +345,6 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
                 value="Importer mes cours"
                 primary
                 onPress={() => {
-                  setOpenedIcalModal(true);
                   setTimeout(() => {
                     PapillonNavigation.current?.navigate("LessonsImportIcal", {});
                   }, 100);
@@ -412,7 +406,7 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
         numberOfDays={displayMode === "Semaine" ? 5 : displayMode === "3 jours" ? 3 : 1}
         hideWeekDays={displayMode === "Semaine" ? [6, 7] : []}
         pagesPerSide={2}
-        scrollByDay={displayMode === "Semaine" ? false : true}
+        scrollByDay={displayMode !== "Semaine"}
         events={events}
         onDateChanged={handleDateChange}
         initialLocales={LOCALES}

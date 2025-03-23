@@ -29,7 +29,7 @@ export interface GradeValue {
    */
   disabled?: boolean
 
-};
+}
 
 export interface Grade {
   id: string;

@@ -3,7 +3,6 @@ import { ScrollView, TextInput, KeyboardAvoidingView, StyleSheet } from "react-n
 import type { Screen } from "@/router/helpers/types";
 import { useTheme } from "@react-navigation/native";
 import { BadgeHelp, Code, Trash2, Undo2 } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useFlagsStore } from "@/stores/flags";
 import { useCurrentAccount } from "@/stores/account";
@@ -13,10 +12,9 @@ import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextIn
 
 const SettingsFlags: Screen<"SettingsFlags"> = ({ navigation }) => {
   const { flags, remove, set } = useFlagsStore();
-  const account = useCurrentAccount(store => store.account!);
-  const externals = useCurrentAccount(store => store.linkedAccounts);
+  const account = useCurrentAccount((store) => store.account!);
+  const externals = useCurrentAccount((store) => store.linkedAccounts);
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const textInputRef = useRef<TextInput>(null);
 
   const { showAlert } = useAlert();

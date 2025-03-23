@@ -40,7 +40,7 @@ const dayToWeekCommonDay = (date: Date): Date => {
   return _date;
 };
 
-export const epochWNToDate = (epochWeekNumber: number)=>dayToWeekCommonDay(weekNumberToMiddleDate(epochWeekNumber));
+export const epochWNToDate = (epochWeekNumber: number) => dayToWeekCommonDay(weekNumberToMiddleDate(epochWeekNumber));
 
 export const epochWNToPronoteWN = (epochWeekNumber: number, account: PronoteAccount) =>
   translateToWeekNumber(epochWNToDate(epochWeekNumber), account.instance?.instance.firstMonday || pronoteFirstDate) || 1;
@@ -108,9 +108,11 @@ export const epochWMToCalendarWeekNumber = (epochWeekNumber: number): number => 
   // Set Day to Sunday and make it the 7th day of the week
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
   // Get first day of year
-  var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
   // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil(( ( (date.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
+  const weekNo = Math.ceil(
+    ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
   // Return array of year and week number
   return weekNo;
 };

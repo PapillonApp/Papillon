@@ -1,8 +1,7 @@
 import type React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { ArrowUpRight } from "lucide-react-native";
 import { NavigationContainerRef, useTheme } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import type { RouteParameters } from "@/router/helpers/types";
 
 interface RedirectButtonProps {

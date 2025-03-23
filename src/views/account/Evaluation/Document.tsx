@@ -14,11 +14,11 @@ import {
 } from "lucide-react-native";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {Skill} from "@/services/shared/Evaluation";
-import {SkillLevelBadge} from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
+import { Skill } from "@/services/shared/Evaluation";
+import { SkillLevelBadge } from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
 
 const EvaluationDocument: Screen<"EvaluationDocument"> = ({ route, navigation }) => {
-  const { evaluation, allEvaluations = [] } = route.params;
+  const { evaluation } = route.params;
   const theme = useTheme();
 
   const [subjectData, setSubjectData] = useState({
@@ -199,7 +199,7 @@ const EvaluationDocument: Screen<"EvaluationDocument"> = ({ route, navigation })
                   <NativeItem
                     key={index}
                     leading={<SkillLevelBadge skillLevel={skill.level} />}
-                    trailing={<NativeText variant="subtitle" style={{fontSize: 18, marginLeft: 10}}>
+                    trailing={<NativeText variant="subtitle" style={{ fontSize: 18, marginLeft: 10 }}>
                       {skill.pillarPrefixes.join(", ")}
                     </NativeText>}
                   >
@@ -213,7 +213,7 @@ const EvaluationDocument: Screen<"EvaluationDocument"> = ({ route, navigation })
           <NativeListHeader label={"Détails"} />
           <NativeList>
             <NativeItem
-              icon={<User2/>}
+              icon={<User2 />}
             >
               <NativeText variant="overtitle">Déposé par </NativeText>
               <NativeText
@@ -224,7 +224,7 @@ const EvaluationDocument: Screen<"EvaluationDocument"> = ({ route, navigation })
             </NativeItem>
             {evaluation.description !== "" && (
               <NativeItem
-                icon={<MessageSquareMore/>}
+                icon={<MessageSquareMore />}
               >
                 <NativeText variant="overtitle">Détails</NativeText>
                 <NativeText

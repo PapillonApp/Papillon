@@ -74,12 +74,10 @@ const PapillonShineBubble: React.FC<{
     bubbleScale.value = withSpring(1, { damping: 15, stiffness: 150 });
   }, []);
 
-  const [sHeight, setSHeight] = React.useState(Dimensions.get("window").height / Dimensions.get("window").scale);
   const [sWidth, setSWidth] = React.useState(Dimensions.get("window").width / Dimensions.get("window").scale);
 
   useEffect(() => {
     Dimensions.addEventListener("change", ({ window }) => {
-      setSHeight(window.height / window.scale);
       setSWidth(window.width / window.scale);
     });
   }, []);

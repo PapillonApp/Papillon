@@ -32,8 +32,8 @@ const MemoizedSubjectContainerCard = React.memo(SubjectContainerCard);
 type Item = [key: string, value: { color: string; pretty: string; emoji: string; }];
 
 const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
-  const account = useCurrentAccount(store => store.account!);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const insets = useSafeAreaInsets();
   const colors = useTheme().colors;
 
@@ -64,8 +64,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [selectedSubject]);
 
   const updateSubject = useCallback((subjectKey: string, updates: Partial<Item[1]>) => {
-    setSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
+    setSubjects((prevSubjects) =>
+      prevSubjects.map((subject) =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], ...updates }] : subject
       )
     );
@@ -85,8 +85,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
 
   const handleSubjectTitleBlur = useCallback(() => {
     if (selectedSubject && currentTitle.trim() !== "") {
-      setLocalSubjects(prevSubjects =>
-        prevSubjects.map(subject =>
+      setLocalSubjects((prevSubjects) =>
+        prevSubjects.map((subject) =>
           subject[0] === selectedSubject[0] ? [subject[0], { ...subject[1], pretty: currentTitle }] : subject
         )
       );
@@ -96,15 +96,15 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
 
   const handleSubjectEmojiChange = useCallback((subjectKey: string, newEmoji: string) => {
     let emoji = "";
-    if(newEmoji.length >= 1) {
-      var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
+    if (newEmoji.length >= 1) {
+      let regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
       const emojiMatch = newEmoji.match(regexp);
-      if(emojiMatch) {
+      if (emojiMatch) {
         emoji = emojiMatch[emojiMatch.length - 1];
       }
     }
-    setLocalSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
+    setLocalSubjects((prevSubjects) =>
+      prevSubjects.map((subject) =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], emoji }] : subject
       )
     );
@@ -113,8 +113,8 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   }, [debouncedUpdateSubject]);
 
   const handleSubjectColorChange = useCallback((subjectKey: string, newColor: string) => {
-    setLocalSubjects(prevSubjects =>
-      prevSubjects.map(subject =>
+    setLocalSubjects((prevSubjects) =>
+      prevSubjects.map((subject) =>
         subject[0] === subjectKey ? [subject[0], { ...subject[1], color: newColor }] : subject
       )
     );
@@ -176,7 +176,7 @@ const SettingsSubjects: Screen<"SettingsSubjects"> = ({ navigation }) => {
   const [customColor, setCustomColor] = useState("");
 
   const renderSubjectItem = useCallback(({ item: subject, index }: { item: Item, index: number }) => {
-    if (!subject[0] || !subject[1] || !subject[1].emoji || !subject[1].pretty || !subject[1].color)
+    if (!subject[0] || !subject[1]?.emoji || !subject[1]?.pretty || !subject[1]?.color)
       return null;
 
     return (

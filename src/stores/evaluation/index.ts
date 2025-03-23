@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { create } from "zustand";
-import {EvaluationStore} from "@/stores/evaluation/types";
+import { EvaluationStore } from "@/stores/evaluation/types";
 
 export const useEvaluationStore = create<EvaluationStore>()(
   persist(

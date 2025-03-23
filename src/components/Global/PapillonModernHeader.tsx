@@ -17,12 +17,9 @@ interface ModernHeaderProps {
   startLocation?: number,
   native? : boolean,
   tint?: string,
-};
+}
 
 export const PapillonModernHeader: React.FC<ModernHeaderProps> = (props) => {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-
   if (props.native) {
     return (
       <NativeModernHeader {...props} />
@@ -30,7 +27,7 @@ export const PapillonModernHeader: React.FC<ModernHeaderProps> = (props) => {
   }
 
   return (
-    <LinearGradientModernHeader {...props} tint={props.tint}/>
+    <LinearGradientModernHeader {...props} tint={props.tint} />
   );
 };
 
@@ -45,7 +42,7 @@ const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, out
   const enableBlur = Platform.OS === "ios" && !isExpoGo() && parseInt(Platform.Version) >= 18;
 
   return (
-    <>
+    <View style={{ marginTop: (Platform.OS === "android" && outsideNav) ? insets.top : undefined }}>
       {enableBlur ? (
         <CustomFilterView
           style={[
@@ -140,7 +137,7 @@ const LinearGradientModernHeader: React.FC<ModernHeaderProps> = ({ children, out
           }}
         />
       }
-    </>
+    </View>
   );
 };
 
@@ -160,7 +157,7 @@ const NativeModernHeader: React.FC<ModernHeaderProps> = ({ children, outsideNav 
           justifyContent: "space-between",
           alignItems: "center",
           gap: 8,
-          backgroundColor: tint ? tint : theme.colors.card + "10",
+          backgroundColor: tint ?? theme.colors.card + "10",
           borderBottomColor: theme.colors.border,
           borderBottomWidth: 0.5,
         }]}
@@ -229,8 +226,8 @@ export const PapillonHeaderAction: React.FC<{
   return (
     <Reanimated.View
       layout={animated && animPapillon(LinearTransition)}
-      entering={entering && entering}
-      exiting={exiting && exiting}
+      entering={entering}
+      exiting={exiting}
     >
       <PressableScale
         activeScale={0.85}

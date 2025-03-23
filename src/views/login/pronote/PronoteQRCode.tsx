@@ -21,6 +21,7 @@ import extract_pronote_name from "@/utils/format/extract_pronote_name";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { useAlert } from "@/providers/AlertProvider";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
+import { error } from "@/utils/logger/logger";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -39,8 +40,8 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const { colors } = theme;
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -149,8 +150,8 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           });
         });
       }, 1000);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      error("" + (err as Error)?.stack, "PronoteQRCode/loginQR");
 
       showAlert({
         title: "Erreur",
@@ -170,10 +171,8 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
   }, []);
 
   const handleBarCodeScanned = ({
-    type,
     data,
   }: {
-    type: string;
     data: string;
   }) => {
     setScanned(true);

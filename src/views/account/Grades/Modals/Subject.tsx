@@ -13,7 +13,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { Screen } from "@/router/helpers/types";
 
-const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
+const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route }) => {
   const { subject, allGrades } = route.params;
   const theme = useTheme();
 
@@ -239,11 +239,11 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
                     lineHeight: 18,
                     fontFamily: "semibold",
                     color:
-									(averageDiff.difference || 0) < 0
-									  ? "#4CAF50"
-									  : (averageDiff.difference || 0) === 0
-									    ? theme.colors.text
-									    : "#F44336",
+                  (averageDiff.difference || 0) < 0
+                    ? "#4CAF50"
+                    : (averageDiff.difference || 0) === 0
+                      ? theme.colors.text
+                      : "#F44336",
                     marginLeft: 12,
                     marginRight: 6,
                   }}

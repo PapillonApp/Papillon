@@ -43,7 +43,7 @@ const PapillonNavigatorTabs: React.FC<Omit<ReturnType<typeof useNavigationBuilde
         Platform.OS === "android" ? styles.tabBarAndroid : styles.tabBarIOS,
       ]}
     >
-      {tabs.map((route, index) => (
+      {tabs.map((route) => (
         <TabItem
           key={route?.key}
           route={route}

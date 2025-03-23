@@ -13,8 +13,9 @@ import Reanimated, {
   FadeOutUp,
 } from "react-native-reanimated";
 import SubjectTitle from "./SubjectTitle";
-import {Evaluation, EvaluationsPerSubject, Skill} from "@/services/shared/Evaluation";
-import {SkillLevelBadge} from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
+import { Evaluation, EvaluationsPerSubject, Skill } from "@/services/shared/Evaluation";
+import { SkillLevelBadge } from "@/views/account/Evaluation/Atoms/SkillLevelBadge";
+import { log } from "@/utils/logger/logger";
 
 interface SubjectItemProps {
   subject: EvaluationsPerSubject,
@@ -60,7 +61,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
             evaluation={item}
             index={index}
             onPress={() => {
-              navigation.navigate("EvaluationDocument", { evaluation:item, allEvaluations});
+              navigation.navigate("EvaluationDocument", { evaluation:item, allEvaluations });
             }}
           />
         )}
@@ -91,7 +92,7 @@ const SubjectEvaluationItem: React.FC<SubjectEvaluationItemProps> = ({ subject, 
       .slice(0, 4);
     const skillLevelsMoreNumber = evaluation.skills.length - 4;
 
-    console.log("skillLevelsMoreNumber", skillLevelsMoreNumber);
+    log("SkillLevelsMoreNumber: " + skillLevelsMoreNumber, "SubjectEvaluationItem");
 
     setSkillLevelsList(skillLevels);
     setSkillLevelsMoreNumber(skillLevelsMoreNumber);
@@ -143,7 +144,7 @@ const SubjectEvaluationItem: React.FC<SubjectEvaluationItemProps> = ({ subject, 
               <SkillLevelBadge skillLevel={skill.level} key={index} />
             ))}
             {skillLevelsMoreNumber > 0 && (
-              <NativeText variant={"subtitle"} style={{fontSize: 16}}>
+              <NativeText variant={"subtitle"} style={{ fontSize: 16 }}>
                 {`+${skillLevelsMoreNumber}`}
               </NativeText>
             )}

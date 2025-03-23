@@ -10,9 +10,9 @@ export const useNewsStore = create<NewsStore>()(
     (set) => ({
       informations: [],
       updateInformations: (informations) => {
-        log("updating store...", "news:updateInformations");
+        log("Updating store...", "news:updateInformations");
         set(() => ({ informations }));
-        log("updated store.", "news:updateInformations");
+        log("Updated store.", "news:updateInformations");
       }
     }),
     {

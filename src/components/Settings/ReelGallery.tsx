@@ -13,17 +13,11 @@ import { useGradesStore } from "@/stores/grades";
 import GradeModal from "../Grades/GradeModal";
 import { Reel } from "@/services/shared/Reel";
 
-interface ReelModalProps {
-  reel: Reel;
-  visible: boolean;
-  onClose: () => void;
-}
-
 // Components
 const GradeIndicator = ({ value, outOf, color }: { value: string; outOf: number; color: string }) => (
   <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-    <Text style={[styles.scoreText, {color: color}]}>{value}</Text>
-    <Text style={[styles.maxScoreText, {color: color+"50"}]}>/{outOf}</Text>
+    <Text style={[styles.scoreText, { color: color }]}>{value}</Text>
+    <Text style={[styles.maxScoreText, { color: color + "50" }]}>/{outOf}</Text>
   </View>
 );
 
@@ -51,7 +45,7 @@ const ReelThumbnail = ({ reel, onPress, width }: { reel: Reel; onPress: () => vo
         justifyContent: "center",
         alignItems: "center"
       }]}>
-        <Text style={{color: colors.text}}>Image non disponible</Text>
+        <Text style={{ color: colors.text }}>Image non disponible</Text>
       </View>
     );
   }
@@ -103,7 +97,7 @@ const ReelGallery = ({ reels }: ReelGalleryProps) => {
   const numColumns = 2;
 
   // Vérification des reels valides
-  const validReels = reels.filter(reel =>
+  const validReels = reels.filter((reel) =>
     reel &&
     typeof reel.id === "string" &&
     reel.grade &&

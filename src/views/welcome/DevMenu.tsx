@@ -244,7 +244,7 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
                           `❌ Failed to unregister background task: ${ERRfatal}`,
                           "BACKGROUND"
                         )
-                      );;
+                      );
                   }
 
                   await registerBackgroundTasks()

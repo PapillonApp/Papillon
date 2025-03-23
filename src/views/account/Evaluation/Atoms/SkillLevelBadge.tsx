@@ -1,8 +1,8 @@
-import {SkillLevel} from "@/services/shared/Evaluation";
-import {View} from "react-native";
-import React, {useState} from "react";
-import {NativeText} from "@/components/Global/NativeComponents";
-import {Plus} from "lucide-react-native";
+import { SkillLevel } from "@/services/shared/Evaluation";
+import { View } from "react-native";
+import React, { useState } from "react";
+import { NativeText } from "@/components/Global/NativeComponents";
+import { Plus } from "lucide-react-native";
 
 
 interface SkillLevelBadgeProps {
@@ -77,7 +77,7 @@ export const SkillLevelBadge: React.FC<SkillLevelBadgeProps> = ({ skillLevel }) 
           color: "#006AB7",
           fontSize: 15,
           fontFamily: "semibold",
-          transform: [{ translateY: -2 }, {translateX: 0.5}],
+          transform: [{ translateY: -2 }, { translateX: 0.5 }],
         }}>
           a
         </NativeText>

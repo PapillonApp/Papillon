@@ -24,11 +24,11 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
   const account = useCurrentAccount((state) => state.account!);
   const { mutateProperty } = useCurrentAccount();
   const theme = useTheme();
-  const { playHaptics, playSound } = useSoundHapticsWrapper();
+  const { playSound } = useSoundHapticsWrapper();
   const LEson5 = require("@/../assets/sound/5.wav");
   const LEson6 = require("@/../assets/sound/6.wav");
 
-  const hasProfilePic = account && account?.personalization && account?.personalization.profilePictureB64 !== undefined && account?.personalization.profilePictureB64.trim() !== "";
+  const hasProfilePic = (account?.personalization.profilePictureB64?.trim() ?? "") !== "";
 
   const [loadingPic, setLoadingPic] = React.useState(false);
 
@@ -55,7 +55,7 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
     setLoadingPic(false);
   };
 
-  let name = (!account || !account.studentName?.first) ? null
+  let name = (!account?.studentName?.first) ? null
     : account.studentName?.first;
 
   // Truncate name if over 10 characters.
@@ -67,7 +67,7 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <MaskStars />
 
-      <View style={{height: 48}}/>
+      <View style={{ height: 48 }} />
 
       <PapillonShineBubble
         message={name ? `Très bon choix, ${name} ! Maintenant, une petite photo ?` : "Ajouter une photo de profil ?"}
@@ -79,7 +79,7 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
         noFlex
       />
 
-      <Reanimated.View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      <Reanimated.View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Reanimated.View layout={animPapillon(LinearTransition)}>
           <Pressable
             onPress={() => {updateProfilePic();}}
@@ -169,7 +169,7 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
           disabled={!hasProfilePic}
           primary
           onPress={() => {
-            navigation.navigate("AccountStack", {onboard: true});
+            navigation.navigate("AccountStack", { onboard: true });
             playSound(LEson6);
           }}
         />
@@ -177,7 +177,7 @@ const ProfilePic: Screen<"ProfilePic"> = ({ navigation }) => {
           value="Ignorer cette étape"
           onPress={() => {
             navigation.navigate("AccountStack", { onboard: true });
-            playSound(LEson6);
+            playSound(LEson5);
           }}
         />
       </View>

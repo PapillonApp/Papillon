@@ -18,7 +18,7 @@ import {
   WifiOff,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
+import { View, Linking, TouchableOpacity, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -73,31 +73,15 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
     }
   }, [account.instance]);
 
-  const tagsStyles = {
-    body: {
-      color: theme.colors.text,
-    },
-    a: {
-      color: theme.colors.primary,
-      textDecorationColor: theme.colors.primary,
-    },
-  };
-
-  function onPress (event: GestureResponderEvent, href: string) {
+  function onPress (href: string) {
     Linking.openURL(href);
   }
-
-  const renderersProps = {
-    a: {
-      onPress: onPress,
-    },
-  };
 
   return (
     <View style={{ flex: 1 }}>
       <PapillonModernHeader native height={110} outsideNav={true}>
         <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
-          <View style={{flex: 1, gap: 3}}>
+          <View style={{ flex: 1, gap: 3 }}>
             <NativeText variant="title" numberOfLines={1}>{message.title === "" ? message.author : message.title}</NativeText>
             <NativeText variant="subtitle" numberOfLines={1}>{message.title === "" ? formatDate(message.date.toString()) : message.author}</NativeText>
           </View>
@@ -235,10 +219,11 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
           <HTMLView
             value={`<body>${message.content.replaceAll("<p>", "").replaceAll("</p>", "")}</body>`}
             stylesheet={stylesText}
+            onLinkPress={onPress}
           />
         </View>
 
-        {isED && <ScrollView horizontal={true} contentContainerStyle={{gap: 5, paddingHorizontal: 16}}>
+        {isED && <ScrollView horizontal={true} contentContainerStyle={{ gap: 5, paddingHorizontal: 16 }}>
           <View style={{
             padding: 4,
             paddingHorizontal: 12,

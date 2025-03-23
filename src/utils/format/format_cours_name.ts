@@ -56,7 +56,7 @@ function findObjectByPronoteString (pronoteString = "") {
 function formatPretty (text: string): string {
   const upperCaseTerms = ["CM", "TD", "TP", "LV1", "LV2", "LV3", "LVA", "LVB", "LVC", "SAE", "PPP"];
   let words = text.split(" ");
-  words = words.map(word => {
+  words = words.map((word) => {
     if (upperCaseTerms.includes(word.toUpperCase())) {
       return word.toUpperCase();
     }

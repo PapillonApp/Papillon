@@ -4,7 +4,8 @@ import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-nativ
 import { Sparkles, X } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
-import { Dimensions, View } from "react-native";
+import { Dimensions, View, TouchableOpacity } from "react-native";
+
 import { Elements, type Element } from "./ElementIndex";
 import { animPapillon } from "@/utils/ui/animations";
 import { useFlagsStore } from "@/stores/flags";
@@ -13,7 +14,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { defaultTabs } from "@/consts/DefaultTabs";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface ModalContentProps {
@@ -140,8 +140,18 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
               backgroundColor: colors.primary + "20",
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Sparkles size={22} strokeWidth={2} color={colors.text} />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <Sparkles
+                size={22}
+                strokeWidth={2}
+                color={colors.text}
+              />
               <NativeText variant="title" style={{ flex: 1 }}>
                 Papillon vient d'être mis à jour à la version {PackageJSON.version} !
               </NativeText>

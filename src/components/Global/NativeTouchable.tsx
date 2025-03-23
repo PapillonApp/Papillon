@@ -12,7 +12,7 @@ const NativeTouchable: React.FC<NativeTouchableProps> = ({
   contentContainerStyle,
   ...props
 }) => {
-  if(Platform.OS === "android") {
+  if (Platform.OS === "android") {
     return (
       <TouchableNativeFeedback {...props} style={contentContainerStyle}>
         <View style={props.style}>
