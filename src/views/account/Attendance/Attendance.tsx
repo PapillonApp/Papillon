@@ -1,33 +1,34 @@
 import {useTheme} from "@react-navigation/native";
 import React, {useEffect, useMemo, useState} from "react";
-import {ActivityIndicator, Platform, RefreshControl, View} from "react-native";
+import { RefreshControl, View} from "react-native";
 
 import type {Screen} from "@/router/helpers/types";
 import {useCurrentAccount} from "@/stores/account";
 import {useAttendanceStore} from "@/stores/attendance";
 import {updateAttendanceInCache, updateAttendancePeriodsInCache} from "@/services/attendance";
-import {NativeText} from "@/components/Global/NativeComponents";
-import Reanimated, {FadeIn, FadeOut, LinearTransition} from "react-native-reanimated";
+import Reanimated, { FadeInUp, FadeOutDown, LinearTransition} from "react-native-reanimated";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import {ChevronDown, Eye, Scale, Timer, UserX} from "lucide-react-native";
-import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
+import { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
 import {animPapillon} from "@/utils/ui/animations";
 import AttendanceItem from "./Atoms/AttendanceItem";
 import {getAbsenceTime} from "@/utils/format/attendance_time";
 import TotalMissed from "./Atoms/TotalMissed";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {protectScreenComponent} from "@/router/helpers/protected-screen";
 import {Observation} from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
 import {hasFeatureAccountSetup} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import {AccountService} from "@/stores/account/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { PapillonHeaderSelector, PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
   const account = useCurrentAccount(store => store.account!);
   const { isOnline } = useOnlineStatus();
+
+  const outsideNav = route.params?.outsideNav;
 
   const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Attendance, account.localID) : true;
 
@@ -186,47 +187,56 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
 
   return (
     <>
-      <PapillonHeader route={route} navigation={navigation}>
-        <Reanimated.View
-          layout={LinearTransition}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 16,
-          }}
+      <PapillonModernHeader outsideNav={outsideNav}>
+        <PapillonPicker
+          delay={0}
+          data={periods.map((period) => {
+            return {
+              label: period.name,
+              subtitle:
+              new Date(period.startTimestamp as number).toLocaleDateString(
+                "fr-FR",
+                {
+                  month: "long",
+                  day: "numeric",
+                }
+              ),
+              onPress: () => setUserSelectedPeriod(period.name),
+              checked: period.name === selectedPeriod,
+            };
+          })}
+          selected={userSelectedPeriod ?? selectedPeriod}
+          onSelectionChange={setUserSelectedPeriod}
         >
-          <Reanimated.View
-            layout={LinearTransition}
-          >
-            <PapillonPicker
-              delay={0}
-              data={periods.map(period => period.name)}
-              selected={userSelectedPeriod ?? selectedPeriod}
-              onSelectionChange={setUserSelectedPeriod}
-              direction="right"
+          <PapillonHeaderSelector loading={isLoading}>
+            <View
+              style={{ flexDirection: "row", gap: 4, alignItems: "center" }}
             >
-              <View style={{ flexDirection: "row", gap: 4, alignItems: "center" }}>
-                <NativeText style={{ color: theme.colors.primary, maxWidth: 100 }} numberOfLines={1}>
-                  {userSelectedPeriod ?? selectedPeriod}
-                </NativeText>
-                <ChevronDown color={theme.colors.primary} size={24} />
-              </View>
-            </PapillonPicker>
-          </Reanimated.View>
+              <Reanimated.Text
+                style={{
+                  color: theme.colors.text,
+                  maxWidth: 100,
+                  fontFamily: "medium",
+                  fontSize: 16,
+                }}
+                numberOfLines={1}
+                key={`${selectedPeriod}sel`}
+                entering={animPapillon(FadeInUp)}
+                exiting={animPapillon(FadeOutDown)}
+              >
+                {userSelectedPeriod ?? selectedPeriod}
+              </Reanimated.Text>
 
-          {isLoading && !isRefreshing &&
-            <Reanimated.View
-              entering={FadeIn}
-              exiting={FadeOut.duration(1000)}
-              layout={LinearTransition}
-              style={{ marginRight: 6 }}
-            >
-              <ActivityIndicator color={Platform.OS === "android" ? theme.colors.primary : void 0} />
-            </Reanimated.View>
-          }
-        </Reanimated.View>
-      </PapillonHeader>
+              <ChevronDown
+                color={theme.colors.text}
+                size={22}
+                strokeWidth={2.5}
+                style={{ marginRight: -4 }}
+              />
+            </View>
+          </PapillonHeaderSelector>
+        </PapillonPicker>
+      </PapillonModernHeader>
 
       <Reanimated.ScrollView
         layout={animPapillon(LinearTransition)}
@@ -320,4 +330,4 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   );
 };
 
-export default protectScreenComponent(Attendance);
+export default Attendance;

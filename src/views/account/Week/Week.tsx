@@ -10,7 +10,7 @@ import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import { AlertTriangle, CalendarDays } from "lucide-react-native";
-import { PapillonHeaderAction } from "@/components/Global/PapillonModernHeader";
+import { PapillonHeaderAction, PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
 import { getSubjectData } from "@/services/shared/Subject";
 import { PapillonNavigation } from "@/router/refs";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
@@ -295,134 +295,141 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
   }, [account?.personalization?.icalURLs]);
 
   return (
-    <View style={{ flex: 1, marginTop: insets.top }}>
-      {!isOnline && (
-        <View style={{ padding: 16 }}>
-          <OfflineWarning cache={true} />
-        </View>
-      )}
-
-      {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
-        <View
-          style={{
-            zIndex: 100000,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: theme.colors.background,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 6,
-            padding: 24,
-          }}
-        >
-          {isLoading ? (
-            <PapillonSpinner
-              color={theme.colors.primary}
-            />
-          ) : (
-            <>
-              <CalendarDays
-                size={36}
-                strokeWidth={2}
-                color={theme.colors.text}
-                style={{ marginBottom: 6 }}
-              />
-              <NativeText
-                variant="title"
-                style={{textAlign: "center"}}
-              >
-                Aucun agenda externe
-              </NativeText>
-              <NativeText
-                variant="subtitle"
-                style={{textAlign: "center"}}
-              >
-                Importez un calendrier depuis une URL de votre agenda externe tel que ADE ou Moodle.
-              </NativeText>
-
-              <View style={{ height: 24 }} />
-
-              <ButtonCta
-                value="Importer mes cours"
-                primary
-                onPress={() => {
-                  setOpenedIcalModal(true);
-                  setTimeout(() => {
-                    PapillonNavigation.current?.navigate("LessonsImportIcal", {});
-                  }, 100);
-                }}
-              />
-              <ButtonCta
-                value="Comment faire ?"
-                onPress={() => {
-                  Linking.openURL("https://support.papillon.bzh/articles/351142-import-ical");
-                }}
-              />
-            </>
-          )}
-        </View>
-      )}
+    <>
+      <PapillonModernHeader children native outsideNav={outsideNav} />
 
       <View
         style={{
-          zIndex: 1000,
-          overflow: "visible",
-          position: "absolute",
-          left: 12,
-          top: 3,
+          flex: 1,
+          marginTop: insets.top + 16,
         }}
       >
-        <PapillonPicker
-          animated
-          direction="left"
-          delay={0}
-          selected={displayMode}
-          onSelectionChange={(mode: string) => {
-            setIsLoading(true);
-            requestAnimationFrame(() => {
-
-              setDisplayMode(mode);
-              setIsLoading(false);
-            });
-          }}
-          data={displayModes}
-        >
-          <PapillonHeaderAction
-            icon={
-              isLoading ? (
-                <PapillonSpinner
-                  size={20}
-                  strokeWidth={5}
+        {account?.providers?.includes("ical") && Object.values(timetables).flat().length === 0 && (
+          <View
+            style={{
+              zIndex: 100000,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: theme.colors.background,
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 6,
+              padding: 24,
+            }}
+          >
+            {isLoading ? (
+              <PapillonSpinner
+                color={theme.colors.primary}
+              />
+            ) : (
+              <>
+                <CalendarDays
+                  size={36}
+                  strokeWidth={2}
                   color={theme.colors.text}
+                  style={{ marginBottom: 6 }}
                 />
-              ) : (
-                <CalendarDays />
-              )
-            }
-          />
-        </PapillonPicker>
-      </View>
+                <NativeText
+                  variant="title"
+                  style={{textAlign: "center"}}
+                >
+                  Aucun agenda externe
+                </NativeText>
+                <NativeText
+                  variant="subtitle"
+                  style={{textAlign: "center"}}
+                >
+                  Importez un calendrier depuis une URL de votre agenda externe tel que ADE ou Moodle.
+                </NativeText>
 
-      <CalendarKit
-        theme={customTheme}
-        numberOfDays={displayMode === "Semaine" ? 5 : displayMode === "3 jours" ? 3 : 1}
-        hideWeekDays={displayMode === "Semaine" ? [6, 7] : []}
-        pagesPerSide={2}
-        scrollByDay={displayMode === "Semaine" ? false : true}
-        events={events}
-        onDateChanged={handleDateChange}
-        initialLocales={LOCALES}
-        locale="fr"
-        hourFormat="HH:mm"
-        renderEvent={(event) => <EventItem event={event} />}
-        renderHeaderItem={(header) => <HeaderItem header={header} />}
-        dayBarHeight={50}
-      />
-    </View>
+                <View style={{ height: 24 }} />
+
+                <ButtonCta
+                  value="Importer mes cours"
+                  primary
+                  onPress={() => {
+                    setOpenedIcalModal(true);
+                    setTimeout(() => {
+                      PapillonNavigation.current?.navigate("LessonsImportIcal", {});
+                    }, 100);
+                  }}
+                />
+                <ButtonCta
+                  value="Comment faire ?"
+                  onPress={() => {
+                    Linking.openURL("https://support.papillon.bzh/articles/351142-import-ical");
+                  }}
+                />
+              </>
+            )}
+          </View>
+        )}
+        {!isOnline && (
+          <View style={{ padding: 16 }}>
+            <OfflineWarning cache={true} />
+          </View>
+        )}
+
+        <View
+          style={{
+            zIndex: 1000,
+            overflow: "visible",
+            position: "absolute",
+            left: 12,
+            top: 3,
+          }}
+        >
+          <PapillonPicker
+            animated
+            direction="left"
+            delay={0}
+            selected={displayMode}
+            onSelectionChange={(mode: string) => {
+              setIsLoading(true);
+              requestAnimationFrame(() => {
+
+                setDisplayMode(mode);
+                setIsLoading(false);
+              });
+            }}
+            data={displayModes}
+          >
+            <PapillonHeaderAction
+              icon={
+                isLoading ? (
+                  <PapillonSpinner
+                    size={20}
+                    strokeWidth={5}
+                    color={theme.colors.text}
+                  />
+                ) : (
+                  <CalendarDays />
+                )
+              }
+            />
+          </PapillonPicker>
+        </View>
+        <CalendarKit
+          theme={customTheme}
+          numberOfDays={displayMode === "Semaine" ? 5 : displayMode === "3 jours" ? 3 : 1}
+          hideWeekDays={displayMode === "Semaine" ? [6, 7] : []}
+          pagesPerSide={2}
+          scrollByDay={displayMode === "Semaine" ? false : true}
+          events={events}
+          onDateChanged={handleDateChange}
+          initialLocales={LOCALES}
+          locale="fr"
+          hourFormat="HH:mm"
+          renderEvent={(event) => <EventItem event={event} />}
+          renderHeaderItem={(header) => <HeaderItem header={header} />}
+          dayBarHeight={50}
+        />
+      </View>
+    </>
   );
 };
 
