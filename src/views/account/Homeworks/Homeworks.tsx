@@ -716,7 +716,10 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         </Reanimated.View>
       </PapillonModernHeader>
 
-      <AddHomeworkButton onPress={() => navigation.navigate("AddHomework")} outsideNav={route.params?.outsideNav} />
+      <AddHomeworkButton
+        onPress={() => navigation.navigate("AddHomework", {})}
+        outsideNav={route.params?.outsideNav ?? true}
+      />
 
       <FlatList
         ref={flatListRef}

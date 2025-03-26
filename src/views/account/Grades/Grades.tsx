@@ -9,7 +9,7 @@ import {
   updateGradesAndAveragesInCache,
   updateGradesPeriodsInCache,
 } from "@/services/grades";
-import type { GradesPerSubject } from "@/services/shared/Grade";
+import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
