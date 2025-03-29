@@ -40,7 +40,7 @@ import { getMenu } from "@/services/menu";
 import type { FoodAllergen, FoodLabel, Menu as PawnoteMenu } from "pawnote";
 import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { LessonsDateModal } from "../Lessons/LessonsHeader";
+import DateModal from "../../../components/Global/DateModal";
 import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
 import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
@@ -645,11 +645,12 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                   </View>
                 )}
               </>}
-            <LessonsDateModal
+            <DateModal
               showDatePicker={showDatePicker}
               setShowDatePicker={setShowDatePicker}
               currentDate={pickerDate}
               onDateSelect={onDatePickerSelect}
+              isHomework={false}
             />
           </>
         )}

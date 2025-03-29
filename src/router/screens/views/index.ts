@@ -91,6 +91,7 @@ export default [
     sheetCornerRadius: 16,
     sheetAllowedDetents: [0.5, 1],
     sheetGrabberVisible: true,
+    // @ts-expect-error
     sheetInitialDetentIndex: 0,
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {

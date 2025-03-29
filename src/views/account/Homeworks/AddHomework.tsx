@@ -14,6 +14,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { BookOpen, Calendar } from "lucide-react-native";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
+import { Homework } from "@/services/shared/Homework";
 
 
 const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
@@ -26,7 +27,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
   );
 
   // Création de devoirs personnalisés
-  const [currentHw, setCurrentHw] = useState("");
+  const [currentHw, setCurrentHw] = useState<Homework | null>(null);
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [idHomework, setIdHomework] = useState(NaN);
@@ -35,10 +36,10 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
 
 
   useEffect(() => {
-    if(route.params?.hwid) {
+    if (route.params?.hwid) {
       const allHomeworks = Object.values(homeworks).flat();
       const homework = allHomeworks.find(hw => hw.id === route.params?.hwid);
-      if(homework) {
+      if (homework) {
         setSelectedPretty(localSubjects[homework.subject]);
         setIdHomework(Number(homework.id));
         setContentHomework(homework.content);
@@ -87,6 +88,8 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
   };
 
   const updateHomework = async () => {
+    if (!currentHw) return;
+
     const newHomework: Homework = {
       ...currentHw,
       subject: selectedPretty.pretty,
@@ -258,7 +261,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
       <ButtonCta
         value={currentHw ? "Mettre à jour" : "Valider"}
         onPress={() => {
-          if(currentHw) {
+          if (currentHw) {
             updateHomework();
           } else {
             createHomework();
