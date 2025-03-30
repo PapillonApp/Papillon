@@ -12,7 +12,7 @@ export const getChats = async (account: EcoleDirecteAccount): Promise<Chat[]> =>
   return chats.chats.map((chat) => ({
     id: chat.id.toString(),
     subject: chat.subject,
-    recipient: chat.sender,
+    recipient: account.name,
     creator: chat.sender,
     read: chat.read,
     date: chat.date

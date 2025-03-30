@@ -10,4 +10,5 @@ export interface HomeworkStore {
     updatedHomework: Homework
   ) => void;
   removeHomework: (epochWeekNumber: number, homeworkID: string) => void;
+  existsHomework: (epochWeekNumber: number, homeworkID: string) => boolean;
 }

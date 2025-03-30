@@ -16,16 +16,17 @@ export interface TimetableClass {
   statusText?: string,
   source?: string
   url?: string,
-  ressourceID?: string,
-  ressource?: {
-    title?: string,
-    description?: string,
-    category?: string,
-    files?: Array<{
-      name: string,
-      url: string
-    }>
-  }[]
+  ressourceID?: string
+}
+
+export interface TimetableRessource {
+  title?: string,
+  description?: string,
+  category?: string,
+  files?: Array<{
+    name: string,
+    url: string
+  }>
 }
 
 export type Timetable = Array<TimetableClass>;

@@ -58,6 +58,13 @@ export const useHomeworkStore = create<HomeworkStore>()(
           },
         }));
       },
+
+      existsHomework: (epochWeekNumber, homeworkID) => {
+        const state = useHomeworkStore.getState() as HomeworkStore;
+        return state.homeworks[epochWeekNumber]?.some(
+          (homework) => homework.id === homeworkID
+        );
+      },
     }),
     {
       name: "<default>-homework-storage", // <default> will be replace to user id when using "switchTo"

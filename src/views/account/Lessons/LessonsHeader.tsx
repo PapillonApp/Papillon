@@ -204,7 +204,7 @@ const LessonsDateModal: React.FC<LessonsDateModalProps> = ({
                 onChange={(_event, selectedDate) => {
                   const newSelectedDate = selectedDate || currentDate;
                   // set hours to 0
-                  newSelectedDate.setUTCHours(1, 0, 0, 0);
+                  newSelectedDate.setUTCHours(0, 0, 0, 0);
                   onDateSelect(newSelectedDate);
                 }}
               />

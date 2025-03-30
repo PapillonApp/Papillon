@@ -259,7 +259,7 @@ export const NativeItem: React.FC<NativeItemProps> = ({
         <View style={[item_styles.part, item_styles.leading]}>
           {leading && !icon && leading}
 
-          {icon && (
+          {icon && React.isValidElement(icon) && (
             React.cloneElement(icon as React.ReactElement<any>, {
               size: icon.props.size || 24,
               color: icon.props.color || colors.text,

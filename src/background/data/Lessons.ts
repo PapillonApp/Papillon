@@ -11,18 +11,28 @@ import { formatHoursMinutes } from "../utils/format";
 
 const getAllLessonsForDay = (lessons: Record<number, Timetable>) => {
   const date = new Date();
-  date.setUTCHours(1, 0, 0, 0);
+  date.setUTCHours(0, 0, 0, 0);
   const week = dateToEpochWeekNumber(date);
   const timetable = lessons[week] || [];
 
-  const lessonsOfDay = timetable.filter((lesson) => {
-    const lessonDate = new Date(lesson.startTimestamp);
-    lessonDate.setUTCHours(1, 0, 0, 0);
+  const newDate = Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
 
-    return lessonDate.getTime() === date.getTime();
+  const day = timetable.filter((lesson) => {
+    const startTimetableDate = new Date(lesson.startTimestamp);
+    const lessonDate = Date.UTC(
+      startTimetableDate.getFullYear(),
+      startTimetableDate.getMonth(),
+      startTimetableDate.getDate(),
+    );
+
+    return lessonDate === newDate;
   });
 
-  return lessonsOfDay;
+  return day;
 };
 
 const getDifferences = (

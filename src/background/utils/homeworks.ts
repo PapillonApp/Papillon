@@ -5,9 +5,9 @@ import { epochWNToDate } from "@/utils/epochWeekNumber";
 
 const getCurrentWeekNumber = () => {
   const now = new Date();
-  now.setUTCHours(1, 0, 0, 0);
+  now.setUTCHours(0, 0, 0, 0);
   const start = new Date(1970, 0, 0);
-  start.setUTCHours(1, 0, 0, 0);
+  start.setUTCHours(0, 0, 0, 0);
   const diff = now.getTime() - start.getTime();
   const oneWeek = 1000 * 60 * 60 * 24 * 7;
   return Math.floor(diff / oneWeek);

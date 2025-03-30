@@ -61,7 +61,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
   const [chats, setChats] = useState<Chat[] | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const supported = account.service === AccountService.Pronote;
+  const supported = account.service === AccountService.Pronote || account.service === AccountService.EcoleDirecte;
 
   const enabled = supported && account.instance?.user.authorizations.tabs.includes(TabLocation.Discussions);
 

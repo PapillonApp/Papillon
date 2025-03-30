@@ -12,6 +12,7 @@ import MissingItem from "@/components/Global/MissingItem";
 import { TimetableItem } from "../../Lessons/Atoms/Item";
 import { getHolidayEmoji } from "@/utils/format/holidayEmoji";
 import PapillonLoading from "@/components/Global/PapillonLoading";
+import { isToday, isTomorrow } from "date-fns";
 
 interface TimetableElementProps {
   onImportance: (value: number) => unknown;
@@ -39,27 +40,6 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
     }
   };
 
-  const isToday = (timestamp: number) => {
-    const today = new Date();
-    const date = new Date(timestamp);
-    return (
-      date.getUTCDate() === today.getUTCDate() &&
-      date.getUTCMonth() === today.getUTCMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
-
-  const isTomorrow = (timestamp: number) => {
-    const tomorrow = new Date();
-    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
-    const date = new Date(timestamp);
-    return (
-      date.getUTCDate() === tomorrow.getUTCDate() &&
-      date.getUTCMonth() === tomorrow.getUTCMonth() &&
-      date.getFullYear() === tomorrow.getFullYear()
-    );
-  };
-
   const isWeekend = (courses: TimetableClass[]) => {
     const today = new Date().getUTCDay();
     return (today === 6 || today === 0) && courses.length === 0;
@@ -70,18 +50,21 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
 
   const filterAndSortCourses = (weekCourses: TimetableClass[]): TimetableClass[] => {
     const now = Date.now();
+
     const todayCourses = weekCourses
       .filter((c) => isToday(c.startTimestamp) && c.endTimestamp > now)
       .sort((a, b) => a.startTimestamp - b.startTimestamp);
     if (todayCourses.length > 0) {
       return todayCourses;
     }
+
     const tomorrowCourses = weekCourses
       .filter((c) => isTomorrow(c.startTimestamp))
       .sort((a, b) => a.startTimestamp - b.startTimestamp);
     if (tomorrowCourses.length > 0) {
       return tomorrowCourses.slice(0, 3);
     }
+
     return weekCourses
       .filter((c) => c.startTimestamp > now)
       .sort((a, b) => a.startTimestamp - b.startTimestamp)

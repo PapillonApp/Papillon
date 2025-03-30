@@ -15,7 +15,7 @@ export const timestampToString = (timestamp: number) => {
   }
 
   const mtn = new Date();
-  mtn.setUTCHours(1, 0, 0, 0);
+  mtn.setUTCHours(0, 0, 0, 0);
 
   return formatDistance(new Date(timestamp), mtn, {
     locale: fr,

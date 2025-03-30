@@ -4,7 +4,7 @@ import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-nativ
 import { Sparkles, X } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import PackageJSON from "../../../../package.json";
-import { Dimensions, View } from "react-native";
+import { Dimensions, View} from "react-native";
 import { Elements, type Element } from "./ElementIndex";
 import { animPapillon } from "@/utils/ui/animations";
 import { useFlagsStore } from "@/stores/flags";
@@ -15,6 +15,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+import WebBrowser from "expo-web-browser";
+
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>;
@@ -127,6 +129,32 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
 
   return (
     <View style={{ minHeight: Dimensions.get("window").height - 131 }}>
+      {(new Date).getMonth() == 3 && (new Date).getDate() == 1 && (
+        <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
+          <TouchableOpacity
+            onPress={() => {WebBrowser.openBrowserAsync("https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4");}}
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              gap: 8,
+              backgroundColor: colors.primary + "20",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Sparkles size={22} strokeWidth={2} color={colors.text} />
+              <NativeText variant="title" style={{ flex: 1 }}>
+                Nouvele police d'écriture !
+              </NativeText>
+            </View>
+            <NativeText variant="subtitle">
+              Pour ce premier avril, Papillon a décidé de se faire un petit coup de beauté !
+            </NativeText>
+          </TouchableOpacity>
+        </NativeList>
+      )}
+
       {(defined("force_changelog") || updatedRecently) && (
         <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
           <TouchableOpacity

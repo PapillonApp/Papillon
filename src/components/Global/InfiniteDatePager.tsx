@@ -14,7 +14,7 @@ interface InfiniteDatePagerProps {
 const InfiniteDatePager = ({ renderDate, initialDate = new Date(), onDateChange }: InfiniteDatePagerProps) => {
   const pagerRef = useRef<InfinitePagerImperativeApi>(null);
   const baseDate = useRef(new Date()).current;
-  baseDate.setUTCHours(1, 0, 0, 0);
+  baseDate.setUTCHours(0, 0, 0, 0);
   const lastChangeTime = useRef(0);
 
   const getDateFromIndex = useCallback((index: number) => {

@@ -73,7 +73,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [currentMenu, setCurrentMenu] = useState<PawnoteMenu | null>(null);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [pickerDate, setPickerDate] = React.useState(new Date(new Date().setUTCHours(1, 0, 0, 0)));
+  const [pickerDate, setPickerDate] = React.useState(new Date(new Date().setUTCHours(0, 0, 0, 0)));
   const [isMenuLoading, setMenuLoading] = useState(false);
   const [isInitialised, setIsInitialised] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
@@ -99,7 +99,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
     const newDate = new Date(date);
 
-    newDate.setUTCHours(1, 0, 0, 0);
+    newDate.setUTCHours(0, 0, 0, 0);
 
     if (newDate.valueOf() === pickerDate.valueOf()) {
       return;

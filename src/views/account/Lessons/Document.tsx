@@ -12,6 +12,7 @@ import {
   Platform,
   Linking,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { getSubjectData } from "@/services/shared/Subject";
 import { Screen } from "@/router/helpers/types";
@@ -29,20 +30,20 @@ import {
   User2,
   Users,
 } from "lucide-react-native";
-
 import * as WebBrowser from "expo-web-browser";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 import HTMLView from "react-native-htmlview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import { TimetableClass } from "@/services/shared/Timetable";
+import { TimetableClass, TimetableRessource } from "@/services/shared/Timetable";
 import { ClassSubject } from "pawdirecte";
 import { useClassSubjectStore } from "@/stores/classSubject";
 import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import getAndOpenFile from "@/utils/files/getAndOpenFile";
 import { getDuration } from "@/utils/format/course_duration";
+import { getCourseRessources } from "@/services/timetable";
 
 const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -58,6 +59,8 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   const lesson = route.params.lesson as unknown as TimetableClass;
   const subjects = useClassSubjectStore();
   const [classSubjects, setClassSubjects] = useState<ClassSubject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [ressource, setRessource] = useState<TimetableRessource[] | undefined>(undefined);
   const account = useCurrentAccount((store) => store.account!);
 
   const openUrl = (url: string) => {
@@ -75,16 +78,24 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    setClassSubjects(
-      subjects.subjects.filter(
-        (b) =>
-          new Date(b.date).getUTCDate() ===
-            new Date(lesson.startTimestamp).getUTCDate() &&
-          new Date(b.date).getUTCMonth() ===
-            new Date(lesson.startTimestamp).getUTCMonth() &&
-          lesson.subject === b.subject,
-      ) ?? [],
-    );
+    const fetchData = async () => {
+      const ressource = await getCourseRessources(account, lesson);
+      setRessource(ressource);
+      setClassSubjects(
+        subjects.subjects.filter(
+          (b) =>
+            new Date(b.date).getUTCDate() ===
+              new Date(lesson.startTimestamp).getUTCDate() &&
+            new Date(b.date).getUTCMonth() ===
+              new Date(lesson.startTimestamp).getUTCMonth() &&
+            lesson.subject === b.subject,
+        ) ?? [],
+      );
+
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   const [subjectData, setSubjectData] = useState({
@@ -266,7 +277,14 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
             </View>
           );
         })}
-        {(classSubjects.length > 0 || (lesson.ressource?.length ?? 0) > 0) && (
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color={theme.colors.primary}
+            style={{ marginTop: 10 }}
+          />
+        )}
+        {(classSubjects.length > 0 || (ressource?.length ?? 0) > 0) && (
           <View>
             <NativeListHeader label="Contenu de séance" />
             <NativeList>
@@ -293,7 +311,7 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
                 );
               })}
 
-              {lesson.ressource?.map((r, index) => {
+              {ressource?.map((r, index) => {
                 let title = (r.title?.charAt(0).toUpperCase() ?? "") + (r.title?.slice(1) ?? ""); // S'assurer que la première lettre est en majuscule
                 let desc = r.description?.replace("\n\n", "\n").trim() ?? ""; // Remplacer les doubles sauts de ligne par un seul
                 let descText = desc.replace(/<[^>]*>/g, "").trim(); // Il peut arriver que le contenu soit vide, mais qu'il y ait du html tout de même

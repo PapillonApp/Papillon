@@ -37,7 +37,16 @@ export const getChatRecipients = async <T extends Account> (account: T, chat: Ch
     }
     case AccountService.EcoleDirecte: {
       // TODO
-      return [];
+      return [{
+        id: account.localID,
+        name: account.name,
+        class: null
+      },
+      {
+        id: chat.creator,
+        name: chat.creator,
+        class: null
+      }];
     }
     case AccountService.PapillonMultiService: {
       const service = getFeatureAccount(MultiServiceFeature.Chats, account.localID);

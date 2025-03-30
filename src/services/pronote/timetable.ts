@@ -1,5 +1,5 @@
 import type { PronoteAccount } from "@/stores/account/types";
-import { TimetableClassStatus, WeekFrequency, type Timetable, type TimetableClass } from "../shared/Timetable";
+import { TimetableClassStatus, TimetableRessource, WeekFrequency, type Timetable, type TimetableClass } from "../shared/Timetable";
 import { ErrorServiceUnauthenticated } from "../shared/errors";
 import pronote from "pawnote";
 import { info } from "@/utils/logger/logger";
@@ -70,28 +70,6 @@ export const getTimetableForWeek = async (account: PronoteAccount, weekNumber: n
 
   let timetable_formatted = timetable.classes.map(decodeTimetableClass);
 
-  await Promise.all(
-    timetable_formatted.map(async (c) => {
-      if (c.type === "lesson" && c.ressourceID) {
-        let ressource = (await pronote.resource(account.instance!, c.ressourceID)).contents;
-        c.ressource = ressource.map((r) => {
-          let category = category_match[r.category];
-          return {
-            title: r.title,
-            description: r.description,
-            category,
-            files: r.files.map((f) => {
-              return {
-                name: f.name,
-                url: f.url
-              };
-            })
-          };
-        });
-      }
-    })
-  );
-
   return timetable_formatted;
 };
 
@@ -128,4 +106,28 @@ export const getWeekFrequency = (account: PronoteAccount, weekNumber: number): W
     freqLabel: frequency.label,
     num: frequency.fortnight
   };
+};
+
+export const getCourseRessources = async (account: PronoteAccount, course: TimetableClass): Promise<TimetableRessource[]> => {
+  let ressources: TimetableRessource[] = [];
+
+  if (course.type === "lesson" && course.ressourceID) {
+    let ressource = (await pronote.resource(account.instance!, course.ressourceID)).contents;
+    ressources = ressource.map((r) => {
+      let category = category_match[r.category];
+      return {
+        title: r.title,
+        description: r.description,
+        category,
+        files: r.files.map((f) => {
+          return {
+            name: f.name,
+            url: f.url
+          };
+        })
+      };
+    });
+  }
+
+  return ressources;
 };
