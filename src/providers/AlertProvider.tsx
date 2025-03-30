@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { Check } from "lucide-react-native";
-import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode, memo } from "react";
 import { Modal, View, Text, StyleSheet, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
@@ -53,7 +53,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
   const { isTablet } = useScreenDimensions();
   const insets = useSafeAreaInsets();
 
-  const showAlert = ({
+  const showAlert = useCallback(({
     title,
     message,
     icon,
@@ -75,12 +75,12 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
     }, {} as { [key: string]: number });
 
     setDelays(initialDelays);
-  };
+  }, []);
 
-  const hideAlert = () => {
+  const hideAlert = useCallback(() => {
     setVisible(false);
     setTimeout(() => setAlert(null), 150);
-  };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -151,7 +151,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                       {
                         borderColor: colors.text + "20",
                         backgroundColor: colors.text + "06",
-                        // @ts-expect-error
                         flexDirection: alert.actions?.length > 2 ? "column" : "row",
                         alignItems: "center",
                       },
@@ -171,7 +170,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                           key={title}
                           layout={anim2Papillon(LinearTransition)}
                           style={[
-                            // @ts-expect-error
                             alert.actions?.length === 1 || alert.actions?.length > 2
                               ? styles.singleButtonContainer
                               : null,
@@ -186,7 +184,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                             }}
                             contentContainerStyle={{ borderRadius: 300, overflow: "hidden" }}
                             style={[
-                              // @ts-expect-error
                               alert.actions?.length === 1 || alert.actions?.length > 2
                                 ? styles.singleButtonContainer
                                 : null,
@@ -203,7 +200,6 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                   borderRadius: 300,
                                   overflow: "hidden",
                                 },
-                                // @ts-expect-error
                                 alert.actions?.length === 1 || alert.actions?.length > 2
                                   ? styles.singleButton
                                   : null,
@@ -347,4 +343,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AlertProvider;
+export default memo(AlertProvider);

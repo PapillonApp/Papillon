@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { Sparkles, X } from "lucide-react-native";
@@ -169,4 +169,4 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
   );
 };
 
-export default ModalContent;
+export default memo(ModalContent);

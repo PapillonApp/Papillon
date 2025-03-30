@@ -22,6 +22,7 @@ import ChatThemes from "@/views/account/Chat/Modals/ChatThemes";
 import RestaurantCardDetail from "@/views/account/Restaurant/Modals/CardDetail";
 import RestaurantPaymentSuccess from "@/views/account/Restaurant/Modals/PaymentSuccess";
 import AddHomeworkScreen from "@/views/account/Homeworks/AddHomework";
+import CustomizeHeader from "@/views/account/Home/Modal/CustomizeHeader";
 
 export default [
   createScreen("GradeReaction", GradeReaction, {
@@ -91,6 +92,17 @@ export default [
     sheetCornerRadius: 16,
     sheetAllowedDetents: [0.5, 1],
     sheetGrabberVisible: true,
+    // @ts-expect-error
+    sheetInitialDetentIndex: 0,
+  }),
+  createScreen("CustomizeHeader", CustomizeHeader, {
+    headerTitle: "Personnaliser",
+    presentation: "formSheet",
+    headerShown: true,
+    sheetCornerRadius: 16,
+    sheetAllowedDetents: [0.5, 0.7],
+    sheetGrabberVisible: true,
+    // @ts-expect-error
     sheetInitialDetentIndex: 0,
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {

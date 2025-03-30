@@ -1,16 +1,16 @@
+import React, { memo } from "react";
 import { useTheme } from "@react-navigation/native";
-import React, { cloneElement } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 
 const WidgetHeader: React.FC<{
-  title: string
-  icon?: React.ReactElement
-  loading?: boolean
+  title: string;
+  icon?: React.ReactElement;
+  loading?: boolean;
 }> = ({ icon, title, loading }) => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const clonedIcon = icon && cloneElement(icon, {
+  const clonedIcon = icon && React.cloneElement(icon, {
     size: 20,
     strokeWidth: 2.3,
     color: colors.text,
@@ -27,7 +27,6 @@ const WidgetHeader: React.FC<{
       }}
     >
       {clonedIcon}
-
       <Text
         style={{
           color: colors.text,
@@ -38,12 +37,9 @@ const WidgetHeader: React.FC<{
       >
         {title}
       </Text>
-
-      {loading && (
-        <ActivityIndicator />
-      )}
+      {loading && <ActivityIndicator />}
     </View>
   );
 };
 
-export default WidgetHeader;
+export default memo(WidgetHeader);

@@ -1,30 +1,32 @@
-import AttendanceElement from "./Elements/AttendanceElement";
-import GradesElement from "./Elements/GradesElement";
-import HomeworksElement from "./Elements/HomeworksElement";
-import TimetableElement from "./Elements/TimetableElement";
-import React from "react";
+import React, { lazy } from "react";
 
-export const Elements = [
+// Lazy load components to improve initial load performance
+const AttendanceElement = lazy(() => import("./Elements/AttendanceElement"));
+const GradesElement = lazy(() => import("./Elements/GradesElement"));
+const HomeworksElement = lazy(() => import("./Elements/HomeworksElement"));
+const TimetableElement = lazy(() => import("./Elements/TimetableElement"));
+
+export type Element = {
+  id: string;
+  component: React.LazyExoticComponent<React.FC<any>>; // Use LazyExoticComponent for lazy-loaded components
+  importance?: number;
+};
+
+export const Elements: Element[] = [
   {
-    id:  "timetable",
+    id: "timetable",
     component: TimetableElement,
   },
   {
-    id:  "grades",
+    id: "grades",
     component: GradesElement,
   },
   {
-    id:  "attendance",
+    id: "attendance",
     component: AttendanceElement,
   },
   {
-    id:  "homeworks",
+    id: "homeworks",
     component: HomeworksElement,
-  }
+  },
 ];
-
-export type Element = {
-  id: string
-  component: React.FC<any>
-  importance?: number
-};

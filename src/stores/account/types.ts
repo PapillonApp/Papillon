@@ -34,37 +34,48 @@ export interface PapillonIcalURL {
 }
 
 export interface Personalization {
-  color: PersonalizationColor
-  profilePictureB64?: string,
-  hideNameOnHomeScreen: boolean,
-  hideProfilePicOnHomeScreen: boolean,
-  hideTabTitles: boolean,
-  showTabBackground: boolean,
-  showWeekFrequency: boolean,
-  transparentTabBar: boolean,
-  hideTabBar: boolean,
-  popupRestauration?: boolean,
-  magicEnabled?: boolean,
-  MagicNews?: boolean,
-  MagicHomeworks?: boolean,
+  color: PersonalizationColor;
+  profilePictureB64?: string;
+  hideNameOnHomeScreen: boolean;
+  hideProfilePicOnHomeScreen: boolean;
+  hideTabTitles: boolean;
+  showTabBackground: boolean;
+  showWeekFrequency: boolean;
+  transparentTabBar: boolean;
+  hideTabBar: boolean;
+  popupRestauration?: boolean;
+  magicEnabled?: boolean;
+  MagicNews?: boolean;
+  MagicHomeworks?: boolean;
   notifications?: {
-    enabled?: boolean
-    news?: boolean
-    homeworks?: boolean
-    grades?: boolean
-    timetable?: boolean
-    attendance?: boolean
-    evaluation?: boolean
-  }
-  icalURLs: PapillonIcalURL[],
-  tabs: Tab[],
+    enabled?: boolean;
+    news?: boolean;
+    homeworks?: boolean;
+    grades?: boolean;
+    timetable?: boolean;
+    attendance?: boolean;
+    evaluation?: boolean;
+  };
+  icalURLs: PapillonIcalURL[];
+  tabs: Tab[];
   subjects: {
     [subject: string]: {
-      color: string,
-      pretty: string,
-      emoji: string,
-    }
-  }
+      color: string;
+      pretty: string;
+      emoji: string;
+    };
+  };
+  header: {
+    gradient: PersonalizationHeaderGradient;
+    image: string | undefined;
+    darken: boolean;
+  };
+}
+
+export interface PersonalizationHeaderGradient {
+  startColor: string;
+  endColor: string;
+  angle: number;
 }
 
 export interface Identity {

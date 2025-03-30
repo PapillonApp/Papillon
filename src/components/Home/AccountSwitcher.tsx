@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ChevronDown } from "lucide-react-native";
@@ -18,13 +18,13 @@ import { BlurView } from "expo-blur";
 const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 const AnimatedChevronDown = Reanimated.createAnimatedComponent(ChevronDown);
 
-const AccountSwitcher: React.FC<{
-  small?: boolean;
-  opened?: boolean;
-  modalOpen?: boolean;
-  translationY?: Reanimated.SharedValue<number>;
-  loading?: boolean;
-}> = ({ small, opened, modalOpen, translationY, loading }) => {
+const AccountSwitcher = ({
+  small = false,
+  opened = false,
+  modalOpen = false,
+  translationY,
+  loading = false,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
   const account = useCurrentAccount((store) => store.account!);
@@ -48,11 +48,7 @@ const AccountSwitcher: React.FC<{
   }));
 
   const textAnimatedStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#FFF", colors.text]
-    ),
+    color: colors.text,
     fontSize: 16,
     fontFamily: "semibold",
     maxWidth: 140,
@@ -94,58 +90,29 @@ const AccountSwitcher: React.FC<{
 
   return (
     <Reanimated.View
-      style={{
-        backgroundColor: opened
-          ? theme.dark && !modalOpen
-            ? "#00000044"
-            : "#FFFFFF22"
-          : modalOpen
-            ? colors.text + "10"
-            : "#FFFFFF12",
-        borderRadius: 12,
-        borderCurve: "continuous",
-        overflow: "hidden",
-        alignSelf: "flex-start",
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.dark ? colors.background : colors.card,
+          borderColor: modalOpen ? colors.border : "transparent",
+          shadowOpacity: modalOpen ? 0.16 : 0,
+        },
+      ]}
       layout={animPapillon(LinearTransition)}
     >
-      <ReanimatedBlurView
-        tint="default"
-        experimentalBlurMethod="dimezisBlurView"
-        style={{
-          paddingHorizontal: 2,
-          paddingVertical: 0,
-          alignSelf: "flex-start",
-        }}
-        layout={animPapillon(LinearTransition)}
-      >
+      <Reanimated.View style={styles.innerContainer} layout={animPapillon(LinearTransition)}>
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
           style={[
             styles.accountSwitcher,
             loading && { shadowOpacity: 0 },
-            small && {
-              paddingHorizontal: 0,
-              shadowOpacity: 0,
-              elevation: 0,
-              borderRadius: 0,
-              paddingVertical: 0,
-              backgroundColor: "transparent",
-            },
+            small && styles.smallAccountSwitcher,
           ]}
         >
-          <Reanimated.View
-            style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
-            layout={animPapillon(LinearTransition)}
-          >
+          <Reanimated.View style={styles.row} layout={animPapillon(LinearTransition)}>
             {renderProfilePicture()}
             <Reanimated.Text
-              style={{
-                color: modalOpen && !opened ? colors.text : "#FFF",
-                fontSize: 16,
-                fontFamily: "semibold",
-                maxWidth: 140,
-              }}
+              style={textAnimatedStyle}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -157,7 +124,7 @@ const AccountSwitcher: React.FC<{
               <PapillonSpinner
                 size={20}
                 strokeWidth={3}
-                color={modalOpen && !opened ? colors.text : "#FFF"}
+                color={colors.text}
                 animated
                 entering={animPapillon(ZoomIn)}
                 exiting={animPapillon(ZoomOut)}
@@ -168,17 +135,36 @@ const AccountSwitcher: React.FC<{
                 size={24}
                 strokeWidth={2.3}
                 style={iconAnimatedStyle}
-                color={modalOpen && !opened ? colors.text : "#FFF"}
+                color={colors.text}
               />
             </Reanimated.View>
           </Reanimated.View>
         </Reanimated.View>
-      </ReanimatedBlurView>
+      </Reanimated.View>
     </Reanimated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    borderRadius: 12,
+    borderCurve: "continuous",
+    overflow: "visible",
+    alignSelf: "flex-start",
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    shadowOpacity: 0,
+    borderWidth: 1,
+  },
+  innerContainer: {
+    paddingHorizontal: 2,
+    paddingVertical: 0,
+    alignSelf: "flex-start",
+    borderRadius: 12,
+    borderCurve: "continuous",
+    overflow: "hidden",
+  },
   accountSwitcher: {
     flexDirection: "row",
     justifyContent: "center",
@@ -191,6 +177,18 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     gap: 6,
   },
+  smallAccountSwitcher: {
+    paddingHorizontal: 0,
+    elevation: 0,
+    borderRadius: 0,
+    paddingVertical: 0,
+    backgroundColor: "transparent",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
   avatar: {
     aspectRatio: 1,
     borderRadius: 24,
@@ -200,4 +198,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AccountSwitcher;
+export default memo(AccountSwitcher);

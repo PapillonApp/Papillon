@@ -84,9 +84,11 @@ export type RouteParameters = {
   SkolengoGeolocation: undefined;
   SkolengoInstanceSelector: { pos: CurrentPosition | null };
   SkolengoWebview: { school: SkolengoSchool };
+
   // account.index
   Home: undefined;
   HomeScreen?: { onboard: boolean };
+  CustomizeHeader: undefined;
 
   Lessons?: { outsideNav?: boolean };
   LessonsImportIcal: {

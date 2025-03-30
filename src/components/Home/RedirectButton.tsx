@@ -1,4 +1,4 @@
-import type React from "react";
+import React, { memo, useCallback } from "react";
 import { View, Text } from "react-native";
 import { ArrowUpRight } from "lucide-react-native";
 import { NavigationContainerRef, useTheme } from "@react-navigation/native";
@@ -6,19 +6,20 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import type { RouteParameters } from "@/router/helpers/types";
 
 interface RedirectButtonProps {
-  navigation: NavigationContainerRef<RouteParameters> | null,
-  redirect: keyof RouteParameters
+  navigation: NavigationContainerRef<RouteParameters> | null;
+  redirect: keyof RouteParameters;
 }
 
 const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect }) => {
   const theme = useTheme();
   const { colors } = theme;
 
+  const handlePress = useCallback(() => {
+    navigation?.navigate(redirect);
+  }, [navigation, redirect]);
+
   return (
-    <TouchableOpacity
-      // @ts-expect-error : on ne prend pas le state des routes en compte ici.
-      onPress={() => navigation?.navigate(redirect)}
-    >
+    <TouchableOpacity onPress={handlePress}>
       <View
         style={{
           flexDirection: "row",
@@ -37,7 +38,6 @@ const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect })
         <Text style={{ color: colors.text, fontSize: 15, fontFamily: "semibold" }}>
           Voir plus
         </Text>
-
         <ArrowUpRight
           strokeWidth={2.5}
           size={20}
@@ -48,4 +48,4 @@ const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect })
   );
 };
 
-export default RedirectButton;
+export default memo(RedirectButton);

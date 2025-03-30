@@ -3,7 +3,7 @@ import findObjectByPronoteString from "@/utils/format/format_cours_name";
 
 export const COLORS_LIST = ["#D1005A", "#BE4541", "#D54829", "#F46E00", "#B2641F", "#D18800", "#BEA541", "#E5B21A", "#B2BE41", "#94BE41", "#5CB21F", "#32CB10", "#1FB28B", "#6DA2E3", "#0099D1", "#1F6DB2", "#4E339E", "#7941BE", "#CC33BF", "#BE417F", "#E36DB8", "#7F7F7F"];
 
-const getRandColor = () => {
+export const getRandColor = () => {
   return COLORS_LIST[Math.floor(Math.random() * COLORS_LIST.length)];
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import {
   Dimensions,
   Image,
@@ -22,13 +22,13 @@ import { BlurView } from "expo-blur";
 import { Check, Cog, Plus } from "lucide-react-native";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
-const ContextMenu: React.FC<{
-  style?: any;
-  children: React.ReactNode;
-  transparent?: boolean;
-  shouldOpenContextMenu?: boolean;
-  menuStyles?: any;
-}> = ({ children, style, shouldOpenContextMenu, transparent, menuStyles }) => {
+const ContextMenu = ({
+  style,
+  children,
+  transparent,
+  shouldOpenContextMenu,
+  menuStyles,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
   const navigation = useNavigation();
@@ -58,9 +58,9 @@ const ContextMenu: React.FC<{
   }, [playHaptics]);
 
   const handlePress = useCallback(() => {
-    setOpened(!opened);
+    setOpened((prevOpened) => !prevOpened);
     openEffects();
-  }, [opened, openEffects]);
+  }, [openEffects]);
 
   const handleLongPress = useCallback(() => {
     setTouchLongPress(true);
@@ -419,4 +419,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContextMenu;
+export default memo(ContextMenu);
