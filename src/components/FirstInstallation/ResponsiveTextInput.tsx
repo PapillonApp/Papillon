@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, TextInputProps } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const ResponsiveTextInput = React.forwardRef<TextInput, TextInputProps>(

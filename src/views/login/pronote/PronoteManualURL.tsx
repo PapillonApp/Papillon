@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { RouteParameters, Screen } from "@/router/helpers/types";
 import { View, StyleSheet, TouchableOpacity, KeyboardEvent, Keyboard } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import determinateAuthenticationView from "@/services/pronote/determinate-authentication-view";
 
 import * as Clipboard from "expo-clipboard";

@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 

@@ -10,7 +10,7 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useAlert } from "@/providers/AlertProvider";
 import { Check, WifiOff } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useCurrentAccount } from "@/stores/account";
 
 const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {

@@ -6,7 +6,7 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { useHomeworkStore } from "@/stores/homework";
 import { useCurrentAccount } from "@/stores/account";
 
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { ActivityIndicator, Alert, Dimensions, Platform, TextInput, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import PapillonPicker from "@/components/Global/PapillonPicker";
@@ -143,38 +143,42 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
     });
   }, [navigation, currentHw]);
 
+  const [exampleDone, setExampleDone] = useState(false);
+
   return (
     <ScrollView style={{
       paddingHorizontal: 12
     }}>
       <NativeList inline>
         <NativeItem>
-          <NativeText variant="subtitle" numberOfLines={1}>
-            Aperçu
-          </NativeText>
-          <View style={{ marginHorizontal: -20, marginTop: 5, marginBottom: -10 }}>
+          <View style={{ marginHorizontal: -20, marginTop: -8, marginBottom: -10 }}>
             <HomeworkItem
               homework={{
                 attachments: [],
                 color: selectedPretty.color,
-                content: contentHomework ?? "Écris le contenu du devoir juste en-dessous",
-                done: false,
+                content: contentHomework ?? "Commence par ajouter du contenu",
+                done: exampleDone,
                 due: dateHomework,
                 id: String(idHomework),
                 personalizate: true,
                 subject: selectedPretty.pretty,
                 exam: false,
               }}
+              contentOpacity={!contentHomework ? 0.5 : undefined}
               index={idHomework}
               key={idHomework}
               // @ts-expect-error
               navigation={navigation}
-              onDonePressHandler={() => undefined}
+              onDonePressHandler={() => {
+                setExampleDone(!exampleDone);
+              }}
               total={1}
             />
           </View>
         </NativeItem>
+      </NativeList>
 
+      <NativeList inline>
         <NativeItem
           icon={<BookOpen size={22} strokeWidth={2} />}
           trailing={
@@ -194,6 +198,17 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
                   data={Object.entries(localSubjects).map(([key, subject]) => ({
                     label: subject.pretty,
                     onPress: () => setSelectedPretty(subject),
+                    checked: selectedPretty?.pretty === subject.pretty,
+                    ios: {
+                      icon: {
+                        type: "IMAGE_SYSTEM" ,
+                        imageValue: {
+                          systemName: "circle.fill",
+                          pointSize: 12,
+                          hierarchicalColor: subject?.color,
+                        },
+                      }
+                    }
                   }))}
                   selected={selectedPretty?.pretty}
                 >
@@ -329,6 +344,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
           alignSelf: "center",
           marginTop: 15,
         }}
+        backgroundColor={selectedPretty.color}
       />
     </ScrollView>
   );

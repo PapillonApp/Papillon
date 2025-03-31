@@ -1,5 +1,5 @@
 import PapillonLoading from "@/components/Global/PapillonLoading";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 const LessonsLoading = () => {
   const colors = useTheme().colors;

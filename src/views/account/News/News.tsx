@@ -10,7 +10,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import BetaIndicator from "@/components/News/Beta";
 import NewsListItem from "./Atoms/Item";
 import Reanimated, { FadeInUp, FadeOut, LinearTransition } from "react-native-reanimated";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { animPapillon } from "@/utils/ui/animations";
 import { categorizeMessages } from "@/utils/magic/categorizeMessages";
 import { protectScreenComponent } from "@/router/helpers/protected-screen";

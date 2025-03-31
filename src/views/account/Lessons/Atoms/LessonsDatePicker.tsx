@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import {View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ListRenderItem} from "react-native";
 import { format, addDays, isSameDay } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import * as Haptics from "expo-haptics";
 
 import Animated, {

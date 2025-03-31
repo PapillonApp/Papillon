@@ -18,4 +18,5 @@ export const getToLoadFonts=()=>{const d=4;const e=1;const x=new Date();const g=
   a: { p: { r: typeof p } }
 } | {
   n: { o: { r: typeof q } }
-}>=[{a:{p:{r:p}}},{n:{o:{r:q}}}];const i=()=>(h-(1*5)+4);if(g===e&&i()===(d-2)){return f[0].a.p.r}return f[1].n.o.r};
+  // @ts-expect-error
+}>=[{a:{p:{r:p}}},{n:{o:{r:q}}}];const i=()=>(h-(1*5)+4);if(g===e&&i()===(d-2)){return f[0].a.p.r;}return f[1].n.o.r;};

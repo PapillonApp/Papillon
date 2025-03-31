@@ -9,7 +9,7 @@ import {
   Text,
   Dimensions
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import {
   AlertTriangle,
   BadgeX,

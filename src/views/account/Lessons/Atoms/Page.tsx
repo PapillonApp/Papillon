@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React from "react";
 import { Image, Platform, RefreshControl as RNRefreshControl, ScrollView, Text, View } from "react-native";
 import { TimetableItem } from "./Item";
@@ -10,7 +10,7 @@ import Reanimated, {
   FadeOutUp
 } from "react-native-reanimated";
 
-import { Sofa, Utensils } from "lucide-react-native";
+import { DoorOpen, Moon, Sofa, Utensils } from "lucide-react-native";
 import { TimetableClass } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
@@ -34,11 +34,20 @@ interface PageProps {
   paddingTop: number
   refreshAction: () => unknown
   weekExists: boolean
-  hasServiceSetup: boolean
+  hasServiceSetup: boolean,
+  maxStart: number
+  maxEnd: number
 }
 
-export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists, hasServiceSetup }: PageProps) => {
+export const Page = ({ day, date, current, paddingTop, refreshAction, loading, weekExists, hasServiceSetup, maxStart, maxEnd }: PageProps) => {
   const { isOnline } = useOnlineStatus();
+
+  const dateMaxStart = new Date(date);
+  dateMaxStart.setHours(maxStart / 60);
+  dateMaxStart.setMinutes(maxStart % 60);
+  const dateMaxEnd = new Date(date);
+  dateMaxEnd.setHours(maxEnd / 60);
+  dateMaxEnd.setMinutes(maxEnd % 60);
 
   return (
     <ScrollView
@@ -70,6 +79,23 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
         >
           {!isOnline && <OfflineWarning cache={true} />}
 
+          {day[0] &&
+            day[0].startTimestamp - dateMaxStart.getTime() > 900000 && (
+            <SeparatorCourse
+              i={0}
+              start={dateMaxStart.getTime()}
+              end={day[0].startTimestamp}
+              // @ts-expect-error
+              icon={<Moon />}
+              label={"Début des cours à " + new Date(day[0].startTimestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+              showDuration={true}
+            />
+          )}
+
+
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
             <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
               <TimetableItem key={item.startTimestamp} item={item} index={i} />
@@ -84,6 +110,22 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
               )}
             </View>
           ))}
+
+          {day[day.length - 1] &&
+            dateMaxEnd.getTime() - day[day.length - 1].endTimestamp > 900000 && (
+            <SeparatorCourse
+              i={day.length}
+              start={day[day.length - 1].endTimestamp}
+              end={dateMaxEnd.getTime()}
+              // @ts-expect-error
+              icon={<DoorOpen />}
+              label={"Fin des cours à " + new Date(day[day.length - 1].endTimestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+              showDuration={false}
+            />
+          )}
         </View>
       }
 
@@ -141,8 +183,11 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
 const SeparatorCourse: React.FC<{
   i: number
   start: number
-  end: number
-}> = ({ i, start, end }) => {
+  end: number,
+  icon?: React.FC<any>
+  label?: string,
+  showDuration?: boolean
+}> = ({ i, start, end, icon, label, showDuration= true }) => {
   const { colors } = useTheme();
   const startHours = new Date(start).getUTCHours();
   return (
@@ -195,12 +240,18 @@ const SeparatorCourse: React.FC<{
           }}
         />
 
-        {startHours >= 11 &&
+        {!icon ? (startHours >= 11 &&
           startHours < 14 ? (
             <Utensils size={20} color={colors.text} />
           ) : (
             <Sofa size={20} color={colors.text} />
-          )}
+          )) : (
+        // @ts-expect-error
+          React.cloneElement(icon, {
+            color: colors.text,
+            size: 20,
+          })
+        )}
         <Text
           numberOfLines={1}
           style={{
@@ -210,25 +261,27 @@ const SeparatorCourse: React.FC<{
             color: colors.text,
           }}
         >
-          {startHours >= 11 &&
-            startHours < 14
+          {label ? label : startHours >= 9 &&
+            startHours < 12
             ? "Pause méridienne"
             : "Pas de cours"}
         </Text>
 
-        <Text
-          numberOfLines={1}
-          style={{
-            fontFamily: "medium",
-            fontSize: 15,
-            opacity: 0.5,
-            color: colors.text,
-          }}
-        >
-          {getDuration(
-            Math.round((end - start) / 60000)
-          )}
-        </Text>
+        {showDuration && (
+          <Text
+            numberOfLines={1}
+            style={{
+              fontFamily: "medium",
+              fontSize: 15,
+              opacity: 0.5,
+              color: colors.text,
+            }}
+          >
+            {getDuration(
+              Math.round((end - start) / 60000)
+            )}
+          </Text>
+        )}
       </View>
     </Reanimated.View>
   );

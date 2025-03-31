@@ -16,7 +16,7 @@ import uuid from "@/utils/uuid-v4";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, type EcoleDirecteAccount } from "@/stores/account/types";
 import defaultPersonalization from "@/services/ecoledirecte/default-personalization";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
 import {NativeText} from "@/components/Global/NativeComponents";

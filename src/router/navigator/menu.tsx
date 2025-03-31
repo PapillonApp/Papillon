@@ -58,7 +58,7 @@ const PapillonNavigatorMenu: React.FC<Omit<ReturnType<typeof useNavigationBuilde
             }
           ]}
         >
-          <AccountSwitcher loading={!account?.instance} />
+          <AccountSwitcher loading={!account?.instance} translationY={null} />
         </ContextMenu>
 
         {tabs.map((route, index) => (

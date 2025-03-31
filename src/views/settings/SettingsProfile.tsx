@@ -1,7 +1,7 @@
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import * as ImagePicker from "expo-image-picker";
 import { BadgeX, Camera, CameraOff, ChevronDown, ChevronUp, ClipboardCopy, TextCursorInput, Trash, Undo2, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";

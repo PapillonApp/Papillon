@@ -7,7 +7,7 @@ import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeCo
 import { differenceInDays, formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import { PressableScale } from "react-native-pressable-scale";
 import { useAccounts, useCurrentAccount } from "@/stores/account";

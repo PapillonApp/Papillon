@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, { useEffect, useLayoutEffect } from "react";
 import { View } from "react-native";
 import MissingItem from "@/components/Global/MissingItem";

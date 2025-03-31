@@ -9,7 +9,7 @@ import {PrimaryAccount, AccountService} from "@/stores/account/types";
 import {defaultProfilePicture} from "@/utils/ui/default-profile-picture";
 import {Check} from "lucide-react-native";
 import React from "react";
-import {useTheme} from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 const AccountItem: React.FC<{
   account: PrimaryAccount,

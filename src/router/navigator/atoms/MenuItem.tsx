@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { StyleSheet, Platform, Pressable } from "react-native";
 import LottieView from "lottie-react-native";
 import colorsList from "@/utils/data/colors.json";

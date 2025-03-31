@@ -12,7 +12,7 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 
 import { useCurrentAccount } from "@/stores/account";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Camera, Trash } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";

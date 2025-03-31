@@ -6,7 +6,7 @@ import datasets from "@/consts/datasets.json";
 import uuid from "@/utils/uuid-v4";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { AlertTriangle, Bug, Sparkles, X } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";

@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { View, Text, ActivityIndicator } from "react-native";
 
 const WidgetHeader: React.FC<{

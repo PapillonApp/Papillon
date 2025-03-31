@@ -30,11 +30,14 @@ interface HomeworkItemProps {
   total: number
   homework: Homework
   onDonePressHandler: () => unknown
-  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen" | "Homeworks", undefined>
+  navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen" | "Homeworks", undefined>,
+  contentOpacity?: number,
+  entering?: any,
+  exiting?: any
 }
 
 
-const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }: HomeworkItemProps) => {
+const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, contentOpacity=1, entering, exiting }: HomeworkItemProps) => {
   const theme = useTheme();
   const [subjectData, setSubjectData] = useState(getSubjectData(homework.subject));
   const [category, setCategory] = useState<string | null>(null);
@@ -169,8 +172,8 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
       onPress={() => navigation.navigate("HomeworksDocument", { homework })}
       chevron={false}
       key={homework.content}
-      entering={FadeIn}
-      exiting={FadeOut}
+      entering={entering || FadeIn}
+      exiting={exiting || FadeOut}
       separator={index !== total - 1}
       style={{ backgroundColor: category ? (subjectData.color + "15") : undefined }}
       leading={
@@ -232,6 +235,9 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total }
                     }}
                   />
                 }
+                style={{
+                  opacity: contentOpacity || 1,
+                }}
               >
                 <HTMLView
                   value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`}

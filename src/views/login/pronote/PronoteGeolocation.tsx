@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View,Text, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import { getCurrentPosition } from "@/utils/native/location";
 import { useLocationPermission } from "@/hooks/location";

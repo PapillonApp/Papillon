@@ -9,7 +9,7 @@ import SubjectItem from "./SubjectList";
 import { useCallback, useMemo, useState } from "react";
 import PapillonPicker, { PickerDataItem } from "@/components/Global/PapillonPicker";
 import { ArrowDownAZ, Calendar, ChevronDown, TrendingUp } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 
 interface SubjectProps {

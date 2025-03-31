@@ -9,7 +9,7 @@ import Reanimated, { LinearTransition, FlipInXDown, ZoomIn, ZoomOut, FadeInDown,
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Search, X } from "lucide-react-native";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";

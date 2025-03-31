@@ -1,7 +1,7 @@
 import React, { Fragment, useRef } from "react";
 import { ScrollView, TextInput, KeyboardAvoidingView, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BadgeHelp, Code, Trash2, Undo2 } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";

@@ -20,7 +20,7 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { Info } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import type { Screen } from "@/router/helpers/types";
 

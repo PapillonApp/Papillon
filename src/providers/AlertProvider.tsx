@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Check } from "lucide-react-native";
 import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode, memo } from "react";
 import { Modal, View, Text, StyleSheet, Pressable } from "react-native";
@@ -151,6 +151,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                       {
                         borderColor: colors.text + "20",
                         backgroundColor: colors.text + "06",
+                        // @ts-expect-error
                         flexDirection: alert.actions?.length > 2 ? "column" : "row",
                         alignItems: "center",
                       },
@@ -170,6 +171,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                           key={title}
                           layout={anim2Papillon(LinearTransition)}
                           style={[
+                            // @ts-expect-error
                             alert.actions?.length === 1 || alert.actions?.length > 2
                               ? styles.singleButtonContainer
                               : null,
@@ -184,6 +186,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                             }}
                             contentContainerStyle={{ borderRadius: 300, overflow: "hidden" }}
                             style={[
+                              // @ts-expect-error
                               alert.actions?.length === 1 || alert.actions?.length > 2
                                 ? styles.singleButtonContainer
                                 : null,
@@ -200,6 +203,7 @@ const AlertProvider = ({ children }: AlertProviderProps) => {
                                   borderRadius: 300,
                                   overflow: "hidden",
                                 },
+                                // @ts-expect-error
                                 alert.actions?.length === 1 || alert.actions?.length > 2
                                   ? styles.singleButton
                                   : null,

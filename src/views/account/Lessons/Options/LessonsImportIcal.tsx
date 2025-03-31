@@ -2,7 +2,7 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Calendar, Info, QrCode, X } from "lucide-react-native";
 import React, { useEffect } from "react";
 import { Alert, Modal, TouchableOpacity, View } from "react-native";

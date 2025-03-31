@@ -1,7 +1,7 @@
 import React, {Suspense, useEffect, useMemo, useRef, useState} from "react";
 import {View, ScrollView, RefreshControl, Platform, ActivityIndicator} from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import {useTheme} from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {PapillonHeaderSelector, PapillonModernHeader} from "@/components/Global/PapillonModernHeader";
 import {useCurrentAccount} from "@/stores/account";

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Image, ActivityIndicator, FlatList, ImageBackground, Platform, StyleSheet, Text, TouchableOpacity, View, KeyboardAvoidingView, } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import type { Screen } from "@/router/helpers/types";
 import { NativeText } from "@/components/Global/NativeComponents";

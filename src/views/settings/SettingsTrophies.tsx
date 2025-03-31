@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 

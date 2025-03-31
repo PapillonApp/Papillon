@@ -7,7 +7,7 @@ import { View } from "react-native";
 import WebView from "react-native-webview";
 import { useRef, useState } from "react";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";
 import { log } from "@/utils/logger/logger";

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState, memo } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, ZoomIn } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import { PressableScale } from "react-native-pressable-scale";

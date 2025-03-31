@@ -11,7 +11,6 @@
 
  -----------------------------------------------------------------------------------------------
 */
-
 import { pronoteFirstDate } from "@/services/pronote/timetable";
 import type { PronoteAccount } from "@/stores/account/types";
 import { translateToWeekNumber } from "pawnote";
@@ -29,88 +28,95 @@ const EPOCH_WN_CONFIG = {
  * For comparing days and week, we need to have a common day to start the week, aka here Wednesday, 6:0:0:0
  *!It's internal and should not be used outside of this file.
  */
+
 const dayToWeekCommonDay = (date: Date): Date => {
   const _date = new Date(date);
+  const day = _date.getUTCDay();
   _date.setUTCHours(EPOCH_WN_CONFIG.setHour, 0, 0, 0);
-  _date.setUTCDate(_date.getUTCDate() - ( (7 + _date.getUTCDay() - 1) %7 ) + EPOCH_WN_CONFIG.setMiddleDay - 1);
-  // the (7+ ... -1 ) %7 is to have Monday as the first day (0) of the week and Sunday as last day (7) cause JS start the week on Sunday ¯\_(ツ)_/¯
-  // In details : the 7+ is to avoid negative value, the -1 is to have Monday as the first day of the week and the %7 is to have the right day number (0 to 6)
-  // In details : setMiddleDay - 1 is to have the middle day of the week, aka Wednesday
-  // Its to avoid the fact that Sunday is in the next week with simpler JS code.
+  _date.setUTCDate(
+    _date.getUTCDate() - ((7 + day - 1) % 7) + EPOCH_WN_CONFIG.setMiddleDay - 1
+  );
   return _date;
 };
 
-export const epochWNToDate = (epochWeekNumber: number)=>dayToWeekCommonDay(weekNumberToMiddleDate(epochWeekNumber));
+export const epochWNToDate = (epochWeekNumber: number) =>
+  dayToWeekCommonDay(weekNumberToMiddleDate(epochWeekNumber));
 
-export const epochWNToPronoteWN = (epochWeekNumber: number, account: PronoteAccount) =>
-  translateToWeekNumber(epochWNToDate(epochWeekNumber), account.instance?.instance.firstMonday || pronoteFirstDate) || 1;
+export const epochWNToPronoteWN = (
+  epochWeekNumber: number,
+  account: PronoteAccount
+) =>
+  translateToWeekNumber(
+    epochWNToDate(epochWeekNumber),
+    account.instance?.instance.firstMonday || pronoteFirstDate
+  ) || 1;
 
-/**
- * Convert a date to a week number.
- */
 export const dateToEpochWeekNumber = (date: Date): number => {
   const commonDay = dayToWeekCommonDay(date);
-  const epochWeekNumber = Math.floor((commonDay.getTime() + EPOCH_WN_CONFIG.adjustEpochInitialDate  - ( (EPOCH_WN_CONFIG.setMiddleDay - 1) /7 ) * EPOCH_WN_CONFIG.numberOfMsInAWeek) / EPOCH_WN_CONFIG.numberOfMsInAWeek);
-  // this is the opposite of the weekNumberToMiddleDate function
-  return epochWeekNumber;
+  return Math.floor(
+    (commonDay.getTime() + EPOCH_WN_CONFIG.adjustEpochInitialDate - 172800000) /
+      EPOCH_WN_CONFIG.numberOfMsInAWeek
+  );
 };
 
-/**
- * Check if the test date is in the same week as the reference date.
- * If we need to check if the test date is "near" our reference date, we can use the numberOfWeeksBefore and numberOfWeeksAfter parameters.
- * So if I want to check if the test date is in the same week or the next week, I can call isInTheWeek(referenceDate, testDate, 0, 1).
- */
-export const isInTheWeek = (referenceDate: Date, testDate: Date, numberOfWeeksBefore = 0, numberOfWeeksAfter = 0): boolean => {
+export const isInTheWeek = (
+  referenceDate: Date,
+  testDate: Date,
+  numberOfWeeksBefore = 0,
+  numberOfWeeksAfter = 0
+): boolean => {
   const referenceWeek = dateToEpochWeekNumber(referenceDate);
   const testWeek = dateToEpochWeekNumber(testDate);
-  return testWeek >= referenceWeek - numberOfWeeksBefore && testWeek <= referenceWeek + numberOfWeeksAfter;
+  return (
+    testWeek >= referenceWeek - numberOfWeeksBefore &&
+    testWeek <= referenceWeek + numberOfWeeksAfter
+  );
 };
 
-export const weekNumberToDateRange = (epochWeekNumber: number, numberOfWeeksBefore = 0, numberOfWeeksAfter = 0): { start: Date; end: Date } => {
-  const start = new Date(
-    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek
-    - EPOCH_WN_CONFIG.adjustEpochInitialDate
-    - numberOfWeeksBefore * EPOCH_WN_CONFIG.numberOfMsInAWeek
-  );
-  const end = new Date(
-    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek
-    + ( 6/7 ) * EPOCH_WN_CONFIG.numberOfMsInAWeek // 6/7 is to have the end of the week, aka Sunday (we are in Europe so we dont need to worry if we want to include the Sunday)
-    - EPOCH_WN_CONFIG.adjustEpochInitialDate
-    + numberOfWeeksAfter * EPOCH_WN_CONFIG.numberOfMsInAWeek
-  );
-  return { start, end };
+export const weekNumberToDateRange = (
+  epochWeekNumber: number,
+  numberOfWeeksBefore = 0,
+  numberOfWeeksAfter = 0
+) => {
+  const baseTime =
+    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek -
+    EPOCH_WN_CONFIG.adjustEpochInitialDate;
+  return {
+    start: new Date(
+      baseTime - numberOfWeeksBefore * EPOCH_WN_CONFIG.numberOfMsInAWeek
+    ),
+    end: new Date(
+      baseTime +
+        518400000 +
+        numberOfWeeksAfter * EPOCH_WN_CONFIG.numberOfMsInAWeek
+    ),
+  };
 };
-
 
 export const weekNumberToDaysList = (epochWeekNumber: number): Date[] => {
+  const baseTime =
+    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek -
+    EPOCH_WN_CONFIG.adjustEpochInitialDate;
   const weekdays = [];
   for (let i = 0; i < 7; i++) {
-    weekdays.push(new Date(
-      epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek + (i/7)
-        * EPOCH_WN_CONFIG.numberOfMsInAWeek
-        - EPOCH_WN_CONFIG.adjustEpochInitialDate
-    ));
+    weekdays.push(new Date(baseTime + i * 86400000));
   }
   return weekdays;
 };
 
 export const weekNumberToMiddleDate = (epochWeekNumber: number): Date => {
-  const date = new Date(
-    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek
-    + ( (EPOCH_WN_CONFIG.setMiddleDay - 1) /7 ) * EPOCH_WN_CONFIG.numberOfMsInAWeek // (setMiddleDay-1)/7 is to have the middle of the week, aka Wednesday
-    - EPOCH_WN_CONFIG.adjustEpochInitialDate
+  return new Date(
+    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek +
+      172800000 -
+      EPOCH_WN_CONFIG.adjustEpochInitialDate
   );
-  return date;
 };
 
-export const epochWMToCalendarWeekNumber = (epochWeekNumber: number): number => {
+export const epochWMToCalendarWeekNumber = (
+  epochWeekNumber: number
+): number => {
   const date = weekNumberToMiddleDate(epochWeekNumber);
-  // Set Day to Sunday and make it the 7th day of the week
-  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
-  // Get first day of year
-  var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
-  // Calculate full weeks to nearest Thursday
-  var weekNo = Math.ceil(( ( (date.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
-  // Return array of year and week number
-  return weekNo;
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 };

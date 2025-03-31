@@ -1,4 +1,4 @@
-import {useTheme} from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, {useEffect, useMemo, useState} from "react";
 import { RefreshControl, View} from "react-native";
 

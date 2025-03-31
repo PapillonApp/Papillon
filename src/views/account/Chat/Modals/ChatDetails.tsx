@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { ScrollView, TouchableOpacity, View, Image, StyleSheet } from "react-native";
-import {useTheme} from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import type {Screen} from "@/router/helpers/types";
 import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";

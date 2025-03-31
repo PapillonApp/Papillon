@@ -7,7 +7,7 @@ import type { Grade } from "@/services/shared/Grade";
 import { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { anim2Papillon } from "@/utils/ui/animations";
 import { adjustColor } from "@/utils/ui/colors";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 type GradeLatestItemProps = {
   grade: Grade;

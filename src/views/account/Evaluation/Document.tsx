@@ -5,7 +5,7 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Image, ScrollView, Text, View, Platform } from "react-native";
 import {

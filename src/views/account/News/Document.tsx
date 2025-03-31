@@ -7,7 +7,7 @@ import {
 } from "@/components/Global/NativeComponents";
 import { Information } from "@/services/shared/Information";
 import formatDate from "@/utils/format/format_date_complets";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import {
   Check,
   Eye,

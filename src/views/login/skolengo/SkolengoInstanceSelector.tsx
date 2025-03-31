@@ -7,7 +7,7 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import { Search, X, GraduationCap, } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";

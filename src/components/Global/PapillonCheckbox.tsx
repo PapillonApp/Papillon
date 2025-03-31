@@ -1,6 +1,6 @@
 import { type ViewStyle, type StyleProp } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import Reanimated, { LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { PressableScale } from "react-native-pressable-scale";

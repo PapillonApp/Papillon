@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import QRCode from "react-native-qrcode-svg";
 import Barcode from "react-native-barcode-svg";
 import { useAccounts } from "@/stores/account";

@@ -8,7 +8,7 @@ import {
   Text,
   RefreshControl,
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import {
   NativeItem,
@@ -63,6 +63,7 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
 
   const supported = account.service === AccountService.Pronote || account.service === AccountService.EcoleDirecte;
 
+  // @ts-expect-error
   const enabled = supported && account.instance?.user.authorizations.tabs.includes(TabLocation.Discussions);
 
   useLayoutEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeText } from "@/components/Global/NativeComponents";
 import {Screen} from "@/router/helpers/types";

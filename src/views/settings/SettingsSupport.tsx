@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SupportContainerCard from "@/components/Settings/SupportContainerCard";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";

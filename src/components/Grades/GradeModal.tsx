@@ -19,7 +19,7 @@ import { Reel } from "@/services/shared/Reel";
 import { captureRef } from "react-native-view-shot";
 import Animated, { Easing, FadeInRight, ZoomIn } from "react-native-reanimated";
 import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useAlert } from "@/providers/AlertProvider";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 interface GradeModalProps {

@@ -8,7 +8,7 @@ import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import * as WebBrowser from "expo-web-browser";
 

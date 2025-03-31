@@ -20,7 +20,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 import { CalendarPlus, Eye, EyeOff, MoreVertical } from "lucide-react-native";
 import {
@@ -54,6 +54,36 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
   const [shouldShowWeekFrequency, setShouldShowWeekFrequency] = useState(account.personalization.showWeekFrequency);
   const [weekFrequency, setWeekFrequency] = useState<WeekFrequency | null>(null);
+
+  const [maxStartTime, setMaxStartTime] = useState(0);
+  const [maxEndTime, setMaxEndTime] = useState(0);
+
+  useEffect(() => {
+    try {
+      const lessons = Object.values(timetables).flat();
+
+      if (lessons.length > 0) {
+        const startTimes = lessons.map((lesson) => {
+          const startDate = new Date(lesson.startTimestamp);
+          return startDate.getHours() * 60 + startDate.getMinutes();
+        });
+
+        const endTimes = lessons.map((lesson) => {
+          const endDate = new Date(lesson.endTimestamp);
+          return endDate.getHours() * 60 + endDate.getMinutes();
+        });
+
+        const maxStart = Math.min(...startTimes);
+        const maxEnd = Math.max(...endTimes);
+
+        setMaxStartTime(maxStart);
+        setMaxEndTime(maxEnd);
+      }
+    }
+    catch (e) {
+      console.log("Error calculating max start and end times:", e);
+    }
+  }, [timetables]);
 
   const { width, height, isTablet } = useScreenDimensions();
   const finalWidth = width - (isTablet ? (
@@ -206,6 +236,8 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
             }
             refreshAction={() => loadTimetableWeek(weekNumber, true)}
             loading={loadingWeeks.includes(weekNumber)}
+            maxStart={maxStartTime}
+            maxEnd={maxEndTime}
           />
         </View>
       );

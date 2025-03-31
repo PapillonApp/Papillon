@@ -10,7 +10,7 @@ import {
 import { WebView } from "react-native-webview";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 
 import Reanimated, {

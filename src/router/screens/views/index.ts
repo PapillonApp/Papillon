@@ -90,7 +90,7 @@ export default [
     presentation: "formSheet",
     headerShown: true,
     sheetCornerRadius: 16,
-    sheetAllowedDetents: [0.5, 1],
+    sheetAllowedDetents: [0.6, 1],
     sheetGrabberVisible: true,
     // @ts-expect-error
     sheetInitialDetentIndex: 0,

@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import { View, StyleSheet, Pressable, Platform } from "react-native";
 import MaskStarsColored from "@/components/FirstInstallation/MaskStarsColored";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import type { Screen } from "@/router/helpers/types";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";

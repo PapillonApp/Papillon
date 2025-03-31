@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Calendar } from "lucide-react-native";
 import { Platform, Text } from "react-native";
 

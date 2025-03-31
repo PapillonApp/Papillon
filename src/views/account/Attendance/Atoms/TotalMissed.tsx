@@ -4,7 +4,7 @@ import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { leadingZero } from "@/utils/format/attendance_time";
 import { animPapillon } from "@/utils/ui/animations";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
 
 interface TotalMissedProps {

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { formatCardIdentifier, ServiceCard } from "@/utils/external/restaurant";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import { PressableScale } from "react-native-pressable-scale";
 import { AccountService } from "@/stores/account/types";

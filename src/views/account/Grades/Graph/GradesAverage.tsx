@@ -8,7 +8,7 @@ import {
   getPronoteAverage,
   GradeHistory,
 } from "@/utils/grades/getAverages";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import { View, StyleSheet, Platform, TouchableOpacity, Linking } from "react-native";
 

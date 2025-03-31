@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Text, ScrollView, View, TouchableOpacity, Image } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BadgeInfo, Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";

@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { TrendingUp } from "lucide-react-native";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo } from "react";
 import { Text, View } from "react-native";

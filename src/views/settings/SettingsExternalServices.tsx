@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass, Check, Trash2, BadgeInfo } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { Sparkles, X } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View} from "react-native";
 import { Elements, type Element } from "./ElementIndex";

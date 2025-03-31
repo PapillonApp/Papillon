@@ -14,7 +14,7 @@ import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { ChevronDown } from "lucide-react-native";
 import React from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";

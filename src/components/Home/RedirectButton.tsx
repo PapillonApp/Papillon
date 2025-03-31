@@ -15,6 +15,7 @@ const RedirectButton: React.FC<RedirectButtonProps> = ({ navigation, redirect })
   const { colors } = theme;
 
   const handlePress = useCallback(() => {
+    // @ts-expect-error
     navigation?.navigate(redirect);
   }, [navigation, redirect]);
 

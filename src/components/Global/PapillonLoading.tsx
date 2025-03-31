@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { NativeText } from "./NativeComponents";
 import PapillonSpinner from "./PapillonSpinner";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 const PapillonLoading: React.FC<{
   title: string;

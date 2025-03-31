@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useGradesStore } from "@/stores/grades";
 import ReelGallery from "@/components/Settings/ReelGallery";
 import MissingItem from "@/components/Global/MissingItem";

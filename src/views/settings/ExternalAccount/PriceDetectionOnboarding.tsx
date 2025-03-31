@@ -1,6 +1,6 @@
 import React from "react";
 import type { Screen } from "@/router/helpers/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BellRing } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image, View, StyleSheet, Text } from "react-native";

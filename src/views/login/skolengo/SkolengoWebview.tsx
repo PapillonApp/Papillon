@@ -15,7 +15,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 
 import { School } from "scolengo-api/types/models/School";

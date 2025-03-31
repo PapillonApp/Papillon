@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState, useCallback, useMemo } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Calendar, Clock } from "lucide-react-native";
 
 import { WidgetProps } from "@/components/Home/Widget";

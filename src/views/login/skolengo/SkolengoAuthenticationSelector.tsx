@@ -5,7 +5,7 @@ import { MapPinIcon, SearchIcon, LockIcon } from "lucide-react-native";
 import type { Screen } from "@/router/helpers/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";

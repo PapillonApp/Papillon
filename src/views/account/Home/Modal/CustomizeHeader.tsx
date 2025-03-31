@@ -7,7 +7,7 @@ import { useCurrentAccount } from "@/stores/account";
 import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { COLORS_LIST } from "@/services/shared/Subject";
 import { PersonalizationHeaderGradient } from "@/stores/account/types";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Dice5, Moon, Palette, PictureInPicture } from "lucide-react-native";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 
@@ -61,6 +61,7 @@ const CustomizeHeader: Screen<"CustomizeHeader"> = ({ route, navigation }) => {
   };
 
   const [image, setImage] = React.useState<string | undefined>(account?.personalization?.header?.image);
+  // @ts-expect-error
   const [gradient, setGradient] = React.useState<PersonalizationHeaderGradient>(account?.personalization?.header?.gradient);
   const [darken, setDarken] = React.useState<boolean>(account?.personalization?.header?.darken || false);
   const [centerReset, setCenterReset] = React.useState<any>(undefined);
@@ -130,9 +131,11 @@ const CustomizeHeader: Screen<"CustomizeHeader"> = ({ route, navigation }) => {
                 header: {
                   image,
                   darken,
+                  // @ts-expect-error
                   gradient: gradValue,
                 },
               });
+              // @ts-expect-error
               setGradient(gradValue);
             }}
           />

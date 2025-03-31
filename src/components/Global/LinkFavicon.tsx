@@ -2,7 +2,7 @@ import {Image, ImageStyle, StyleProp, View} from "react-native";
 import * as FileSystem from "expo-file-system";
 import { useEffect, useState } from "react";
 import { Link2 } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 export const getURLDomain = (url: string, www: boolean = true) => {
   return url.replace("https://", "").replace("http://", "").split("/")[0].replace(www ? "www." : "", "");

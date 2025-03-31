@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, { useMemo } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 
@@ -57,7 +57,7 @@ export const TimetableItem: React.FC<{
         <View style={[{ flex: 1, flexDirection: "column", overflow: "hidden", borderRadius: 10 }]}>
           {item.statusText && (
             <View style={[styles.statusContainer, {
-              backgroundColor: item.status === TimetableClassStatus.CANCELED ? "#E8BEBF" : item.status === TimetableClassStatus.TEST ? "#f4b490" : subjectData.color + "33" }]}>
+              backgroundColor: item.status === TimetableClassStatus.CANCELED ? "#E8BEBF" : item.status === TimetableClassStatus.TEST ? "#f4b490" : subjectData.color + "22" }]}>
               <Text style={[styles.statusText, { color: item.status === TimetableClassStatus.CANCELED ? "#B42828" : item.status === TimetableClassStatus.TEST ? "#d2691e" : subjectData.color}]}>{item.statusText}</Text>
             </View>
           )}

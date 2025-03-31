@@ -1,4 +1,4 @@
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { AlertTriangle, BadgeHelp, CheckCheck, ChevronRight, Eraser, Undo2 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";

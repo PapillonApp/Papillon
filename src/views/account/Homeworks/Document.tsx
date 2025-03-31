@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { HomeworkReturnType } from "@/services/shared/Homework";
 import * as WebBrowser from "expo-web-browser";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import HTMLView from "react-native-htmlview";
 import { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

@@ -18,7 +18,7 @@ import {
   NativeText,
 } from "../Global/NativeComponents";
 import { AlertTriangle, Eye, EyeOff, Info } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import ButtonCta from "../FirstInstallation/ButtonCta";
 import ResponsiveTextInput from "../FirstInstallation/ResponsiveTextInput";
 

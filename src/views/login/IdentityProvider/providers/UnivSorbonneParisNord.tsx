@@ -5,7 +5,7 @@ import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, LocalAccount } from "@/stores/account/types";
 import defaultPersonalization from "@/services/local/default-personalization";
 import uuid from "@/utils/uuid-v4";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import LoginView from "@/components/Templates/LoginView";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";

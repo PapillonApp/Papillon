@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { ChevronDown } from "lucide-react-native";
 import Reanimated, {
   interpolateColor,
@@ -22,6 +22,7 @@ const AccountSwitcher = ({
   small = false,
   opened = false,
   modalOpen = false,
+  // @ts-expect-error
   translationY,
   loading = false,
 }) => {

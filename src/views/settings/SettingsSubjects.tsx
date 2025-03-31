@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import Reanimated, { ZoomIn, ZoomOut } from "react-native-reanimated";
 import debounce from "lodash/debounce";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";

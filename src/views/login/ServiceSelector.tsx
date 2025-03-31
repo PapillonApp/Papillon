@@ -9,7 +9,7 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import GetV6Data from "@/utils/login/GetV6Data";
 import { Check, School, WifiOff } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";

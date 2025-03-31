@@ -43,7 +43,7 @@ import {
 import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import {get_settings_widgets} from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AddonPlacementManifest} from "@/addons/types";

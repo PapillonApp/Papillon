@@ -1,7 +1,7 @@
 import type React from "react";
 import { View } from "react-native";
 import { NativeText } from "../Global/NativeComponents";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import AnimatedNumber from "../Global/AnimatedNumber";
 import { Utensils } from "lucide-react-native";
 

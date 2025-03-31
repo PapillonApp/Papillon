@@ -1,90 +1,135 @@
+import "@/background/BackgroundTasks";
 import Router from "@/router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { LogBox, AppState, AppStateStatus } from "react-native";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { LogBox, AppState } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import {AccountService, PrimaryAccount} from "@/stores/account/types";
+import { AccountService } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
 import { registerBackgroundTasks } from "@/background/BackgroundTasks";
+import { SoundHapticsProvider } from "@/hooks/Theme_Sound_Haptics";
+import { PapillonNavigation } from "@/router/refs";
+import * as Device from "expo-device";
+import * as ScreenOrientation from "expo-screen-orientation";
 import {getToLoadFonts} from "@/consts/Fonts";
 
 SplashScreen.preventAutoHideAsync();
 
 const DEFAULT_BACKGROUND_TIME = 15 * 60 * 1000; // 15 minutes
 
-const BACKGROUND_LIMITS: Partial<Record<AccountService, number>> = {
+const BACKGROUND_LIMITS = {
   [AccountService.EcoleDirecte]: 15 * 60 * 1000,    // 15 minutes
   [AccountService.Pronote]: 5 * 60 * 1000,         // 5 minutes
-  [AccountService.Skolengo]: 12 * 60 * 60 * 1000,  // 12 heures
+  [AccountService.Skolengo]: 60 * 60 * 1000,  // 1 heure
 };
 
 export default function App () {
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
-  const backgroundStartTime = useRef<number | null>(null);
+  const [appState, setAppState] = useState(AppState.currentState);
+  const currentAccount = useCurrentAccount((store) => store.account);
   const switchTo = useCurrentAccount((store) => store.switchTo);
-  const accounts: PrimaryAccount[] = useAccounts((store) => store.accounts)
-    .filter(account => !account.isExternal) as PrimaryAccount[];
+  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
 
-  const [fontsLoaded, fontError] = useFonts(getToLoadFonts());
+  const [fontsLoaded] = useFonts(getToLoadFonts());
 
-  const getBackgroundTimeLimit = useCallback((service: AccountService): number => {
+  useEffect(() => {
+    const configureOrientation = async () => {
+      try {
+        const deviceType = await Device.getDeviceTypeAsync();
+        if (deviceType === Device.DeviceType.TABLET) {
+          await ScreenOrientation.unlockAsync();
+        } else {
+          await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+        }
+      } catch (error) {
+        log(`Error during orientation lock: ${error}`, "Orientation/App");
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      }
+    };
+
+    configureOrientation();
+  }, []);
+
+  const handleNotificationPress = async (notification: any) => {
+    if (notification?.data) {
+      const accountID = notification.data.accountID;
+      if (accountID) {
+        useAccounts.getState().setLastOpenedAccountID(accountID);
+
+        setTimeout(() => {
+          PapillonNavigation.current?.navigate(
+            notification.data.page,
+            notification.data.parameters,
+          );
+        }, 1000);
+      }
+    }
+  };
+
+  const checkInitialNotification = async () => {
+    const notifee = (await import("@notifee/react-native")).default;
+    const initialNotification = await notifee.getInitialNotification();
+    if (initialNotification) {
+      await handleNotificationPress(initialNotification.notification);
+    }
+  };
+
+  const getBackgroundTimeLimit = useCallback((service: keyof typeof BACKGROUND_LIMITS) => {
     return BACKGROUND_LIMITS[service] ?? DEFAULT_BACKGROUND_TIME;
   }, []);
 
   const handleBackgroundState = useCallback(async () => {
-    try {
-      if (!backgroundStartTime.current) return;
+    const savedTimestamp = await AsyncStorage.getItem("@background_timestamp");
+    if (!savedTimestamp || !currentAccount) return;
 
-      const timeInBackground = Date.now() - backgroundStartTime.current;
-      await AsyncStorage.setItem("@background_timestamp", Date.now().toString());
+    const timeInBackground = Date.now() - parseInt(savedTimestamp, 10);
+    const timeLimit =
+        currentAccount.service in BACKGROUND_LIMITS
+          ? getBackgroundTimeLimit(currentAccount.service as keyof typeof BACKGROUND_LIMITS)
+          : DEFAULT_BACKGROUND_TIME;
 
+    const timeInBackgroundSeconds = Math.floor(timeInBackground / 1000);
+    if (timeInBackground >= timeLimit) {
+      log(
+        `⚠️ Refreshing current account ${currentAccount.studentName.first} after ${timeInBackgroundSeconds}s in background`,
+        "RefreshToken"
+      );
       for (const account of accounts) {
-        const timeLimit = getBackgroundTimeLimit(account.service);
-        const timeInBackgroundSeconds = Math.floor(timeInBackground / 1000);
-        const serviceName = AccountService[account.service];
-
-        log(`Checking account ${account.studentName.first} ${account.studentName.last}:`, "RefreshToken");
-        log(`Time in background: ${timeInBackgroundSeconds}s`, "RefreshToken");
-        log(`Time limit: ${timeLimit / 1000}s`, "RefreshToken");
-        log(`Account type: ${serviceName}`, "RefreshToken");
-        log(`Using ${BACKGROUND_LIMITS[account.service] ? "specific" : "default"} time limit`, "RefreshToken");
-
-        if (timeInBackground >= timeLimit) {
-          log(`⚠️ Refreshing account ${account.studentName.first} ${account.studentName.last} after ${timeInBackgroundSeconds}s in background`, "RefreshToken");
-
-          // Prevent React state updates during render
-          setTimeout(() => {
-            switchTo(account).catch((error) => {
-              log(`Error during switchTo: ${error}`, "RefreshToken");
-            });
-          }, 0);
-
-          // Wait before processing next account
-          await new Promise(resolve => setTimeout(resolve, 1000));
+        if (account.localID === currentAccount.localID) {
+          await switchTo(account).catch((error) => {
+            log(`Error during switchTo: ${error}`, "RefreshToken");
+          });
+          break;
         }
       }
-    } catch (error) {
-      log(`Error handling background state: ${error}`, "RefreshToken");
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-  }, [accounts, switchTo, getBackgroundTimeLimit]);
+    await AsyncStorage.removeItem("@background_timestamp");
+  }, [currentAccount, switchTo, getBackgroundTimeLimit]);
+
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", async (nextAppState: AppStateStatus) => {
+    if (!isExpoGo()) checkInitialNotification();
+  }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
       if (appState === nextAppState) return;
 
       if (nextAppState === "active") {
-        log("🔄 App is active", "AppState");
+        if (!isExpoGo()) {
+          const notifee = (await import("@notifee/react-native")).default;
+          await notifee.setBadgeCount(0);
+          await notifee.cancelAllNotifications();
+        }
         await handleBackgroundState();
-        backgroundStartTime.current = null;
       } else if (nextAppState.match(/inactive|background/)) {
-        log("App in background", "AppState");
-        backgroundStartTime.current = Date.now();
+        const now = Date.now();
+        await AsyncStorage.setItem("@background_timestamp", now.toString());
       }
-
       setAppState(nextAppState);
     });
 
@@ -101,28 +146,22 @@ export default function App () {
       "[Reanimated] Property ",
     ]);
 
-    if (!isExpoGo()) {
-      registerBackgroundTasks();
-    };
-  }, []);
+    if (!isExpoGo()) registerBackgroundTasks();
 
-  const applyGlobalPolyfills = useCallback(() => {
     const encoding = require("text-encoding");
     Object.assign(global, {
       TextDecoder: encoding.TextDecoder,
       TextEncoder: encoding.TextEncoder,
       atob: atobPolyfill,
-      btoa: btoaPolyfill
+      btoa: btoaPolyfill,
     });
   }, []);
 
-  useEffect(() => {
-    applyGlobalPolyfills();
-  }, [applyGlobalPolyfills]);
+  if (!fontsLoaded) return null;
 
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
-
-  return <Router />;
+  return (
+    <SoundHapticsProvider>
+      <Router />
+    </SoundHapticsProvider>
+  );
 }

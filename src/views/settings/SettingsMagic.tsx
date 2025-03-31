@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, Switch } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 // Ensure this file contains valid regex patterns

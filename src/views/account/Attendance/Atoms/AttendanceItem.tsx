@@ -8,7 +8,7 @@ import { FadeIn, FadeInUp, FadeOut, FadeOutDown } from "react-native-reanimated"
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { leadingZero } from "@/utils/format/attendance_time";
 import { animPapillon } from "@/utils/ui/animations";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { timestampToString } from "@/utils/format/DateHelper";
 
 interface AttendanceItemProps {

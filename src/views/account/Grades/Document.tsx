@@ -1,7 +1,7 @@
 import React from "react";
 import { NativeItem, NativeList, NativeListHeader, NativeText, } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Image, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import * as StoreReview from "expo-store-review";

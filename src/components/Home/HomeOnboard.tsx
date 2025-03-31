@@ -8,7 +8,7 @@ import Reanimated, { Easing, useSharedValue, withRepeat, withTiming } from "reac
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
 import { ArrowDown } from "lucide-react-native";
 

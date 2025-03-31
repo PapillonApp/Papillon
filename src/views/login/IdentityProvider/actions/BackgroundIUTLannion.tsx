@@ -2,7 +2,7 @@ import defaultPersonalization from "@/services/local/default-personalization";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, Identity, LocalAccount } from "@/stores/account/types";
 import uuid from "@/utils/uuid-v4";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React from "react";
 import { Pressable, View } from "react-native";
 import { WebView } from "react-native-webview";

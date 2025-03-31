@@ -7,7 +7,7 @@ import * as FileSystem from "expo-file-system";
 import { Asset } from "expo-asset";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteParameters } from "@/router/helpers/types";

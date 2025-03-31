@@ -17,12 +17,22 @@ import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BlurView } from "expo-blur";
 import { Check, Cog, Palette, Plus } from "lucide-react-native";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
-const ContextMenu = ({
+interface ContextMenu {
+  // @ts-expect-error
+  style?: StyleProp<ViewStyle>;
+  children: React.ReactNode;
+  transparent?: boolean;
+  shouldOpenContextMenu?: boolean;
+  // @ts-expect-error
+  menuStyles?: StyleProp<ViewStyle>;
+}
+
+const ContextMenu: React.FC<ContextMenu> = ({
   style,
   children,
   transparent,
@@ -82,10 +92,6 @@ const ContextMenu = ({
             impact: Haptics.ImpactFeedbackStyle.Soft,
           });
           setOpened(false);
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "AccountStack" as never }],
-          });
           requestAnimationFrame(() => {
             switchTo(account);
           });

@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Image, type ImageSourcePropType, type ImageStyle, type StyleProp, View } from "react-native";
 
 const PapillonAvatar: React.FC<{

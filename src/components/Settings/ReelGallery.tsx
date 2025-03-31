@@ -8,7 +8,7 @@ import {
   Text,
   Dimensions,
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useGradesStore } from "@/stores/grades";
 import GradeModal from "../Grades/GradeModal";
 import { Reel } from "@/services/shared/Reel";

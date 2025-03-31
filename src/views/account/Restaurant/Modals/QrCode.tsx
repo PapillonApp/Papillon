@@ -1,6 +1,6 @@
 import { balanceFromExternal } from "@/services/balance";
 import { qrcodeFromExternal } from "@/services/qrcode";
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BlurView } from "expo-blur";
 import { QrCodeIcon, X } from "lucide-react-native";
 import { useEffect, useState } from "react";

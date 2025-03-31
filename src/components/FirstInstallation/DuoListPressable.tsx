@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
-import { useTheme } from "@react-navigation/native";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import * as Haptics from "expo-haptics";
 
 import Reanimated, { Easing, useSharedValue, withTiming } from "react-native-reanimated";
