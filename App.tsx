@@ -16,6 +16,7 @@ import { PapillonNavigation } from "@/router/refs";
 import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import {getToLoadFonts} from "@/consts/Fonts";
+import { useFlagsStore } from "@/stores/flags";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,7 +34,8 @@ export default function App () {
   const switchTo = useCurrentAccount((store) => store.switchTo);
   const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
 
-  const [fontsLoaded] = useFonts(getToLoadFonts());
+  const defined = useFlagsStore(state => state.defined);
+  const [fontsLoaded] = useFonts(getToLoadFonts(defined));
 
   useEffect(() => {
     const configureOrientation = async () => {

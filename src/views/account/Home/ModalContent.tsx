@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
-import { Sparkles, X } from "lucide-react-native";
+import { Bug, Sparkles, X } from "lucide-react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View} from "react-native";
@@ -128,9 +128,10 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
 
   return (
     <View style={{ minHeight: Dimensions.get("window").height - 131 }}>
-      {(new Date).getMonth() == 3 && (new Date).getDate() == 1 && (
+      {(defined("force_debugmode") || __DEV__) && (
         <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
           <TouchableOpacity
+            onPress={() => navigation.navigate("DevMenu")}
             style={{
               flex: 1,
               flexDirection: "column",
@@ -141,13 +142,14 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Sparkles size={22} strokeWidth={2} color={colors.text} />
+              <Bug size={22} strokeWidth={2} color={colors.text} />
               <NativeText variant="title" style={{ flex: 1 }}>
-                Nouvelle police d'écriture !
+                Mode debug
               </NativeText>
             </View>
             <NativeText variant="subtitle">
-              Pour ce premier avril, Papillon a décidé de se faire un petit coup de beauté !
+              Vous êtes actuellement en mode debug, vous pouvez acceder au menu debug en appuyant sur cette carte.
+
             </NativeText>
           </TouchableOpacity>
         </NativeList>
