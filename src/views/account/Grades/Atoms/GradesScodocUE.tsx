@@ -18,6 +18,7 @@ const GradesScodocUE = memo(({ account, navigation, selectedPeriod }: { account:
   const { showAlert } = useAlert();
 
   const data = account.serviceData.semestres;
+  // @ts-expect-error
   const grades = data[selectedPeriod];
 
   const ues = grades["relevé"]["ues"];

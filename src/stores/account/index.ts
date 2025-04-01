@@ -56,6 +56,7 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
       set({
         account: {
           ...currentAccount,
+          // @ts-expect-error
           instance: value,
         },
       });
@@ -67,6 +68,7 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
     set({
       account: {
         ...account,
+        // @ts-expect-error
         instance: currentAccount.instance,
       },
     });
@@ -273,7 +275,7 @@ export const useAccounts = create<AccountsStore>()(
       update: (localID, key, value) => {
         const accounts = get().accounts;
         const account = accounts.find((acc) => acc.localID === localID);
-        if (!account || key === "instance") return account;
+        if (!account || key === "instance") return account || null;
 
         let accountMutated: Account;
         if (key === "personalization") {

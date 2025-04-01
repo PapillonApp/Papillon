@@ -70,6 +70,22 @@
     <package android:name="com.instagram.android"/>
     <package android:name="com.twitter.android"/>
     <package android:name="com.zhiliaoapp.musically"/>
+    <package android:name="com.facebook.katana"/>
+    <package android:name="com.instagram.android"/>
+    <package android:name="com.twitter.android"/>
+    <package android:name="com.zhiliaoapp.musically"/>
+    <package android:name="com.facebook.katana"/>
+    <package android:name="com.instagram.android"/>
+    <package android:name="com.twitter.android"/>
+    <package android:name="com.zhiliaoapp.musically"/>
+    <package android:name="com.facebook.katana"/>
+    <package android:name="com.instagram.android"/>
+    <package android:name="com.twitter.android"/>
+    <package android:name="com.zhiliaoapp.musically"/>
+    <package android:name="com.facebook.katana"/>
+    <package android:name="com.instagram.android"/>
+    <package android:name="com.twitter.android"/>
+    <package android:name="com.zhiliaoapp.musically"/>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
       <category android:name="android.intent.category.BROWSABLE"/>

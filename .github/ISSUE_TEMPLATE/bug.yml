@@ -61,7 +61,7 @@ body:
     attributes:
       label: Version utilisée
       description: Paramètres (de Papillon) -> Version affichée en bas de la page
-      placeholder: "7.12.1"
+      placeholder: "7.12.3"
     validations:
       required: true
 
