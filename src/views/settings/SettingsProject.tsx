@@ -7,6 +7,7 @@ import { NativeIconGradient, NativeItem, NativeList, NativeText } from "@/compon
 import { Scroll, HelpCircle, Bug, Info } from "lucide-react-native";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
+import { SettingsSubItem } from "./Settings";
 
 const SettingsProject: Screen<"SettingsProject"> = ({ navigation }) => {
   const theme = useTheme();
@@ -19,7 +20,7 @@ const SettingsProject: Screen<"SettingsProject"> = ({ navigation }) => {
     });
   };
 
-  const items = [
+  const items: SettingsSubItem[] = [
     {
       icon: <Scroll />,
       colors: ["#FF5722", "#FF8A65"], // Deep orange to light orange
@@ -69,11 +70,11 @@ const SettingsProject: Screen<"SettingsProject"> = ({ navigation }) => {
             <NativeText variant="title">
               {item.label}
             </NativeText>
-            {"description" in item && item.description &&
+            {item.description && (
               <NativeText variant="subtitle" style={{ marginTop: -3 }}>
                 {item.description}
               </NativeText>
-            }
+            )}
           </NativeItem>
         ))}
       </NativeList>

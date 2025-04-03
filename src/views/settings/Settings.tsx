@@ -26,6 +26,17 @@ import {
   BadgeHelp
 } from "lucide-react-native";
 
+export interface SettingsSubItem {
+  icon: React.ReactNode;
+  colors: string[];
+  label: string;
+  description?: string;
+  onPress: () => void;
+  android?: boolean;
+  beta?: boolean;
+  disabled?: boolean;
+}
+
 import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";

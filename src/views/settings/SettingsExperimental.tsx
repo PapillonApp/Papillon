@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeIconGradient, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { WandSparkles, Blocks, Puzzle } from "lucide-react-native";
 import { useFlagsStore } from "@/stores/flags";
+import { SettingsSubItem } from "./Settings";
 
 const SettingsExperimental: Screen<"SettingsExperimental"> = ({ navigation }) => {
   const theme = useTheme();
@@ -13,7 +14,7 @@ const SettingsExperimental: Screen<"SettingsExperimental"> = ({ navigation }) =>
   const insets = useSafeAreaInsets();
   const defined = useFlagsStore(state => state.defined);
 
-  const items = [
+  const items: SettingsSubItem[] = [
     {
       icon: <WandSparkles />,
       colors: ["#FB8C00", "#FFA726"],
@@ -61,7 +62,6 @@ const SettingsExperimental: Screen<"SettingsExperimental"> = ({ navigation }) =>
               />
             }
             trailing={
-              // @ts-expect-error : on ignore la condition
               item.beta && (
                 <View
                   style={{

@@ -9,6 +9,7 @@ import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import { ZoomIn, ZoomOut } from "react-native-reanimated";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
+import { SettingsSubItem } from "./Settings";
 
 const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation }) => {
   const theme = useTheme();
@@ -17,7 +18,7 @@ const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation
   const { isTablet } = useScreenDimensions();
 
   // These are regular items that stay within the settings navigation
-  const regularItems = [
+  const regularItems: SettingsSubItem[] = [
     {
       icon: <SwatchBook />,
       colors: ["#4CAF50", "#8BC34A"],
@@ -34,7 +35,7 @@ const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation
   ];
 
   // These are special items that close the settings modal and show a full-screen view
-  const specialItems = [
+  const specialItems: SettingsSubItem[] = [
     {
       icon: <Palette />,
       colors: ["#9C27B0", "#BA68C8"],

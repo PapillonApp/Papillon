@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
-import { NativeList, NativeText } from "@/components/Global/NativeComponents";
+import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
 import { Bug, Sparkles, X } from "lucide-react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
@@ -130,28 +130,29 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     <View style={{ minHeight: Dimensions.get("window").height - 131 }}>
       {(defined("force_debugmode") || __DEV__) && (
         <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("DevMenu")}
+          <View
             style={{
               flex: 1,
               flexDirection: "column",
-              paddingHorizontal: 14,
-              paddingVertical: 12,
+              paddingHorizontal: 0,
+              paddingVertical: 0,
               gap: 8,
               backgroundColor: colors.primary + "20",
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Bug size={22} strokeWidth={2} color={colors.text} />
-              <NativeText variant="title" style={{ flex: 1 }}>
+            <NativeItem
+              onPress={() => navigation.navigate("DevMenu")}
+              chevron={true}
+              leading={<Bug size={22} strokeWidth={2} color={colors.text} />}
+              style={{
+                paddingHorizontal: 0,
+              }}
+            >
+              <NativeText variant="title" style={{ flex: 1, paddingVertical: 4 }}>
                 Mode debug
               </NativeText>
-            </View>
-            <NativeText variant="subtitle">
-              Tu es actuellement en mode debug, tu peux accéder au menu debug en appuyant sur cette carte.
-
-            </NativeText>
-          </TouchableOpacity>
+            </NativeItem>
+          </View>
         </NativeList>
       )}
 
