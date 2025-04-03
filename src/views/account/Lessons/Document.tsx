@@ -84,10 +84,10 @@ const LessonDocument: Screen<"LessonDocument"> = ({ route, navigation }) => {
       setClassSubjects(
         subjects.subjects.filter(
           (b) =>
-            new Date(b.date).getUTCDate() ===
-              new Date(lesson.startTimestamp).getUTCDate() &&
-            new Date(b.date).getUTCMonth() ===
-              new Date(lesson.startTimestamp).getUTCMonth() &&
+            new Date(b.date).getDate() ===
+              new Date(lesson.startTimestamp).getDate() &&
+            new Date(b.date).getMonth() ===
+              new Date(lesson.startTimestamp).getMonth() &&
             lesson.subject === b.subject,
         ) ?? [],
       );

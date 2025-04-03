@@ -30,7 +30,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
 
   const ImportanceHandler = (nextCourses: TimetableClass[]) => {
     if (nextCourses.length > 0) {
-      let difference = new Date(nextCourses[0].startTimestamp).getUTCHours() - new Date().getUTCHours();
+      let difference = new Date(nextCourses[0].startTimestamp).getHours() - new Date().getHours();
       if (difference < 0) {
         difference = 0;
       }
@@ -41,7 +41,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
   };
 
   const isWeekend = (courses: TimetableClass[]) => {
-    const today = new Date().getUTCDay();
+    const today = new Date().getDay();
     return (today === 6 || today === 0) && courses.length === 0;
   };
 
@@ -183,7 +183,7 @@ const TimetableElement: React.FC<TimetableElementProps> = ({ onImportance }) => 
 
     const isTodayCourse = courseDate.toDateString() === today.toDateString();
     const tomorrow = new Date(today);
-    tomorrow.setUTCDate(today.getUTCDate() + 1);
+    tomorrow.setDate(today.getDate() + 1);
 
     const isTomorrowCourse = courseDate.toDateString() === tomorrow.toDateString();
 

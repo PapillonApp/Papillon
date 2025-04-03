@@ -148,7 +148,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
               </NativeText>
             </View>
             <NativeText variant="subtitle">
-              Vous êtes actuellement en mode debug, vous pouvez acceder au menu debug en appuyant sur cette carte.
+              Tu es actuellement en mode debug, tu peux accéder au menu debug en appuyant sur cette carte.
 
             </NativeText>
           </TouchableOpacity>

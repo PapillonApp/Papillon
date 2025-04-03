@@ -21,7 +21,7 @@ const EPOCH_WN_CONFIG = {
   setMiddleDay: 3, // We set the middle day of the week to Wednesday to ensure <... same than above ...>
   setEndDay: 7, // We set the last day of the week to Sunday to ensure <...>
   numberOfMsInAWeek: 1000 /* ms */ * 60 /* s */ * 60 /* min */ * 24 /* h */ * 7, /* days */
-  adjustEpochInitialDate: 259200000, // =(((new Date(0)).getUTCDay()-1) * EPOCH_WN_CONFIG.numberOfMsInAWeek/7) // We need to substract this for having a good range cause 01/01/1970 was not a Monday and the "-1" is to have Monday as the first day of the week
+  adjustEpochInitialDate: 259200000, // =(((new Date(0)).getDay()-1) * EPOCH_WN_CONFIG.numberOfMsInAWeek/7) // We need to substract this for having a good range cause 01/01/1970 was not a Monday and the "-1" is to have Monday as the first day of the week
 };
 
 /**
@@ -31,10 +31,12 @@ const EPOCH_WN_CONFIG = {
 
 const dayToWeekCommonDay = (date: Date): Date => {
   const _date = new Date(date);
-  const day = _date.getUTCDay();
-  _date.setUTCHours(EPOCH_WN_CONFIG.setHour, 0, 0, 0);
-  _date.setUTCDate(
-    _date.getUTCDate() - ((7 + day - 1) % 7) + EPOCH_WN_CONFIG.setMiddleDay - 1
+  const day = _date.getDay();
+  _date.setHours(EPOCH_WN_CONFIG.setHour, 0, 0, 0);
+  _date.setDate(
+    _date.getDate() -
+      ((7 + day - EPOCH_WN_CONFIG.setStartDay) % 7) +
+      EPOCH_WN_CONFIG.setMiddleDay
   );
   return _date;
 };
@@ -54,7 +56,7 @@ export const epochWNToPronoteWN = (
 export const dateToEpochWeekNumber = (date: Date): number => {
   const commonDay = dayToWeekCommonDay(date);
   return Math.floor(
-    (commonDay.getTime() + EPOCH_WN_CONFIG.adjustEpochInitialDate - 172800000) /
+    (commonDay.getTime() + EPOCH_WN_CONFIG.adjustEpochInitialDate) /
       EPOCH_WN_CONFIG.numberOfMsInAWeek
   );
 };
@@ -119,4 +121,16 @@ export const epochWMToCalendarWeekNumber = (
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+};
+
+export const calculateWeekNumber = (date: Date): number => {
+  const epochWeekNumber = dateToEpochWeekNumber(date);
+  const firstSeptemberEpochWeekNumber = dateToEpochWeekNumber(
+    new Date(Date.UTC(date.getUTCFullYear(), 8, 1))
+  );
+
+  const relativeWeekNumber =
+    ((epochWeekNumber - firstSeptemberEpochWeekNumber + 52) % 52) + 1;
+
+  return relativeWeekNumber;
 };

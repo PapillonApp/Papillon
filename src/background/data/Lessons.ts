@@ -11,7 +11,7 @@ import { formatHoursMinutes } from "../utils/format";
 
 const getAllLessonsForDay = (lessons: Record<number, Timetable>) => {
   const date = new Date();
-  date.setUTCHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
   const week = dateToEpochWeekNumber(date);
   const timetable = lessons[week] || [];
 

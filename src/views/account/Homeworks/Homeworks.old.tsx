@@ -204,7 +204,7 @@ const HomeworksScreen: Screen<"Homeworks"> = ({ navigation }) => {
 
   const getDayName = (date: string | number | Date): string => {
     const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    return days[new Date(date).getUTCDay()];
+    return days[new Date(date).getDay()];
   };
 
   useEffect(() => {

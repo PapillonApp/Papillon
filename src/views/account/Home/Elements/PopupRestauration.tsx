@@ -19,7 +19,7 @@ const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) =
   const mutateProperty = useCurrentAccount(store => store.mutateProperty);
 
   const ImportanceHandler = () => {
-    let hours = new Date().getUTCHours();
+    let hours = new Date().getHours();
     if (hours >= 11 && hours < 14)
       onImportance(10);
     else

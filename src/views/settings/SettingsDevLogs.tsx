@@ -34,7 +34,7 @@ import {
   FadeOutUp,
 } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
+import { useTheme } from "@react-navigation/native";
 import { useAlert } from "@/providers/AlertProvider";
 import MissingItem from "@/components/Global/MissingItem";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";

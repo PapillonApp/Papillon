@@ -2,7 +2,7 @@ import { getCurrentAccount } from "../utils/accounts";
 import { papillonNotify } from "../Notifications";
 import { getHomeworks, updateHomeworksState } from "../utils/homeworks";
 import { Homework } from "@/services/shared/Homework";
-import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
+import { calculateWeekNumber, dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import parse_homeworks from "@/utils/format/format_pronote_homeworks";
 
 const getDifferences = (
@@ -25,9 +25,7 @@ const fetchHomeworks = async (): Promise<Homework[]> => {
   // @ts-expect-error
   let firstDate = account.instance?.instance?.firstDate || null;
   if (!firstDate) {
-    firstDate = new Date();
-    firstDate.setUTCMonth(8);
-    firstDate.setUTCDate(1);
+    firstDate = new Date(Date.UTC(new Date().getFullYear(), 8, 1));
   }
   const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
@@ -83,10 +81,7 @@ const fetchHomeworks = async (): Promise<Homework[]> => {
           {
             id: `${account.name}-homeworks`,
             title: `[${account.name}] Nouveau devoir en ${differencesHwSemaineActuelle[0].subject}`,
-            subtitle: `Semaine ${(
-              ((SemaineAct - (firstDateEpoch % 52)) % 52) +
-                1
-            ).toString()}`,
+            subtitle: `Semaine ${calculateWeekNumber(new Date()).toString()}`,
             body: parse_homeworks(differencesHwSemaineActuelle[0].content),
             data: {
               accountID: account.localID,
@@ -103,10 +98,7 @@ const fetchHomeworks = async (): Promise<Homework[]> => {
           {
             id: `${account.name}-homeworks`,
             title: `[${account.name}] Nouveau devoir en ${differencesHwSemaineProchaine[0].subject}`,
-            subtitle: `Semaine ${(
-              ((SemaineAct - (firstDateEpoch % 52)) % 52) +
-                2
-            ).toString()}`,
+            subtitle: `Semaine ${(calculateWeekNumber(new Date()) + 1).toString()}`,
             body: parse_homeworks(differencesHwSemaineProchaine[0].content),
             data: {
               accountID: account.localID,
@@ -138,22 +130,13 @@ const fetchHomeworks = async (): Promise<Homework[]> => {
 
       let subtitle = "Semaine ";
       if (differencesHwSemaineActuelle.length > 0) {
-        subtitle += (
-          ((SemaineAct - (firstDateEpoch % 52)) % 52) +
-            1
-        ).toString();
+        subtitle += calculateWeekNumber(new Date()).toString();
       }
       if (differencesHwSemaineProchaine.length > 0) {
         if (differencesHwSemaineActuelle.length > 0) {
-          subtitle += `et ${(
-            ((SemaineAct - (firstDateEpoch % 52)) % 52) +
-              2
-          ).toString()}`;
+          subtitle += ` et ${(calculateWeekNumber(new Date()) + 1).toString()}`;
         } else {
-          subtitle += (
-            ((SemaineAct - (firstDateEpoch % 52)) % 52) +
-              2
-          ).toString();
+          subtitle += (calculateWeekNumber(new Date()) + 1).toString();
         }
       }
 

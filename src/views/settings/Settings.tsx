@@ -10,37 +10,23 @@ import Reanimated, {
   FadeOut,
   runOnJS,
   useAnimatedScrollHandler,
-  useSharedValue,
-  ZoomIn,
-  ZoomOut
+  useSharedValue
 } from "react-native-reanimated";
 
 import {
-  Bell,
-  Cable,
   HandCoins,
   Info,
-  Laptop,
   LogOut,
   Palette,
   Paperclip,
-  Puzzle,
-  Route,
-  Scroll,
   Settings as SettingsLucide,
-  Sparkles,
-  Smile,
-  SwatchBook,
   WandSparkles,
   X,
-  Blocks,
-  HelpCircle,
   PersonStanding,
-  Bug,
   BadgeHelp
 } from "lucide-react-native";
 
-import { NativeIcon, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
@@ -49,8 +35,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {AddonPlacementManifest} from "@/addons/types";
 import { useFlagsStore } from "@/stores/flags";
 import { useAlert } from "@/providers/AlertProvider";
-import PapillonSpinner from "@/components/Global/PapillonSpinner";
-import { animPapillon } from "@/utils/ui/animations";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
@@ -106,212 +90,51 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
   const { showAlert } = useAlert();
 
-  const tabs = [
+  const menuItems = [
     {
       icon: <SettingsLucide />,
+      colors: ["#1E88E5", "#64B5F6"],
       label: "Général",
-      tabs: [
-        {
-          icon: <Bell />,
-          color: "#CF0029",
-          label: "Notifications",
-          onPress: () => navigation.navigate("SettingsNotifications"),
-        },
-        {
-          icon: <Cable />,
-          color: "#D79400",
-          label: "Services externes",
-          description: "Connecte ta cantine à Papillon",
-          onPress: () => navigation.navigate("SettingsExternalServices"),
-        },
-        {
-          icon: <Smile />,
-          color: "#136B00",
-          label: "Réactions",
-          onPress: () => navigation.navigate("SettingsReactions"),
-        },
-      ],
+      description: "Notifications et services",
+      onPress: () => navigation.navigate("SettingsGeneral"),
     },
     {
       icon: <Palette />,
+      colors: ["#43A047", "#81C784"],
       label: "Personnalisation",
-      tabs: [
-        {
-          icon: <SwatchBook />,
-          color: "#5C9441",
-          label: "Matières",
-          onPress: () => navigation.navigate("SettingsSubjects"),
-        },
-        {
-          icon: <Sparkles />,
-          color: "#295787",
-          label: "Icône de l'application",
-          onPress: () => navigation.navigate("SettingsIcons"),
-          android: false,
-        },
-        {
-          icon: <Palette />,
-          color: "#3B117E",
-          label: "Thème de couleur",
-          onPress: async () => {
-            if (Platform.OS === "ios") {
-              navigation.goBack();
-            }
-            setTimeout(() => {
-              navigation.navigate("ColorSelector", { settings: true });
-            }, 10);
-          }
-        },
-      ],
+      description: "Apparence et navigation",
+      onPress: () => navigation.navigate("SettingsPersonalization"),
     },
     {
-      icon: <Laptop />,
+      icon: <PersonStanding />,
+      colors: ["#8E24AA", "#BA68C8"],
       label: "Accessibilité",
-      tabs: [
-        {
-          icon: <PersonStanding />,
-          color: "#bf547d",
-          label: "Accessibilité",
-          onPress: () => navigation.navigate("SettingsAccessibility"),
-        },
-      ],
+      description: "Options d'accessibilité",
+      onPress: () => navigation.navigate("SettingsAccessibility"),
     },
     {
       icon: <WandSparkles />,
+      colors: ["#FB8C00", "#FFB74D"],
       label: "Expérimental",
-      tabs: [
-        {
-          icon: <WandSparkles />,
-          color: "#58A3C3",
-          label: "Papillon Magic",
-          beta: true,
-          description: "Fonctionnalités intelligentes",
-          onPress: () => navigation.navigate("SettingsMagic"),
-        },
-        {
-          icon: <Blocks />,
-          color: "#1f76ce",
-          label: "Multiservice",
-          beta: true,
-          description: "Connecte plusieurs services en un seul espace de travail",
-          onPress: () => navigation.navigate("SettingsMultiService"),
-        },
-        {
-          icon: <Puzzle />,
-          color: "#498c75",
-          label: "Extensions",
-          description: "Disponible prochainement",
-          onPress: () => navigation.navigate("SettingsAddons"),
-          disabled: !defined("enable_addons"),
-        },
-      ],
+      description: "Fonctionnalités beta",
+      onPress: () => navigation.navigate("SettingsExperimental"),
     },
     {
-      icon: <Laptop />,
+      icon: <Info />,
+      colors: ["#546E7A", "#90A4AE"],
       label: "Projet Papillon",
-      tabs: [
-        {
-          icon: <Scroll />,
-          color: "#c75110",
-          label: "Quoi de neuf ?",
-          onPress: () => navigation.navigate("ChangelogScreen"),
-        },
-        {
-          icon: <HelpCircle />,
-          color: "#0E7CCB",
-          label: "Besoin d'aide ?",
-          onPress: () => openUrl("https://support.papillon.bzh/"),
-        },
-        {
-          icon: <Bug />,
-          color: "#CF0029",
-          label: "Signaler un problème",
-          onPress: () => navigation.navigate("SettingsSupport"),
-        },
-        {
-          icon: <Info />,
-          color: "#888888",
-          label: "À propos de Papillon",
-          onPress: () => navigation.navigate("SettingsAbout"),
-        }
-      ],
+      description: "À propos et support",
+      onPress: () => navigation.navigate("SettingsProject"),
     },
-    {
-      tabs: [
-        {
-          icon: <LogOut />,
-          color: "#CF0029",
-          label: "Se déconnecter",
-          onPress: () => {
-            showAlert({
-              title: "Se déconnecter",
-              message: "Veux-tu vraiment te déconnecter ?",
-              icon: <BadgeHelp />,
-              actions: [
-                {
-                  title: "Annuler",
-                  icon: <X />,
-                  primary: false,
-                },
-                {
-                  title: "Déconnexion",
-                  onPress: () => {
-                    removeAccount(account.localID);
-                    setTimeout(() => {
-                      navigation.reset({
-                        index: 0,
-                        routes: [{ name: "AccountSelector" }],
-                      });
-                    }, 100);
-                  },
-                  danger: true,
-                  icon: <LogOut />,
-                  delayDisable: 5,
-                },
-              ],
-            });
-          }
-        },
-      ]
-    }
   ];
 
   if (Platform.OS === "android") {
-    tabs[3].tabs.push({
+    menuItems.push({
       icon: <HandCoins />,
-      color: "#f0a500",
+      colors: ["#F57C00", "#FFB74D"],
       label: "Soutenir Papillon",
+      description: "Faire un don",
       onPress: () => openUrl("https://papillon.bzh/donate"),
-      android: true,
-      description: "",
-      disabled: false,
-    });
-  }
-
-  if (!isTablet) {
-    tabs[1].tabs.push({
-      icon: click ? (
-        <PapillonSpinner
-          size={18}
-          color="white"
-          strokeWidth={2.8}
-          entering={animPapillon(ZoomIn)}
-          exiting={animPapillon(ZoomOut)}
-        />) : <Route />,
-      color: "#7E1174",
-      label: "Onglets & Navigation",
-      onPress: async () => {
-        setClick(true);
-        setTimeout(() => {
-          if (Platform.OS === "ios") {
-            navigation.goBack();
-          }
-          navigation.navigate("SettingsTabs");
-          setClick(false);
-        }, 10);
-      },
-      description: "",
-      disabled: false,
     });
   }
 
@@ -403,71 +226,74 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               </NativeList>
             </>
         }
-        {tabs.map((tab, index) => (
-          <View key={index}>
-            {tab.label &&
-              <NativeListHeader
-                key={index}
-                label={tab.label}
+
+        <NativeList>
+          {menuItems.map((item, index) => (
+            <NativeItem
+              key={index}
+              onPress={item.onPress}
+              leading={
+                <NativeIconGradient
+                  icon={item.icon}
+                  colors={item.colors}
+                />
+              }
+            >
+              <NativeText variant="title">
+                {item.label}
+              </NativeText>
+              {"description" in item && item.description &&
+                <NativeText variant="subtitle" style={{ marginTop: -3 }}>
+                  {item.description}
+                </NativeText>
+              }
+            </NativeItem>
+          ))}
+        </NativeList>
+
+        <NativeList style={{ marginTop: 16 }}>
+          <NativeItem
+            onPress={() => {
+              showAlert({
+                title: "Se déconnecter",
+                message: "Veux-tu vraiment te déconnecter ?",
+                icon: <BadgeHelp />,
+                actions: [
+                  {
+                    title: "Annuler",
+                    icon: <X />,
+                    primary: false,
+                  },
+                  {
+                    title: "Déconnexion",
+                    onPress: () => {
+                      removeAccount(account.localID);
+                      setTimeout(() => {
+                        navigation.reset({
+                          index: 0,
+                          routes: [{ name: "AccountSelector" }],
+                        });
+                      }, 100);
+                    },
+                    danger: true,
+                    icon: <LogOut />,
+                    delayDisable: 5,
+                  },
+                ],
+              });
+            }}
+            leading={
+              <NativeIconGradient
+                icon={<LogOut />}
+                colors={["#E53935", "#EF5350"]}
               />
             }
-            <NativeList>
-              {tab.tabs.map((subtab, index) => (
-                (Platform.OS === "android" && "android" in subtab && !subtab.android) ? <View key={index} /> :
-                  <NativeItem
-                    key={index}
-                    onPress={subtab.onPress}
-                    disabled={"disabled" in subtab && subtab.disabled}
-                    leading={
-                      <NativeIcon
-                        icon={subtab.icon}
-                        color={subtab.color}
-                        style={{
-                          marginLeft: -6,
-                        }}
-                      />
-                    }
-                    trailing={
-                      // @ts-expect-error : on ignore la condition
-                      subtab.beta && (
-                        <View
-                          style={{
-                            borderColor: colors.primary,
-                            borderWidth: 1,
-                            borderRadius: 7,
-                            borderCurve: "continuous",
-                            paddingHorizontal: 6,
-                            paddingVertical: 2,
-                          }}
-                        >
-                          <NativeText
-                            style={{
-                              color: colors.primary,
-                              textTransform: "uppercase",
-                              fontFamily: "semibold",
-                              fontSize: 12.5,
-                              letterSpacing: 1,
-                            }}
-                          >
-                            Bêta
-                          </NativeText>
-                        </View>
-                      )
-                    }
-                  >
-                    <NativeText variant="title">
-                      {subtab.label}
-                    </NativeText>
-                    {"description" in subtab && subtab.description &&
-                      <NativeText variant="subtitle" style={{ marginTop: -3 }}>
-                        {subtab.description}
-                      </NativeText>
-                    }
-                  </NativeItem>
-              ))}
-            </NativeList>
-          </View>
-        ))}
+          >
+            <NativeText variant="title">
+              Se déconnecter
+            </NativeText>
+          </NativeItem>
+        </NativeList>
 
         {devModeEnabled && (
           <View>
@@ -476,12 +302,9 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
               <NativeItem
                 onPress={() => navigation.navigate("SettingsDevLogs")}
                 leading={
-                  <NativeIcon
+                  <NativeIconGradient
                     icon={<Paperclip/>}
-                    color={"#000"}
-                    style={{
-                      marginLeft: -6,
-                    }}
+                    colors={["#757575", "#BDBDBD"]}
                   />
                 }
               >

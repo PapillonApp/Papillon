@@ -41,7 +41,8 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
       const allHomeworks = Object.values(homeworks).flat();
       const homework = allHomeworks.find(hw => hw.id === route.params?.hwid);
       if (homework) {
-        setSelectedPretty(localSubjects[homework.subject]);
+        const THEpretty = Object.entries(localSubjects).find((element) => element[1].pretty === homework.subject);
+        if (THEpretty) setSelectedPretty(THEpretty[1]);
         setIdHomework(parseInt(homework.id));
         setContentHomework(homework.content);
         setDateHomework(homework.due);

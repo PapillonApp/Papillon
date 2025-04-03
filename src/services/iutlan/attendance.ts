@@ -29,10 +29,10 @@ export const saveIUTLanAttendance = async (
 
         for (const absence of absences) {
           let from = new Date(day);
-          from.setUTCHours(parseInt(absence.debut));
+          from.setHours(parseInt(absence.debut));
 
           let to = new Date(absence.dateFin);
-          to.setUTCHours(parseInt(absence.fin));
+          to.setHours(parseInt(absence.fin));
 
           allAbsences.push({
             id: absence.idAbs,
