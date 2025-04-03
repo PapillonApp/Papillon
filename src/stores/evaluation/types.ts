@@ -1,5 +1,5 @@
 import type { Period } from "@/services/shared/Period";
-import {Evaluation} from "@/services/shared/Evaluation";
+import { Evaluation } from "@/services/shared/Evaluation";
 
 export interface EvaluationStore {
   lastUpdated: number

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,7 +15,7 @@ import { useCurrentAccount, useAccounts } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import PackageJSON from "../../../package.json";
 
-const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
+const SettingsSupport: Screen<"SettingsSupport"> = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -27,7 +27,7 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
   const [description, setDescription] = useState<string>();
 
   const currentAccount = useCurrentAccount((store) => store.account!);
-  const AccountType = AccountService[currentAccount.service] !== "Local" && currentAccount.service !== AccountService.PapillonMultiService ? AccountService[currentAccount.service] : currentAccount.identityProvider ? currentAccount.identityProvider.name : "Compte local";
+  const AccountType = AccountService[currentAccount.service] !== "Local" && currentAccount.service !== AccountService.PapillonMultiService ? AccountService[currentAccount.service] : currentAccount.identityProvider?.name ?? "Compte local";
 
   const cantineAccounts = useAccounts((state) =>
     state.accounts.filter((acc) =>
@@ -79,6 +79,7 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
     });
 
     const result = await response.json();
+    if (__DEV__) console.log(result);
     setSubject("");
     setEmail("");
     setDescription("");
@@ -176,56 +177,12 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
             <NativeText>J’accepte de transmettre le modèle et la version de mon appareil, les services connectés ainsi que les données du formulaire pour le traitement de ma demande</NativeText>
           </NativeItem>
         </NativeList>
-        <View style={{paddingVertical: 20}}>
+        <View style={{ paddingVertical: 20 }}>
           <ButtonCta primary value={"Envoyer mon message"} disabled={!(email && subject && description && sendLogs)} onPress={() => handlePress()} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-// Styles
-const styles = StyleSheet.create({
-  title: {
-    color: "#222222",
-    fontSize: 15,
-  },
-  time: {
-    color: "#3F3F3F",
-    opacity: 0.5,
-    textAlign: "right",
-    fontFamily: "sfmedium",
-    fontSize: 13,
-    marginRight: 10,
-  },
-  message: {
-    color: "#3F3F3F",
-    fontFamily: "sfmedium",
-    fontSize: 14,
-    maxWidth: "85%",
-    minWidth: "85%",
-    lineHeight: 15,
-    letterSpacing: -0.4,
-  },
-
-  overlay: {
-    backgroundColor: "#EEF5F5",
-    borderWidth: 1,
-    borderColor: "#00000030",
-    borderRadius: 20,
-    height: 25,
-    padding: 9,
-    marginHorizontal: 20,
-  },
-
-  fixedButtonContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-  }
-});
 
 export default SettingsSupport;

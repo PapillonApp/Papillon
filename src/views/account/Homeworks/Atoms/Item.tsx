@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {Check, Clock, Paperclip, PencilLine, Sparkles, WifiOff} from "lucide-react-native";
+import { Check, Clock, Paperclip, PencilLine, Sparkles, WifiOff } from "lucide-react-native";
 import { getSubjectData } from "@/services/shared/Subject";
-import { useRoute, useTheme} from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import { NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
-import { FadeIn, FadeOut } from "react-native-reanimated";
+import Reanimated, { LinearTransition, FadeIn, FadeOut } from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import HTMLView from "react-native-htmlview";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -45,8 +44,6 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
   const account = useCurrentAccount((store) => store.account!);
   const { isOnline } = useOnlineStatus();
   const { showAlert } = useAlert();
-
-  const route = useRoute();
 
   const stylesText = StyleSheet.create({
     body: {
@@ -199,7 +196,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
         <Reanimated.View style={{ flex: 1, gap: 4 }} layout={animPapillon(LinearTransition)}>
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             {homework.personalizate && (
-              <PencilLine color={subjectData.color} size={20} strokeWidth={2} style={{marginRight: -4}} />
+              <PencilLine color={subjectData.color} size={20} strokeWidth={2} style={{ marginRight: -4 }} />
             )}
             <NativeText variant="overtitle" style={{ color: subjectData.color, flex: 1 }} numberOfLines={1}>
               {subjectData.pretty}
@@ -252,7 +249,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                 opacity={0.6}
                 color={theme.colors.text}
               />
-              <NativeText style={{color: theme.colors.text, opacity:0.5}}>{timestampToString(homework.due)}</NativeText>
+              <NativeText style={{ color: theme.colors.text, opacity:0.5 }}>{timestampToString(homework.due)}</NativeText>
             </View>
           </Reanimated.View>
           {homework.attachments.length > 0 && (

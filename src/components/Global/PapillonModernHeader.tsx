@@ -34,7 +34,7 @@ const NativeModernHeaderComponent: React.FC<ModernHeaderProps> = ({
         style={[
           styles.nativeHeader,
           {
-            backgroundColor: tint ? tint : theme.colors.card + "10",
+            backgroundColor: tint ?? theme.colors.card + "10",
             borderBottomColor: theme.colors.border,
           }
         ]}

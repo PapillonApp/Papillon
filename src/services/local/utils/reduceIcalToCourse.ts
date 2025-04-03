@@ -1,9 +1,9 @@
-import {TimetableClass} from "@/services/shared/Timetable";
+import { TimetableClass } from "@/services/shared/Timetable";
 
 function extractNames (text: string) {
   const pattern = /\b([A-ZÀ-Ÿ]+)\s+([A-ZÀ-Ÿ][a-zà-ÿ]+)\b/g;
   const matches = [...text.matchAll(pattern)];
-  return matches.map(match => `${match[1]} ${match[2]}`);
+  return matches.map((match) => `${match[1]} ${match[2]}`);
 }
 
 export const reduceIcalToCourse = (course: any, identityProvider: any, url: string): TimetableClass => {
@@ -49,13 +49,11 @@ export const reduceIcalToCourse = (course: any, identityProvider: any, url: stri
 
     // class
     const classRegex = /\b[A-Za-z]{2}\s\d[A-Za-z](?:\d)?\s[A-Za-z]+\b/g;
-    const classes = course.summary?.value.match(classRegex);
 
     const cmRegex = /\bCM\s+\w+\b/g;
     const cm = course.summary?.value.match(cmRegex);
 
     const cmSRegex = /\d{1,2}[a-z]\s[A-Z]{2,}/i;
-    const cmS = course.summary?.value.match(cmSRegex);
 
     // remove ressource from title
     let title = course.summary?.value;

@@ -1,39 +1,38 @@
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import React, {useEffect, useMemo, useState} from "react";
-import {ActivityIndicator, Platform, RefreshControl, View} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Platform, RefreshControl, View } from "react-native";
 
-import type {Screen} from "@/router/helpers/types";
-import {useCurrentAccount} from "@/stores/account";
-import {useAttendanceStore} from "@/stores/attendance";
-import {updateAttendanceInCache, updateAttendancePeriodsInCache} from "@/services/attendance";
-import {NativeText} from "@/components/Global/NativeComponents";
-import Reanimated, {FadeIn, FadeOut, LinearTransition} from "react-native-reanimated";
+import type { Screen } from "@/router/helpers/types";
+import { useCurrentAccount } from "@/stores/account";
+import { useAttendanceStore } from "@/stores/attendance";
+import { updateAttendanceInCache, updateAttendancePeriodsInCache } from "@/services/attendance";
+import { NativeText } from "@/components/Global/NativeComponents";
+import Reanimated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import PapillonPicker from "@/components/Global/PapillonPicker";
-import {ChevronDown, Eye, Scale, Timer, UserX} from "lucide-react-native";
+import { ChevronDown, Eye, Scale, Timer, UserX } from "lucide-react-native";
 import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
-import {animPapillon} from "@/utils/ui/animations";
+import { animPapillon } from "@/utils/ui/animations";
 import AttendanceItem from "./Atoms/AttendanceItem";
-import {getAbsenceTime} from "@/utils/format/attendance_time";
 import TotalMissed from "./Atoms/TotalMissed";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {protectScreenComponent} from "@/router/helpers/protected-screen";
-import {Observation} from "@/services/shared/Observation";
+import { protectScreenComponent } from "@/router/helpers/protected-screen";
+import { Observation } from "@/services/shared/Observation";
 import MissingItem from "@/components/Global/MissingItem";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {AccountService} from "@/stores/account/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { AccountService } from "@/stores/account/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const { isOnline } = useOnlineStatus();
 
   const hasServiceSetup = account.service === AccountService.PapillonMultiService ? hasFeatureAccountSetup(MultiServiceFeature.Attendance, account.localID) : true;
 
-  const defaultPeriod = useAttendanceStore(store => store.defaultPeriod);
-  const periods = useAttendanceStore(store => store.periods);
-  const attendances = useAttendanceStore(store => store.attendances);
+  const defaultPeriod = useAttendanceStore((store) => store.defaultPeriod);
+  const periods = useAttendanceStore((store) => store.periods);
+  const attendances = useAttendanceStore((store) => store.attendances);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(hasServiceSetup);
@@ -109,9 +108,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
     let totalDelayHours = 0;
     let totalDelayMinutes = 0;
 
-    attendances[selectedPeriod]?.absences.forEach(absence => {
-      const missed = getAbsenceTime(absence.fromTimestamp, absence.toTimestamp);
-
+    attendances[selectedPeriod]?.absences.forEach((absence) => {
       if (!absence.justified)  {
         totalUnJustifiedHours += parseInt(absence.hours.split("h")[0]);
         totalUnJustifiedMinutes += parseInt(absence.hours.split("h")[1]);
@@ -124,7 +121,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
       totalAbsenceMinutes += parseInt(absence.hours.split("h")[1]);
     });
 
-    attendances[selectedPeriod]?.delays.forEach(delay => {
+    attendances[selectedPeriod]?.delays.forEach((delay) => {
       const origMins = delay.duration;
       const missed = {
         hours: Math.floor(origMins / 60),
@@ -201,7 +198,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           >
             <PapillonPicker
               delay={0}
-              data={periods.map(period => period.name)}
+              data={periods.map((period) => period.name)}
               selected={userSelectedPeriod ?? selectedPeriod}
               onSelectionChange={setUserSelectedPeriod}
               direction="right"
@@ -242,7 +239,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
             progressViewOffset={70}
             onRefresh={() => {
               setIsRefreshing(true);
-              if(account.identityProvider?.identifier) {
+              if (account.identityProvider?.identifier) {
                 navigation.navigate("BackgroundIdentityProvider");
                 updateAttendanceInCache(account, selectedPeriod).then(() => setIsRefreshing(false));
               }
@@ -297,7 +294,7 @@ const Attendance: Screen<"Attendance"> = ({ route, navigation }) => {
           />
         )}
 
-        {Object.keys(attendances_observations_details).map(sectionName => (
+        {Object.keys(attendances_observations_details).map((sectionName) => (
           <AttendanceItem
             key={sectionName}
             title={sectionName}

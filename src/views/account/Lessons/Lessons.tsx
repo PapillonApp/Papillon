@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, View, ViewToken } from "react-native";
-import { StyleSheet } from "react-native";
+import { FlatList, View, ViewToken, StyleSheet } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { useCurrentAccount } from "@/stores/account";
 import { useTimetableStore } from "@/stores/timetable";
@@ -32,9 +31,9 @@ import {
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { WeekFrequency } from "@/services/shared/Timetable";
-import {AccountService} from "@/stores/account/types";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { AccountService } from "@/stores/account/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import { fetchIcalData } from "@/services/local/ical";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
@@ -153,7 +152,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
     try {
       await updateTimetableForWeekInCache(account, weekNumber, force);
-      await fetchIcalData(account, force);
+      await fetchIcalData(account);
       currentlyLoadingWeeks.current.add(weekNumber);
     } finally {
       currentlyLoadingWeeks.current.delete(weekNumber);
@@ -292,7 +291,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
 
             setTimeout(() => {
               AsyncStorage.getItem("review_given").then((value) => {
-                if(!value) {
+                if (!value) {
                   askForReview();
                   AsyncStorage.setItem("review_given", "true");
                 }
@@ -320,7 +319,7 @@ const Lessons: Screen<"Lessons"> = ({ route, navigation }) => {
     const lastDate = data[data.length - 1];
 
     let updatedData = [...data];
-    const uniqueDates = new Set(updatedData.map(d => d.getTime()));
+    const uniqueDates = new Set(updatedData.map((d) => d.getTime()));
 
     if (newDate < firstDate) {
       const dates = [];

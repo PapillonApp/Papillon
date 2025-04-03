@@ -1,5 +1,6 @@
 import pronote from "pawnote";
 import datasets from "../../consts/datasets.json";
+import { error, log } from "@/utils/logger/logger";
 
 const getInstancesFromDataset = async (longitude: number, latitude: number): Promise<pronote.GeolocatedInstance[]> => {
   let adress_api_fetch = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}&limit=1`);
@@ -15,7 +16,7 @@ const getInstancesFromDataset = async (longitude: number, latitude: number): Pro
 
     try {
       let instances = await instances_fetch.json();
-      console.log("Fetched instances:", instances);
+      log("Fetched instances: " + instances, "getInstancesFromDataset");
 
       const calculateHaversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
         const toRadians = (degrees: number) => degrees * (Math.PI / 180);
@@ -40,9 +41,9 @@ const getInstancesFromDataset = async (longitude: number, latitude: number): Pro
           instance.long
         );
 
-        console.log("User location:", { latitude, longitude });
-        console.log("Instance location:", { latitude: instance.lat, longitude: instance.long });
-        console.log("Calculated distance:", distance);
+        log(`User location: { ${latitude}, ${longitude} }`, "getInstancesFromDataset");
+        log(`Instance location: { latitude: ${instance.lat}, longitude: ${instance.long} }`, "getInstancesFromDataset");
+        log("Calculated distance: " + distance, "getInstancesFromDataset");
 
         return {
           name: instance.name.toUpperCase(),
@@ -52,12 +53,12 @@ const getInstancesFromDataset = async (longitude: number, latitude: number): Pro
           latitude: instance.lat,
         };
       });
-    } catch (error) {
-      console.error("Error fetching instances:", error);
+    } catch (err) {
+      error("Error fetching instances:" + err, "getInstancesFromDataset");
       return [];
     }
-  } catch (error) {
-    console.error("Error fetching address:", error);
+  } catch (err) {
+    error("Error fetching address:" + err, "getInstancesFromDataset");
     return [];
   }
 };

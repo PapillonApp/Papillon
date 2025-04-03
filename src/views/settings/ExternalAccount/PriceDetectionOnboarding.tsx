@@ -3,17 +3,16 @@ import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BellRing } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image, View, StyleSheet, Text } from "react-native";
+import { Image, View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { NativeText, } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import BetaIndicator from "@/components/News/Beta";
 
 const PriceDetectionOnboarding: Screen<"PriceDetectionOnboarding"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const accountID = route.params?.accountID;
 
   return (

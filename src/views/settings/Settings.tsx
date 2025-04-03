@@ -41,25 +41,20 @@ import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeTex
 import ModalHandle from "@/components/Modals/ModalHandle";
 import AccountContainerCard from "@/components/Settings/AccountContainerCard";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import {get_settings_widgets} from "@/addons/addons";
+import { get_settings_widgets } from "@/addons/addons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {AddonPlacementManifest} from "@/addons/types";
-import { useFlagsStore } from "@/stores/flags";
+import { AddonPlacementManifest } from "@/addons/types";
 import { useAlert } from "@/providers/AlertProvider";
 import * as WebBrowser from "expo-web-browser";
 import { WebBrowserPresentationStyle } from "expo-web-browser";
-import useScreenDimensions from "@/hooks/useScreenDimensions";
 
 const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const [ addons, setAddons ] = useState<Array<AddonPlacementManifest>>([]);
   const [devModeEnabled, setDevModeEnabled] = useState(false);
-  const defined = useFlagsStore(state => state.defined);
-  const [click, setClick] = useState<true | false>(false);
-  const { isTablet } = useScreenDimensions();
 
   const removeAccount = useAccounts((store) => store.remove);
 
@@ -73,7 +68,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
   useEffect(() => {
     AsyncStorage.getItem("devmode")
       .then((res) => {
-        let value = {enabled: false};
+        let value = { enabled: false };
         if (res)
           value = JSON.parse(res);
         setDevModeEnabled(value.enabled);
@@ -209,7 +204,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
         />
         {addons.length > 0 &&
             <>
-              <NativeListHeader label={"Extensions"}/>
+              <NativeListHeader label={"Extensions"} />
               <NativeList>
                 {addons.map((addon, index) => (
                   <NativeItem
@@ -217,7 +212,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
                     onPress={() => navigation.navigate("AddonSettingsPage", { addon, from: "Settings" })}
                     leading={
                       <Image
-                        source={addon.manifest.icon == "" ? require("../../../assets/images/addon_default_logo.png"): {uri: addon.manifest.icon}}
+                        source={addon.manifest.icon == "" ? require("../../../assets/images/addon_default_logo.png"): { uri: addon.manifest.icon }}
                         style={{
                           width: 36,
                           height: 36,
@@ -308,7 +303,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
 
         {devModeEnabled && (
           <View>
-            <NativeListHeader label={"Développeur"}/>
+            <NativeListHeader label={"Développeur"} />
             <NativeList>
               <NativeItem
                 onPress={() => navigation.navigate("SettingsDevLogs")}

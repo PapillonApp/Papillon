@@ -31,7 +31,7 @@ import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
 import { LinearGradient } from "expo-linear-gradient";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
-import {Search, X, GraduationCap, SearchX} from "lucide-react-native";
+import { Search, X, GraduationCap, SearchX } from "lucide-react-native";
 import { useAlert } from "@/providers/AlertProvider";
 import { Audio } from "expo-av";
 import getInstancesFromDataset from "@/services/pronote/dataset_geolocation";
@@ -67,9 +67,6 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
-
-  const routes = navigation.getState()?.routes;
-  const prevRoute = routes[routes.length - 2];
 
   const keyboardDidShow = (event: KeyboardEvent) => {
     setKeyboardOpen(true);
@@ -387,7 +384,7 @@ const PronoteInstanceSelector: Screen<"PronoteInstanceSelector"> = ({
                 />
               </Reanimated.View>
             </Reanimated.View>
-            <View style={{height: 36}} />
+            <View style={{ height: 36 }} />
           </Reanimated.ScrollView>
         </Reanimated.View>
       )}

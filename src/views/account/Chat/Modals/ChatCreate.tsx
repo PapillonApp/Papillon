@@ -173,7 +173,7 @@ const ChatCreate: Screen<"ChatCreate"> = ({ navigation }) => {
           </NativeList>
         )}
       </ScrollView>
-      <View style={[styles.fixedButtonContainer, {backgroundColor: colors.background}]}>
+      <View style={[styles.fixedButtonContainer, { backgroundColor: colors.background }]}>
         <ButtonCta primary value={"Créer la discussion"} disabled={!(content && selectedRecipients.length > 0)} onPress={() => {
           if (!subject) {
             showAlert({

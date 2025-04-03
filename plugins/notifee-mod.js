@@ -1,7 +1,7 @@
 const { withProjectBuildGradle } = require("expo/config-plugins");
 
 module.exports = function withNotifeeRepo (config) {
-  return withProjectBuildGradle(config, async config => {
+  return withProjectBuildGradle(config, async (config) => {
     const contents = config.modResults.contents;
 
     if (!contents.includes("@notifee/react-native")) {

@@ -142,9 +142,8 @@ const HomeworksDocument: Screen<"HomeworksDocument"> = ({ navigation, route }) =
                   >
                     {homework.returnType === HomeworkReturnType.FileUpload
                       ? "A rendre sur l'ENT"
-                      : homework.returnType === HomeworkReturnType.Paper
-                        ? "A rendre en classe"
-                        : null}
+                      : homework.returnType === HomeworkReturnType.Paper && "A rendre en classe"
+                    }
                   </NativeText>
                 </TouchableOpacity>
               </View>

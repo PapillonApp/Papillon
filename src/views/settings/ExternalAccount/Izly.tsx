@@ -11,7 +11,7 @@ const ExternalIzlyLogin: Screen<"ExternalIzlyLogin"> = ({ navigation }) => {
   const handleLogin = async (username: string, password: string): Promise<void> => {
     try {
       await login(username, password);
-      navigation.navigate("IzlyActivation", {username, password});
+      navigation.navigate("IzlyActivation", { username, password });
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

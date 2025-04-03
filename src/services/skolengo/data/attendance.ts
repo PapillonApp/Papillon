@@ -8,7 +8,7 @@ const dateIntervalToDeltaInMin = (from: Date, to: Date) => Math.round((to.getTim
 
 const dateIntervalToTime = (from: Date, to: Date) => {
   const deltaInMin = dateIntervalToDeltaInMin(from, to);
-  if(deltaInMin < 60) {
+  if (deltaInMin < 60) {
     return `${deltaInMin}min`;
   } else if (deltaInMin < 1440) {
     return `${Math.floor(deltaInMin/60)}h${deltaInMin%60}`;
@@ -17,7 +17,7 @@ const dateIntervalToTime = (from: Date, to: Date) => {
   }
 };
 
-const _strs = (strs: (string|null|undefined)[], defaultStr: string) => strs.filter(e=>e && e.trim().length > 0).length > 0 ? strs.filter(e=>e && e.trim().length > 0).join(" - ") : defaultStr;
+const _strs = (strs: (string|null|undefined)[], defaultStr: string) => strs.filter((e) => e && e.trim().length > 0).length > 0 ? strs.filter((e) => e && e.trim().length > 0).join(" - ") : defaultStr;
 
 export const getAttendance = async (account: SkolengoAccount): Promise<Attendance> => {
   if (!account.instance)
@@ -34,8 +34,8 @@ export const getAttendance = async (account: SkolengoAccount): Promise<Attendanc
     observations: []
   };
 
-  absences.map(e=>e.currentState).forEach(absence => {
-    switch(absence.absenceType as SupportedAbsenceType) {
+  absences.map((e) => e.currentState).forEach((absence) => {
+    switch (absence.absenceType as SupportedAbsenceType) {
 
       case ("ABSENCE"):
         attendance.absences.push({

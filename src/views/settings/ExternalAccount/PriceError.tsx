@@ -2,25 +2,18 @@ import React from "react";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BadgeX, CircleHelp } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {View, StyleSheet, Text, Alert} from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAccounts } from "@/stores/account";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import {ExternalAccount} from "@/stores/account/types";
-import {detectMealPrice as ARDPriceDetector} from "@/views/settings/ExternalAccount/ARD";
+import { ExternalAccount } from "@/stores/account/types";
+import { detectMealPrice as ARDPriceDetector } from "@/views/settings/ExternalAccount/ARD";
 import { useAlert } from "@/providers/AlertProvider";
-
-type Props = {
-  navigation: any;
-  route: { params: { accountID: string } };
-};
 
 const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const insets = useSafeAreaInsets();
-  const update = useAccounts(store => store.update);
+  const update = useAccounts((store) => store.update);
   const account = route.params?.account;
   const accountId = route.params?.accountId;
 
@@ -35,13 +28,13 @@ const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
         { text: "Soumettre", onPress: async (input) => {
           if (input) {
             const mealPrice = parseFloat(input.replace(",", ".")) * 100;
-            update<ExternalAccount>(accountId, "authentication", {"mealPrice": mealPrice});
+            update<ExternalAccount>(accountId, "authentication", { "mealPrice": mealPrice });
             navigation.pop();
             navigation.pop();
             navigation.pop();
             navigation.pop();
           }
-        }},
+        } },
       ],
       "plain-text",
       "2.00"
@@ -68,7 +61,7 @@ const PriceError: Screen<"PriceError"> = ({ navigation, route }) => {
     <SafeAreaView
       style={styles.container}
     >
-      <View style={{width: "100%", alignItems: "center", justifyContent: "center", flex: 1}}>
+      <View style={{ width: "100%", alignItems: "center", justifyContent: "center", flex: 1 }}>
         <CircleHelp color={colors.text + "55"} size={200}></CircleHelp>
       </View>
       <View style={{

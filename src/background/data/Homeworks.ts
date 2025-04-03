@@ -27,7 +27,6 @@ const fetchHomeworks = async (): Promise<Homework[]> => {
   if (!firstDate) {
     firstDate = new Date(Date.UTC(new Date().getFullYear(), 8, 1));
   }
-  const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
   const SemaineAct = dateToEpochWeekNumber(new Date());
   const currentHwSemaineActuelle = getHomeworks()[SemaineAct] ?? [];

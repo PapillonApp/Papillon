@@ -18,7 +18,7 @@ interface GradesElementProps {
 const GradesElement: React.FC<GradesElementProps> = ({ onImportance }) => {
   const account = useCurrentAccount((store) => store.account);
 
-  const defaultPeriod = useGradesStore(store => store.defaultPeriod);
+  const defaultPeriod = useGradesStore((store) => store.defaultPeriod);
   const grades = useGradesStore((store) => store.grades);
 
   const [loading, setLoading] = useState(false);

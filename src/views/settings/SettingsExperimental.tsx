@@ -12,7 +12,7 @@ const SettingsExperimental: Screen<"SettingsExperimental"> = ({ navigation }) =>
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const defined = useFlagsStore(state => state.defined);
+  const defined = useFlagsStore((state) => state.defined);
 
   const items: SettingsSubItem[] = [
     {

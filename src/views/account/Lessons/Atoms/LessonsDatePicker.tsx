@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ListRenderItem} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ListRenderItem } from "react-native";
 import { format, addDays, isSameDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
@@ -14,9 +14,9 @@ import Animated, {
   runOnJS, SharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {Theme} from "@react-navigation/native/src/types";
-import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
-import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
+import { Theme } from "@react-navigation/native/src/types";
+import { NativeScrollEvent, ScrollViewProps } from "react-native/Libraries/Components/ScrollView/ScrollView";
+import { NativeSyntheticEvent } from "react-native/Libraries/Types/CoreEventTypes";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -25,7 +25,6 @@ const ITEM_MARGIN = 10;
 const ITEM_TOTAL_WIDTH = ITEM_WIDTH + ITEM_MARGIN * 2;
 const DATE_RANGE = 30;
 const SCROLL_THRESHOLD = 7;
-const SCROLL_VELOCITY = 100;
 
 const generateDateRange = (centerDate: Date) => {
   return Array.from({ length: DATE_RANGE }, (_, i) => addDays(centerDate, i - Math.floor(DATE_RANGE / 2)));
@@ -116,7 +115,7 @@ const HorizontalDatePicker = ({ onDateSelect, onCurrentDatePress, initialDate = 
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    const dateIndex = dates.findIndex(date => isSameDay(date, initialDate));
+    const dateIndex = dates.findIndex((date) => isSameDay(date, initialDate));
     if (dateIndex !== -1) {
       const diffFromCenter = dateIndex - centerIndex;
       if (Math.abs(diffFromCenter) <= SCROLL_THRESHOLD) {

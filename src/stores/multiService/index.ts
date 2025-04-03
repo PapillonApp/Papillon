@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { create } from "zustand";
 import { log } from "@/utils/logger/logger";
-import {MultiServiceSpace, MultiServiceStore} from "@/stores/multiService/types";
+import { MultiServiceSpace, MultiServiceStore } from "@/stores/multiService/types";
 
 
 /**
@@ -19,17 +19,17 @@ export const useMultiService = create<MultiServiceStore>()(
 
       // When creating, we don't want the "instance" to be stored.
       create: (space, linkAccount) => {
-        log(`creating a virtual MultiService space with account id ${linkAccount.localID} (${space.name})`, "multiService:create");
+        log(`Creating a virtual MultiService space with account id ${linkAccount.localID} (${space.name})`, "multiService:create");
 
         set((state) => ({
           spaces: [...state.spaces, space]
         }));
 
-        log(`stored ${space.name}, with account ${linkAccount.localID}`, "multiService:create");
+        log(`Stored ${space.name}, with account ${linkAccount.localID}`, "multiService:create");
       },
 
       remove: (localID) => {
-        log(`removing virtual MultiService space ${localID}`, "multiService:remove");
+        log(`Removing virtual MultiService space ${localID}`, "multiService:remove");
 
         set((state) => ({
           spaces: state.spaces.filter(
@@ -37,7 +37,7 @@ export const useMultiService = create<MultiServiceStore>()(
           )
         }));
 
-        log(`removed ${localID}`, "multiService:remove");
+        log(`Removed ${localID}`, "multiService:remove");
       },
 
       toggleEnabledState: () => {

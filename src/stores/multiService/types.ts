@@ -1,4 +1,4 @@
-import {PapillonMultiServiceSpace, PrimaryAccount} from "@/stores/account/types";
+import { PapillonMultiServiceSpace, PrimaryAccount } from "@/stores/account/types";
 
 export enum MultiServiceFeature {
   Grades = "grades",
