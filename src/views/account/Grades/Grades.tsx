@@ -232,74 +232,74 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
             />
           </View>
         }>
-          <View
-            style={{
-              padding: 16,
-              overflow: "visible",
-              paddingTop: 0,
-              paddingBottom: 16 + insets.bottom,
-            }}
-          >
-            {!isOnline && <OfflineWarning cache={true} />}
+          {!isLoading && (
+            <View
+              style={{
+                padding: 16,
+                overflow: "visible",
+                paddingTop: 0,
+                paddingBottom: 16 + insets.bottom,
+              }}
+            >
+              {!isOnline && <OfflineWarning cache={true} />}
 
-            {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
-							!isLoading &&
+              {(!grades[selectedPeriod] || grades[selectedPeriod].length === 0) &&
 							!isRefreshing && hasServiceSetup && (
-              <MissingItem
-                style={{ marginTop: 24, marginHorizontal: 16 }}
-                emoji="📚"
-                title={`Aucune note pour le ${selectedPeriod.toLowerCase()}`}
-                description={"La période ne contient pas de notes pour le moment."}
-              />
-            )}
-
-            {!hasServiceSetup && (
-              <MissingItem
-                title="Aucun service connecté"
-                description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
-                emoji="🤷"
-                style={{ marginTop: 24, marginHorizontal: 16 }}
-              />
-            )}
-
-            {grades[selectedPeriod] &&
-							grades[selectedPeriod].filter((grade) => grade.student.value !== null && !isNaN(grade.student.value)).length > 1 &&
-              !isLoading && (
-              <Reanimated.View
-                layout={animPapillon(LinearTransition)}
-                entering={FadeInUp.duration(200)}
-                exiting={FadeOut.duration(100)}
-                key={account.instance + "graph"}
-              >
-                <GradesAverageGraph
-                  grades={grades[selectedPeriod] ?? []}
-                  overall={(averages[selectedPeriod]?.overall && !averages[selectedPeriod]?.overall.disabled) ? averages[selectedPeriod]?.overall.value : null}
-                  classOverall={averages[selectedPeriod]?.classOverall.value}
+                <MissingItem
+                  style={{ marginTop: 24, marginHorizontal: 16 }}
+                  emoji="📚"
+                  title={`Aucune note pour le ${selectedPeriod.toLowerCase()}`}
+                  description={"La période ne contient pas de notes pour le moment."}
                 />
-              </Reanimated.View>
-            )}
+              )}
 
-            {latestGradesData.length > 2 && (
-              <GradesLatestList
-                latestGrades={latestGradesData}
-                navigation={navigation}
-                allGrades={grades[selectedPeriod] || []}
-              />
-            )}
+              {!hasServiceSetup && (
+                <MissingItem
+                  title="Aucun service connecté"
+                  description="Tu n'as pas encore paramétré de service pour cette fonctionnalité."
+                  emoji="🤷"
+                  style={{ marginTop: 24, marginHorizontal: 16 }}
+                />
+              )}
 
-            {gradesPerSubject.length > 0 && "providers" in account && account.providers && account.providers.includes("scodoc") && (
-              <GradesScodocUE account={account} navigation={navigation} selectedPeriod={selectedPeriod} />
-            )}
+              {grades[selectedPeriod] &&
+							grades[selectedPeriod].filter((grade) => grade.student.value !== null && !isNaN(grade.student.value)).length > 1 && (
+                <Reanimated.View
+                  layout={animPapillon(LinearTransition)}
+                  entering={FadeInUp.duration(200)}
+                  exiting={FadeOut.duration(100)}
+                  key={account.instance + "graph"}
+                >
+                  <GradesAverageGraph
+                    grades={grades[selectedPeriod] ?? []}
+                    overall={(averages[selectedPeriod]?.overall && !averages[selectedPeriod]?.overall.disabled) ? averages[selectedPeriod]?.overall.value : null}
+                    classOverall={averages[selectedPeriod]?.classOverall.value}
+                  />
+                </Reanimated.View>
+              )}
 
-            {gradesPerSubject.length > 0 && (
-              <Subject
-                navigation={navigation}
-                gradesPerSubject={gradesPerSubject}
-                allGrades={grades[selectedPeriod] || []}
-                currentPeriod={selectedPeriod}
-              />
-            )}
-          </View>
+              {latestGradesData.length > 2 && (
+                <GradesLatestList
+                  latestGrades={latestGradesData}
+                  navigation={navigation}
+                  allGrades={grades[selectedPeriod] || []}
+                />
+              )}
+
+              {gradesPerSubject.length > 0 && "providers" in account && account.providers && account.providers.includes("scodoc") && (
+                <GradesScodocUE account={account} navigation={navigation} selectedPeriod={selectedPeriod} />
+              )}
+
+              {gradesPerSubject.length > 0 && (
+                <Subject
+                  navigation={navigation}
+                  gradesPerSubject={gradesPerSubject}
+                  allGrades={grades[selectedPeriod] || []}
+                  currentPeriod={selectedPeriod}
+                />
+              )}
+            </View>
+          )}
         </Suspense>
       </ScrollView>
     </>

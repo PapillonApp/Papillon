@@ -118,7 +118,7 @@ export const getSubjectAverage = (
     }
   }
 
-  let result = -1;
+  let result = 0;
   if (useMath) {
     result = countedGrades > 0 ? calcGradesSum / countedGrades : -1;
   } else if (calcOutOfSum > 0) {
