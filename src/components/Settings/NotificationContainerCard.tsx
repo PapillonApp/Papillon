@@ -138,10 +138,13 @@ const NotificationContainerCard = ({
         trailing={
           isEnable !== null && isEnable !== undefined ? (
             <Switch
-              trackColor={{
-                false: colors.border,
-                true: colors.primary,
-              }}
+              trackColor={
+                {
+                  false: colors.border,
+                  true: colors.primary
+                }
+              }
+              thumbColor={theme.dark ? colors.text : colors.background}
               style={{
                 marginRight: 10,
               }}
@@ -185,9 +188,13 @@ const NotificationContainerCard = ({
               }}
             >
               <Switch
-                trackColor={{
-                  false: colors.border,
-                }}
+                trackColor={
+                  {
+                    false: colors.border,
+                    true: colors.primary
+                  }
+                }
+                thumbColor={theme.dark ? colors.text : colors.background}
                 style={{
                   marginRight: 10,
                 }}

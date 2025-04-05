@@ -152,6 +152,13 @@ const SettingsMultiService: Screen<"SettingsMultiService"> = ({ navigation }) =>
         <NativeItem
           trailing={
             <Switch
+              trackColor={
+                {
+                  false: theme.colors.border,
+                  true: theme.colors.primary
+                }
+              }
+              thumbColor={theme.dark ? theme.colors.text : theme.colors.background}
               value={multiServiceEnabled ?? false}
               onValueChange={() => {
                 if (multiServiceEnabled) {

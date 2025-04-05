@@ -101,6 +101,7 @@ const SettingsAccessibility: Screen<"SettingsAccessibility"> = () => {
                 false: theme.colors.border,
                 true: theme.colors.primary,
               }}
+              thumbColor={theme.dark ? theme.colors.text : theme.colors.background}
               value={enableSon}
               onValueChange={(value) => setEnableSon(value)}
             />
@@ -128,6 +129,7 @@ const SettingsAccessibility: Screen<"SettingsAccessibility"> = () => {
                 false: theme.colors.border,
                 true: theme.colors.primary,
               }}
+              thumbColor={theme.dark ? theme.colors.text : theme.colors.background}
               value={enableHaptics}
               onValueChange={(value) => setEnableHaptics(value)}
             />
