@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+import anecdotesList from "@/utils/data/anecdotes.json";
 
 
 interface ModalContentProps {
@@ -156,7 +157,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
         </NativeList>
       )}
 
-      {(defined("force_changelog") || updatedRecently) && (
+      {(defined("force_changelog") || updatedRecently) ? (
         <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
           <TouchableOpacity
             onPress={() => navigation.navigate("ChangelogScreen")}
@@ -187,6 +188,27 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             <NativeText variant="subtitle">
               Clique ici pour voir tous les changements et les dernières nouveautés.
             </NativeText>
+          </TouchableOpacity>
+        </NativeList>
+      ) : (
+        <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
+          <TouchableOpacity
+            onPress={() => /* Naviguer vers une page spécifique ? */ undefined}
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              paddingHorizontal: 14,
+              paddingVertical: 12,
+              gap: 8,
+              backgroundColor: colors.primary + "20",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Sparkles size={22} strokeWidth={2} color={colors.text} />
+              <NativeText variant="title" style={{ flex: 1 }}>
+                {anecdotesList[Math.floor(Math.random() * anecdotesList.length)].text}
+              </NativeText>
+            </View>
           </TouchableOpacity>
         </NativeList>
       )}
