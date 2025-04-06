@@ -1,6 +1,10 @@
 [
   {
     "title": "Le savais-tu ?",
-    "content": "Ceci est un exemple de contenu d'anecdote."
+    "content": "Les notifications se connectent à ton compte toutes les 15 minutes et te previennent si tu as de nouvelles notes, devoirs...",
+    "onClick": {
+      "stack": "SettingStack",
+      "page": "SettingsNotifications"
+    }
   }
 ]

@@ -103,6 +103,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     await checkForUpdateRecently();
     checkForNewTabs();
     sortElementsByImportance();
+    setIdAnecdote(Math.floor(Math.random() * anecdotesList.length));
     endRefresh();
   }, [checkForUpdateRecently, checkForNewTabs, sortElementsByImportance, endRefresh]);
 
@@ -195,28 +196,47 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
           </TouchableOpacity>
         </NativeList>
       ) : (
-        <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
-          <TouchableOpacity
-            onPress={() => /* Naviguer vers une page spécifique ? */ undefined}
+        <NativeList
+          animated
+          entering={animPapillon(FadeInUp)}
+          exiting={animPapillon(FadeOutDown)}
+        >
+          <View
             style={{
               flex: 1,
               flexDirection: "column",
-              paddingHorizontal: 14,
-              paddingVertical: 12,
-              gap: 8,
+              padding: 0,
               backgroundColor: colors.primary + "20",
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Sparkles size={22} strokeWidth={2} color={colors.text} />
-              <NativeText variant="title" style={{ flex: 1 }}>
-                {anecdotesList[idAnecdote].title}
+            <NativeItem
+              onPress={() => {
+                if (anecdotesList[idAnecdote].onClick) {
+                  if (anecdotesList[idAnecdote].onClick.stack) {
+                    // @ts-expect-error
+                    navigation.navigate(anecdotesList[idAnecdote].onClick.stack, {
+                      screen: anecdotesList[idAnecdote].onClick.page,
+                    });
+                  } else {
+                    // @ts-expect-error
+                    navigation.navigate(anecdotesList[idAnecdote].onClick.page);
+                  }
+                }
+              }}
+              chevron={anecdotesList[idAnecdote].onClick ? true : false}
+
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Sparkles size={22} strokeWidth={2} color={colors.text} />
+                <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
+                  {anecdotesList[idAnecdote].title}
+                </NativeText>
+              </View>
+              <NativeText variant="subtitle">
+                {anecdotesList[idAnecdote].content}
               </NativeText>
-            </View>
-            <NativeText variant="subtitle">
-              {anecdotesList[idAnecdote].content}
-            </NativeText>
-          </TouchableOpacity>
+            </NativeItem>
+          </View>
         </NativeList>
       )}
       {!isOnline && <OfflineWarning paddingTop={16} cache={true} />}
