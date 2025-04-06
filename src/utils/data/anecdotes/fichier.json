@@ -1,0 +1,32 @@
+[
+  {
+    "type": "info",
+    "content": "Les notifications se connectent à ton compte toutes les 15 minutes et te previennent si tu as de nouvelles notes, devoirs...",
+    "onClick": {
+      "stack": "SettingStack",
+      "page": "SettingsNotifications"
+    }
+  },
+  {
+    "type": "new",
+    "content": "Tu peux désormais personnaliser le fond de la page d'accueil de l'application !",
+    "onClick": {
+      "page": "CustomizeHeader"
+    }
+  },
+  {
+    "type": "new",
+    "content": "Les devoirs personnalisés sont de retour ! Tu peux maintenant créer des devoirs personnalisés pour chaque matière.",
+    "onClick": {
+      "page": "AddHomework"
+    }
+  },
+  {
+    "type": "info",
+    "content": "Tu peux regrouper plusieurs services scolaires dans un seul et même compte !",
+    "onClick": {
+      "stack": "SettingStack",
+      "page": "SettingsMultiService"
+    }
+  }
+]

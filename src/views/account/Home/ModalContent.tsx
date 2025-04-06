@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
-import { Bug, Sparkles, X } from "lucide-react-native";
+import { Bug, Info, Sparkles, X } from "lucide-react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View} from "react-native";
@@ -15,7 +15,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { Anecdote } from "@/utils/data/anecdotes/type";
 
+const anecdotesList = require("@/utils/data/anecdotes/fichier.json") as Anecdote[];
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>;
@@ -32,8 +34,11 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
 
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const [elements, setElements] = useState<Element[]>([]);
+  const [idAnecdote, setIdAnecdote] = useState<number>(0);
 
   useEffect(() => {
+    setIdAnecdote(Math.floor(Math.random() * anecdotesList.length));
+
     setElements(Elements.map((Element) => ({
       id: Element.id,
       component: Element.component,
@@ -98,6 +103,11 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     await checkForUpdateRecently();
     checkForNewTabs();
     sortElementsByImportance();
+    let newIdAnecdote = Math.floor(Math.random() * anecdotesList.length);
+    while (newIdAnecdote === idAnecdote) {
+      newIdAnecdote = Math.floor(Math.random() * anecdotesList.length);
+    }
+    setIdAnecdote(newIdAnecdote);
     endRefresh();
   }, [checkForUpdateRecently, checkForNewTabs, sortElementsByImportance, endRefresh]);
 
@@ -156,7 +166,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
         </NativeList>
       )}
 
-      {(defined("force_changelog") || updatedRecently) && (
+      {(defined("force_changelog") || updatedRecently) ? (
         <NativeList animated entering={animPapillon(FadeInUp)} exiting={animPapillon(FadeOutDown)}>
           <TouchableOpacity
             onPress={() => navigation.navigate("ChangelogScreen")}
@@ -188,6 +198,60 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
               Clique ici pour voir tous les changements et les dernières nouveautés.
             </NativeText>
           </TouchableOpacity>
+        </NativeList>
+      ) : (
+        <NativeList
+          animated
+          entering={animPapillon(FadeInUp)}
+          exiting={animPapillon(FadeOutDown)}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              padding: 0,
+              backgroundColor: colors.primary + "20",
+            }}
+          >
+            <NativeItem
+              onPress={() => {
+                if (anecdotesList[idAnecdote].onClick) {
+                  if (anecdotesList[idAnecdote].onClick.stack) {
+                    // @ts-expect-error
+                    navigation.navigate(anecdotesList[idAnecdote].onClick.stack, {
+                      screen: anecdotesList[idAnecdote].onClick.page,
+                    });
+                  } else {
+                    // @ts-expect-error
+                    navigation.navigate(anecdotesList[idAnecdote].onClick.page);
+                  }
+                }
+              }}
+              chevron={anecdotesList[idAnecdote].onClick ? true : false}
+
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                {anecdotesList[idAnecdote].type === "new" ? (
+                  <>
+                    <Sparkles size={22} strokeWidth={2} color={colors.text} />
+                    <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
+                      C'est nouveau !
+                    </NativeText>
+                  </>
+                ) : (
+                  <>
+                    <Info size={22} strokeWidth={2} color={colors.text} />
+                    <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
+                      Le savais-tu ?
+                    </NativeText>
+                  </>
+                )}
+              </View>
+              <NativeText variant="subtitle">
+                {anecdotesList[idAnecdote].content}
+              </NativeText>
+            </NativeItem>
+          </View>
         </NativeList>
       )}
       {!isOnline && <OfflineWarning paddingTop={16} cache={true} />}
