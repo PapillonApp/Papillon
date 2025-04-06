@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, { FadeInUp, FadeOutDown, LinearTransition } from "react-native-reanimated";
-import { Bug, Sparkles, X } from "lucide-react-native";
+import { Bug, Info, Sparkles, X } from "lucide-react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import PackageJSON from "../../../../package.json";
 import { Dimensions, View} from "react-native";
@@ -227,10 +227,21 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
 
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <Sparkles size={22} strokeWidth={2} color={colors.text} />
-                <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
-                  {anecdotesList[idAnecdote].title}
-                </NativeText>
+                {anecdotesList[idAnecdote].type === "new" ? (
+                  <>
+                    <Sparkles size={22} strokeWidth={2} color={colors.text} />
+                    <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
+                      C'est nouveau !
+                    </NativeText>
+                  </>
+                ) : (
+                  <>
+                    <Info size={22} strokeWidth={2} color={colors.text} />
+                    <NativeText variant="title" style={{ flex: 1, paddingVertical: 5 }}>
+                      Le savais-tu ?
+                    </NativeText>
+                  </>
+                )}
               </View>
               <NativeText variant="subtitle">
                 {anecdotesList[idAnecdote].content}

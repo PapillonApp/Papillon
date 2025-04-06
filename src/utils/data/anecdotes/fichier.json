@@ -1,10 +1,17 @@
 [
   {
-    "title": "Le savais-tu ?",
+    "type": "info",
     "content": "Les notifications se connectent à ton compte toutes les 15 minutes et te previennent si tu as de nouvelles notes, devoirs...",
     "onClick": {
       "stack": "SettingStack",
       "page": "SettingsNotifications"
+    }
+  },
+  {
+    "type": "new",
+    "content": "Tu peux désormais personnaliser le fond de la page d'accueil de l'application !",
+    "onClick": {
+      "page": "CustomizeHeader"
     }
   }
 ]

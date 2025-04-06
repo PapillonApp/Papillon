@@ -1,7 +1,7 @@
 import { RouteParameters } from "@/router/helpers/types";
 
 export interface Anecdote {
-  title: string;
+  type: "new" | "info";
   content: string;
   onClick: {
     stack: "AccountStack" | "SettingStack" | undefined;
