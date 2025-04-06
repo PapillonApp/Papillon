@@ -47,6 +47,10 @@ export const HEADERS_IMAGE = [
   {
     label: "tictactoe",
     source: require("@/../assets/headers/tictactoe.png"),
+  },
+  {
+    label: "star",
+    source: require("@/../assets/headers/star.png"),
   }
 ];
 
