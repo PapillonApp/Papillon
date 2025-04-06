@@ -103,7 +103,11 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
     await checkForUpdateRecently();
     checkForNewTabs();
     sortElementsByImportance();
-    setIdAnecdote(Math.floor(Math.random() * anecdotesList.length));
+    let newIdAnecdote = Math.floor(Math.random() * anecdotesList.length);
+    while (newIdAnecdote === idAnecdote) {
+      newIdAnecdote = Math.floor(Math.random() * anecdotesList.length);
+    }
+    setIdAnecdote(newIdAnecdote);
     endRefresh();
   }, [checkForUpdateRecently, checkForNewTabs, sortElementsByImportance, endRefresh]);
 
