@@ -15,8 +15,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteParameters } from "@/router/helpers/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
-import anecdotesList from "@/utils/data/anecdotes.json";
+import { Anecdote } from "@/utils/data/anecdotes/type";
 
+const anecdotesList = require("@/utils/data/anecdotes/fichier.json") as Anecdote[];
 
 interface ModalContentProps {
   navigation: NativeStackNavigationProp<RouteParameters, "HomeScreen", undefined>;
@@ -211,10 +212,10 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
               <NativeText variant="title" style={{ flex: 1 }}>
                 {anecdotesList[idAnecdote].title}
               </NativeText>
-              <NativeText variant="subtitle">
-                {anecdotesList[idAnecdote].content}
-              </NativeText>
             </View>
+            <NativeText variant="subtitle">
+              {anecdotesList[idAnecdote].content}
+            </NativeText>
           </TouchableOpacity>
         </NativeList>
       )}
