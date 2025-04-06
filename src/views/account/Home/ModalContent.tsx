@@ -33,8 +33,11 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
 
   const [updatedRecently, setUpdatedRecently] = useState(false);
   const [elements, setElements] = useState<Element[]>([]);
+  const [idAnecdote, setIdAnecdote] = useState<number>(0);
 
   useEffect(() => {
+    setIdAnecdote(Math.floor(Math.random() * anecdotesList.length));
+
     setElements(Elements.map((Element) => ({
       id: Element.id,
       component: Element.component,
@@ -206,7 +209,10 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <Sparkles size={22} strokeWidth={2} color={colors.text} />
               <NativeText variant="title" style={{ flex: 1 }}>
-                {anecdotesList[Math.floor(Math.random() * anecdotesList.length)].text}
+                {anecdotesList[idAnecdote].title}
+              </NativeText>
+              <NativeText variant="subtitle">
+                {anecdotesList[idAnecdote].content}
               </NativeText>
             </View>
           </TouchableOpacity>
