@@ -1,4 +1,4 @@
-import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 import { useCurrentAccount } from "@/stores/account";
 import { useHomeworkStore } from "@/stores/homework";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
@@ -11,54 +11,50 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
-  TextInput,
   ListRenderItem,
-  Pressable
+  Pressable,
+  TouchableOpacity,
+  TextInput
 } from "react-native";
-import { calculateWeekNumber, dateToEpochWeekNumber, epochWNToDate } from "@/utils/epochWeekNumber";
+import { calculateWeekNumber, dateToEpochWeekNumber, epochWNToDate, weekNumberToMiddleDate } from "@/utils/epochWeekNumber";
 
 import * as StoreReview from "expo-store-review";
 
 import { PressableScale } from "react-native-pressable-scale";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Book, CheckSquare, ChevronLeft, ChevronRight, CircleDashed, Plus, Search, X } from "lucide-react-native";
+import { CheckSquare, Plus, Search, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 
-import Reanimated, { Easing, FadeIn, FadeInLeft, FadeInUp, FadeOut, FadeOutDown, FadeOutLeft, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
+import Reanimated, {
+  FadeIn,
+  FadeInUp,
+  FadeOut,
+  FadeOutDown,
+  FadeOutLeft,
+  LinearTransition,
+  ZoomIn,
+  ZoomOut,
+} from "react-native-reanimated";
 import { animPapillon } from "@/utils/ui/animations";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import * as Haptics from "expo-haptics";
 import MissingItem from "@/components/Global/MissingItem";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
-import {Homework} from "@/services/shared/Homework";
-import {Account, AccountService} from "@/stores/account/types";
-import {Screen} from "@/router/helpers/types";
-import {NativeSyntheticEvent} from "react-native/Libraries/Types/CoreEventTypes";
-import {NativeScrollEvent, ScrollViewProps} from "react-native/Libraries/Components/ScrollView/ScrollView";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { Homework } from "@/services/shared/Homework";
+import { AccountService } from "@/stores/account/types";
+import { Screen } from "@/router/helpers/types";
+import { NativeSyntheticEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import { NativeScrollEvent, ScrollViewProps } from "react-native/Libraries/Components/ScrollView/ScrollView";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 import HomeworkItem from "./Atoms/Item";
+import DateModal from "@/components/Global/DateModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const MemoizedHomeworkItem = React.memo(HomeworkItem);
-const MemoizedNativeItem = React.memo(NativeItem);
 const MemoizedNativeList = React.memo(NativeList);
-const MemoizedNativeText = React.memo(NativeText);
-
-type HomeworksPageProps = {
-  index: number;
-  isActive: boolean;
-  loaded: boolean;
-  homeworks: Record<number, Homework[]>;
-  account: Account;
-  updateHomeworks: () => Promise<void>;
-  loading: boolean;
-  getDayName: (date: string | number | Date) => string;
-};
 
 const formatDate = (date: string | number | Date): string => {
   return new Date(date).toLocaleDateString("fr-FR", {
@@ -70,9 +66,7 @@ const formatDate = (date: string | number | Date): string => {
 const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const flatListRef: React.MutableRefObject<FlatList> = useRef(null) as any as React.MutableRefObject<FlatList>;
   const { width } = Dimensions.get("window");
-  const finalWidth = width;
   const insets = useSafeAreaInsets();
-  const { playHaptics } = useSoundHapticsWrapper();
   const { isOnline } = useOnlineStatus();
 
   const outsideNav = route.params?.outsideNav;
@@ -89,18 +83,19 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   }
   const firstDateEpoch = dateToEpochWeekNumber(firstDate);
 
-  const currentWeek = dateToEpochWeekNumber(new Date());
+  const currentWeek = new Date().getUTCDay() >= 5 || new Date().getUTCDay() === 0
+    ? dateToEpochWeekNumber(new Date()) + 1
+    : dateToEpochWeekNumber(new Date());
   const [data, setData] = useState(Array.from({ length: 100 }, (_, i) => currentWeek - 50 + i));
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
-  const [direction, setDirection] = useState<"left" | "right">("right");
-  const [oldSelectedWeek, setOldSelectedWeek] = useState(selectedWeek);
 
+  const [showDatePickerWeek, setShowDatePickerWeek] = useState(false);
   const [hideDone, setHideDone] = useState(false);
 
   const getItemLayout = useCallback((_: any, index: number) => ({
-    length: finalWidth,
-    offset: finalWidth * index,
+    length: width,
+    offset: width * index,
     index,
   }), [width]);
 
@@ -123,7 +118,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   const [loadedWeeks, setLoadedWeeks] = useState<number[]>([]);
 
   const updateHomeworks = useCallback(async (force = false, showRefreshing = true, showLoading = true) => {
-    if(!account) return;
+    if (!account) return;
 
     if (!force && loadedWeeks.includes(selectedWeek)) {
       return;
@@ -143,20 +138,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       });
   }, [account, selectedWeek, loadedWeeks]);
 
-  // on page change, load the homeworks
-  useEffect(() => {
-    if (selectedWeek > oldSelectedWeek) {
-      setDirection("right");
-    } else if (selectedWeek < oldSelectedWeek) {
-      setDirection("left");
-    }
-
-    setTimeout(() => {
-      setOldSelectedWeek(selectedWeek);
-      updateHomeworks(false, false);
-    }, 0);
-  }, [selectedWeek]);
-
   const [searchTerms, setSearchTerms] = useState("");
 
   const renderWeek: ListRenderItem<number> = useCallback(({ item }) => {
@@ -166,7 +147,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
       (a, b) => new Date(a.due).getTime() - new Date(b.due).getTime()
     );
 
-    const groupedHomework = sortedHomework.reduce((acc, curr) => {
+    let groupedHomework = sortedHomework.reduce((acc, curr) => {
       const dayName = getDayName(curr.personalizate
         ? curr.due - 86400
         : curr.due
@@ -182,11 +163,33 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
       // filter homeworks by search terms
       if (searchTerms.length > 0) {
-        acc[day] = acc[day].filter(homework => {
-          const content = homework.content.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const subject = homework.subject.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          return content.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) ||
-                 subject.includes(searchTerms.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+        acc[day] = acc[day].filter((homework) => {
+          const content = homework.content
+            .toLowerCase()
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+          const subject = homework.subject
+            .toLowerCase()
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+          return (
+            content.includes(
+              searchTerms
+                .toLowerCase()
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+            ) ||
+            subject.includes(
+              searchTerms
+                .toLowerCase()
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+            )
+          );
         });
       }
 
@@ -210,6 +213,52 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
       return acc;
     }, {} as Record<string, Homework[]>);
+
+    const isCurrentWeek = item === currentWeek;
+    if (isCurrentWeek) {
+      const today = new Date().getUTCDay();
+      const daysOfWeek = [
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi",
+        "Dimanche",
+      ];
+
+      const reorderedDays = [
+        ...daysOfWeek.slice(today),
+        ...daysOfWeek.slice(0, today),
+      ];
+
+      const reorderedGroupedHomework: Record<string, Homework[]> = {};
+      const completedDays: string[] = [];
+
+      Object.keys(groupedHomework).forEach((day) => {
+        const allDone = groupedHomework[day].every(
+          (homework) => homework.done
+        );
+        if (allDone) {
+          completedDays.push(day);
+        }
+      });
+
+      reorderedDays.forEach((dayName) => {
+        const dayKey = Object.keys(groupedHomework).find((day) =>
+          day.startsWith(dayName)
+        );
+        if (dayKey && !completedDays.includes(dayKey)) {
+          reorderedGroupedHomework[dayKey] = groupedHomework[dayKey];
+        }
+      });
+
+      completedDays.forEach((dayKey) => {
+        reorderedGroupedHomework[dayKey] = groupedHomework[dayKey];
+      });
+
+      groupedHomework = reorderedGroupedHomework;
+    }
 
     const askForReview = async () => {
       StoreReview.isAvailableAsync().then((available) => {
@@ -338,7 +387,6 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
 
         <View style={{ height: 82 }} />
       </ScrollView>
-
     );
   }, [
     homeworks,
@@ -367,78 +415,25 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
   };
 
   const onScroll: ScrollViewProps["onScroll"] = useCallback(({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (nativeEvent.contentOffset.x < finalWidth) {
+    if (nativeEvent.contentOffset.x < width) {
       onStartReached();
     }
 
     // Update selected week based on scroll position
-    const index = Math.round(nativeEvent.contentOffset.x / finalWidth);
+    const index = Math.round(nativeEvent.contentOffset.x / width);
     setSelectedWeek(data[index]);
-  }, [finalWidth, data]);
+  }, [width, data]);
 
   const onMomentumScrollEnd: ScrollViewProps["onMomentumScrollEnd"] = useCallback(({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(nativeEvent.contentOffset.x / finalWidth);
+    const index = Math.round(nativeEvent.contentOffset.x / width);
     setSelectedWeek(data[index]);
-  }, [finalWidth, data]);
-
-  const goToWeek = useCallback((weekNumber: number) => {
-    const index = data.findIndex(week => week === weekNumber);
-    if (index !== -1) {
-      // @ts-expect-error
-      const currentIndex = Math.round(flatListRef.current?.contentOffset?.x / finalWidth) || 0;
-      const distance = Math.abs(index - currentIndex);
-      const animated = distance <= 10; // Animate if the distance is 10 weeks or less
-
-      flatListRef.current?.scrollToIndex({ index, animated });
-      setSelectedWeek(weekNumber);
-    } else {
-      // If the week is not in the current data, update the data and scroll
-      const newData = Array.from({ length: 100 }, (_, i) => weekNumber - 50 + i);
-      setData(newData);
-
-      // Use a timeout to ensure the FlatList has updated before scrolling
-      setTimeout(() => {
-        flatListRef.current?.scrollToIndex({ index: 50, animated: false });
-        setSelectedWeek(weekNumber);
-      }, 0);
-    }
-  }, [data, finalWidth]);
-
-  const [showPickerButtons, setShowPickerButtons] = useState(false);
-  const [searchHasFocus, setSearchHasFocus] = useState(false);
+  }, [width, data]);
 
   const SearchRef: React.MutableRefObject<TextInput> = useRef(null) as any as React.MutableRefObject<TextInput>;
 
   return (
     <View>
       <PapillonModernHeader outsideNav={outsideNav}>
-        {showPickerButtons && !searchHasFocus &&
-          <Reanimated.View
-            layout={animPapillon(LinearTransition)}
-            entering={animPapillon(ZoomIn)}
-            exiting={animPapillon(ZoomOut)}
-          >
-            <PressableScale
-              onPress={() => goToWeek(selectedWeek - 1)}
-              activeScale={0.8}
-            >
-              <BlurView
-                style={[styles.weekButton, {
-                  backgroundColor: theme.colors.primary + 16,
-                }]}
-                tint={theme.dark ? "dark" : "light"}
-              >
-                <ChevronLeft
-                  size={24}
-                  color={theme.colors.primary}
-                  strokeWidth={2.5}
-                />
-              </BlurView>
-            </PressableScale>
-          </Reanimated.View>
-        }
-
-        {!searchHasFocus &&
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
           entering={animPapillon(FadeIn).delay(100)}
@@ -446,21 +441,12 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
         >
           <PressableScale
             style={[styles.weekPickerContainer]}
-            onPress={() => setShowPickerButtons(!showPickerButtons)}
-            onLongPress={() => {
-              setHideDone(!hideDone);
-              playHaptics("notification", {
-                notification: Haptics.NotificationFeedbackType.Success,
-              });
-            }}
-            delayLongPress={200}
+            onPress={() => setShowDatePickerWeek(true)}
           >
             <Reanimated.View
               layout={animPapillon(LinearTransition)}
               style={[{
-                backgroundColor:
-                showPickerButtons ? theme.colors.primary + 16 :
-                  theme.colors.text + 16,
+                backgroundColor: theme.colors.text + 16,
                 overflow: "hidden",
                 borderRadius: 80,
               }]}
@@ -471,58 +457,28 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                 }]}
                 tint={theme.dark ? "dark" : "light"}
               >
-                {showPickerButtons && !loading &&
-                  <Reanimated.View
-                    entering={animPapillon(FadeIn)}
-                    exiting={animPapillon(FadeOut)}
-                    style={{
-                      marginRight: 2,
-                    }}
-                  >
-                    <Book
-                      color={showPickerButtons ? theme.colors.primary : theme.colors.text}
-                      size={18}
-                      strokeWidth={2.6}
-                    />
-                  </Reanimated.View>
-                }
-
-                {!showPickerButtons && hideDone &&
-                    <Reanimated.View
-                      entering={animPapillon(ZoomIn)}
-                      exiting={animPapillon(FadeOut)}
-                      style={{
-                        marginRight: 2,
-                      }}
-                    >
-                      <CircleDashed
-                        color={showPickerButtons ? theme.colors.primary : theme.colors.text}
-                        size={18}
-                        strokeWidth={3}
-                        opacity={0.7}
-                      />
-                    </Reanimated.View>
-                }
-
-                <Reanimated.Text style={[styles.weekPickerText, styles.weekPickerTextIntl,
-                  {
-                    color: showPickerButtons ? theme.colors.primary : theme.colors.text,
-                  }
-                ]}
-                layout={animPapillon(LinearTransition)}
+                <Reanimated.Text
+                  style={[
+                    styles.weekPickerText,
+                    styles.weekPickerTextIntl,
+                    {
+                      color: theme.colors.text,
+                    },
+                  ]}
+                  layout={animPapillon(LinearTransition)}
                 >
                   {width > 370 ? "Semaine" : "sem."}
                 </Reanimated.Text>
 
-                <Reanimated.View
-                  layout={animPapillon(LinearTransition)}
-                >
+                <Reanimated.View layout={animPapillon(LinearTransition)}>
                   <AnimatedNumber
                     value={calculateWeekNumber(epochWNToDate(selectedWeek))}
-                    style={[styles.weekPickerText, styles.weekPickerTextNbr,
+                    style={[
+                      styles.weekPickerText,
+                      styles.weekPickerTextNbr,
                       {
-                        color: showPickerButtons ? theme.colors.primary : theme.colors.text,
-                      }
+                        color: theme.colors.text,
+                      },
                     ]}
                   />
                 </Reanimated.View>
@@ -530,7 +486,7 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
                 {loading &&
                   <PapillonSpinner
                     size={18}
-                    color={showPickerButtons ? theme.colors.primary : theme.colors.text}
+                    color={theme.colors.text}
                     strokeWidth={2.8}
                     entering={animPapillon(ZoomIn)}
                     exiting={animPapillon(ZoomOut)}
@@ -543,180 +499,145 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
             </Reanimated.View>
           </PressableScale>
         </Reanimated.View>
-        }
 
-        {showPickerButtons && !searchHasFocus &&
-          <Reanimated.View
-            layout={animPapillon(LinearTransition)}
-            entering={animPapillon(ZoomIn).delay(100)}
-            exiting={animPapillon(FadeOutLeft)}
-          >
-            <PressableScale
-              onPress={() => goToWeek(selectedWeek + 1)}
-              activeScale={0.8}
-            >
-              <BlurView
-                style={[styles.weekButton, {
-                  backgroundColor: theme.colors.primary + 16,
-                }]}
-                tint={theme.dark ? "dark" : "light"}
-              >
-                <ChevronRight
-                  size={24}
-                  color={theme.colors.primary}
-                  strokeWidth={2.5}
-                />
-              </BlurView>
-            </PressableScale>
-          </Reanimated.View>
-        }
-
-        {showPickerButtons && !searchHasFocus &&
-          <Reanimated.View
-            layout={animPapillon(LinearTransition)}
-            style={{
-              flex: 1
-            }}
-          />
-        }
-
-        {showPickerButtons && !searchHasFocus && width > 330 &&
         <Reanimated.View
           layout={animPapillon(LinearTransition)}
-          entering={animPapillon(FadeInLeft).delay(100)}
-          exiting={animPapillon(FadeOutLeft)}
           style={{
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: hideDone ? theme.colors.primary : theme.colors.background + "ff",
-            borderColor: theme.colors.border + "dd",
-            borderWidth: 1,
-            borderRadius: 800,
-            height: 40,
-            width: showPickerButtons ? 40 : null,
-            minWidth: showPickerButtons ? 40 : null,
-            maxWidth: showPickerButtons ? 40 : null,
-            gap: 4,
-            shadowColor: "#00000022",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.6,
-            shadowRadius: 4,
+            flex: 1
           }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setHideDone(!hideDone);
-            }}
-          >
-            <CheckSquare
-              size={20}
-              color={hideDone ? "#fff" : theme.colors.text}
-              strokeWidth={2.5}
-              opacity={hideDone ? 1 : 0.7}
-            />
-          </TouchableOpacity>
-        </Reanimated.View>
-        }
+        />
 
-        <Reanimated.View
-          layout={
-            LinearTransition.duration(250).easing(Easing.bezier(0.5, 0, 0, 1).factory())
-          }
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-            backgroundColor: theme.colors.background + "ff",
-            borderColor: theme.colors.border + "dd",
-            borderWidth: 1,
-            borderRadius: 800,
-            paddingHorizontal: 14,
-            height: 40,
-            width: showPickerButtons ? 40 : null,
-            minWidth: showPickerButtons ? 40 : null,
-            maxWidth: showPickerButtons ? 40 : null,
-            gap: 4,
-            shadowColor: "#00000022",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.6,
-            shadowRadius: 4,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setShowPickerButtons(false);
-
-              setTimeout(() => {
-                // #TODO : change timeout method or duration
-                SearchRef.current?.focus();
-              }, 20);
-            }}
-          >
-            <Search
-              size={20}
-              color={theme.colors.text}
-              strokeWidth={2.5}
-              opacity={0.7}
-            />
-          </TouchableOpacity>
-
-          {!showPickerButtons &&
-          <Reanimated.View
-            layout={animPapillon(LinearTransition)}
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <View
             style={{
-              flex: 1,
-              height: "100%",
-              overflow: "hidden",
-              borderRadius: 80,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: hideDone ? theme.colors.primary : theme.colors.background + "ff",
+              borderColor: theme.colors.border + "dd",
+              borderWidth: 1,
+              borderRadius: 800,
+              height: 40,
+              width: 40,
+              gap: 4,
+              shadowColor: "#00000022",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.6,
+              shadowRadius: 4,
             }}
-            entering={FadeIn.duration(250).delay(20)}
-            exiting={FadeOut.duration(100)}
           >
-            <TextInput
-              placeholder={
-                (hideDone && !searchHasFocus) ? "Non terminé" :
-                  "Rechercher"
-              }
-              value={searchTerms}
-              onChangeText={setSearchTerms}
-              placeholderTextColor={theme.colors.text + "80"}
-              style={{
-                color: theme.colors.text,
-                padding: 8,
-                borderRadius: 80,
-                fontFamily: "medium",
-                fontSize: 16.5,
-                flex: 1,
+            <TouchableOpacity
+              onPress={() => {
+                setHideDone(!hideDone);
               }}
-              onFocus={() => setSearchHasFocus(true)}
-              onBlur={() => setSearchHasFocus(false)}
-              ref={SearchRef}
-            />
-          </Reanimated.View>
-          }
+            >
+              <CheckSquare
+                size={20}
+                color={hideDone ? "#fff" : theme.colors.text}
+                strokeWidth={2.5}
+                opacity={hideDone ? 1 : 0.7}
+              />
+            </TouchableOpacity>
+          </View>
 
-          {searchTerms.length > 0 && searchHasFocus &&
-          <TouchableOpacity
-            onPress={() => {
-              setSearchTerms("");
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+              backgroundColor: theme.colors.background + "ff",
+              borderColor: theme.colors.border + "dd",
+              borderWidth: 1,
+              borderRadius: 800,
+              paddingHorizontal: 14,
+              height: 40,
+              width: 40,
+              gap: 4,
+              shadowColor: "#00000022",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.6,
+              shadowRadius: 4,
+              maxWidth: "60%",
             }}
           >
-            <Reanimated.View
-              layout={animPapillon(LinearTransition)}
-              entering={FadeIn.duration(100)}
-              exiting={FadeOut.duration(100)}
-            >
-              <X
+            <TouchableOpacity onPress={() => SearchRef.current?.focus()}>
+              <Search
                 size={20}
                 color={theme.colors.text}
                 strokeWidth={2.5}
                 opacity={0.7}
               />
+            </TouchableOpacity>
+
+            <Reanimated.View
+              layout={animPapillon(LinearTransition)}
+              style={{
+                flex: 1,
+                overflow: "hidden",
+                borderRadius: 80,
+              }}
+              entering={FadeIn.duration(250).delay(20)}
+              exiting={FadeOut.duration(100)}
+            >
+              <ResponsiveTextInput
+                placeholder={hideDone ? "Non terminés" : "Rechercher"}
+                value={searchTerms}
+                onChangeText={setSearchTerms}
+                placeholderTextColor={theme.colors.text + "80"}
+                style={{
+                  color: theme.colors.text,
+                  padding: 7,
+                  borderRadius: 80,
+                  fontFamily: "medium",
+                  fontSize: 16.5,
+                }}
+                ref={SearchRef}
+              />
             </Reanimated.View>
-          </TouchableOpacity>
-          }
-        </Reanimated.View>
+
+            {searchTerms.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchTerms("")}>
+                <Reanimated.View
+                  layout={animPapillon(LinearTransition)}
+                  entering={FadeIn.duration(100)}
+                  exiting={FadeOut.duration(100)}
+                >
+                  <X
+                    size={20}
+                    color={theme.colors.text}
+                    strokeWidth={2.5}
+                    opacity={0.7}
+                  />
+                </Reanimated.View>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        {showDatePickerWeek && (
+          <DateModal
+            currentDate={weekNumberToMiddleDate(selectedWeek)}
+            onDateSelect={(selectedDate) => {
+              if (selectedDate) {
+                selectedDate.setUTCHours(1, 0, 0, 0);
+
+                const weekNumber = dateToEpochWeekNumber(selectedDate);
+                const index = data.findIndex((week) => week === weekNumber);
+                if (index !== -1) {
+                  flatListRef.current?.scrollToIndex({ index, animated: true });
+                  setSelectedWeek(weekNumber);
+
+                  setTimeout(async () => {
+                    await updateHomeworks(true, false, true);
+                  }, 500);
+                }
+              }
+            }}
+            showDatePicker={showDatePickerWeek}
+            setShowDatePicker={setShowDatePickerWeek}
+            isHomework
+          />
+        )}
       </PapillonModernHeader>
 
       <AddHomeworkButton
@@ -775,8 +696,8 @@ const AddHomeworkButton: React.FC<{ onPress: () => void, outsideNav: boolean }> 
     >
       <View
         style={{
-          width: 60,
-          height: 60,
+          width: 50,
+          height: 50,
           borderRadius: 30,
           backgroundColor: theme.colors.primary,
           justifyContent: "center",
