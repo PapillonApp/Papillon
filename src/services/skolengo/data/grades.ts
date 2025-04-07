@@ -8,24 +8,16 @@ const SKOLENGO_DEFAULT_SCALE = 20;
 
 const decodeGradeNumber = (value?:number | null): GradeValue =>
   typeof value === "number" ?
-    { value, disabled: false, status: null}
+    { value, disabled: false, status: null }
     : { value: null, disabled: true, status: null };
 
-const getSubjectMinMax = (evalSubj: Evaluation): {min: GradeValue, max:GradeValue, outOf: GradeValue} => {
+const getSubjectMinMax = (evalSubj: Evaluation): { min: GradeValue, max:GradeValue, outOf: GradeValue } => {
   const outOf = decodeGradeNumber(evalSubj.scale || SKOLENGO_DEFAULT_SCALE);
-  if(evalSubj.evaluations.filter(e=>e.evaluationResult.mark !== null && !e.evaluationResult.nonEvaluationReason).length === 0) return {min: { value: null, disabled: true, status: null } , max: { value: null, disabled: true, status: null }, outOf};
-  const [minimum, maximum] = evalSubj.evaluations.filter(e=>e.evaluationResult.mark !== null)
-    .map(e=>((e.evaluationResult.mark!)/(e.scale || SKOLENGO_DEFAULT_SCALE)) * (evalSubj.scale || SKOLENGO_DEFAULT_SCALE))
+  if (evalSubj.evaluations.filter((e) => e.evaluationResult.mark !== null && !e.evaluationResult.nonEvaluationReason).length === 0) return { min: { value: null, disabled: true, status: null } , max: { value: null, disabled: true, status: null }, outOf };
+  const [minimum, maximum] = evalSubj.evaluations.filter((e) => e.evaluationResult.mark !== null)
+    .map((e) => ((e.evaluationResult.mark!)/(e.scale || SKOLENGO_DEFAULT_SCALE)) * (evalSubj.scale || SKOLENGO_DEFAULT_SCALE))
     .reduce(([minAcc, maxAcc], e) => [Math.min(minAcc, e), Math.max(maxAcc, e)], [evalSubj.scale || SKOLENGO_DEFAULT_SCALE, 0]);
-  return {min: { value: minimum, disabled: false, status: null } , max: { value: maximum, disabled: false, status: null }, outOf};
-};
-
-const getOverall = (evals: Evaluation[]): GradeValue =>{
-  if(evals.filter(e=>e.average !== null).length === 0)
-    return { value: null, disabled: true, status: null };
-  const sum = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.average! * (e.coefficient || 1)), 0);
-  const sumCoef = evals.filter(e=>e.average !== null).reduce((acc, e) => acc + (e.coefficient || 1), 0);
-  return { value: sum / sumCoef, disabled: false, status: null };
+  return { min: { value: minimum, disabled: false, status: null } , max: { value: maximum, disabled: false, status: null }, outOf };
 };
 
 export const getGradesAndAverages = async (account: SkolengoAccount, periodName: string): Promise<{
@@ -36,7 +28,7 @@ export const getGradesAndAverages = async (account: SkolengoAccount, periodName:
     throw new ErrorServiceUnauthenticated("skolengo");
 
   const periods = await getPeriod(account);
-  const period = periods.find(p => p.name === periodName);
+  const period = periods.find((p) => p.name === periodName);
   if (!period)
     throw new Error("La période sélectionnée n'a pas été trouvée.");
 
@@ -54,7 +46,7 @@ export const getGradesAndAverages = async (account: SkolengoAccount, periodName:
     })),
   };
 
-  const grades: Grade[] = evals.map(e=>e.evaluations.map(f=>({...f, evaluation: e}))).flat().map(g => ({
+  const grades: Grade[] = evals.map((e) => e.evaluations.map((f) => ({ ...f, evaluation: e }))).flat().map((g) => ({
     id: g.id,
     subjectName: g.evaluation.subject.label,
     description: g.title || g.topic || "Evaluation",

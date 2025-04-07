@@ -2,8 +2,8 @@ import { Coffee, Utensils } from "lucide-react-native";
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import Reanimated from "react-native-reanimated";
-import {Balance} from "@/services/shared/Balance";
-import {Theme} from "@react-navigation/native";
+import { Balance } from "@/services/shared/Balance";
+import { Theme } from "@react-navigation/native";
 
 const AnimatedTouchableOpacity = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedView = Reanimated.createAnimatedComponent(View);

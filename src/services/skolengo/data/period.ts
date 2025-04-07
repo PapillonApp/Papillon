@@ -7,7 +7,7 @@ export const getPeriod = async (account: SkolengoAccount) => {
 
   const periods = await account.instance.getEvaluationSettings();
 
-  return periods.map(e=>e.periods).flat().map((p) => ({
+  return periods.map((e) => e.periods).flat().map((p) => ({
     id: p.id,
     name: p.label,
     startTimestamp: new Date(p.startDate).getTime(),

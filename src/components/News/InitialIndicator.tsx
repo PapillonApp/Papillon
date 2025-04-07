@@ -15,7 +15,7 @@ const InitialIndicator = ({ initial, color, textColor = "#FFF", size = 42 }: { i
       backgroundColor: color,
     }}>
       {initial === "group" ? (
-        <UsersRound size={size / 2} color={textColor}/>
+        <UsersRound size={size / 2} color={textColor} />
       ):(
         <NativeText variant="title" style={{
           color: textColor,

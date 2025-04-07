@@ -11,23 +11,23 @@ import { useCurrentAccount } from "@/stores/account";
 import QRCode from "react-native-qrcode-svg";
 import { AccountService } from "@/stores/account/types";
 import { qrcodeFromExternal } from "@/services/qrcode";
-import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteParameters } from "./../../router/helpers/types";
 import { STORE_THEMES } from "@/views/account/Restaurant/Cards/StoreThemes";
 import { formatCardIdentifier, ServiceCard } from "@/utils/external/restaurant";
+import { warn } from "@/utils/logger/logger";
+import { useNavigation } from "@react-navigation/native";
 
 type NavigationProps = StackNavigationProp<RouteParameters, "RestaurantQrCode">;
 
 const RestaurantQRCodeWidget = forwardRef(({
   setLoading,
-  setHidden,
-  loading,
+  setHidden
 }: WidgetProps, ref) => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const linkedAccounts = useCurrentAccount(store => store.linkedAccounts);
+  const linkedAccounts = useCurrentAccount((store) => store.linkedAccounts);
   const navigation = useNavigation<NavigationProps>();
   const [allCards, setAllCards] = useState<Array<ServiceCard> | null>(null);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -40,12 +40,6 @@ const RestaurantQRCodeWidget = forwardRef(({
     }
   }));
 
-  const getWeekNumber = (date: Date) => {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-  };
-
   useEffect(() => {
     void async function () {
       setHidden(true);
@@ -55,8 +49,8 @@ const RestaurantQRCodeWidget = forwardRef(({
       const accountPromises = linkedAccounts.map(async (account) => {
         try {
           const [cardnumber] = await Promise.all([
-            qrcodeFromExternal(account).catch(err => {
-              console.warn(`Error fetching QR code for account ${account}:`, err);
+            qrcodeFromExternal(account).catch((err) => {
+              warn(`Error fetching QR code for account ${account.username}:` + err, "RestaurantQRCodeWidget/qrcodeFromExternal");
               return "0";
             }),
           ]);
@@ -73,14 +67,14 @@ const RestaurantQRCodeWidget = forwardRef(({
           };
 
           newCards.push(newCard);
-        } catch (error) {
-          console.warn(`An error occurred with account ${account}:`, error);
+        } catch (err) {
+          warn(`An error occurred with account ${account.username}:` + err, "RestaurantQRCodeWidget/accountPromises");
         }
       });
 
       await Promise.all(accountPromises);
       setAllCards(newCards);
-      setHidden(!(allCards?.some(card => card.cardnumber) && currentHour >= 11 && currentHour <= 14));
+      setHidden(!(allCards?.some((card) => card.cardnumber) && currentHour >= 11 && currentHour <= 14));
       setLoading(false);
     }();
   }, [linkedAccounts, setHidden]);
@@ -88,7 +82,7 @@ const RestaurantQRCodeWidget = forwardRef(({
   useEffect(() => {
     const updateVisibility = () => {
       const currentHour = new Date().getHours();
-      const shouldShow = allCards?.some(card => card.cardnumber) && currentHour >= 11 && currentHour < 14;
+      const shouldShow = allCards?.some((card) => card.cardnumber) && currentHour >= 11 && currentHour < 14;
       setHidden(!shouldShow);
     };
 

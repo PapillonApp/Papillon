@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Image, View, StyleSheet } from "react-native";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
@@ -10,14 +10,8 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useAlert } from "@/providers/AlertProvider";
 import { Check, WifiOff } from "lucide-react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { useCurrentAccount } from "@/stores/account";
 
-const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation, route }) => {
-  const theme = useTheme();
-  const { colors } = theme;
-  const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account!);
+const ExternalAccountSelector: Screen<"ExternalAccountSelector"> = ({ navigation }) => {
   const { isOnline } = useOnlineStatus();
   const { showAlert } = useAlert();
 

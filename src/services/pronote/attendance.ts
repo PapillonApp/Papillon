@@ -31,7 +31,7 @@ export const getAttendancePeriods = (account: PronoteAccount): { periods: Period
 
 export async function getAttendance (account: PronoteAccount, periodName: string): Promise<Attendance> {
   const tab = getTab(account); // Vérifie aussi la validité de `account.instance`.
-  const period = tab.periods.find(p => p.name === periodName);
+  const period = tab.periods.find((p) => p.name === periodName);
   if (!period)
     throw new Error("La période sélectionnée n'a pas été trouvée.");
 
@@ -39,7 +39,7 @@ export async function getAttendance (account: PronoteAccount, periodName: string
   info(`PRONOTE->getAttendance(): OK pour ${periodName}`, "pronote");
 
   const attendance: Attendance = {
-    observations: items.observations.map(observation => {
+    observations: items.observations.map((observation) => {
       let sectionType: ObservationType;
 
       switch (observation.kind) {
@@ -68,7 +68,7 @@ export async function getAttendance (account: PronoteAccount, periodName: string
       };
     }),
 
-    punishments: items.punishments.map(punishment => ({
+    punishments: items.punishments.map((punishment) => ({
       id: punishment.id,
 
       schedulable: false, // TODO
@@ -91,7 +91,7 @@ export async function getAttendance (account: PronoteAccount, periodName: string
       duration: punishment.durationMinutes
     })),
 
-    absences: items.absences.map(absence => ({
+    absences: items.absences.map((absence) => ({
       id: absence.id,
       fromTimestamp: absence.startDate.getTime(),
       toTimestamp: absence.endDate.getTime(),
@@ -101,7 +101,7 @@ export async function getAttendance (account: PronoteAccount, periodName: string
       reasons: absence.reason
     })),
 
-    delays: items.delays.map(delay => ({
+    delays: items.delays.map((delay) => ({
       id: delay.id,
       timestamp: delay.date.getTime(),
       duration: delay.minutes,

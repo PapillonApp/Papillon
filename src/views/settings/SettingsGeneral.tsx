@@ -1,13 +1,11 @@
 import React from "react";
 import { ScrollView } from "react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeIconGradient, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { Bell, Cable, Smile } from "lucide-react-native";
 
 const SettingsGeneral: Screen<"SettingsGeneral"> = ({ navigation }) => {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const items = [

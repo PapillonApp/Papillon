@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ScrollView, Platform } from "react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeIconGradient, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
@@ -12,7 +11,6 @@ import useScreenDimensions from "@/hooks/useScreenDimensions";
 import { SettingsSubItem } from "./Settings";
 
 const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation }) => {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [click, setClick] = useState<true | false>(false);
   const { isTablet } = useScreenDimensions();

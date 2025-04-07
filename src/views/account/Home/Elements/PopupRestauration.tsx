@@ -1,8 +1,7 @@
-import React, {useEffect} from "react";
-import { View, Image, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { ArrowUpRight } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
 import { PapillonNavigation } from "@/router/refs";
@@ -15,8 +14,8 @@ interface PopupRestaurationProps {
 
 const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) => {
   const { colors } = useTheme();
-  const account = useCurrentAccount(store => store.account!);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
   const ImportanceHandler = () => {
     let hours = new Date().getHours();
@@ -26,13 +25,13 @@ const PopupRestauration: React.FC<PopupRestaurationProps> = ({ onImportance }) =
       onImportance(2);
   };
 
-  if (account.personalization?.popupRestauration === false) {
-    return null;
-  }
-
   useEffect(() => {
     ImportanceHandler();
   }, []);
+
+  if (account.personalization?.popupRestauration === false) {
+    return null;
+  }
 
   return (
     <NativeList

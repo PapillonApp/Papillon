@@ -7,7 +7,7 @@ function upperName (name: string): string {
 }
 
 export default function extract_pronote_name (fullName: string) {
-  const regex = /^([\p{L} \-]+) ([\p{L}\-]+.*)$/u;
+  const regex = /^([\p{L} -]+) ([\p{L}-]+.*)$/u;
   const match = fullName.match(regex);
 
   if (match) {

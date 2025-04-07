@@ -14,8 +14,8 @@ const PriceBeforeScan: Screen<"PriceBeforeScan"> = ({ navigation, route }) => {
   const { accountID } = route.params;
 
   const { mainAccount, externalAccount } = useMemo(() => {
-    const mainAccount = accounts.find(acc => acc.localID === accountID && !acc.isExternal) as PrimaryAccount;
-    const externalAccount = accounts.find(acc => acc.localID === accountID || acc.linkedExternalLocalIDs?.includes(accountID)) as ExternalAccount;
+    const mainAccount = accounts.find((acc) => acc.localID === accountID && !acc.isExternal) as PrimaryAccount;
+    const externalAccount = accounts.find((acc) => acc.localID === accountID || acc.linkedExternalLocalIDs?.includes(accountID)) as ExternalAccount;
     return { mainAccount, externalAccount };
   }, [accounts, accountID]);
 
@@ -29,7 +29,7 @@ const PriceBeforeScan: Screen<"PriceBeforeScan"> = ({ navigation, route }) => {
   }, [mainAccount]);
 
   const getBarcodeFormat = useCallback((type: string): string => {
-    switch(type) {
+    switch (type) {
       case "org.gs1.EAN-8":
         return "EAN8";
       case "org.gs1.EAN-13":

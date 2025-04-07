@@ -1,7 +1,6 @@
 import { CopyPlus } from "lucide-react-native";
 import React, { forwardRef, useEffect, useState, useCallback, useMemo, memo } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useCurrentAccount } from "@/stores/account";
 import Reanimated, { Easing, FadeInRight, ZoomIn, ZoomOut } from "react-native-reanimated";
 import { get_home_widgets } from "@/addons/addons";
@@ -201,8 +200,6 @@ const HeaderButton = React.memo<{
   scrolled: boolean;
   onPress: () => void;
 }>(({ icon, index, text, scrolled, onPress }) => {
-      const theme = useTheme();
-      const { colors } = theme;
 
       const newIcon = useMemo(() => React.cloneElement(icon, { size: 24, color: "#fff" }), [icon]);
 

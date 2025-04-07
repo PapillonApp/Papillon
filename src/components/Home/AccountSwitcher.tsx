@@ -7,20 +7,17 @@ import Reanimated, {
   LinearTransition,
   useAnimatedStyle,
   ZoomIn,
-  ZoomOut,
+  ZoomOut
 } from "react-native-reanimated";
 import { useCurrentAccount } from "@/stores/account";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
 import PapillonSpinner from "../Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
-import { BlurView } from "expo-blur";
 
-const ReanimatedBlurView = Reanimated.createAnimatedComponent(BlurView);
 const AnimatedChevronDown = Reanimated.createAnimatedComponent(ChevronDown);
 
 const AccountSwitcher = ({
   small = false,
-  opened = false,
   modalOpen = false,
   // @ts-expect-error
   translationY,
@@ -32,21 +29,6 @@ const AccountSwitcher = ({
 
   const shouldHideName = account.personalization.hideNameOnHomeScreen || false;
   const shouldHidePicture = account.personalization.hideProfilePicOnHomeScreen || false;
-
-  const borderAnimatedStyle = useAnimatedStyle(() => ({
-    borderWidth: 1,
-    borderRadius: 80,
-    borderColor: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#ffffff50", colors.border]
-    ),
-    backgroundColor: interpolateColor(
-      translationY?.value || 0,
-      [200, 251],
-      ["#ffffff30", "transparent"]
-    ),
-  }));
 
   const textAnimatedStyle = useAnimatedStyle(() => ({
     color: colors.text,

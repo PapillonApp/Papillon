@@ -29,7 +29,7 @@ const GradesScodocUE = memo(({ account, navigation, selectedPeriod }: { account:
   const ressources = grades["relevé"]["ressources"];
   const saes = grades["relevé"]["saes"];
 
-  const finalUes = useMemo(() => uekeys.map(ue => ({
+  const finalUes = useMemo(() => uekeys.map((ue) => ({
     name: ue,
     ...ues[ue]
   })), [uekeys, ues]);
@@ -80,9 +80,9 @@ const GradesScodocUE = memo(({ account, navigation, selectedPeriod }: { account:
           const [opened, setOpened] = useState(false);
 
           const grades = useMemo(() => {
-            const result: Array<{key: string, type: "ressources" | "saes"}> = [];
-            Object.keys(ue.ressources).forEach(res => result.push({ key: res, type: "ressources" }));
-            Object.keys(ue.saes).forEach(sae => result.push({ key: sae, type: "saes" }));
+            const result: Array<{ key: string, type: "ressources" | "saes" }> = [];
+            Object.keys(ue.ressources).forEach((res) => result.push({ key: res, type: "ressources" }));
+            Object.keys(ue.saes).forEach((sae) => result.push({ key: sae, type: "saes" }));
             return result;
           }, [ue.ressources, ue.saes]);
 

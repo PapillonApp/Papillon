@@ -9,14 +9,15 @@ import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import LoginView from "@/components/Templates/LoginView";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { NativeText } from "@/components/Global/NativeComponents";
+import { error } from "@/utils/logger/logger";
 
 const API_BASE_URL = "https://api.univ-spn.fr";
 const USER_AGENT = "USPNAPP/1.0.1 CFNetwork/1568.200.41 Darwin/24.1.0";
 
 const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ navigation }) => {
   const theme = useTheme();
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
 
@@ -61,6 +62,7 @@ const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ na
 
       const studentInfo = await fetchStudentInfo(studentId, token);
       // Exclude INE from rawData
+      // eslint-disable-next-line
       const { INE, ...safeStudentInfo } = studentInfo;
 
       const localAccount: LocalAccount = {
@@ -95,8 +97,8 @@ const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ na
         index: 0,
         routes: [{ name: "AccountCreated" }],
       });
-    } catch (error) {
-      console.error("Error during login process:", error);
+    } catch (err) {
+      error("Error during login process: " + err, "UnivSorbonneParisNord_login/login");
       // Here you might want to show an error message to the user
     } finally {
       setIsLoading(false);

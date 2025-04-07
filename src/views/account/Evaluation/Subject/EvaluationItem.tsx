@@ -36,9 +36,9 @@ const EvaluationItem: React.FC<GradeItemProps> = ({
   });
 
   const gradeValue =
-		typeof grade.student.value === "number"
-		  ? grade.student.value.toFixed(2)
-		  : "N. not";
+    typeof grade.student.value === "number"
+      ? grade.student.value.toFixed(2)
+      : "N. not";
 
   return (
     <NativeItem

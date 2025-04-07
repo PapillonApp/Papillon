@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Image, StyleSheet, View } from "react-native";
+import { ScrollView, Image, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Euro, Github, MapPin, MessageCircle } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NativeList, NativeItem, NativeListHeader } from "@/components/Global/NativeComponents";
-import { NativeIcon } from "@/components/Global/NativeComponents";
-import { NativeText } from "@/components/Global/NativeComponents";
+import { NativeList, NativeItem, NativeListHeader, NativeIcon, NativeText } from "@/components/Global/NativeComponents";
 import PackageJSON from "../../../package.json";
 import AboutContainerCard from "@/components/Settings/AboutContainerCard";
 import * as Linking from "expo-linking";
@@ -89,7 +87,7 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
         {teams.map((team, index) => (
           <NativeItem
             onPress={team.link ? () => Linking.openURL(team.link) : undefined}
-            chevron={team.link ? true : false}
+            chevron={!!team.link}
             key={index}
             leading={<Image
               source={{ uri: team.ppimage }}
@@ -212,40 +210,5 @@ const SettingsAbout: Screen<"SettingsAbout"> = ({ navigation }) => {
     </ScrollView>
   );
 };
-
-// Styles
-const styles = StyleSheet.create({
-  title: {
-    color: "#222222",
-    fontSize: 15,
-  },
-  time: {
-    color: "#3F3F3F",
-    opacity: 0.5,
-    textAlign: "right",
-    fontFamily: "sfmedium",
-    fontSize: 13,
-    marginRight: 10,
-  },
-  message: {
-    color: "#3F3F3F",
-    fontFamily: "sfmedium",
-    fontSize: 14,
-    maxWidth: "85%",
-    minWidth: "85%",
-    lineHeight: 15,
-    letterSpacing: -0.4,
-  },
-
-  overlay: {
-    backgroundColor: "#EEF5F5",
-    borderWidth: 1,
-    borderColor: "#00000030",
-    borderRadius: 20,
-    height: 25,
-    padding: 9,
-    marginHorizontal: 20,
-  },
-});
 
 export default SettingsAbout;

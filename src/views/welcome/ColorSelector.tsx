@@ -24,8 +24,8 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const settings = route.params?.settings || false;
   const { playHaptics, playSound } = useSoundHapticsWrapper();
   const LEson003 = require("@/../assets/sound/click_003.wav");
@@ -64,7 +64,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           setIconName(iconConstructName);
         }
       });
-    };
+    }
   };
 
   const ColorButton: React.FC<{ color: Color }> = ({ color }) => (
@@ -135,7 +135,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
         width={280}
         offsetTop={"10%"}
       />
-      <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text}/>
+      <MaskStarsColored color={account?.personalization?.color?.hex.primary || colors.text} />
       <View style={styles.colors}>
         <View style={styles.row}>
           {colorsList.slice(0, 3).map((color) => <ColorButton key={color.id} color={color} />)}
@@ -187,7 +187,7 @@ const ColorSelector: Screen<"ColorSelector"> = ({ route, navigation }) => {
           value={settings ? "Sauvegarder" : !hasProfilePic ? "Continuer" : "Finaliser"}
           onPress={async () => {
             if (!settings) {
-              if(!hasProfilePic) {
+              if (!hasProfilePic) {
                 navigation.navigate("ProfilePic");
                 return;
               }

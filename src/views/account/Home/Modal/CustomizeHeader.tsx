@@ -54,9 +54,9 @@ export const HEADERS_IMAGE = [
   }
 ];
 
-const CustomizeHeader: Screen<"CustomizeHeader"> = ({ route, navigation }) => {
-  const account = useCurrentAccount(store => store.account);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+const CustomizeHeader: Screen<"CustomizeHeader"> = ({ navigation }) => {
+  const account = useCurrentAccount((store) => store.account);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
   const defaultGradient = {
     startColor: COLORS_LIST[0],
@@ -150,7 +150,7 @@ const CustomizeHeader: Screen<"CustomizeHeader"> = ({ route, navigation }) => {
           centerReset={centerReset}
           selected={gradient?.startColor || undefined}
           onColorSelect={(color) => {
-            if(!gradient) {
+            if (!gradient) {
               setGradient(defaultGradient);
             }
             setGradient((prev) => ({
@@ -165,7 +165,7 @@ const CustomizeHeader: Screen<"CustomizeHeader"> = ({ route, navigation }) => {
           centerReset={centerReset}
           selected={gradient?.endColor || undefined}
           onColorSelect={(color) => {
-            if(!gradient) {
+            if (!gradient) {
               setGradient(defaultGradient);
             }
             setGradient((prev) => ({

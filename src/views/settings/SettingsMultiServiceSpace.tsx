@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -9,18 +9,18 @@ import {
   View
 } from "react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import type {Screen} from "@/router/helpers/types";
-import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
-import {BadgeHelp, Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, Undo2, User2} from "lucide-react-native";
-import {useAccounts} from "@/stores/account";
-import {AccountService, PrimaryAccount} from "@/stores/account/types";
+import type { Screen } from "@/router/helpers/types";
+import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import { BadgeHelp, Camera, ChevronDown, CircleAlert, TextCursorInput, Trash2, Type, Undo2, User2 } from "lucide-react-native";
+import { useAccounts } from "@/stores/account";
+import { AccountService, PrimaryAccount } from "@/stores/account/types";
 import * as ImagePicker from "expo-image-picker";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {useMultiService} from "@/stores/multiService";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useMultiService } from "@/stores/multiService";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import LottieView from "lottie-react-native";
-import {anim2Papillon} from "@/utils/ui/animations";
-import Reanimated, {FadeOut, ZoomIn} from "react-native-reanimated";
+import { anim2Papillon } from "@/utils/ui/animations";
+import Reanimated, { FadeOut, ZoomIn } from "react-native-reanimated";
 import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
 import * as Haptics from "expo-haptics";
 import AccountItem from "@/components/Global/AccountItem";
@@ -34,13 +34,13 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
   const insets = useSafeAreaInsets();
   const space = route.params.space;
   const accounts = useAccounts();
-  const availableAccounts = accounts.accounts.filter(account => !account.isExternal && !(account.service == AccountService.PapillonMultiService));
-  const deleteMultiServiceSpace = useMultiService(store => store.remove);
-  const updateMultiServiceSpace = useMultiService(store => store.update);
-  const setMultiServiceSpaceAccountFeature = useMultiService(store => store.setFeatureAccount);
+  const availableAccounts = accounts.accounts.filter((account) => !account.isExternal && !(account.service == AccountService.PapillonMultiService));
+  const deleteMultiServiceSpace = useMultiService((store) => store.remove);
+  const updateMultiServiceSpace = useMultiService((store) => store.update);
+  const setMultiServiceSpaceAccountFeature = useMultiService((store) => store.setFeatureAccount);
   const { playHaptics } = useSoundHapticsWrapper();
 
-  const linkedAccount = accounts.accounts.find(account => account.localID === space.accountLocalID) as PrimaryAccount | undefined;
+  const linkedAccount = accounts.accounts.find((account) => account.localID === space.accountLocalID) as PrimaryAccount | undefined;
 
   const firstNameRef = useRef<TextInput>(null);
   const lastNameRef = useRef<TextInput>(null);
@@ -110,7 +110,7 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
   };
 
   const openAccountSelector = (feature: MultiServiceFeature, name: string) => {
-    setSelectedAccount(availableAccounts.find(account => account.localID === space.featuresServices[feature]) || null);
+    setSelectedAccount(availableAccounts.find((account) => account.localID === space.featuresServices[feature]) || null);
     setFeatureSelection(feature);
     setFeatureSelectionName(name);
     setAccountSelectorOpened(true);
@@ -126,11 +126,11 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
       linkedAccountsIds = linkedAccountsIds.filter((value, index) => linkedAccountsIds.indexOf(value) === index); // Remove duplicates
     } else {
       // If feature's service has been removed and service is not assigned to other feature, we remove it from "associatedAccountsLocalIDs"
-      const accountNoMoreUsed = !Object.keys(space.featuresServices).some(key =>
+      const accountNoMoreUsed = !Object.keys(space.featuresServices).some((key) =>
         (space.featuresServices[key as MultiServiceFeature] == currentSelectedAccountID && !((key as MultiServiceFeature) === feature))
       );
       if (accountNoMoreUsed) {
-        linkedAccountsIds = linkedAccountsIds.filter(localID => localID != currentSelectedAccountID);
+        linkedAccountsIds = linkedAccountsIds.filter((localID) => localID != currentSelectedAccountID);
       }
     }
     // @ts-expect-error
@@ -387,17 +387,17 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
                     />
                   </Reanimated.View>}
                 onPress={() => openAccountSelector(feature.feature, feature.name)}
-                trailing={<ChevronDown color={theme.colors.primary}/>}
+                trailing={<ChevronDown color={theme.colors.primary} />}
                 chevron={false}
               >
                 <NativeText variant="title">{feature.name}</NativeText>
               </NativeItem>
-              {accounts.accounts.find(account =>
+              {accounts.accounts.find((account) =>
                 account.localID === space.featuresServices[feature.feature]) ?
                 (
                   <AccountItem
                     account={accounts.accounts.find(
-                      account => account.localID === space.featuresServices[feature.feature]) as PrimaryAccount}
+                      (account) => account.localID === space.featuresServices[feature.feature]) as PrimaryAccount}
                     endCheckMark={false}
                     additionalStyles={{
                       paddingStart: 10,
@@ -420,13 +420,13 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
           ))}
         </NativeList>
 
-        <PapillonBottomSheet opened={accountSelectorOpened} setOpened={opened => setAccountSelectorOpened(opened)}>
+        <PapillonBottomSheet opened={accountSelectorOpened} setOpened={(opened) => setAccountSelectorOpened(opened)}>
           <View
             style={{
               paddingHorizontal: 10
             }}
           >
-            <NativeListHeader label={`Sélectionner un service pour "${featureSelectionName}"`}/>
+            <NativeListHeader label={`Sélectionner un service pour "${featureSelectionName}"`} />
             <NativeList>
               {availableAccounts.map((account, index) => (
                 <Pressable

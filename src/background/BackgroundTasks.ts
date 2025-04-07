@@ -19,33 +19,37 @@ const notifeeEvent = async () => {
 
   // Gestion des badges quand app en arrière-plan
   notifee.onBackgroundEvent(async ({ type, detail }) => {
-    const { notification, pressAction } = detail;
+    const { pressAction } = detail;
 
     switch (type) {
-      case EventType.ACTION_PRESS:
-        console.log(`[Notifee] Action press: ${pressAction?.id}`);
-
-      case EventType.DISMISSED:
+      case EventType.ACTION_PRESS: {
+        log(`[Notifee] Action press: ${pressAction?.id}`, "NOTIFEE/BK");
+        break;
+      }
+      case EventType.DISMISSED: {
         let badgeCount = await notifee.getBadgeCount();
         badgeCount--;
         await notifee.setBadgeCount(badgeCount);
         break;
+      }
     }
   });
 
   // Gestion des badges quand app en premier plan
   notifee.onForegroundEvent(async ({ type, detail }) => {
-    const { notification, pressAction } = detail;
+    const { pressAction } = detail;
 
     switch (type) {
-      case EventType.ACTION_PRESS:
-        console.log(`[Notifee] Action press: ${pressAction?.id}`);
-
-      case EventType.DISMISSED:
+      case EventType.ACTION_PRESS: {
+        log(`[Notifee] Action press: ${pressAction?.id}`, "NOTIFEE/FW");
+        break;
+      }
+      case EventType.DISMISSED: {
         let badgeCount = await notifee.getBadgeCount();
         badgeCount--;
         await notifee.setBadgeCount(badgeCount);
         break;
+      }
     }
   });
 };

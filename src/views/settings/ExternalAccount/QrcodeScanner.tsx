@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 import type { Screen } from "@/router/helpers/types";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { QrCode } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets, SafeAreaView } from "react-native-safe-area-context";
 import { View, StyleSheet, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
 
 import { ExternalAccount } from "@/stores/account/types";
 import { useAccounts } from "@/stores/account";
@@ -14,16 +11,9 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import * as Haptics from "expo-haptics";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
-type Props = {
-  navigation: any;
-  route: { params: { accountID: string } };
-};
-
 const QrcodeScanner: Screen<"QrcodeScanner"> = ({ navigation, route }) => {
-  const theme = useTheme();
-  const { colors } = theme;
   const insets = useSafeAreaInsets();
-  const update = useAccounts(store => store.update);
+  const update = useAccounts((store) => store.update);
   const accountID = route.params?.accountID;
   const [hasPermission, setHasPermission] = React.useState<boolean | null>(null);
   const [scanned, setScanned] = React.useState(false);

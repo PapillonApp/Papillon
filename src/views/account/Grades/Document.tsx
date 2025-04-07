@@ -1,4 +1,3 @@
-import React from "react";
 import { NativeItem, NativeList, NativeListHeader, NativeText, } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
@@ -15,8 +14,7 @@ import {
   Users,
   Maximize2
 } from "lucide-react-native";
-import { getAverageDiffGrade } from "@/utils/grades/getAverages";
-import type { AverageDiffGrade } from "@/utils/grades/getAverages";
+import { getAverageDiffGrade, type AverageDiffGrade } from "@/utils/grades/getAverages";
 import { Screen } from "@/router/helpers/types";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,7 +52,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
     navigation.addListener("beforeRemove", () => {
       if (shouldShowReviewOnClose) {
         AsyncStorage.getItem("review_given").then((value) => {
-          if(!value) {
+          if (!value) {
             askForReview();
             AsyncStorage.setItem("review_given", "true");
           }
@@ -179,38 +177,38 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
           title: "Moyenne générale",
           description: "Impact estimé sur la moyenne générale",
           value:
-                        gradeDiff.difference === undefined
-                          ? "???"
-                          : (gradeDiff.difference > 0
-                            ? "- "
-                            : gradeDiff.difference === 0
-                              ? "+/- "
-                              : "+ ") +
-                            gradeDiff.difference.toFixed(2).replace("-", "") +
-                            " pts",
+            gradeDiff.difference === undefined
+              ? "???"
+              : (gradeDiff.difference > 0
+                ? "- "
+                : gradeDiff.difference === 0
+                  ? "+/- "
+                  : "+ ") +
+                gradeDiff.difference.toFixed(2).replace("-", "") +
+                " pts",
           color:
-                        gradeDiff.difference === undefined
-                          ? void 0
-                          : gradeDiff.difference < 0
-                            ? "#4CAF50"
-                            : gradeDiff.difference === 0
-                              ? theme.colors.text
-                              : "#F44336",
+            gradeDiff.difference === undefined
+              ? void 0
+              : gradeDiff.difference < 0
+                ? "#4CAF50"
+                : gradeDiff.difference === 0
+                  ? theme.colors.text
+                  : "#F44336",
         },
         !grade.average.disabled && {
           icon: <School />,
           title: "Moyenne de la classe",
           description: "Impact de la note sur la moyenne de la classe",
           value:
-                        classDiff.difference === undefined
-                          ? "???"
-                          : (classDiff.difference > 0
-                            ? "- "
-                            : gradeDiff.difference === 0
-                              ? "+/- "
-                              : "+ ") +
-                            classDiff.difference.toFixed(2).replace("-", "") +
-                            " pts",
+            classDiff.difference === undefined
+              ? "???"
+              : (classDiff.difference > 0
+                ? "- "
+                : gradeDiff.difference === 0
+                  ? "+/- "
+                  : "+ ") +
+                classDiff.difference.toFixed(2).replace("-", "") +
+                " pts",
         },
       ],
     },

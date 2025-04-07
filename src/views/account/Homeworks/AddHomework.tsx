@@ -19,9 +19,9 @@ import HomeworkItem from "./Atoms/Item";
 
 
 const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
   const theme = useTheme();
-  const homeworks = useHomeworkStore(store => store.homeworks);
+  const homeworks = useHomeworkStore((store) => store.homeworks);
   const localSubjects = account.personalization.subjects ?? {};
   const [selectedPretty, setSelectedPretty] = useState(
     Object.entries(localSubjects || {})[0]?.[1] ?? null
@@ -39,7 +39,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
   useEffect(() => {
     if (route.params?.hwid) {
       const allHomeworks = Object.values(homeworks).flat();
-      const homework = allHomeworks.find(hw => hw.id === route.params?.hwid);
+      const homework = allHomeworks.find((hw) => hw.id === route.params?.hwid);
       if (homework) {
         const THEpretty = Object.entries(localSubjects).find((element) => element[1].pretty === homework.subject);
         if (THEpretty) setSelectedPretty(THEpretty[1]);
@@ -133,7 +133,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
     setContentHomework(null);
     setDateHomework(Date.now());
     navigation.goBack();
-    if(route.params?.modal) {
+    if (route.params?.modal) {
       navigation.goBack();
     }
   };
@@ -196,7 +196,7 @@ const AddHomeworkScreen: Screen<"AddHomework"> = ({ route, navigation }) => {
             >
               {Platform.OS === "ios" ? (
                 <PapillonPicker
-                  data={Object.entries(localSubjects).map(([key, subject]) => ({
+                  data={Object.entries(localSubjects).map(([_key, subject]) => ({
                     label: subject.pretty,
                     onPress: () => setSelectedPretty(subject),
                     checked: selectedPretty?.pretty === subject.pretty,

@@ -1,14 +1,14 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import { useHomeworkStore } from "@/stores/homework";
 import type { Homework } from "./shared/Homework";
-import {error, log} from "@/utils/logger/logger";
+import { error, info, log } from "@/utils/logger/logger";
 import { translateToWeekNumber } from "pawnote";
 import { pronoteFirstDate } from "./pronote/timetable";
 import { dateToEpochWeekNumber } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { useClassSubjectStore } from "@/stores/classSubject";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
 
 /**
  * Updates the state and cache for the homework of given week number.
@@ -25,7 +25,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
         break;
       }
       case AccountService.Skolengo: {
-        if(!checkIfSkoSupported(account, "Homeworks")) {
+        if (!checkIfSkoSupported(account, "Homeworks")) {
           error("[updateHomeworkForWeekInCache]: This Skolengo instance doesn't support Homeworks.", "skolengo");
           break;
         }
@@ -55,7 +55,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
         return updateHomeworkForWeekInCache(service, date);
       }
       default:
-        console.info(`[updateHomeworkForWeekInCache]: updating to empty since ${account.service} not implemented.`);
+        info(`Updating to empty since ${account.service} not implemented.`, "updateHomeworkForWeekInCache");
     }
 
     const weekNumber = dateToEpochWeekNumber(date);

@@ -1,6 +1,6 @@
 import { NativeList, NativeItem, NativeText } from "@/components/Global/NativeComponents";
 import { ScrollView, StyleSheet, View, Image } from "react-native";
-import type {Screen} from "@/router/helpers/types";
+import type { Screen } from "@/router/helpers/types";
 
 const ChatThemes: Screen<"ChatThemes"> = ({ navigation, route }) => {
   const { themes, onGoBack } = route.params;
@@ -8,7 +8,7 @@ const ChatThemes: Screen<"ChatThemes"> = ({ navigation, route }) => {
   return (
     <ScrollView style={styles.container}>
       <NativeList>
-        {themes.map(theme => (
+        {themes.map((theme) => (
           <NativeItem
             key={theme.path}
             onPress={() => {

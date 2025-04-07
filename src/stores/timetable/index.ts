@@ -10,7 +10,7 @@ export const useTimetableStore = create<TimetableStore>()(
     (set) => ({
       timetables: {},
       updateClasses: (weekNumber, classes) => {
-        log(`updating classes for week ${weekNumber}`, "timetable:updateClasses");
+        log(`Updating classes for week ${weekNumber}`, "timetable:updateClasses");
 
         set((state) => {
           return {
@@ -21,21 +21,21 @@ export const useTimetableStore = create<TimetableStore>()(
           };
         });
 
-        log(`[timetable:updateClasses]: updated classes for week ${weekNumber}`, "timetable:updateClasses");
+        log(`Updated classes for week ${weekNumber}`, "timetable:updateClasses");
       },
       injectClasses: (data: any) => {
-        log("replacing classes", "timetable:replaceClasses");
+        log("Replacing classes", "timetable:replaceClasses");
 
-        set((state) => {
+        set(() => {
           return {
             timetables: data,
           };
         });
 
-        log(`[timetable:replaceClasses]: replaced classes for week ${data.weekNumber}`, "timetable:replaceClasses");
+        log(`Replaced classes for week ${data.weekNumber}`, "timetable:replaceClasses");
       },
       removeClasses: (weekNumber) => {
-        log(`removing classes for week ${weekNumber}`, "timetable:removeClasses");
+        log(`Removing classes for week ${weekNumber}`, "timetable:removeClasses");
 
         set((state) => {
           const timetables = { ...state.timetables };
@@ -45,10 +45,10 @@ export const useTimetableStore = create<TimetableStore>()(
           };
         });
 
-        log(`[timetable:removeClasses]: removed classes for week ${weekNumber}`, "timetable:removeClasses");
+        log(`Removed classes for week ${weekNumber}`, "timetable:removeClasses");
       },
       removeClassesFromSource: (source) => {
-        log(`removing classes from source ${source}`, "timetable:removeClassesFromSource");
+        log(`Removing classes from source ${source}`, "timetable:removeClassesFromSource");
 
         set((state) => {
           const timetables = { ...state.timetables };
@@ -60,7 +60,7 @@ export const useTimetableStore = create<TimetableStore>()(
           };
         });
 
-        log(`[timetable:removeClassesFromSource]: removed classes from source ${source}`, "timetable:removeClassesFromSource");
+        log(`Removed classes from source ${source}`, "timetable:removeClassesFromSource");
       }
     }),
     {

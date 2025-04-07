@@ -3,10 +3,9 @@ import { useTimetableStore } from "@/stores/timetable";
 import { epochWNToPronoteWN, weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import { checkIfSkoSupported } from "./skolengo/default-personalization";
 import { error, log } from "@/utils/logger/logger";
-import {MultiServiceFeature} from "@/stores/multiService/types";
-import {getFeatureAccount} from "@/utils/multiservice";
-import { TimetableRessource, WeekFrequency } from "./shared/Timetable";
-import { TimetableClass } from "./shared/Timetable";
+import { MultiServiceFeature } from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
+import { TimetableRessource, WeekFrequency, TimetableClass } from "./shared/Timetable";
 
 /**
  * Updates the state and cache for the timetable of given week number.
@@ -26,7 +25,7 @@ export async function updateTimetableForWeekInCache <T extends Account> (account
       break;
     }
     case AccountService.Skolengo: {
-      if(!checkIfSkoSupported(account, "Lessons")) {
+      if (!checkIfSkoSupported(account, "Lessons")) {
         error("[updateTimetableForWeekInCache]: This Skolengo instance doesn't support Lessons.", "skolengo");
         break;
       }

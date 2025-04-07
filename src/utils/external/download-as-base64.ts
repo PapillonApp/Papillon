@@ -6,7 +6,7 @@ export default async function downloadAsBase64 (url: string, headers?: Record<st
   });
   const blob = await response.blob();
 
-  return new Promise<string>(resolve => {
+  return new Promise<string>((resolve) => {
     // Read as base64 URL.
     const reader = new FileReader();
     reader.readAsDataURL(blob);
@@ -15,4 +15,4 @@ export default async function downloadAsBase64 (url: string, headers?: Record<st
       resolve(base64data);
     };
   });
-};
+}
