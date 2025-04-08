@@ -26,11 +26,10 @@ export const COLORS_LIST = [
   "#7F7F7F",
 ];
 
-// @ts-expect-error
-export const getRandColor = (usedColors?) => {
+export const getRandColor = (usedColors?: string[]): string => {
   const availableColors = COLORS_LIST.filter(
     (color) => {
-      if(usedColors.length > 0) {
+      if(usedColors && usedColors.length > 0) {
         return !usedColors.includes(color);
       }
       return true;
@@ -42,8 +41,7 @@ export const getRandColor = (usedColors?) => {
   );
 };
 
-// @ts-expect-error
-const getClosestGradeEmoji = (subjectName) => {
+const getClosestGradeEmoji = (subjectName: string) => {
   const gradeEmojiList = {
     numerique: "💻",
     SI: "💻",
@@ -104,12 +102,10 @@ const getClosestGradeEmoji = (subjectName) => {
   const closest =
     sortedKeys.find((key) => subjectNameFormatted.includes(key)) || "default";
 
-  // @ts-expect-error
-  return gradeEmojiList[closest];
+  return gradeEmojiList[closest as keyof typeof gradeEmojiList];
 };
 
-// @ts-expect-error
-export const getSubjectData = (entry) => {
+export const getSubjectData = (entry: string) => {
   try {
     const state = useCurrentAccount.getState();
     const { account, mutateProperty } = state;
