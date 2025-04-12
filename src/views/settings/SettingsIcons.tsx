@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, ScrollView, View, TouchableOpacity, Image } from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, Image, Platform } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BadgeInfo, Sparkles } from "lucide-react-native";
@@ -55,7 +55,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       } else {
         // Si l'utilisateur a changé l'icône avant le changement de module
         resetIcon();
-        setIcon("default");
+        setIcon("Default");
       }
     };
 
@@ -69,7 +69,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       const mainColor = theme.colors.primary;
       const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
 
-      const iconConstructName = icon.id + (colorItem ? "_" + colorItem.id : "");
+      const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
+      const iconConstructName = idIcon + (colorItem ? "_" + colorItem.id : "");
 
       if (!isExpoGo()) {
         changeIcon(iconConstructName)
@@ -84,7 +85,9 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       }
     } else {
       if (!isExpoGo()) {
-        changeIcon(icon.id)
+        const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
+
+        changeIcon(idIcon)
           .then(() => {
             setIcon(icon.id);
           })
