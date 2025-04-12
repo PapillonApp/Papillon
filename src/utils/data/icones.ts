@@ -1,7 +1,7 @@
 export const icones = {
   "Par défaut": [
     {
-      id: "Default",
+      id: "default",
       name: "Défaut",
       icon: require("../../../assets/icon.png"),
       author: "",
@@ -12,7 +12,7 @@ export const icones = {
   ],
   Dynamiques: [
     {
-      id: "AppIcon_Dynamic",
+      id: "dynamic",
       name: "Originale",
       icon: require("../../../assets/icon/dynamic_green.png"),
       dynamic: {
@@ -29,7 +29,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_3D_Dynamic",
+      id: "3d_dynamic",
       name: "3D",
       icon: require("../../../assets/icon/3d_green.png"),
       dynamic: {
@@ -46,7 +46,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Circle_Dynamic",
+      id: "circle_dynamic",
       name: "Cercles",
       icon: require("../../../assets/icon/circle_green.png"),
       dynamic: {
@@ -63,7 +63,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Cutted_Dynamic",
+      id: "cutted_dynamic",
       name: "Découpe",
       icon: require("../../../assets/icon/cutted_green.png"),
       dynamic: {
@@ -80,7 +80,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Rays_Dynamic",
+      id: "rays_dynamic",
       name: "Rayons",
       icon: require("../../../assets/icon/rays_green.png"),
       dynamic: {
@@ -97,7 +97,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Gradient_Dynamic",
+      id: "gradient_dynamic",
       name: "Dégradé",
       icon: require("../../../assets/icon/gradent_green.png"),
       dynamic: {
@@ -114,7 +114,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Stroke_Dynamic",
+      id: "stroke_dynamic",
       name: "Lignes",
       icon: require("../../../assets/icon/stroke_green.png"),
       dynamic: {
@@ -133,7 +133,7 @@ export const icones = {
   ],
   "Concours de la communauté": [
     {
-      id: "AppIcon_Community_Gradient",
+      id: "community_gradient",
       name: "Dégradé",
       icon: require("../../../assets/icon/community_gradient.png"),
       author: "Gabriel (ggkervran)",
@@ -142,7 +142,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_V7",
+      id: "community_v7",
       name: "Version 7",
       icon: require("../../../assets/icon/community_v7.png"),
       author: "Quentin (quentin_17)",
@@ -151,7 +151,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_GTAVI",
+      id: "community_gtavi",
       name: "VI",
       icon: require("../../../assets/icon/community_gtavi.png"),
       author: "Yann (yannouu__)",
@@ -160,7 +160,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Moon",
+      id: "community_moon",
       name: "Moon",
       icon: require("../../../assets/icon/community_moon.png"),
       author: "Yann (yannouu__)",
@@ -169,7 +169,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Slash",
+      id: "community_slash",
       name: "Slash",
       icon: require("../../../assets/icon/community_slash.png"),
       author: "Noé (NonozgYtb)",
@@ -178,7 +178,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_ios18",
+      id: "community_ios18",
       name: "Apple",
       icon: require("../../../assets/icon/community_ios18.png"),
       author: "Alaxe (alaxe.graph)",
@@ -187,7 +187,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Beach",
+      id: "community_beach",
       name: "Plage",
       icon: require("../../../assets/icon/community_beach.png"),
       author: "Alaxe (alaxe.graph)",
@@ -196,7 +196,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_RetroYellow",
+      id: "community_retroyellow",
       name: "Rétro chaud",
       icon: require("../../../assets/icon/community_retroyellow.png"),
       author: "Alaxe (alaxe.graph)",
@@ -205,7 +205,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_RetroBlue",
+      id: "community_retroblue",
       name: "Rétro froid",
       icon: require("../../../assets/icon/community_retroblue.png"),
       author: "Alaxe (alaxe.graph)",
@@ -214,7 +214,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Butter",
+      id: "community_butter",
       name: "Beurre salé",
       icon: require("../../../assets/icon/community_butter.png"),
       author: "Vince (ecnivtwelve)",
@@ -223,7 +223,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Sun",
+      id: "community_sun",
       name: "Soleil",
       icon: require("../../../assets/icon/community_sun.png"),
       author: "orafilynie",
@@ -232,7 +232,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Community_Shapes",
+      id: "community_shapes",
       name: "Formes",
       icon: require("../../../assets/icon/community_shapes.png"),
       author: "avrgfrnchguy",
@@ -243,7 +243,7 @@ export const icones = {
   ],
   "Icônes statiques": [
     {
-      id: "AppIcon_Frutiger",
+      id: "frutiger",
       name: "Frutiger",
       icon: require("../../../assets/icon/frutiger.png"),
       author: "Tom Hélière (toi-et-moi)",
@@ -252,7 +252,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Pride",
+      id: "pride",
       name: "Pride 2024",
       icon: require("../../../assets/icon/pride_2024.png"),
       author: "",
@@ -261,7 +261,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Modern",
+      id: "modern",
       name: "Moderne",
       icon: require("../../../assets/icon/modern.png"),
       author: "",
@@ -270,7 +270,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Future",
+      id: "future",
       name: "Futur",
       icon: require("../../../assets/icon/futur_dark.png"),
       author: "",
@@ -281,7 +281,7 @@ export const icones = {
   ],
   "Icônes V6": [
     {
-      id: "AppIcon_Chip",
+      id: "chip",
       name: "Puce P1",
       icon: require("../../../assets/icon/chip.png"),
       author: "",
@@ -290,7 +290,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_retro",
+      id: "retro",
       name: "Rétro",
       icon: require("../../../assets/icon/retro.png"),
       author: "",
@@ -299,7 +299,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Beta",
+      id: "beta",
       name: "Bêta",
       icon: require("../../../assets/icon/beta.png"),
       author: "",
@@ -308,7 +308,7 @@ export const icones = {
       isPremium: false,
     },
     {
-      id: "AppIcon_Black",
+      id: "black",
       name: "Sombre",
       icon: require("../../../assets/icon/black.png"),
       author: "",
