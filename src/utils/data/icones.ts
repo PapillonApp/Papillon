@@ -1,7 +1,7 @@
 export const icones = {
   "Par défaut": [
     {
-      id: "default",
+      id: "Default",
       name: "Défaut",
       icon: require("../../../assets/icon.png"),
       author: "",
