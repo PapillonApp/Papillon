@@ -51,11 +51,13 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       const THEicon = await getIcon();
 
       if (THEicon) {
-        setIcon(THEicon);
+        setIcon(THEicon === "Default" ? "default" : THEicon);
       } else {
         // Si l'utilisateur a changé l'icône avant le changement de module
-        resetIcon();
-        setIcon("default");
+        resetIcon()
+          .catch((error) => {
+            console.error("Erreur lors de la réinitialisation de l'icône", error);
+          });
       }
     };
 
@@ -74,9 +76,6 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
 
       if (!isExpoGo()) {
         changeIcon(iconConstructName)
-          .then(() => {
-            setIcon(iconConstructName);
-          })
           .catch((error) => {
             console.error("Erreur lors du changement d'icône", error);
           });
@@ -86,9 +85,6 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
     } else if (icon.id === "default") {
       if (!isExpoGo()) {
         resetIcon()
-          .then(() => {
-            setIcon("default");
-          })
           .catch((error) => {
             console.error("Erreur lors de la réinitialisation de l'icône", error);
           });
@@ -100,9 +96,6 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
         const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
 
         changeIcon(idIcon)
-          .then(() => {
-            setIcon(icon.id);
-          })
           .catch((error) => {
             console.error("Erreur lors du changement d'icône", error);
           });
@@ -204,7 +197,9 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                           {
                             title: "Réinitialiser",
                             icon: <RefreshCcw />,
-                            onPress: () => resetIcon(),
+                            onPress: () => resetIcon().catch((error) => {
+                              console.error("Erreur lors de la réinitialisation de l'icône", error);
+                            }),
                             danger: true,
                             delayDisable: 5,
                           }
