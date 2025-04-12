@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Text, ScrollView, View, TouchableOpacity, Image, Platform } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { BadgeInfo, Sparkles } from "lucide-react-native";
+import { BadgeInfo, RefreshCcw, Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import IconsContainerCard from "@/components/Settings/IconsContainerCard";
@@ -110,6 +110,22 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       <IconsContainerCard
         theme={theme}
       />
+
+      <View>
+        <NativeList inline>
+          <NativeItem icon={<RefreshCcw />}>
+            <NativeText
+              variant="title"
+              style={{ paddingVertical: 2, marginBottom: -4 }}
+            >
+              Redémarrage automatique
+            </NativeText>
+            <NativeText variant="subtitle">
+              Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
+            </NativeText>
+          </NativeItem>
+        </NativeList>
+      </View>
 
       {Object.keys(data).map((key, index) => (
         <View key={index}>
