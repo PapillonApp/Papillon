@@ -51,14 +51,12 @@
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
-    <!-- Par défaut -->
     <activity-alias android:name=".MainActivitydefault" android:enabled="true" android:exported="true" android:icon="@mipmap/ic_launcher" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
-    <!-- Dynamiques -->
     <activity-alias android:name=".MainActivityDynamic_blue" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_dynamic_blue" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -311,7 +309,6 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
-    <!-- Concours de la communauté -->
     <activity-alias android:name=".MainActivityCommunity_Gradient" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_community_gradient" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -384,7 +381,6 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
-    <!-- Icônes statiques -->
     <activity-alias android:name=".MainActivityFrutiger" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_frutiger" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -409,7 +405,6 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
-    <!-- Icônes V6 -->
     <activity-alias android:name=".MainActivityChip" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_chip" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -434,7 +429,6 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
-    <!-- Pas utilisé, changer `android:name` si doit être utilisé -->
     <activity-alias android:name=".MainActivityBackToSchool" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_backtoschool" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
