@@ -44,7 +44,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
-  const [currentIcon, setIcon] = React.useState("default");
+  const [currentIcon, setIcon] = React.useState("Default");
 
   useEffect(() => {
     const currentIcon = async () => {
