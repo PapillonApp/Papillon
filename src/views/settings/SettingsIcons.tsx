@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Text, ScrollView, View, TouchableOpacity, Image, Platform } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { BadgeInfo, Info, RefreshCcw, Sparkles, Undo2 } from "lucide-react-native";
+import { BadgeInfo, RefreshCcw, Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import IconsContainerCard from "@/components/Settings/IconsContainerCard";
@@ -138,7 +138,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
             label={key}
             trailing={(
               <View>
-                {(key === "Dynamiques") ? (
+                {(key === "Dynamiques") && (
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
@@ -168,54 +168,6 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                       }}
                     >
                       Qu'est ce que c'est ?
-                    </Text>
-                  </TouchableOpacity>
-                ) : (key === "Par défaut") && (
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                      paddingHorizontal: 10,
-                      paddingVertical: 5,
-                      borderRadius: 10,
-                      marginVertical: -3,
-                      marginTop: -4,
-                      backgroundColor: colors.primary + "22",
-                    }}
-                    onPress={() => {
-                      showAlert({
-                        title: "Réinitialisation de l'icône",
-                        message: "Cette option est recommandée uniquement si tu rencontres des problèmes (doublons d'icônes notamment). Veux-tu poursuivre ?",
-                        icon: <Info />,
-                        actions: [
-                          {
-                            title: "Annuler",
-                            icon: <Undo2 />,
-                            primary: false,
-                          },
-                          {
-                            title: "Réinitialiser",
-                            icon: <RefreshCcw />,
-                            onPress: () => resetIcon().catch((error) => {
-                              console.error("Erreur lors de la réinitialisation de l'icône", error);
-                            }),
-                            danger: true,
-                            delayDisable: 5,
-                          }
-                        ]
-                      });
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: colors.primary,
-                        fontSize: 14.5,
-                        letterSpacing: 0.3,
-                        fontFamily: "semibold",
-                      }}
-                    >
-                      Réinitialiser l'icône par défaut
                     </Text>
                   </TouchableOpacity>
                 )}
