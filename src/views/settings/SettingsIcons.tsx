@@ -10,7 +10,7 @@ import IconsContainerCard from "@/components/Settings/IconsContainerCard";
 import { icones } from "@/utils/data/icones";
 import colorsList from "@/utils/data/colors.json";
 
-import { getIconName, setIconName } from "@candlefinance/app-icon";
+import ChangeIcon from "react-native-change-icon";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
@@ -37,20 +37,23 @@ export const removeColor = (icon: string) => {
   return newName;
 };
 
-const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
+const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const theme = useTheme();
   const { colors } = theme;
-  const {showAlert} = useAlert();
+  const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
   const [currentIcon, setIcon] = React.useState("default");
 
   useEffect(() => {
+    const getIcon = async () => {
+      const THEicon = await ChangeIcon.getIcon();
+      setIcon(THEicon);
+    };
+
     if (!isExpoGo()) {
-      getIconName().then((icon) => {
-        setIcon(icon);
-      });
+      getIcon();
     };
   }, []);
 
@@ -62,19 +65,28 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
       const iconConstructName = icon.id + (colorItem ? "_" + colorItem.id : "");
 
       if (!isExpoGo()) {
-        setIconName(iconConstructName);
-        setIcon(iconConstructName);
+        ChangeIcon.changeIcon(`./assets/icon/${iconConstructName}.png`)
+          .then(() => {
+            setIcon(iconConstructName);
+          })
+          .catch((error) => {
+            console.error("Erreur lors du changement d'icône", error);
+          });
       } else {
         alertExpoGo(showAlert);
-      };
-    }
-    else {
+      }
+    } else {
       if (!isExpoGo()) {
-        setIconName(icon.id);
-        setIcon(icon.id);
+        ChangeIcon.changeIcon(`./assets/icon/${icon.id}.png`)
+          .then(() => {
+            setIcon(icon.id);
+          })
+          .catch((error) => {
+            console.error("Erreur lors du changement d'icône", error);
+          });
       } else {
         alertExpoGo(showAlert);
-      };
+      }
     }
   };
 
@@ -139,21 +151,23 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                 onPress={() => {
                   setNewIcon(icon);
                 }}
-                leading={<Image
-                  source={
-                    icon.isVariable
-                      ? icon.dynamic[colorsList.find((color) => color.hex.primary === colors.primary)?.id || "green"]
-                      : icon.icon
-                  }
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 10,
-                    resizeMode: "contain",
-                    marginLeft: -6,
-                  }}
-                />}
-                trailing={
+                leading={(
+                  <Image
+                    source={
+                      icon.isVariable
+                        ? icon.dynamic[colorsList.find((color) => color.hex.primary === colors.primary)?.id || "green"]
+                        : icon.icon
+                    }
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 10,
+                      resizeMode: "contain",
+                      marginLeft: -6,
+                    }}
+                  />
+                )}
+                trailing={(
                   <View
                     style={{
                       flexDirection: "row",
@@ -172,7 +186,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                           });
                         }}
                       >
-                        <Sparkles color={colors.primary} style={{ marginRight: 10}}/>
+                        <Sparkles color={colors.primary} style={{ marginRight: 10 }} />
                       </TouchableOpacity>
                     ) : null}
 
@@ -183,12 +197,12 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                       }}
                     />
                   </View>
-                }
+                )}
               >
                 <NativeText variant="title">{icon.name}</NativeText>
-                {(icon.author && icon.author.trim() !== "") &&
-                <NativeText variant="subtitle">{icon.author}</NativeText>
-                }
+                {icon.author && icon.author.trim() !== "" && (
+                  <NativeText variant="subtitle">{icon.author}</NativeText>
+                )}
               </NativeItem>
             ))}
           </NativeList>
@@ -200,11 +214,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
           marginBottom: insets.bottom,
         }}
       />
-
-
     </ScrollView>
   );
 };
-
 
 export default SettingsIcons;
