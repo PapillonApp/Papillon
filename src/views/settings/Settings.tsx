@@ -32,7 +32,6 @@ export interface SettingsSubItem {
   label: string;
   description?: string;
   onPress: () => void;
-  android?: boolean;
   beta?: boolean;
   disabled?: boolean;
 }
