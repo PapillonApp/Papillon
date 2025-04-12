@@ -10,7 +10,7 @@ import IconsContainerCard from "@/components/Settings/IconsContainerCard";
 import { icones } from "@/utils/data/icones";
 import colorsList from "@/utils/data/colors.json";
 
-import { changeIcon, getIcon } from "react-native-change-icon";
+import { changeIcon, getIcon, resetIcon } from "react-native-change-icon";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
@@ -44,13 +44,19 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
-  const [currentIcon, setIcon] = React.useState("Default");
+  const [currentIcon, setIcon] = React.useState("default");
 
   useEffect(() => {
     const currentIcon = async () => {
       const THEicon = await getIcon();
 
-      setIcon(THEicon);
+      if (THEicon) {
+        setIcon(THEicon.toLowerCase());
+      } else {
+        // Si l'utilisateur a changé l'icône avant le changement de module
+        resetIcon();
+        setIcon("default");
+      }
     };
 
     if (!isExpoGo()) {
@@ -66,7 +72,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       const iconConstructName = icon.id + (colorItem ? "_" + colorItem.id : "");
 
       if (!isExpoGo()) {
-        changeIcon(`./assets/icon/${iconConstructName}.png`)
+        changeIcon(iconConstructName)
           .then(() => {
             setIcon(iconConstructName);
           })
@@ -78,7 +84,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       }
     } else {
       if (!isExpoGo()) {
-        changeIcon(`./assets/icon/${icon.id}.png`)
+        changeIcon(icon.id)
           .then(() => {
             setIcon(icon.id);
           })
