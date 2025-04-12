@@ -180,7 +180,9 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                 key={index}
                 chevron={false}
                 onPress={() => {
-                  setNewIcon(icon);
+                  if (icon.id !== currentIcon) {
+                    setNewIcon(icon);
+                  }
                 }}
                 leading={(
                   <Image
@@ -224,7 +226,9 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                     <PapillonCheckbox
                       checked={removeColor(currentIcon) === icon.id}
                       onPress={() => {
-                        setNewIcon(icon);
+                        if (icon.id !== currentIcon) {
+                          setNewIcon(icon);
+                        }
                       }}
                     />
                   </View>
