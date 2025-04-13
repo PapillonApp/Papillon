@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, ScrollView, View, TouchableOpacity, Image, Platform } from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, Image, Platform, BackHandler } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { BadgeInfo, RefreshCcw, Sparkles } from "lucide-react-native";
@@ -14,7 +14,6 @@ import { getActiveIcon, resetIcon, setIcon } from "react-native-app-icon-changer
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
-import RNRestart from "react-native-restart";
 
 type Icon = {
   id: string;
@@ -94,7 +93,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
         setDisableChoise(true);
 
         setTimeout(() => {
-          RNRestart.restart();
+          BackHandler.exitApp();
         }, 300);
       } catch (e) {
         console.error("Erreur lors du changement d'icône", e);
