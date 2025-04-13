@@ -55,7 +55,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
 
         const validIcons = ["default", ...Object.values(icones).flat().map((icon) => icon.id)];
 
-        if (!THEicon || !validIcons.includes(THEicon)) {
+        if (!THEicon || !validIcons.includes(THEicon === "Default" ? "default" : THEicon)) {
           await resetIcon();
           setCurrentIcon("default");
         } else {
