@@ -46,6 +46,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const data = icones as { [key: string]: Icon[] };
 
   const [currentIcon, setCurrentIcon] = React.useState("default");
+  const [disableChoise, setDisableChoise] = React.useState(false);
 
   useEffect(() => {
     const currentIcon = async () => {
@@ -90,6 +91,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
           await setIcon(iconConstructName);
           setCurrentIcon(iconConstructName);
         }
+        setDisableChoise(true);
 
         setTimeout(() => {
           RNRestart.restart();
@@ -177,7 +179,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                 key={index}
                 chevron={false}
                 onPress={() => {
-                  if (icon.id !== currentIcon) {
+                  if (icon.id !== currentIcon && !disableChoise) {
                     setNewIcon(icon);
                   }
                 }}
@@ -223,7 +225,7 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
                     <PapillonCheckbox
                       checked={removeColor(currentIcon) === icon.id}
                       onPress={() => {
-                        if (icon.id !== currentIcon) {
+                        if (icon.id !== currentIcon && !disableChoise) {
                           setNewIcon(icon);
                         }
                       }}
