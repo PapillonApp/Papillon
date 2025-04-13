@@ -49,22 +49,25 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
 
   useEffect(() => {
     const currentIcon = async () => {
-      const THEicon = await getActiveIcon();
+      try {
+        const THEicon = await getActiveIcon();
 
-      if (THEicon) {
-        setCurrentIcon(THEicon === "Default" ? "default" : THEicon);
-      } else {
-        // Si l'utilisateur a changé l'icône avant le changement de module
-        resetIcon()
-          .catch((error) => {
-            console.error("Erreur lors de la réinitialisation de l'icône", error);
-          });
+        const validIcons = ["default", ...Object.values(icones).flat().map((icon) => icon.id)];
+
+        if (!THEicon || !validIcons.includes(THEicon)) {
+          await resetIcon();
+          setCurrentIcon("default");
+        } else {
+          setCurrentIcon(THEicon === "Default" ? "default" : THEicon);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la détection de l'icône active", error);
       }
     };
 
     if (!isExpoGo()) {
       currentIcon();
-    };
+    }
   }, []);
 
   const setNewIcon = (icon: Icon) => {
