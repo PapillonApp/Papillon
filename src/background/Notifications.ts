@@ -2,6 +2,7 @@ import { useAlert } from "@/providers/AlertProvider";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { Notification } from "@notifee/react-native";
 import { Platform } from "react-native";
+import { getIcon } from "react-native-change-icon";
 
 const requestNotificationPermission = async (
   showAlert: ReturnType<typeof useAlert>["showAlert"]
@@ -119,7 +120,12 @@ const papillonNotify = async (
     | "Evaluation"
 ) => {
   const notifee = (await import("@notifee/react-native")).default;
-  const AndroidColor = (await import("@notifee/react-native")).AndroidColor;
+  let smallIcon = await getIcon();
+  if (smallIcon === "Default") {
+    smallIcon = "ic_launcher";
+  } else {
+    smallIcon = `ic_launcher_${smallIcon}`;
+  }
 
   // Add timestamp for Android
   const timestamp = new Date().getTime();
@@ -139,11 +145,10 @@ const papillonNotify = async (
       badgeCount,
       showTimestamp: channelId !== "Status" ? true : false,
       showChronometer: channelId === "Status" ? true : false,
-      smallIcon: "@mipmap/ic_launcher_foreground",
-      color: AndroidColor.GREEN,
+      smallIcon,
       pressAction: {
-        id: "default",
-        launchActivity: "default",
+        id: "Default",
+        launchActivity: "Default",
       }
     },
     ios: {
