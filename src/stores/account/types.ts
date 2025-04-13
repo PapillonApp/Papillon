@@ -1,4 +1,4 @@
-import type pronote from "pawnote";
+import type { SessionHandle, RefreshInformation } from "pawnote";
 import type { Account as PawdirecteAccount, Session as PawdirecteSession } from "pawdirecte";
 import type { Client as ARDClient } from "pawrd";
 import { Client as TurboselfClient } from "turboself-api";
@@ -8,7 +8,7 @@ import { Configuration, Identification } from "ezly";
 import type MultiAPI from "esup-multi.js";
 import { SkolengoAuthConfig } from "@/services/skolengo/skolengo-types";
 import { User as ScolengoAPIUser } from "scolengo-api/types/models/Common";
-import { OnlinePayments } from "pawrd/dist";
+import { OnlinePayments } from "pawrd";
 
 export interface Tab {
   name: string
@@ -157,9 +157,9 @@ interface BaseExternalAccount {
 
 export interface PronoteAccount extends BaseAccount {
   service: AccountService.Pronote;
-  instance?: pronote.SessionHandle;
+  instance?: SessionHandle;
 
-  authentication: pronote.RefreshInformation & {
+  authentication: RefreshInformation & {
     deviceUUID: string;
   };
   identityProvider?: undefined;
