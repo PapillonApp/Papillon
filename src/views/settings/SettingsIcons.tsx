@@ -116,21 +116,24 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
         theme={theme}
       />
 
-      <View>
-        <NativeList inline>
-          <NativeItem icon={<RefreshCcw />}>
-            <NativeText
-              variant="title"
-              style={{ paddingVertical: 2, marginBottom: -4 }}
-            >
-              Redémarrage automatique
-            </NativeText>
-            <NativeText variant="subtitle">
-              Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
-            </NativeText>
-          </NativeItem>
-        </NativeList>
-      </View>
+      {/* Bug connu de la librairie, uniquement sur Android */}
+      {Platform.OS === "android" && (
+        <View>
+          <NativeList inline>
+            <NativeItem icon={<RefreshCcw />}>
+              <NativeText
+                variant="title"
+                style={{ paddingVertical: 2, marginBottom: -4 }}
+              >
+                Redémarrage automatique
+              </NativeText>
+              <NativeText variant="subtitle">
+                Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
+              </NativeText>
+            </NativeItem>
+          </NativeList>
+        </View>
+      )}
 
       {Object.keys(data).map((key, index) => (
         <View key={index}>
