@@ -2,6 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "module": "ES2020",
+    "moduleResolution": "bundler",
     "strict": true,
     "baseUrl": ".",
     "paths": {
