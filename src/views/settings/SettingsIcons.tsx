@@ -14,6 +14,7 @@ import { getActiveIcon, resetIcon, setIcon } from "react-native-app-icon-changer
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
+import RNRestart from "react-native-restart";
 
 type Icon = {
   id: string;
@@ -67,38 +68,35 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
   }, []);
 
   const setNewIcon = (icon: Icon) => {
-    if (icon.isVariable) {
-      const mainColor = theme.colors.primary;
-      const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
-
-      const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
-      const iconConstructName = idIcon + (colorItem ? "_" + colorItem.id : "");
-
-      if (!isExpoGo()) {
-        setIcon(iconConstructName);
-        setCurrentIcon(iconConstructName);
-      } else {
-        alertExpoGo(showAlert);
-      }
-    } else if (icon.id === "default") {
-      if (!isExpoGo()) {
-        resetIcon()
-          .catch((error) => {
-            console.error("Erreur lors de la réinitialisation de l'icône", error);
-          });
-        setCurrentIcon("default");
-      } else {
-        alertExpoGo(showAlert);
-      }
-    } else {
-      if (!isExpoGo()) {
-        const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
-        setIcon(idIcon);
-        setCurrentIcon(idIcon);
-      } else {
-        alertExpoGo(showAlert);
-      }
+    if (isExpoGo()) {
+      alertExpoGo(showAlert);
+      return;
     }
+
+    const mainColor = theme.colors.primary;
+    const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
+    const baseId = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
+    const iconConstructName = icon.isVariable ? `${baseId}_${colorItem?.id ?? "green"}` : baseId;
+
+    const applyIconChange = async () => {
+      try {
+        if (icon.id === "default") {
+          await resetIcon();
+          setCurrentIcon("default");
+        } else {
+          await setIcon(iconConstructName);
+          setCurrentIcon(iconConstructName);
+        }
+
+        setTimeout(() => {
+          RNRestart.restart();
+        }, 300);
+      } catch (e) {
+        console.error("Erreur lors du changement d'icône", e);
+      }
+    };
+
+    applyIconChange();
   };
 
   return (
@@ -112,24 +110,21 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
         theme={theme}
       />
 
-      {/* Bug connu de la librairie, uniquement sur Android */}
-      {Platform.OS === "android" && (
-        <View>
-          <NativeList inline>
-            <NativeItem icon={<RefreshCcw />}>
-              <NativeText
-                variant="title"
-                style={{ paddingVertical: 2, marginBottom: -4 }}
-              >
-                Redémarrage automatique
-              </NativeText>
-              <NativeText variant="subtitle">
-                Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
-              </NativeText>
-            </NativeItem>
-          </NativeList>
-        </View>
-      )}
+      <View>
+        <NativeList inline>
+          <NativeItem icon={<RefreshCcw />}>
+            <NativeText
+              variant="title"
+              style={{ paddingVertical: 2, marginBottom: -4 }}
+            >
+              Redémarrage automatique
+            </NativeText>
+            <NativeText variant="subtitle">
+              Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
+            </NativeText>
+          </NativeItem>
+        </NativeList>
+      </View>
 
       {Object.keys(data).map((key, index) => (
         <View key={index}>
