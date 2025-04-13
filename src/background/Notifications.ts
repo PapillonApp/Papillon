@@ -2,7 +2,7 @@ import { useAlert } from "@/providers/AlertProvider";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { Notification } from "@notifee/react-native";
 import { Platform } from "react-native";
-import { getIcon } from "react-native-change-icon";
+import { getActiveIcon } from "react-native-app-icon-changer";
 
 const requestNotificationPermission = async (
   showAlert: ReturnType<typeof useAlert>["showAlert"]
@@ -120,7 +120,7 @@ const papillonNotify = async (
     | "Evaluation"
 ) => {
   const notifee = (await import("@notifee/react-native")).default;
-  let smallIcon = await getIcon();
+  let smallIcon = await getActiveIcon();
   if (smallIcon === "Default") {
     smallIcon = "ic_launcher";
   } else {

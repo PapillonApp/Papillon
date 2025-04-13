@@ -10,7 +10,7 @@ import IconsContainerCard from "@/components/Settings/IconsContainerCard";
 import { icones } from "@/utils/data/icones";
 import colorsList from "@/utils/data/colors.json";
 
-import { changeIcon, getIcon, resetIcon } from "react-native-change-icon";
+import { getActiveIcon, resetIcon, setIcon } from "react-native-app-icon-changer";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
@@ -44,14 +44,14 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
-  const [currentIcon, setIcon] = React.useState("default");
+  const [currentIcon, setCurrentIcon] = React.useState("default");
 
   useEffect(() => {
     const currentIcon = async () => {
-      const THEicon = await getIcon();
+      const THEicon = await getActiveIcon();
 
       if (THEicon) {
-        setIcon(THEicon === "Default" ? "default" : THEicon);
+        setCurrentIcon(THEicon === "Default" ? "default" : THEicon);
       } else {
         // Si l'utilisateur a changé l'icône avant le changement de module
         resetIcon()
@@ -75,10 +75,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
       const iconConstructName = idIcon + (colorItem ? "_" + colorItem.id : "");
 
       if (!isExpoGo()) {
-        changeIcon(iconConstructName)
-          .catch((error) => {
-            console.error("Erreur lors du changement d'icône", error);
-          });
+        setIcon(iconConstructName);
+        setCurrentIcon(iconConstructName);
       } else {
         alertExpoGo(showAlert);
       }
@@ -88,17 +86,15 @@ const SettingsIcons: Screen<"SettingsIcons"> = () => {
           .catch((error) => {
             console.error("Erreur lors de la réinitialisation de l'icône", error);
           });
+        setCurrentIcon("default");
       } else {
         alertExpoGo(showAlert);
       }
     } else {
       if (!isExpoGo()) {
         const idIcon = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
-
-        changeIcon(idIcon)
-          .catch((error) => {
-            console.error("Erreur lors du changement d'icône", error);
-          });
+        setIcon(idIcon);
+        setCurrentIcon(idIcon);
       } else {
         alertExpoGo(showAlert);
       }
