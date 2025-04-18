@@ -5,22 +5,21 @@ import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import * as ImagePicker from "expo-image-picker";
 import { BadgeX, Camera, CameraOff, ChevronDown, ChevronUp, ClipboardCopy, TextCursorInput, Trash, Undo2, User2, UserCircle2, WholeWord } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, ScrollView, Switch, TextInput, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAlert } from "@/providers/AlertProvider";
 import * as Clipboard from "expo-clipboard";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDefaultProfilePicture } from "@/utils/GetRessources/GetDefaultProfilePicture";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
-const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
+const SettingsProfile: Screen<"SettingsProfile"> = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account!);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
-  const [oldFirstName, setOldFirstName] = useState(account.studentName?.first ?? "");
-  const [oldLastName, setOldLastName] = useState(account.studentName?.last ?? "");
+  const oldFirstName = account.studentName?.first ?? "";
+  const oldLastName = account.studentName?.last ?? "";
 
   const firstNameRef = useRef<TextInput>(null);
   const lastNameRef = useRef<TextInput>(null);

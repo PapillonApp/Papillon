@@ -1,20 +1,18 @@
 import React from "react";
 import { ScrollView, Switch } from "react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 // Ensure this file contains valid regex patterns
 import MagicContainerCard from "@/components/Settings/MagicContainerCard";
 import { NativeIconGradient, NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import { ArrowUpNarrowWide, BookDashed } from "lucide-react-native";
 import { useCurrentAccount } from "@/stores/account";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
-const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
+const SettingsMagic: Screen<"SettingsMagic"> = () => {
   const theme = useTheme();
-  const { colors } = theme;
-  const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const colors = theme.colors;
+  const account = useCurrentAccount((store) => store.account);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
   return (
     <ScrollView
@@ -22,7 +20,7 @@ const SettingsMagic: Screen<"SettingsMagic"> = ({ navigation }) => {
         paddingHorizontal: 15,
       }}
     >
-      <MagicContainerCard theme={theme} />
+      <MagicContainerCard />
 
       <NativeListHeader label="Actualités" />
       <NativeList>

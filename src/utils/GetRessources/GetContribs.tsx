@@ -1,5 +1,6 @@
 import axios from "axios";
-import teams from "../../utils/data/teams.json";
+import teams from "@/utils/data/teams.json";
+import { error } from "@/utils/logger/logger";
 
 export interface Contributor {
   login: string;
@@ -21,8 +22,8 @@ export async function getContributors (): Promise<Contributor[]> {
     return allContributors.filter(({ login }) =>
       !teamGithubUsernames.has(login.toLowerCase())
     );
-  } catch (error) {
-    console.error("Erreur lors de la récupération des contributeurs:", error);
+  } catch (err) {
+    error("Erreur lors de la récupération des contributeurs:" + err, "getContributors");
     return [];
   }
 }

@@ -3,7 +3,6 @@ import { ScrollView, } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { Star } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
 import {
   NativeItem,
@@ -16,8 +15,7 @@ import { useCurrentAccount } from "@/stores/account";
 const ExternalAccountSelectMethod: Screen<"ExternalAccountSelectMethod"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const insets = useSafeAreaInsets();
-  const account = useCurrentAccount(store => store.account!);
+  const account = useCurrentAccount((store) => store.account!);
 
   return (
     <ScrollView

@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { FadeInDown, FadeOutUp } from "react-native-reanimated";
 
-const RestaurantPaymentSuccess: Screen<"RestaurantPaymentSuccess"> = ({ route, navigation }) => {
+const RestaurantPaymentSuccess: Screen<"RestaurantPaymentSuccess"> = ({ route }) => {
   const { card, diff } = route.params;
   const theme = useTheme();
 

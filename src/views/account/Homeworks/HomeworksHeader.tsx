@@ -11,7 +11,7 @@ import Reanimated, {
 import { epochWMToCalendarWeekNumber } from "@/utils/epochWeekNumber";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
-const HeaderCalendar: React.FC<{ epochWeekNumber: number, oldPageIndex: number, showPicker: () => void, changeIndex: (index: number) => void }> = ({ epochWeekNumber, oldPageIndex, showPicker, changeIndex }) => {
+const HeaderCalendar: React.FC<{ epochWeekNumber: number, showPicker: () => void, changeIndex: (index: number) => void }> = ({ epochWeekNumber, showPicker, changeIndex }) => {
   const { width, isTablet } = useScreenDimensions();
 
   const index = epochWeekNumber;
@@ -37,14 +37,12 @@ const HeaderCalendar: React.FC<{ epochWeekNumber: number, oldPageIndex: number, 
           epochWeekNumber={epochWeekNumber - 2}
           active={false}
           key={index - 2}
-          location="left"
           onPress={() => changeIndex(epochWeekNumber - 2)}
         />
         <HeaderWeekComponent
           epochWeekNumber={epochWeekNumber - 1}
           active={false}
           key={index - 1}
-          location="left"
           onPress={() => changeIndex(epochWeekNumber - 1)}
         />
         <HeaderWeekComponent
@@ -57,14 +55,12 @@ const HeaderCalendar: React.FC<{ epochWeekNumber: number, oldPageIndex: number, 
           epochWeekNumber={epochWeekNumber + 1}
           active={false}
           key={index + 1}
-          location="right"
           onPress={() => changeIndex(epochWeekNumber + 1)}
         />
         <HeaderWeekComponent
           epochWeekNumber={epochWeekNumber + 2}
           active={false}
           key={index + 2}
-          location="right"
           onPress={() => changeIndex(epochWeekNumber + 2)}
         />
       </Reanimated.View>
@@ -72,7 +68,7 @@ const HeaderCalendar: React.FC<{ epochWeekNumber: number, oldPageIndex: number, 
   );
 };
 
-const HeaderWeekComponent: React.FC<{ epochWeekNumber: number, active: boolean, location?: string, onPress?: () => void }> = ({ epochWeekNumber, active, location, onPress }) => {
+const HeaderWeekComponent: React.FC<{ epochWeekNumber: number, active: boolean, onPress?: () => void }> = ({ epochWeekNumber, active, onPress }) => {
   const { colors } = useTheme();
 
   return (

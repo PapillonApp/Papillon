@@ -8,13 +8,14 @@ import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService, type MultiAccount } from "@/stores/account/types";
 import defaultPersonalization from "@/services/multi/default-personalization";
 import LoginView from "@/components/Templates/LoginView";
+import { error as error_logger } from "@/utils/logger/logger";
 
 const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -52,7 +53,7 @@ const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
           instanceURL: route.params.instanceURL,
           refreshAuthToken: account.userData.refreshAuthToken || "",
         },
-        personalization: await defaultPersonalization(account),
+        personalization: await defaultPersonalization(),
         serviceData: {},
         providers: []
       };
@@ -71,29 +72,27 @@ const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
         });
       });
     }
-    catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
+    catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
       }
       else {
         setError("Erreur inconnue");
       }
 
       setLoading(false);
-      console.error(error);
+      error_logger("" + err, "Multi_Login/handleLogin");
     }
   };
 
   return (
-    <>
-      <LoginView
-        serviceIcon={route.params.image}
-        serviceName={route.params.title}
-        loading={loading}
-        error={error}
-        onLogin={(username, password) => handleLogin(username, password)}
-      />
-    </>
+    <LoginView
+      serviceIcon={route.params.image}
+      serviceName={route.params.title}
+      loading={loading}
+      error={error}
+      onLogin={(username, password) => handleLogin(username, password)}
+    />
   );
 };
 

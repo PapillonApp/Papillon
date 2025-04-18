@@ -2,11 +2,10 @@ import { NativeText } from "@/components/Global/NativeComponents";
 import { getCourseSpeciality } from "@/utils/format/format_cours_name";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import React, { useEffect } from "react";
-import { View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import {type RouteParameters} from "@/router/helpers/types";
-import type {NativeStackNavigationProp} from "@react-navigation/native-stack";
-import type {Grade, GradesPerSubject} from "@/services/shared/Grade";
+import { View, TouchableOpacity } from "react-native";
+import { type RouteParameters } from "@/router/helpers/types";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { Grade, GradesPerSubject } from "@/services/shared/Grade";
 import { getSubjectAverage } from "@/utils/grades/getAverages";
 import { adjustColor } from "@/utils/ui/colors";
 

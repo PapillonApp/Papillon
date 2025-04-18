@@ -1,27 +1,28 @@
-import React, {useState, useEffect} from "react";
-import type {Screen} from "@/router/helpers/types";
+import React, { useState, useEffect } from "react";
+import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
-import { Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View} from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Alert, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBubble";
-import { NativeText,} from "@/components/Global/NativeComponents";
+import { NativeText } from "@/components/Global/NativeComponents";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { tokenize} from "ezly";
-import {AccountService, IzlyAccount} from "@/stores/account/types";
-import {useAccounts, useCurrentAccount} from "@/stores/account";
+import { tokenize } from "ezly";
+import { AccountService, IzlyAccount } from "@/stores/account/types";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
 import uuid from "@/utils/uuid-v4";
 
 import * as Linking from "expo-linking";
 import { useAlert } from "@/providers/AlertProvider";
 import { BadgeX } from "lucide-react-native";
+import { log } from "@/utils/logger/logger";
 
 const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
 
-  const linkExistingExternalAccount = useCurrentAccount(store => store.linkExistingExternalAccount);
-  const create = useAccounts(store => store.create);
+  const linkExistingExternalAccount = useCurrentAccount((store) => store.linkExistingExternalAccount);
+  const create = useAccounts((store) => store.create);
   const [loading, setLoading] = useState(false);
 
   const secret = route.params?.password;
@@ -34,10 +35,10 @@ const IzlyActivation: Screen<"IzlyActivation"> = ({ navigation, route }) => {
       const url = event.url;
       const scheme = url.split(":")[0];
       if (scheme === "izly") {
-        console.log("[IzlyActivation] Activation link received:", url);
+        log("[IzlyActivation] Activation link received:" + url, "Izly/handleDeepLink");
         handleActivation(url);
       } else {
-        console.log("[IzlyActivation] Ignoring link:", url);
+        log("[IzlyActivation] Ignoring link:" + url, "Izly/handleDeepLink");
       }
     };
 

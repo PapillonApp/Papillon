@@ -10,12 +10,13 @@ import { AccountService } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
+// eslint-disable-next-line no-duplicate-imports
 import { registerBackgroundTasks } from "@/background/BackgroundTasks";
 import { SoundHapticsProvider } from "@/hooks/Theme_Sound_Haptics";
 import { PapillonNavigation } from "@/router/refs";
 import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
-import {getToLoadFonts} from "@/consts/Fonts";
+import { getToLoadFonts } from "@/consts/Fonts";
 import { useFlagsStore } from "@/stores/flags";
 
 SplashScreen.preventAutoHideAsync();
@@ -32,9 +33,9 @@ export default function App () {
   const [appState, setAppState] = useState(AppState.currentState);
   const currentAccount = useCurrentAccount((store) => store.account);
   const switchTo = useCurrentAccount((store) => store.switchTo);
-  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
+  const accounts = useAccounts((store) => store.accounts).filter((account) => !account.isExternal);
 
-  const defined = useFlagsStore(state => state.defined);
+  const defined = useFlagsStore((state) => state.defined);
   const [fontsLoaded] = useFonts(getToLoadFonts(defined));
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function App () {
           break;
         }
       }
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
     await AsyncStorage.removeItem("@background_timestamp");
   }, [currentAccount, switchTo, getBackgroundTimeLimit]);

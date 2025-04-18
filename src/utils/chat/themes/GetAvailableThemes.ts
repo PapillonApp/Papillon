@@ -1,4 +1,4 @@
-import {ThemesMeta} from "@/utils/chat/themes/Themes.types";
+import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
 
 async function GetAvailableThemes (): Promise<ThemesMeta[]> {
   let f = await fetch("https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/themes/themes.json");

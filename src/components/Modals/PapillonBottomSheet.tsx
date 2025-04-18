@@ -1,6 +1,6 @@
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import React, {useCallback} from "react";
+import React, { useCallback } from "react";
 import { KeyboardAvoidingView, Modal, Pressable } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 

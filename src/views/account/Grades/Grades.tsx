@@ -16,8 +16,7 @@ import { useGradesStore } from "@/stores/grades";
 import { animPapillon } from "@/utils/ui/animations";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { ChevronDown } from "lucide-react-native";
-import React from "react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
   Platform,
   RefreshControl,
@@ -32,8 +31,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import GradesScodocUE from "./Atoms/GradesScodocUE";
-import {hasFeatureAccountSetup} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { hasFeatureAccountSetup } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -101,7 +100,7 @@ const Grades: Screen<"Grades"> = ({ route, navigation }) => {
       setIsLoading(true);
       await updateData();
 
-      if(isRefreshing && account.identityProvider?.identifier) {
+      if (isRefreshing && account.identityProvider?.identifier) {
         navigation.navigate("BackgroundIdentityProvider");
       }
 

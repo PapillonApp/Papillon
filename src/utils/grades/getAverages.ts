@@ -17,7 +17,7 @@ export type AverageDiffGrade = {
 const subjectAverageCache = new Map<string, number>();
 
 const getCacheKey = (subject: Grade[], target: Target, useMath: boolean, loop: boolean): string => {
-  return `${target}-${useMath}-${loop}-${subject.map(g => g.subjectId ?? g.subjectName).join(",")}`;
+  return `${target}-${useMath}-${loop}-${subject.map((g) => g.subjectId ?? g.subjectName).join(",")}`;
 };
 
 const getPronoteAverage = (
@@ -138,8 +138,8 @@ const getAverageDiffGrade = (
 ): AverageDiffGrade => {
   try {
     const baseAverage = getSubjectAverage(list, target);
-    const filteredList = list.filter(grade =>
-      !grades.some(g =>
+    const filteredList = list.filter((grade) =>
+      !grades.some((g) =>
         g.student.value === grade.student.value &&
         g.coefficient === grade.coefficient
       )

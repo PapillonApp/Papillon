@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Image, Linking, Platform, ScrollView, View } from "react-native";
+import { Image, Linking, Platform, ScrollView, View, TouchableOpacity } from "react-native";
 
 import PackageJSON from "../../../package.json";
 import datasets from "@/consts/datasets.json";
@@ -12,11 +12,10 @@ import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { animPapillon } from "@/utils/ui/animations";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { PressableScale } from "react-native-pressable-scale";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Screen} from "@/router/helpers/types";
+import { Screen } from "@/router/helpers/types";
 import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
 import useScreenDimensions from "@/hooks/useScreenDimensions";
 
@@ -56,7 +55,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if(!changelog) {
+    if (!changelog) {
       setLoading(true);
       fetch(changelogURL + "#update=" + uuid()) // #TODO : remove, it's for development
         .then((response) => response.json())
@@ -68,7 +67,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
             acknowledgeUpdate();
           }
         })
-        .catch((err) => {
+        .catch(() => {
           setLoading(false);
           setNotFound(true);
         });
@@ -83,7 +82,7 @@ const ChangelogScreen: Screen<"ChangelogScreen"> = ({ route, navigation }) => {
           onPress={() => navigation.goBack()}
           style={{
             width: 32,
-            aspectRatio: 1 / 1,
+            aspectRatio: 1,
             backgroundColor: theme.colors.text + "18",
             alignItems: "center",
             justifyContent: "center",
@@ -323,15 +322,15 @@ const ChangelogFeature: React.FC<{ feature: Feature, navigation: any, theme: any
         {feature.navigation && (
           <NativeItem
             onPress={(feature.href || feature.navigation) ? () => {
-              if(feature.href) {
+              if (feature.href) {
                 Linking.openURL(feature.href);
               }
-              else if(feature.navigation) {
+              else if (feature.navigation) {
                 try {
                   navigation.goBack();
                   navigation.navigate(feature.navigation);
                 }
-                catch {}
+                catch { /* empty */ }
               }
             } : undefined}
           >

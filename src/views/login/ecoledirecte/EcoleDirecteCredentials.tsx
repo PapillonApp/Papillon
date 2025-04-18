@@ -19,15 +19,16 @@ import defaultPersonalization from "@/services/ecoledirecte/default-personalizat
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import BottomSheet from "@/components/Modals/PapillonBottomSheet";
-import {NativeText} from "@/components/Global/NativeComponents";
+import { NativeText } from "@/components/Global/NativeComponents";
 import Reanimated, {
   FlipInXDown,
   LinearTransition,
   useSharedValue
 } from "react-native-reanimated";
 import DuoListPressable from "@/components/FirstInstallation/DuoListPressable";
-import {SvgFromXml} from "react-native-svg";
+import { SvgFromXml } from "react-native-svg";
 import LoginView from "@/components/Templates/LoginView";
+import { error as logger_error, warn } from "@/utils/logger/logger";
 
 const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -40,15 +41,15 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
 
   const theme = useTheme();
 
-  const createStoredAccount = useAccounts(store => store.create);
-  const switchTo = useCurrentAccount(store => store.switchTo);
+  const createStoredAccount = useAccounts((store) => store.create);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
 
   const handleLogin = async (username: string, password: string, currentSession = session) => {
     try {
       setLoading(true);
       setError(null);
       if (username === "demo" && password === "demo") {
-        setDoubleAuthChallenge({answers: ["demo00", "demo01", "demo02", "demo03", "demo04", "demo05", "demo06", "demo07", "demo08", "demo09"], question: "Ceci est une question de démonstration"});
+        setDoubleAuthChallenge({ answers: ["demo00", "demo01", "demo02", "demo03", "demo04", "demo05", "demo06", "demo07", "demo08", "demo09"], question: "Ceci est une question de démonstration" });
       }
 
       if (currentSession === null) {
@@ -57,7 +58,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         setCachedPassword(password);
       }
 
-      const accounts = await login(currentSession, password ? password : cachedPassword);
+      const accounts = await login(currentSession, password ?? cachedPassword);
       const account = accounts[0]; // NOTE: We only support single accounts for now. //TODO: Support multiple accounts in ED
 
       setAccessToken(currentSession, account);
@@ -112,10 +113,10 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         });
       });
     }
-    catch (error) {
-      if (error instanceof DoubleAuthRequired) {
+    catch (err) {
+      if (err instanceof DoubleAuthRequired) {
         const challenge = await initDoubleAuth(currentSession!).catch((e) => {
-          console.error(e);
+          logger_error("" + (e as Error)?.stack, "EcoleDirecteCredentials/DoubleAuthRequired");
           setError("Une erreur est survenue lors de la récupération des questions pour la double authentification");
           return null;
         }).finally(() => setLoading(false));
@@ -124,22 +125,22 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
         setSession(currentSession);
         return;
       }
-      if (error instanceof Error) {
-        if (error.message === "Bad credentials, no token found in response") setError("Nom d'utilisateur ou mot de passe incorrect!");
-        else setError(error.message);
+      if (err instanceof Error) {
+        if (err.message === "Bad credentials, no token found in response") setError("Nom d'utilisateur ou mot de passe incorrect!");
+        else setError(err.message);
       }
       else {
         setError("Erreur inconnue");
       }
 
       setLoading(false);
-      console.error(error);
+      logger_error("" + (err as Error)?.stack, "EcoleDirecteCredentials");
     }
   };
 
   const handleChallenge = async (answer: string) => {
     if (!session) {
-      console.warn("No session to handle challenge");
+      warn("No session to handle challenge", "EcoleDirecteCredentials/handleChallenge");
       return;
     }
 
@@ -175,7 +176,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
           setOpened={() => setDoubleAuthChallenge(null)}
         >
           <View>
-            <View style={{padding: 16, height: 60 + 16, paddingBottom: 0}}>
+            <View style={{ padding: 16, height: 60 + 16, paddingBottom: 0 }}>
               <NativeText variant={"title"}>{doubleAuthChallenge.question}</NativeText>
               <NativeText variant={"subtitle"}>Réponds à la question suivante pour continuer ton authentification</NativeText>
             </View>
@@ -200,10 +201,10 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
               }}
             />
             <ScrollView
-              style={{height: 450}}
+              style={{ height: 450 }}
               showsVerticalScrollIndicator={false}
             >
-              <Reanimated.View style={{display: "flex", gap: 9, padding: 16, marginTop: scrollY, paddingBottom: 50 + 32}}>
+              <Reanimated.View style={{ display: "flex", gap: 9, padding: 16, marginTop: scrollY, paddingBottom: 50 + 32 }}>
                 {doubleAuthChallenge.answers.map((answer, index) => (
                   <Reanimated.View
                     style={{
@@ -222,7 +223,7 @@ const EcoleDirecteCredentials: Screen<"EcoleDirecteCredentials"> = ({ navigation
                 ))}
               </Reanimated.View>
             </ScrollView>
-            <View style={{padding: 16, position: "absolute", height: 50 + 32, bottom: -5}}>
+            <View style={{ padding: 16, position: "absolute", height: 50 + 32, bottom: -5 }}>
               <SvgFromXml
                 xml={`
                 <svg xmlns="http://www.w3.org/2000/svg" fill="${theme.colors.text}" width="10000">

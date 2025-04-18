@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { RouteParameters, Screen } from "@/router/helpers/types";
-import { View, StyleSheet, TouchableOpacity, KeyboardEvent, Keyboard } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Keyboard } from "react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import determinateAuthenticationView from "@/services/pronote/determinate-authentication-view";
 
@@ -19,14 +19,14 @@ import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextIn
 
 const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const {colors} = theme;
+  const { colors } = theme;
   const insets = useSafeAreaInsets();
   const [instanceURL, setInstanceURL] = useState("");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  const {showAlert} = useAlert();
+  const { showAlert } = useAlert();
 
-  const keyboardDidShow = (event: KeyboardEvent) => {
+  const keyboardDidShow = () => {
     setKeyboardOpen(true);
   };
 
@@ -150,7 +150,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           onSubmitEditing={() => {
             if (instanceURL.length > 0) {
               checkForDemoInstance(instanceURL, navigation, showAlert);
-            };
+            }
           }}
         />
 
@@ -180,7 +180,7 @@ const PronoteManualURL: Screen<"PronoteManualURL"> = ({ route, navigation }) => 
           onPress={() => {
             if (instanceURL.length > 0) {
               checkForDemoInstance(instanceURL, navigation, showAlert);
-            };
+            }
           }}
         />
         {(route.params?.method) && (

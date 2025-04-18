@@ -1,7 +1,7 @@
 import { type Account, AccountService } from "@/stores/account/types";
 import type { Period } from "./shared/Period";
-import {getFeatureAccount} from "@/utils/multiservice";
-import {MultiServiceFeature} from "@/stores/multiService/types";
+import { getFeatureAccount } from "@/utils/multiservice";
+import { MultiServiceFeature } from "@/stores/multiService/types";
 import { useEvaluationStore } from "@/stores/evaluation";
 import { Evaluation } from "@/services/shared/Evaluation";
 import { error, log } from "@/utils/logger/logger";
@@ -37,8 +37,8 @@ export async function updateEvaluationPeriodsInCache <T extends Account> (accoun
     default:
       throw new Error("Service not implemented");
   }
-  if(periods.length === 0) return;
-  if(!defaultPeriod) defaultPeriod = getDefaultPeriod(periods);
+  if (periods.length === 0) return;
+  if (!defaultPeriod) defaultPeriod = getDefaultPeriod(periods);
   useEvaluationStore.getState().updatePeriods(periods, defaultPeriod);
 }
 

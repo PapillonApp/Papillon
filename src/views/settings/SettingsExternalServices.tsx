@@ -1,7 +1,6 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass, Check, Trash2, BadgeInfo } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
@@ -34,7 +33,6 @@ const serviceConfig = {
 const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   navigation,
 }) => {
-  const theme = useTheme();
   const accounts = useAccounts((state) => state.accounts);
   const removeAccount = useAccounts((state) => state.remove);
   const { showAlert } = useAlert();
@@ -75,7 +73,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
     });
   };
 
-  const filteredAccounts = accounts.filter((acc, index) => {
+  const filteredAccounts = accounts.filter((acc) => {
     if (acc.isExternal) {
       return true;
     }
@@ -88,7 +86,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
         paddingHorizontal: 16,
       }}
     >
-      <ExternalServicesContainerCard theme={theme} />
+      <ExternalServicesContainerCard />
 
       <View>
         <NativeList>

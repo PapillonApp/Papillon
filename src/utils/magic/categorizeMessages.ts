@@ -37,7 +37,7 @@ export const categorizeMessages = (messages: Information[]): CategorizedMessages
           }
         }
       }
-    };
+    }
     if (!message.title) {
       message.title = "";
     }

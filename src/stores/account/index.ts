@@ -76,7 +76,7 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
   },
 
   switchTo: async (account) => {
-    log(`reading ${account.name}`, "switchTo");
+    log(`Reading ${account.name}`, "switchTo");
     set({ account });
     useAccounts.setState({ lastOpenedAccountID: account.localID });
 
@@ -177,7 +177,7 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
     log(`logging out ${account.name}`, "current:logout");
     if (account.service === AccountService.Pronote && account.instance) {
       pronote.clearPresenceInterval(account.instance);
-      log("stopped pronote presence", "current:logout");
+      log("Stopped pronote presence", "current:logout");
     }
 
     set({ account: null, linkedAccounts: [] });
@@ -199,7 +199,7 @@ export const useAccounts = create<AccountsStore>()(
         );
       },
 
-      create: ({ instance, ...account }) => {
+      create: ({ ...account }) => {
         log(`storing ${account.localID}`, "accounts:create");
         set((state) => ({
           accounts: [...state.accounts, account as Account],

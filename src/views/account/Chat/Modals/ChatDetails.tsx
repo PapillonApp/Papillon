@@ -1,20 +1,21 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View, Image, StyleSheet } from "react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 
-import type {Screen} from "@/router/helpers/types";
-import {NativeItem, NativeList, NativeListHeader, NativeText,} from "@/components/Global/NativeComponents";
-import {useCurrentAccount} from "@/stores/account";
-import {ChevronDown } from "lucide-react-native";
+import type { Screen } from "@/router/helpers/types";
+import { NativeItem, NativeList, NativeListHeader, NativeText, } from "@/components/Global/NativeComponents";
+import { useCurrentAccount } from "@/stores/account";
+import { ChevronDown } from "lucide-react-native";
 import parse_initials from "@/utils/format/format_pronote_initials";
 import InitialIndicator from "@/components/News/InitialIndicator";
-import {getProfileColorByName} from "@/services/local/default-personalization";
+import { getProfileColorByName } from "@/services/local/default-personalization";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
 import GetAvailableThemes from "@/utils/chat/themes/GetAvailableThemes";
 import { ThemesMeta } from "@/utils/chat/themes/Themes.types";
 import GetThemeForChatId from "@/utils/chat/themes/GetThemeForChat";
 import SetThemeForChatId from "@/utils/chat/themes/SetThemeForChat";
 import { defaultProfilePicture } from "@/utils/ui/default-profile-picture";
+import { error } from "@/utils/logger/logger";
 
 const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
   const account = useCurrentAccount((state) => state.account!);
@@ -35,8 +36,8 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
       .then((themes) => {
         setAvailableThemes(themes);
       })
-      .catch((error) => {
-        console.error("Error fetching themes:", error);
+      .catch((err) => {
+        error("Error fetching themes:" + err, "ChatDetails/GetAvailableThemes");
       });
   }, []);
 
@@ -45,8 +46,8 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
       .then((theme) => {
         setActualTheme(theme.meta.path);
       })
-      .catch((error) => {
-        console.error("Error fetching themes:", error);
+      .catch((err) => {
+        error("Error fetching themes:" + err, "ChatDetails/GetThemeForChatId");
       });
   }, []);
 
@@ -70,13 +71,13 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
           textColor={getProfileColorByName(creatorName).dark}
           size={55}
         />
-        <View style={{alignItems: "center", maxWidth: "80%"}}>
+        <View style={{ alignItems: "center", maxWidth: "80%" }}>
           <NativeText variant="subtitle">{creatorName}</NativeText>
-          <NativeText variant="title" numberOfLines={3} style={{textAlign: "center"}}>{chat.subject}</NativeText>
+          <NativeText variant="title" numberOfLines={3} style={{ textAlign: "center" }}>{chat.subject}</NativeText>
         </View>
       </View>
 
-      <View style={{paddingHorizontal: 20}}>
+      <View style={{ paddingHorizontal: 20 }}>
         <NativeList>
           <NativeItem onPress={() => navigation.navigate("ChatThemes", {
             handle: chat,
@@ -86,24 +87,24 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
             <View style={styles.themeItem}>
               <View style={{ flex: 1, flexDirection: "row", gap: 10, alignItems: "center" }}>
                 <Image
-                  source={availableThemes.find(theme => theme.path === actualTheme)?.icon}
+                  source={availableThemes.find((theme) => theme.path === actualTheme)?.icon}
                   style={{ width: 35, height: 35, borderRadius: 25 / 2 }}
                 />
                 <View>
                   <NativeText>Thème</NativeText>
-                  <NativeText variant="subtitle">{availableThemes.find(theme => theme.path === actualTheme)?.name}</NativeText>
+                  <NativeText variant="subtitle">{availableThemes.find((theme) => theme.path === actualTheme)?.name}</NativeText>
                 </View>
               </View>
             </View>
           </NativeItem>
         </NativeList>
-        <NativeListHeader label={"Destinataires (" + recipients.length + ")"}/>
+        <NativeListHeader label={"Destinataires (" + recipients.length + ")"} />
         <NativeList>
           {recipients.slice(0, maxRecipientsShow).map((recipient, index) => (
             <NativeItem
               key={index}
             >
-              <View style={{flex: 1, flexDirection: "row", alignItems: "center", gap: 10}}>
+              <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 10 }}>
                 {recipient.name === account.name ? (
                   <Image
                     source={account.personalization.profilePictureB64 && account.personalization.profilePictureB64.trim() !== ""
@@ -133,9 +134,9 @@ const ChatDetails: Screen<"ChatDetails"> = ({ navigation, route }) => {
           {recipients.length > maxRecipientsShow ? (
             <NativeItem>
               <TouchableOpacity onPress={increaseMaxRecipientsShow}>
-                <View style={{flex: 1, flexDirection: "row", justifyContent:"space-between"}}>
+                <View style={{ flex: 1, flexDirection: "row", justifyContent:"space-between" }}>
                   <NativeText variant="title">En afficher plus</NativeText>
-                  <ChevronDown color={colors.text}/>
+                  <ChevronDown color={colors.text} />
                 </View>
               </TouchableOpacity>
             </NativeItem>

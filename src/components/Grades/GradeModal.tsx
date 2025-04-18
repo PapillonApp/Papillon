@@ -22,6 +22,8 @@ import PapillonBottomSheet from "@/components/Modals/PapillonBottomSheet";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { useAlert } from "@/providers/AlertProvider";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
+import { error } from "@/utils/logger/logger";
+
 interface GradeModalProps {
   isVisible: boolean;
   reel: Reel;
@@ -95,8 +97,8 @@ const GradeModal: React.FC<GradeModalProps> = ({
         message: "L'image a été sauvegardée dans ta galerie.",
         icon: <ImageDown />,
       });
-    } catch (error) {
-      console.error("Failed to save image:", error);
+    } catch (err) {
+      error("Failed to save image:" + err, "GradeModal/saveimage");
     }
   };
 
@@ -107,10 +109,10 @@ const GradeModal: React.FC<GradeModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <PapillonBottomSheet opened={showDeleteWarning} setOpened={setShowDeleteWarning} contentContainerStyle={{overflow: "hidden"}}>
-        <View style={{height: 180, justifyContent: "center", alignItems: "center", flexDirection: "row"}}>
+      <PapillonBottomSheet opened={showDeleteWarning} setOpened={setShowDeleteWarning} contentContainerStyle={{ overflow: "hidden" }}>
+        <View style={{ height: 180, justifyContent: "center", alignItems: "center", flexDirection: "row" }}>
           <Image
-            source={{uri: `data:image/jpeg;base64,${reel.image}`}}
+            source={{ uri: `data:image/jpeg;base64,${reel.image}` }}
             style={{
               position: "absolute",
               top: 0,
@@ -121,23 +123,23 @@ const GradeModal: React.FC<GradeModalProps> = ({
             blurRadius={200}
           />
           <Image
-            source={{uri: `data:image/jpeg;base64,${reel.image}`}}
+            source={{ uri: `data:image/jpeg;base64,${reel.image}` }}
             style={{
               width: 150,
               height: 150,
               objectFit: "contain",
-              transform: [{rotate: "-10deg"}],
+              transform: [{ rotate: "-10deg" }],
               shadowColor: "#000",
-              shadowOffset: {width: 0, height: 0},
+              shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.5,
               shadowRadius: 10,
             }}
           />
         </View>
-        <View style={{padding: 16, paddingBottom: 0}}>
+        <View style={{ padding: 16, paddingBottom: 0 }}>
           <NativeText variant={"titleLarge"}>Veux-tu vraiment supprimer cette réaction ?</NativeText>
           <NativeText variant={"subtitle"}>Cette action est irréversible.</NativeText>
-          <View style={{flexDirection: "row", gap: 10, height: 46, marginTop: 20 }}>
+          <View style={{ flexDirection: "row", gap: 10, height: 46, marginTop: 20 }}>
             <PressableScale
               style={{
                 flex: 1,
@@ -228,7 +230,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
         }}
       >
         <Animated.View
-          style={{flex: 1}}
+          style={{ flex: 1 }}
           entering={
             ZoomIn
               .easing(Easing.bezierFn(0, 0.5, 0.1, 1.15))
@@ -284,7 +286,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
               >
                 <Download color="white" size={24} />
               </View>
-              <NativeText style={{color: "#FFF", fontSize: 15}}>Enregistrer</NativeText>
+              <NativeText style={{ color: "#FFF", fontSize: 15 }}>Enregistrer</NativeText>
             </PressableScale>
           </Animated.View>
           <Animated.View
@@ -323,7 +325,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
                   borderRadius: 100,
                 }}
               />
-              <NativeText style={{color: "#FFF", fontSize: 15}}>Instagram</NativeText>
+              <NativeText style={{ color: "#FFF", fontSize: 15 }}>Instagram</NativeText>
             </PressableScale>
           </Animated.View>
           <Animated.View
@@ -368,7 +370,7 @@ const GradeModal: React.FC<GradeModalProps> = ({
               >
                 <Ellipsis color="#000" size={24} />
               </View>
-              <NativeText style={{color: "#FFF", fontSize: 15}}>Autre</NativeText>
+              <NativeText style={{ color: "#FFF", fontSize: 15 }}>Autre</NativeText>
             </PressableScale>
           </Animated.View>
         </ScrollView>

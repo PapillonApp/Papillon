@@ -1,60 +1,54 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  ActivityIndicator,
-  RefreshControl,
-  Text,
-  Dimensions
-} from "react-native";
-import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import {
-  AlertTriangle,
-  BadgeX,
-  ChefHat,
-  CookingPot,
-  MapPin,
-  Plus,
-  Sprout,
-  Utensils,
-} from "lucide-react-native";
-
-import type { Screen } from "@/router/helpers/types";
-import {
-  NativeItem,
-  NativeList,
-  NativeListHeader,
-  NativeText,
-} from "@/components/Global/NativeComponents";
-import { useCurrentAccount } from "@/stores/account";
-import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
-import { balanceFromExternal } from "@/services/balance";
-import MissingItem from "@/components/Global/MissingItem";
-import { animPapillon } from "@/utils/ui/animations";
+import { ScrollView, RefreshControl, ActivityIndicator, Dimensions, Switch, StyleSheet, View } from "react-native";
 import Reanimated, { FadeIn, FadeInDown, FadeOut, LinearTransition, ZoomIn, ZoomOut } from "react-native-reanimated";
-import { reservationHistoryFromExternal } from "@/services/reservation-history";
-import { qrcodeFromExternal } from "@/services/qrcode";
-import { getMenu } from "@/services/menu";
-import type { FoodAllergen, FoodLabel, Menu as PawnoteMenu } from "pawnote";
-import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
-import AnimatedNumber from "@/components/Global/AnimatedNumber";
-import { LessonsDateModal } from "../Lessons/LessonsHeader";
-import { BookingTerminal, BookingDay } from "@/services/shared/Booking";
-import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
-import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
 import { PressableScale } from "react-native-pressable-scale";
-import { ChevronLeft, ChevronRight} from "lucide-react-native";
-import DrawableImportRestaurant from "@/components/Drawables/DrawableImportRestaurant";
-import ButtonCta from "@/components/FirstInstallation/ButtonCta";
-import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
-import { AccountService } from "@/stores/account/types";
-import { STORE_THEMES, StoreTheme } from "./Cards/StoreThemes";
-import MenuCard from "./Cards/Card";
+
+// External modules
+import { AlertTriangle, BadgeX, ChefHat, ChevronLeft, ChevronRight, CookingPot, MapPin, Plus, Sprout, Utensils } from "lucide-react-native";
+import type { FoodAllergen, FoodLabel, Menu as PawnoteMenu } from "pawnote";
+
+// Utils
+import { animPapillon } from "@/utils/ui/animations";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
+import { warn } from "@/utils/logger/logger";
+
+// Providers
 import { useAlert } from "@/providers/AlertProvider";
+
+// Hooks
+import { OfflineWarning, useOnlineStatus } from "@/hooks/useOnlineStatus";
+
+// Stores
+import { useCurrentAccount } from "@/stores/account";
+import { AccountService } from "@/stores/account/types";
+
+// Components
+import AnimatedNumber from "@/components/Global/AnimatedNumber";
+import ButtonCta from "@/components/FirstInstallation/ButtonCta";
+import DrawableImportRestaurant from "@/components/Drawables/DrawableImportRestaurant";
+import InsetsBottomView from "@/components/Global/InsetsBottomView";
+import MissingItem from "@/components/Global/MissingItem";
+import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
+import PapillonHeader, { PapillonHeaderInsetHeight } from "@/components/Global/PapillonHeader";
+import { PapillonHeaderSelector } from "@/components/Global/PapillonModernHeader";
+import TabAnimatedTitle from "@/components/Global/TabAnimatedTitle";
+
+// Views
+import MenuCard from "@/views/account/Restaurant/Cards/Card";
+import { LessonsDateModal } from "@/views/account/Lessons/LessonsHeader";
+
+// Services
+import { bookDayFromExternal, getBookingsAvailableFromExternal } from "@/services/booking";
+import { getMenu } from "@/services/menu";
+import { balanceFromExternal } from "@/services/balance";
+import { qrcodeFromExternal } from "@/services/qrcode";
+import { reservationHistoryFromExternal } from "@/services/reservation-history";
+
+// Types
+import type { Screen } from "@/router/helpers/types";
+import { BookingDay, BookingTerminal } from "@/services/shared/Booking";
 import { ServiceCard } from "@/utils/external/restaurant";
+import { STORE_THEMES, StoreTheme } from "./Cards/StoreThemes";
 
 const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const theme = useTheme();
@@ -73,10 +67,9 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
   const [currentMenu, setCurrentMenu] = useState<PawnoteMenu | null>(null);
   const [currentWeek, setCurrentWeek] = useState<number>(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [pickerDate, setPickerDate] = React.useState(new Date(new Date().setHours(0, 0, 0, 0)));
-  const [isMenuLoading, setMenuLoading] = useState(false);
+  const [pickerDate, setPickerDate] = useState(new Date(new Date().setHours(0, 0, 0, 0)));
+  const [menuLoading, setMenuLoading] = useState(false);
   const [isInitialised, setIsInitialised] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
   const [allCards, setAllCards] = useState<Array<ServiceCard> | null>(null);
 
   const { showAlert } = useAlert();
@@ -193,25 +186,25 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
         const dailyMenu = account ? await getMenu(account, pickerDate).catch(() => null) : null;
         const accountPromises = linkedAccounts.map(async (account) => {
           try {
-            if (!account || !account.service) {
+            if (!account?.service) {
               return;
             }
 
             const [balance, history, cardnumber, booking] = await Promise.all([
-              balanceFromExternal(account, isRefreshing).catch(err => {
-                console.warn(`Error fetching balance for account ${account}:`, err);
+              balanceFromExternal(account, isRefreshing).catch((err) => {
+                warn(`Error fetching balance for account ${account.username}:` + err, "Menu/balanceFromExternal");
                 return [];
               }),
-              reservationHistoryFromExternal(account).catch(err => {
-                console.warn(`Error fetching history for account ${account}:`, err);
+              reservationHistoryFromExternal(account).catch((err) => {
+                warn(`Error fetching history for account ${account.username}:` + err, "Menu/reservationHistoryFromExternal");
                 return [];
               }),
-              qrcodeFromExternal(account).catch(err => {
-                console.warn(`Error fetching QR code for account ${account}:`, err);
+              qrcodeFromExternal(account).catch((err) => {
+                warn(`Error fetching QR code for account ${account.username}:` + err, "Menu/qrcodeFromExternal");
                 return "0";
               }),
-              getBookingsAvailableFromExternal(account, getWeekNumber(new Date()), isRefreshing).catch(err => {
-                console.warn(`Error fetching bookings for account ${account}:`, err);
+              getBookingsAvailableFromExternal(account, getWeekNumber(new Date()), isRefreshing).catch((err) => {
+                warn(`Error fetching bookings for account ${account.username}:` + err, "Menu/getBookingsAvailableFromExternal");
                 return [];
               })
             ]);
@@ -232,7 +225,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
             newCards.push(newCard);
           } catch (error) {
             setIsInitialised(true);
-            console.warn(`An error occurred with account ${account}:`, error);
+            warn(`An error occurred with account ${account.username}:` + error, "Menu/fetchCardsData");
           }
         });
 
@@ -243,7 +236,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
         setIsInitialised(true);
         setIsRefreshing(false);
       } catch (error) {
-        console.warn("An error occurred while fetching data:", error);
+        warn("An error occurred while fetching data:" + error, "Menu/fetchCardsData");
       }
     })();
   };
@@ -295,7 +288,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
           opacity={0.6}
         />
         <NativeText variant="subtitle">
-          Allergènes : {allergens.map(allergen => allergen.name).join(", ")}
+          Allergènes : {allergens.map((allergen) => allergen.name).join(", ")}
         </NativeText>
       </View>
     );
@@ -311,9 +304,9 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
         {labels.map((label, k) => (
           <View key={"label-" + k} style={[styles.label, { backgroundColor: label.color ?? "#888888" }]}>
             {getLabelIcon(label.name)}
-            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "bold" }}>
+            <Reanimated.Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "bold" }}>
               {getLabelName(label.name)}
-            </Text>
+            </Reanimated.Text>
           </View>
         ))}
       </View>
@@ -377,7 +370,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               />
             )}
 
-            <View style={{height: 16}} />
+            <View style={{ height: 16 }} />
 
             {(allCards ?? [])?.length > 0 && (
               <ScrollView
@@ -415,7 +408,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
               </ScrollView>
             )}
 
-            {(currentMenu || (allBookings && allBookings?.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
+            {(currentMenu || (allBookings?.some((terminal) => terminal.days.some((day) => day.date?.toDateString() === pickerDate.toDateString())))) &&
               <View style={styles.calendarContainer}>
                 <Reanimated.View
                   layout={animPapillon(LinearTransition)}
@@ -444,7 +437,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
                     </View>
                   </PressableScale>
                 </Reanimated.View>
-                <PapillonHeaderSelector loading={isMenuLoading} onPress={() => setShowDatePicker(true)}>
+                <PapillonHeaderSelector loading={menuLoading} onPress={() => setShowDatePicker(true)}>
                   <Reanimated.View layout={animPapillon(LinearTransition)}>
                     <Reanimated.View
                       key={pickerDate.toLocaleDateString("fr-FR", { weekday: "short" })}
@@ -527,7 +520,7 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
             {currentMenu ?
               <>
-                {isMenuLoading ? (
+                {menuLoading ? (
                   <ActivityIndicator size="large" style={{ padding: 50 }} />
                 ) : currentMenu?.lunch || currentMenu?.dinner ? (
                   <>

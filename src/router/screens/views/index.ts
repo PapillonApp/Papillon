@@ -43,7 +43,7 @@ export default [
     presentation: "modal",
   }),
   createScreen("RestaurantCardDetail", RestaurantCardDetail, {
-    headerShown: Platform.OS == "android" ? false : true,
+    headerShown: Platform.OS != "android",
     headerTransparent: true,
     presentation: Platform.OS == "android" ? "modal" : "formSheet",
     sheetCornerRadius: 16,

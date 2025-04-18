@@ -9,8 +9,8 @@ import {
   NativeItem,
   NativeListHeader,
   NativeIconGradient,
+  NativeText
 } from "@/components/Global/NativeComponents";
-import { NativeText } from "@/components/Global/NativeComponents";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { useThemeSoundHaptics } from "@/hooks/Theme_Sound_Haptics";
 import { Switch } from "react-native-gesture-handler";

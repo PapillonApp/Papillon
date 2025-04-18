@@ -30,7 +30,7 @@ export const COLORS_LIST = [
 export const getRandColor = (usedColors?) => {
   const availableColors = COLORS_LIST.filter(
     (color) => {
-      if(usedColors.length > 0) {
+      if (usedColors.length > 0) {
         return !usedColors.includes(color);
       }
       return true;

@@ -3,7 +3,7 @@ import { SkolengoAuthConfig, SkolengoJWT, SkolengoTokenSet, authTokenToSkolengoT
 import { DiscoveryDocument } from "expo-auth-session";
 import { SkolengoAccount, AccountService } from "@/stores/account/types";
 import axios, { type AxiosResponse } from "axios";
-import { decode as b64decode, encode as b64encode} from "js-base64";
+import { decode as b64decode, encode as b64encode } from "js-base64";
 import { decode as htmlDecode } from "html-entities";
 import { useCurrentAccount } from "@/stores/account";
 import defaultSkolengoPersonalization from "./default-personalization";
@@ -54,7 +54,7 @@ export const refreshSkolengoToken = async (refreshToken: string, discovery: Disc
   formData.append("grant_type", "refresh_token");
   formData.append("refresh_token", refreshToken);
 
-  if(!discovery.tokenEndpoint) throw new Error("[SKOLENGO] ERR - No token endpoint in discovery document");
+  if (!discovery.tokenEndpoint) throw new Error("[SKOLENGO] ERR - No token endpoint in discovery document");
 
   return await fetch(discovery.tokenEndpoint, {
     method: "POST",
@@ -62,17 +62,17 @@ export const refreshSkolengoToken = async (refreshToken: string, discovery: Disc
       Authorization: "Basic "+b64encode(OID_CLIENT_ID + ":" + OID_CLIENT_SECRET),
     },
     body: formData
-  }).then((response) => response.json()).then(d => authTokenToSkolengoTokenSet(d));
+  }).then((response) => response.json()).then((d) => authTokenToSkolengoTokenSet(d));
 };
 
 const getJWTClaims = (token: string): SkolengoJWT => {
   const dataPart = token.split(".")?.at(1)?.replace(/-/g, "+").replace(/_/g, "/");
-  if(!dataPart) throw new Error("[SKOLENGO] ERR - No data part in token");
+  if (!dataPart) throw new Error("[SKOLENGO] ERR - No data part in token");
   const data = JSON.parse(b64decode(dataPart));
   return data;
 };
 
-export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInfo?: User)=>{
+export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInfo?: User) => {
   const skolengoAccount = new Skolengo(
     null,
     authConfig.school,
@@ -80,7 +80,7 @@ export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInf
     {
       refreshToken: async (tokenSet): Promise<SkolengoTokenSet> =>
       {
-        if(!tokenSet.refresh_token) throw new Error("[SKOLENGO] ERR - No refresh token");
+        if (!tokenSet.refresh_token) throw new Error("[SKOLENGO] ERR - No refresh token");
         return refreshSkolengoToken(tokenSet.refresh_token, authConfig.discovery);
       },
       onTokenRefresh: async (tokenSet) => {
@@ -94,7 +94,7 @@ export const getSkolengoAccount = async (authConfig: SkolengoAuthConfig, userInf
       handlePronoteError: true
     }
   );
-  if(!userInfo) userInfo = await skolengoAccount.getUserInfo();
+  if (!userInfo) userInfo = await skolengoAccount.getUserInfo();
   const jwtDecoded = getJWTClaims(skolengoAccount.tokenSet.id_token!);
   const account: SkolengoAccount = {
     service: AccountService.Skolengo,

@@ -11,29 +11,23 @@ import { ScrollView } from "react-native-gesture-handler";
 import * as Clipboard from "expo-clipboard";
 
 import { CameraView } from "expo-camera";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PapillonSpinner from "@/components/Global/PapillonSpinner";
 import { fetchIcalData } from "@/services/local/ical";
-import {Screen} from "@/router/helpers/types";
-import { useAlert } from "@/providers/AlertProvider";
+import { Screen } from "@/router/helpers/types";
 import ResponsiveTextInput from "@/components/FirstInstallation/ResponsiveTextInput";
 
 const ical = require("cal-parser");
 
 const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) => {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
 
   const defaultIcal = route.params?.ical || "";
-  const defaultTitle = route.params?.title || "";
   const autoAdd = route.params?.autoAdd || false;
 
-  const account = useCurrentAccount(store => store.account!);
-  const timetables = useTimetableStore(store => store.timetables);
-  const mutateProperty = useCurrentAccount(store => store.mutateProperty);
+  const account = useCurrentAccount((store) => store.account!);
+  const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
 
   const [url, setUrl] = React.useState(defaultIcal);
-  const [title, setTitle] = React.useState(defaultTitle);
 
   const [cameraVisible, setCameraVisible] = React.useState(false);
 
@@ -46,7 +40,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
   useEffect(() => {
     if (!account.instance) return;
     if (defaultIcal && autoAdd) {
-      if(account.personalization.icalURLs?.filter(u => u.url === defaultIcal).length === 0) {
+      if (account.personalization.icalURLs?.filter((u) => u.url === defaultIcal).length === 0) {
         saveIcal().then(() => {
           if (autoAdd) {
             navigation.goBack();
@@ -60,15 +54,13 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
     }
   }, [defaultIcal]);
 
-  const { showAlert } = useAlert();
-
   const saveIcal = async () => {
     setLoading(true);
     const oldUrls = account.personalization.icalURLs || [];
 
     await fetch(url)
-      .then(response => response.text())
-      .then(text => {
+      .then((response) => response.text())
+      .then((text) => {
         const parsed = ical.parseString(text);
         let newParsed = parsed;
         newParsed.events = [];
@@ -78,7 +70,7 @@ const LessonsImportIcal: Screen<"LessonsImportIcal"> = ({ route, navigation }) =
         mutateProperty("personalization", {
           ...account.personalization,
           icalURLs: [...oldUrls, {
-            name: title.trim().length > 0 ? title : defaultTitle,
+            name: defaultTitle,
             url,
           }]
         });
