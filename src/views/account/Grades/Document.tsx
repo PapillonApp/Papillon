@@ -200,7 +200,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         !grade.average.disabled && {
           icon: <School />,
           title: "Moyenne de la classe",
-          description: "Impact de la note sur la moyenne de la classe",
+          description: "Impact estimé sur la moyenne de la classe",
           value:
                         classDiff.difference === undefined
                           ? "???"
