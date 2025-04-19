@@ -124,7 +124,7 @@ export type RouteParameters = {
     allEvaluations?: Evaluation[];
   };
 
-  Attendance: undefined;
+  Attendance: { outsideNav?: boolean };
 
   // settings.externalAccount
   SelectMethod: undefined;
