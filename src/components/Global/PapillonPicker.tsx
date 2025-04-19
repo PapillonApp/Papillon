@@ -87,14 +87,10 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             return {
               actionKey: "action-"+index.toString(),
               actionTitle: typeof item === "string" ? item : item.label,
-              // @ts-ignore
-              actionSubtitle: item.subtitle,
-              // @ts-ignore
-              menuState: (item.checked || item === selected) ? "on" : "off",
-              // @ts-ignore
-              menuAttributes: [item.destructive ? "destructive" : "normal"],
-              // @ts-ignore
-              icon: item.ios?.icon ? item.ios.icon : {
+              actionSubtitle: typeof item !== "string" ? item.subtitle : undefined,
+              menuState: (typeof item !== "string" && (item.checked || item === selected)) ? "on" : "off",
+              menuAttributes: [typeof item !== "string" && item.destructive ? "destructive" : "normal"],
+              icon: typeof item !== "string" && item.ios?.icon ? item.ios.icon : {
                 type: typeof item !== "string" ? "IMAGE_SYSTEM" : "IMAGE_SYSTEM",
                 imageValue: {
                   systemName: typeof item !== "string" ? (item.sfSymbol ? item.sfSymbol : "") : "",
