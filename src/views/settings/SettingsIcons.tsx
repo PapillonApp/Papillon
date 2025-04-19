@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Text, ScrollView, View, TouchableOpacity, Image } from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, Image, Platform, BackHandler } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { BadgeInfo, Sparkles } from "lucide-react-native";
+import { BadgeInfo, RefreshCcw, Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeList, NativeItem, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
 import IconsContainerCard from "@/components/Settings/IconsContainerCard";
@@ -10,7 +10,7 @@ import IconsContainerCard from "@/components/Settings/IconsContainerCard";
 import { icones } from "@/utils/data/icones";
 import colorsList from "@/utils/data/colors.json";
 
-import { getIconName, setIconName } from "@candlefinance/app-icon";
+import { getActiveIcon, resetIcon, setIcon } from "react-native-app-icon-changer";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { alertExpoGo, isExpoGo } from "@/utils/native/expoGoAlert";
 import { useAlert } from "@/providers/AlertProvider";
@@ -37,45 +37,70 @@ export const removeColor = (icon: string) => {
   return newName;
 };
 
-const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
+const SettingsIcons: Screen<"SettingsIcons"> = () => {
   const theme = useTheme();
   const { colors } = theme;
-  const {showAlert} = useAlert();
+  const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
   const data = icones as { [key: string]: Icon[] };
 
-  const [currentIcon, setIcon] = React.useState("default");
+  const [currentIcon, setCurrentIcon] = React.useState("default");
+  const [disableChoise, setDisableChoise] = React.useState(false);
 
   useEffect(() => {
-    if (!isExpoGo()) {
-      getIconName().then((icon) => {
-        setIcon(icon);
-      });
+    const currentIcon = async () => {
+      try {
+        const THEicon = await getActiveIcon();
+
+        const validIcons = ["default", ...Object.values(icones).flat().map((icon) => icon.id)];
+
+        if (!THEicon || !validIcons.includes(THEicon === "Default" ? "default" : THEicon)) {
+          await resetIcon();
+          setCurrentIcon("default");
+        } else {
+          setCurrentIcon(THEicon === "Default" ? "default" : THEicon);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la détection de l'icône active", error);
+      }
     };
+
+    if (!isExpoGo()) {
+      currentIcon();
+    }
   }, []);
 
   const setNewIcon = (icon: Icon) => {
-    if (icon.isVariable) {
-      const mainColor = theme.colors.primary;
-      const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
-
-      const iconConstructName = icon.id + (colorItem ? "_" + colorItem.id : "");
-
-      if (!isExpoGo()) {
-        setIconName(iconConstructName);
-        setIcon(iconConstructName);
-      } else {
-        alertExpoGo(showAlert);
-      };
+    if (isExpoGo()) {
+      alertExpoGo(showAlert);
+      return;
     }
-    else {
-      if (!isExpoGo()) {
-        setIconName(icon.id);
-        setIcon(icon.id);
-      } else {
-        alertExpoGo(showAlert);
-      };
-    }
+
+    const mainColor = theme.colors.primary;
+    const colorItem = colorsList.find((color) => color.hex.primary === mainColor);
+    const baseId = Platform.OS === "android" ? icon.id : `AppIcon_${icon.id}`;
+    const iconConstructName = icon.isVariable ? `${baseId}_${colorItem?.id ?? "green"}` : baseId;
+
+    const applyIconChange = async () => {
+      try {
+        if (icon.id === "default") {
+          await resetIcon();
+          setCurrentIcon("default");
+        } else {
+          await setIcon(iconConstructName);
+          setCurrentIcon(iconConstructName);
+        }
+        setDisableChoise(true);
+
+        setTimeout(() => {
+          BackHandler.exitApp();
+        }, 300);
+      } catch (e) {
+        console.error("Erreur lors du changement d'icône", e);
+      }
+    };
+
+    applyIconChange();
   };
 
   return (
@@ -88,6 +113,22 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
       <IconsContainerCard
         theme={theme}
       />
+
+      <View>
+        <NativeList inline>
+          <NativeItem icon={<RefreshCcw />}>
+            <NativeText
+              variant="title"
+              style={{ paddingVertical: 2, marginBottom: -4 }}
+            >
+              Redémarrage automatique
+            </NativeText>
+            <NativeText variant="subtitle">
+              Pour que les modifications s'appliquent correctement, l'application va se fermer dès que tu vas changer d'icône
+            </NativeText>
+          </NativeItem>
+        </NativeList>
+      </View>
 
       {Object.keys(data).map((key, index) => (
         <View key={index}>
@@ -137,23 +178,27 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                 key={index}
                 chevron={false}
                 onPress={() => {
-                  setNewIcon(icon);
-                }}
-                leading={<Image
-                  source={
-                    icon.isVariable
-                      ? icon.dynamic[colorsList.find((color) => color.hex.primary === colors.primary)?.id || "green"]
-                      : icon.icon
+                  if (icon.id !== currentIcon && !disableChoise) {
+                    setNewIcon(icon);
                   }
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 10,
-                    resizeMode: "contain",
-                    marginLeft: -6,
-                  }}
-                />}
-                trailing={
+                }}
+                leading={(
+                  <Image
+                    source={
+                      icon.isVariable
+                        ? icon.dynamic[colorsList.find((color) => color.hex.primary === colors.primary)?.id || "green"]
+                        : icon.icon
+                    }
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 10,
+                      resizeMode: "contain",
+                      marginLeft: -6,
+                    }}
+                  />
+                )}
+                trailing={(
                   <View
                     style={{
                       flexDirection: "row",
@@ -172,23 +217,25 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
                           });
                         }}
                       >
-                        <Sparkles color={colors.primary} style={{ marginRight: 10}}/>
+                        <Sparkles color={colors.primary} style={{ marginRight: 10 }} />
                       </TouchableOpacity>
                     ) : null}
 
                     <PapillonCheckbox
                       checked={removeColor(currentIcon) === icon.id}
                       onPress={() => {
-                        setNewIcon(icon);
+                        if (icon.id !== currentIcon && !disableChoise) {
+                          setNewIcon(icon);
+                        }
                       }}
                     />
                   </View>
-                }
+                )}
               >
                 <NativeText variant="title">{icon.name}</NativeText>
-                {(icon.author && icon.author.trim() !== "") &&
-                <NativeText variant="subtitle">{icon.author}</NativeText>
-                }
+                {icon.author && icon.author.trim() !== "" && (
+                  <NativeText variant="subtitle">{icon.author}</NativeText>
+                )}
               </NativeItem>
             ))}
           </NativeList>
@@ -200,11 +247,8 @@ const SettingsIcons: Screen<"SettingsIcons"> = ({ navigation }) => {
           marginBottom: insets.bottom,
         }}
       />
-
-
     </ScrollView>
   );
 };
-
 
 export default SettingsIcons;

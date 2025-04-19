@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Platform } from "react-native";
+import { ScrollView } from "react-native";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,7 +30,6 @@ const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation
       colors: ["#2196F3", "#03A9F4"],
       label: "Icône de l'application",
       onPress: () => navigation.navigate("SettingsIcons"),
-      android: false,
     },
   ];
 
@@ -90,26 +89,25 @@ const SettingsPersonalization: Screen<"SettingsPersonalization"> = ({ navigation
     >
       <NativeList>
         {regularItems.map((item, index) => (
-          (Platform.OS === "android" && "android" in item && !item.android) ? null :
-            <NativeItem
-              key={index}
-              onPress={item.onPress}
-              leading={
-                <NativeIconGradient
-                  icon={item.icon}
-                  colors={item.colors}
-                />
-              }
-            >
-              <NativeText variant="title">
-                {item.label}
-              </NativeText>
-              {"description" in item && item.description &&
+          <NativeItem
+            key={index}
+            onPress={item.onPress}
+            leading={
+              <NativeIconGradient
+                icon={item.icon}
+                colors={item.colors}
+              />
+            }
+          >
+            <NativeText variant="title">
+              {item.label}
+            </NativeText>
+            {"description" in item && item.description && (
               <NativeText variant="subtitle" style={{ marginTop: -3 }}>
                 {item.description}
               </NativeText>
-              }
-            </NativeItem>
+            )}
+          </NativeItem>
         ))}
       </NativeList>
 
