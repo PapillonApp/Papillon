@@ -63,8 +63,11 @@ const Discussions: Screen<"Discussions"> = ({ navigation, route }) => {
 
   const supported = account.service === AccountService.Pronote || account.service === AccountService.EcoleDirecte;
 
-  // @ts-expect-error
-  const enabled = supported && account.instance?.user.authorizations.tabs.includes(TabLocation.Discussions);
+  const enabled =
+    supported &&
+    (account.service === AccountService.Pronote
+      ? account.instance?.user.authorizations.tabs.includes(TabLocation.Discussions)
+      : true);
 
   useLayoutEffect(() => {
     navigation.setOptions({

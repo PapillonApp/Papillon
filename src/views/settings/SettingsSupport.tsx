@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SupportContainerCard from "@/components/Settings/SupportContainerCard";
 import PapillonCheckbox from "@/components/Global/PapillonCheckbox";
 import { NativeItem, NativeList, NativeListHeader, NativeText } from "@/components/Global/NativeComponents";
-import { Check, Mail, Tag, Text } from "lucide-react-native";
+import { Check, Mail, Tag, Text, OctagonX } from "lucide-react-native";
 import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import { get_logs, Log } from "@/utils/logger/logger";
 import { useAlert } from "@/providers/AlertProvider";
@@ -62,7 +62,19 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
       })
       .join("<br>");
 
+    const isValidEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
 
+    if (!isValidEmail(email ?? "")) {
+      showAlert({
+        title: "Oups, une erreur s'est produite",
+        message: "Ton adresse e-mail n'est pas valide.",
+        icon: <OctagonX />,
+      });
+      return;
+    }
 
     const data = {
       email: email,

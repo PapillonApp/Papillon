@@ -22,9 +22,14 @@ const AccountSwitcher = ({
   small = false,
   opened = false,
   modalOpen = false,
-  // @ts-expect-error
   translationY,
   loading = false,
+}: {
+  small?: boolean;
+  opened?: boolean;
+  modalOpen?: boolean;
+  translationY?: Reanimated.SharedValue<number>;
+  loading?: boolean;
 }) => {
   const theme = useTheme();
   const { colors } = theme;

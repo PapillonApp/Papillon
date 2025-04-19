@@ -4,11 +4,13 @@ import {
   Image,
   Platform,
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TouchableNativeFeedback,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useNavigation } from "@react-navigation/native";
@@ -23,12 +25,10 @@ import { Check, Cog, Palette, Plus } from "lucide-react-native";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 interface ContextMenu {
-  // @ts-expect-error
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   transparent?: boolean;
   shouldOpenContextMenu?: boolean;
-  // @ts-expect-error
   menuStyles?: StyleProp<ViewStyle>;
 }
 

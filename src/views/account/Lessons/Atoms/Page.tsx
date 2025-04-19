@@ -85,8 +85,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
               i={0}
               start={dateMaxStart.getTime()}
               end={day[0].startTimestamp}
-              // @ts-expect-error
-              icon={<Moon />}
+              icon={Moon}
               label={"Début des cours à " + new Date(day[0].startTimestamp).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -117,8 +116,7 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
               i={day.length}
               start={day[day.length - 1].endTimestamp}
               end={dateMaxEnd.getTime()}
-              // @ts-expect-error
-              icon={<DoorOpen />}
+              icon={DoorOpen}
               label={"Fin des cours à " + new Date(day[day.length - 1].endTimestamp).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -246,8 +244,7 @@ const SeparatorCourse: React.FC<{
           ) : (
             <Sofa size={20} color={colors.text} />
           )) : (
-        // @ts-expect-error
-          React.cloneElement(icon, {
+          React.createElement(icon, {
             color: colors.text,
             size: 20,
           })

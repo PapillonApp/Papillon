@@ -101,7 +101,6 @@ const NativeListComponent: React.FC<NativeListProps> = ({
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
-      overflow: "visible",
       elevation: 1,
     },
     inline && { marginTop: 16 },
@@ -129,7 +128,6 @@ const NativeListComponent: React.FC<NativeListProps> = ({
 
   return (
     <Reanimated.View
-      // @ts-expect-error
       style={listStyle}
       layout={animated && (layout ?? defaultAnimation)}
       entering={entering}
