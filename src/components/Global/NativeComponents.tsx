@@ -12,8 +12,9 @@ type EntryOrExitLayoutType = NonNullable<AnimatedProps<{}>["entering"]>;
 const listStyles = StyleSheet.create({
   list: {
     borderRadius: 16,
+    borderCurve: "continuous",
     flexDirection: "column",
-    overflow: "hidden",
+    overflow: "visible",
     marginTop: 24,
   },
   item: {}
