@@ -226,7 +226,7 @@ const GradeSubjectScreen: Screen<"GradeSubject"> = ({ route, navigation }) => {
         })}
       </NativeList>
 
-      {averageDiff.without !== 0 && (
+      {averageDiff.without !== -1 && (
         <>
           <NativeListHeader label="Détails" />
 
