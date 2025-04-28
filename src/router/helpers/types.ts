@@ -71,7 +71,6 @@ export type RouteParameters = {
   UnivRennes1_Login: undefined;
   UnivRennes2_Login: undefined;
   UnivIUTLannion_Login: undefined;
-  UnivLimoges_Login: undefined;
   UnivSorbonneParisNord_login: undefined;
   UnivUphf_Login: undefined;
   BackgroundIdentityProvider: undefined;

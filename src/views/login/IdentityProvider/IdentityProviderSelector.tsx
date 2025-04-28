@@ -58,13 +58,6 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       navigate: () => navigation.navigate("UnivRennes2_Login"),
     },
     {
-      name: "univ_limoges",
-      title: "Université de Limoges",
-      description: "Utilise ton compte Biome pour te connecter",
-      image: require("@/../assets/images/service_unilim.png"),
-      navigate: () => navigation.navigate("UnivLimoges_Login"),
-    },
-    {
       name: "univ_sorbonne_paris_nord",
       title: "Université Sorbonne Paris Nord",
       description: "Utilise ton compte Sorbonne pour te connecter",
