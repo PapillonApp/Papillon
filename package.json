@@ -1,6 +1,6 @@
 {
   "name": "papillonvex",
-  "version": "7.12.4",
+  "version": "7.12.5",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -82,6 +82,7 @@
     "react": "18.2.0",
     "react-native": "^0.74.3",
     "react-native-barcode-svg": "^0.0.15",
+    "react-native-calendars": "^1.1310.0",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-draglist": "^3.6.1",
     "react-native-gesture-handler": "^2.22.1",
