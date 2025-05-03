@@ -2,9 +2,43 @@ import NetInfo from "@react-native-community/netinfo";
 import {type Account, AccountService} from "@/stores/account/types";
 import {error, warn} from "@/utils/logger/logger";
 import { Alert } from "react-native";
+import { PapillonNavigation } from "@/router/refs";
+
 export interface Reconnected<T extends Account> {
   instance: T["instance"]
   authentication: T["authentication"]
+}
+
+function navigateRecreatedAccount (account: Account) {
+  const navigate = PapillonNavigation.current?.navigate;
+  if (!navigate) {
+    console.warn("No navigation available to navigate to the authentication selector.");
+    return;
+  }
+
+  switch (account.service) {
+    case AccountService.Pronote: {
+      navigate("PronoteAuthenticationSelector");
+      break;
+    }
+    case AccountService.Skolengo: {
+      navigate("SkolengoAuthenticationSelector");
+      break;
+    }
+    case AccountService.EcoleDirecte: {
+      navigate("EcoleDirecteCredentials");
+      break;
+    }
+    case AccountService.Turboself:
+    case AccountService.Alise:
+    case AccountService.ARD:
+    case AccountService.Izly: {
+      navigate("SettingStack", { screen: "ExternalAccountSelector" });
+      break;
+    }
+  }
+
+  return;
 }
 
 /**
@@ -76,14 +110,26 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
       }
     }
   } catch (ERRfatal) {
-    error(
-      `Unable to reload account (Service: ${account.service}), see => ${ERRfatal}`,
-      "ACCOUNT"
-    );
+    error(`Unable to reload account, see => ${ERRfatal}`, "ACCOUNT");
     if (!isOnline) {
       Alert.alert(
         "Connexion impossible",
         "Impossible de te connecter à ton compte, car tu n'es pas connecté(e) à Internet"
+      );
+    } else {
+      Alert.alert(
+        "Erreur de connexion",
+        "Une erreur est survenue lors de la connexion à ton compte. La réinitialisation de ton compte est nécessaire",
+        [
+          {
+            text: "Annuler",
+            style: "cancel"
+          },
+          {
+            text: "Recréer le compte",
+            onPress: () => navigateRecreatedAccount(account),
+          }
+        ]
       );
     }
 
