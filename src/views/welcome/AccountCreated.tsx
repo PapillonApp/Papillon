@@ -185,6 +185,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
           linkedExternalLocalIDs: [ ...(curr.linkedExternalLocalIDs || []) ],
           associatedAccountsLocalIDs: [ ...(curr.associatedAccountsLocalIDs || []) ],
           serviceData: { ...(curr.serviceData || {}) },
+          studentName: curr.studentName || acc.studentName,
         };
       }, account);
 
