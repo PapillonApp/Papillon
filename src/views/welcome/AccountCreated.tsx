@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import type { Screen } from "@/router/helpers/types";
@@ -14,6 +14,8 @@ import * as Haptics from "expo-haptics";
 
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
+import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
+import { AccountService, PrimaryAccount } from "@/stores/account/types";
 
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const accounts = useAccounts((state) => state.accounts);
@@ -32,15 +34,18 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
 
   const animationRef = useRef<LottieView>(null);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [fusionsDetected, setFusionsDetected] = useState(
-    accounts
-      .filter((THEaccount) => !THEaccount.isExternal)
-      .filter(
-        (THEaccount) =>
-          THEaccount.service === account.service &&
-        THEaccount.studentName === account.studentName
-      )
-  );
+  const fusionsDetected = accounts
+    .filter((THEaccount) => !THEaccount.isExternal)
+    .filter(
+      (THEaccount) =>
+        THEaccount.service === account.service &&
+        THEaccount.name === account.name
+    )
+    .sort((a, b) => {
+      if (a.localID === account.localID) return -1;
+      if (b.localID === account.localID) return 1;
+      return 0;
+    });
   const [isFusionDetected, setIsFusionDetected] = useState(fusionsDetected.length > 0);
 
   // show animation on focus
@@ -69,6 +74,82 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
 
     return unsubscribe;
   }, [navigation]);
+
+  const renderAccount = useCallback((account: PrimaryAccount, index: number, lenghtFusions: number) => {
+    const theme = useTheme();
+
+    return (
+      <View
+        style={{
+          backgroundColor: theme.dark ? theme.colors.primary + "09" : theme.colors.primary + "11",
+          flexDirection: "row",
+          padding: 9,
+          borderStyle: "solid",
+          borderBottomWidth: index !== lenghtFusions - 1 ? 1 : 0,
+          borderColor: theme.colors.text + "20",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 80,
+            backgroundColor: "#000000",
+            marginRight: 10,
+          }}
+        >
+          <Image
+            source={{ uri: account.personalization.profilePictureB64 }}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 80,
+            }}
+            resizeMode="cover"
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+          <View style={{ flexDirection: "row", flexWrap: "nowrap", minWidth: "90%", maxWidth: "75%" }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "semibold",
+                color: theme.colors.text,
+                flexShrink: 1,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {account.studentName?.first || "Utilisateur"} {account.studentName?.last || ""}
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontSize: 15,
+              fontWeight: 500,
+              color: theme.colors.text + "50",
+              fontFamily: "medium",
+              maxWidth: "70%",
+            }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {AccountService[account.service] !== "Local" && account.service !== AccountService.PapillonMultiService
+              ? AccountService[account.service]
+              : account.identityProvider
+                ? account.identityProvider.name
+                : "Compte local"}
+          </Text>
+        </View>
+      </View>
+    );
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,10 +189,42 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
         }}
       />
 
-      {/* Liste des comptes fusionnables */}
-      {/* {isFusionDetected && (
-        <></>
-      )} */}
+      {isFusionDetected && (
+        <View style={styles.menu}>
+          {fusionsDetected.map((THEfusion, index) => (
+            <>
+              {THEfusion.localID === account.localID ? (
+                <Text
+                  key={THEfusion.localID}
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "semibold",
+                    color: "#000000",
+                    padding: 9,
+                    backgroundColor: "#FFFFFF",
+                  }}
+                >
+                  Compte ajouté
+                </Text>
+              ) : index === 1 && (
+                <Text
+                  key={THEfusion.localID}
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "semibold",
+                    color: "#000000",
+                    padding: 9,
+                    backgroundColor: "#FFFFFF",
+                  }}
+                >
+                  Fusions possibles
+                </Text>
+              )}
+              {renderAccount(THEfusion, index, fusionsDetected.length)}
+            </>
+          ))}
+        </View>
+      )}
 
       <View
         style={styles.buttons}
@@ -176,6 +289,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "medium",
     paddingHorizontal: 20,
+  },
+
+  menu: {
+    width: 260,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
   },
 });
 
