@@ -20,6 +20,7 @@ import { AccountService, PrimaryAccount } from "@/stores/account/types";
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const accounts = useAccounts((state) => state.accounts);
   const account = useCurrentAccount((state) => state.account!);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
   const createStoredAccount = useAccounts(store => store.create);
   const removeAccount = useAccounts((store) => store.remove);
 
@@ -155,49 +156,53 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
     );
   }, []);
 
-  const fusionAccounts = useCallback(() => {
+  const fusionAccounts = useCallback(async () => {
     if (!account) return;
 
-    // @ts-expect-error
-    const mergedAccount = fusionsDetected.reduce((acc, curr) => {
-      return {
-        ...acc,
-        personalization: {
-          ...acc.personalization,
-          ...curr.personalization,
-          tabs: Array.from(
-            new Set([...(acc.personalization.tabs || []), ...(curr.personalization.tabs || [])])
-          ),
-          icalURLs: Array.from(
-            new Set([...(acc.personalization.icalURLs || []), ...(curr.personalization.icalURLs || [])])
-          ),
-          subjects: {
-            ...(acc.personalization.subjects || {}),
-            ...(curr.personalization.subjects || {}),
+    const mergedAccount = fusionsDetected
+      .filter((curr) => curr.localID !== account.localID)
+      // @ts-expect-error
+      .reduce((acc, curr) => {
+        /** Explication de la fusion des comptes
+         * `...` permet de faire une copie d'un objet
+         * `Array.from(new Set(...))` permet de supprimer les doublons d'un tableau
+         */
+
+        return {
+          ...acc,
+          personalization: {
+            ...acc.personalization,
+            ...curr.personalization,
+            tabs: Array.from(
+              new Set([...(acc.personalization.tabs || []), ...(curr.personalization.tabs || [])])
+            ),
+            icalURLs: Array.from(
+              new Set([...(acc.personalization.icalURLs || []), ...(curr.personalization.icalURLs || [])])
+            ),
+            subjects: {
+              ...(acc.personalization.subjects || {}),
+              ...(curr.personalization.subjects || {}),
+            },
           },
-        },
-        linkedExternalLocalIDs: Array.from(
-          new Set([...(acc.linkedExternalLocalIDs || []), ...(curr.linkedExternalLocalIDs || [])])
-        ),
-        associatedAccountsLocalIDs: Array.from(
-          new Set([...(acc.associatedAccountsLocalIDs || []), ...(curr.associatedAccountsLocalIDs || [])])
-        ),
-        serviceData: {
-          ...(acc.serviceData || {}),
-          ...(curr.serviceData || {}),
-        },
-      };
-    }, account);
+          linkedExternalLocalIDs: Array.from(
+            new Set([...(acc.linkedExternalLocalIDs || []), ...(curr.linkedExternalLocalIDs || [])])
+          ),
+          associatedAccountsLocalIDs: Array.from(
+            new Set([...(acc.associatedAccountsLocalIDs || []), ...(curr.associatedAccountsLocalIDs || [])])
+          ),
+          serviceData: {
+            ...(acc.serviceData || {}),
+            ...(curr.serviceData || {}),
+          },
+        };
+      }, account);
 
     createStoredAccount(mergedAccount);
-    fusionsDetected
-      .filter((acc) => acc.localID !== account.localID)
-      .forEach((acc) => {
-        removeAccount(acc.localID);
-      });
+    await switchTo(mergedAccount);
 
-
-    setIsFusionDetected(false);
+    fusionsDetected.forEach((acc) => {
+      removeAccount(acc.localID);
+    });
   }, [account, fusionsDetected]);
 
   return (
@@ -240,11 +245,11 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
 
       {isFusionDetected && (
         <View style={styles.menu}>
-          {fusionsDetected.map((THEfusion, index) => (
-            <>
-              {THEfusion.localID === account.localID ? (
+          {fusionsDetected.map((acc, index) => (
+            <View key={acc.localID}>
+              {acc.localID === account.localID ? (
                 <Text
-                  key={THEfusion.localID}
+                  key={acc.localID}
                   style={{
                     fontSize: 16,
                     fontFamily: "semibold",
@@ -257,7 +262,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
                 </Text>
               ) : index === 1 && (
                 <Text
-                  key={THEfusion.localID}
+                  key={acc.localID}
                   style={{
                     fontSize: 16,
                     fontFamily: "semibold",
@@ -269,24 +274,22 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
                   {fusionsDetected.length > 2 ? "Fusions possibles" : "Fusion possible"}
                 </Text>
               )}
-              {renderAccount(THEfusion, index, fusionsDetected.length)}
-            </>
+              {renderAccount(acc, index, fusionsDetected.length)}
+            </View>
           ))}
         </View>
       )}
 
-      <View
-        style={styles.buttons}
-      >
+      <View style={styles.buttons}>
         {isFusionDetected ? (
           <>
             <ButtonCta
               value="Fusionner les comptes"
               primary
               disabled={loading}
-              onPress={() => {
+              onPress={async () => {
                 setLoading(true);
-                fusionAccounts();
+                await fusionAccounts();
 
                 setTimeout(() => {
                   playSound(LEson6);
