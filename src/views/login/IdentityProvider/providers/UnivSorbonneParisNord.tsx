@@ -89,7 +89,7 @@ const UnivSorbonneParisNord_login: Screen<"UnivSorbonneParisNord_login"> = ({ na
       };
 
       createStoredAccount(localAccount);
-      switchTo(localAccount);
+      await switchTo(localAccount);
 
       navigation.reset({
         index: 0,
