@@ -20,6 +20,9 @@ import { AccountService, PrimaryAccount } from "@/stores/account/types";
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const accounts = useAccounts((state) => state.accounts);
   const account = useCurrentAccount((state) => state.account!);
+  const createStoredAccount = useAccounts(store => store.create);
+  const removeAccount = useAccounts((store) => store.remove);
+
   const { playHaptics, playSound } = useSoundHapticsWrapper();
   const LEson5 = require("@/../assets/sound/5.wav");
   const LEson6 = require("@/../assets/sound/6.wav");
@@ -45,8 +48,9 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
       if (a.localID === account.localID) return -1;
       if (b.localID === account.localID) return 1;
       return 0;
-    });
+    }) as PrimaryAccount[];
   const [isFusionDetected, setIsFusionDetected] = useState(fusionsDetected.length > 1);
+  const [loading, setLoading] = useState(false);
 
   // show animation on focus
   useEffect(() => {
@@ -151,6 +155,51 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
     );
   }, []);
 
+  const fusionAccounts = useCallback(() => {
+    if (!account) return;
+
+    // @ts-expect-error
+    const mergedAccount = fusionsDetected.reduce((acc, curr) => {
+      return {
+        ...acc,
+        personalization: {
+          ...acc.personalization,
+          ...curr.personalization,
+          tabs: Array.from(
+            new Set([...(acc.personalization.tabs || []), ...(curr.personalization.tabs || [])])
+          ),
+          icalURLs: Array.from(
+            new Set([...(acc.personalization.icalURLs || []), ...(curr.personalization.icalURLs || [])])
+          ),
+          subjects: {
+            ...(acc.personalization.subjects || {}),
+            ...(curr.personalization.subjects || {}),
+          },
+        },
+        linkedExternalLocalIDs: Array.from(
+          new Set([...(acc.linkedExternalLocalIDs || []), ...(curr.linkedExternalLocalIDs || [])])
+        ),
+        associatedAccountsLocalIDs: Array.from(
+          new Set([...(acc.associatedAccountsLocalIDs || []), ...(curr.associatedAccountsLocalIDs || [])])
+        ),
+        serviceData: {
+          ...(acc.serviceData || {}),
+          ...(curr.serviceData || {}),
+        },
+      };
+    }, account);
+
+    createStoredAccount(mergedAccount);
+    fusionsDetected
+      .filter((acc) => acc.localID !== account.localID)
+      .forEach((acc) => {
+        removeAccount(acc.localID);
+      });
+
+
+    setIsFusionDetected(false);
+  }, [account, fusionsDetected]);
+
   return (
     <SafeAreaView style={styles.container}>
       <MaskStars />
@@ -234,13 +283,23 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
             <ButtonCta
               value="Fusionner les comptes"
               primary
-              // onPress={() => {
-              //   navigation.navigate("ColorSelector");
-              //   playSound(LEson5);
-              // }}
+              disabled={loading}
+              onPress={() => {
+                setLoading(true);
+                fusionAccounts();
+
+                setTimeout(() => {
+                  playSound(LEson6);
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "AccountStack" }],
+                  });
+                }, 1000);
+              }}
             />
             <ButtonCta
               value="Ne pas fusionner"
+              disabled={loading}
               onPress={() => {
                 setIsFusionDetected(false);
               }}
