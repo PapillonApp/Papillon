@@ -27,24 +27,6 @@ const sortingFunctions: Record<number, SortingFunction> = {
   2: (a, b) => (b.average?.average?.value || 0) - (a.average?.average?.value || 0)
 };
 
-const sortings: PickerDataItem[] = [
-  {
-    label: "Alphabétique",
-    icon: <ArrowDownAZ />,
-    sfSymbol: "arrow.up.arrow.down",
-  },
-  {
-    label: "Date",
-    icon: <Calendar />,
-    sfSymbol: "calendar",
-  },
-  {
-    label: "Moyenne",
-    icon: <TrendingUp />,
-    sfSymbol: "chart.line.uptrend.xyaxis",
-  },
-];
-
 const Subject: React.FC<SubjectProps> = ({
   gradesPerSubject,
   navigation,
@@ -55,7 +37,24 @@ const Subject: React.FC<SubjectProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const theme = useTheme();
 
-  // Memoize sorted data
+  const sortings: PickerDataItem[] = useMemo(() => [
+    {
+      label: "Alphabétique",
+      icon: <ArrowDownAZ />,
+      sfSymbol: "arrow.up.arrow.down",
+    },
+    {
+      label: "Date",
+      icon: <Calendar />,
+      sfSymbol: "calendar",
+    },
+    {
+      label: "Moyenne",
+      icon: <TrendingUp />,
+      sfSymbol: "chart.line.uptrend.xyaxis",
+    },
+  ], []);
+
   const sortedData = useMemo(() => {
     const sortFn = sortingFunctions[sorting];
     return [...gradesPerSubject].sort(sortFn);
@@ -63,12 +62,11 @@ const Subject: React.FC<SubjectProps> = ({
 
   const handleSortingChange = useCallback((item: PickerDataItem) => {
     setIsLoading(true);
-    // Use requestAnimationFrame to prevent UI blocking
     requestAnimationFrame(() => {
       setSorting(sortings.indexOf(item));
       setIsLoading(false);
     });
-  }, []);
+  }, [sortings]);
 
   const renderItem = useCallback(({ item, index }: { item: GradesPerSubject; index: number }) => (
     <SubjectItem
@@ -114,11 +112,7 @@ const Subject: React.FC<SubjectProps> = ({
                 textTransform: "uppercase",
               }}
             >
-              {
-                typeof sortings[sorting] === "string"
-                  ? sortings[sorting]
-                  : sortings[sorting]?.label
-              }
+              {sortings[sorting]?.label}
             </NativeText>
             {isLoading && (
               <PapillonSpinner
@@ -141,8 +135,8 @@ const Subject: React.FC<SubjectProps> = ({
     />
   ), [sorting, theme.colors.primary, isLoading, handleSortingChange]);
 
-  const keyExtractor = useCallback((item: GradesPerSubject, index: number) =>
-    item.average.subjectName + index,
+  const keyExtractor = useCallback((item: GradesPerSubject) =>
+    `${item.average.subjectName}-${item.average.average?.value}-${item.grades.length}`,
   []);
 
   return (
@@ -150,15 +144,15 @@ const Subject: React.FC<SubjectProps> = ({
       layout={anim2Papillon(LinearTransition)}
     >
       <FlatList
-        key={"allGrades[" + currentPeriod + "]:" + sorting}
+        key={`allGrades[${currentPeriod}]:${sorting}`}
         data={sortedData}
         renderItem={renderItem}
         ListHeaderComponent={ListHeaderComponent}
-        ListHeaderComponentStyle={{zIndex: 99}}
+        ListHeaderComponentStyle={{ zIndex: 99 }}
         keyExtractor={keyExtractor}
-        removeClippedSubviews={false}
-        maxToRenderPerBatch={10}
-        initialNumToRender={8}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={6}
+        initialNumToRender={4}
         windowSize={5}
         contentContainerStyle={{
           overflow: "visible",

@@ -2,7 +2,6 @@ import createScreen from "@/router/helpers/create-screen";
 
 import IdentityProviderSelector from "@/views/login/IdentityProvider/IdentityProviderSelector";
 import UnivRennes1_Login from "@/views/login/IdentityProvider/providers/UnivRennes1";
-import UnivLimoges_Login from "@/views/login/IdentityProvider/providers/UnivLimoges";
 import UnivRennes2_Login from "@/views/login/IdentityProvider/providers/UnivRennes2";
 import UnivSorbonneParisNord_login from "@/views/login/IdentityProvider/providers/UnivSorbonneParisNord";
 //import UnivUphf_Login from "@/views/login/IdentityProvider/providers/UnivUphf";
@@ -28,11 +27,6 @@ export default [
   createScreen("UnivIUTLannion_Login", UnivIUTLannion_Login, {
     headerBackVisible: true,
     headerTitle: "IUT de Lannion",
-  }),
-
-  createScreen("UnivLimoges_Login", UnivLimoges_Login, {
-    headerBackVisible: true,
-    headerTitle: "Université de Limoges",
   }),
 
   createScreen("UnivSorbonneParisNord_login", UnivSorbonneParisNord_login, {

@@ -13,6 +13,8 @@ import { Screen } from "@/router/helpers/types";
 import { ExternalAccount } from "@/stores/account/types";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import * as Brightness from "expo-brightness";
+import Reanimated, { ZoomIn } from "react-native-reanimated";
+import { anim2Papillon } from "@/utils/ui/animations";
 
 const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) => {
   const { card } = route.params;
@@ -123,7 +125,7 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
           }}
           onPress={() => navigation.goBack()}
         >
-          <View
+          <Reanimated.View
             style={{
               marginBottom: 32,
               justifyContent: "center",
@@ -148,42 +150,50 @@ const RestaurantQrCode: Screen<"RestaurantQrCode">  = ({ route, navigation }) =>
             >
               Approche le code QR du scanner de la borne afin de valider ta carte
             </Text>
-          </View>
+          </Reanimated.View>
         </Pressable>
 
         {qrCode && (
-          <PressableScale
-            style={{
-              padding: 16,
-              backgroundColor: "white",
-
-              borderColor: theme.colors.text + "40",
-              borderWidth: 1,
-
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.2,
-              shadowRadius: 7,
-
-              elevation: 5,
-
-              borderRadius: 16,
-              borderCurve: "continuous",
-            }}
-            onPress={() => {
-              GenerateQRCode();
-            }}
-            weight="light"
-            activeScale={0.9}
+          <Reanimated.View
+            entering={anim2Papillon(ZoomIn).delay(100)}
           >
-            <QRCode
-              value={qrCode}
-              size={280}
-            />
-          </PressableScale>
+            <PressableScale
+              style={{
+                padding: 16,
+                backgroundColor: "white",
+
+                borderColor: theme.colors.text + "40",
+                borderWidth: 1,
+
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.2,
+                shadowRadius: 7,
+
+                elevation: 5,
+
+                borderRadius: 16,
+                borderCurve: "continuous",
+              }}
+              onPress={() => {
+                GenerateQRCode();
+              }}
+              weight="light"
+              activeScale={0.9}
+            >
+              <Reanimated.View
+                entering={anim2Papillon(ZoomIn).delay(200)}
+              >
+                <QRCode
+                  value={qrCode}
+                  size={280}
+                />
+              </Reanimated.View>
+            </PressableScale>
+          </Reanimated.View>
         )}
 
         <Pressable

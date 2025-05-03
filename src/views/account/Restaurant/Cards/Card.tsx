@@ -40,8 +40,9 @@ const MenuCard = ({ card, onPress }: { card: ServiceCard, onPress?: () => void }
             {card?.theme?.name}
           </Text>
           <View style={[styles.cardBalances]}>
-            {card.balance?.map((balance, index) =>
-              balance.amount && (
+            {card.balance
+              ?.filter(balance => !!balance.amount)
+              .map((balance, index) => (
                 <View key={index} style={[styles.cardBalance]}>
                   <Text style={[styles.cardBalanceTitle, { color: card?.theme?.colors?.accent }]}>
                     {balance.label}
@@ -50,8 +51,7 @@ const MenuCard = ({ card, onPress }: { card: ServiceCard, onPress?: () => void }
                     {balance.amount.toFixed(2) + " €"}
                   </Text>
                 </View>
-              )
-            )}
+              ))}
           </View>
         </View>
 

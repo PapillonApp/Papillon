@@ -1,7 +1,7 @@
 ![Papillon, un client de vie scolaire alternatif open source](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/main_banner_light.svg#gh-light-mode-only)
 ![Papillon, un client de vie scolaire alternatif open source](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/main_banner_dark.svg#gh-dark-mode-only)
 
-<!-- 
+<!--
 ![Ce projet est en cours de développement actif. Des changements majeurs peuvent survenir au cours des prochaines mises à jour.](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/warning_devt_light.svg#gh-light-mode-only)
 ![Ce projet est en cours de développement actif. Des changements majeurs peuvent survenir au cours des prochaines mises à jour.](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/warning_devt_dark.svg#gh-dark-mode-only)
 -->
@@ -31,7 +31,6 @@ Voici un aperçu de ce qui a été accompli et ce qui est en cours de développe
   - [x] EcoleDirecte
   - [x] Skolengo
   - [x] Universités :
-    - Limoges
     - Lorraine
     - Nîmes
     - Polytechnique Hauts-de-France (UPHF)
@@ -49,13 +48,13 @@ Voici un aperçu de ce qui a été accompli et ce qui est en cours de développe
   - Connexion par cookie d'ENT
 - 🔐 Appel à l'API pour se connecter et conservation de la session
 
-#### 🍽️ Services de restauration  
+#### 🍽️ Services de restauration
 
-La gestion de tes repas et transactions au sein de ton établissement est simplifiée grâce aux services de cantine intégrés suivants :  
-- **Turboself**  
-- **ARD**  
-- **Izly**  
-- **Alise**  
+La gestion de tes repas et transactions au sein de ton établissement est simplifiée grâce aux services de cantine intégrés suivants :
+- **Turboself**
+- **ARD**
+- **Izly**
+- **Alise**
 
 #### 📊 Affichage des données
 
@@ -70,17 +69,15 @@ La gestion de tes repas et transactions au sein de ton établissement est simpli
 - 💬 Conversations
 - 🎒 Vie scolaire
 - 📩 Messagerie
-  
-#### 🌐 Rejoins la communauté  
 
-Viens discuter avec nous, poser tes questions et te tenir informé des dernières actus sur Papillon !  
-👉 [Rejoins le Discord officiel](https://discord.com/invite/wVKWBRTbfh)  
+#### 🌐 Rejoins la communauté
+
+Viens discuter avec nous, poser tes questions et te tenir informé des dernières actus sur Papillon !
+👉 [Rejoins le Discord officiel](https://discord.com/invite/wVKWBRTbfh)
 
 #
- 
+
  ![À propos du projet](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/part_dev_light.svg#gh-light-mode-only)
  ![À propos du projet](https://raw.githubusercontent.com/PapillonApp/Papillon/main/.github/assets/part_dev_dark.svg#gh-dark-mode-only)
 
 Pour commencer à développer sur Papillon v7, consulte le [centre de documentation pour développeurs](https://docs.papillon.bzh/).
-
-

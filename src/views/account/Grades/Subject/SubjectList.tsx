@@ -4,7 +4,7 @@ import {
   NativeText,
 } from "@/components/Global/NativeComponents";
 import { getSubjectData } from "@/services/shared/Subject";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import { FlatList, View } from "react-native";
 import Reanimated, { FadeIn, FadeInDown, FadeOut, FadeOutUp } from "react-native-reanimated";
 import SubjectTitle from "./SubjectTitle";
@@ -24,7 +24,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
   subject,
   allGrades,
   navigation,
-  index,
+  index = 0,
 }) => {
   const [subjectData, setSubjectData] = useState({
     color: "#888888",
@@ -32,25 +32,30 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     emoji: "❓",
   });
 
-  const fetchSubjectData = () => {
+  useEffect(() => {
     const data = getSubjectData(subject.average.subjectName);
     setSubjectData(data);
-  };
-
-  useEffect(() => {
-    fetchSubjectData();
   }, [subject.average.subjectName]);
 
   if (!subjectData) {
     return null;
   }
 
-  index = index || 0;
+  const renderGradeItem = useCallback(({ item, index }) => (
+    <SubjectGradeItem
+      subject={subject}
+      grade={item}
+      index={index}
+      onPress={() => navigation.navigate("GradeDocument", { grade: item, allGrades })}
+    />
+  ), [subject, allGrades, navigation]);
+
+  const keyExtractor = useCallback((item) => item.id, []);
 
   return (
     <NativeList
       animated
-      key={subject.average.subjectName+"subjectItem"}
+      key={subject.average.subjectName + "subjectItem"}
       entering={index < 3 && anim2Papillon(FadeInDown).duration(300).delay(80 * index)}
       exiting={index < 3 && anim2Papillon(FadeOutUp).duration(100).delay(80 * index)}
     >
@@ -63,22 +68,8 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
 
       <FlatList
         data={subject.grades}
-        renderItem={({ item, index }) => (
-          <SubjectGradeItem
-            subject={subject}
-            grade={item}
-            index={index}
-            onPress={() => {
-              navigation.navigate("GradeDocument", { grade:item, allGrades });
-            }}
-          />
-        )}
-        keyExtractor={(item) => {
-          if (!item.description) {
-            return item.id + "_" + Math.random();
-          }
-          return item.id;
-        }}
+        renderItem={renderGradeItem}
+        keyExtractor={keyExtractor}
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={8}
@@ -95,7 +86,7 @@ interface SubjectGradeItemProps {
   onPress: () => void;
 }
 
-const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, index, onPress }) => {
+const SubjectGradeItem: React.FC<SubjectGradeItemProps> = memo(({ subject, grade, index, onPress }) => {
   return (
     <Reanimated.View
       entering={FadeIn.duration(100)}
@@ -105,7 +96,7 @@ const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, ind
       <NativeItem
         separator={index < subject.grades.length - 1}
         chevron={false}
-        onPress={() => onPress()}
+        onPress={onPress}
       >
         <View
           style={{
@@ -161,6 +152,6 @@ const SubjectGradeItem: React.FC<SubjectGradeItemProps> = ({ subject, grade, ind
       </NativeItem>
     </Reanimated.View>
   );
-};
+});
 
-export default SubjectItem;
+export default memo(SubjectItem);
