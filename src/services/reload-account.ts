@@ -119,14 +119,14 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
     } else {
       Alert.alert(
         "Erreur de connexion",
-        "Une erreur est survenue lors de la connexion à ton compte. La réinitialisation de ton compte est nécessaire",
+        "Pour corriger la connexion, la réinitialisation de ton compte est nécessaire (tes données pourront être récupérées).",
         [
           {
             text: "Annuler",
             style: "cancel"
           },
           {
-            text: "Recréer le compte",
+            text: "Réinitialiser le compte",
             onPress: () => navigateRecreatedAccount(account),
           }
         ]
