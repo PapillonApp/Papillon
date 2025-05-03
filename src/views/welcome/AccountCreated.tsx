@@ -25,6 +25,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const removeAccount = useAccounts((store) => store.remove);
 
   const { playHaptics, playSound } = useSoundHapticsWrapper();
+  const theme = useTheme();
   const LEson5 = require("@/../assets/sound/5.wav");
   const LEson6 = require("@/../assets/sound/6.wav");
 
@@ -80,81 +81,77 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const renderAccount = useCallback((account: PrimaryAccount, index: number, lenghtFusions: number) => {
-    const theme = useTheme();
-
-    return (
+  const renderAccount = useCallback((account: PrimaryAccount, index: number, lenghtFusions: number) => (
+    <View
+      style={{
+        backgroundColor: theme.colors.primary + "11",
+        flexDirection: "row",
+        padding: 9,
+        borderStyle: "solid",
+        borderBottomWidth: index !== lenghtFusions - 1 ? 1 : 0,
+        borderColor: theme.colors.text + "20",
+        alignItems: "center",
+      }}
+    >
       <View
         style={{
-          backgroundColor: theme.dark ? theme.colors.primary + "09" : theme.colors.primary + "11",
-          flexDirection: "row",
-          padding: 9,
-          borderStyle: "solid",
-          borderBottomWidth: index !== lenghtFusions - 1 ? 1 : 0,
-          borderColor: theme.colors.text + "20",
-          alignItems: "center",
+          width: 30,
+          height: 30,
+          borderRadius: 80,
+          backgroundColor: "#000000",
+          marginRight: 10,
         }}
       >
-        <View
+        <Image
+          source={{ uri: account.personalization.profilePictureB64 }}
           style={{
-            width: 30,
-            height: 30,
+            width: "100%",
+            height: "100%",
             borderRadius: 80,
-            backgroundColor: "#000000",
-            marginRight: 10,
           }}
-        >
-          <Image
-            source={{ uri: account.personalization.profilePictureB64 }}
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: 80,
-            }}
-            resizeMode="cover"
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <View style={{ flexDirection: "row", flexWrap: "nowrap", minWidth: "90%", maxWidth: "75%" }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: "semibold",
-                color: theme.colors.text,
-                flexShrink: 1,
-              }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {account.studentName?.first || "Utilisateur"} {account.studentName?.last || ""}
-            </Text>
-          </View>
+          resizeMode="cover"
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <View style={{ flexDirection: "row", flexWrap: "nowrap", minWidth: "90%", maxWidth: "75%" }}>
           <Text
             style={{
-              fontSize: 15,
-              fontWeight: 500,
-              color: theme.colors.text + "50",
-              fontFamily: "medium",
-              maxWidth: "70%",
+              fontSize: 16,
+              fontFamily: "semibold",
+              color: theme.colors.text,
+              flexShrink: 1,
             }}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {AccountService[account.service] !== "Local" && account.service !== AccountService.PapillonMultiService
-              ? AccountService[account.service]
-              : account.identityProvider
-                ? account.identityProvider.name
-                : "Compte local"}
+            {account.studentName?.first || "Utilisateur"} {account.studentName?.last || ""}
           </Text>
         </View>
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: 500,
+            color: theme.colors.text + "50",
+            fontFamily: "medium",
+            maxWidth: "70%",
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {AccountService[account.service] !== "Local" && account.service !== AccountService.PapillonMultiService
+            ? AccountService[account.service]
+            : account.identityProvider
+              ? account.identityProvider.name
+              : "Compte local"}
+        </Text>
       </View>
-    );
-  }, []);
+    </View>
+  ), []);
 
   const fusionAccounts = useCallback(async () => {
     if (!account) return;
@@ -253,9 +250,9 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
                   style={{
                     fontSize: 16,
                     fontFamily: "semibold",
-                    color: "#000000",
+                    color: theme.colors.text,
                     padding: 9,
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: theme.colors.primary + "25",
                   }}
                 >
                   Compte ajouté
@@ -266,9 +263,9 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
                   style={{
                     fontSize: 16,
                     fontFamily: "semibold",
-                    color: "#000000",
+                    color: theme.colors.text,
                     padding: 9,
-                    backgroundColor: "#FFFFFF",
+                    backgroundColor: theme.colors.primary + "25",
                   }}
                 >
                   {fusionsDetected.length > 2 ? "Fusions possibles" : "Fusion possible"}
