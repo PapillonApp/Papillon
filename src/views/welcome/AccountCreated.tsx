@@ -16,6 +16,20 @@ import { useAccounts, useCurrentAccount } from "@/stores/account";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { AccountService, PrimaryAccount } from "@/stores/account/types";
+import PapillonLoading from "@/components/Global/PapillonLoading";
+
+const makeUUID = (): string => {
+  let dt = new Date().getTime();
+  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+    /[xy]/g,
+    (c) => {
+      const r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+    }
+  );
+  return uuid;
+};
 
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   const accounts = useAccounts((state) => state.accounts);
@@ -154,7 +168,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
   ), []);
 
   const fusionAccounts = useCallback(async () => {
-    if (!account) return;
+    setLoading(true);
 
     const mergedAccount = fusionsDetected
       .filter((curr) => curr.localID !== account.localID)
@@ -167,39 +181,28 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
 
         return {
           ...acc,
-          personalization: {
-            ...acc.personalization,
-            ...curr.personalization,
-            tabs: Array.from(
-              new Set([...(acc.personalization.tabs || []), ...(curr.personalization.tabs || [])])
-            ),
-            icalURLs: Array.from(
-              new Set([...(acc.personalization.icalURLs || []), ...(curr.personalization.icalURLs || [])])
-            ),
-            subjects: {
-              ...(acc.personalization.subjects || {}),
-              ...(curr.personalization.subjects || {}),
-            },
-          },
-          linkedExternalLocalIDs: Array.from(
-            new Set([...(acc.linkedExternalLocalIDs || []), ...(curr.linkedExternalLocalIDs || [])])
-          ),
-          associatedAccountsLocalIDs: Array.from(
-            new Set([...(acc.associatedAccountsLocalIDs || []), ...(curr.associatedAccountsLocalIDs || [])])
-          ),
-          serviceData: {
-            ...(acc.serviceData || {}),
-            ...(curr.serviceData || {}),
-          },
+          personalization: { ...(curr.personalization || {}) },
+          linkedExternalLocalIDs: [ ...(curr.linkedExternalLocalIDs || []) ],
+          associatedAccountsLocalIDs: [ ...(curr.associatedAccountsLocalIDs || []) ],
+          serviceData: { ...(curr.serviceData || {}) },
         };
       }, account);
+
+    mergedAccount.instance = account.instance;
+    mergedAccount.localID = makeUUID();
+    mergedAccount.service = account.service;
+    mergedAccount.isExternal = account.isExternal;
+    mergedAccount.name = account.name;
+    mergedAccount.className = account.className;
+    mergedAccount.schoolName = account.schoolName;
+    mergedAccount.authentication = account.authentication;
+    mergedAccount.identity = account.identity;
+    mergedAccount.providers = account.providers;
 
     createStoredAccount(mergedAccount);
     await switchTo(mergedAccount);
 
-    fusionsDetected.forEach((acc) => {
-      removeAccount(acc.localID);
-    });
+    fusionsDetected.forEach((acc) => removeAccount(acc.localID));
   }, [account, fusionsDetected]);
 
   return (
@@ -240,7 +243,9 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
         }}
       />
 
-      {isFusionDetected && (
+      {loading ? (
+        <PapillonLoading title="Fusion des comptes en cours..." />
+      ) : isFusionDetected && (
         <View style={styles.menu}>
           {fusionsDetected.map((acc, index) => (
             <View key={acc.localID}>
@@ -285,7 +290,6 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
               primary
               disabled={loading}
               onPress={async () => {
-                setLoading(true);
                 await fusionAccounts();
 
                 setTimeout(() => {
