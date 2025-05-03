@@ -12,10 +12,11 @@ import PapillonShineBubble from "@/components/FirstInstallation/PapillonShineBub
 
 import * as Haptics from "expo-haptics";
 
-import { useCurrentAccount } from "@/stores/account";
+import { useAccounts, useCurrentAccount } from "@/stores/account";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 
 const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
+  const accounts = useAccounts((state) => state.accounts);
   const account = useCurrentAccount((state) => state.account!);
   const { playHaptics, playSound } = useSoundHapticsWrapper();
   const LEson5 = require("@/../assets/sound/5.wav");
@@ -31,6 +32,16 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
 
   const animationRef = useRef<LottieView>(null);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [fusionsDetected, setFusionsDetected] = useState(
+    accounts
+      .filter((THEaccount) => !THEaccount.isExternal)
+      .filter(
+        (THEaccount) =>
+          THEaccount.service === account.service &&
+        THEaccount.studentName === account.studentName
+      )
+  );
+  const [isFusionDetected, setIsFusionDetected] = useState(fusionsDetected.length > 0);
 
   // show animation on focus
   useEffect(() => {
@@ -83,32 +94,64 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
       )}
 
       <PapillonShineBubble
-        message={name ? `Enchanté, ${name} ! On va personnaliser ton expérience !` : "Bienvenue sur Papillon !"}
-        numberOfLines={name ? 2 : 1}
+        message={
+          isFusionDetected
+            ? `Une fusion ${fusionsDetected.length > 1 ? "de plusieurs comptes" : "d'un compte"} est possible`
+            : name
+              ? `Enchanté, ${name} ! On va personnaliser ton expérience !`
+              : "Bienvenue sur Papillon !"
+        }
+        numberOfLines={isFusionDetected || name ? 2 : 1}
         width={260}
         style={{
           zIndex: 10,
         }}
       />
 
+      {/* Liste des comptes fusionnables */}
+      {/* {isFusionDetected && (
+        <></>
+      )} */}
+
       <View
         style={styles.buttons}
       >
-        <ButtonCta
-          value="Personnaliser Papillon"
-          primary
-          onPress={() => {
-            navigation.navigate("ColorSelector");
-            playSound(LEson5);
-          }}
-        />
-        <ButtonCta
-          value="Ignorer cette étape"
-          onPress={() => {
-            navigation.navigate("AccountStack", { onboard: true });
-            playSound(LEson6);
-          }}
-        />
+        {isFusionDetected ? (
+          <>
+            <ButtonCta
+              value="Fusionner les comptes"
+              primary
+              // onPress={() => {
+              //   navigation.navigate("ColorSelector");
+              //   playSound(LEson5);
+              // }}
+            />
+            <ButtonCta
+              value="Ne pas fusionner"
+              onPress={() => {
+                setIsFusionDetected(false);
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <ButtonCta
+              value="Personnaliser Papillon"
+              primary
+              onPress={() => {
+                navigation.navigate("ColorSelector");
+                playSound(LEson5);
+              }}
+            />
+            <ButtonCta
+              value="Ignorer cette étape"
+              onPress={() => {
+                navigation.navigate("AccountStack", { onboard: true });
+                playSound(LEson6);
+              }}
+            />
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
