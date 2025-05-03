@@ -1,5 +1,7 @@
+import NetInfo from "@react-native-community/netinfo";
 import {type Account, AccountService} from "@/stores/account/types";
 import {error, warn} from "@/utils/logger/logger";
+import { Alert } from "react-native";
 export interface Reconnected<T extends Account> {
   instance: T["instance"]
   authentication: T["authentication"]
@@ -12,6 +14,8 @@ export interface Reconnected<T extends Account> {
  * Once the instance has been reloaded, we give the new values for further authentications.
  */
 export async function reload <T extends Account> (account: T): Promise<Reconnected<T>> {
+  const isOnline = await NetInfo.fetch().then(state => state.isConnected ?? false);
+
   try {
     switch (account.service) {
       case AccountService.Pronote: {
@@ -72,7 +76,17 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
       }
     }
   } catch (ERRfatal) {
-    error(`Unable to reload account (Service: ${account.service}), see => ${ERRfatal}`, "ACCOUNT");
+    error(
+      `Unable to reload account (Service: ${account.service}), see => ${ERRfatal}`,
+      "ACCOUNT"
+    );
+    if (!isOnline) {
+      Alert.alert(
+        "Connexion impossible",
+        "Impossible de te connecter à ton compte, car tu n'es pas connecté(e) à Internet"
+      );
+    }
+
     return { instance: undefined, authentication: undefined };
   }
 }
