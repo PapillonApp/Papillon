@@ -46,7 +46,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
       if (b.localID === account.localID) return 1;
       return 0;
     });
-  const [isFusionDetected, setIsFusionDetected] = useState(fusionsDetected.length > 0);
+  const [isFusionDetected, setIsFusionDetected] = useState(fusionsDetected.length > 1);
 
   // show animation on focus
   useEffect(() => {
@@ -177,7 +177,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
       <PapillonShineBubble
         message={
           isFusionDetected
-            ? `Une fusion ${fusionsDetected.length > 1 ? "de plusieurs comptes" : "d'un compte"} est possible`
+            ? `Une fusion ${fusionsDetected.length > 2 ? "de plusieurs comptes" : "d'un compte"} est possible`
             : name
               ? `Enchanté, ${name} ! On va personnaliser ton expérience !`
               : "Bienvenue sur Papillon !"
@@ -217,7 +217,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
                     backgroundColor: "#FFFFFF",
                   }}
                 >
-                  Fusions possibles
+                  {fusionsDetected.length > 2 ? "Fusions possibles" : "Fusion possible"}
                 </Text>
               )}
               {renderAccount(THEfusion, index, fusionsDetected.length)}
