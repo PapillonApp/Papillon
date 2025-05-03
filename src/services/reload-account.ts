@@ -116,6 +116,11 @@ export async function reload <T extends Account> (account: T): Promise<Reconnect
         "Connexion impossible",
         "Impossible de te connecter à ton compte, car tu n'es pas connecté(e) à Internet"
       );
+    } else if (String(ERRfatal).includes("RateLimitedError")) {
+      Alert.alert(
+        "Adresse IP bloquée",
+        "Ton adresse IP a été bloquée par le serveur de l'établissement. Tu peux essayer de te connecter à un autre réseau (ex: 4G) ou patienter quelques minutes.",
+      );
     } else {
       Alert.alert(
         "Erreur de connexion",
