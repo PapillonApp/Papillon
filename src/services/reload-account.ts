@@ -36,6 +36,13 @@ function navigateRecreatedAccount (account: Account) {
       navigate("SettingStack", { screen: "ExternalAccountSelector" });
       break;
     }
+    case AccountService.Local:
+    case AccountService.Multi:
+      navigate("IdentityProviderSelector");
+      break;
+    case AccountService.PapillonMultiService:
+      // Pas de navigation pour le moment
+      break;
   }
 
   return;
