@@ -17,6 +17,7 @@ import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import { AccountService, PrimaryAccount } from "@/stores/account/types";
 import PapillonLoading from "@/components/Global/PapillonLoading";
+import { NativeItem, NativeList, NativeListHeader } from "@/components/Global/NativeComponents";
 
 const makeUUID = (): string => {
   let dt = new Date().getTime();
@@ -95,37 +96,31 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const renderAccount = useCallback((account: PrimaryAccount, index: number, lenghtFusions: number) => (
-    <View
-      style={{
-        backgroundColor: theme.colors.primary + "11",
-        flexDirection: "row",
-        padding: 9,
-        borderStyle: "solid",
-        borderBottomWidth: index !== lenghtFusions - 1 ? 1 : 0,
-        borderColor: theme.colors.text + "20",
-        alignItems: "center",
-      }}
-    >
-      <View
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: 80,
-          backgroundColor: "#000000",
-          marginRight: 10,
-        }}
-      >
-        <Image
-          source={{ uri: account.personalization.profilePictureB64 }}
+  const renderAccount = useCallback((account: PrimaryAccount, index: number) => (
+    <NativeItem
+      key={index}
+      leading={
+        <View
           style={{
-            width: "100%",
-            height: "100%",
+            width: 30,
+            height: 30,
             borderRadius: 80,
+            backgroundColor: "#000000",
+            marginRight: 10,
           }}
-          resizeMode="cover"
-        />
-      </View>
+        >
+          <Image
+            source={{ uri: account.personalization.profilePictureB64 }}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 80,
+            }}
+            resizeMode="cover"
+          />
+        </View>
+      }
+    >
       <View
         style={{
           flexDirection: "column",
@@ -164,7 +159,7 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
               : "Compte local"}
         </Text>
       </View>
-    </View>
+    </NativeItem>
   ), []);
 
   const fusionAccounts = useCallback(async () => {
@@ -248,38 +243,23 @@ const AccountCreated: Screen<"AccountCreated"> = ({ navigation }) => {
         <PapillonLoading title="Fusion des comptes en cours..." />
       ) : isFusionDetected && (
         <View style={styles.menu}>
-          {fusionsDetected.map((acc, index) => (
-            <View key={acc.localID}>
-              {acc.localID === account.localID ? (
-                <Text
-                  key={acc.localID}
-                  style={{
-                    fontSize: 16,
-                    fontFamily: "semibold",
-                    color: theme.colors.text,
-                    padding: 9,
-                    backgroundColor: theme.colors.primary + "25",
-                  }}
-                >
-                  Compte ajouté
-                </Text>
-              ) : index === 1 && (
-                <Text
-                  key={acc.localID}
-                  style={{
-                    fontSize: 16,
-                    fontFamily: "semibold",
-                    color: theme.colors.text,
-                    padding: 9,
-                    backgroundColor: theme.colors.primary + "25",
-                  }}
-                >
-                  {fusionsDetected.length > 2 ? "Fusions possibles" : "Fusion possible"}
-                </Text>
-              )}
-              {renderAccount(acc, index, fusionsDetected.length)}
-            </View>
-          ))}
+          <NativeListHeader label="Compte ajouté" />
+          <NativeList>
+            {renderAccount(fusionsDetected[0], 0)}
+          </NativeList>
+
+          <NativeListHeader
+            label={
+              fusionsDetected.length > 2
+                ? "Fusions possibles"
+                : "Fusion possible"
+            }
+          />
+          <NativeList>
+            {fusionsDetected.map(
+              (acc, index) => index > 0 && renderAccount(acc, index)
+            )}
+          </NativeList>
         </View>
       )}
 
@@ -345,7 +325,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 16,
     gap: 9,
-    marginBottom: 16,
+    marginVertical: 16,
   },
 
   terms_text: {
