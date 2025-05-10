@@ -240,7 +240,7 @@ const HomeworkItem = ({ homework, navigation, onDonePressHandler, index, total, 
                 }}
               >
                 <HTMLView
-                  value={`<body>${parse_homeworks(homework.content).replace("\n", "")}</body>`}
+                  value={`<body>${parse_homeworks(homework.content).replace("\n", "<br/>")}</body>`}
                   stylesheet={stylesText}
                 />
               </MaskedView>
