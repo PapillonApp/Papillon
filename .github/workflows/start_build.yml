@@ -33,39 +33,39 @@ jobs:
         run: npm run prebuild
 
   build_android:
-  needs: clean
-  runs-on: ubuntu-latest
-  steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v3
-
-    - name: 📥 Download node_modules
-      uses: actions/download-artifact@v4
-      with:
-        name: node_modules
-
-    - name: ⚙️ Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: 🚀 Build Debug APK
-      run: |
-        cd android
-        ./gradlew clean assembleDebug
-        ls app/build/outputs/apk/debug/
-
-    - name: 🛠️ Rename APK files
-      run: |
-        cd android/app/build/outputs/apk/debug/
-        for file in *.apk; do
-          mv "$file" "Papillon Dev-${file%-debug.apk}.apk"
-        done
-
-    - name: 🛜 Upload Debug APKs
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-apks
-        path: android/app/build/outputs/apk/debug/*.apk
-        if-no-files-found: error
+    needs: clean
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+  
+      - name: 📥 Download node_modules
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+  
+      - name: ⚙️ Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+  
+      - name: 🚀 Build Debug APK
+        run: |
+          cd android
+          ./gradlew clean assembleDebug
+          ls app/build/outputs/apk/debug/
+  
+      - name: 🛠️ Rename APK files
+        run: |
+          cd android/app/build/outputs/apk/debug/
+          for file in *.apk; do
+            mv "$file" "Papillon Dev-${file%-debug.apk}.apk"
+          done
+  
+      - name: 🛜 Upload Debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
