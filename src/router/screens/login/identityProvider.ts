@@ -8,6 +8,7 @@ import UnivSorbonneParisNord_login from "@/views/login/IdentityProvider/provider
 import { UnivIUTLannion_Login } from "@/views/login/IdentityProvider/providers/UnivIUTLannion";
 import Muli_Login from "@/views/login/IdentityProvider/providers/Multi";
 import Appscho_Login from "@/views/login/IdentityProvider/providers/Appscho";
+import AppschoUniversities from "@/views/login/IdentityProvider/providers/AppschoUniversities";
 
 export default [
   createScreen("IdentityProviderSelector", IdentityProviderSelector, {
@@ -43,5 +44,9 @@ export default [
   createScreen("Appscho_Login", Appscho_Login, {
     headerBackVisible: true,
     headerTitle: "Appscho",
+  }),
+  createScreen("AppschoUniversities", AppschoUniversities, {
+    headerBackVisible: true,
+    headerTitle: "Autres universités",
   }),
 ] as const;

@@ -69,10 +69,11 @@ export type RouteParameters = {
     image: ImageSourcePropType;
   };
   Appscho_Login: {
-    instanceURL: string;
+    instanceID: string;
     title: string;
     image: ImageSourcePropType;
   };
+  AppschoUniversities: undefined;
   UnivRennes1_Login: undefined;
   UnivRennes2_Login: undefined;
   UnivIUTLannion_Login: undefined;

@@ -18,11 +18,12 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
 
   const handleLogin = async (username: string, password: string) => {
     try {
+      console.log("login", username, password, route.params);
       setLoading(true);
       setError(null);
 
 
-      const account = await login(route.params.instanceURL,  username, password );
+      const account = await login(route.params.instanceID,  username, password );
 
       const local_account: AppschoAccount = {
         instance: {},
@@ -55,10 +56,10 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
         },
 
         authentication: {
-          instanceAppscho: route.params.instanceURL,
+          instanceAppscho: route.params.instanceID,
           token: account.token || ""
         },
-        personalization: await defaultPersonalization(account),
+        personalization: await defaultPersonalization(),
         serviceData: {},
         providers: []
       };
