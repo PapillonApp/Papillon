@@ -32,7 +32,6 @@ export default function App () {
   const [appState, setAppState] = useState(AppState.currentState);
   const currentAccount = useCurrentAccount((store) => store.account);
   const switchTo = useCurrentAccount((store) => store.switchTo);
-  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
 
   const defined = useFlagsStore(state => state.defined);
   const [fontsLoaded] = useFonts(getToLoadFonts(defined));
@@ -99,14 +98,9 @@ export default function App () {
         `⚠️ Refreshing current account ${currentAccount.studentName.first} after ${timeInBackgroundSeconds}s in background`,
         "RefreshToken"
       );
-      for (const account of accounts) {
-        if (account.localID === currentAccount.localID) {
-          await switchTo(account).catch((error) => {
-            log(`Error during switchTo: ${error}`, "RefreshToken");
-          });
-          break;
-        }
-      }
+      await switchTo(currentAccount).catch((error) => {
+        log(`Error during switchTo: ${error}`, "RefreshToken");
+      });
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     await AsyncStorage.removeItem("@background_timestamp");
