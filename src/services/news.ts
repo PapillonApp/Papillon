@@ -45,6 +45,12 @@ export async function updateNewsInCache <T extends Account> (account: T): Promis
       useNewsStore.getState().updateInformations(informations);
       break;
     }
+    case AccountService.Appscho: {
+      const { getNews } = await import("./appscho/data/news");
+      const informations = await getNews(account);
+      useNewsStore.getState().updateInformations(informations);
+      break;
+    }
     case AccountService.PapillonMultiService: {
       const service = getFeatureAccount(MultiServiceFeature.News, account.localID);
       if (!service) {

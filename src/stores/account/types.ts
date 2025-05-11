@@ -121,6 +121,7 @@ export enum AccountService {
   Parcoursup,
   Onisep,
   Multi,
+  Appscho,
   Izly,
   Alise,
   PapillonMultiService
@@ -199,6 +200,23 @@ export interface MultiAccount extends BaseAccount {
   authentication: {
     instanceURL: string
     refreshAuthToken: string
+  }
+  identityProvider?: undefined
+  associatedAccountsLocalIDs?: undefined
+  providers: string[]
+  serviceData: Record<string, unknown>
+}
+
+export interface AppschoAccount extends BaseAccount {
+  service: AccountService.Appscho
+  instance: {}
+  authentication: {
+    instanceAppscho: string
+    token: string
+  }
+  credentials:{
+    username: string
+    password: string
   }
   identityProvider?: undefined
   associatedAccountsLocalIDs?: undefined
@@ -295,6 +313,7 @@ export type PrimaryAccount = (
   | EcoleDirecteAccount
   | SkolengoAccount
   | MultiAccount
+  | AppschoAccount
   | LocalAccount
   | PapillonMultiServiceSpace
 );

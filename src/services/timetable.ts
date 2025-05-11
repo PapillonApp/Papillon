@@ -48,6 +48,12 @@ export async function updateTimetableForWeekInCache <T extends Account> (account
       useTimetableStore.getState().updateClasses(epochWeekNumber, timetable);
       break;
     }
+    case AccountService.Appscho: {
+      const { getTimetableForWeek } = await import("./appscho/data/timetable");
+      const timetable = await getTimetableForWeek(account, epochWeekNumber);
+      useTimetableStore.getState().updateClasses(epochWeekNumber, timetable);
+      break;
+    }
     case AccountService.PapillonMultiService: {
       const service = getFeatureAccount(MultiServiceFeature.Timetable, account.localID);
       if (!service) {

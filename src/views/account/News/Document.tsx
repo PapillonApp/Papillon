@@ -18,7 +18,7 @@ import {
   WifiOff,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet } from "react-native";
+import {View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet, Image} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";
@@ -229,6 +229,21 @@ const NewsItem: Screen<"NewsItem"> = ({ route, navigation }) => {
             </NativeList>
           ) : (
             <View style={{ marginBottom: 16 }} />
+          )}
+
+          {message.picture && (
+            <View>
+              <Image
+                source={{ uri: message.picture }}
+                style={{
+                  height: 200,
+                  resizeMode: "cover",
+                  marginVertical: 16,
+                  borderRadius: 16,
+                }}
+              />
+            </View>
+
           )}
 
 

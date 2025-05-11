@@ -42,6 +42,7 @@ export async function updateHomeworkForWeekInCache <T extends Account> (account:
         useClassSubjectStore.getState().pushSubjects(response.subjects);
         break;
       }
+      case AccountService.Appscho:
       case AccountService.Local: {
         homeworks = [];
         break;
@@ -88,6 +89,7 @@ export async function toggleHomeworkState <T extends Account> (account: T, homew
       await toggleHomeworkState(account, homework);
       break;
     }
+    case AccountService.Appscho:
     case AccountService.Local: {
       break;
     }

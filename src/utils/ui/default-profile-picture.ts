@@ -19,6 +19,7 @@ export const defaultProfilePicture = (service: AccountService, accountProvider?:
       return require("../../../assets/images/service_ed.png");
     case AccountService.Skolengo:
       return require("../../../assets/images/service_skolengo.png");
+    case AccountService.Appscho:
     case AccountService.Local:
       return require("../../../assets/images/service_unknown.png");
     case AccountService.Izly:

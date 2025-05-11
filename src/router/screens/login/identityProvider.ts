@@ -7,6 +7,7 @@ import UnivSorbonneParisNord_login from "@/views/login/IdentityProvider/provider
 //import UnivUphf_Login from "@/views/login/IdentityProvider/providers/UnivUphf";
 import { UnivIUTLannion_Login } from "@/views/login/IdentityProvider/providers/UnivIUTLannion";
 import Muli_Login from "@/views/login/IdentityProvider/providers/Multi";
+import Appscho_Login from "@/views/login/IdentityProvider/providers/Appscho";
 
 export default [
   createScreen("IdentityProviderSelector", IdentityProviderSelector, {
@@ -37,5 +38,10 @@ export default [
   createScreen("Multi_Login", Muli_Login, {
     headerBackVisible: true,
     headerTitle: "ESUP Multi",
+  }),
+
+  createScreen("Appscho_Login", Appscho_Login, {
+    headerBackVisible: true,
+    headerTitle: "Appscho",
   }),
 ] as const;
