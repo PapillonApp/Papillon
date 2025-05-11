@@ -1,18 +1,32 @@
 rootProject.name = 'Papillon'
 
-dependencyResolutionManagement {
-  versionCatalogs {
-    reactAndroidLibs {
-      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
+def resolveNodeModulePath(String packageName, String relativePath) {
+    def cmd = ["node", "-p", "require.resolve('${packageName}')"]
+    def proc = cmd.execute(null, rootDir)
+    proc.waitFor()
+    if (proc.exitValue() != 0) {
+        throw new GradleException("Failed to resolve module path for ${packageName}: ${proc.err.text}")
     }
-  }
+    return new File(proc.in.text.trim(), relativePath)
 }
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
+dependencyResolutionManagement {
+    versionCatalogs {
+        reactAndroidLibs {
+            from(files(resolveNodeModulePath('react-native/package.json', '../gradle/libs.versions.toml')))
+        }
+    }
+}
+
+// Apply Expo autolinking script
+apply from: resolveNodeModulePath('expo/package.json', '../scripts/autolinking.gradle')
 useExpoModules()
 
-apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
+// Apply React Native CLI platform-android autolinking
+apply from: resolveNodeModulePath('@react-native-community/cli-platform-android/package.json', '../native_modules.gradle')
 applyNativeModulesSettingsGradle(settings)
 
 include ':app'
-includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
+
+// Include React Native Gradle plugin
+includeBuild(resolveNodeModulePath('@react-native/gradle-plugin/package.json', '').parent)
