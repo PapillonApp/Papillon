@@ -4,48 +4,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  clean:
+  build_android:
     runs-on: ubuntu-latest
     steps:
-      - name: 🧹 Clean environment
-        run: |
-          rm -rf node_modules
-          rm -rf ios/build
-          rm -rf ~/Library/Developer/Xcode/DerivedData
-          rm -rf android/app/build/
-          rm -rf $HOME/.gradle/caches/
-
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+        
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
           
-      - name: 📥 Checkout code
-        uses: actions/checkout@v3
-          
       - name: 💾 Install dependencies
         run: yarn install
-      
-      - name: 📤 Upload node_modules
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules
-          path: node_modules
 
       - name: 🔄 Run Expo Prebuild
         run: npx expo prebuild -p android
-
-  build_android:
-    needs: clean
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v3
-  
-      - name: 📥 Download node_modules
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules
   
       - name: ⚙️ Setup Java
         uses: actions/setup-java@v3
