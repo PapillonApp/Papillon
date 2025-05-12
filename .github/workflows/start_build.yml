@@ -56,7 +56,7 @@ jobs:
       - name: 🚀 Build Debug APK
         run: |
           cd android
-          ./gradlew clean assembleDebug
+          ./gradlew ":app:assembleDebug"
           ls app/build/outputs/apk/debug/
   
       - name: 🛠️ Rename APK files
