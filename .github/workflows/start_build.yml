@@ -30,12 +30,12 @@ jobs:
       - name: 🚀 Build Debug APK
         run: |
           cd android
-          ./gradlew ":app:assembleDebug"
-          ls app/build/outputs/apk/debug/
+          ./gradlew ":app:assembleRelease"
+          ls app/build/outputs/apk/release/
   
       - name: 🛠️ Rename APK files
         run: |
-          cd android/app/build/outputs/apk/debug/
+          cd android/app/build/outputs/apk/release/
           for file in *.apk; do
             mv "$file" "Papillon Dev-${file%-debug.apk}.apk"
           done
