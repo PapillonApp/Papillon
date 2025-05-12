@@ -33,7 +33,7 @@ jobs:
           path: node_modules
 
       - name: 🔄 Run Expo Prebuild
-        run: npx expo prebuild
+        run: npx expo prebuild -p android
 
   build_android:
     needs: clean
