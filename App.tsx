@@ -5,7 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { LogBox, AppState } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAccounts, useCurrentAccount } from "@/stores/account";
+import { useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
