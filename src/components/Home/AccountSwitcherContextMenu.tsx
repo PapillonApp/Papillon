@@ -92,8 +92,8 @@ const ContextMenu: React.FC<ContextMenu> = ({
             impact: Haptics.ImpactFeedbackStyle.Soft,
           });
           setOpened(false);
-          requestAnimationFrame(() => {
-            switchTo(account);
+          requestAnimationFrame(async () => {
+            await switchTo(account);
           });
         }}
         style={({ pressed }) => [

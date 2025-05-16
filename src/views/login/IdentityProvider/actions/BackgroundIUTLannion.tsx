@@ -222,7 +222,7 @@ const BackgroundIUTLannion: Screen<"BackgroundIUTLannion"> = ({ route, navigatio
     // https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/pn8d0kn8.shu
 
     createStoredAccount(local_account);
-    switchTo(local_account);
+    await switchTo(local_account);
 
     retreiveGrades(data);
   };

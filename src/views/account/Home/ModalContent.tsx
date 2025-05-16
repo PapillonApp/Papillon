@@ -26,7 +26,10 @@ interface ModalContentProps {
 const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRefresh }) => {
   const { colors } = useTheme();
   const { isOnline } = useOnlineStatus();
+  const [isAlreadyOffline, setIsAlreadyOffline] = useState(false);
+
   const account = useCurrentAccount((store) => store.account!);
+  const switchTo = useCurrentAccount((store) => store.switchTo);
   const mutateProperty = useCurrentAccount((store) => store.mutateProperty);
   const defined = useFlagsStore((state) => state.defined);
 
@@ -40,6 +43,19 @@ const ModalContent: React.FC<ModalContentProps> = ({ navigation, refresh, endRef
       importance: undefined,
     })));
   }, []);
+
+  useEffect(() => {
+    const checkOffline = async () => {
+      if (isOnline && isAlreadyOffline) {
+        await switchTo(account);
+        setIsAlreadyOffline(false);
+      } else if (!isOnline) {
+        setIsAlreadyOffline(true);
+      }
+    };
+
+    checkOffline();
+  }, [isOnline]);
 
   const sortElementsByImportance = useCallback(() => {
     setElements((prevElements) =>
