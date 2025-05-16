@@ -20,6 +20,11 @@ interface SubjectItemProps {
   index?: number;
 }
 
+interface renderGradeItemProps {
+  item: Grade;
+  index: number;
+}
+
 const SubjectItem: React.FC<SubjectItemProps> = ({
   subject,
   allGrades,
@@ -41,7 +46,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     return null;
   }
 
-  const renderGradeItem = useCallback(({ item, index }) => (
+  const renderGradeItem = useCallback(({ item, index }: renderGradeItemProps) => (
     <SubjectGradeItem
       subject={subject}
       grade={item}
@@ -50,7 +55,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({
     />
   ), [subject, allGrades, navigation]);
 
-  const keyExtractor = useCallback((item) => item.id, []);
+  const keyExtractor = useCallback((item: Grade) => item.id, []);
 
   return (
     <NativeList

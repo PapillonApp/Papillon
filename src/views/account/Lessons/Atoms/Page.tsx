@@ -11,7 +11,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 
 import { DoorOpen, Moon, Sofa, Utensils } from "lucide-react-native";
-import { TimetableClass } from "@/services/shared/Timetable";
+import { TimetableClass, TimetableClassStatus } from "@/services/shared/Timetable";
 import { animPapillon } from "@/utils/ui/animations";
 import LessonsLoading from "./Loading";
 import MissingItem from "@/components/Global/MissingItem";
@@ -68,39 +68,54 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
         />
       }
     >
-      {current &&
+      {current && (
         <View
           style={{
             paddingHorizontal: 10,
             paddingVertical: 10,
             gap: 10,
-            width: "100%"
+            width: "100%",
           }}
         >
           {!isOnline && <OfflineWarning cache={true} />}
 
-          {day[0] &&
-            day[0].startTimestamp - dateMaxStart.getTime() > 900000 && (
-            <SeparatorCourse
-              i={0}
-              start={dateMaxStart.getTime()}
-              end={day[0].startTimestamp}
-              icon={Moon}
-              label={"Début des cours à " + new Date(day[0].startTimestamp).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-              showDuration={true}
-            />
+          {day[0] && (
+            day[0].status === TimetableClassStatus.CANCELED ? (
+              day.find((item) => item.status !== TimetableClassStatus.CANCELED) && (
+                <SeparatorCourse
+                  i={day.findIndex((item) => item.status !== TimetableClassStatus.CANCELED)}
+                  start={dateMaxStart.getTime()}
+                  end={day.find((item) => item.status !== TimetableClassStatus.CANCELED)?.startTimestamp ?? dateMaxStart.getTime()}
+                  icon={Moon}
+                  label={"Début des cours à " + new Date(day.find((item) => item.status !== TimetableClassStatus.CANCELED)?.startTimestamp ?? dateMaxStart.getTime()).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  showDuration={false}
+                />
+              )
+            ) : (
+              day[0].startTimestamp - dateMaxStart.getTime() > 900000 && (
+                <SeparatorCourse
+                  i={0}
+                  start={dateMaxStart.getTime()}
+                  end={day[0].startTimestamp}
+                  icon={Moon}
+                  label={"Début des cours à " + new Date(day[0].startTimestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  showDuration={false}
+                />
+              )
+            )
           )}
-
 
           {day && day.length > 0 && day[0].type !== "vacation" && day.map((item, i) => (
             <View key={item.startTimestamp + i.toString()} style={{ gap: 10 }}>
               <TimetableItem key={item.startTimestamp} item={item} index={i} />
 
-              {day[i + 1] &&
-                day[i + 1].startTimestamp - item.endTimestamp > 1740000 && (
+              {day[i + 1] && day[i + 1].startTimestamp - item.endTimestamp > 1740000 && (
                 <SeparatorCourse
                   i={i}
                   start={item.endTimestamp}
@@ -110,22 +125,39 @@ export const Page = ({ day, date, current, paddingTop, refreshAction, loading, w
             </View>
           ))}
 
-          {day[day.length - 1] &&
-            dateMaxEnd.getTime() - day[day.length - 1].endTimestamp > 900000 && (
-            <SeparatorCourse
-              i={day.length}
-              start={day[day.length - 1].endTimestamp}
-              end={dateMaxEnd.getTime()}
-              icon={DoorOpen}
-              label={"Fin des cours à " + new Date(day[day.length - 1].endTimestamp).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-              showDuration={false}
-            />
+          {day[day.length - 1] && day.length > 0 && (
+            day[day.length - 1].status === TimetableClassStatus.CANCELED ? (
+              day.slice().reverse().find((item) => item.status !== TimetableClassStatus.CANCELED) && (
+                <SeparatorCourse
+                  i={day.length}
+                  start={day.slice().reverse().find((item) => item.status !== TimetableClassStatus.CANCELED)?.endTimestamp ?? dateMaxEnd.getTime()}
+                  end={dateMaxEnd.getTime()}
+                  icon={DoorOpen}
+                  label={"Fin des cours à " + new Date(day.slice().reverse().find((item) => item.status !== TimetableClassStatus.CANCELED)?.endTimestamp ?? dateMaxEnd.getTime()).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  showDuration={false}
+                />
+              )
+            ) : (
+              dateMaxEnd.getTime() - day[day.length - 1].endTimestamp > 900000 && (
+                <SeparatorCourse
+                  i={day.length}
+                  start={day[day.length - 1].endTimestamp}
+                  end={dateMaxEnd.getTime()}
+                  icon={DoorOpen}
+                  label={"Fin des cours à " + new Date(day[day.length - 1].endTimestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  showDuration={false}
+                />
+              )
+            )
           )}
         </View>
-      }
+      )}
 
       {loading && day.length == 0 && (
         <Reanimated.View

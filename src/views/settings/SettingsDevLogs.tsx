@@ -53,9 +53,18 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = () => {
   useEffect(() => {
     get_logs().then((logs) => {
       setLogs(
-        logs.sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-        )
+        logs
+          .sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          )
+          .map((log) => ({
+            ...log,
+            formattedDate: formatDistanceToNow(new Date(log.date), {
+              addSuffix: true,
+              includeSeconds: true,
+              locale: fr,
+            }),
+          }))
       );
       setLoading(false);
     });
@@ -212,11 +221,7 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = () => {
                 >
                   <NativeText variant="title">{log.message}</NativeText>
                   <NativeText variant="subtitle">
-                    {formatDistanceToNow(log.date, {
-                      addSuffix: true,
-                      includeSeconds: true,
-                      locale: fr,
-                    })}
+                    {log.formattedDate ?? log.date}
                   </NativeText>
                   <NativeText variant="subtitle">{log.from}</NativeText>
                 </NativeItem>

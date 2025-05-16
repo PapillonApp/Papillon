@@ -12,49 +12,19 @@ import { fetchLessons } from "./data/Lessons";
 import { fetchAttendance } from "./data/Attendance";
 import { fetchEvaluation } from "./data/Evaluation";
 import { papillonNotify } from "./Notifications";
-
 import { useFlagsStore } from "@/stores/flags";
 
-const notifeeEvent = async () => {
-  const notifee = (await import("@notifee/react-native")).default;
-  const EventType = (await import("@notifee/react-native")).EventType;
-
-  // Gestion des badges quand app en arrière-plan
-  notifee.onBackgroundEvent(async ({ type, detail }) => {
-    const { notification, pressAction } = detail;
-
-    switch (type) {
-      case EventType.ACTION_PRESS:
-        console.log(`[Notifee] Action press: ${pressAction?.id}`);
-        break;
-      case EventType.DISMISSED:
-        let badgeCount = await notifee.getBadgeCount();
-        badgeCount = Math.max(badgeCount - 1, 0);
-        await notifee.setBadgeCount(badgeCount);
-        break;
-    }
-  });
-
-  // Gestion des badges quand app en premier plan
-  notifee.onForegroundEvent(async ({ type, detail }) => {
-    const { notification, pressAction } = detail;
-
-    switch (type) {
-      case EventType.ACTION_PRESS:
-        console.log(`[Notifee] Action press: ${pressAction?.id}`);
-        break;
-      case EventType.DISMISSED:
-        let badgeCount = await notifee.getBadgeCount();
-        badgeCount = Math.max(badgeCount - 1, 0);
-        await notifee.setBadgeCount(badgeCount);
-        break;
-    }
-  });
-};
-
-if (!isExpoGo()) notifeeEvent();
-
 let isBackgroundFetchRunning = false;
+const BACKGROUND_TASK_NAME = "background-fetch";
+
+const fetch = async (label: string, fn: () => Promise<any>) => {
+  try {
+    info(`▶️ Running background ${label}`, "BACKGROUND");
+    await fn();
+  } catch (e) {
+    error(`❌ ${label} fetch failed: ${e}`, "BACKGROUND");
+  }
+};
 
 const backgroundFetch = async () => {
   const disableBackgroundTasks = useFlagsStore.getState().defined("disablebackgroundtasks");
@@ -99,18 +69,12 @@ const backgroundFetch = async () => {
         account.personalization.notifications;
 
       if (notificationsTypesPermissions?.enabled) {
-        info("▶️ Running background News", "BACKGROUND");
-        await fetchNews();
-        info("▶️ Running background Homeworks", "BACKGROUND");
-        await fetchHomeworks();
-        info("▶️ Running background Grades", "BACKGROUND");
-        await fetchGrade();
-        info("▶️ Running background Lessons", "BACKGROUND");
-        await fetchLessons();
-        info("▶️ Running background Attendance", "BACKGROUND");
-        await fetchAttendance();
-        info("▶️ Running background Evaluation", "BACKGROUND");
-        await fetchEvaluation();
+        await fetch("News", fetchNews);
+        await fetch("Homeworks", fetchHomeworks);
+        await fetch("Grades", fetchGrade);
+        await fetch("Lessons", fetchLessons);
+        await fetch("Attendance", fetchAttendance);
+        await fetch("Evaluation", fetchEvaluation);
       }
     }
 
@@ -127,14 +91,14 @@ const backgroundFetch = async () => {
   }
 };
 
-if (!isExpoGo()) TaskManager.defineTask("background-fetch", backgroundFetch);
+if (!isExpoGo()) TaskManager.defineTask(BACKGROUND_TASK_NAME, backgroundFetch);
 
 const unsetBackgroundFetch = async () =>
-  await BackgroundFetch.unregisterTaskAsync("background-fetch");
+  await BackgroundFetch.unregisterTaskAsync(BACKGROUND_TASK_NAME);
 
 const setBackgroundFetch = async () =>
-  await BackgroundFetch.registerTaskAsync("background-fetch", {
-    minimumInterval: 60 * 15,
+  await BackgroundFetch.registerTaskAsync(BACKGROUND_TASK_NAME, {
+    minimumInterval: 60 * (__DEV__ ? 1 : 15),
     stopOnTerminate: false,
     startOnBoot: true,
   });
@@ -152,11 +116,11 @@ const registerBackgroundTasks = async () => {
   }
 
   const isRegistered = await TaskManager.isTaskRegisteredAsync(
-    "background-fetch"
+    BACKGROUND_TASK_NAME
   );
 
   if (isRegistered) {
-    warn(
+    info(
       "⚠️ Background task already registered. Unregister background task...",
       "BACKGROUND"
     );
