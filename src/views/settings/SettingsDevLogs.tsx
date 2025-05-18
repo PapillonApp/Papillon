@@ -57,14 +57,20 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = () => {
           .sort(
             (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
           )
-          .map((log) => ({
-            ...log,
-            formattedDate: formatDistanceToNow(new Date(log.date), {
-              addSuffix: true,
-              includeSeconds: true,
-              locale: fr,
-            }),
-          }))
+          .map((log) => {
+            if (Number.isNaN(new Date(log.date).getTime())) {
+              return log;
+            } else {
+              return {
+                ...log,
+                formattedDate: formatDistanceToNow(new Date(log.date), {
+                  addSuffix: true,
+                  includeSeconds: true,
+                  locale: fr,
+                }),
+              };
+            }
+          })
       );
       setLoading(false);
     });
@@ -160,8 +166,6 @@ const SettingsDevLogs: Screen<"SettingsDevLogs"> = () => {
           exiting={animPapillon(FadeOutUp)}
         >
           {logs.slice().reverse().map((log, index) => {
-            if (Number.isNaN(new Date(log.date).getTime())) return;
-
             if (log.message.toLowerCase().includes(searchTerms.toLowerCase())) {
               return (
                 <NativeItem
