@@ -11,21 +11,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: () => ({ sfSymbol: "house" }),
+          tabBarIcon: () => require('@/assets/icons/home.svg'),
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendar',
-          tabBarIcon: () => ({ sfSymbol: "calendar" }),
+          tabBarIcon: () => require('@/assets/icons/calendar.svg'),
         }}
       />
       <Tabs.Screen
         name="grades"
         options={{
           title: 'Grades',
-          tabBarIcon: () => ({ sfSymbol: "chart.pie.fill" }),
+          tabBarIcon: () => require('@/assets/icons/results.svg'),
         }}
       />
     </Tabs>
