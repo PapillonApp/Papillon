@@ -10,8 +10,8 @@ module.exports = {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
-      image: "./assets/images/splash-icon.png",
-      resizeMode: "contain",
+      image: "./assets/images/splash-screen.png",
+      resizeMode: "cover",
       backgroundColor: "#ffffff",
     },
     ios: {
