@@ -3,19 +3,29 @@ import { Tabs } from '@/components/router/BottomTabs';
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    <Tabs
+      hapticFeedbackEnabled={true}
+      sidebarAdaptable={true}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: () => ({ sfSymbol: "person" }),
+          title: 'Home',
+          tabBarIcon: () => ({ sfSymbol: "house" }),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="calendar"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: () => ({ sfSymbol: "person" }),
+          title: 'Calendar',
+          tabBarIcon: () => ({ sfSymbol: "calendar" }),
+        }}
+      />
+      <Tabs.Screen
+        name="grades"
+        options={{
+          title: 'Grades',
+          tabBarIcon: () => ({ sfSymbol: "chart.pie.fill" }),
         }}
       />
     </Tabs>
