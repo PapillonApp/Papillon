@@ -6,6 +6,7 @@ export default function TabLayout() {
     <Tabs
       hapticFeedbackEnabled={true}
       sidebarAdaptable={true}
+      labeled={false}
     >
       <Tabs.Screen
         name="index"
@@ -22,10 +23,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="tasks"
+        options={{
+          title: 'Tasks',
+          tabBarIcon: () => require('@/assets/icons/tasks.svg'),
+        }}
+      />
+      <Tabs.Screen
         name="grades"
         options={{
           title: 'Grades',
           tabBarIcon: () => require('@/assets/icons/results.svg'),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: () => require('@/assets/icons/profile.svg'),
         }}
       />
     </Tabs>

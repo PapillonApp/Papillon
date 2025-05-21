@@ -11,7 +11,7 @@ export default function Layout() {
         name="index"
         options={{
           headerShown: true,
-          headerTitle: 'Home',
+          headerTitle: 'Profile',
         }}
       />
     </Stack>
