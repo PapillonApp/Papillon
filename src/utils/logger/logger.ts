@@ -125,6 +125,7 @@ export interface Log {
   date: string;
   from?: string;
   message: string;
+  formattedDate?: string;
 }
 
 async function get_logs (): Promise<Log[]> {

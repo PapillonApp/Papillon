@@ -12,7 +12,6 @@ import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
 import { registerBackgroundTasks } from "@/background/BackgroundTasks";
 import { SoundHapticsProvider } from "@/hooks/Theme_Sound_Haptics";
-import { PapillonNavigation } from "@/router/refs";
 import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import {getToLoadFonts} from "@/consts/Fonts";
@@ -55,30 +54,6 @@ export default function App () {
     configureOrientation();
   }, []);
 
-  const handleNotificationPress = async (notification: any) => {
-    if (notification?.data) {
-      const accountID = notification.data.accountID;
-      if (accountID) {
-        useAccounts.getState().setLastOpenedAccountID(accountID);
-
-        setTimeout(() => {
-          PapillonNavigation.current?.navigate(
-            notification.data.page,
-            notification.data.parameters,
-          );
-        }, 1000);
-      }
-    }
-  };
-
-  const checkInitialNotification = async () => {
-    const notifee = (await import("@notifee/react-native")).default;
-    const initialNotification = await notifee.getInitialNotification();
-    if (initialNotification) {
-      await handleNotificationPress(initialNotification.notification);
-    }
-  };
-
   const getBackgroundTimeLimit = useCallback((service: keyof typeof BACKGROUND_LIMITS) => {
     return BACKGROUND_LIMITS[service] ?? DEFAULT_BACKGROUND_TIME;
   }, []);
@@ -111,11 +86,6 @@ export default function App () {
     }
     await AsyncStorage.removeItem("@background_timestamp");
   }, [currentAccount, switchTo, getBackgroundTimeLimit]);
-
-
-  useEffect(() => {
-    if (!isExpoGo()) checkInitialNotification();
-  }, []);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", async (nextAppState) => {

@@ -124,19 +124,12 @@ const papillonNotify = async (
   // Add timestamp for Android
   const timestamp = new Date().getTime();
 
-  // Get badge count
-  let badgeCount = await notifee.getBadgeCount();
-  if (channelId !== "Status") {
-    badgeCount++;
-  }
-
   // Display a notification
   await notifee.displayNotification({
     ...props,
     android: {
       channelId,
       timestamp,
-      badgeCount,
       showTimestamp: channelId !== "Status" ? true : false,
       showChronometer: channelId === "Status" ? true : false,
       smallIcon: "@mipmap/ic_launcher_foreground",
@@ -148,7 +141,6 @@ const papillonNotify = async (
     },
     ios: {
       threadId: channelId,
-      badgeCount,
       sound: channelId !== "Status" ? "default" : "",
     }
   });

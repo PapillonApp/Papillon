@@ -206,7 +206,7 @@ const GradeReaction: Screen<"GradeReaction"> = ({ navigation, route }) => {
         <View ref={composerRef} style={[
           styles.cameraContainer,
           {
-            marginTop: inset.top + 75,
+            marginTop: inset.top,
             maxHeight: isTablet ? "65%" : "75%",
           }
         ]}

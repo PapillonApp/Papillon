@@ -23,14 +23,13 @@ const IGNORED_TAGS = new Set([
 const TAG_REGEX = /<\/?([a-zA-Z]+)(?:\s[^>]*)?>|([^<]+)/g;
 const NUMERIC_ENTITY_REGEX = /&#(\d+);/g;
 const NAMED_ENTITY_REGEX = /&([a-zA-Z]+);/g;
-const UNICODE_SYMBOLS_REGEX = /[\u2200-\u22FF\u03B1-\u03C9]/g;
+const LATEX_REGEX = /\\[a-zA-Z]+(?:\{\})?/g;
 const MULTI_NEWLINE_REGEX = /\n{2,}/g;
 
 const HTML_ENTITIES: Record<string, string> = {
   "&nbsp;": " ",
   "&quot;": "\"",
-  "&#039;": "'",
-  ...latexVocabulary,
+  "&#039;": "'"
 };
 
 const DECODE_CACHE = new Map<string, string>();
@@ -126,7 +125,10 @@ function decodeHtmlEntities (text: string): string {
       NAMED_ENTITY_REGEX,
       (_, entity) => HTML_ENTITIES[`&${entity};`] || `&${entity};`
     )
-    .replace(UNICODE_SYMBOLS_REGEX, (match) => HTML_ENTITIES[match] || match);
+    .replace(LATEX_REGEX, (match) => {
+      match = match.replace("{}", "");
+      return latexVocabulary[match] || match;
+    });
 }
 
 export default parse_homeworks;
