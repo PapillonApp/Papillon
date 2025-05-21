@@ -6,7 +6,7 @@ export default function TabLayout() {
     <Tabs
       hapticFeedbackEnabled={true}
       sidebarAdaptable={true}
-      labeled={true}
+      labeled={false}
     >
       <Tabs.Screen
         name="index"

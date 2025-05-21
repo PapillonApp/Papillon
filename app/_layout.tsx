@@ -1,4 +1,3 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ThemeProvider } from '@react-navigation/native';
 import { DefaultTheme, DarkTheme } from '@/utils/theme/Theme';
 import { useFonts } from 'expo-font';
@@ -23,8 +22,12 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
+    light: require('../assets/fonts/SNPro-Light.ttf'),
+    regular: require('../assets/fonts/SNPro-Regular.ttf'),
+    medium: require('../assets/fonts/SNPro-Medium.ttf'),
+    semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
+    bold: require('../assets/fonts/SNPro-Bold.ttf'),
+    black: require('../assets/fonts/SNPro-Black.ttf')
   });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
