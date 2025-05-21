@@ -2,7 +2,7 @@ import type { AppschoAccount } from "@/stores/account/types";
 import { type Timetable, type TimetableClass } from "../../shared/Timetable";
 import { getPlanning, type Lesson } from "appscho";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
-import { weekNumberToDateRange } from "@/utils/epochWeekNumber"; // Assurez-vous que ce chemin est correct
+import { weekNumberToDateRange } from "@/utils/epochWeekNumber";
 import { parse } from "date-fns";
 
 const decodeTimetableClass = (c: any): TimetableClass => ({
