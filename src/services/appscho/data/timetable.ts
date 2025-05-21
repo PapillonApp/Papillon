@@ -25,15 +25,18 @@ export const getTimetableForWeek = async (account: AppschoAccount, weekNumber: n
 
   const { start: weekStartDate, end: weekEndDate } = weekNumberToDateRange(weekNumber);
 
-
-  const allEventsFromAPI = await getPlanning(account.authentication.instanceAppscho, account.authentication.token);
+  let allEventsFromAPI = [];
+  try {
+    allEventsFromAPI = await getPlanning(account.authentication.instanceAppscho, account.authentication.token);
+  } catch (error) {
+    return [];
+  }
 
   const eventsForWeek = allEventsFromAPI.filter((event: Lesson) => {
     if (!event.dtstart || !event.dtstart) {
       return false;
     }
     const eventStartDate = parse(event.dtstart, "yyyy-MM-dd HH:mm:ss X", new Date());
-    console.log(eventStartDate);
     return eventStartDate >= weekStartDate && eventStartDate <= weekEndDate;
   });
 
