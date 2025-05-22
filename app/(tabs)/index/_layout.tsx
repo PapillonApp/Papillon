@@ -1,21 +1,21 @@
-import { Stack } from 'expo-router';
-import React from 'react';
+import { Stack } from "expo-router";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-import { screenOptions } from '@/utils/theme/ScreenOptions';
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function Layout() {
+    const { t } = useTranslation();
 
-  return (
-    <Stack
-      screenOptions={screenOptions}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: true,
-          headerTitle: 'Home',
-        }}
-      />
-    </Stack>
-  );
+    return (
+        <Stack screenOptions={screenOptions}>
+            <Stack.Screen
+                name="index"
+                options={{
+                    headerShown: true,
+                    headerTitle: t("Home"),
+                }}
+            />
+        </Stack>
+    );
 }

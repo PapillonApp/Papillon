@@ -1,13 +1,10 @@
-import { useTheme } from "@react-navigation/native";
 import React, { StyleSheet, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 
 export default function TabOneScreen() {
-    const theme = useTheme();
-    const { colors } = theme;
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.container}>
             <UnderConstructionNotice />
         </View>
     );

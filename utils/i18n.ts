@@ -1,9 +1,9 @@
+import * as Localization from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import * as Localization from "expo-localization";
 
-import fr from "@/utils/locales/fr.json";
 import en from "@/utils/locales/en.json";
+import fr from "@/utils/locales/fr.json";
 
 const resources = {
     fr: { translation: fr },
@@ -17,8 +17,6 @@ const languageDetector = {
         const detectedLang = Localization.locale.split("-")[0];
         cb(Object.keys(resources).includes(detectedLang) ? detectedLang : "en");
     },
-    init: () => {},
-    cacheUserLanguage: () => {},
 };
 
 i18n.use(languageDetector as any)
