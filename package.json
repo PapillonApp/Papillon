@@ -29,9 +29,11 @@
     "expo-status-bar": "~2.2.3",
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
+    "i18next": "^25.2.0",
     "lucide-react-native": "^0.511.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-i18next": "^15.5.1",
     "react-native": "0.79.2",
     "react-native-bottom-tabs": "^0.9.1",
     "react-native-gesture-handler": "~2.24.0",
@@ -42,7 +44,8 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "sonner-native": "^0.20.0",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "expo-localization": "~16.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
