@@ -1,6 +1,8 @@
-import { StyleSheet, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import React, { ScrollView, StyleSheet, Text } from 'react-native';
+
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
+
 
 export default function TabOneScreen() {
     const theme = useTheme();
