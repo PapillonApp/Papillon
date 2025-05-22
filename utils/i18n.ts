@@ -14,14 +14,8 @@ const languageDetector = {
     type: "languageDetector",
     async: true,
     detect: (cb: (lang: string) => void) => {
-        const locale = Localization.locale;
-        console.log("Current region:", locale);
-        const detectedLang = locale.split("-")[0];
-        if (Object.keys(resources).includes(detectedLang)) {
-            cb(detectedLang);
-        } else {
-            cb("en");
-        }
+        const detectedLang = Localization.locale.split("-")[0];
+        cb(Object.keys(resources).includes(detectedLang) ? detectedLang : "en");
     },
     init: () => {},
     cacheUserLanguage: () => {},
