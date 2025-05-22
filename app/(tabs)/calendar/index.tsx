@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView } from 'react-native';
+import React, { ScrollView, StyleSheet, Text } from 'react-native';
 
 export default function TabOneScreen() {
   return (

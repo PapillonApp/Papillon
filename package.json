@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "lint": "eslint app components utils --ext .ts --fix"
   },
   "jest": {
     "preset": "jest-expo"
@@ -46,11 +47,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@eslint/js": "^9.27.0",
     "@types/react": "~19.0.10",
+    "eslint": "^9.27.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.1.0",
     "jest": "^29.2.1",
     "jest-expo": "~53.0.5",
     "react-test-renderer": "19.0.0",
-    "typescript": "~5.8.3"
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.32.1"
   },
   "private": true
 }

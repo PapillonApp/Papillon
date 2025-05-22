@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import React from 'react';
+
 import { Tabs } from '@/components/router/BottomTabs';
 
 export default function TabLayout() {
