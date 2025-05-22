@@ -3,5 +3,7 @@
     "Calendar": "Calendar",
     "Tasks": "Tasks",
     "Grades": "Grades",
-    "Profile": "Profile"
+    "Profile": "Profile",
+    "TabUnderConstruction": "This tab is under construction.",
+    "TabUnderConstructionDetails": "Please check back later for updates."
 }

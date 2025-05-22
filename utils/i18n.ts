@@ -14,7 +14,14 @@ const languageDetector = {
     type: "languageDetector",
     async: true,
     detect: (cb: (lang: string) => void) => {
-        cb(Localization.locale.split("-")[0] || "en");
+        const locale = Localization.locale;
+        console.log("Current region:", locale);
+        const detectedLang = locale.split("-")[0];
+        if (Object.keys(resources).includes(detectedLang)) {
+            cb(detectedLang);
+        } else {
+            cb("en");
+        }
     },
     init: () => {},
     cacheUserLanguage: () => {},
@@ -25,7 +32,11 @@ i18n.use(languageDetector as any)
     .init({
         resources,
         fallbackLng: "en",
+        lng: Localization.locale.split("-")[0],
         interpolation: { escapeValue: false },
+        detection: {
+            order: ["languageDetector"],
+        },
     });
 
 export default i18n;

@@ -1,9 +1,7 @@
 import React from "react";
 import { Tabs } from "@/components/router/BottomTabs";
-import { useTranslation } from "react-i18next";
 
 export default function TabLayout() {
-    const { t } = useTranslation();
     return (
         <Tabs
             hapticFeedbackEnabled={true}
@@ -13,35 +11,35 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: t("Home"),
+                    title: "Home",
                     tabBarIcon: () => require("@/assets/icons/home.svg"),
                 }}
             />
             <Tabs.Screen
                 name="calendar"
                 options={{
-                    title: t("Calendar"),
+                    title: "Calendar",
                     tabBarIcon: () => require("@/assets/icons/calendar.svg"),
                 }}
             />
             <Tabs.Screen
                 name="tasks"
                 options={{
-                    title: t("Tasks"),
+                    title: "Tasks",
                     tabBarIcon: () => require("@/assets/icons/tasks.svg"),
                 }}
             />
             <Tabs.Screen
                 name="grades"
                 options={{
-                    title: t("Grades"),
+                    title: "Grades",
                     tabBarIcon: () => require("@/assets/icons/results.svg"),
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: t("Profile"),
+                    title: "Profile",
                     tabBarIcon: () => require("@/assets/icons/profile.svg"),
                 }}
             />

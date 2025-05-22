@@ -3,5 +3,7 @@
     "Calendar": "Calendrier",
     "Tasks": "Tâches",
     "Grades": "Notes",
-    "Profile": "Profil"
+    "Profile": "Profil",
+    "TabUnderConstruction": "Cet onglet est en construction.",
+    "TabUnderConstructionDetails": "Veuillez revenir plus tard pour des mises à jour."
 }
