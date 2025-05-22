@@ -6,7 +6,7 @@ export default function TabOneScreen() {
     const theme = useTheme();
     const { colors } = theme;
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <UnderConstructionNotice />
         </View>
     );
