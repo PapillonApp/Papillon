@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import React from 'react';
-import { Tabs } from '@/components/router/BottomTabs';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
+import { Tabs } from "@/components/router/BottomTabs";
 
 export default function TabLayout() {
+    const { t } = useTranslation();
     return (
         <Tabs
             hapticFeedbackEnabled={true}
@@ -13,35 +15,35 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "Home",
+                    title: t("Home"),
                     tabBarIcon: () => require("@/assets/icons/home.svg"),
                 }}
             />
             <Tabs.Screen
                 name="calendar"
                 options={{
-                    title: "Calendar",
+                    title: t("Calendar"),
                     tabBarIcon: () => require("@/assets/icons/calendar.svg"),
                 }}
             />
             <Tabs.Screen
                 name="tasks"
                 options={{
-                    title: "Tasks",
+                    title: t("Tasks"),
                     tabBarIcon: () => require("@/assets/icons/tasks.svg"),
                 }}
             />
             <Tabs.Screen
                 name="grades"
                 options={{
-                    title: "Grades",
+                    title: t("Grades"),
                     tabBarIcon: () => require("@/assets/icons/results.svg"),
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: "Profile",
+                    title: t("Profile"),
                     tabBarIcon: () => require("@/assets/icons/profile.svg"),
                 }}
             />

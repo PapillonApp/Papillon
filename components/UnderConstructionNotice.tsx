@@ -1,7 +1,8 @@
-import { View, Text } from "react-native";
-import { AlertTriangle } from "lucide-react-native";
-import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
+import { AlertTriangle } from "lucide-react-native";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 
 export default function UnderConstructionNotice() {
     const { t } = useTranslation();
