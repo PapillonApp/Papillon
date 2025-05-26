@@ -18,7 +18,6 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
 
   const handleLogin = async (username: string, password: string) => {
     try {
-      console.log("login", username, password, route.params);
       setLoading(true);
       setError(null);
 
@@ -68,10 +67,7 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
       setLoading(false);
       switchTo(local_account);
 
-      // We need to wait a tick to make sure the account is set before navigating.
       queueMicrotask(() => {
-        // Reset the navigation stack to the "Home" screen.
-        // Prevents the user from going back to the login screen.
         navigation.reset({
           index: 0,
           routes: [{ name: "AccountCreated" }],
