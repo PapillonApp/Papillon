@@ -209,7 +209,7 @@ export interface MultiAccount extends BaseAccount {
 
 export interface AppschoAccount extends BaseAccount {
   service: AccountService.Appscho
-  instance: {}
+  instance: undefined
   authentication: {
     instanceAppscho: string
     token: string

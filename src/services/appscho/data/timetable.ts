@@ -15,7 +15,6 @@ const decodeTimetableClass = (c: any): TimetableClass => ({
   room: c.rooms && Array.isArray(c.rooms) ? c.rooms.join(", ") : (c.rooms || undefined),
   teacher: c.teachers ? c.teachers.split("\n ").join(", ") : undefined,
   source: "APPSCHO",
-
 });
 
 export const getTimetableForWeek = async (account: AppschoAccount, weekNumber: number): Promise<Timetable> => {
@@ -33,7 +32,7 @@ export const getTimetableForWeek = async (account: AppschoAccount, weekNumber: n
   }
 
   const eventsForWeek = allEventsFromAPI.filter((event: Lesson) => {
-    if (!event.dtstart || !event.dtstart) {
+    if (!event.dtstart || !event.dtend) {
       return false;
     }
     const eventStartDate = parse(event.dtstart, "yyyy-MM-dd HH:mm:ss X", new Date());

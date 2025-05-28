@@ -4,7 +4,7 @@ import type { Screen } from "@/router/helpers/types";
 import {ScrollView} from "react-native-gesture-handler";
 import {NativeItem, NativeList, NativeListHeader, NativeText} from "@/components/Global/NativeComponents";
 import InsetsBottomView from "@/components/Global/InsetsBottomView";
-import {INSTANCES} from "appscho"; // Ajustez le chemin
+import { INSTANCES } from "appscho";
 
 
 export const AppschoUniversities: Screen<"AppschoUniversities"> = ({ navigation }) => {

@@ -44,7 +44,7 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       name: "appscho",
       title: "Autres universités",
       description: "Utilise ton compte CAS pour te connecter",
-      image: require("@/../assets/images/service_appscho.png"), // Envisagez une image plus générique ici
+      image: require("@/../assets/images/service_appscho.png"),
       navigate: () => navigation.navigate("AppschoUniversities"),
     }
   ];

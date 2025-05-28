@@ -18,7 +18,7 @@ import {
   WifiOff,
 } from "lucide-react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import {View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet, Image} from "react-native";
+import { View, Linking, TouchableOpacity, type GestureResponderEvent, StyleSheet, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import HTMLView from "react-native-htmlview";
 import { PapillonModernHeader } from "@/components/Global/PapillonModernHeader";

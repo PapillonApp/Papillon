@@ -25,7 +25,7 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
       const account = await login(route.params.instanceID,  username, password );
 
       const local_account: AppschoAccount = {
-        instance: {},
+        instance: undefined,
 
         localID: uuid(),
         service: AccountService.Appscho,
@@ -46,7 +46,6 @@ const Appscho_Login: Screen<"Appscho_Login"> = ({ route, navigation }) => {
           last: account.lastname,
           first: account.firstname
         },
-        className: "", // TODO ?
         schoolName: route.params.title,
 
         credentials: {

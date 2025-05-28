@@ -1,9 +1,9 @@
-import {AppschoAccount} from "@/stores/account/types";
+import { AppschoAccount } from "@/stores/account/types";
 import { Information } from "../../shared/Information";
 import { AttachmentType } from "@/services/shared/Attachment";
 import { ErrorServiceUnauthenticated } from "@/services/shared/errors";
-import { getNewsFeed, NewsFeed} from "appscho";
-import {parse} from "date-fns";
+import { getNewsFeed, NewsFeed } from "appscho";
+import { parse } from "date-fns";
 
 const parseInformation = (i: NewsFeed): Information => ({
   id: generateId(i),
