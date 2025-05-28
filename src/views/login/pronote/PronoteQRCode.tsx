@@ -134,7 +134,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
 
       pronote.startPresenceInterval(session);
       createStoredAccount(account);
-      switchTo(account);
+      await switchTo(account);
 
       setTimeout(() => {
         setLoadingModalVisible(false);

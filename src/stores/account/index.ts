@@ -100,6 +100,9 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
     } else if (typeof account.instance === "undefined") {
       log("instance undefined, reloading...", "switchTo");
       const { instance, authentication } = await reload(account);
+      if (!instance || !authentication) {
+        return;
+      }
       currentGet.mutateProperty("authentication", authentication);
       currentGet.mutateProperty("instance", instance);
       log("instance reload done!", "switchTo");
@@ -120,6 +123,9 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
     const reloadPromises = [
       ...linkedAccounts.map(async (linkedAccount) => {
         const { instance, authentication } = await reload(linkedAccount);
+        if (!instance || !authentication) {
+          return;
+        }
         linkedAccount.instance = instance;
         linkedAccount.authentication = authentication;
         log("reloaded external", "switchTo");
@@ -128,6 +134,9 @@ export const useCurrentAccount = create<CurrentAccountStore>()((set, get) => ({
         if (typeof associatedAccount.instance !== "undefined") return;
         try {
           const { instance, authentication } = await reload(associatedAccount);
+          if (!instance || !authentication) {
+            return;
+          }
           associatedAccount.instance = instance;
           associatedAccount.authentication = authentication;
           useAccounts

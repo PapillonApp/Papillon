@@ -59,7 +59,7 @@ const Muli_Login: Screen<"Multi_Login"> = ({ route, navigation }) => {
 
       createStoredAccount(local_account);
       setLoading(false);
-      switchTo(local_account);
+      await switchTo(local_account);
 
       // We need to wait a tick to make sure the account is set before navigating.
       queueMicrotask(() => {

@@ -83,7 +83,7 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
       pronote.startPresenceInterval(session);
       createStoredAccount(account);
       setLoading(false);
-      switchTo(account);
+      await switchTo(account);
 
       await AsyncStorage.setItem("pronote:imported", "true");
 

@@ -211,7 +211,7 @@ const SkolengoWebview: Screen<"SkolengoWebview"> = ({ route, navigation }) => {
 
                   setLoginStep("Finalisation du compte...");
                   createStoredAccount(skolengoAccount);
-                  switchTo(skolengoAccount);
+                  await switchTo(skolengoAccount);
 
                   // We need to wait a tick to make sure the account is set before navigating.
                   queueMicrotask(() => {
