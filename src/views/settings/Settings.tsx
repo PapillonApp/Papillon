@@ -127,7 +127,7 @@ const Settings: Screen<"Settings"> = ({ route, navigation }) => {
       icon: <WandSparkles />,
       colors: ["#FB8C00", "#FFB74D"],
       label: "Expérimental",
-      description: "Fonctionnalités beta",
+      description: "Fonctionnalités en bêta",
       onPress: () => navigation.navigate("SettingsExperimental"),
     },
     {

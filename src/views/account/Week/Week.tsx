@@ -283,6 +283,20 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
 
   const [openedIcalModal, setOpenedIcalModal] = React.useState(false);
 
+  const initialDate = useMemo(() => {
+    if (displayMode === "Journée") {
+      return new Date();
+    }
+    return undefined;
+  }, [displayMode]);
+
+  const calendarKey = useMemo(() => {
+    if (displayMode === "Journée") {
+      return `journee-${new Date().toDateString()}`;
+    }
+    return displayMode;
+  }, [displayMode]);
+
   React.useEffect(() => {
     if(events.length === 0 && (account?.personalization?.icalURLs?.length || 0) > 0) {
       setIsLoading(true);
@@ -421,6 +435,8 @@ const Week: Screen<"Week"> = ({ route, navigation }) => {
         renderEvent={(event) => <EventItem event={event} />}
         renderHeaderItem={(header) => <HeaderItem header={header} />}
         dayBarHeight={50}
+        key={calendarKey}
+        initialDate={initialDate}
       />
     </View>
   );

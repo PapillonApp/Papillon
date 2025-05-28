@@ -70,7 +70,7 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
               color: theme.colors.text + "88",
             }}
           >
-            manquées
+            {totalMissed.total.hours >= 2 ? "manquées" : "manquée"}
           </NativeText>
         </View>
         <View
@@ -109,7 +109,7 @@ const TotalMissed = ({ totalMissed }: TotalMissedProps) => {
               color: (totalMissed.unJustified.hours > 0) ? "#D10000" : theme.colors.text + "88",
             }}
           >
-            injustifiées
+            {totalMissed.unJustified.hours >= 2 ? "injustifiées" : "injustifiée"}
           </NativeText>
         </View>
       </View>
