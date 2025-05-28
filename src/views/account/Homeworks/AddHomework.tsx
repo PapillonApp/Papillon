@@ -1,13 +1,12 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import { Screen } from "@/router/helpers/types";
-import { Pressable, ScrollView } from "react-native-gesture-handler";
 import { NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
 import { useHomeworkStore } from "@/stores/homework";
 import { useCurrentAccount } from "@/stores/account";
 
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { ActivityIndicator, Alert, Dimensions, Platform, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, Platform, TextInput, View, ScrollView, Pressable } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import PapillonPicker from "@/components/Global/PapillonPicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
