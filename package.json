@@ -19,7 +19,8 @@
     "@react-native-community/netinfo": "11.3.1",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-masked-view/masked-view": "0.3.1",
-    "@react-native-picker/picker": "2.7.5",
+    "@react-native-ml-kit/barcode-scanning": "^1.4.1",
+    "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^6.6.0",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
@@ -39,7 +40,7 @@
     "expo-blur": "~13.0.2",
     "expo-brightness": "~12.0.1",
     "expo-build-properties": "~0.12.5",
-    "expo-camera": "~15.0.13",
+    "expo-camera": "~15.0.16",
     "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.2",
     "expo-crypto": "~13.0.2",
@@ -108,6 +109,7 @@
     "swiftui-react-native": "^6.3.3",
     "text-encoding": "^0.7.0",
     "turboself-api": "^2.1.8",
+    "uuid": "^11.1.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

@@ -23,6 +23,7 @@ import RestaurantCardDetail from "@/views/account/Restaurant/Modals/CardDetail";
 import RestaurantPaymentSuccess from "@/views/account/Restaurant/Modals/PaymentSuccess";
 import AddHomeworkScreen from "@/views/account/Homeworks/AddHomework";
 import CustomizeHeader from "@/views/account/Home/Modal/CustomizeHeader";
+import ChooseQrCode from "@/views/account/Restaurant/Modals/chooseQrCode";
 
 export default [
   createScreen("GradeReaction", GradeReaction, {
@@ -151,5 +152,11 @@ export default [
   createScreen("BackgroundIdentityProvider", BackgroundIdentityProvider, {
     headerTitle: "Fournisseur d'identité",
     presentation: "modal",
+  }),
+  createScreen("ChooseQrCode", ChooseQrCode, {
+    headerTitle: "Choisir un QR Code",
+    presentation: "modal",
+    headerShown: true,
+    sheetCornerRadius: 24,
   }),
 ] as const;

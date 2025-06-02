@@ -8,12 +8,15 @@ import { type RouteProp, useTheme } from "@react-navigation/native";
 import type { RouteParameters } from "@/router/helpers/types";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { PapillonModernHeader } from "./PapillonModernHeader";
+import { useCurrentAccount } from "@/stores/account";
 
 interface PapillonHeaderProps {
   children?: React.ReactNode
   route: RouteProp<RouteParameters, keyof RouteParameters>
   navigation: NativeStackNavigationProp<RouteParameters, keyof RouteParameters>,
   title?: string
+  rightButtonIcon?: React.ComponentType<any>
+  rightButtonNavigateTo?: keyof RouteParameters
 }
 
 interface PapillonHeaderInsetHeightProps {
@@ -24,13 +27,23 @@ const PapillonHeader: React.FC<PapillonHeaderProps> = ({
   children,
   route,
   navigation,
-  title
+  title,
+  rightButtonIcon: RightButtonIcon,
+  rightButtonNavigateTo
 }) => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const account = useCurrentAccount(store => store.account);
+  const userColor = account?.personalization?.color?.hex.primary || theme.colors.primary;
 
   const topPadding = (Platform.OS === "ios" && route.params?.outsideNav) ? 0 : insets.top;
   const largeHeader = route.params?.outsideNav || Platform.OS !== "ios";
+
+  const handleRightButtonPress = () => {
+    if (rightButtonNavigateTo) {
+      navigation.navigate(rightButtonNavigateTo as any);
+    }
+  };
 
   return (
     <>
@@ -72,6 +85,17 @@ const PapillonHeader: React.FC<PapillonHeaderProps> = ({
             }}
           >
             {children}
+
+            {RightButtonIcon && rightButtonNavigateTo && (
+              <TouchableOpacity
+                style={{
+                  paddingLeft: 16,
+                }}
+                onPress={handleRightButtonPress}
+              >
+                <RightButtonIcon color={userColor}size={24} />
+              </TouchableOpacity>
+            )}
 
             {Platform.OS === "ios" && (
               <TabAnimatedTitleRight
