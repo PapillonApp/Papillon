@@ -312,7 +312,7 @@ const PronoteWebview: Screen<"PronoteWebview"> = ({ route, navigation }) => {
                     last: extract_pronote_name(name).familyName,
                   },
 
-                  authentication: { ...refresh, deviceUUID },
+                  authentication: { ...refresh, deviceUUID, oldTokens: [refresh.token] },
                   personalization: await defaultPersonalization(session),
 
                   identity: {},

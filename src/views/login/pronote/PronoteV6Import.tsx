@@ -72,7 +72,7 @@ const PronoteV6Import: Screen<"PronoteV6Import"> = ({ route, navigation }) => {
           last: extract_pronote_name(name).familyName
         },
 
-        authentication: { ...refresh, deviceUUID: data.deviceUUID },
+        authentication: { ...refresh, deviceUUID: data.deviceUUID, oldTokens: [refresh.token] },
         personalization: await defaultPersonalization(session),
 
         identity: {},

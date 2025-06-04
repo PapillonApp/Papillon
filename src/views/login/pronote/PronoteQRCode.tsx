@@ -124,7 +124,7 @@ const PronoteQRCode: Screen<"PronoteQRCode"> = ({ navigation }) => {
           last: extract_pronote_name(name).familyName
         },
 
-        authentication: { ...refresh, deviceUUID: accountID },
+        authentication: { ...refresh, deviceUUID: accountID, oldTokens: [refresh.token] },
         personalization: await defaultPersonalization(session),
 
         identity: {},

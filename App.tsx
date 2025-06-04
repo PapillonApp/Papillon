@@ -8,6 +8,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
 import { AccountService } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
+import { useAlert } from "@/providers/AlertProvider";
+import { BadgeX } from "lucide-react-native";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
 import { registerBackgroundTasks } from "@/background/BackgroundTasks";
@@ -32,6 +34,7 @@ export default function App () {
   const currentAccount = useCurrentAccount((store) => store.account);
   const switchTo = useCurrentAccount((store) => store.switchTo);
   const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
+  const { showAlert } = useAlert();
 
   const defined = useFlagsStore(state => state.defined);
   const [fontsLoaded] = useFonts(getToLoadFonts(defined));
@@ -78,6 +81,13 @@ export default function App () {
         if (account.localID === currentAccount.localID) {
           await switchTo(account).catch((error) => {
             log(`Error during switchTo: ${error}`, "RefreshToken");
+            if (account.service === AccountService.Pronote) {
+              showAlert({
+                title: "Connexion expirée",
+                message: "Ton compte PRONOTE a expiré, reconnecte-toi.",
+                icon: <BadgeX />,
+              });
+            }
           });
           break;
         }

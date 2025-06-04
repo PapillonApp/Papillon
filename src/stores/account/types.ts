@@ -161,6 +161,7 @@ export interface PronoteAccount extends BaseAccount {
 
   authentication: pronote.RefreshInformation & {
     deviceUUID: string;
+    oldTokens?: string[];
   };
   identityProvider?: undefined;
   providers: string[];
