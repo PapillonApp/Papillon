@@ -10,8 +10,8 @@
     "\\bépreuve\\s(?:surveillée|sur\\stable|en\\sclasse|anticipée|terminale|écrite|orale|finale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\btest\\s(?:surveillé|en\\sclasse|sur\\stable|de\\sconnaissances|de\\scompétences|écrit|oral|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\bevaluation\\s|évaluation\\s(?:de|écrite|finale|sur|surveillée|sur\\stable|diagnostique|formative|écrite|orale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",      
-    "\\binterrogation\\s(?:écrite|surveillée|surprise|courte|orale|finale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
-    "\\bcontrole\\s|contrôle\\s(?:n|de|écrit|des\\sconnaissances|continu|inopiné|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
+    "\\binterrogation(?:\\s(?:écrite|surveillée|surprise|courte|orale|finale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année))?\\b",
+    "\\b(?:controle|contrôle)(?:\\s(?:n|de|écrit|des\\sconnaissances|continu|inopiné|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année))?\\b",
     "\\bexamen\\s(?:partiel|final|de\\sfin\\sde\\ssemestre|de\\srattrapage|oral|écrit|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\bépreuve\\s(?:écrite|orale|pratique|anticipée|terminale|finale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\béval(?:uation)?\\s(?:continue|finale|formative|sommative|diagnostique|écrite|orale|partielle|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
@@ -23,7 +23,7 @@
     "\\btest\\s(?:d'anglais|d'espagnol|d'allemand|de\\slangue)\\s(?:écrit|oral|de\\scompréhension|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\b(?:English|Spanish|German|French)\\s(?:writing|speaking|listening|reading)\\s(?:test|exam|assessment|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
     "\\bprueba\\sde\\sespañol\\s(?:escrita|oral|de\\scomprensión|de\\sgramática|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
-    "\\bDeutschtest\\s(?:schriftlich|mündlich|Hörverstehen|Leseverstehen|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année)\\b",
+    "\\bDeutschtest(?:\\s(?:schriftlich|mündlich|Hörverstehen|Leseverstehen|final|partiel|de\\sfin\\sde\\ssemestre|de\\srattrapage|de\\smi\\ssemestre|de\\smi\\strimestre|de\\sfin\\sd'année))?\\b",
     "\\b(?:examen|prueba|evaluación|control)\\s(?:final|parcial|oral|escrito|diagnóstica|formativa|sumativa|de\\srecuperación|de\\smedio\\scurso|de\\sfin\\sde\\scurso)\\b"
   ],
   "Devoirs Maison": [
