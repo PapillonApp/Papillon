@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { View, Platform, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { View, Pressable, Platform, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 import { animPapillon, PapillonContextEnter, PapillonContextExit } from "@/utils/ui/animations";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { Pressable } from "react-native-gesture-handler";
 import Reanimated, { LinearTransition, type AnimatedStyle } from "react-native-reanimated";
 import { NativeText } from "./NativeComponents";
 
