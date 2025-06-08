@@ -40,6 +40,13 @@ const IdentityProviderSelector: Screen<"IdentityProviderSelector"> = ({ navigati
       image: require("@/../assets/images/service_iutlan.png"),
       navigate: () => navigation.navigate("UnivIUTLannion_Login"),
     },
+    {
+      name: "appscho",
+      title: "Autres universités",
+      description: "Utilise ton compte CAS pour te connecter",
+      image: require("@/../assets/images/service_appscho.png"),
+      navigate: () => navigation.navigate("AppschoUniversities"),
+    }
   ];
 
   const identityProviders = [

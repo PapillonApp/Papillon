@@ -33,6 +33,10 @@ export async function updateGradesPeriodsInCache <T extends Account> (account: T
       defaultPeriod = getDefaultPeriod(periods);
       break;
     }
+    case AccountService.Appscho: {
+      log("No service set in multi-service space for feature \"Grades\"", "appscho");
+      break;
+    }
     case AccountService.Local: {
       if (account.identityProvider.identifier == "iut-lannion") {
         const { saveIUTLanPeriods } = await import("./iutlan/grades");
@@ -125,6 +129,10 @@ export async function updateGradesAndAveragesInCache <T extends Account> (accoun
           };
         }
 
+        break;
+      }
+      case AccountService.Appscho: {
+        log("No service set in multi-service space for feature \"Grades\"", "appscho");
         break;
       }
       case AccountService.Skolengo: {
