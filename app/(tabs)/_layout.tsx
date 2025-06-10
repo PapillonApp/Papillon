@@ -1,12 +1,25 @@
 import React from 'react';
-import { Tabs } from '@/components/router/BottomTabs';
+
+import {
+  createNativeBottomTabNavigator,
+  NativeBottomTabNavigationEventMap,
+  NativeBottomTabNavigationOptions,
+} from "@bottom-tabs/react-navigation";
+import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import { withLayoutContext } from "expo-router";
+
+const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
+
+const Tabs = withLayoutContext<
+  NativeBottomTabNavigationOptions,
+  typeof BottomTabNavigator,
+  TabNavigationState<ParamListBase>,
+  NativeBottomTabNavigationEventMap
+>(BottomTabNavigator);
 
 export default function TabLayout() {
   return (
     <Tabs
-      hapticFeedbackEnabled={true}
-      sidebarAdaptable={true}
-      labeled={false}
     >
       <Tabs.Screen
         name="index"
