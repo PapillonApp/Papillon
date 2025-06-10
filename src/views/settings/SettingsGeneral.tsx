@@ -4,7 +4,7 @@ import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import type { Screen } from "@/router/helpers/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeIconGradient, NativeItem, NativeList, NativeText } from "@/components/Global/NativeComponents";
-import { Bell, Cable, Smile } from "lucide-react-native";
+import { Bell, Cable, QrCode, Smile } from "lucide-react-native";
 
 const SettingsGeneral: Screen<"SettingsGeneral"> = ({ navigation }) => {
   const theme = useTheme();
@@ -23,6 +23,13 @@ const SettingsGeneral: Screen<"SettingsGeneral"> = ({ navigation }) => {
       label: "Services externes",
       description: "Connecte ta cantine à Papillon",
       onPress: () => navigation.navigate("SettingsExternalServices"),
+    },
+    {
+      icon: <QrCode />,
+      colors: ["#9142A9", "#C53CFF"],
+      label: "Qr Code",
+      description: "Ajoute ton qr code de cantine",
+      onPress: () => navigation.navigate("SettingsQrCode"),
     },
     {
       icon: <Smile />,
