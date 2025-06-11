@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from 'react-native';
 import "@/utils/i18n";
+import { screenOptions } from '@/utils/theme/ScreenOptions';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,8 +55,12 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName='(tabs)'>
+      <Stack initialRouteName='(tabs)' screenOptions={{
+                  ...screenOptions,
+                  headerBackButtonDisplayMode: "minimal",
+              }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="page" />
       </Stack>
     </ThemeProvider>
   );
