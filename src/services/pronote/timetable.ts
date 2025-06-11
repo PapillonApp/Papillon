@@ -23,7 +23,7 @@ const decodeTimetableClass = (c: pronote.TimetableClassLesson | pronote.Timetabl
       room: c.classrooms.join(", ") || void 0,
       teacher: c.teacherNames?.join(", ") ?? void 0,
       group: c.groupNames.join(", ") || void 0,
-      status: c.status === "Cours annulé" || c.status === "Prof. absent" || c.status === "Classe absente" || c.status === "Prof./pers. absent" || c.status === "Sortie pédagogique" ? TimetableClassStatus.CANCELED : c.test ? TimetableClassStatus.TEST : void 0,
+      status: c.status === "Cours annulé" || c.status === "Prof. absent" || c.status === "Classe absente" || c.status === "Prof./pers. absent" || c.status === "Sortie pédagogique" || c.status === "Conseil de classe" ? TimetableClassStatus.CANCELED : c.test ? TimetableClassStatus.TEST : void 0,
       statusText: c.test ? "Devoir Surveillé" : c.status,
       ressourceID: c.lessonResourceID ?? void 0,
       ...base
