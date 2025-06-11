@@ -1,11 +1,11 @@
-import React, { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { useEffect } from "react";
 
 import { useNavigation } from "expo-router";
-import { CalendarArrowDown, MoreVertical, Plus } from "lucide-react-native";
+import { CalendarArrowDown, MoreVertical } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 
 export default function TabOneScreen({}) {
@@ -13,40 +13,8 @@ export default function TabOneScreen({}) {
   const { colors } = useTheme();
   
   navigation.setOptions({
-    headerTitle: "Anglais LV2",
+    headerTitle: "Modal",
     headerRight: () => (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <Pressable
-          onPress={() => {
-            setTimeout(() => {
-              Alert.alert("Pressé !", "Vous avez appuyé sur le bouton d'ajout.", [
-                {
-                  text: "OK",
-                  onPress: () => console.log("OK Pressed"),
-                  isPreferred: true,
-                },
-                {
-                  text: "Quoicoubeh",
-                  onPress: () => console.log("Quoicoubeh Pressed"),
-                  style: "cancel",
-                },
-                {
-                  text: "Apayinye",
-                  onPress: () => console.log("Quoicoubeh Pressed"),
-                  style: "destructive",
-                },
-              ]);
-            }, 100);
-          }}
-          style={{
-            height: 35,
-            aspectRatio: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Plus color={colors.text} size={24} />
-        </Pressable>
       <MenuView
         title="Anglais LV2"
         actions={[
@@ -94,7 +62,6 @@ export default function TabOneScreen({}) {
           <MoreVertical color={colors.text} size={24} />
         </Pressable>
       </MenuView>
-      </View>
     )
   });
 
