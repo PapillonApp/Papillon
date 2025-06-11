@@ -28,6 +28,7 @@ function UnderConstructionNotice() {
                     justifyContent: "center",
                     alignItems: "center",
                     borderRadius: 500,
+                    overflow: "hidden",
                 }}
             >
                 <AlertTriangle strokeWidth={2} size={24} color="#c28500" />
@@ -48,7 +49,7 @@ function UnderConstructionNotice() {
                         textAlign: "center",
                     }}
                 >
-                    {t("TabUnderConstruction")}
+                    {t("TabUnderConstruction_Title")}
                 </Text>
                 <Text
                     style={{
@@ -59,7 +60,7 @@ function UnderConstructionNotice() {
                         width: "80%",
                     }}
                 >
-                    {t("TabUnderConstructionDetails")}
+                    {t("TabUnderConstruction_Details")}
                 </Text>
             </View>
         </View>

@@ -13,7 +13,7 @@ export default function Layout() {
                 name="index"
                 options={{
                     headerShown: true,
-                    headerTitle: t("Home"),
+                    headerTitle: t("Tab_Home"),
                 }}
             />
         </Stack>

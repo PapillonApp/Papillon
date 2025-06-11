@@ -1,9 +1,9 @@
 {
-    "Home": "Home",
-    "Calendar": "Calendar",
-    "Tasks": "Tasks",
-    "Grades": "Grades",
-    "Profile": "Profile",
-    "TabUnderConstruction": "This tab is under construction.",
-    "TabUnderConstructionDetails": "Please check back later for updates."
+  "Tab_Home": "Home",
+  "Tab_Calendar": "Calendar",
+  "Tab_Tasks": "Tasks",
+  "Tab_Grades": "Grades",
+  "Tab_Profile": "Profile",
+  "TabUnderConstruction_Title": "This tab is under construction.",
+  "TabUnderConstruction_Details": "Please check back later for updates."
 }
