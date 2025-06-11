@@ -24,6 +24,19 @@ export default function TabOneScreen() {
                     >Ouvrir un cours</Text>
                 </View>
             </Link>
+
+            <Link href="/calendar/modal" style={{ marginTop: 20 }}>
+                <View style={{ width: "100%", padding: 14, backgroundColor: "#29947A22", borderRadius: 300 }}>
+                    <Text
+                        style={{
+                            color: "#29947A",
+                            fontSize: 16,
+                            textAlign: "center",
+                            fontFamily: "bold"
+                        }}
+                    >Ouvrir une modal</Text>
+                </View>
+            </Link>
         </ScrollView>
     );
 }

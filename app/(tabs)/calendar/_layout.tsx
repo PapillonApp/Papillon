@@ -23,6 +23,17 @@ export default function Layout() {
                     headerTitle: t("Tab_Page"),
                 }}
             />
+            <Stack.Screen
+                name="modal"
+                options={{
+                    headerShown: true,
+                    headerTitle: t("Tab_Page"),
+                    presentation: "formSheet",
+                    sheetAllowedDetents: [0.25, 0.5, 0.9],
+                    sheetGrabberVisible: true,
+                    headerLargeTitle: false,
+                }}
+            />
         </Stack>
     );
 }
