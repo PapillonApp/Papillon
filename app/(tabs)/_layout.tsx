@@ -37,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t("Home"),
+          title: t("Tab_Home"),
           tabBarIcon: () => 
             isiOS ? require('@/assets/icons/home_padding.svg') :
               require('@/assets/icons/home.svg'),
@@ -46,7 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: t("Calendar"),
+          title: t("Tab_Calendar"),
           tabBarIcon: () =>
             isiOS ? require('@/assets/icons/calendar_padding.svg') :
               require('@/assets/icons/calendar.svg'),
@@ -55,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="tasks"
         options={{
-          title: t("Tasks"),
+          title: t("Tab_Tasks"),
           tabBarIcon: () => 
             isiOS ? require('@/assets/icons/tasks_padding.svg') :
               require('@/assets/icons/tasks.svg'),
@@ -64,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="grades"
         options={{
-          title: t("Grades"),
+          title: t("Tab_Grades"),
           tabBarIcon: () =>
             isiOS ? require('@/assets/icons/results_padding.svg') :
               require('@/assets/icons/results.svg'),
@@ -73,7 +73,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: t("Profile"),
+          title: t("Tab_Profile"),
           tabBarIcon: () =>
             isiOS ? require('@/assets/icons/profile_padding.svg') :
               require('@/assets/icons/profile.svg'),

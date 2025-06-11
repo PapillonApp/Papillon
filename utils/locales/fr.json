@@ -1,9 +1,9 @@
 {
-    "Home": "Accueil",
-    "Calendar": "Calendrier",
-    "Tasks": "Tâches",
-    "Grades": "Notes",
-    "Profile": "Profil",
-    "TabUnderConstruction": "Cet onglet est en construction.",
-    "TabUnderConstructionDetails": "Veuillez revenir plus tard pour des mises à jour."
+  "Tab_Home": "Accueil",
+  "Tab_Calendar": "Cours",
+  "Tab_Tasks": "Tâches",
+  "Tab_Grades": "Notes",
+  "Tab_Profile": "Profil",
+  "TabUnderConstruction_Title": "Cet onglet est en construction.",
+  "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour."
 }

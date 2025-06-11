@@ -13,7 +13,7 @@ export default function Layout() {
                 name="index"
                 options={{
                     headerShown: true,
-                    headerTitle: t("Tasks"),
+                    headerTitle: t("Tab_Tasks"),
                 }}
             />
         </Stack>
