@@ -15,11 +15,11 @@ module.exports = {
       backgroundColor: "#ffffff",
     },
     ios: {
-      bundleIdentifier: "xyz.getpapillon.ios",
+      bundleIdentifier: "xyz.getpapillon.ios.beta",
       supportsTablet: true,
     },
     android: {
-      package: "xyz.getpapillon.app",
+      package: "xyz.getpapillon.app.beta",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",

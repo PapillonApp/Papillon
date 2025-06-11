@@ -42,7 +42,17 @@
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
     "sonner-native": "^0.20.0",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "expo-blur": "~14.1.5",
+    "expo-haptics": "~14.1.4",
+    "expo-linear-gradient": "~14.1.5",
+    "expo-live-photo": "~0.1.4",
+    "expo-mesh-gradient": "~0.3.4",
+    "@expo/ui": "~0.1.1-alpha.9",
+    "@react-native-community/datetimepicker": "8.3.0",
+    "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-native-segmented-control/segmented-control": "2.5.7",
+    "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
