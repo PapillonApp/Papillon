@@ -12,4 +12,8 @@ export const screenOptions: any = {
   headerLargeTitleStyle: {
     fontFamily: "bold",
   },
+  headerBackTitleStyle: {
+    fontFamily: "semibold",
+    fontSize: 17,
+  },
 };
