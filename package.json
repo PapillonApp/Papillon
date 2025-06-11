@@ -52,7 +52,8 @@
     "@react-native-community/datetimepicker": "8.3.0",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-segmented-control/segmented-control": "2.5.7",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "expo-localization": "~16.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
