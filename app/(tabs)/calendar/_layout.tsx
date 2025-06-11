@@ -16,6 +16,13 @@ export default function Layout() {
                     headerTitle: t("Tab_Calendar"),
                 }}
             />
+            <Stack.Screen
+                name="item"
+                options={{
+                    headerShown: true,
+                    headerTitle: t("Tab_Page"),
+                }}
+            />
         </Stack>
     );
 }
