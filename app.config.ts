@@ -10,9 +10,9 @@ module.exports = {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
-      image: "./assets/images/splash-icon.png",
-      resizeMode: "contain",
-      backgroundColor: "#ffffff",
+      image: "./assets/images/splash.png",
+      resizeMode: "cover",
+      backgroundColor: "#003A21",
     },
     ios: {
       bundleIdentifier: "xyz.getpapillon.ios.beta",
