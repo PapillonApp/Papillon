@@ -33,6 +33,7 @@ module.exports = {
     },
     plugins: [
       "expo-router",
+      "expo-localization",
       "react-native-bottom-tabs",
       [
         "expo-build-properties",
