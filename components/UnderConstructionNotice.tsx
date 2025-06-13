@@ -1,3 +1,5 @@
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import { AlertTriangle } from "lucide-react-native";
 import React, { memo } from "react";
@@ -9,61 +11,33 @@ function UnderConstructionNotice() {
     const { colors } = useTheme();
 
     return (
-        <View
-            style={{
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 10,
-                marginVertical: 20,
-                marginHorizontal: 20,
-            }}
+        <Stack
+            gap={12}
+            vAlign="center"
+            hAlign="center"
+            backgroundColor={colors.card}
+            padding={20}
+            radius={20}
         >
-            <View
-                style={{
-                    backgroundColor: "#EFA40035",
-                    width: 48,
-                    height: 48,
-                    maxWidth: 48,
-                    maxHeight: 48,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 500,
-                    overflow: "hidden",
-                }}
+            <Stack
+                vAlign="center"
+                hAlign="center"
+                padding={10}
+                inline
+                backgroundColor="#EFA40035"
+                radius={30}
             >
                 <AlertTriangle strokeWidth={2} size={24} color="#c28500" />
-            </View>
-            <View
-                style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 5,
-                    width: "100%",
-                }}
-            >
-                <Text
-                    style={{
-                        fontSize: 20,
-                        fontFamily: "bold",
-                        color: colors.text,
-                        textAlign: "center",
-                    }}
-                >
+            </Stack>
+            <Stack gap={2} vAlign="center" hAlign="center">
+                <Typography align="center" variant="h4">
                     {t("TabUnderConstruction_Title")}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 15,
-                        textAlign: "center",
-                        fontFamily: "medium",
-                        color: "#A0A0A0",
-                        width: "80%",
-                    }}
-                >
+                </Typography>
+                <Typography align="center" variant="body1" color="secondary">
                     {t("TabUnderConstruction_Details")}
-                </Text>
-            </View>
-        </View>
+                </Typography>
+            </Stack>
+        </Stack>
     );
 }
 

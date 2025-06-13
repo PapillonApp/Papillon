@@ -14,6 +14,7 @@ export const DefaultTheme = {
   colors: {
     ...NativeDefaultTheme.colors,
     primary: PrimaryAccentColor.light,
+    text: "#000000",
   },
 };
 
@@ -22,5 +23,6 @@ export const DarkTheme = {
   colors: {
     ...NativeDarkTheme.colors,
     primary: PrimaryAccentColor.dark,
+    text: "#FFFFFF",
   },
 };

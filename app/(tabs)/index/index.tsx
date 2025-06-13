@@ -21,7 +21,7 @@ export default function TabOneScreen() {
                                         textAlign: "center",
                                         fontFamily: "bold"
                                     }}
-                                >Page au dessus de la nav</Text>
+                                >UI Test</Text>
                             </View>
                         </Link>
         </ScrollView>
