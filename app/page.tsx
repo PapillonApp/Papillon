@@ -7,65 +7,11 @@ import { useEffect } from "react";
 import { useNavigation } from "expo-router";
 import { CalendarArrowDown, MoreVertical, Plus } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
+import Typography from "@/ui/components/Typography";
 
 export default function TabOneScreen({}) {
   const navigation = useNavigation();
   const { colors } = useTheme();
-  
-  navigation.setOptions({
-    headerTitle: "Au dela de la navigation",
-    headerRight: () => (
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-      <MenuView
-        title="Apayinye"
-        actions={[
-          {
-            id: "addEvent",
-            title: "Ajouter au calendrier",
-            image: Platform.select({
-              ios: 'plus',
-              android: 'ic_menu_add',
-            }),
-            imageColor: colors.text,
-          },
-          {
-            id: "edit",
-            title: "Modifier",
-            image: Platform.select({
-              ios: 'pencil',
-              android: 'ic_menu_edit',
-            }),
-            imageColor: colors.text,
-          },
-          {
-            id: "delete",
-            title: "Supprimer",
-            attributes: {
-              destructive: true,
-            },
-            image: Platform.select({
-              ios: 'trash',
-              android: 'ic_menu_delete',
-            }),
-            imageColor: "#FF3B30",
-          },
-        ]}
-
-      >
-        <Pressable
-          style={{
-            height: 35,
-            aspectRatio: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <MoreVertical color={colors.text} size={24} />
-        </Pressable>
-      </MenuView>
-      </View>
-    )
-  });
 
     return (
         <ScrollView
@@ -73,7 +19,33 @@ export default function TabOneScreen({}) {
             contentContainerStyle={styles.containerContent}
             style={styles.container}
         >
-            <UnderConstructionNotice />
+            <Typography variant="h1">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="h2">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="h3">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="h4">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="h5">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="h6">
+              Lorem ipsum
+            </Typography>
+            <Typography variant="body1">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+            </Typography>
+            <Typography variant="body2">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh.
+            </Typography>
         </ScrollView>
     );
 }
@@ -84,7 +56,5 @@ const styles = StyleSheet.create({
         padding: 16
     },
     containerContent: {
-        justifyContent: "center",
-        alignItems: "center",
     }
 });
