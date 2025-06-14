@@ -1,29 +1,37 @@
 import React, { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { Link } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
+import Button from "@/ui/components/Button";
+import { useState } from "react";
+import Stack from "@/ui/components/Stack";
 
 export default function TabOneScreen() {
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    
     return (
         <ScrollView
             contentInsetAdjustmentBehavior="automatic"
             contentContainerStyle={styles.containerContent}
             style={styles.container}
         >
-            <UnderConstructionNotice />
+            <Stack gap={16} hAlign="center">
+                <UnderConstructionNotice />
 
-             <Link href="/page" style={{ marginTop: 20 }}>
-                            <View style={{ width: "100%", padding: 14, backgroundColor: "#29947A", borderRadius: 300 }}>
-                                <Text
-                                    style={{
-                                        color: "#FFFFFF",
-                                        fontSize: 16,
-                                        textAlign: "center",
-                                        fontFamily: "bold"
-                                    }}
-                                >UI Test</Text>
-                            </View>
-                        </Link>
+                <Button
+                    title="Click Me"
+                    onPress={() => router.navigate("/page")}
+                />
+
+                <Button
+                    title="Load something"
+                    inline
+                    loading={loading}
+                    variant="outline"
+                    onPress={() => setLoading(!loading)}
+                />
+            </Stack>
         </ScrollView>
     );
 }
