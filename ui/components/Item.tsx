@@ -1,14 +1,13 @@
 import { Pressable, PressableProps } from "react-native";
 import React, { useMemo, useCallback } from "react";
 import Reanimated, { LinearTransition, useSharedValue, useAnimatedStyle, withTiming, withSpring, Easing } from "react-native-reanimated";
+import { useTheme } from "@react-navigation/native";
+import { Animation } from "../utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-const LAYOUT_ANIMATION = LinearTransition
-  .springify()
-  .mass(1)
-  .damping(20)
-  .stiffness(300);
+const LAYOUT_ANIMATION = Animation(LinearTransition, "list")
 
 export const LEADING_TYPE = Symbol('Leading');
 export const TRAILING_TYPE = Symbol('Trailing');
@@ -45,7 +44,9 @@ const MemoizedTrailing = React.memo(Trailing);
 
 interface ListProps extends PressableProps {
   children?: React.ReactNode;
+  animate?: boolean;
   contentContainerStyle?: PressableProps['style'];
+  isLast?: boolean;
 }
 
 const DEFAULT_CONTAINER_STYLE = {
@@ -66,10 +67,14 @@ function ItemComponent({
   children,
   contentContainerStyle,
   style,
+  animate,
   onPressIn,
   onPressOut,
+  isLast = false,
   ...rest
 }: ListProps) {
+  const { colors } = useTheme();
+  
   // Animation scale et opacity
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -117,6 +122,13 @@ function ItemComponent({
   }, [children]);
 
   // Optimisation : Styles mémoïsés plus efficaces
+  const borderStyle = useMemo(() => {
+    return !isLast ? {
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.text + "25", // 25 = opacity de 15%
+    } : {};
+  }, [isLast, colors.text]);
+
   const containerStyle = useMemo(() => {
     const baseStyle = style ? [DEFAULT_CONTAINER_STYLE, style] : DEFAULT_CONTAINER_STYLE;
     return [baseStyle, animatedStyle];
@@ -128,19 +140,26 @@ function ItemComponent({
   );
 
   return (
-    <AnimatedPressable
-      {...rest}
+    <Reanimated.View
       layout={LAYOUT_ANIMATION}
-      style={containerStyle}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      style={borderStyle}
+      entering={animate ? PapillonAppearIn : undefined}
+      exiting={animate ? PapillonAppearOut : undefined}
     >
-      {sortedChildren.leading}
-      <Reanimated.View style={contentStyle as any}>
-        {sortedChildren.others}
-      </Reanimated.View>
-      {sortedChildren.trailing}
-    </AnimatedPressable>
+      <AnimatedPressable
+        {...rest}
+        layout={LAYOUT_ANIMATION}
+        style={containerStyle}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        {sortedChildren.leading}
+        <Reanimated.View style={contentStyle as any}>
+          {sortedChildren.others}
+        </Reanimated.View>
+        {sortedChildren.trailing}
+      </AnimatedPressable>
+    </Reanimated.View>
   );
 }
 
