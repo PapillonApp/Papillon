@@ -1,4 +1,4 @@
-import React, { Image, ScrollView, StyleSheet, View } from "react-native";
+import React, { Alert, Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import List from "@/ui/components/List";
@@ -7,8 +7,11 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import { ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
+import { useState } from "react";
 
 export default function TabOneScreen() {
+    const [showFranck, setShowFranck] = useState(false);
+
     return (
         <ScrollView
             contentInsetAdjustmentBehavior="automatic"
@@ -19,16 +22,33 @@ export default function TabOneScreen() {
 
             <List>
                 <Item>
-                    <Leading>
-                        <Image
-                            source={{ uri: "https://tinyurl.com/47n7hh4x" }}
-                            style={{ width: 40, height: 40, borderRadius: 8 }}
-                        />
-                    </Leading>
-                    <Typography variant="title">
-                        Franck Leboeuf
+                    <Typography>
+                        Afficher Franck Leboeuf
                     </Typography>
+                    <Trailing>
+                        <Switch
+                            style={{ marginRight: 0 }}
+                            value={showFranck}
+                            onValueChange={setShowFranck}
+                        />
+                    </Trailing>
                 </Item>
+            </List>
+
+            <List>
+                {showFranck && (
+                    <Item animate>
+                        <Leading>
+                            <Image
+                                source={{ uri: "https://tinyurl.com/47n7hh4x" }}
+                                style={{ width: 40, height: 40, borderRadius: 8 }}
+                            />
+                        </Leading>
+                        <Typography variant="title">
+                            Franck Leboeuf
+                        </Typography>
+                    </Item>
+                )}
                 <Item>
                     <Icon>
                         <EyeIcon />
@@ -46,7 +66,7 @@ export default function TabOneScreen() {
                             inline
                             size="small"
                             icon={<SparkleIcon />}
-                            onPress={() => console.log("Action pressed")}
+                            onPress={() => Alert.alert("Action", "Action pressed for Item 1")}
                         />
                     </Trailing>
                 </Item>

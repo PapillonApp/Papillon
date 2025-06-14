@@ -12,7 +12,7 @@ interface ListProps extends ViewProps {
 }
 
 // Configuration d'animation mémoïsée pour éviter les re-créations
-const LAYOUT_ANIMATION = Animation(LinearTransition);
+const LAYOUT_ANIMATION = Animation(LinearTransition, "list");
 
 // Styles constants pour optimiser les performances
 const BASE_CONTAINER_STYLE = {
@@ -85,6 +85,8 @@ const List: React.FC<ListProps> = React.memo(({
           needsPadding: false,
           borderBottomWidth: 0,
           key: index,
+          isItem: false,
+          isLast: false,
         };
       }
 
@@ -102,8 +104,10 @@ const List: React.FC<ListProps> = React.memo(({
         child,
         isValidElement: true,
         needsPadding,
-        borderBottomWidth: index < count - 1 ? 0.5 : 0,
+        borderBottomWidth: !isItem && index < count - 1 ? 0.5 : 0,
         key: child.key ?? index,
+        isItem,
+        isLast: index === count - 1,
       };
     });
   }, [children, disablePadding]);
@@ -127,13 +131,18 @@ const List: React.FC<ListProps> = React.memo(({
       contentContainerStyle,
     ];
 
+    // Si c'est un composant Item, on le clone avec la propriété isLast
+    const childToRender = childData.isItem 
+      ? React.cloneElement(childData.child, { isLast: childData.isLast })
+      : childData.child;
+
     return (
       <Reanimated.View
         key={childData.key}
         layout={LAYOUT_ANIMATION}
         style={itemStyle}
       >
-        {childData.child}
+        {childToRender}
       </Reanimated.View>
     );
   }, [borderBottomColor, contentContainerStyle]);
