@@ -29,6 +29,7 @@ export default function TabLayout() {
     <Tabs
     sidebarAdaptable
     hapticFeedbackEnabled
+    labeled={true}
     tabLabelStyle={{
       fontFamily: 'semibold',
       fontSize: 12,

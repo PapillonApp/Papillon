@@ -5,9 +5,11 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from 'react-native';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
 import "@/utils/i18n";
 import { screenOptions } from '@/utils/theme/ScreenOptions';
+
+import * as SystemUI from 'expo-system-ui';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,6 +54,11 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colorScheme === 'dark' ? '#000000' : '#F5F5F5');
+    StatusBar.setBarStyle(colorScheme === 'dark' ? 'light-content' : 'dark-content');
+  }, [colorScheme]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

@@ -13,17 +13,19 @@ type Color = 'primary' | 'text' | 'light' | 'danger';
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
+  icon?: React.ReactNode;
   color?: Color;
   title?: string;
   inline?: boolean;
   loading?: boolean;
   onPress?: () => void;
-}
+};
 
 const defaultProps = {
   variant: 'primary' as Variant,
+  icon: null,
   color: 'primary' as Color,
-  title: 'Button',
+  title: undefined,
   inline: false,
   loading: false,
   onPress: () => {},
@@ -31,6 +33,7 @@ const defaultProps = {
 
 const Button: React.FC<ButtonProps> = React.memo(({
   variant = defaultProps.variant,
+  icon = defaultProps.icon,
   color = defaultProps.color,
   title = defaultProps.title,
   inline = defaultProps.inline,
@@ -96,7 +99,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       borderCurve: 'continuous',
       backgroundColor: backgroundColor,
       overflow: 'hidden',
-      height: 48,
+      height: 50,
       paddingHorizontal: 18,
       flexDirection: 'row',
       justifyContent: 'center',
@@ -112,6 +115,17 @@ const Button: React.FC<ButtonProps> = React.memo(({
     animatedStyle,
   ], [inline, colors.primary, style, animatedStyle]);
 
+  const buttonIcon = useMemo(() => {
+    if (icon) {
+      return React.cloneElement(icon as React.ReactElement, {
+        color: textColor,
+        size: 22,
+        strokeWidth: 2,
+      });
+    }
+    return null;
+  }, [icon, textColor]);
+
   return (
     <AnimatedPressable
       {...rest}
@@ -123,18 +137,28 @@ const Button: React.FC<ButtonProps> = React.memo(({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      {rest.children ? rest.children : (
+      {(rest.children && !title) ? rest.children : (
         <>
           {loading && (
             <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
               <ActivityIndicator color={textColor} />
             </Reanimated.View>
           )}
+          {buttonIcon && (
+            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+              {buttonIcon}
+            </Reanimated.View>
+          )}
           <Reanimated.View layout={Animation(LinearTransition)}>
             <Typography variant="button" color={textColor}>
-              {title}
+              {title || "Button"}
             </Typography>
           </Reanimated.View>
+          {rest.children && typeof rest.children !== "function" && (
+            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+              {rest.children}
+            </Reanimated.View>
+          )}
         </>
       )}
     </AnimatedPressable>
