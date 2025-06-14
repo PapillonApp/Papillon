@@ -96,7 +96,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       borderCurve: 'continuous',
       backgroundColor: backgroundColor,
       overflow: 'hidden',
-      height: 48,
+      height: 50,
       paddingHorizontal: 18,
       flexDirection: 'row',
       justifyContent: 'center',
