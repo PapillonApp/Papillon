@@ -4,17 +4,19 @@ import React, { useCallback, useMemo } from "react";
 import { useTheme } from "@react-navigation/native";
 import Reanimated, { FadeIn, FadeOut, LinearTransition, useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing } from "react-native-reanimated";
 import { Animation } from "../utils/Animation";
-import { PapillonZoomIn, PapillonZoomOut, Transition } from "../utils/Transition";
+import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'outline' | 'light';
 type Color = 'primary' | 'text' | 'light' | 'danger';
+type Size = 'small' | 'medium' | 'large';
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
   icon?: React.ReactNode;
   color?: Color;
+  size?: Size;
   title?: string;
   inline?: boolean;
   loading?: boolean;
@@ -25,6 +27,7 @@ const defaultProps = {
   variant: 'primary' as Variant,
   icon: null,
   color: 'primary' as Color,
+  size: 'medium' as Size,
   title: undefined,
   inline: false,
   loading: false,
@@ -35,6 +38,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   variant = defaultProps.variant,
   icon = defaultProps.icon,
   color = defaultProps.color,
+  size = defaultProps.size,
   title = defaultProps.title,
   inline = defaultProps.inline,
   loading = defaultProps.loading,
@@ -110,6 +114,14 @@ const Button: React.FC<ButtonProps> = React.memo(({
       borderWidth: 1,
       borderColor: colorsList[color as Color],
     },
+    size === 'small' && {
+      height: 40,
+      paddingHorizontal: 12,
+    },
+    size === 'large' && {
+      height: 60,
+      paddingHorizontal: 24,
+    },
     inline && { width: undefined },
     style,
     animatedStyle,
@@ -118,6 +130,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   const buttonIcon = useMemo(() => {
     if (icon) {
       return React.cloneElement(icon as React.ReactElement, {
+        // @ts-expect-error
         color: textColor,
         size: 22,
         strokeWidth: 2,

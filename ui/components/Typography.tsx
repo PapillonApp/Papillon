@@ -24,6 +24,11 @@ const VARIANTS = StyleSheet.create({
     fontFamily: "bold",
     lineHeight: 24,
   },
+  title: {
+    fontSize: 17,
+    fontFamily: "semibold",
+    lineHeight: 24,
+  },
   h1: {
     fontSize: 32,
     fontFamily: "bold",

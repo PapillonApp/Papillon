@@ -1,3 +1,4 @@
+import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
@@ -11,33 +12,33 @@ function UnderConstructionNotice() {
     const { colors } = useTheme();
 
     return (
-        <Stack
-            gap={12}
-            vAlign="center"
-            hAlign="center"
-            backgroundColor={colors.card}
-            padding={20}
-            radius={20}
-        >
+        <List disablePadding>
             <Stack
+                gap={12}
                 vAlign="center"
                 hAlign="center"
-                padding={10}
-                inline
-                backgroundColor="#EFA40035"
-                radius={30}
+                padding={20}
             >
-                <AlertTriangle strokeWidth={2} size={24} color="#c28500" />
+                <Stack
+                    vAlign="center"
+                    hAlign="center"
+                    padding={10}
+                    inline
+                    backgroundColor="#EFA40035"
+                    radius={30}
+                >
+                    <AlertTriangle strokeWidth={2} size={24} color="#c28500" />
+                </Stack>
+                <Stack gap={2} vAlign="center" hAlign="center">
+                    <Typography align="center" variant="h4">
+                        {t("TabUnderConstruction_Title")}
+                    </Typography>
+                    <Typography align="center" variant="body1" color="secondary">
+                        {t("TabUnderConstruction_Details")}
+                    </Typography>
+                </Stack>
             </Stack>
-            <Stack gap={2} vAlign="center" hAlign="center">
-                <Typography align="center" variant="h4">
-                    {t("TabUnderConstruction_Title")}
-                </Typography>
-                <Typography align="center" variant="body1" color="secondary">
-                    {t("TabUnderConstruction_Details")}
-                </Typography>
-            </Stack>
-        </Stack>
+        </List>
     );
 }
 

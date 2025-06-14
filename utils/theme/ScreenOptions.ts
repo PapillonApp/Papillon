@@ -8,7 +8,7 @@ export const screenOptions: any = {
   headerTransparent: Platform.OS === "ios" && parseInt(Platform.Version) >= 26,
   headerTitleStyle: {
     fontFamily: "semibold",
-    fontSize: 18,
+    fontSize: Platform.OS === "ios" ? 18 : 20,
   },
   headerLargeTitleStyle: {
     fontFamily: "bold",
