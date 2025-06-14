@@ -36,6 +36,15 @@ module.exports = {
       "expo-localization",
       "react-native-bottom-tabs",
       [
+        "react-native-edge-to-edge",
+        {
+          android: {
+            parentTheme: "Material3",
+            enforceNavigationBarContrast: false,
+          },
+        },
+      ],
+      [
         "expo-build-properties",
         {
           ios: {

@@ -9,13 +9,13 @@ export const PapillonZoomIn = () => {
     },
     animations: {
       opacity: withTiming(1, {
-        duration: 200,
+        duration: 300,
         easing: Easing.bezier(0.3, 0.3, 0, 1),
       }),
       transform: [
         {
           scale: withTiming(1, {
-            duration: 200,
+            duration: 300,
             easing: Easing.bezier(0.3, 0.3, 0, 1),
           }),
         },
@@ -33,13 +33,13 @@ export const PapillonZoomOut = () => {
     },
     animations: {
       opacity: withTiming(0, {
-        duration: 200,
+        duration: 300,
         easing: Easing.bezier(0.3, 0.3, 0, 1),
       }),
       transform: [
         {
           scale: withTiming(0.1, {
-            duration: 200,
+            duration: 300,
             easing: Easing.bezier(0.3, 0.3, 0, 1),
           }),
         },
