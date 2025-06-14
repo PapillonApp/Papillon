@@ -62,7 +62,7 @@ const Stack: React.FC<StackProps> = ({
       radius && { borderRadius: radius, borderCurve: "continuous", overflow: "hidden" },
       inline && { width: "fit-content", display: "inline-flex" },
     ],
-    [flexDirection, gap, padding, margin, hAlign, vAlign]
+    [flexDirection, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]
   );
 
   return (
