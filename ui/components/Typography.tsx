@@ -21,7 +21,7 @@ const VARIANTS = StyleSheet.create({
   },
   button: {
     fontSize: 16,
-    fontFamily: "semibold",
+    fontFamily: "bold",
     lineHeight: 24,
   },
   h1: {
@@ -57,12 +57,12 @@ const VARIANTS = StyleSheet.create({
 });
 
 type Variant = keyof typeof VARIANTS;
-type Color = 'primary' | 'text' | 'secondary';
+type Color = 'primary' | 'text' | 'secondary' | 'light' | 'danger';
 type Alignment = 'left' | 'center' | 'right' | 'justify';
 
 interface TypographyProps extends TextProps {
   variant?: Variant;
-  color?: Color;
+  color?: Color | string;
   align?: Alignment;
   style?: TextStyle | TextStyle[];
 }
@@ -80,13 +80,17 @@ const Typography: React.FC<TypographyProps> = ({
     primary: colors.primary,
     text: colors.text,
     secondary: colors.text + '80',
+    light: '#FFFFFF',
+    danger: '#DC1400',
   }), [colors]);
 
   return (
     <Text
       {...rest}
       style={[
-        { color: colorsList[color] },
+        { color: (typeof color === 'string' && color in colorsList)
+            ? colorsList[color as Color]
+            : color },
         { textAlign: align },
         VARIANTS[variant],
         style,
