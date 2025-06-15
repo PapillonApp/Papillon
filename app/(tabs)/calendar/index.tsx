@@ -1,7 +1,7 @@
+import { Link } from "expo-router";
 import React, { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { Link } from "expo-router";
 
 export default function TabOneScreen() {
     return (

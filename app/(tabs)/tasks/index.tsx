@@ -1,13 +1,13 @@
+import { ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
+import { useState } from "react";
 import React, { Alert, Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import List from "@/ui/components/List";
-import Typography from "@/ui/components/Typography";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import { ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
-import { useState } from "react";
+import Item, { Leading, Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Typography from "@/ui/components/Typography";
 
 export default function TabOneScreen() {
     const [showFranck, setShowFranck] = useState(false);

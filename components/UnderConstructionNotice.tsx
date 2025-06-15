@@ -1,11 +1,12 @@
-import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import { AlertTriangle } from "lucide-react-native";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
+
+import List from "@/ui/components/List";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 function UnderConstructionNotice() {
     const { t } = useTranslation();

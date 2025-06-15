@@ -1,6 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo } from "react";
 import { View, ViewProps } from "react-native";
+
 import { LEADING_TYPE } from "./Item";
 
 interface IconProps extends ViewProps {

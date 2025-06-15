@@ -1,11 +1,11 @@
+import { Link, useNavigation, useRouter } from "expo-router";
+import { RefreshCcw } from "lucide-react-native";
+import { useState } from "react";
 import React, { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { Link, useNavigation, useRouter } from "expo-router";
 import Button from "@/ui/components/Button";
-import { useState } from "react";
 import Stack from "@/ui/components/Stack";
-import { RefreshCcw } from "lucide-react-native";
 
 export default function TabOneScreen() {
     const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 import { Platform } from "react-native";
 import { ScreenProps } from "react-native-screens";
 

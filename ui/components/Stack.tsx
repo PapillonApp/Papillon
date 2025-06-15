@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ViewProps, ViewStyle, StyleSheet, FlexAlignType } from "react-native";
+import { FlexAlignType,StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 
 // Types pour la direction et l'alignement
 type Direction = "vertical" | "horizontal";
