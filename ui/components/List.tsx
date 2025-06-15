@@ -1,8 +1,9 @@
+import { useTheme } from "@react-navigation/native";
+import React, { useCallback,useMemo } from "react";
 import { ViewProps } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+
 import { Animation } from "../utils/Animation";
-import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useCallback } from "react";
 import Item from "./Item";
 
 interface ListProps extends ViewProps {
@@ -40,7 +41,7 @@ const DEFAULT_PADDING = {
 
 // Fonction utilitaire mémoïsée pour vérifier si un style a du padding
 const hasPaddingStyle = (style: any): boolean => {
-  if (!style || typeof style !== 'object') return false;
+  if (!style || typeof style !== 'object') {return false;}
   if (Array.isArray(style)) {
     return style.some(s => hasPaddingStyle(s));
   }

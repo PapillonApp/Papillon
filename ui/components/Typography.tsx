@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
-import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 import React from "react";
+import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 
 const VARIANTS = StyleSheet.create({
   body1: {

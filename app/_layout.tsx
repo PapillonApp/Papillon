@@ -1,15 +1,16 @@
+import 'react-native-reanimated';
+import "@/utils/i18n";
+
 import { ThemeProvider } from '@react-navigation/native';
-import { DefaultTheme, DarkTheme } from '@/utils/theme/Theme';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
-import "@/utils/i18n";
-import { screenOptions } from '@/utils/theme/ScreenOptions';
-
 import * as SystemUI from 'expo-system-ui';
+import { useEffect } from 'react';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
+
+import { screenOptions } from '@/utils/theme/ScreenOptions';
+import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -36,7 +37,7 @@ export default function RootLayout() {
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) {throw error;}
   }, [error]);
 
   useEffect(() => {

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
@@ -7,9 +5,9 @@ import {
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
-import { Platform } from 'react-native';
-
+import React from 'react';
 import { useTranslation } from "react-i18next";
+import { Platform } from 'react-native';
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 

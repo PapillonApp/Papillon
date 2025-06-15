@@ -1,10 +1,11 @@
-import { ActivityIndicator, Pressable, PressableProps } from "react-native";
-import Typography from "./Typography";
-import React, { useCallback, useMemo } from "react";
 import { useTheme } from "@react-navigation/native";
-import Reanimated, { FadeIn, FadeOut, LinearTransition, useSharedValue, useAnimatedStyle, withSpring, withTiming, Easing } from "react-native-reanimated";
+import React, { useCallback, useMemo } from "react";
+import { ActivityIndicator, Pressable, PressableProps } from "react-native";
+import Reanimated, { Easing,FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+
 import { Animation } from "../utils/Animation";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
+import Typography from "./Typography";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 

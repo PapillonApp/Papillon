@@ -7,7 +7,14 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], plugins: { js }, extends: ["js/recommended"] },
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], languageOptions: { globals: globals.browser } },
+  {
+    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    languageOptions: {
+      globals: Object.fromEntries(
+        Object.entries(globals.browser).map(([key, value]) => [key.trim(), value])
+      )
+    }
+  },
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
