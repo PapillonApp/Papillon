@@ -1,4 +1,5 @@
-import { AlertTriangle } from "lucide-react-native";
+import { useTheme } from "@react-navigation/native";
+import { Code } from "lucide-react-native";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -6,8 +7,9 @@ import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 
-function UnderConstructionNotice() {
+function DevModeNotice() {
     const { t } = useTranslation();
+    const { colors } = useTheme();
 
     return (
         <List disablePadding>
@@ -22,17 +24,17 @@ function UnderConstructionNotice() {
                     hAlign="center"
                     padding={10}
                     inline
-                    backgroundColor="#EFA40035"
-                    radius={30}
+                    backgroundColor={colors.primary + "25"}
+                    radius={15}
                 >
-                    <AlertTriangle strokeWidth={2} size={24} color="#c28500" />
+                    <Code strokeWidth={2} size={27} color={colors.primary} />
                 </Stack>
                 <Stack gap={2} vAlign="center" hAlign="center">
                     <Typography align="center" variant="h4">
-                        {t("TabUnderConstruction_Title")}
+                        {t("TabDevModeNotice_Title")}
                     </Typography>
                     <Typography align="center" variant="body1" color="secondary">
-                        {t("TabUnderConstruction_Details")}
+                        {t("TabDevModeNotice_Details")}
                     </Typography>
                 </Stack>
             </Stack>
@@ -40,4 +42,4 @@ function UnderConstructionNotice() {
     );
 }
 
-export default memo(UnderConstructionNotice);
+export default memo(DevModeNotice);

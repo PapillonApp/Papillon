@@ -1,6 +1,6 @@
-import { ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
+import { EyeIcon, SparkleIcon } from "lucide-react-native";
 import { useState } from "react";
-import React, { Alert, Image, ScrollView, StyleSheet, Switch, View } from "react-native";
+import React, { Image, ScrollView, StyleSheet, Switch } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Button from "@/ui/components/Button";
@@ -8,6 +8,7 @@ import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
+import { log } from "@/utils/logger/logger";
 
 export default function TabOneScreen() {
     const [showFranck, setShowFranck] = useState(false);
@@ -27,7 +28,7 @@ export default function TabOneScreen() {
                     </Typography>
                     <Trailing>
                         <Switch
-                            style={{ marginRight: 0 }}
+                            style={{ marginRight: 10 }}
                             value={showFranck}
                             onValueChange={setShowFranck}
                         />
@@ -66,7 +67,7 @@ export default function TabOneScreen() {
                             inline
                             size="small"
                             icon={<SparkleIcon />}
-                            onPress={() => Alert.alert("Action", "Action pressed for Item 1")}
+                            onPress={() => log("Action pressed for Item 1")}
                         />
                     </Trailing>
                 </Item>

@@ -9,5 +9,8 @@
   "Tab_Page": "Page",
 
   "TabUnderConstruction_Title": "This tab is under construction.",
-  "TabUnderConstruction_Details": "Please check back later for updates."
+  "TabUnderConstruction_Details": "Please check back later for updates.",
+
+  "TabDevModeNotice_Title": "DevMode",
+  "TabDevModeNotice_Details": "Full-featured test environment for developers."
 }

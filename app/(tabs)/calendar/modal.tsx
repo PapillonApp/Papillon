@@ -1,13 +1,12 @@
-import { MenuComponentRef,MenuView } from '@react-native-menu/menu';
+import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import { CalendarArrowDown, MoreVertical } from "lucide-react-native";
-import { useEffect } from "react";
-import React, { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { MoreVertical } from "lucide-react-native";
+import React, { Platform, Pressable, ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 
-export default function TabOneScreen({}) {
+export default function TabOneScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   
