@@ -219,10 +219,10 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
                           color={button.color ? button.color : "primary"}
                           variant={button.principal ? "primary" : "light"}
                           style={{
-                            borderRadius: isLast ? 0 : 12,
+                            borderRadius: isLast ? 0 : 10,
                             ...(isLast && {
-                              borderTopLeftRadius: 6,
-                              borderTopRightRadius: 6,
+                              borderTopLeftRadius: 10,
+                              borderTopRightRadius: 10,
                               borderBottomLeftRadius: 27,
                               borderBottomRightRadius: 27,
                             }),
