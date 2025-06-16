@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useLogStore } from '../../stores/logs/index'
-const format = "[%TYPE%][%DATE%][%FROM%] %MESSAGE%";
+const format = "[%DATE%][%FROM%] %MESSAGE%";
 
 const typeList = ["LOG", "ERROR", "WARN", "INFO", "NAV"];
 
@@ -37,7 +37,7 @@ function saveLog(log: string) {
 
 function log(message: string, from?: string): void {
   const entry = getMessage(0, getIsoDate(), obtainFunctionName(from), message);
-  saveLog(entry);
+  saveLog(message);
   console.log(entry);
 }
 
