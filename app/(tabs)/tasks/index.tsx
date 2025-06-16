@@ -1,8 +1,9 @@
-import { EyeIcon, SparkleIcon } from "lucide-react-native";
+import { AlertCircle, ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
 import { useState } from "react";
-import React, { Image, ScrollView, StyleSheet, Switch } from "react-native";
+import React, { Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
+import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
@@ -12,7 +13,8 @@ import { log } from "@/utils/logger/logger";
 
 export default function TabOneScreen() {
     const [showFranck, setShowFranck] = useState(false);
-
+    const { showAlert, hideAlert } = useAlert();
+    
     return (
         <ScrollView
             contentInsetAdjustmentBehavior="automatic"
@@ -67,7 +69,30 @@ export default function TabOneScreen() {
                             inline
                             size="small"
                             icon={<SparkleIcon />}
-                            onPress={() => log("Action pressed for Item 1")}
+                            onPress={() => showAlert({
+                            title: "Votre établissement ne répond plus",
+                            message: "Les données ne seront plus mises à jour",
+                            expandedDescription: "Impossible de se connecter à votre compte PRONOTE. Vérifiez que l'établissement est correctement accessible",
+                            expandedIllustration: <View style={{width: "100%", height: "100%", backgroundColor: "#D600461A", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                                <Image
+                                    source={{ uri: "https://i.ibb.co/KzrS1MMd/Group-11.png" }}
+                                    style={{width: 229, height: 56}}
+                                />
+                            </View>,
+                            buttons: [
+                                {
+                                    label: "Réessayer de se connecter",
+                                    onPress: () => {log("Réessayer de se connecter")},
+                                    principal: true,
+                                    color: "cherry"
+                                },
+                                {
+                                    label: "Annuler",
+                                    onPress: () => {hideAlert()},
+                                    color: "cherry"
+                                }
+                            ]
+                            })}
                         />
                     </Trailing>
                 </Item>
