@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import 'react-native-reanimated';
 import "@/utils/i18n";
 
@@ -6,8 +7,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import { useEffect } from 'react';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
+import { StatusBar, useColorScheme } from 'react-native';
 
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
@@ -17,6 +18,7 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
+// eslint-disable-next-line camelcase
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
@@ -27,6 +29,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
+    
     light: require('../assets/fonts/SNPro-Light.ttf'),
     regular: require('../assets/fonts/SNPro-Regular.ttf'),
     medium: require('../assets/fonts/SNPro-Medium.ttf'),
@@ -69,6 +72,7 @@ function RootLayoutNav() {
               }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="page" />
+        <Stack.Screen name="devmode" options={{ headerTitle: "DevMode", headerBackButtonDisplayMode: "minimal",  }} />
       </Stack>
     </ThemeProvider>
   );

@@ -6,5 +6,13 @@ export interface LogsStorage {
 export interface Log {
     date: string,
     message: string,
-    type: "LOG" | "WARN" | "ERROR" | "INFO"
+    type: LogType
+    from?: string,
+}
+
+export enum LogType {
+    LOG = "LOG",
+    WARN = "WARN",
+    ERROR = "ERROR",
+    INFO = "INFO"
 }

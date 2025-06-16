@@ -1,4 +1,4 @@
-import React, { ScrollView, StyleSheet, View } from "react-native";
+import React, { ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 

@@ -1,13 +1,13 @@
-import { MenuComponentRef,MenuView } from '@react-native-menu/menu';
+import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
-import { CalendarArrowDown, MoreVertical, Plus } from "lucide-react-native";
-import { useEffect } from "react";
-import React, { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { MoreVertical, Plus } from "lucide-react-native";
+import React, { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
+import { log } from '@/utils/logger/logger';
 
-export default function TabOneScreen({}) {
+export default function TabOneScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   
@@ -21,17 +21,17 @@ export default function TabOneScreen({}) {
               Alert.alert("Pressé !", "Vous avez appuyé sur le bouton d'ajout.", [
                 {
                   text: "OK",
-                  onPress: () => console.log("OK Pressed"),
+                  onPress: () => log("OK Pressed"),
                   isPreferred: true,
                 },
                 {
                   text: "Quoicoubeh",
-                  onPress: () => console.log("Quoicoubeh Pressed"),
+                  onPress: () => log("Quoicoubeh Pressed"),
                   style: "cancel",
                 },
                 {
                   text: "Apayinye",
-                  onPress: () => console.log("Quoicoubeh Pressed"),
+                  onPress: () => log("Quoicoubeh Pressed"),
                   style: "destructive",
                 },
               ]);

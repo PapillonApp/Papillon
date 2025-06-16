@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { LogType } from '@/stores/logs/types';
+
 import { useLogStore } from '../../stores/logs/index'
 const format = "[%DATE%][%FROM%] %MESSAGE%";
 
@@ -36,35 +38,35 @@ function obtainFunctionName(from?: string): string {
   return functionName;
 }
 
-function saveLog(date: string, message: string, type: "LOG" | "WARN" | "ERROR" | "INFO") {
-  useLogStore.getState().addItem({ date, message, type });
+function saveLog(date: string, message: string, type: LogType, from?: string) {
+  useLogStore.getState().addItem({ date, message, from, type });
 }
 
 function log(message: string, from?: string): void {
   const date = getIsoDate()
   const entry = getMessage(0, date, obtainFunctionName(from), message);
-  saveLog(date, message, "LOG");
+  saveLog(date, message, LogType.LOG, from);
   console.log(entry);
 }
 
 function error(message: string, from?: string): void {
   const date = getIsoDate()
   const entry = getMessage(1, date, obtainFunctionName(from), message);
-  saveLog(date, entry, "ERROR");
+  saveLog(date, message, LogType.ERROR, from);
   console.error(entry);
 }
 
 function warn(message: string, from?: string): void {
   const date = getIsoDate()
   const entry = getMessage(2, date, obtainFunctionName(from), message);
-  saveLog(date, entry, "WARN");
+  saveLog(date, message, LogType.WARN, from);
   console.warn(entry);
 }
 
 function info(message: string, from?: string): void {
   const date = getIsoDate()  
   const entry = getMessage(3, date, obtainFunctionName(from), message);
-  saveLog(date, entry, "INFO");
+  saveLog(date, message, LogType.INFO, from);
   console.info(entry);
 }
 

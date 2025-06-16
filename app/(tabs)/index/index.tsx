@@ -1,7 +1,6 @@
-import { Link, useNavigation, useRouter } from "expo-router";
-import { RefreshCcw } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import React, { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Button from "@/ui/components/Button";
@@ -23,6 +22,11 @@ export default function TabOneScreen() {
                 <Button
                     title="Click Me"
                     onPress={() => router.navigate("/page")}
+                />
+
+                <Button
+                    title="Papillon DevMode"
+                    onPress={() => router.navigate("/devmode")}
                 />
 
                 <Button
