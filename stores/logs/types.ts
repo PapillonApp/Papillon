@@ -1,4 +1,10 @@
 export interface LogsStorage {
-    logs: string[]
-    addItem: (log: string) => void;
+    logs: Log[]
+    addItem: (log: Log) => void;
+}
+
+export interface Log {
+    date: string,
+    message: string,
+    type: "LOG" | "WARN" | "ERROR" | "INFO"
 }
