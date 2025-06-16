@@ -10,7 +10,7 @@ import Typography from "./Typography";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'outline' | 'light';
-type Color = 'primary' | 'text' | 'light' | 'danger';
+export type Color = 'primary' | 'text' | 'light' | 'danger';
 type Size = 'small' | 'medium' | 'large';
 
 interface ButtonProps extends PressableProps {

@@ -1,6 +1,6 @@
 import { AlertCircle, ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
 import { useState } from "react";
-import React, { Image, ScrollView, StyleSheet, Switch } from "react-native";
+import React, { Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -13,7 +13,7 @@ import { log } from "@/utils/logger/logger";
 
 export default function TabOneScreen() {
     const [showFranck, setShowFranck] = useState(false);
-    const { showAlert } = useAlert();
+    const { showAlert, hideAlert } = useAlert();
     
     return (
         <ScrollView
@@ -72,16 +72,24 @@ export default function TabOneScreen() {
                             onPress={() => showAlert({
                             title: "Votre établissement ne répond plus",
                             message: "Les données ne seront plus mises à jour",
-                            expandedView: null,
+                            expandedDescription: "Impossible de se connecter à votre compte PRONOTE. Vérifiez que l'établissement est correctement accessible",
+                            expandedIllustration: <View style={{width: "100%", height: "100%", backgroundColor: "#D600461A", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                                <Image
+                                    source={{ uri: "https://i.ibb.co/KzrS1MMd/Group-11.png" }}
+                                    style={{width: 229, height: 56}}
+                                />
+                            </View>,
                             buttons: [
                                 {
                                     label: "Réessayer de se connecter",
-                                    onPress: () => {console.log("Réessayer de se connecter")},
-                                    principal: true
+                                    onPress: () => {log("Réessayer de se connecter")},
+                                    principal: true,
+                                    color: "danger"
                                 },
                                 {
                                     label: "Annuler",
-                                    onPress: () => {console.log("Réessayer de se connecter")}
+                                    onPress: () => {hideAlert()},
+                                    color: "danger"
                                 }
                             ]
                             })}
