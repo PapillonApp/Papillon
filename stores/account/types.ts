@@ -7,6 +7,9 @@
 export interface AccountsStorage {
     lastUsedAccount: string;
     accounts : Account[]
+    removeAccount: (account: Account) => void;
+    addAccount: (account: Account) => void;
+    setLastUsedAccount: (accountId: string) => void;
 }
 
 /**
