@@ -50,8 +50,7 @@ export interface ServiceAccount {
     auth: Auth;
     createdAt: string;
     updatedAt: string;
-    firstName?: string;
-    lastName?: string;
+    additionals?: Record<string, string>;
 }
 
 /**
