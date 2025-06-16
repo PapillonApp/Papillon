@@ -1,3 +1,4 @@
+import { AlertProvider } from "@/ui/components/AlertProvider";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,

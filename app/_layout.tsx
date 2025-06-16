@@ -8,10 +8,11 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import React, { useEffect } from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
 
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
+import { AlertProvider } from '@/ui/components/AlertProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -66,14 +67,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName='(tabs)' screenOptions={{
-                  ...screenOptions,
-                  headerBackButtonDisplayMode: "minimal",
-              }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="page" />
-        <Stack.Screen name="devmode" options={{ headerTitle: "DevMode", headerBackButtonDisplayMode: "minimal",  }} />
-      </Stack>
+      <AlertProvider>
+        <Stack initialRouteName='(tabs)' screenOptions={{
+                    ...screenOptions,
+                    headerBackButtonDisplayMode: "minimal",
+        }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="page" />
+          <Stack.Screen name="devmode" options={{ headerTitle: "DevMode", headerBackButtonDisplayMode: "minimal",  }} />
+        </Stack>
+      </AlertProvider>
     </ThemeProvider>
   );
 }
