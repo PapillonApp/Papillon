@@ -10,7 +10,6 @@ import { useLogStore } from '@/stores/logs';
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Typography from "@/ui/components/Typography";
-import { error, log, warn } from '@/utils/logger/logger';
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -100,18 +99,6 @@ export default function Devmode() {
             <Typography variant="title">Charger plus</Typography>
           </Item>
         )}
-      </List>
-
-      <List>
-        <Item onPress={() => log("Log entry added from DevMode", "dfgf")}>
-          <Typography variant="title">Ajouter un LOG</Typography>
-        </Item>
-        <Item onPress={() => warn("Log entry added from DevMode", "dfgf")}>
-          <Typography variant="title">Ajouter un WARN</Typography>
-        </Item>
-        <Item onPress={() => error("Log entry added from DevMode", "dfgf")}>
-          <Typography variant="title">Ajouter une ERROR</Typography>
-        </Item>
       </List>
     </ScrollView>
   );
