@@ -9,5 +9,8 @@
   "Tab_Page": "Page",
 
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
-  "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour."
+  "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour.",
+
+  "TabDevModeNotice_Title": "Mode Développement",
+  "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs."
 }

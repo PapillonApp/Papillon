@@ -3,8 +3,8 @@ import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Switch } from "react-native";
 
+import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
-import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { useAccountStore } from '@/stores/account';
 import { useLogStore } from '@/stores/logs';
 import Item, { Leading, Trailing } from '@/ui/components/Item';
@@ -41,7 +41,7 @@ export default function Devmode() {
       contentContainerStyle={styles.containerContent}
       style={styles.container}
     >
-      <UnderConstructionNotice />
+      <DevModeNotice />
 
       <List>
         <Item>
@@ -76,17 +76,21 @@ export default function Devmode() {
         </Item>
 
         {showLogsStore &&
-          logsStore.logs.slice(0, visibleLogsCount).map((logEntry, index) => (
-            <Item key={index}>
-              <Leading>
-                <LogIcon type={logEntry.type} />
-              </Leading>
-              <Typography variant="body2">{logEntry.message}</Typography>
-              <Typography variant="caption">
-                {logEntry.from} - {logEntry.type} - {new Date(logEntry.date).toLocaleString()}
-              </Typography>
-            </Item>
-          ))}
+          logsStore.logs
+            .slice()
+            .reverse()
+            .slice(0, visibleLogsCount)
+            .map((logEntry, index) => (
+              <Item key={index}>
+          <Leading>
+            <LogIcon type={logEntry.type} />
+          </Leading>
+          <Typography variant="body2">{logEntry.message}</Typography>
+          <Typography variant="caption">
+            {logEntry.from ?? "UNKNOW"} - {logEntry.type} - {new Date(logEntry.date).toLocaleString()}
+          </Typography>
+              </Item>
+            ))}
 
         {showLogsStore && visibleLogsCount < logsStore.logs.length && (
           <Item onPress={loadMoreLogs}>
