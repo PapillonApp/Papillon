@@ -204,7 +204,8 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
                   )}
                   <View style={styles.expandedContent}>
                     <Typography variant="h5">{alert?.title}</Typography>
-                    <Typography variant="body1" color="secondary">
+                    <Typography variant="body2" color="secondary" style={{ width: "100%" }}
+                    >
                       {alert?.expandedDescription}
                     </Typography>
                   </View>
@@ -287,20 +288,20 @@ const styles = StyleSheet.create({
   expandedContainer: {
     flexDirection: "column",
     width: "100%",
-    gap: 20,
+    gap: 15,
   },
   illustrationWrapper: {
     width: "100%",
     height: 175,
     borderTopLeftRadius: 27,
     borderTopRightRadius: 27,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     overflow: "hidden",
   },
   expandedContent: {
     flexDirection: "column",
-    paddingHorizontal: 15,
+    paddingHorizontal: 13,
   },
   buttonGroup: {
     width: "100%",

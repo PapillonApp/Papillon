@@ -84,12 +84,12 @@ export default function TabOneScreen() {
                                     label: "Réessayer de se connecter",
                                     onPress: () => {log("Réessayer de se connecter")},
                                     principal: true,
-                                    color: "danger"
+                                    color: "cherry"
                                 },
                                 {
                                     label: "Annuler",
                                     onPress: () => {hideAlert()},
-                                    color: "danger"
+                                    color: "cherry"
                                 }
                             ]
                             })}
