@@ -1,0 +1,69 @@
+/**
+ * Represents the storage structure for user accounts.
+ *
+ * @property {string} lastUsedAccount - The identifier of the most recently used account.
+ * @property {Account[]} accounts - An array of `Account` objects associated with the storage.
+ */
+export interface AccountsStorage {
+    lastUsedAccount: string;
+    accounts : Account[]
+}
+
+/**
+ * Represents a user account.
+ *
+ * @property {string} id - Unique identifier for the account (read-only).
+ * @property {string} firstName - The user's first name.
+ * @property {string} lastName - The user's last name.
+ * @property {string} [schoolName] - (Optional) The name of the user's school.
+ * @property {ServiceAccount[]} services - List of service accounts associated with this account.
+ * @property {string} createdAt - ISO string representing the account creation date (stored as string due to MMKV limitations).
+ * @property {string} updatedAt - ISO string representing the last update date (stored as string due to MMKV limitations).
+ */
+export interface Account {
+    readonly id: string;
+    firstName: string;
+    lastName: string;
+    schoolName?: string;
+    services: ServiceAccount[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+/**
+ * Represents a service account.
+ *
+ * @property {string} id - Unique identifier for the service account.
+ * @property {Services} serviceId - Identifier for the associated service.
+ * @property {Auth} auth - Authentication details for the account (access token, refresh token...).
+ * @property {string} createdAt - ISO string representing the account creation date (stored as string due to MMKV limitations).
+ * @property {string} updatedAt - ISO string representing the last update date (stored as string due to MMKV limitations).
+ * @property {string} [firstName] - Optional first name of the account holder.
+ * @property {string} [lastName] - Optional last name of the account holder.
+ */
+export interface ServiceAccount {
+    readonly id: string;
+    serviceId: Services;
+    auth: Auth;
+    createdAt: string;
+    updatedAt: string;
+    firstName?: string;
+    lastName?: string;
+}
+
+/**
+ * Represents authentication credentials and additional metadata.
+ *
+ * @property {string} [accessToken] - Optional access token used for authentication.
+ * @property {string} [refreshToken] - Optional refresh token used to obtain new access tokens.
+ * @property {string} [additionals] - Optional record containing additional authentication-related key-value pairs.
+ */
+export interface Auth {
+    accessToken?: string;
+    refreshToken?: string;
+    additionals?: Record<string, string>;
+}
+
+export enum Services {
+    PRONOTE = 1
+}
