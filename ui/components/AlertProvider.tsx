@@ -97,7 +97,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const hideAlert = () => {
-    scale.value = withTiming(1, { duration: 100 });
+    scale.value = withTiming(0.8, { duration: 100 });
     blur.value = withTiming(0, { duration: 200 });
     opacity.value = withTiming(0, {
       duration: 100,
