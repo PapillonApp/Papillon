@@ -86,7 +86,7 @@ export default function Devmode() {
           </Leading>
           <Typography variant="body2">{logEntry.message}</Typography>
           <Typography variant="caption">
-            {logEntry.from ?? "UNKNOW"} - {logEntry.type} - {new Date(logEntry.date).toLocaleString()}
+            {new Date(logEntry.date).toLocaleString()} - {logEntry.from ?? "UNKNOW"}
           </Typography>
               </Item>
             ))}
