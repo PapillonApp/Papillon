@@ -1,5 +1,4 @@
 import { BlurView } from 'expo-blur';
-import { X } from "lucide-react-native";
 import React, {
   createContext,
   ReactNode,
@@ -40,6 +39,8 @@ type Alert = {
   expandedDescription: string;
   expandedIllustration?: React.ReactNode;
   buttons: AlertButton[];
+  icon?: React.ReactNode
+  iconBackgroundColor?: string;
 };
 
 type AlertContextType = {
@@ -179,15 +180,11 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
             >
               {!isExpanded ? (
                 <>
-                  <View style={styles.iconContainer}>
-                    <X
-                      width={20}
-                      height={20}
-                      color="white"
-                      strokeWidth={3}
-                      absoluteStrokeWidth
-                    />
-                  </View>
+                  {alert?.icon ? (
+                    <View style={[styles.iconContainer, alert.iconBackgroundColor && { backgroundColor: alert.iconBackgroundColor }]}>
+                      {alert.icon}
+                    </View>
+                  ) : null}
                   <View>
                     <Typography variant="title">{alert?.title}</Typography>
                     <Typography variant="body2" color="secondary">
