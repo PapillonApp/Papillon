@@ -1,4 +1,3 @@
-import { AlertProvider } from "@/ui/components/AlertProvider";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
@@ -9,6 +8,8 @@ import { withLayoutContext } from "expo-router";
 import React from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
+
+import { AlertProvider } from "@/ui/components/AlertProvider";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -26,13 +27,13 @@ export default function TabLayout() {
 
   return (
     <Tabs
-    sidebarAdaptable
-    hapticFeedbackEnabled
-    labeled={true}
-    tabLabelStyle={{
-      fontFamily: 'semibold',
-      fontSize: 12,
-    }}
+      sidebarAdaptable
+      hapticFeedbackEnabled
+      labeled={true}
+      tabLabelStyle={{
+        fontFamily: 'semibold',
+        fontSize: 12,
+      }}
     >
       <Tabs.Screen
         name="index"

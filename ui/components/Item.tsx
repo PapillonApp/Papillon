@@ -137,7 +137,7 @@ function ItemComponent({
 
   const contentStyle = useMemo(() => 
     contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE,
-    [contentContainerStyle]
+  [contentContainerStyle]
   );
 
   return (
