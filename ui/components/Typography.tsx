@@ -94,8 +94,8 @@ const Typography: React.FC<TypographyProps> = ({
       {...rest}
       style={[
         { color: (typeof color === 'string' && color in colorsList)
-            ? colorsList[color as Color]
-            : color },
+          ? colorsList[color as Color]
+          : color },
         { textAlign: align },
         VARIANTS[variant],
         style,

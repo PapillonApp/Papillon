@@ -10,9 +10,9 @@ import * as SystemUI from 'expo-system-ui';
 import React, { useEffect } from 'react';
 import { Platform, StatusBar, useColorScheme } from 'react-native';
 
+import { AlertProvider } from '@/ui/components/AlertProvider';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
-import { AlertProvider } from '@/ui/components/AlertProvider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -69,8 +69,8 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AlertProvider>
         <Stack initialRouteName='(tabs)' screenOptions={{
-                    ...screenOptions,
-                    headerBackButtonDisplayMode: "minimal",
+          ...screenOptions,
+          headerBackButtonDisplayMode: "minimal",
         }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="page" />
