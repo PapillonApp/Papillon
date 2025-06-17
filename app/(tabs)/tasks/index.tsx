@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
+import { EyeIcon, SparkleIcon, X } from "lucide-react-native";
 import { useState } from "react";
 import React, { Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 
@@ -91,12 +91,14 @@ export default function TabOneScreen() {
                                     onPress: () => {hideAlert()},
                                     color: "cherry"
                                 }
-                            ]
+                            ],
+                            icon: <X width={16} height={16} color={"white"} absoluteStrokeWidth={true} strokeWidth={3} />
                             })}
                         />
                     </Trailing>
                 </Item>
             </List>
+
         </ScrollView>
     );
 }
