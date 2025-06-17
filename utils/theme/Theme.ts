@@ -14,7 +14,7 @@ export const DefaultTheme = {
   colors: {
     ...NativeDefaultTheme.colors,
     primary: PrimaryAccentColor.light,
-    background: "#F5F5F5",
+    background: "#FFFFFF",
     text: "#000000",
     card: "#FFFFFF",
   },

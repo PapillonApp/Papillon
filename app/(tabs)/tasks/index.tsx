@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowUpSquare, EyeIcon, SparkleIcon } from "lucide-react-native";
+import { EyeIcon, SparkleIcon } from "lucide-react-native";
 import { useState } from "react";
 import React, { Image, ScrollView, StyleSheet, Switch, View } from "react-native";
 

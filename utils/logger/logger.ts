@@ -44,29 +44,33 @@ function saveLog(date: string, message: string, type: LogType, from?: string) {
 
 function log(message: string, from?: string): void {
   const date = getIsoDate()
-  const entry = getMessage(0, date, obtainFunctionName(from), message);
-  saveLog(date, message, LogType.LOG, from);
+  const functionName = obtainFunctionName(from)
+  const entry = getMessage(0, date, functionName, message);
+  saveLog(date, message, LogType.LOG, functionName);
   console.log(entry);
 }
 
 function error(message: string, from?: string): void {
   const date = getIsoDate()
-  const entry = getMessage(1, date, obtainFunctionName(from), message);
-  saveLog(date, message, LogType.ERROR, from);
+  const functionName = obtainFunctionName(from)
+  const entry = getMessage(1, date, functionName, message);
+  saveLog(date, message, LogType.ERROR, functionName);
   console.error(entry);
 }
 
 function warn(message: string, from?: string): void {
   const date = getIsoDate()
-  const entry = getMessage(2, date, obtainFunctionName(from), message);
-  saveLog(date, message, LogType.WARN, from);
+  const functionName = obtainFunctionName(from)
+  const entry = getMessage(2, date, functionName, message);
+  saveLog(date, message, LogType.WARN, functionName);
   console.warn(entry);
 }
 
 function info(message: string, from?: string): void {
-  const date = getIsoDate()  
-  const entry = getMessage(3, date, obtainFunctionName(from), message);
-  saveLog(date, message, LogType.INFO, from);
+  const date = getIsoDate()
+  const functionName = obtainFunctionName(from)
+  const entry = getMessage(3, date, functionName, message);
+  saveLog(date, message, LogType.INFO, functionName);
   console.info(entry);
 }
 
