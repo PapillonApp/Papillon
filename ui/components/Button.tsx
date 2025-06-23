@@ -79,22 +79,22 @@ const Button: React.FC<ButtonProps> = React.memo(({
 
   const backgroundColor = useMemo(() => {
     switch (variant) {
-      case 'outline':
-        return 'transparent';
-      case 'light':
-        return colorsList[color as Color] + '30';
-      case 'primary':
-      default:
-        return colorsList[color as Color];
+    case 'outline':
+      return 'transparent';
+    case 'light':
+      return colorsList[color as Color] + '30';
+    case 'primary':
+    default:
+      return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
 
   const textColor = useMemo(() => {
     switch (variant) {
-      case 'primary':
-        return colorsList.light;
-      default:
-        return colorsList[color as Color];
+    case 'primary':
+      return colorsList.light;
+    default:
+      return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
 

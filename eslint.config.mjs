@@ -18,10 +18,11 @@ export default defineConfig([
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
-     plugins: {
+    plugins: {
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      "indent": ["error", 2],
       "no-duplicate-imports": "error",
       "no-self-compare": "error",
       "no-template-curly-in-string": "warn",

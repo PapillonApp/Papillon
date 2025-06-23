@@ -27,12 +27,12 @@ export default function Devmode() {
   };
 
   useEffect(() => {
-  if (!showLogsStore) {
-    setVisibleLogsCount(20);
-  }
+    if (!showLogsStore) {
+      setVisibleLogsCount(20);
+    }
 
 
-}, [showLogsStore]);
+  }, [showLogsStore]);
 
   return (
     <ScrollView
@@ -81,20 +81,20 @@ export default function Devmode() {
             .slice(0, visibleLogsCount)
             .map((logEntry, index) => (
               <Item key={index}>
-          <Leading>
-            <LogIcon type={logEntry.type} />
-          </Leading>
-          <Typography variant="body2">{logEntry.message}</Typography>
-          <Typography variant="caption">
-            {new Date(logEntry.date).toLocaleString()} - {logEntry.from ?? "UNKNOW"}
-          </Typography>
+                <Leading>
+                  <LogIcon type={logEntry.type} />
+                </Leading>
+                <Typography variant="body2">{logEntry.message}</Typography>
+                <Typography variant="caption">
+                  {new Date(logEntry.date).toLocaleString()} - {logEntry.from ?? "UNKNOW"}
+                </Typography>
               </Item>
             ))}
 
         {showLogsStore && visibleLogsCount < logsStore.logs.length && (
           <Item onPress={loadMoreLogs}>
             <Leading>
-                <Plus color={colors.text} size={24} />
+              <Plus color={colors.text} size={24} />
             </Leading>
             <Typography variant="title">Charger plus</Typography>
           </Item>

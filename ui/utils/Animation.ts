@@ -16,11 +16,11 @@ const PapillonList = (a: any) =>
 
 export const Animation = (animation?: any, style?: AnimationStyle) => {
   switch (style) {
-    case "spring":
-      return PapillonSpring(animation);
-    case "list":
-      return PapillonList(animation);
-    default:
-      return PapillonSpring(animation);
+  case "spring":
+    return PapillonSpring(animation);
+  case "list":
+    return PapillonList(animation);
+  default:
+    return PapillonSpring(animation);
   }
 };

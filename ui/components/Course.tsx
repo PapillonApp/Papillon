@@ -5,6 +5,7 @@ import { Path, Svg } from "react-native-svg";
 
 import { formatDuration } from "../utils/Duration";
 import Icon from "./Icon";
+import Stack from "./Stack";
 import Typography from "./Typography";
 
 type Variant = 'primary' | 'separator';
@@ -43,70 +44,73 @@ const Course = React.memo(({
 
   return (
     <Pressable style={{width: "100%", display: "flex", gap: 4}} onPress={onPress}>
-        { status?.canceled && variant !== "separator" && (
-            <View style={styles.importantBox}>
-                <Typography color="danger" variant="h4" style={styles.room}>
-                    {status.label}
-                </Typography>
-            </View>
-        )}
-        <View
-            style={[
-                styles.container,
-                status?.canceled && variant !== "separator" ? styles.importantContainer : null,
-                { backgroundColor: color },
-                status?.canceled || variant === "separator" ? styles.canceled : null,
-                containerStyle,
-            ]}
-        >
-        <View style={styles.nameContainer}>
-            <View style={{ display: "flex", flexDirection: "row", gap: 10}}>
-                {variant === "separator" && Leading && (
-                    <Icon>
-                        <Leading stroke={"#606060"}/>
-                    </Icon>
-                )}
-                <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
-                    {name}
-                </Typography>
-            </View>
-            {variant === "separator" && Leading && (
-                <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
-                    {formatDuration(duration)}
-                </Typography>
-            )}
+      { status?.canceled && variant !== "separator" && (
+        <View style={styles.importantBox}>
+          <Typography color="danger" variant="h4" style={styles.room}>
+            {status.label}
+          </Typography>
         </View>
+      )}
+      <Stack
+        gap={4}
+        direction="vertical"
+        radius={18}
+        style={[
+          styles.container,
+          status?.canceled && variant !== "separator" ? styles.importantContainer : {},
+          { backgroundColor: color },
+          status?.canceled || variant === "separator" ? styles.canceled : {},
+          ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
+        ]}
+      >
+        <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
+          <View style={{ display: "flex", flexDirection: "row", gap: 10}}>
+            {variant === "separator" && Leading && (
+              <Icon>
+                <Leading stroke={"#606060"}/>
+              </Icon>
+            )}
+            <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
+              {name}
+            </Typography>
+          </View>
+          {variant === "separator" && Leading && (
+            <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
+              {formatDuration(duration)}
+            </Typography>
+          )}
+        </Stack>
         {variant !== "separator" && (
-            <View style={styles.row}>
-                <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
-                <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
-                {room}
-                </Typography>
-                <View
-                style={[
-                    styles.separator,
-                    { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
-                ]}
-                />
-                <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
-                <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-                {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
-                </Typography>
-            </View>
+          <Stack direction="horizontal" hAlign="center" gap={12}>
+            <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
+            <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+              {room}
+            </Typography>
+            <View
+              style={[
+                styles.separator,
+                { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
+              ]}
+            />
+            <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
+            <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
+              {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
+            </Typography>
+          </Stack>
         )}
         {status && !status.canceled && variant !== "separator" && (
-            <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
-                <View style={styles.statusLabelContainer}>
-                <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                    {status.label}
-                </Typography>
-                </View>
-                <Typography color="light" variant="h4" style={[styles.statusDuration]}>
-                    {formatDuration(duration)}
-                </Typography>
-            </View>
+          <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
+            <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+              <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                {status.label}
+              </Typography>
+            </Stack>
+            <Typography color="light" variant="h4" style={[styles.statusDuration]}>
+              {formatDuration(duration)}
+            </Typography>
+          </View>
         )}
-        </View>
+      </Stack>
     </Pressable>
   );
 });
@@ -134,13 +138,6 @@ const FilledCircleUser: React.FC<{ color?: string }> = ({ color = "white" }) => 
 };
 
 const styles = StyleSheet.create({
-  nameContainer: {
-    display: "flex",
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
   importantBox: {
     width: "100%",
     paddingHorizontal: 16,
@@ -152,12 +149,8 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "100%",
-    borderRadius: 18,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    display: "flex",
-    flexDirection: "column",
-    gap: 4,
     alignSelf: "stretch"
   },
   canceled: {
@@ -167,12 +160,6 @@ const styles = StyleSheet.create({
   importantContainer: {
     borderTopRightRadius: 6,
     borderTopLeftRadius: 6
-  },
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
   },
   room: {
     fontSize: 18,
@@ -191,16 +178,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   statusLabelContainer: {
-    display: "flex",
     width: "auto",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 300,
     paddingHorizontal: 8,
     paddingVertical: 4
   },
   statusDuration: {
-        fontSize: 15,
-        color: "#FFFFFF80"
+    fontSize: 15,
+    color: "#FFFFFF80"
   }
 });
 
