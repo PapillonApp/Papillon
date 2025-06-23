@@ -18,6 +18,10 @@ const Calendar: React.FC<CalendarProps> = ({
   showDatePicker,
   setShowDatePicker,
 }) => {
+  if(Platform.OS === 'android') {
+    return null;
+  }
+
   const [date, setDate] = useState(initialDate);
   const insets = useSafeAreaInsets();
 
@@ -61,7 +65,7 @@ const Calendar: React.FC<CalendarProps> = ({
             mode="date"
             display="inline"
             onChange={handleChange}
-            style={{ width: "100%", marginTop: -10, marginHorizontal: 10 }}
+            style={{ width: "100%", marginTop: -6, marginHorizontal: 10 }}
           />
         </List>
       </View>
