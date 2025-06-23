@@ -1,4 +1,3 @@
- 
 import { Platform } from "react-native";
 import { ScreenProps } from "react-native-screens";
 
@@ -6,6 +5,10 @@ import { ScreenProps } from "react-native-screens";
 export const screenOptions: any = {
   headerLargeTitle: true,
   headerTransparent: Platform.OS === "ios" && parseInt(Platform.Version) >= 26,
+  headerBackButtonDisplayMode:
+    Platform.OS === "ios" && parseInt(Platform.Version) < 26
+      ? undefined
+      : "minimal",
   headerTitleStyle: {
     fontFamily: "semibold",
     fontSize: Platform.OS === "ios" ? 18 : 20,
