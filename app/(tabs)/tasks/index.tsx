@@ -13,7 +13,7 @@ import { log } from "@/utils/logger/logger";
 
 export default function TabOneScreen() {
   const [showFranck, setShowFranck] = useState(false);
-  const { showAlert, hideAlert } = useAlert();
+  const { showAlert } = useAlert();
     
   return (
     <ScrollView
@@ -72,26 +72,19 @@ export default function TabOneScreen() {
               onPress={() => showAlert({
                 title: "Votre établissement ne répond plus",
                 message: "Les données ne seront plus mises à jour",
-                expandedDescription: "Impossible de se connecter à votre compte PRONOTE. Vérifiez que l'établissement est correctement accessible",
-                expandedIllustration: <View style={{width: "100%", height: "100%", backgroundColor: "#D600461A", display: "flex", alignItems: "center", justifyContent: "center"}}>
-                  <Image
-                    source={{ uri: "https://i.ibb.co/KzrS1MMd/Group-11.png" }}
-                    style={{width: 229, height: 56}}
-                  />
-                </View>,
-                buttons: [
+                description: "Impossible de se connecter à votre compte PRONOTE. Vérifiez que l'établissement est correctement accessible",
+                technical: JSON.stringify(
                   {
-                    label: "Réessayer de se connecter",
-                    onPress: () => {log("Réessayer de se connecter")},
-                    principal: true,
-                    color: "cherry"
+                    "error": "NetworkError(Simulation)",
+                    "message": "Unable to locate the server endpoint",
+                    "code": "NETWORK_ERROR",
+                    "timestamp": "${new Date().toISOString()}",
+                    "endpoint": "https://example.com/api/v3/pronote?params=0350053t",
                   },
-                  {
-                    label: "Annuler",
-                    onPress: () => {hideAlert()},
-                    color: "cherry"
-                  }
-                ]
+                  null,
+                  2),
+                icon: "AlertTriangleIcon",
+                color: "#FF0000",
               })}
             />
           </Trailing>
