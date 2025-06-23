@@ -12,5 +12,7 @@
   "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour.",
 
   "TabDevModeNotice_Title": "Mode Développement",
-  "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs."
+  "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs.",
+
+  "Alert_TechnicalDetails": "Détails techniques"
 }

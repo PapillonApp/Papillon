@@ -13,6 +13,7 @@ import { Platform, StatusBar, useColorScheme } from 'react-native';
 import { AlertProvider } from '@/ui/components/AlertProvider';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -66,6 +67,7 @@ function RootLayoutNav() {
   }, [colorScheme]);
 
   return (
+    <GestureHandlerRootView>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AlertProvider>
         <Stack initialRouteName='(tabs)' screenOptions={{
@@ -75,8 +77,19 @@ function RootLayoutNav() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="page" />
           <Stack.Screen name="devmode" options={{ headerTitle: "DevMode", headerBackButtonDisplayMode: "minimal",  }} />
+          <Stack.Screen name="alert"
+            options={{
+              headerShown: false,
+              presentation: 'formSheet',
+              sheetAllowedDetents: 'fitToContents',
+              sheetGrabberVisible: false,
+              sheetExpandsWhenScrolledToEdge: false,
+              sheetInitialDetentIndex: 0,
+            }}
+          />
         </Stack>
       </AlertProvider>
     </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
