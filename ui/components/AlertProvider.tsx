@@ -25,6 +25,7 @@ import Animated, {
 
 import Button, { Color } from './Button';
 import Typography from "./Typography";
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 
 type AlertButton = {
   label: string;
@@ -160,6 +161,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
         <AnimatedBlurView
           style={styles.modalContainer}
           animatedProps={animatedProps}
+          entering={PapillonAppearIn}
         >
           <Pressable style={styles.modalOverlay} onPress={hideAlert} />
           <AnimatedPressable
@@ -170,11 +172,10 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
             <Animated.View
               style={[
                 styles.box,
-                animatedStyle,
                 {
                   borderRadius: boxBorderRadius,
                   paddingHorizontal: boxHorizontalPadding,
-                  backgroundColor: isExpanded ? "#FFFFFF" : "#FFFFFF95"
+                  backgroundColor: isExpanded ? "#FFFFFF" : "#FFFFFF95",
                 },
               ]}
             >
@@ -244,6 +245,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     position: "relative",
+    transformOrigin: "center bottom",
   },
   modalOverlay: {
     position: "absolute",
