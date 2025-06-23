@@ -3,6 +3,7 @@ import { View, Platform } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import List from "./List";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 export interface CalendarProps {
   date?: Date;
@@ -52,6 +53,8 @@ const Calendar: React.FC<CalendarProps> = ({
             maxWidth: "90%",
             transformOrigin: "top center",
           }}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
         >
           <DateTimePicker
             value={date}
