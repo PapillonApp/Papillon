@@ -42,13 +42,6 @@ import { useTheme } from '@react-navigation/native';
 import { AlertTriangle } from 'lucide-react-native';
 import { useNavigation, useRouter } from 'expo-router';
 
-type AlertButton = {
-  label: string;
-  onPress: () => void;
-  principal?: boolean;
-  color?: Color;
-};
-
 type Alert = {
   title: string;
   message?: string;
