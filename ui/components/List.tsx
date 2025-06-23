@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback,useMemo } from "react";
 import { ViewProps } from "react-native";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
+import Reanimated, { EntryOrExitLayoutType, LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import Item from "./Item";
@@ -10,6 +10,8 @@ interface ListProps extends ViewProps {
   children?: React.ReactNode;
   disablePadding?: boolean;
   contentContainerStyle?: ViewProps['style'];
+  entering?: EntryOrExitLayoutType;
+  exiting?: EntryOrExitLayoutType;
 }
 
 // Configuration d'animation mémoïsée pour éviter les re-créations
@@ -60,6 +62,8 @@ const List: React.FC<ListProps> = React.memo(({
   disablePadding = false, 
   style, 
   contentContainerStyle, 
+  entering,
+  exiting,
   ...rest 
 }) => {
   const { colors } = useTheme();
@@ -152,6 +156,8 @@ const List: React.FC<ListProps> = React.memo(({
     <Reanimated.View
       layout={LAYOUT_ANIMATION}
       style={containerStyle}
+      entering={entering}
+      exiting={exiting}
       {...rest}
     >
       {childrenData.map(renderChild)}
