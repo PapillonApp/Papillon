@@ -1,3 +1,4 @@
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
@@ -26,6 +27,11 @@ const VARIANTS = StyleSheet.create({
   },
   title: {
     fontSize: 17,
+    fontFamily: "semibold",
+    lineHeight: 24,
+  },
+  navigation: {
+    fontSize: screenOptions.headerTitleStyle.fontSize || 18,
     fontFamily: "semibold",
     lineHeight: 24,
   },
