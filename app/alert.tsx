@@ -28,7 +28,8 @@ export default function AlertModal() {
   return (
     <View
       style={{
-        padding: 16,
+        padding: 18,
+        paddingTop: 20,
         justifyContent: "flex-start",
         alignItems: "flex-start",
         gap: 22,
