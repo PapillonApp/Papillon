@@ -28,16 +28,20 @@ export default function AlertModal() {
   return (
     <View
       style={{
-        padding: 16,
+        padding: 18,
+        paddingTop: 20,
         justifyContent: "flex-start",
         alignItems: "flex-start",
         gap: 22,
         marginBottom: Platform.OS === 'ios' ? -32 : 0,
+        alignSelf: "center",
+        maxWidth: 500,
       }}
     >
       <View
         style={{
           width: "100%",
+          minWidth: "100%",
           height: 160,
           backgroundColor: params.color ? params.color + "22" : "#ccc",
           borderRadius: 24,
@@ -133,8 +137,10 @@ export default function AlertModal() {
         style={{
           paddingHorizontal: 6,
           gap: 8,
-          width: "100%",
           marginBottom: 4,
+          minWidth: "100%",
+          alignSelf: "stretch",
+          flex: 1
         }}
         layout={LinearTransition.duration(200).easing(Easing.inOut(Easing.quad))}
       >
