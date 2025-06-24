@@ -1,5 +1,4 @@
 import { Platform } from "react-native";
-import { ScreenProps } from "react-native-screens";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const screenOptions: any = {

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+bun.lock
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+.expo/
+android/build/
+ios/build/
+
+# Generated files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Platform specific
+android/
+ios/Pods/
+ios/Papillon.xcworkspace/
+ios/Papillon.xcodeproj/
+
+# Patches
+patches/
