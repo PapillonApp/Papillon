@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { View, Platform } from "react-native";
+import { View, Platform, Pressable } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import List from "./List";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Localization from "expo-localization";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+import * as Haptics from "expo-haptics";
+import { useTheme } from "@react-navigation/native";
 
 export interface CalendarProps {
   date?: Date;
@@ -24,38 +27,50 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const [date, setDate] = useState(initialDate);
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   const handleChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     onDateChange?.(currentDate);
-    if (Platform.OS === "android") setShowDatePicker(false);
+    if (Platform.OS === "android") {setShowDatePicker(false);}
   };
 
-  if (!showDatePicker) return null;
+  React.useEffect(() => {
+    if (showDatePicker) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [showDatePicker]);
+
+  if (!showDatePicker) {return null;}
 
   return (
-    <View
+    <Pressable
+      onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
         top: insets.top + 48,
         zIndex: 99999,
         width: "100%",
+        height: "100%",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         shadowColor: "#000",
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
+        shadowOpacity: 0.4,
+        shadowRadius: 20,
         shadowOffset: { width: 0, height: 2 },
       }}
     >
-      <View>
+      <View style={{ pointerEvents: "box-none" }}>
         <List
           disablePadding
           style={{
             overflow: "hidden",
             maxWidth: "90%",
             transformOrigin: "top center",
+            maxHeight: 320,
+            borderColor: colors.text + "26",
+            borderWidth: 0.5,
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
@@ -64,12 +79,13 @@ const Calendar: React.FC<CalendarProps> = ({
             value={date}
             mode="date"
             display="inline"
+            locale={Localization.locale}
             onChange={handleChange}
-            style={{ width: "100%", marginTop: -6, marginHorizontal: 10 }}
+            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
           />
         </List>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
