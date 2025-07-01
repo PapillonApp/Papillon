@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
 import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
@@ -10,22 +10,57 @@ interface NativeHeaderTopPressableProps {
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   layout?: ((values: { current: unknown; next: unknown }) => object) | undefined;
+  disabled?: boolean;
+  testID?: string;
 }
 
-export default function NativeHeaderTopPressable({ onPress, children, style, layout }: NativeHeaderTopPressableProps) {
+const baseStyle: ViewStyle = { flexDirection: "row", gap: 4, alignItems: "center" };
+
+const NativeHeaderTopPressable = React.memo(function NativeHeaderTopPressable({
+  onPress,
+  children,
+  style,
+  layout,
+  disabled = false,
+  testID,
+}: NativeHeaderTopPressableProps) {
   const opacity = useSharedValue(1);
+
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-  }));
+  }), []);
+
+  const handlePressIn = useCallback(() => {
+    if (opacity.value !== 0.4) {
+      opacity.value = withTiming(0.4, { duration: 50 });
+    }
+  }, [opacity]);
+
+  const handlePressOut = useCallback(() => {
+    if (opacity.value !== 1) {
+      opacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [opacity]);
+
+  const handlePress = useCallback(() => {
+    if (onPress) onPress();
+  }, [onPress]);
 
   return (
     <AnimatedPressable
-      onPressIn={() => { opacity.value = withTiming(0.4, { duration: 50 }); if (onPress) { onPress(); } }}
-      onPressOut={() => { opacity.value = withTiming(1, { duration: 200 }); }}
-      style={[{ flexDirection: "row", gap: 4, alignItems: "center" }, animatedStyle, style]}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={handlePress}
+      style={[baseStyle, animatedStyle, style]}
       layout={layout ?? Animation(LinearTransition)}
+      disabled={disabled}
+      testID={testID}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
     >
       {children}
     </AnimatedPressable>
   );
-}
+});
+
+export default NativeHeaderTopPressable;

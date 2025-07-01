@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback } from "react";
 import { useNavigation } from "expo-router";
 import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType } from "react-native";
 import Typography from "./Typography";
@@ -48,17 +48,24 @@ interface NativeSideProps extends ViewProps {
 
 const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, ...props }: NativeSideProps) {
   const navigation = useNavigation();
+  // Memoize children and props for stable dependencies
   const memoChildren = useMemo(() => children, [children]);
+  const memoProps = useMemo(() => props, [props]);
 
   useEffect(() => {
+    // Only set options if children or props change
     navigation.setOptions({
       [`header${side}`]: () => (
-        <View style={styles.side} {...props}>
+        <View style={styles.side} {...memoProps}>
           {memoChildren}
         </View>
       ),
     });
-  }, [memoChildren, navigation, side, props]);
+    // Clean up on unmount
+    return () => {
+      navigation.setOptions({ [`header${side}`]: undefined });
+    };
+  }, [memoChildren, memoProps, navigation, side]);
 
   return null;
 });
@@ -81,35 +88,41 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
 }: NativeHeaderTitleProps) {
   const navigation = useNavigation();
   const memoChildren = useMemo(() => children, [children]);
+  const memoProps = useMemo(() => props, [props]);
+  // Memoize search handler
+  const handleSearch = useCallback(
+    (e: any) => {
+      if (onSearch) onSearch(e.nativeEvent.text);
+    },
+    [onSearch]
+  );
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <View style={styles.title} {...props}>
+        <View style={styles.title} {...memoProps}>
           {memoChildren}
         </View>
       ),
       headerLargeTitle: headerLargeTitle,
-      headerSearchBarOptions: search ? {
-        placeholder: placeholder,
-        onChangeText: (e) => {
-          if (onSearch) {
-            onSearch(e.nativeEvent.text);
+      headerSearchBarOptions: search
+        ? {
+            placeholder: placeholder,
+            onChangeText: handleSearch,
           }
-        }
-      } : undefined,
+        : undefined,
     });
     return () => {
-      navigation.setOptions({ headerTitle: undefined });
+      navigation.setOptions({ headerTitle: undefined, headerLargeTitle: undefined, headerSearchBarOptions: undefined });
     };
-  }, [memoChildren, navigation, headerLargeTitle, props]);
+  }, [memoChildren, memoProps, navigation, headerLargeTitle, search, placeholder, handleSearch]);
 
   return null;
 });
 
 const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: PressableProps) {
-  // Correction du typage pour la prop style
-  const composedStyle = React.useCallback(
+  // Memoize style callback for performance
+  const composedStyle = useCallback(
     (state: PressableStateCallbackType) => {
       if (typeof props.style === 'function') {
         const styleResult = props.style(state);
@@ -119,9 +132,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
     },
     [props.style]
   );
-  return (
-    <Pressable {...props} style={composedStyle} />
-  );
+  return <Pressable {...props} style={composedStyle} />;
 });
 
 interface NativeHeaderHighlightProps extends ViewProps {
@@ -130,12 +141,11 @@ interface NativeHeaderHighlightProps extends ViewProps {
 }
 
 const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({ children, color = "#29947A", ...props }: NativeHeaderHighlightProps) {
+  // Memoize background color for performance
   const backgroundColor = useMemo(() => color + "22", [color]);
+  const mergedStyle = useMemo(() => [styles.highlight, { backgroundColor }, props.style], [backgroundColor, props.style]);
   return (
-    <View
-      style={[styles.highlight, { backgroundColor }, props.style]}
-      {...props}
-    >
+    <View style={mergedStyle} {...props}>
       {typeof children === 'string' ? (
         <Typography variant="navigation" style={{ color: color }}>
           {children}

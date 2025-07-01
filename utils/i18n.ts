@@ -14,7 +14,7 @@ const languageDetector = {
   type: "languageDetector",
   async: true,
   detect: (cb: (lang: string) => void) => {
-    const detectedLang = Localization.locale.split("-")[0];
+    const detectedLang = Localization.getLocales()[0].languageTag.split("-")[0];
     cb(Object.keys(resources).includes(detectedLang) ? detectedLang : "en");
   },
 };
@@ -25,7 +25,7 @@ i18n
   .init({
     resources,
     fallbackLng: "en",
-    lng: Localization.locale.split("-")[0],
+    lng: Localization.getLocales()[0].languageTag.split("-")[0],
     interpolation: { escapeValue: false },
     detection: {
       order: ["languageDetector"],

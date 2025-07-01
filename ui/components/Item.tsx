@@ -1,24 +1,20 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback,useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Pressable, PressableProps } from "react-native";
-import Reanimated, { Easing,LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import Reanimated, { Easing, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming, runOnJS } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
+const LAYOUT_ANIMATION = Animation(LinearTransition, "list");
 
-const LAYOUT_ANIMATION = Animation(LinearTransition, "list")
-
-export const LEADING_TYPE = Symbol('Leading');
-export const TRAILING_TYPE = Symbol('Trailing');
+export const LEADING_TYPE = Symbol("Leading");
+export const TRAILING_TYPE = Symbol("Trailing");
 
 function Leading({ children, ...rest }: PressableProps) {
   return (
-    <AnimatedPressable
-      {...rest}
-      layout={LAYOUT_ANIMATION}
-    >
+    <AnimatedPressable {...rest} layout={LAYOUT_ANIMATION}>
       {children}
     </AnimatedPressable>
   );
@@ -26,84 +22,129 @@ function Leading({ children, ...rest }: PressableProps) {
 
 function Trailing({ children, ...rest }: PressableProps) {
   return (
-    <AnimatedPressable
-      {...rest}
-      layout={LAYOUT_ANIMATION}
-    >
+    <AnimatedPressable {...rest} layout={LAYOUT_ANIMATION}>
       {children}
     </AnimatedPressable>
   );
 }
 
-// Mémoïser les composants
 const MemoizedLeading = React.memo(Leading);
 const MemoizedTrailing = React.memo(Trailing);
-
-// Ajouter les symbols aux composants pour l'identification
 (MemoizedLeading as any).__ITEM_TYPE__ = LEADING_TYPE;
 (MemoizedTrailing as any).__ITEM_TYPE__ = TRAILING_TYPE;
 
 interface ListProps extends PressableProps {
   children?: React.ReactNode;
   animate?: boolean;
-  contentContainerStyle?: PressableProps['style'];
+  contentContainerStyle?: PressableProps["style"];
   isLast?: boolean;
 }
 
-const DEFAULT_CONTAINER_STYLE = {
-  flexDirection: 'row' as const,
-  alignItems: 'center' as const,
-  width: '100%' as const,
+const DEFAULT_CONTAINER_STYLE = Object.freeze({
+  flexDirection: "row" as const,
+  alignItems: "center" as const,
+  width: "100%" as const,
   paddingVertical: 12,
   paddingHorizontal: 16,
   gap: 16,
-};
+});
 
-const DEFAULT_CONTENT_STYLE = {
-  flexDirection: 'column' as const,
+const DEFAULT_CONTENT_STYLE = Object.freeze({
+  flexDirection: "column" as const,
   flex: 1,
-};
+});
 
-function ItemComponent({
-  children,
-  contentContainerStyle,
-  style,
-  animate,
-  onPressIn,
-  onPressOut,
-  isLast = false,
-  ...rest
-}: ListProps) {
-  const { colors } = useTheme();
+function areEqual(prev: ListProps, next: ListProps) {
+  // Quick reference equality check
+  if (prev === next) return true;
   
-  // Animation scale et opacity
+  // Check non-children props
+  const prevKeys = Object.keys(prev) as Array<keyof ListProps>;
+  const nextKeys = Object.keys(next) as Array<keyof ListProps>;
+  
+  if (prevKeys.length !== nextKeys.length) return false;
+  
+  for (const key of prevKeys) {
+    if (key === "children") continue;
+    if (prev[key] !== next[key]) return false;
+  }
+  
+  // Children comparison
+  return prev.children === next.children;
+}
+
+const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function ItemComponent(
+  {
+    children,
+    contentContainerStyle,
+    style,
+    animate,
+    onPressIn,
+    onPressOut,
+    isLast = false,
+    ...rest
+  },
+  ref
+) {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
+  const isAnimatingRef = useRef(false);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }), []);
 
   const handlePressIn = useCallback((event: any) => {
-    "use worklet";
-    scale.value = withTiming(0.97, { duration: 100, easing: Easing.out(Easing.exp) });
-    opacity.value = withTiming(0.7, { duration: 50, easing: Easing.out(Easing.exp) });
-    onPressIn?.(event);
+    'worklet';
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    
+    scale.value = withTiming(0.97, { 
+      duration: 100, 
+      easing: Easing.out(Easing.exp) 
+    });
+    opacity.value = withTiming(0.7, { 
+      duration: 50, 
+      easing: Easing.out(Easing.exp) 
+    });
+    
+    if (onPressIn) {
+      runOnJS(onPressIn)(event);
+    }
   }, [scale, opacity, onPressIn]);
 
   const handlePressOut = useCallback((event: any) => {
-    "use worklet";
-    scale.value = withSpring(1, { mass: 1, damping: 20, stiffness: 300 });
-    opacity.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
-    onPressOut?.(event);
+    'worklet';
+    const resetAnimating = () => {
+      isAnimatingRef.current = false;
+    };
+    
+    scale.value = withSpring(1, { 
+      mass: 1, 
+      damping: 20, 
+      stiffness: 300 
+    }, () => {
+      runOnJS(resetAnimating)();
+    });
+    opacity.value = withTiming(1, { 
+      duration: 150, 
+      easing: Easing.out(Easing.ease) 
+    });
+    
+    if (onPressOut) {
+      runOnJS(onPressOut)(event);
+    }
   }, [scale, opacity, onPressOut]);
 
-  // Optimisation : Fonction de tri des enfants optimisée
   const sortedChildren = useMemo(() => {
+    if (!children) return { leading: [], trailing: [], others: [] };
+    
     const leading: React.ReactNode[] = [];
     const trailing: React.ReactNode[] = [];
     const others: React.ReactNode[] = [];
-
+    
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child)) {
         const childType = (child.type as any)?.__ITEM_TYPE__;
@@ -118,27 +159,31 @@ function ItemComponent({
         others.push(child);
       }
     });
-
+    
     return { leading, trailing, others };
   }, [children]);
 
-  // Optimisation : Styles mémoïsés plus efficaces
   const borderStyle = useMemo(() => {
-    return !isLast ? {
+    if (isLast) return {};
+    return {
       borderBottomWidth: 0.5,
-      borderBottomColor: colors.text + "25", // 25 = opacity de 15%
-    } : {};
+      borderBottomColor: `${colors.text}25`, // 25 = 15% opacity in hex
+    };
   }, [isLast, colors.text]);
 
   const containerStyle = useMemo(() => {
-    const baseStyle = style ? [DEFAULT_CONTAINER_STYLE, style] : DEFAULT_CONTAINER_STYLE;
-    return [baseStyle, animatedStyle];
+    return [DEFAULT_CONTAINER_STYLE, style, animatedStyle];
   }, [style, animatedStyle]);
 
-  const contentStyle = useMemo(() => 
-    contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE,
-  [contentContainerStyle]
-  );
+  const contentStyle = useMemo(() => {
+    return contentContainerStyle
+      ? [DEFAULT_CONTENT_STYLE, contentContainerStyle]
+      : DEFAULT_CONTENT_STYLE;
+  }, [contentContainerStyle]);
+
+  const hasLeading = sortedChildren.leading.length > 0;
+  const hasTrailing = sortedChildren.trailing.length > 0;
+  const hasOthers = sortedChildren.others.length > 0;
 
   return (
     <Reanimated.View
@@ -149,24 +194,26 @@ function ItemComponent({
     >
       <AnimatedPressable
         {...rest}
+        ref={ref as any}
         layout={LAYOUT_ANIMATION}
         style={containerStyle}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        {sortedChildren.leading}
-        <Reanimated.View style={contentStyle as any}>
-          {sortedChildren.others}
-        </Reanimated.View>
-        {sortedChildren.trailing}
+        {hasLeading && sortedChildren.leading}
+        {hasOthers && (
+          <Reanimated.View style={contentStyle as any}>
+            {sortedChildren.others}
+          </Reanimated.View>
+        )}
+        {hasTrailing && sortedChildren.trailing}
       </AnimatedPressable>
     </Reanimated.View>
   );
-}
+});
 
-// Mémoïser le composant Item
-const Item = React.memo(ItemComponent);
-Item.displayName = 'Item';
+const Item = React.memo(ItemComponent, areEqual);
+Item.displayName = "Item";
 
 export default Item;
 export { MemoizedLeading as Leading, MemoizedTrailing as Trailing };
