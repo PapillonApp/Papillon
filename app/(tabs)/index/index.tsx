@@ -21,7 +21,7 @@ export default function TabOneScreen() {
 
         <Button
           title="Click Me"
-          onPress={() => router.navigate("/page")}
+          onPress={() => router.navigate("/demo")}
         />
 
         <Button
