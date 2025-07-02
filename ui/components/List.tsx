@@ -1,17 +1,20 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useRef } from "react";
-import { ViewProps, StyleProp, ViewStyle } from "react-native";
+import React, { useMemo, useCallback, useState } from "react";
+import { ViewProps, StyleProp, ViewStyle, ListRenderItemInfo } from "react-native";
 import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
+import { LegendList } from "@legendapp/list";
 
 import { Animation } from "../utils/Animation";
 import Item from "./Item";
 
 interface ListProps extends ViewProps {
+  data?: any[]; // Accept data array for large lists
   children?: React.ReactNode;
   disablePadding?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
   entering?: EntryExitTransition;
   exiting?: EntryExitTransition;
+  disableItemAnimation?: boolean; // NEW: disables Reanimated.View for each item
 }
 
 // Memoized animation config - frozen for immutability
@@ -114,6 +117,7 @@ const areChildrenEqual = (prevChildren: React.ReactNode, nextChildren: React.Rea
 
 const List: React.FC<ListProps> = React.memo(
   ({
+    data,
     children,
     disablePadding = false,
     style,
@@ -124,11 +128,6 @@ const List: React.FC<ListProps> = React.memo(
   }) => {
     const { colors } = useTheme();
     
-    // Use refs to track previous values for optimization
-    const prevChildrenRef = useRef<React.ReactNode>(null);
-    const prevDisablePaddingRef = useRef<boolean>(false);
-    const prevChildrenDataRef = useRef<ChildMeta[] | null>(null);
-
     // Memoize container style with stable object references
     const containerStyle = useMemo(() => {
       const baseStyle = {
@@ -137,62 +136,6 @@ const List: React.FC<ListProps> = React.memo(
       };
       return style ? [baseStyle, style] : baseStyle;
     }, [colors.card, style]);
-
-    // Optimized children metadata with aggressive memoization
-    const childrenData: ChildMeta[] = useMemo(() => {
-      // Skip recalculation if children and disablePadding haven't changed
-      if (
-        prevChildrenRef.current === children &&
-        prevDisablePaddingRef.current === disablePadding &&
-        prevChildrenDataRef.current
-      ) {
-        return prevChildrenDataRef.current;
-      }
-
-      const childrenArray = React.Children.toArray(children);
-      const count = childrenArray.length;
-      
-      const result = childrenArray.map((child, index) => {
-        if (!React.isValidElement(child)) {
-          return {
-            child,
-            isValidElement: false,
-            needsPadding: false,
-            borderBottomWidth: 0,
-            key: index,
-            isItem: false,
-            isLast: false,
-          } as const;
-        }
-        
-        const childProps = child.props as any;
-        const hasDisabledPadding = childProps?.disableListPadding;
-        const isItem = isItemComponent(child);
-        const hasStylePadding = hasPaddingStyle(childProps?.style);
-        const needsPadding =
-          !disablePadding &&
-          !hasDisabledPadding &&
-          !isItem &&
-          !hasStylePadding;
-        
-        return {
-          child,
-          isValidElement: true,
-          needsPadding,
-          borderBottomWidth: !isItem && index < count - 1 ? BORDER_BOTTOM_WIDTH : 0,
-          key: child.key ?? index,
-          isItem,
-          isLast: index === count - 1,
-        } as const;
-      });
-
-      // Cache the result
-      prevChildrenRef.current = children;
-      prevDisablePaddingRef.current = disablePadding;
-      prevChildrenDataRef.current = result;
-      
-      return result;
-    }, [children, disablePadding]);
 
     // Memoize border color with hex optimization
     const borderBottomColor = useMemo(() => `${colors.text}${OPACITY_HEX}`, [colors.text]);
@@ -205,55 +148,148 @@ const List: React.FC<ListProps> = React.memo(
         : [contentContainerStyle] as ViewStyle[];
     }, [contentContainerStyle]);
 
-    // Render each child with optimized style creation
-    const renderChild = useCallback(
-      (childData: ChildMeta) => {
-        if (!childData.isValidElement) {
-          return childData.child;
+    // --- OPTIMIZED DATA PREPARATION ---
+    // If data prop is provided and already in ChildMeta[] format, use it directly for best performance
+    const childrenData: ChildMeta[] = useMemo(() => {
+      if (data) {
+        // Fast path: if data is already ChildMeta[] (has 'child' and 'isValidElement'), use as is
+        if (data.length > 0 && typeof data[0] === 'object' && 'child' in data[0] && 'isValidElement' in data[0]) {
+          return data as ChildMeta[];
         }
-        
-        // Pre-build style array to avoid recreation
-        const itemStyle: ViewStyle[] = [BASE_ITEM_STYLE];
-        
-        // Add border style only if needed
-        if (childData.borderBottomWidth > 0) {
-          itemStyle.push({
-            borderBottomColor,
-            borderBottomWidth: childData.borderBottomWidth,
-          });
+        // Otherwise, map to ChildMeta
+        return data.map((item, index) => {
+          if (React.isValidElement(item)) {
+            const childProps = item.props as any;
+            const hasDisabledPadding = childProps?.disableListPadding;
+            const isItem = isItemComponent(item);
+            const hasStylePadding = hasPaddingStyle(childProps?.style);
+            const needsPadding =
+              !disablePadding &&
+              !hasDisabledPadding &&
+              !isItem &&
+              !hasStylePadding;
+            return {
+              child: item,
+              isValidElement: true,
+              needsPadding,
+              borderBottomWidth: !isItem && index < data.length - 1 ? BORDER_BOTTOM_WIDTH : 0,
+              key: item.key ?? index,
+              isItem,
+              isLast: index === data.length - 1,
+            } as const;
+          }
+          return {
+            child: item,
+            isValidElement: false,
+            needsPadding: false,
+            borderBottomWidth: 0,
+            key: index,
+            isItem: false,
+            isLast: false,
+          } as const;
+        });
+      }
+      // Fallback: children mode (for small lists)
+      const childrenArray = React.Children.toArray(children);
+      const count = childrenArray.length;
+      return childrenArray.map((child, index) => {
+        if (!React.isValidElement(child)) {
+          return {
+            child,
+            isValidElement: false,
+            needsPadding: false,
+            borderBottomWidth: 0,
+            key: index,
+            isItem: false,
+            isLast: false,
+          } as const;
         }
-        
-        // Add padding only if needed
-        if (childData.needsPadding) {
-          itemStyle.push(DEFAULT_PADDING);
-        }
-        
-        // Add content container styles if present
-        if (mergedContentContainerStyle) {
-          itemStyle.push(...mergedContentContainerStyle);
-        }
+        const childProps = child.props as any;
+        const hasDisabledPadding = childProps?.disableListPadding;
+        const isItem = isItemComponent(child);
+        const hasStylePadding = hasPaddingStyle(childProps?.style);
+        const needsPadding =
+          !disablePadding &&
+          !hasDisabledPadding &&
+          !isItem &&
+          !hasStylePadding;
+        return {
+          child,
+          isValidElement: true,
+          needsPadding,
+          borderBottomWidth: !isItem && index < count - 1 ? BORDER_BOTTOM_WIDTH : 0,
+          key: child.key ?? index,
+          isItem,
+          isLast: index === count - 1,
+        } as const;
+      });
+    }, [data, children, disablePadding]);
 
-        // Clone Item with isLast prop only if child accepts it
-        let childToRender = childData.child;
-        if (childData.isItem && React.isValidElement(childData.child)) {
-          childToRender = React.cloneElement(
-            childData.child as React.ReactElement<{ isLast?: boolean }>,
-            { isLast: childData.isLast }
+    // --- OPTIMIZED RENDER ITEM ---
+    // Precompute static styles for performance
+    const staticItemStyle = useMemo(() => [BASE_ITEM_STYLE, mergedContentContainerStyle].filter(Boolean), [mergedContentContainerStyle]);
+
+    // --- LAST VISIBLE INDEX STATE FOR VIRTUALIZED LISTS ---
+    const [lastVisibleIndex, setLastVisibleIndex] = useState<number | null>(null);
+
+    // Handler for visible items change (LegendList compatible)
+    const onViewableItemsChanged = useCallback((info: { viewableItems: { index: number }[] }) => {
+      if (info && info.viewableItems && info.viewableItems.length > 0) {
+        const maxIdx = Math.max(...info.viewableItems.map(i => i.index ?? -1));
+        setLastVisibleIndex(maxIdx);
+      }
+    }, []);
+
+    // For LegendList, renderItem receives { item, index }
+    const renderItem = useCallback(
+      ({ item, index }: { item: ChildMeta; index: number }) => {
+        const isLastVisible = lastVisibleIndex === index;
+        if (!item.isValidElement) {
+          return <React.Fragment key={item.key}>{item.child}</React.Fragment>;
+        }
+        // Precompute style array only for dynamic parts
+        let itemStyle = staticItemStyle;
+        if (item.borderBottomWidth > 0 || item.needsPadding) {
+          itemStyle = [...staticItemStyle];
+          if (item.borderBottomWidth > 0) {
+            itemStyle.push({ borderBottomColor, borderBottomWidth: item.borderBottomWidth });
+          }
+          if (item.needsPadding) {
+            itemStyle.push(DEFAULT_PADDING);
+          }
+        }
+        // Use plain View if animation is disabled
+        if (rest.disableItemAnimation) {
+          return (
+            <React.Fragment key={item.key}>
+              <Reanimated.View style={itemStyle}>
+                {React.isValidElement(item.child)
+                  ? React.cloneElement(item.child as any, { isLastVisible, isLast: item.isLast })
+                  : item.child}
+              </Reanimated.View>
+            </React.Fragment>
           );
         }
-
         return (
           <Reanimated.View
-            key={childData.key}
+            key={item.key}
             layout={LAYOUT_ANIMATION}
             style={itemStyle}
           >
-            {childToRender}
+            {React.isValidElement(item.child)
+              ? React.cloneElement(item.child as any, { isLastVisible, isLast: item.isLast })
+              : item.child}
           </Reanimated.View>
         );
       },
-      [borderBottomColor, mergedContentContainerStyle]
+      [borderBottomColor, staticItemStyle, rest.disableItemAnimation, lastVisibleIndex]
     );
+
+    const keyExtractor = useCallback((item: ChildMeta) => String(item.key), []);
+
+    // --- USE VIRTUALIZATION FOR LARGE LISTS ---
+    // If data prop is provided, enable virtualization
+    const useVirtualization = !!data;
 
     return (
       <Reanimated.View
@@ -263,7 +299,25 @@ const List: React.FC<ListProps> = React.memo(
         exiting={exiting}
         {...rest}
       >
-        {childrenData.map(renderChild)}
+        {useVirtualization ? (
+          <LegendList
+            data={childrenData}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+            recycleItems
+            estimatedItemSize={48} // Set to your average item height for best perf
+            onViewableItemsChanged={onViewableItemsChanged}
+          />
+        ) : (
+          <>
+            {childrenData.map((item, idx, arr) =>
+              renderItem({ item, index: idx })
+            )}
+          </>
+        )}
       </Reanimated.View>
     );
   },
@@ -275,7 +329,8 @@ const List: React.FC<ListProps> = React.memo(
       'contentContainerStyle',
       'entering',
       'exiting',
-      'style'
+      'style',
+      'data',
     ];
     
     for (const prop of propsToCompare) {
@@ -283,9 +338,9 @@ const List: React.FC<ListProps> = React.memo(
         return false;
       }
     }
-    
     // Compare children last (potentially slower)
-    return areChildrenEqual(prevProps.children, nextProps.children);
+    if (prevProps.children !== nextProps.children) return false;
+    return true;
   }
 );
 

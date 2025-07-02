@@ -32,7 +32,11 @@ export default function TabOneScreen() {
             <Switch
               style={{ marginRight: 10 }}
               value={showFranck}
-              onValueChange={setShowFranck}
+              onValueChange={() => {
+                requestAnimationFrame(() => {
+                  setShowFranck(!showFranck);
+                });
+              }}
             />
           </Trailing>
         </Item>

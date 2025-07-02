@@ -100,6 +100,12 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     'worklet';
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
+
+    if(!rest.onPress) {
+      // If no onPress handler, prevent default behavior
+      event.preventDefault();
+      return;
+    }
     
     scale.value = withTiming(0.97, { 
       duration: 100, 
