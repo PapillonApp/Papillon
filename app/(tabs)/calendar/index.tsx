@@ -12,7 +12,7 @@ import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 
 import { LinearTransition } from "react-native-reanimated";
 import { MenuView } from '@react-native-menu/menu';
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Calendar from "@/ui/components/Calendar";
 import { Dynamic } from "@/ui/components/Dynamic";
 
@@ -23,11 +23,17 @@ export default function TabOneScreen() {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
+  const toggleDatePicker = useCallback(() => {
+    setShowDatePicker((prev) => !prev);
+  }, []);
+
   return (
     <>
       <Calendar
         date={date}
-        onDateChange={setDate}
+        onDateChange={(newDate) => {
+          setDate(newDate);
+        }}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -64,15 +70,17 @@ export default function TabOneScreen() {
           </MenuView>
         </NativeHeaderSide>
 
-        <NativeHeaderTitle>
+        <NativeHeaderTitle
+          key={"header-" + date.toISOString()}
+        >
           <NativeHeaderTopPressable
-            onPress={() => setShowDatePicker(!showDatePicker)}
+            onPress={() => toggleDatePicker()}
             layout={Animation(LinearTransition)}
           >
             <Dynamic
-              key={date.toISOString()}
               animated
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              key={"picker-" + date.toISOString()}
             >
               <Typography variant="navigation">
                 {date.toLocaleDateString("fr-FR", {weekday: "long"})}
