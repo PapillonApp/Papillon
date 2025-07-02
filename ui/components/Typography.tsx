@@ -5,10 +5,10 @@ import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
-  regular: "SNPro-Regular",
-  medium: "SNPro-Medium",
-  semibold: "SNPro-Semibold",
-  bold: "SNPro-Bold",
+  regular: "regular",
+  medium: "medium",
+  semibold: "semibold",
+  bold: "bold",
 } as const;
 
 const VARIANTS = StyleSheet.create({

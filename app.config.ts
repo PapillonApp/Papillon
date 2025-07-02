@@ -25,6 +25,11 @@ module.exports = {
         backgroundColor: "#ffffff",
       },
       edgeToEdgeEnabled: true,
+      splash: {
+        image: "./assets/images/splash.png",
+        resizeMode: "cover",
+        backgroundColor: "#003A21",
+      },
     },
     web: {
       bundler: "metro",

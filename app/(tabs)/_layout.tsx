@@ -22,10 +22,13 @@ const Tabs = withLayoutContext<
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = Platform.OS === 'ios' && !Platform.isPad && parseInt(Platform.Version) >= 26;
+const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
 const ICONS = {
-  home: IS_IOS_WITH_PADDING ? require('@/assets/icons/home_padding.svg') : require('@/assets/icons/home.svg'),
+  home: IS_IOS_WITH_PADDING ?
+    require('@/assets/icons/home_padding.svg')
+  : require('@/assets/icons/home.svg'),
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
   tasks: IS_IOS_WITH_PADDING ? require('@/assets/icons/tasks_padding.svg') : require('@/assets/icons/tasks.svg'),
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
