@@ -59,7 +59,7 @@ const DEVMODE_SCREEN_OPTIONS = {
 } as const;
 
 const DEMO_SCREEN_OPTIONS = {
-  headerTitle: "Demo",
+  headerTitle: "Components Demo",
   headerBackButtonDisplayMode: "minimal" as const,
 }
 
