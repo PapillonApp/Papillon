@@ -48,7 +48,11 @@ export default function Devmode() {
             <Switch
               style={{ marginRight: 10 }}
               value={showAccountStore}
-              onValueChange={setShowAccountStore}
+              onValueChange={() => {
+                requestAnimationFrame(() => {
+                  setShowAccountStore(!showAccountStore);
+                });
+              }}
             />
           </Trailing>
           <Typography variant="title">Account Store</Typography>
@@ -68,7 +72,11 @@ export default function Devmode() {
             <Switch
               style={{ marginRight: 10 }}
               value={showLogsStore}
-              onValueChange={setShowLogsStore}
+              onValueChange={() => {
+                requestAnimationFrame(() => {
+                  setShowLogsStore(!showLogsStore);
+                });
+              }}
             />
           </Trailing>
           <Typography variant="title">Logs Store</Typography>

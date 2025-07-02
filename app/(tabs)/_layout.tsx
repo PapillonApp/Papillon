@@ -5,7 +5,7 @@ import {
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
 
@@ -20,66 +20,102 @@ const Tabs = withLayoutContext<
   NativeBottomTabNavigationEventMap
 >(BottomTabNavigator);
 
-const isiOS = Platform.OS === 'ios' && !Platform.isPad && parseInt(Platform.Version) >= 26;
+// Static platform detection - computed once at module load
+const IS_IOS_WITH_PADDING = Platform.OS === 'ios' && !Platform.isPad && parseInt(Platform.Version) >= 26;
 
-export default function TabLayout() {
+// Pre-load all icons to avoid runtime require() calls
+const ICONS = {
+  home: IS_IOS_WITH_PADDING ? require('@/assets/icons/home_padding.svg') : require('@/assets/icons/home.svg'),
+  calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
+  tasks: IS_IOS_WITH_PADDING ? require('@/assets/icons/tasks_padding.svg') : require('@/assets/icons/tasks.svg'),
+  grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
+  profile: IS_IOS_WITH_PADDING ? require('@/assets/icons/profile_padding.svg') : require('@/assets/icons/profile.svg'),
+} as const;
+
+// Static style object to prevent recreation on every render
+const TAB_LABEL_STYLE = {
+  fontFamily: 'semibold',
+  fontSize: 12,
+} as const;
+
+// Static icon functions to prevent recreation
+const getHomeIcon = () => ICONS.home;
+const getCalendarIcon = () => ICONS.calendar;
+const getTasksIcon = () => ICONS.tasks;
+const getGradesIcon = () => ICONS.grades;
+const getProfileIcon = () => ICONS.profile;
+
+// Custom hook for optimized tab translations
+const useTabTranslations = () => {
   const { t } = useTranslation();
+  
+  return useMemo(() => ({
+    home: t("Tab_Home"),
+    calendar: t("Tab_Calendar"),
+    tasks: t("Tab_Tasks"),
+    grades: t("Tab_Grades"),
+    profile: t("Tab_Profile"),
+  }), [t]);
+};
+
+function TabLayout() {
+  // Use optimized translation hook
+  const translations = useTabTranslations();
+
+  // Memoize screen options to prevent object recreation
+  const screenOptions = useMemo(() => ({
+    index: {
+      title: translations.home,
+      tabBarIcon: getHomeIcon,
+    },
+    calendar: {
+      title: translations.calendar,
+      tabBarIcon: getCalendarIcon,
+    },
+    tasks: {
+      title: translations.tasks,
+      tabBarIcon: getTasksIcon,
+    },
+    grades: {
+      title: translations.grades,
+      tabBarIcon: getGradesIcon,
+    },
+    profile: {
+      title: translations.profile,
+      tabBarIcon: getProfileIcon,
+    },
+  }), [translations]);
 
   return (
     <Tabs
       sidebarAdaptable
       hapticFeedbackEnabled
       labeled={true}
-      tabLabelStyle={{
-        fontFamily: 'semibold',
-        fontSize: 12,
-      }}
+      tabLabelStyle={TAB_LABEL_STYLE}
     >
       <Tabs.Screen
         name="index"
-        options={{
-          title: t("Tab_Home"),
-          tabBarIcon: () => 
-            isiOS ? require('@/assets/icons/home_padding.svg') :
-              require('@/assets/icons/home.svg'),
-        }}
+        options={screenOptions.index}
       />
       <Tabs.Screen
         name="calendar"
-        options={{
-          title: t("Tab_Calendar"),
-          tabBarIcon: () =>
-            isiOS ? require('@/assets/icons/calendar_padding.svg') :
-              require('@/assets/icons/calendar.svg'),
-        }}
+        options={screenOptions.calendar}
       />
       <Tabs.Screen
         name="tasks"
-        options={{
-          title: t("Tab_Tasks"),
-          tabBarIcon: () => 
-            isiOS ? require('@/assets/icons/tasks_padding.svg') :
-              require('@/assets/icons/tasks.svg'),
-        }}
+        options={screenOptions.tasks}
       />
       <Tabs.Screen
         name="grades"
-        options={{
-          title: t("Tab_Grades"),
-          tabBarIcon: () =>
-            isiOS ? require('@/assets/icons/results_padding.svg') :
-              require('@/assets/icons/results.svg'),
-        }}
+        options={screenOptions.grades}
       />
       <Tabs.Screen
         name="profile"
-        options={{
-          title: t("Tab_Profile"),
-          tabBarIcon: () =>
-            isiOS ? require('@/assets/icons/profile_padding.svg') :
-              require('@/assets/icons/profile.svg'),
-        }}
+        options={screenOptions.profile}
       />
     </Tabs>
   );
 }
+
+// Memoize the entire component to prevent unnecessary re-renders
+export default React.memo(TabLayout);

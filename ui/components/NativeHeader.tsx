@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigation } from "expo-router";
 import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType } from "react-native";
 import Typography from "./Typography";
 
-// Styles extraits pour éviter la recréation à chaque render
+// Pre-computed styles for maximum performance
 const styles = StyleSheet.create({
   side: {
     height: 36,
@@ -41,6 +41,33 @@ const styles = StyleSheet.create({
   },
 });
 
+// Pre-computed style arrays to avoid array creation on every render
+const PRESSABLE_STYLE_CACHE = new WeakMap();
+const getPressableStyle = (userStyle: any) => {
+  if (!userStyle) return styles.pressable;
+  if (PRESSABLE_STYLE_CACHE.has(userStyle)) {
+    return PRESSABLE_STYLE_CACHE.get(userStyle);
+  }
+  const combined = [styles.pressable, userStyle];
+  PRESSABLE_STYLE_CACHE.set(userStyle, combined);
+  return combined;
+};
+
+// Pre-computed color cache to avoid string concatenation
+const COLOR_CACHE = new Map();
+const getBackgroundColor = (color: string) => {
+  if (COLOR_CACHE.has(color)) {
+    return COLOR_CACHE.get(color);
+  }
+  const bgColor = color + "22";
+  COLOR_CACHE.set(color, bgColor);
+  return bgColor;
+};
+
+// Default color constant
+const DEFAULT_COLOR = "#29947A";
+const DEFAULT_BACKGROUND_COLOR = getBackgroundColor(DEFAULT_COLOR);
+
 interface NativeSideProps extends ViewProps {
   children?: React.ReactNode;
   side: 'Left' | 'Right';
@@ -48,24 +75,27 @@ interface NativeSideProps extends ViewProps {
 
 const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, ...props }: NativeSideProps) {
   const navigation = useNavigation();
-  // Memoize children and props for stable dependencies
-  const memoChildren = useMemo(() => children, [children]);
-  const memoProps = useMemo(() => props, [props]);
+  const propsRef = useRef(props);
+  const childrenRef = useRef(children);
+  
+  // Update refs without triggering re-renders
+  propsRef.current = props;
+  childrenRef.current = children;
 
   useEffect(() => {
-    // Only set options if children or props change
-    navigation.setOptions({
-      [`header${side}`]: () => (
-        <View style={styles.side} {...memoProps}>
-          {memoChildren}
-        </View>
-      ),
-    });
-    // Clean up on unmount
+    const headerKey = `header${side}`;
+    const renderComponent = () => (
+      <View style={styles.side} {...propsRef.current}>
+        {childrenRef.current}
+      </View>
+    );
+
+    navigation.setOptions({ [headerKey]: renderComponent });
+    
     return () => {
-      navigation.setOptions({ [`header${side}`]: undefined });
+      navigation.setOptions({ [headerKey]: undefined });
     };
-  }, [memoChildren, memoProps, navigation, side]);
+  }, [navigation, side]); // Only side and navigation as dependencies
 
   return null;
 });
@@ -87,52 +117,63 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   ...props
 }: NativeHeaderTitleProps) {
   const navigation = useNavigation();
-  const memoChildren = useMemo(() => children, [children]);
-  const memoProps = useMemo(() => props, [props]);
-  // Memoize search handler
-  const handleSearch = useCallback(
-    (e: any) => {
-      if (onSearch) onSearch(e.nativeEvent.text);
-    },
-    [onSearch]
-  );
+  const propsRef = useRef(props);
+  const childrenRef = useRef(children);
+  const onSearchRef = useRef(onSearch);
+  
+  // Update refs without triggering re-renders
+  propsRef.current = props;
+  childrenRef.current = children;
+  onSearchRef.current = onSearch;
 
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <View style={styles.title} {...memoProps}>
-          {memoChildren}
-        </View>
-      ),
-      headerLargeTitle: headerLargeTitle,
-      headerSearchBarOptions: search
-        ? {
-            placeholder: placeholder,
-            onChangeText: handleSearch,
-          }
-        : undefined,
-    });
-    return () => {
-      navigation.setOptions({ headerTitle: undefined, headerLargeTitle: undefined, headerSearchBarOptions: undefined });
+    const handleSearch = (e: any) => {
+      if (onSearchRef.current) onSearchRef.current(e.nativeEvent.text);
     };
-  }, [memoChildren, memoProps, navigation, headerLargeTitle, search, placeholder, handleSearch]);
+
+    const renderTitle = () => (
+      <View style={styles.title} {...propsRef.current}>
+        {childrenRef.current}
+      </View>
+    );
+
+    const searchOptions = search ? {
+      placeholder,
+      onChangeText: handleSearch,
+    } : undefined;
+
+    navigation.setOptions({
+      headerTitle: renderTitle,
+      headerLargeTitle,
+      headerSearchBarOptions: searchOptions,
+    });
+    
+    return () => {
+      navigation.setOptions({ 
+        headerTitle: undefined, 
+        headerLargeTitle: undefined, 
+        headerSearchBarOptions: undefined 
+      });
+    };
+  }, [navigation, headerLargeTitle, search, placeholder]); // Minimal dependencies
 
   return null;
 });
 
 const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: PressableProps) {
-  // Memoize style callback for performance
-  const composedStyle = useCallback(
-    (state: PressableStateCallbackType) => {
-      if (typeof props.style === 'function') {
-        const styleResult = props.style(state);
-        return [styles.pressable, styleResult];
-      }
-      return [styles.pressable, props.style];
-    },
-    [props.style]
-  );
-  return <Pressable {...props} style={composedStyle} />;
+  // Pre-optimized style function using cache
+  if (typeof props.style === 'function') {
+    const styleFunction = (state: PressableStateCallbackType) => {
+      const userStyle = props.style as (state: PressableStateCallbackType) => any;
+      const styleResult = userStyle(state);
+      return getPressableStyle(styleResult);
+    };
+    return <Pressable {...props} style={styleFunction} />;
+  }
+  
+  // Static style - use cached version
+  const style = getPressableStyle(props.style);
+  return <Pressable {...props} style={style} />;
 });
 
 interface NativeHeaderHighlightProps extends ViewProps {
@@ -140,14 +181,22 @@ interface NativeHeaderHighlightProps extends ViewProps {
   color?: string;
 }
 
-const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({ children, color = "#29947A", ...props }: NativeHeaderHighlightProps) {
-  // Memoize background color for performance
-  const backgroundColor = useMemo(() => color + "22", [color]);
-  const mergedStyle = useMemo(() => [styles.highlight, { backgroundColor }, props.style], [backgroundColor, props.style]);
+const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({ 
+  children, 
+  color = DEFAULT_COLOR, 
+  style,
+  ...props 
+}: NativeHeaderHighlightProps) {
+  // Use cached background color
+  const backgroundColor = color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
+  
+  // Pre-compute style array once
+  const viewStyle = style ? [styles.highlight, { backgroundColor }, style] : [styles.highlight, { backgroundColor }];
+  
   return (
-    <View style={mergedStyle} {...props}>
+    <View style={viewStyle} {...props}>
       {typeof children === 'string' ? (
-        <Typography variant="navigation" style={{ color: color }}>
+        <Typography variant="navigation" style={{ color }}>
           {children}
         </Typography>
       ) : (

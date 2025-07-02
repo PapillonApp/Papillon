@@ -1,6 +1,9 @@
 import React, { ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
+import List from "@/ui/components/List";
+import Item from "@/ui/components/Item";
+import Typography from "@/ui/components/Typography";
 
 export default function TabOneScreen() {
   return (
@@ -10,6 +13,7 @@ export default function TabOneScreen() {
       style={styles.container}
     >
       <UnderConstructionNotice />
+
     </ScrollView>
   );
 }
