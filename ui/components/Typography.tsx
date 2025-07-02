@@ -9,7 +9,7 @@ const FONT_FAMILIES = {
   medium: "SNPro-Medium",
   semibold: "SNPro-Semibold",
   bold: "SNPro-Bold",
-};
+} as const;
 
 const VARIANTS = StyleSheet.create({
   body1: {
@@ -75,9 +75,23 @@ const VARIANTS = StyleSheet.create({
   },
 });
 
+// Pre-computed alignment styles to avoid object creation
+const ALIGNMENT_STYLES = StyleSheet.create({
+  left: { textAlign: "left" as const },
+  center: { textAlign: "center" as const },
+  right: { textAlign: "right" as const },
+  justify: { textAlign: "justify" as const },
+});
+
+// Static color values to avoid string concatenation
+const STATIC_COLORS = {
+  light: "#FFFFFF",
+  danger: "#DC1400",
+} as const;
+
 type Variant = keyof typeof VARIANTS;
 type Color = "primary" | "text" | "secondary" | "light" | "danger";
-type Alignment = "left" | "center" | "right" | "justify";
+type Alignment = keyof typeof ALIGNMENT_STYLES;
 
 interface TypographyProps extends TextProps {
   variant?: Variant;
@@ -86,13 +100,26 @@ interface TypographyProps extends TextProps {
   style?: TextStyle | TextStyle[];
 }
 
-const getColorsList = (colors: Record<string, string>) => ({
-  primary: colors.primary,
-  text: colors.text,
-  secondary: colors.text + "80",
-  light: "#FFFFFF",
-  danger: "#DC1400",
-});
+// Cache for computed color styles per theme
+const colorStyleCache = new WeakMap<Record<string, string>, Record<string, TextStyle>>();
+
+// Cache for computed final styles
+const styleCache = new Map<string, TextStyle>();
+
+const getColorsStyles = (colors: Record<string, string>): Record<string, TextStyle> => {
+  let cached = colorStyleCache.get(colors);
+  if (!cached) {
+    cached = {
+      primary: { color: colors.primary },
+      text: { color: colors.text },
+      secondary: { color: colors.text + "80" },
+      light: { color: STATIC_COLORS.light },
+      danger: { color: STATIC_COLORS.danger },
+    };
+    colorStyleCache.set(colors, cached);
+  }
+  return cached;
+};
 
 const Typography: React.FC<TypographyProps> = React.memo(
   ({
@@ -103,28 +130,119 @@ const Typography: React.FC<TypographyProps> = React.memo(
     ...rest
   }) => {
     const { colors } = useTheme();
-    const colorsList = React.useMemo(() => getColorsList(colors), [colors]);
+    
+    // Generate cache key for this specific combination
+    const cacheKey = React.useMemo(() => {
+      const hasCustomStyle = style != null;
+      const isCustomColor = typeof color === "string" && !(color in STATIC_COLORS) && 
+                            !["primary", "text", "secondary"].includes(color);
+      
+      // Only cache if no custom styles or custom colors to avoid memory leaks
+      if (!hasCustomStyle && !isCustomColor) {
+        return `${variant}-${color}-${align}-${colors.primary}-${colors.text}`;
+      }
+      return null;
+    }, [variant, color, align, colors.primary, colors.text, style]);
 
-    let resolvedColor: string;
-    if (typeof color === "string" && color in colorsList) {
-      resolvedColor = colorsList[color as Color];
-    } else if (typeof color === "string") {
-      resolvedColor = color;
-    } else {
-      resolvedColor = colors.text;
+    const computedStyle = React.useMemo(() => {
+      // Try cache first for common cases
+      if (cacheKey) {
+        const cached = styleCache.get(cacheKey);
+        if (cached) return cached;
+      }
+
+      const colorStyles = getColorsStyles(colors);
+      const variantStyle = VARIANTS[variant];
+      const alignStyle = ALIGNMENT_STYLES[align];
+
+      let colorStyle: TextStyle;
+      if (typeof color === "string" && color in colorStyles) {
+        colorStyle = colorStyles[color as Color];
+      } else if (typeof color === "string") {
+        colorStyle = { color };
+      } else {
+        colorStyle = colorStyles.text;
+      }
+
+      let finalStyle: TextStyle;
+      
+      if (style) {
+        // For custom styles, merge without caching to avoid memory leaks
+        finalStyle = {
+          ...variantStyle,
+          ...alignStyle,
+          ...colorStyle,
+          ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
+        };
+      } else {
+        // For common cases without custom styles, use optimized merging
+        finalStyle = {
+          ...variantStyle,
+          ...alignStyle,
+          ...colorStyle,
+        };
+        
+        // Cache only common cases
+        if (cacheKey) {
+          styleCache.set(cacheKey, finalStyle);
+        }
+      }
+
+      return finalStyle;
+    }, [colors, variant, color, align, style, cacheKey]);
+
+    return <Text {...rest} style={computedStyle} />;
+  },
+  // Custom comparison for even better performance
+  (prevProps, nextProps) => {
+    // Fast equality checks for most common props
+    if (prevProps.variant !== nextProps.variant) return false;
+    if (prevProps.color !== nextProps.color) return false;
+    if (prevProps.align !== nextProps.align) return false;
+    if (prevProps.children !== nextProps.children) return false;
+    
+    // Shallow comparison for style prop
+    if (prevProps.style !== nextProps.style) {
+      if (!prevProps.style && !nextProps.style) return true;
+      if (!prevProps.style || !nextProps.style) return false;
+      
+      // For array styles, do shallow comparison
+      if (Array.isArray(prevProps.style) && Array.isArray(nextProps.style)) {
+        if (prevProps.style.length !== nextProps.style.length) return false;
+        return prevProps.style.every((s, i) => s === (nextProps.style as TextStyle[])[i]);
+      }
+      
+      // For object styles, reference equality is sufficient for performance
+      return prevProps.style === nextProps.style;
     }
-
-    // Flatten style for efficiency
-    const flatStyle = StyleSheet.flatten([
-      { color: resolvedColor },
-      { textAlign: align },
-      VARIANTS[variant],
-      style,
-    ]);
-
-    return <Text {...rest} style={flatStyle} />;
+    
+    // Check other TextProps that might affect rendering
+    const textPropsToCheck: (keyof TextProps)[] = [
+      'numberOfLines', 'ellipsizeMode', 'selectable', 'testID'
+    ];
+    
+    return textPropsToCheck.every(prop => prevProps[prop] === nextProps[prop]);
   }
 );
+
+// Cache cleanup to prevent memory leaks
+const MAX_CACHE_SIZE = 1000;
+const cleanupCache = () => {
+  if (styleCache.size > MAX_CACHE_SIZE) {
+    // Keep only the most recently used half
+    const entries = Array.from(styleCache.entries());
+    styleCache.clear();
+    // Re-add the second half (most recent)
+    entries.slice(Math.floor(entries.length / 2)).forEach(([key, value]) => {
+      styleCache.set(key, value);
+    });
+  }
+};
+
+// Cleanup cache periodically
+if (typeof setInterval !== 'undefined') {
+  setInterval(cleanupCache, 30000); // Every 30 seconds
+}
 
 Typography.displayName = "Typography";
 

@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import { Pressable, PressableProps } from "react-native";
 import Reanimated, { Easing, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming, runOnJS } from "react-native-reanimated";
 
@@ -11,6 +11,10 @@ const LAYOUT_ANIMATION = Animation(LinearTransition, "list");
 
 export const LEADING_TYPE = Symbol("Leading");
 export const TRAILING_TYPE = Symbol("Trailing");
+
+// Pre-computed style objects to avoid recreation
+const LEADING_STYLE = Object.freeze({ layout: LAYOUT_ANIMATION });
+const TRAILING_STYLE = Object.freeze({ layout: LAYOUT_ANIMATION });
 
 function Leading({ children, ...rest }: PressableProps) {
   return (
@@ -28,10 +32,14 @@ function Trailing({ children, ...rest }: PressableProps) {
   );
 }
 
+// Extreme optimization: Pre-create memoized components
 const MemoizedLeading = React.memo(Leading);
 const MemoizedTrailing = React.memo(Trailing);
 (MemoizedLeading as any).__ITEM_TYPE__ = LEADING_TYPE;
 (MemoizedTrailing as any).__ITEM_TYPE__ = TRAILING_TYPE;
+
+// Cache for theme-based border colors to avoid repeated calculations
+const borderColorCache = new Map<string, string>();
 
 interface ListProps extends PressableProps {
   children?: React.ReactNode;
@@ -54,22 +62,21 @@ const DEFAULT_CONTENT_STYLE = Object.freeze({
   flex: 1,
 });
 
+// Optimized areEqual with early returns and minimal key checking
 function areEqual(prev: ListProps, next: ListProps) {
   // Quick reference equality check
   if (prev === next) return true;
   
-  // Check non-children props
-  const prevKeys = Object.keys(prev) as Array<keyof ListProps>;
-  const nextKeys = Object.keys(next) as Array<keyof ListProps>;
+  // Check most likely to change props first
+  if (prev.isLast !== next.isLast) return false;
+  if (prev.animate !== next.animate) return false;
+  if (prev.onPress !== next.onPress) return false;
+  if (prev.onPressIn !== next.onPressIn) return false;
+  if (prev.onPressOut !== next.onPressOut) return false;
+  if (prev.style !== next.style) return false;
+  if (prev.contentContainerStyle !== next.contentContainerStyle) return false;
   
-  if (prevKeys.length !== nextKeys.length) return false;
-  
-  for (const key of prevKeys) {
-    if (key === "children") continue;
-    if (prev[key] !== next[key]) return false;
-  }
-  
-  // Children comparison
+  // Children comparison last (most expensive)
   return prev.children === next.children;
 }
 
@@ -87,81 +94,75 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
   ref
 ) {
   const { colors } = useTheme();
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
+  
+  // Single shared value for performance - combine scale and opacity into one animation
+  const animationValue = useSharedValue(0);
   const isAnimatingRef = useRef(false);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }), []);
+  
+  // Pre-calculate if we have an onPress handler to avoid checks during animation
+  const hasOnPress = Boolean(rest.onPress);
+  
+  const animatedStyle = useAnimatedStyle(() => {
+    const progress = animationValue.value;
+    return {
+      transform: [{ scale: 1 - progress * 0.03 }], // 0.97 when progress = 1
+      opacity: 1 - progress * 0.3, // 0.7 when progress = 1
+    };
+  }, []);
 
   const handlePressIn = useCallback((event: any) => {
-    'worklet';
-    if (isAnimatingRef.current) return;
-    isAnimatingRef.current = true;
-
-    if(!rest.onPress) {
-      // If no onPress handler, prevent default behavior
-      event.preventDefault();
+    if (isAnimatingRef.current || !hasOnPress) {
+      if (!hasOnPress) event?.preventDefault?.();
       return;
     }
     
-    scale.value = withTiming(0.97, { 
+    isAnimatingRef.current = true;
+    animationValue.value = withTiming(1, { 
       duration: 100, 
       easing: Easing.out(Easing.exp) 
     });
-    opacity.value = withTiming(0.7, { 
-      duration: 50, 
-      easing: Easing.out(Easing.exp) 
-    });
     
-    if (onPressIn) {
-      runOnJS(onPressIn)(event);
-    }
-  }, [scale, opacity, onPressIn]);
+    onPressIn?.(event);
+  }, [animationValue, hasOnPress, onPressIn]);
 
   const handlePressOut = useCallback((event: any) => {
-    'worklet';
-    const resetAnimating = () => {
-      isAnimatingRef.current = false;
-    };
+    if (!isAnimatingRef.current) return;
     
-    scale.value = withSpring(1, { 
+    animationValue.value = withSpring(0, { 
       mass: 1, 
       damping: 20, 
       stiffness: 300 
     }, () => {
-      runOnJS(resetAnimating)();
-    });
-    opacity.value = withTiming(1, { 
-      duration: 150, 
-      easing: Easing.out(Easing.ease) 
+      'worklet';
+      runOnJS(() => { isAnimatingRef.current = false; })();
     });
     
-    if (onPressOut) {
-      runOnJS(onPressOut)(event);
-    }
-  }, [scale, opacity, onPressOut]);
+    onPressOut?.(event);
+  }, [animationValue, onPressOut]);
 
+  // Extremely optimized children sorting with minimal allocations
   const sortedChildren = useMemo(() => {
-    if (!children) return { leading: [], trailing: [], others: [] };
+    if (!children) return null;
     
-    const leading: React.ReactNode[] = [];
-    const trailing: React.ReactNode[] = [];
-    const others: React.ReactNode[] = [];
+    let leading: React.ReactNode[] | null = null;
+    let trailing: React.ReactNode[] | null = null;
+    let others: React.ReactNode[] | null = null;
     
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child)) {
         const childType = (child.type as any)?.__ITEM_TYPE__;
         if (childType === LEADING_TYPE) {
+          if (!leading) leading = [];
           leading.push(child);
         } else if (childType === TRAILING_TYPE) {
+          if (!trailing) trailing = [];
           trailing.push(child);
         } else {
+          if (!others) others = [];
           others.push(child);
         }
       } else if (child != null) {
+        if (!others) others = [];
         others.push(child);
       }
     });
@@ -169,27 +170,56 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     return { leading, trailing, others };
   }, [children]);
 
-  const borderStyle = useMemo(() => {
-    if (isLast) return {};
-    return {
+  // Pre-compute border color with caching to avoid string concatenation
+  const borderColor = useMemo(() => {
+    const colorKey = colors.text;
+    let cached = borderColorCache.get(colorKey);
+    if (!cached) {
+      cached = `${colorKey}25`;
+      borderColorCache.set(colorKey, cached);
+    }
+    return cached;
+  }, [colors.text]);
+  
+  // Optimized style calculations with minimal object creation
+  const borderStyle = useMemo(() => 
+    isLast ? null : {
       borderBottomWidth: 0.5,
-      borderBottomColor: `${colors.text}25`, // 25 = 15% opacity in hex
-    };
-  }, [isLast, colors.text]);
+      borderBottomColor: borderColor,
+    }
+  , [isLast, borderColor]);
 
   const containerStyle = useMemo(() => {
-    return [DEFAULT_CONTAINER_STYLE, style, animatedStyle];
+    if (style) {
+      return [DEFAULT_CONTAINER_STYLE, style, animatedStyle];
+    }
+    return [DEFAULT_CONTAINER_STYLE, animatedStyle];
   }, [style, animatedStyle]);
 
-  const contentStyle = useMemo(() => {
-    return contentContainerStyle
-      ? [DEFAULT_CONTENT_STYLE, contentContainerStyle]
-      : DEFAULT_CONTENT_STYLE;
-  }, [contentContainerStyle]);
+  const contentStyle = useMemo(() => 
+    contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE
+  , [contentContainerStyle]);
 
-  const hasLeading = sortedChildren.leading.length > 0;
-  const hasTrailing = sortedChildren.trailing.length > 0;
-  const hasOthers = sortedChildren.others.length > 0;
+  // Early return if no children to render
+  if (!sortedChildren) {
+    return (
+      <Reanimated.View
+        layout={LAYOUT_ANIMATION}
+        style={borderStyle}
+        entering={animate ? PapillonAppearIn : undefined}
+        exiting={animate ? PapillonAppearOut : undefined}
+      >
+        <AnimatedPressable
+          {...rest}
+          ref={ref as any}
+          layout={LAYOUT_ANIMATION}
+          style={containerStyle}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+        />
+      </Reanimated.View>
+    );
+  }
 
   return (
     <Reanimated.View
@@ -206,20 +236,22 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
-        {hasLeading && sortedChildren.leading}
-        {hasOthers && (
+        {sortedChildren.leading}
+        {sortedChildren.others && (
           <Reanimated.View style={contentStyle as any}>
             {sortedChildren.others}
           </Reanimated.View>
         )}
-        {hasTrailing && sortedChildren.trailing}
+        {sortedChildren.trailing}
       </AnimatedPressable>
     </Reanimated.View>
   );
 });
 
+// Ultra-optimized Item component with aggressive memoization
 const Item = React.memo(ItemComponent, areEqual);
 Item.displayName = "Item";
 
+// Pre-export memoized components to avoid recreation
 export default Item;
 export { MemoizedLeading as Leading, MemoizedTrailing as Trailing };

@@ -7,7 +7,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { Platform, StatusBar, useColorScheme } from 'react-native';
 
 import { AlertProvider } from '@/ui/components/AlertProvider';
@@ -29,27 +29,53 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    
-    light: require('../assets/fonts/SNPro-Light.ttf'),
-    regular: require('../assets/fonts/SNPro-Regular.ttf'),
-    medium: require('../assets/fonts/SNPro-Medium.ttf'),
-    semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
-    bold: require('../assets/fonts/SNPro-Bold.ttf'),
-    black: require('../assets/fonts/SNPro-Black.ttf')
-  });
+// Pre-define font config to avoid recreating object on each render
+const FONT_CONFIG = {
+  light: require('../assets/fonts/SNPro-Light.ttf'),
+  regular: require('../assets/fonts/SNPro-Regular.ttf'),
+  medium: require('../assets/fonts/SNPro-Medium.ttf'),
+  semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
+  bold: require('../assets/fonts/SNPro-Bold.ttf'),
+  black: require('../assets/fonts/SNPro-Black.ttf')
+} as const;
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) {throw error;}
+// Pre-define screen options to avoid recreating object
+const STACK_SCREEN_OPTIONS = {
+  headerBackButtonDisplayMode: "minimal" as const,
+};
+
+const ALERT_SCREEN_OPTIONS = {
+  headerShown: false,
+  presentation: 'formSheet' as const,
+  sheetAllowedDetents: 'fitToContents' as const,
+  sheetGrabberVisible: false,
+  sheetExpandsWhenScrolledToEdge: false,
+  sheetInitialDetentIndex: 0,
+} as const;
+
+const DEVMODE_SCREEN_OPTIONS = { 
+  headerTitle: "DevMode", 
+  headerBackButtonDisplayMode: "minimal" as const,
+} as const;
+
+export default function RootLayout() {
+  const [loaded, error] = useFonts(FONT_CONFIG);
+
+  // Memoize error handler to prevent recreation
+  const handleError = useCallback(() => {
+    if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
+  // Memoize splash screen handler
+  const hideSplashScreen = useCallback(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(handleError, [handleError]);
+  useEffect(hideSplashScreen, [hideSplashScreen]);
 
   if (!loaded) {
     return null;
@@ -58,38 +84,48 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-function RootLayoutNav() {
+const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
-  useEffect(() => {
-    SystemUI.setBackgroundColorAsync(colorScheme === 'dark' ? '#000000' : '#F5F5F5');
-    StatusBar.setBarStyle(colorScheme === 'dark' ? 'light-content' : 'dark-content');
+  // Memoize theme selection to prevent unnecessary re-computations
+  const theme = useMemo(() => {
+    return colorScheme === 'dark' ? DarkTheme : DefaultTheme;
   }, [colorScheme]);
 
+  // Memoize background color to prevent string recreation
+  const backgroundColor = useMemo(() => {
+    return colorScheme === 'dark' ? '#000000' : '#F5F5F5';
+  }, [colorScheme]);
+
+  // Memoize status bar style to prevent string recreation
+  const statusBarStyle = useMemo(() => {
+    return colorScheme === 'dark' ? 'light-content' : 'dark-content';
+  }, [colorScheme]);
+
+  // Memoize combined screen options to prevent object recreation
+  const stackScreenOptions = useMemo(() => ({
+    ...screenOptions,
+    ...STACK_SCREEN_OPTIONS,
+  }), []);
+
+  // Combined effect for system UI updates to reduce effect overhead
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(backgroundColor);
+    StatusBar.setBarStyle(statusBarStyle);
+  }, [backgroundColor, statusBarStyle]);
+
   return (
-    <GestureHandlerRootView>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AlertProvider>
-        <Stack initialRouteName='(tabs)' screenOptions={{
-          ...screenOptions,
-          headerBackButtonDisplayMode: "minimal",
-        }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="page" />
-          <Stack.Screen name="devmode" options={{ headerTitle: "DevMode", headerBackButtonDisplayMode: "minimal",  }} />
-          <Stack.Screen name="alert"
-            options={{
-              headerShown: false,
-              presentation: 'formSheet',
-              sheetAllowedDetents: 'fitToContents',
-              sheetGrabberVisible: false,
-              sheetExpandsWhenScrolledToEdge: false,
-              sheetInitialDetentIndex: 0,
-            }}
-          />
-        </Stack>
-      </AlertProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={theme}>
+        <AlertProvider>
+          <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="page" />
+            <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
+            <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+          </Stack>
+        </AlertProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
-}
+});
