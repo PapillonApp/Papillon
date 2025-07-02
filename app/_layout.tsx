@@ -8,7 +8,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 
 import { AlertProvider } from '@/ui/components/AlertProvider';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
@@ -58,12 +58,17 @@ const DEVMODE_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
 } as const;
 
+const DEMO_SCREEN_OPTIONS = {
+  headerTitle: "Demo",
+  headerBackButtonDisplayMode: "minimal" as const,
+}
+
 export default function RootLayout() {
   const [loaded, error] = useFonts(FONT_CONFIG);
 
   // Memoize error handler to prevent recreation
   const handleError = useCallback(() => {
-    if (error) throw error;
+    if (error) {throw error;}
   }, [error]);
 
   // Memoize splash screen handler
@@ -120,7 +125,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         <AlertProvider>
           <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="page" />
+            <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS}/>
             <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
             <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
           </Stack>
