@@ -47,7 +47,8 @@ const STACK_SCREEN_OPTIONS = {
 const ALERT_SCREEN_OPTIONS = {
   headerShown: false,
   presentation: 'formSheet' as const,
-  sheetAllowedDetents: 'fitToContents' as const,
+  sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' as const : [0.9],
+  sheetBorderRadius: Platform.OS === 'ios' ? undefined : 16,
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,

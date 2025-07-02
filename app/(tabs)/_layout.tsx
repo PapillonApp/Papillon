@@ -3,7 +3,7 @@ import {
   NativeBottomTabNavigationEventMap,
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
 import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from "react-i18next";
@@ -38,7 +38,7 @@ const ICONS = {
 // Static style object to prevent recreation on every render
 const TAB_LABEL_STYLE = {
   fontFamily: 'semibold',
-  fontSize: 12,
+  fontSize: Platform.OS === 'ios' ? 12 : 13,
 } as const;
 
 // Static icon functions to prevent recreation
@@ -64,6 +64,7 @@ const useTabTranslations = () => {
 function TabLayout() {
   // Use optimized translation hook
   const translations = useTabTranslations();
+  const { colors } = useTheme();
 
   // Memoize screen options to prevent object recreation
   const screenOptions = useMemo(() => ({
@@ -95,6 +96,11 @@ function TabLayout() {
       hapticFeedbackEnabled
       labeled={true}
       tabLabelStyle={TAB_LABEL_STYLE}
+      tabBarStyle={{
+        backgroundColor: colors.card,
+      }}
+      rippleColor={colors.text + "22"}
+      activeIndicatorColor={colors.primary + "22"}
     >
       <Tabs.Screen
         name="index"

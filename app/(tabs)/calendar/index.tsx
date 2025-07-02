@@ -131,7 +131,7 @@ export default function TabOneScreen() {
           </View>
         </Link>
 
-        <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+        <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
           <Course
             name="Traitement des données"
             teacher={{
