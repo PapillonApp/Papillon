@@ -21,10 +21,6 @@ const Calendar: React.FC<CalendarProps> = ({
   showDatePicker,
   setShowDatePicker,
 }) => {
-  if(Platform.OS === 'android') {
-    return null;
-  }
-
   const [date, setDate] = useState(initialDate);
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -43,6 +39,20 @@ const Calendar: React.FC<CalendarProps> = ({
   }, [showDatePicker]);
 
   if (!showDatePicker) {return null;}
+
+  if( Platform.OS === "android") {
+    return (
+      <DateTimePicker
+        value={date}
+        mode="date"
+        display="inline"
+        accentColor={colors.primary}
+        locale={Localization.getLocales()[0].languageTag}
+        onChange={handleChange}
+        style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
+      />
+    )
+  }
 
   return (
     <Pressable
@@ -79,7 +89,8 @@ const Calendar: React.FC<CalendarProps> = ({
             value={date}
             mode="date"
             display="inline"
-            locale={Localization.locale}
+            accentColor={colors.primary}
+            locale={Localization.getLocales()[0].languageTag}
             onChange={handleChange}
             style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
           />

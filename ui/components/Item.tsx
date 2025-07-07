@@ -66,7 +66,7 @@ const DEFAULT_CONTENT_STYLE = Object.freeze({
 function areEqual(prev: ListProps, next: ListProps) {
   // Quick reference equality check
   if (prev === next) return true;
-  
+
   // Check most likely to change props first
   if (prev.isLast !== next.isLast) return false;
   if (prev.animate !== next.animate) return false;
@@ -75,7 +75,7 @@ function areEqual(prev: ListProps, next: ListProps) {
   if (prev.onPressOut !== next.onPressOut) return false;
   if (prev.style !== next.style) return false;
   if (prev.contentContainerStyle !== next.contentContainerStyle) return false;
-  
+
   // Children comparison last (most expensive)
   return prev.children === next.children;
 }
@@ -94,14 +94,14 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
   ref
 ) {
   const { colors } = useTheme();
-  
+
   // Single shared value for performance - combine scale and opacity into one animation
   const animationValue = useSharedValue(0);
   const isAnimatingRef = useRef(false);
-  
+
   // Pre-calculate if we have an onPress handler to avoid checks during animation
   const hasOnPress = Boolean(rest.onPress);
-  
+
   const animatedStyle = useAnimatedStyle(() => {
     const progress = animationValue.value;
     return {
@@ -115,39 +115,40 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
       if (!hasOnPress) event?.preventDefault?.();
       return;
     }
-    
+
     isAnimatingRef.current = true;
-    animationValue.value = withTiming(1, { 
-      duration: 100, 
-      easing: Easing.out(Easing.exp) 
+    animationValue.value = withTiming(1, {
+      duration: 100,
+      easing: Easing.out(Easing.exp)
     });
-    
+
     onPressIn?.(event);
   }, [animationValue, hasOnPress, onPressIn]);
 
+  const setAnimatingFalse = () => { isAnimatingRef.current = false; };
   const handlePressOut = useCallback((event: any) => {
     if (!isAnimatingRef.current) return;
-    
-    animationValue.value = withSpring(0, { 
-      mass: 1, 
-      damping: 20, 
-      stiffness: 300 
+
+    animationValue.value = withSpring(0, {
+      mass: 1,
+      damping: 20,
+      stiffness: 300
     }, () => {
       'worklet';
-      runOnJS(() => { isAnimatingRef.current = false; })();
+      runOnJS(setAnimatingFalse)();
     });
-    
+
     onPressOut?.(event);
   }, [animationValue, onPressOut]);
 
   // Extremely optimized children sorting with minimal allocations
   const sortedChildren = useMemo(() => {
     if (!children) return null;
-    
+
     let leading: React.ReactNode[] | null = null;
     let trailing: React.ReactNode[] | null = null;
     let others: React.ReactNode[] | null = null;
-    
+
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child)) {
         const childType = (child.type as any)?.__ITEM_TYPE__;
@@ -166,7 +167,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
         others.push(child);
       }
     });
-    
+
     return { leading, trailing, others };
   }, [children]);
 
@@ -180,14 +181,14 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     }
     return cached;
   }, [colors.text]);
-  
+
   // Optimized style calculations with minimal object creation
-  const borderStyle = useMemo(() => 
+  const borderStyle = useMemo(() =>
     isLast ? null : {
       borderBottomWidth: 0.5,
       borderBottomColor: borderColor,
     }
-  , [isLast, borderColor]);
+    , [isLast, borderColor]);
 
   const containerStyle = useMemo(() => {
     if (style) {
@@ -196,9 +197,9 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     return [DEFAULT_CONTAINER_STYLE, animatedStyle];
   }, [style, animatedStyle]);
 
-  const contentStyle = useMemo(() => 
+  const contentStyle = useMemo(() =>
     contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE
-  , [contentContainerStyle]);
+    , [contentContainerStyle]);
 
   // Early return if no children to render
   if (!sortedChildren) {

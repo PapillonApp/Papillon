@@ -1,6 +1,7 @@
+import { database } from "@/database";
 import { LucideIcon } from "lucide-react-native";
 import React from "react";
-import { Pressable, StyleProp, StyleSheet,View, ViewStyle } from "react-native";
+import { Alert, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Path, Svg } from "react-native-svg";
 
 import { formatDuration } from "../utils/Duration";
@@ -8,9 +9,13 @@ import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
 
+import { ContextMenuView } from 'react-native-ios-context-menu';
+import { useTranslation } from "react-i18next";
+
 type Variant = 'primary' | 'separator';
 
 interface CourseProps {
+  id: string;
   name: string;
   teacher?: { firstName: string; lastName: string };
   room?: string;
@@ -23,11 +28,13 @@ interface CourseProps {
   start: number;
   end: number;
   onPress?: () => void;
+  readonly?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
   leading?: LucideIcon;
 }
 
 const Course = React.memo(({
+  id,
   name,
   teacher,
   room,
@@ -36,82 +43,161 @@ const Course = React.memo(({
   variant = 'primary',
   start,
   end,
+  readonly = false,
   leading: Leading,
   onPress,
   containerStyle,
 }: CourseProps) => {
-  const duration = end - start
+  const duration = end - start;
+  const { t } = useTranslation();
 
   return (
-    <Pressable style={{width: "100%", display: "flex", gap: 4}} onPress={onPress}>
-      { status?.canceled && variant !== "separator" && (
-        <View style={styles.importantBox}>
-          <Typography color="danger" variant="h4" style={styles.room}>
-            {status.label}
-          </Typography>
-        </View>
-      )}
-      <Stack
-        gap={4}
-        direction="vertical"
-        radius={18}
-        style={[
-          styles.container,
-          status?.canceled && variant !== "separator" ? styles.importantContainer : {},
-          { backgroundColor: color },
-          status?.canceled || variant === "separator" ? styles.canceled : {},
-          ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
-        ]}
-      >
-        <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
-          <View style={{ display: "flex", flexDirection: "row", gap: 10}}>
-            {variant === "separator" && Leading && (
-              <Icon>
-                <Leading stroke={"#606060"}/>
-              </Icon>
-            )}
-            <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
-              {name}
-            </Typography>
-          </View>
-          {variant === "separator" && Leading && (
-            <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
-              {formatDuration(duration)}
-            </Typography>
-          )}
-        </Stack>
-        {variant !== "separator" && (
-          <Stack direction="horizontal" hAlign="center" gap={12}>
-            <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
-            <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
-              {room}
-            </Typography>
-            <View
-              style={[
-                styles.separator,
-                { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
-              ]}
-            />
-            <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
-            <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-              {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
-            </Typography>
-          </Stack>
-        )}
-        {status && !status.canceled && variant !== "separator" && (
-          <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
-            <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
-              <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                {status.label}
-              </Typography>
-            </Stack>
-            <Typography color="light" variant="h4" style={[styles.statusDuration]}>
-              {formatDuration(duration)}
-            </Typography>
-          </View>
-        )}
+    <Stack direction="horizontal" gap={12} style={{ width: "100%" }}>
+      <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
+        <Typography variant="h5" style={{ lineHeight: 20 }}>
+          {new Date(start * 1000).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Typography>
+        <Typography variant="body2" color="secondary">
+          {new Date(end * 1000).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Typography>
       </Stack>
-    </Pressable>
+      <View style={{ flex: 1, display: "flex", gap: 4 }}>
+        {status?.canceled && variant !== "separator" && (
+          <View style={styles.importantBox}>
+            <Typography color="danger" variant="h4" style={styles.room}>
+              {status.label}
+            </Typography>
+          </View>
+        )}
+
+
+        <ContextMenuView
+          onPressMenuItem={({ nativeEvent }) => {
+            if (nativeEvent.actionKey === 'delete') {
+              // Handle delete action here
+              Alert.alert(
+                t("Context_Delete"),
+                t('Confirm_DeleteEvent'),
+                [
+                  {
+                    text: t("Context_Cancel"),
+                    style: "cancel"
+                  },
+                  {
+                    text: t("Context_Delete"),
+                    style: "destructive",
+                    onPress: async () => {
+                      try {
+                        await database.write(async () => {
+                          const event = await database.get('events').find(id);
+                          if (readonly) {
+                            Alert.alert(t("Alert_TechnicalDetails"), "This event is read-only and cannot be deleted.");
+                            return;
+                          }
+                          await event.markAsDeleted();
+                        });
+                      } catch (error) {
+                        console.error("Failed to delete event:", error);
+                      }
+                    }
+                  }
+                ]
+              );
+            }
+          }}
+          cornerRadius={20}
+          menuConfig={{
+            menuTitle: '',
+            menuItems: [
+              {
+                actionKey: 'delete',
+                actionTitle: t("Context_Delete"),
+                menuAttributes: ['destructive'],
+                icon: {
+                  type: 'IMAGE_SYSTEM',
+                  imageValue: {
+                    systemName: 'trash',
+                  },
+                },
+              }
+            ],
+          }}
+        >
+          <Pressable style={{ flex: 1 }} onPress={() => {
+            if (onPress) {
+              onPress();
+            }
+          }}>
+            <Stack
+              gap={4}
+              direction="vertical"
+              radius={18}
+              style={[
+                styles.container,
+                status?.canceled && variant !== "separator" ? styles.importantContainer : {},
+                { backgroundColor: color },
+                status?.canceled || variant === "separator" ? styles.canceled : {},
+                ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
+              ]}
+            >
+              <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
+                <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+                  {variant === "separator" && Leading && (
+                    <Icon>
+                      <Leading stroke={"#606060"} />
+                    </Icon>
+                  )}
+                  <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
+                    {name}
+                  </Typography>
+                </View>
+                {variant === "separator" && Leading && (
+                  <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
+                    {formatDuration(duration)}
+                  </Typography>
+                )}
+              </Stack>
+              {variant !== "separator" && (
+                <Stack direction="horizontal" hAlign="center" gap={12}>
+                  <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
+                  <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                    {room}
+                  </Typography>
+                  <View
+                    style={[
+                      styles.separator,
+                      { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
+                    ]}
+                  />
+                  <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
+                  <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
+                    {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
+                  </Typography>
+                </Stack>
+              )}
+              {status && !status.canceled && variant !== "separator" && (
+                <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
+                  <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+                    <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                      {status.label}
+                    </Typography>
+                  </Stack>
+                  <Typography color="light" variant="h4" style={[styles.statusDuration]}>
+                    {formatDuration(duration)}
+                  </Typography>
+                </View>
+              )}
+            </Stack>
+          </Pressable>
+        </ContextMenuView>
+      </View>
+    </Stack>
   );
 });
 

@@ -8,11 +8,26 @@
   "Tab_Profile": "Profil",
   "Tab_Page": "Page",
 
+  "Tab_Calendar_Icals": "Gestion des iCal",
+
+  "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
+  "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
+  "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec votre calendrier.",
+
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
   "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour.",
 
   "TabDevModeNotice_Title": "Mode Développement",
   "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs.",
 
-  "Alert_TechnicalDetails": "Détails techniques"
+  "Alert_TechnicalDetails": "Détails techniques",
+
+  "Context_Delete": "Supprimer",
+  "Context_Cancel": "Annuler",
+  "Context_Edit": "Modifier",
+  "Context_Add": "Ajouter",
+
+  "Form_Title": "Titre",
+
+  "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?"
 }

@@ -3,7 +3,7 @@ import {
   NativeBottomTabNavigationEventMap,
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
 import React, { useMemo, useCallback } from 'react';
 import { useTranslation } from "react-i18next";
@@ -22,10 +22,13 @@ const Tabs = withLayoutContext<
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = Platform.OS === 'ios' && !Platform.isPad && parseInt(Platform.Version) >= 26;
+const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
 const ICONS = {
-  home: IS_IOS_WITH_PADDING ? require('@/assets/icons/home_padding.svg') : require('@/assets/icons/home.svg'),
+  home: IS_IOS_WITH_PADDING ?
+    require('@/assets/icons/home_padding.svg')
+  : require('@/assets/icons/home.svg'),
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
   tasks: IS_IOS_WITH_PADDING ? require('@/assets/icons/tasks_padding.svg') : require('@/assets/icons/tasks.svg'),
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
@@ -35,7 +38,7 @@ const ICONS = {
 // Static style object to prevent recreation on every render
 const TAB_LABEL_STYLE = {
   fontFamily: 'semibold',
-  fontSize: 12,
+  fontSize: Platform.OS === 'ios' ? 12 : 13,
 } as const;
 
 // Static icon functions to prevent recreation
@@ -61,6 +64,7 @@ const useTabTranslations = () => {
 function TabLayout() {
   // Use optimized translation hook
   const translations = useTabTranslations();
+  const { colors } = useTheme();
 
   // Memoize screen options to prevent object recreation
   const screenOptions = useMemo(() => ({
@@ -92,6 +96,11 @@ function TabLayout() {
       hapticFeedbackEnabled
       labeled={true}
       tabLabelStyle={TAB_LABEL_STYLE}
+      tabBarStyle={{
+        backgroundColor: colors.card,
+      }}
+      rippleColor={colors.text + "22"}
+      activeIndicatorColor={colors.primary + "22"}
     >
       <Tabs.Screen
         name="index"

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "expo-router";
-import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType } from "react-native";
+import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform, TouchableNativeFeedback } from "react-native";
 import Typography from "./Typography";
 
 // Pre-computed styles for maximum performance
@@ -21,6 +21,12 @@ const styles = StyleSheet.create({
     gap: 4,
     alignItems: "center",
     justifyContent: "center",
+  },
+  titleAndroid: {
+    marginHorizontal: 8,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    maxWidth: 300,
   },
   pressable: {
     height: 36,
@@ -85,7 +91,9 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
   useEffect(() => {
     const headerKey = `header${side}`;
     const renderComponent = () => (
-      <View style={styles.side} {...propsRef.current}>
+      <View style={[
+        styles.side
+      ]} {...propsRef.current}>
         {childrenRef.current}
       </View>
     );
@@ -132,7 +140,10 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
     };
 
     const renderTitle = () => (
-      <View style={styles.title} {...propsRef.current}>
+      <View style={[
+        styles.title,
+        Platform.OS === 'android' ? styles.titleAndroid : {},
+      ]} {...propsRef.current}>
         {childrenRef.current}
       </View>
     );
@@ -168,6 +179,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
       const styleResult = userStyle(state);
       return getPressableStyle(styleResult);
     };
+
     return <Pressable {...props} style={styleFunction} />;
   }
   
