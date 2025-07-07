@@ -14,6 +14,7 @@ import { AlertProvider } from '@/ui/components/AlertProvider';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { DatabaseProvider } from "@/database/DatabaseProvider";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -117,16 +118,18 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={theme}>
-        <AlertProvider>
-          <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="page" />
-            <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
-            <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
-          </Stack>
-        </AlertProvider>
-      </ThemeProvider>
+      <DatabaseProvider>
+        <ThemeProvider value={theme}>
+          <AlertProvider>
+            <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="page" />
+              <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
+              <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+            </Stack>
+          </AlertProvider>
+        </ThemeProvider>
+      </DatabaseProvider>
     </GestureHandlerRootView>
   );
 });

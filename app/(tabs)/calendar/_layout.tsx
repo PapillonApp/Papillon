@@ -17,21 +17,18 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="item"
+        name="event/[id]"
         options={{
           headerShown: true,
-          headerTitle: t("Tab_Page"),
+          headerTitle: "",
         }}
       />
       <Stack.Screen
-        name="modal"
+        name="icals"
         options={{
-          headerShown: true,
-          headerTitle: t("Tab_Page"),
-          presentation: "formSheet",
-          sheetAllowedDetents: [0.25, 0.5, 0.9],
-          sheetGrabberVisible: true,
+          presentation: "modal",
           headerLargeTitle: false,
+          headerTitle: t("Tab_Calendar_Icals"),
         }}
       />
     </Stack>

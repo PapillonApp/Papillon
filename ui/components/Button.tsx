@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo } from "react";
 import { ActivityIndicator, Pressable, PressableProps } from "react-native";
-import Reanimated, { Easing,FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import Reanimated, { Easing, FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
@@ -22,6 +22,7 @@ interface ButtonProps extends PressableProps {
   inline?: boolean;
   loading?: boolean;
   onPress?: () => void;
+  disabled?: boolean;
 };
 
 const defaultProps = {
@@ -32,7 +33,8 @@ const defaultProps = {
   title: undefined,
   inline: false,
   loading: false,
-  onPress: () => {},
+  onPress: () => { },
+  disabled: false,
 };
 
 const Button: React.FC<ButtonProps> = React.memo(({
@@ -44,11 +46,12 @@ const Button: React.FC<ButtonProps> = React.memo(({
   inline = defaultProps.inline,
   loading = defaultProps.loading,
   onPress = defaultProps.onPress,
+  disabled = defaultProps.disabled,
   style,
   ...rest
 }) => {
   const { colors } = useTheme();
-  
+
   const colorsList: Record<Color, string> = React.useMemo(() => ({
     primary: colors.primary,
     text: colors.text,
@@ -78,23 +81,25 @@ const Button: React.FC<ButtonProps> = React.memo(({
   }, [scale, opacity]);
 
   const backgroundColor = useMemo(() => {
+    if (disabled) return colorsList.text + '30'; // Light color with 30% opacity for disabled state
+
     switch (variant) {
-    case 'outline':
-      return 'transparent';
-    case 'light':
-      return colorsList[color as Color] + '30';
-    case 'primary':
-    default:
-      return colorsList[color as Color];
+      case 'outline':
+        return 'transparent';
+      case 'light':
+        return colorsList[color as Color] + '30';
+      case 'primary':
+      default:
+        return colorsList[color as Color];
     }
-  }, [variant, colorsList, color]);
+  }, [variant, colorsList, color, disabled]);
 
   const textColor = useMemo(() => {
     switch (variant) {
-    case 'primary':
-      return colorsList.light;
-    default:
-      return colorsList[color as Color];
+      case 'primary':
+        return colorsList.light;
+      default:
+        return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
 

@@ -1,6 +1,9 @@
-import { Link } from "expo-router";
-import { ChevronDown, Hamburger, ListFilter, Search } from "lucide-react-native";
-import React, { Alert, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEventsForDay } from "@/database/useEvents";
+import { database } from "@/database";
+import Event from "@/database/models/Event";
+import { Link, useNavigation, useRouter } from "expo-router";
+import { ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
+import React, { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Course from "@/ui/components/Course";
@@ -12,20 +15,57 @@ import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 
 import { LinearTransition } from "react-native-reanimated";
 import { MenuView } from '@react-native-menu/menu';
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Calendar from "@/ui/components/Calendar";
 import { Dynamic } from "@/ui/components/Dynamic";
+import { Q } from '@nozbe/watermelondb';
+import { LegendList } from "@legendapp/list";
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
+  const router = useRouter();
   const { colors } = useTheme();
-  // const insets = useSafeAreaInsets();
-
   const [showDatePicker, setShowDatePicker] = useState(false);
-
+  const [refresh, setRefresh] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
+
+  // WatermelonDB events for the selected day
+  const events = useEventsForDay(date, refresh);
+
+  useEffect(() => {
+    setIsRefreshing(false);
+  }, [events]);
+
+  // Add demo event
+  const addDemoEvent = async () => {
+    try {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      const randomTime = new Date(startOfDay.getTime() + Math.random() * (endOfDay.getTime() - startOfDay.getTime()));
+      const start = randomTime.getTime();
+      const end = start + 60 * 60 * 1000; // 1 hour
+      await database.write(async () => {
+        await database.get<Event>('events').create(ev => {
+          ev.title = 'Demo Event';
+          ev.start = start;
+          ev.end = end;
+          ev.color = '#21A467';
+          ev.room = 'Demo Room';
+          ev.teacher = 'Demo Teacher';
+          ev.status = 'Demo';
+          ev.canceled = false;
+        });
+      });
+    } catch (err) {
+      // Optionally, handle error
+    }
+    setRefresh(r => r + 1); // trigger refetch
+  };
 
   return (
     <>
@@ -38,148 +78,109 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-      <ScrollView
+      <NativeHeaderSide side="Left">
+        <MenuView
+          actions={[
+            {
+              id: 'manage_icals',
+              title: 'Gérer les iCal',
+              subtitle: 'Afficher les événements iCal',
+              imageColor: colors.text,
+              image: Platform.select({
+                ios: 'calendar',
+                android: 'ic_menu_add',
+              }),
+            }
+          ]}
+          onPressAction={({ nativeEvent }) => {
+            if (nativeEvent.event === 'manage_icals') {
+              router.push({
+                pathname: "./calendar/icals",
+                params: {}
+              });
+            }
+          }}
+        >
+          <NativeHeaderPressable>
+            <ListFilter color={colors.text} />
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide>
+
+      <NativeHeaderTitle
+        key={"header-" + date.toISOString()}
+      >
+        <NativeHeaderTopPressable
+          onPress={() => toggleDatePicker()}
+          layout={Animation(LinearTransition)}
+        >
+          <Dynamic
+            animated
+            style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+            key={"picker-" + date.toISOString()}
+          >
+            <Typography variant="navigation">
+              {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+            </Typography>
+            <NativeHeaderHighlight color="#D6502B">
+              {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+            </NativeHeaderHighlight>
+            <Typography variant="navigation">
+              {date.toLocaleDateString("fr-FR", { month: "long" })}
+            </Typography>
+          </Dynamic>
+          <Dynamic animated>
+            <ChevronDown color={colors.text} opacity={0.7} />
+          </Dynamic>
+        </NativeHeaderTopPressable>
+      </NativeHeaderTitle>
+
+      <NativeHeaderSide side="Right">
+        <NativeHeaderPressable
+          onPress={() => { addDemoEvent() }}
+        >
+          <Plus color={colors.text} />
+        </NativeHeaderPressable>
+      </NativeHeaderSide>
+
+      <FlatList
+        data={events}
+        style={styles.container}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.containerContent}
-        style={styles.container}
-      >
-        <UnderConstructionNotice />
-
-        <NativeHeaderSide side="Left">
-          <MenuView
-            title="Filtrer"
-            actions={[
-              {
-                id: 'show_canceled',
-                title: 'Cours annulés',
-                subtitle: 'Afficher les cours annulés',
-                imageColor: colors.text,
-                image: Platform.select({
-                  ios: 'calendar',
-                  android: 'ic_menu_add',
-                }),
-                state: "on"
-              }
-            ]}
-          >
-            <NativeHeaderPressable
-              onPress={() => {Alert.alert("Filtre", "Cette fonctionnalité n'est pas encore implémentée.")}}
-            >
-              <ListFilter color={colors.text} />
-            </NativeHeaderPressable>
-          </MenuView>
-        </NativeHeaderSide>
-
-        <NativeHeaderTitle
-          key={"header-" + date.toISOString()}
-        >
-          <NativeHeaderTopPressable
-            onPress={() => toggleDatePicker()}
-            layout={Animation(LinearTransition)}
-          >
-            <Dynamic
-              animated
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              key={"picker-" + date.toISOString()}
-            >
-              <Typography variant="navigation">
-                {date.toLocaleDateString("fr-FR", {weekday: "long"})}
-              </Typography>
-              <NativeHeaderHighlight color="#D6502B">
-                {date.toLocaleDateString("fr-FR", {day: "numeric"})}
-              </NativeHeaderHighlight>
-              <Typography variant="navigation">
-                {date.toLocaleDateString("fr-FR", {month: "long"})}
-              </Typography>
-            </Dynamic>
-            <Dynamic animated>
-              <ChevronDown color={colors.text} opacity={0.7} />
-            </Dynamic>
-          </NativeHeaderTopPressable>
-        </NativeHeaderTitle>
-
-        <NativeHeaderSide side="Right">
-          <NativeHeaderPressable
-            onPress={() => {Alert.alert("Filtre", "Cette fonctionnalité n'est pas encore implémentée.")}}
-          >
-            <Search color={colors.text} />
-          </NativeHeaderPressable>
-        </NativeHeaderSide>
-
-        <Link href="/calendar/item" style={{ marginTop: 20 }}>
-          <View style={{ width: "100%", padding: 14, backgroundColor: "#29947A", borderRadius: 300 }}>
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 16,
-                textAlign: "center",
-                fontFamily: "bold"
-              }}
-            >Ouvrir un cours</Text>
-          </View>
-        </Link>
-        <Link href="/calendar/modal" style={{ marginTop: 20 }}>
-          <View style={{ width: "100%", padding: 14, backgroundColor: "#29947A22", borderRadius: 300 }}>
-            <Text
-              style={{
-                color: "#29947A",
-                fontSize: 16,
-                textAlign: "center",
-                fontFamily: "bold"
-              }}
-            >Ouvrir une modal</Text>
-          </View>
-        </Link>
-
-        <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12, marginTop: 20 }}>
-          <Course
-            name="Traitement des données"
-            teacher={{
-              firstName: "Lucas",
-              lastName: "Martin"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              setRefresh(r => r + 1);
             }}
-            room="Bât. 12 amphi 4"
-            color="#0095D6"
-            status={{ label: "Prof. absent", canceled: false }}
+            colors={[colors.primary]}
+            progressBackgroundColor={colors.background}
+          />
+        }
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Course
+            id={item.id}
+            name={item.title}
+            teacher={item.teacher ? { firstName: item.teacher, lastName: "" } : undefined}
+            room={item.room}
+            color={item.color || "#21A467"}
+            status={{ label: item.status || "", canceled: !!item.canceled }}
             variant="primary"
-            start={1750126049}
-            end={1750129649}
-          />
-          <Course
-            name="Pause méridienne"
-            variant="separator"
-            leading={Hamburger}
-            start={1750126049}
-            end={1750133249}
-          />
-          <Course
-            name="Anglais"
-            teacher={{
-              firstName: "Raphaël",
-              lastName: "Schröder"
+            start={Math.floor(item.start / 1000)}
+            end={Math.floor(item.end / 1000)}
+            readonly={!!item.readonly}
+
+            onPress={() => {
+              router.push({
+                pathname: "./calendar/event/[id]",
+                params: { id: item.id }
+              });
             }}
-            room="Bât. 9 salle 6"
-            color="#21A467"
-            status={{ label: "Professeur absent", canceled: true }}
-            variant="primary"
-            start={1750126049}
-            end={1750129649}
           />
-          <Course
-            name="Développement web"
-            teacher={{
-              firstName: "Vince",
-              lastName: "Linise"
-            }}
-            room="Bât. 10 salle 16"
-            color="#21A467"
-            status={{ label: "Cours magistral", canceled: false }}
-            variant="primary"
-            start={1750126049}
-            end={1750130549}
-          />
-        </View>
-      </ScrollView>
+        )}
+      />
     </>
   );
 }
@@ -187,10 +188,12 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    width: "100%",
   },
   containerContent: {
     justifyContent: "center",
     alignItems: "center",
+    gap: 12,
+    padding: 12,
   }
 });
