@@ -25,6 +25,7 @@ import { Q } from '@nozbe/watermelondb';
 import { LegendList } from "@legendapp/list";
 import { t } from "i18next";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import Animated from 'react-native-reanimated';
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -144,8 +145,8 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, refresh, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
-    const dayEvents = useEventsForDay(dayDate, refresh);
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
+    const dayEvents = useEventsForDay(dayDate, refresh); // keep refresh only for data fetching
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
         <LegendList
@@ -203,10 +204,9 @@ export default function TabOneScreen() {
       </View>
     );
   }, (prevProps, nextProps) => {
-    // Only rerender if dayDate or refresh changes
+    // Only rerender if dayDate or isRefreshing changes
     return (
       prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
-      prevProps.refresh === nextProps.refresh &&
       prevProps.isRefreshing === nextProps.isRefreshing
     );
   });
@@ -217,7 +217,6 @@ export default function TabOneScreen() {
     return (
       <DayEventsPage
         dayDate={dayDate}
-        refresh={refresh}
         headerHeight={headerHeight}
         bottomHeight={bottomHeight}
         isRefreshing={isRefreshing}
@@ -227,7 +226,7 @@ export default function TabOneScreen() {
         t={t}
       />
     );
-  }, [refresh, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t, getDateFromIndex]);
+  }, [headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t, getDateFromIndex]);
 
   return (
     <>
