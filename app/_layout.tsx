@@ -8,11 +8,11 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
 
 import { AlertProvider } from '@/ui/components/AlertProvider';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
-import { DarkTheme,DefaultTheme } from '@/utils/theme/Theme';
+import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DatabaseProvider } from "@/database/DatabaseProvider";
 
@@ -55,8 +55,8 @@ const ALERT_SCREEN_OPTIONS = {
   sheetInitialDetentIndex: 0,
 } as const;
 
-const DEVMODE_SCREEN_OPTIONS = { 
-  headerTitle: "DevMode", 
+const DEVMODE_SCREEN_OPTIONS = {
+  headerTitle: "DevMode",
   headerBackButtonDisplayMode: "minimal" as const,
 } as const;
 
@@ -70,7 +70,7 @@ export default function RootLayout() {
 
   // Memoize error handler to prevent recreation
   const handleError = useCallback(() => {
-    if (error) {throw error;}
+    if (error) { throw error; }
   }, [error]);
 
   // Memoize splash screen handler
@@ -129,7 +129,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
             <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="page" />
-              <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS}/>
+              <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
             </Stack>
