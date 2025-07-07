@@ -5,6 +5,8 @@ import { Link, useNavigation, useRouter } from "expo-router";
 import { CalendarDaysIcon, CalendarIcon, ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
 import React, { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { useHeaderHeight } from '@react-navigation/elements';
+
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
@@ -21,6 +23,7 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { Q } from '@nozbe/watermelondb';
 import { LegendList } from "@legendapp/list";
 import { t } from "i18next";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -67,6 +70,9 @@ export default function TabOneScreen() {
     }
     setRefresh(r => r + 1); // trigger refetch
   };
+
+  const headerHeight = useHeaderHeight();
+  const bottomHeight = useBottomTabBarHeight();
 
   return (
     <>
@@ -144,11 +150,16 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <FlatList
+      <LegendList
         data={events}
         style={styles.container}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.containerContent}
+        waitForInitialLayout
+        contentContainerStyle={{
+          paddingTop: headerHeight + 8,
+          paddingHorizontal: 12,
+          paddingBottom: bottomHeight + 12,
+          gap: 4,
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -199,12 +210,8 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
+
   },
   containerContent: {
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-    padding: 12,
   }
 });
