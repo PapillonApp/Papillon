@@ -11,9 +11,10 @@ import { useEventById } from '@/database/useEventsById';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { NativeHeaderPressable, NativeHeaderSide } from '@/ui/components/NativeHeader';
 import { useDatabase } from '@/database/DatabaseProvider';
+import { t } from 'i18next';
 
 export default function TabOneScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, title } = useLocalSearchParams();
   const database = useDatabase();
   const router = useRouter();
   const navigation = useNavigation();
@@ -32,11 +33,9 @@ export default function TabOneScreen() {
   }, [event]);
 
   useLayoutEffect(() => {
-    if (event) {
-      navigation.setOptions({
-        headerTitle: event ? event.title : "Événement",
-      });
-    }
+    navigation.setOptions({
+      headerTitle: event ? event.title : title ?? t("Event_EventDetails"),
+    });
   }, [event, navigation]);
 
   return (
@@ -46,7 +45,7 @@ export default function TabOneScreen() {
           actions={[
             {
               id: 'delete',
-              title: 'Supprimer l’événement',
+              title: t("Event_DeleteEvent"),
               attributes: {
                 destructive: true,
               },
@@ -60,15 +59,15 @@ export default function TabOneScreen() {
           onPressAction={({ nativeEvent }) => {
             if (nativeEvent.event === 'delete') {
               Alert.alert(
-                "Supprimer l’événement",
-                "Êtes-vous sûr de vouloir supprimer cet événement ?",
+                t("Event_DeleteEvent"),
+                t("Event_Confirm_DeleteEvent"),
                 [
                   {
-                    text: "Annuler",
+                    text: t("Context_Cancel"),
                     style: "cancel"
                   },
                   {
-                    text: "Supprimer",
+                    text: t("Event_DeleteEvent"),
                     style: "destructive",
                     onPress: async () => {
                       try {
@@ -93,7 +92,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <MoreVertical />
+            <MoreVertical color={colors.text} />
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>

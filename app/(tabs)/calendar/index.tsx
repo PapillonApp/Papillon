@@ -2,7 +2,7 @@ import { useEventsForDay } from "@/database/useEvents";
 import { database } from "@/database";
 import Event from "@/database/models/Event";
 import { Link, useNavigation, useRouter } from "expo-router";
-import { ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
+import { CalendarDaysIcon, CalendarIcon, ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
 import React, { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
@@ -85,6 +85,7 @@ export default function TabOneScreen() {
             {
               id: 'manage_icals',
               title: t("Tab_Calendar_Icals"),
+              subtitle: t("Tab_Calendar_Icals_Description"),
               imageColor: colors.text,
               image: Platform.select({
                 ios: 'calendar',
@@ -102,7 +103,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <ListFilter color={colors.text} />
+            <CalendarDaysIcon color={colors.text} />
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
@@ -159,6 +160,16 @@ export default function TabOneScreen() {
           />
         }
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={() => (
+          <View style={styles.containerContent}>
+            <Typography variant="title" color="secondary">
+              {t("Tab_Calendar_Empty")}
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              {t("Tab_Calendar_Empty_Description")}
+            </Typography>
+          </View>
+        )}
         renderItem={({ item }) => (
           <Course
             id={item.id}
@@ -175,7 +186,7 @@ export default function TabOneScreen() {
             onPress={() => {
               router.push({
                 pathname: "./calendar/event/[id]",
-                params: { id: item.id }
+                params: { id: item.id, title: item.title }
               });
             }}
           />

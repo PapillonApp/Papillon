@@ -84,7 +84,7 @@ export default function TabOneScreen() {
                                 title={t("Context_Add")}
                                 variant="primary"
                                 onPress={handleAdd}
-                                disabled={!isValidUrl(icalUrl) || icalTitle.length === 0}
+                                disabled={!isValidUrl(icalUrl)}
                             />
                         </Trailing>
                     )}

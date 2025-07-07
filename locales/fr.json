@@ -9,6 +9,7 @@
   "Tab_Page": "Page",
 
   "Tab_Calendar_Icals": "Gestion des iCal",
+  "Tab_Calendar_Icals_Description": "Gérer vos URL iCal",
 
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
@@ -21,6 +22,9 @@
   "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs.",
 
   "Alert_TechnicalDetails": "Détails techniques",
+
+  "Event_DeleteEvent": "Supprimer l'événement",
+  "Event_Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
   "Context_Delete": "Supprimer",
   "Context_Cancel": "Annuler",
