@@ -20,6 +20,7 @@ import Calendar from "@/ui/components/Calendar";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { Q } from '@nozbe/watermelondb';
 import { LegendList } from "@legendapp/list";
+import { t } from "i18next";
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -83,8 +84,7 @@ export default function TabOneScreen() {
           actions={[
             {
               id: 'manage_icals',
-              title: 'Gérer les iCal',
-              subtitle: 'Afficher les événements iCal',
+              title: t("Tab_Calendar_Icals"),
               imageColor: colors.text,
               image: Platform.select({
                 ios: 'calendar',
