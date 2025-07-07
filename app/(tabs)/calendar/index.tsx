@@ -3,7 +3,10 @@ import { database } from "@/database";
 import Event from "@/database/models/Event";
 import { Link, useNavigation, useRouter } from "expo-router";
 import { CalendarDaysIcon, CalendarIcon, ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
-import React, { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useRef } from "react";
+import { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View, Dimensions } from "react-native";
+
+import { useHeaderHeight } from '@react-navigation/elements';
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Course from "@/ui/components/Course";
@@ -21,6 +24,8 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { Q } from '@nozbe/watermelondb';
 import { LegendList } from "@legendapp/list";
 import { t } from "i18next";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import Animated from 'react-native-reanimated';
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -41,7 +46,7 @@ export default function TabOneScreen() {
   }, [events]);
 
   // Add demo event
-  const addDemoEvent = async () => {
+  const addDemoEvent = useCallback(async () => {
     try {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
@@ -62,15 +67,171 @@ export default function TabOneScreen() {
           ev.canceled = false;
         });
       });
+      setRefresh(r => r + 1); // trigger refetch after adding event
     } catch (err) {
       // Optionally, handle error
     }
-    setRefresh(r => r + 1); // trigger refetch
-  };
+  }, [date]);
+
+  const headerHeight = useHeaderHeight();
+  const bottomHeight = useBottomTabBarHeight();
+  const windowWidth = Dimensions.get("window").width;
+  const INITIAL_INDEX = 10000;
+  const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
+  // Store the reference date for index 10000
+  const referenceDate = useRef(new Date());
+  useEffect(() => {
+    referenceDate.current.setHours(0, 0, 0, 0);
+  }, []);
+
+  // Helper to get date from index
+  const getDateFromIndex = useCallback((index: number) => {
+    const d = new Date(referenceDate.current);
+    d.setDate(referenceDate.current.getDate() + (index - INITIAL_INDEX));
+    return d;
+  }, [INITIAL_INDEX]);
+
+  // Helper to get index from date
+  const getIndexFromDate = useCallback((d: Date) => {
+    const base = new Date(referenceDate.current);
+    base.setHours(0, 0, 0, 0);
+    const diff = Math.floor((d.setHours(0, 0, 0, 0) - base.getTime()) / (1000 * 60 * 60 * 24));
+    return INITIAL_INDEX + diff;
+  }, [INITIAL_INDEX]);
+
+  // FlatList ref for programmatic scroll
+  const flatListRef = useRef<FlatList<any>>(null);
+
+  // When date changes manually, update currentIndex and scroll FlatList to correct index
+  useEffect(() => {
+    const newIndex = getIndexFromDate(date);
+    if (newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+      if (flatListRef.current) {
+        try {
+          flatListRef.current.scrollToIndex({
+            index: newIndex,
+            animated: false, // Teleport instantly to the date
+          });
+        } catch (e) {
+          // If out of range, ignore
+        }
+      }
+    }
+  }, [date, getIndexFromDate, currentIndex]);
+
+  // Handle swipe (momentum end) to update date
+  const onMomentumScrollEnd = useCallback((e: any) => {
+    const newIndex = Math.round(e.nativeEvent.contentOffset.x / windowWidth);
+    if (newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+      const newDate = getDateFromIndex(newIndex);
+      setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
+    }
+  }, [windowWidth, currentIndex, getDateFromIndex]);
+
+  // Track last emitted index to avoid unnecessary updates
+  const lastEmittedIndex = useRef(currentIndex);
+
+  // Update date as soon as the user swipes past the midpoint of a day
+  const onScroll = useCallback((e: any) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(offsetX / windowWidth);
+    if (newIndex !== lastEmittedIndex.current) {
+      lastEmittedIndex.current = newIndex;
+      setCurrentIndex(newIndex);
+      const newDate = getDateFromIndex(newIndex);
+      setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
+    }
+  }, [windowWidth, getDateFromIndex]);
+
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
+    const dayEvents = useEventsForDay(dayDate, refresh); // keep refresh only for data fetching
+    return (
+      <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
+        <LegendList
+          data={dayEvents}
+          style={styles.container}
+          waitForInitialLayout
+          contentContainerStyle={{
+            paddingTop: headerHeight + 8,
+            paddingHorizontal: 12,
+            paddingBottom: bottomHeight + 12,
+            gap: 4,
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => {
+                setRefresh((r: number) => r + 1);
+              }}
+              colors={[colors.primary]}
+              progressBackgroundColor={colors.background}
+            />
+          }
+          keyExtractor={(item) => item.id}
+          ListEmptyComponent={() => (
+            <View style={styles.containerContent}>
+              <Typography variant="title" color="secondary">
+                {t("Tab_Calendar_Empty")}
+              </Typography>
+              <Typography variant="caption" color="secondary">
+                {t("Tab_Calendar_Empty_Description")}
+              </Typography>
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <Course
+              id={item.id}
+              name={item.title}
+              teacher={item.teacher ? { firstName: item.teacher, lastName: "" } : undefined}
+              room={item.room}
+              color={item.color || "#21A467"}
+              status={{ label: item.status || "", canceled: !!item.canceled }}
+              variant="primary"
+              start={Math.floor(item.start / 1000)}
+              end={Math.floor(item.end / 1000)}
+              readonly={!!item.readonly}
+              onPress={() => {
+                router.push({
+                  pathname: "./calendar/event/[id]",
+                  params: { id: item.id, title: item.title }
+                });
+              }}
+            />
+          )}
+        />
+      </View>
+    );
+  }, (prevProps, nextProps) => {
+    // Only rerender if dayDate or isRefreshing changes
+    return (
+      prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
+      prevProps.isRefreshing === nextProps.isRefreshing
+    );
+  });
+
+  // Stable renderItem function
+  const renderDay = useCallback(({ index }: { index: number }) => {
+    const dayDate = getDateFromIndex(index);
+    return (
+      <DayEventsPage
+        dayDate={dayDate}
+        headerHeight={headerHeight}
+        bottomHeight={bottomHeight}
+        isRefreshing={isRefreshing}
+        setRefresh={setRefresh}
+        colors={colors}
+        router={router}
+        t={t}
+      />
+    );
+  }, [headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t, getDateFromIndex]);
 
   return (
     <>
       <Calendar
+        key={"calendar-" + date.toISOString()}
         date={date}
         onDateChange={(newDate) => {
           setDate(newDate);
@@ -108,17 +269,15 @@ export default function TabOneScreen() {
         </MenuView>
       </NativeHeaderSide>
 
-      <NativeHeaderTitle
-        key={"header-" + date.toISOString()}
-      >
+      <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable
-          onPress={() => toggleDatePicker()}
+          onPress={toggleDatePicker}
           layout={Animation(LinearTransition)}
         >
           <Dynamic
             animated
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            key={"picker-" + date.toISOString()}
+            key={"header-" + date.toISOString()}
           >
             <Typography variant="navigation">
               {date.toLocaleDateString("fr-FR", { weekday: "long" })}
@@ -138,59 +297,36 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => { addDemoEvent() }}
+          onPress={addDemoEvent}
         >
           <Plus color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
+      {/* Optimized FlatList for horizontal day swiping */}
       <FlatList
-        data={events}
-        style={styles.container}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.containerContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => {
-              setRefresh(r => r + 1);
-            }}
-            colors={[colors.primary]}
-            progressBackgroundColor={colors.background}
-          />
-        }
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={() => (
-          <View style={styles.containerContent}>
-            <Typography variant="title" color="secondary">
-              {t("Tab_Calendar_Empty")}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              {t("Tab_Calendar_Empty_Description")}
-            </Typography>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <Course
-            id={item.id}
-            name={item.title}
-            teacher={item.teacher ? { firstName: item.teacher, lastName: "" } : undefined}
-            room={item.room}
-            color={item.color || "#21A467"}
-            status={{ label: item.status || "", canceled: !!item.canceled }}
-            variant="primary"
-            start={Math.floor(item.start / 1000)}
-            end={Math.floor(item.end / 1000)}
-            readonly={!!item.readonly}
-
-            onPress={() => {
-              router.push({
-                pathname: "./calendar/event/[id]",
-                params: { id: item.id, title: item.title }
-              });
-            }}
-          />
-        )}
+        ref={flatListRef as any}
+        data={Array.from({ length: 20001 })} // Large number for virtualized days
+        horizontal
+        pagingEnabled={false}
+        showsHorizontalScrollIndicator={false}
+        initialScrollIndex={INITIAL_INDEX}
+        getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+        renderItem={renderDay}
+        keyExtractor={(_, index) => String(index)}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        onMomentumScrollEnd={onMomentumScrollEnd}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        snapToInterval={windowWidth}
+        decelerationRate={0.95}
+        bounces={false}
+        windowSize={3}
+        maxToRenderPerBatch={2}
+        initialNumToRender={1}
+        removeClippedSubviews
+        extraData={{ refresh, headerHeight, bottomHeight, isRefreshing, colors, date }}
       />
     </>
   );
@@ -199,12 +335,11 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
   },
   containerContent: {
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 12,
-    padding: 12,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 32,
   }
 });

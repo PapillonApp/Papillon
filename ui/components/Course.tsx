@@ -1,8 +1,10 @@
 import { database } from "@/database";
-import { LucideIcon } from "lucide-react-native";
+import { LucideIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
 import { Alert, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Path, Svg } from "react-native-svg";
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 
 import { formatDuration } from "../utils/Duration";
 import Icon from "./Icon";
@@ -11,6 +13,8 @@ import Typography from "./Typography";
 
 import { ContextMenuView } from 'react-native-ios-context-menu';
 import { useTranslation } from "react-i18next";
+import { Animation } from "../utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 type Variant = 'primary' | 'separator';
 
@@ -51,153 +55,157 @@ const Course = React.memo(({
   const duration = end - start;
   const { t } = useTranslation();
 
-  return (
-    <Stack direction="horizontal" gap={12} style={{ width: "100%" }}>
-      <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
-        <Typography variant="h5" style={{ lineHeight: 20 }}>
-          {new Date(start * 1000).toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Typography>
-        <Typography variant="body2" color="secondary">
-          {new Date(end * 1000).toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Typography>
-      </Stack>
-      <View style={{ flex: 1, display: "flex", gap: 4 }}>
-        {status?.canceled && variant !== "separator" && (
-          <View style={styles.importantBox}>
-            <Typography color="danger" variant="h4" style={styles.room}>
-              {status.label}
-            </Typography>
-          </View>
-        )}
+  // Right swipe action for delete
+  const renderRightActions = (progress, dragX) => {
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ translateX: dragX.value + 72 }],
+    }));
 
-
-        <ContextMenuView
-          onPressMenuItem={({ nativeEvent }) => {
-            if (nativeEvent.actionKey === 'delete') {
-              // Handle delete action here
-              Alert.alert(
-                t("Context_Delete"),
-                t('Confirm_DeleteEvent'),
-                [
-                  {
-                    text: t("Context_Cancel"),
-                    style: "cancel"
-                  },
-                  {
-                    text: t("Context_Delete"),
-                    style: "destructive",
-                    onPress: async () => {
-                      try {
-                        await database.write(async () => {
-                          const event = await database.get('events').find(id);
-                          if (readonly) {
-                            Alert.alert(t("Alert_TechnicalDetails"), "This event is read-only and cannot be deleted.");
-                            return;
-                          }
-                          await event.markAsDeleted();
-                        });
-                      } catch (error) {
-                        console.error("Failed to delete event:", error);
-                      }
-                    }
-                  }
-                ]
-              );
+    return (
+      <Reanimated.View style={[{ height: '100%', width: 72, justifyContent: 'center', alignItems: 'flex-end' }, animatedStyle]}>
+        <Pressable
+          style={{
+            backgroundColor: '#FF3B30',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: 64,
+            height: "100%",
+            borderRadius: 18,
+            borderCurve: 'continuous',
+          }}
+          onPress={async () => {
+            try {
+              await database.write(async () => {
+                const event = await database.get('events').find(id);
+                if (readonly) {
+                  Alert.alert(t('Alert_TechnicalDetails'), 'This event is read-only and cannot be deleted.');
+                  return;
+                }
+                await event.markAsDeleted();
+              });
+            } catch (error) {
+              console.error('Failed to delete event:', error);
             }
           }}
-          cornerRadius={20}
-          menuConfig={{
-            menuTitle: '',
-            menuItems: [
-              {
-                actionKey: 'delete',
-                actionTitle: t("Context_Delete"),
-                menuAttributes: ['destructive'],
-                icon: {
-                  type: 'IMAGE_SYSTEM',
-                  imageValue: {
-                    systemName: 'trash',
-                  },
-                },
-              }
-            ],
-          }}
+          accessibilityLabel={t('Context_Delete')}
         >
-          <Pressable style={{ flex: 1 }} onPress={() => {
-            if (onPress) {
-              onPress();
-            }
-          }}>
-            <Stack
-              gap={4}
-              direction="vertical"
-              radius={18}
-              style={[
-                styles.container,
-                status?.canceled && variant !== "separator" ? styles.importantContainer : {},
-                { backgroundColor: color },
-                status?.canceled || variant === "separator" ? styles.canceled : {},
-                ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
-              ]}
-            >
-              <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
-                <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+          <Trash2Icon color="white" size={32} strokeWidth={2} />
+        </Pressable>
+      </Reanimated.View>
+    );
+  };
+
+  return (
+    <Reanimated.View
+      layout={Animation(LinearTransition, "list")}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+      style={{
+        width: "100%",
+      }}
+    >
+      <ReanimatedSwipeable
+        containerStyle={{ borderRadius: 18, borderCurve: 'continuous', marginVertical: 2, minWidth: '100%' }}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={!readonly ? renderRightActions : undefined}
+        overshootRight={false}
+      >
+        <Stack direction="horizontal" gap={12} style={{ width: "100%" }}>
+          <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
+            <Typography variant="h5" style={{ lineHeight: 20 }}>
+              {new Date(start * 1000).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              {new Date(end * 1000).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Typography>
+          </Stack>
+          <View style={{ flex: 1, display: "flex", gap: 4 }}>
+            {status?.canceled && variant !== "separator" && (
+              <View style={styles.importantBox}>
+                <Typography color="danger" variant="h4" style={styles.room}>
+                  {status.label}
+                </Typography>
+              </View>
+            )}
+
+            <Pressable style={{ flex: 1 }} onPress={() => {
+              if (onPress) {
+                onPress();
+              }
+            }}>
+              <Stack
+                gap={4}
+                direction="vertical"
+                radius={18}
+                style={[
+                  styles.container,
+                  status?.canceled && variant !== "separator" ? styles.importantContainer : {},
+                  { backgroundColor: color },
+                  status?.canceled || variant === "separator" ? styles.canceled : {},
+                  ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
+                ]}
+              >
+                <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
+                  <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+                    {variant === "separator" && Leading && (
+                      <Icon>
+                        <Leading stroke={"#606060"} />
+                      </Icon>
+                    )}
+                    <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
+                      {name}
+                    </Typography>
+                  </View>
                   {variant === "separator" && Leading && (
-                    <Icon>
-                      <Leading stroke={"#606060"} />
-                    </Icon>
+                    <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
+                      {formatDuration(duration)}
+                    </Typography>
                   )}
-                  <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
-                    {name}
-                  </Typography>
-                </View>
-                {variant === "separator" && Leading && (
-                  <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
-                    {formatDuration(duration)}
-                  </Typography>
-                )}
-              </Stack>
-              {variant !== "separator" && (
-                <Stack direction="horizontal" hAlign="center" gap={12}>
-                  <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
-                  <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {room}
-                  </Typography>
-                  <View
-                    style={[
-                      styles.separator,
-                      { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
-                    ]}
-                  />
-                  <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
-                  <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
-                  </Typography>
                 </Stack>
-              )}
-              {status && !status.canceled && variant !== "separator" && (
-                <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
-                  <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
-                    <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                      {status.label}
+                {variant !== "separator" && (
+                  <Stack direction="horizontal" hAlign="center" gap={12}>
+                    <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
+                    <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {room}
+                    </Typography>
+                    <View
+                      style={[
+                        styles.separator,
+                        { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
+                      ]}
+                    />
+                    <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
+                    <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
                     </Typography>
                   </Stack>
-                  <Typography color="light" variant="h4" style={[styles.statusDuration]}>
-                    {formatDuration(duration)}
-                  </Typography>
-                </View>
-              )}
-            </Stack>
-          </Pressable>
-        </ContextMenuView>
-      </View>
-    </Stack>
+                )}
+                {status && !status.canceled && variant !== "separator" && (
+                  <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
+                    <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+                      <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                        {status.label}
+                      </Typography>
+                    </Stack>
+                    <Typography color="light" variant="h4" style={[styles.statusDuration]}>
+                      {formatDuration(duration)}
+                    </Typography>
+                  </View>
+                )}
+              </Stack>
+            </Pressable>
+          </View>
+        </Stack>
+      </ReanimatedSwipeable>
+    </Reanimated.View>
   );
 });
 
