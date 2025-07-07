@@ -1,16 +1,14 @@
-import React, { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { Platform, Pressable, Text, View } from "react-native";
 import { useState, type ComponentType } from "react";
 import * as LucideIcons from "lucide-react-native";
 
 import Typography from "@/ui/components/Typography";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Button from "@/ui/components/Button";
 import { useTheme } from "@react-navigation/native";
 
-import { Animation } from "@/ui/utils/Animation";
 
 import Reanimated, { LinearTransition, Easing } from "react-native-reanimated";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useTranslation } from "react-i18next";
 
 export default function AlertModal() {
