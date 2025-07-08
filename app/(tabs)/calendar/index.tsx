@@ -317,19 +317,23 @@ export default function TabOneScreen() {
           layout={Animation(LinearTransition)}
         >
           <Dynamic
-            animated
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            key={"header-" + date.toISOString()}
           >
-            <Typography variant="navigation">
-              {date.toLocaleDateString("fr-FR", { weekday: "long" })}
-            </Typography>
-            <NativeHeaderHighlight color="#D6502B">
-              {date.toLocaleDateString("fr-FR", { day: "numeric" })}
-            </NativeHeaderHighlight>
-            <Typography variant="navigation">
-              {date.toLocaleDateString("fr-FR", { month: "long" })}
-            </Typography>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { weekday: "long" })}>
+              <Typography variant="navigation">
+                {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+              </Typography>
+            </Dynamic>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { day: "numeric" })}>
+              <NativeHeaderHighlight color="#D6502B">
+                {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+              </NativeHeaderHighlight>
+            </Dynamic>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { month: "long" })}>
+              <Typography variant="navigation">
+                {date.toLocaleDateString("fr-FR", { month: "long" })}
+              </Typography>
+            </Dynamic>
           </Dynamic>
           <Dynamic animated>
             <ChevronDown color={colors.text} opacity={0.7} />
