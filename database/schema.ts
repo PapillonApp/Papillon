@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 5,
+  version: 6, // incremented version
   tables: [
     tableSchema({
       name: 'events',
@@ -15,6 +15,7 @@ export const mySchema = appSchema({
         { name: 'status', type: 'string', isOptional: true },
         { name: 'canceled', type: 'boolean', isOptional: true },
         { name: 'readonly', type: 'boolean', isOptional: true },
+        { name: 'subject_id', type: 'string', isOptional: true },
       ],
     }),
     tableSchema({
@@ -23,6 +24,14 @@ export const mySchema = appSchema({
         { name: 'title', type: 'string' },
         { name: 'url', type: 'string' },
         { name: 'lastupdated', type: 'number' },
+      ],
+    }),
+    tableSchema({
+      name: 'subjects',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'code', type: 'string', isOptional: true },
+        { name: 'color', type: 'string', isOptional: true },
       ],
     }),
   ],

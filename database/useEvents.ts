@@ -5,7 +5,7 @@ import Event from './models/Event';
 
 export function useEventsForDay(date: Date, refresh = 0) {
   const database = useDatabase();
-  const [events, setEvents] = useState<Event[]>([]);
+  const [eventsWithSubjects, setEventsWithSubjects] = useState<any[]>([]);
 
   useEffect(() => {
     const startOfDay = new Date(date);
@@ -17,12 +17,18 @@ export function useEventsForDay(date: Date, refresh = 0) {
     const query = database.get<Event>('events').query(
       Q.where('start', Q.between(startOfDay.getTime(), endOfDay.getTime()))
     );
-    const subscription = query.observe().subscribe(setEvents);
-    // Optionally, log for debugging
-    // query.fetch().then(allEvents => console.log('All events in DB (from hook):', allEvents.map(e => ({ id: e.id, title: e.title, start: e.start, end: e.end }))));
+    const subscription = query.observe().subscribe(async (events) => {
+      const eventsWithSubjects = await Promise.all(
+        events.map(async (event) => {
+          const subject = await event.subject.fetch();
+          // Use event.start from the Event instance, not from _raw
+          return { ...event._raw, start: event.start, end: event.end, subject: subject ? subject._raw : null };
+        })
+      );
+      setEventsWithSubjects(eventsWithSubjects.sort((a, b) => a.start - b.start));
+    });
     return () => subscription.unsubscribe();
   }, [date, database, refresh]);
 
-  // Sort events by start time before returning
-  return events.slice().sort((a, b) => a.start - b.start);
+  return eventsWithSubjects;
 }
