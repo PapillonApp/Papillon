@@ -191,12 +191,16 @@ export default function TabOneScreen() {
           data={dayEvents}
           style={styles.container}
           waitForInitialLayout
-          contentContainerStyle={{
-            paddingTop: headerHeight + 8,
-            paddingHorizontal: 12,
-            paddingBottom: bottomHeight + 12,
-            gap: 4,
-          }}
+          contentContainerStyle={[
+            Platform.OS === "ios" ? {
+              paddingTop: headerHeight + 8,
+              paddingHorizontal: 12,
+              paddingBottom: bottomHeight + 12,
+              gap: 4,
+            } : {
+              paddingHorizontal: 12,
+            }
+          ]}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}

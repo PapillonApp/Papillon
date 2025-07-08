@@ -196,12 +196,14 @@ const Course = React.memo(({
                   </Stack>
                 )}
                 {status && !status.canceled && variant !== "separator" && (
-                  <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: 2 }}>
-                    <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
-                      <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                        {status.label}
-                      </Typography>
-                    </Stack>
+                  <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 2 : 0 }}>
+                    {status.label && status.label !== "" &&
+                      <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+                        <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                          {status.label}
+                        </Typography>
+                      </Stack>
+                    }
                     <Typography color="light" variant="h4" style={[styles.statusDuration]}>
                       {formatDuration(duration)}
                     </Typography>
