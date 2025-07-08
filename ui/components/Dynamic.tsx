@@ -20,12 +20,12 @@ const ANIMATED_LAYOUT = Animation(LinearTransition);
 // Base style object to avoid recreation
 const BASE_STYLE = { flexDirection: "row" as const };
 
-export const Dynamic = React.memo<DynamicProps>(({ 
-  children, 
-  animated, 
-  style, 
-  origin = "right", 
-  ...rest 
+export const Dynamic = React.memo<DynamicProps>(({
+  children,
+  animated,
+  style,
+  origin = "center",
+  ...rest
 }) => {
   // Memoize the computed style to prevent object recreation
   const computedStyle = useMemo(() => {
@@ -35,7 +35,7 @@ export const Dynamic = React.memo<DynamicProps>(({
         transformOrigin: origin,
       };
     }
-    
+
     return {
       ...style,
       ...BASE_STYLE,
@@ -44,8 +44,8 @@ export const Dynamic = React.memo<DynamicProps>(({
   }, [style, origin]);
 
   // Memoize layout prop to avoid conditional evaluation on every render
-  const layoutProp = useMemo(() => 
-    animated ? ANIMATED_LAYOUT : undefined, 
+  const layoutProp = useMemo(() =>
+    animated ? ANIMATED_LAYOUT : undefined,
     [animated]
   );
 

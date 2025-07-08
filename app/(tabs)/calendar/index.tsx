@@ -1,6 +1,7 @@
 import { useEventsForDay } from "@/database/useEvents";
 import { database } from "@/database";
 import Event from "@/database/models/Event";
+import Subject from '@/database/models/Subject';
 import { Link, useNavigation, useRouter } from "expo-router";
 import { CalendarDaysIcon, CalendarIcon, ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
 import React, { useRef } from "react";
@@ -43,6 +44,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     setIsRefreshing(false);
+    console.log(events);
   }, [events]);
 
   // Add demo event
@@ -55,17 +57,20 @@ export default function TabOneScreen() {
       const randomTime = new Date(startOfDay.getTime() + Math.random() * (endOfDay.getTime() - startOfDay.getTime()));
       const start = randomTime.getTime();
       const end = start + 60 * 60 * 1000; // 1 hour
-      await database.write(async () => {
-        await database.get<Event>('events').create(ev => {
-          ev.title = 'Demo Event';
-          ev.start = start;
-          ev.end = end;
-          ev.color = '#21A467';
-          ev.room = 'Demo Room';
-          ev.teacher = 'Demo Teacher';
-          ev.status = 'Demo';
-          ev.canceled = false;
-        });
+      await createEventWithSubject({
+        title: 'Demo Event',
+        start,
+        end,
+        color: '#21A467',
+        room: 'Demo Room',
+        teacher: 'Demo Teacher',
+        status: 'Demo',
+        canceled: false,
+        subject: {
+          name: 'Demo Subject',
+          code: 'DEMO',
+          color: '#21A467',
+        },
       });
       setRefresh(r => r + 1); // trigger refetch after adding event
     } catch (err) {
@@ -146,19 +151,56 @@ export default function TabOneScreen() {
   }, [windowWidth, getDateFromIndex]);
 
   const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
-    const dayEvents = useEventsForDay(dayDate, refresh); // keep refresh only for data fetching
+    const rawDayEvents = useEventsForDay(dayDate, refresh);
+
+    // Cache to preserve event object identity by id
+    const eventCache = React.useRef<{ [id: string]: any }>({});
+
+    // Shallow compare function
+    function shallowEqual(objA: any, objB: any) {
+      if (objA === objB) return true;
+      if (!objA || !objB) return false;
+      const keysA = Object.keys(objA);
+      const keysB = Object.keys(objB);
+      if (keysA.length !== keysB.length) return false;
+      for (let key of keysA) {
+        if (objA[key] !== objB[key]) return false;
+      }
+      return true;
+    }
+
+    const dayEvents = React.useMemo(() => {
+      const cache = eventCache.current;
+      const next: { [id: string]: any } = {};
+      const result = rawDayEvents.map(ev => {
+        if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
+          next[ev.id] = cache[ev.id];
+          return cache[ev.id];
+        } else {
+          next[ev.id] = ev;
+          return ev;
+        }
+      });
+      eventCache.current = next;
+      return result;
+    }, [rawDayEvents]);
+
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
         <LegendList
           data={dayEvents}
           style={styles.container}
           waitForInitialLayout
-          contentContainerStyle={{
-            paddingTop: headerHeight + 8,
-            paddingHorizontal: 12,
-            paddingBottom: bottomHeight + 12,
-            gap: 4,
-          }}
+          contentContainerStyle={[
+            Platform.OS === "ios" ? {
+              paddingTop: headerHeight + 8,
+              paddingHorizontal: 12,
+              paddingBottom: bottomHeight + 12,
+              gap: 4,
+            } : {
+              paddingHorizontal: 12,
+            }
+          ]}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -183,10 +225,10 @@ export default function TabOneScreen() {
           renderItem={({ item }) => (
             <Course
               id={item.id}
-              name={item.title}
-              teacher={item.teacher ? { firstName: item.teacher, lastName: "" } : undefined}
+              name={item.subject ? item.subject.name : item.title}
+              teacher={item.teacher}
               room={item.room}
-              color={item.color || "#21A467"}
+              color={(item.subject ? item.subject.color : item.color) || "#888888"}
               status={{ label: item.status || "", canceled: !!item.canceled }}
               variant="primary"
               start={Math.floor(item.start / 1000)}
@@ -194,8 +236,8 @@ export default function TabOneScreen() {
               readonly={!!item.readonly}
               onPress={() => {
                 router.push({
-                  pathname: "./calendar/event/[id]",
-                  params: { id: item.id, title: item.title }
+                  pathname: "/(tabs)/calendar/event/[id]",
+                  params: { id: item.id, title: item.title || item.subject.name || item.subject.code || "Event" }
                 });
               }}
             />
@@ -275,19 +317,23 @@ export default function TabOneScreen() {
           layout={Animation(LinearTransition)}
         >
           <Dynamic
-            animated
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            key={"header-" + date.toISOString()}
           >
-            <Typography variant="navigation">
-              {date.toLocaleDateString("fr-FR", { weekday: "long" })}
-            </Typography>
-            <NativeHeaderHighlight color="#D6502B">
-              {date.toLocaleDateString("fr-FR", { day: "numeric" })}
-            </NativeHeaderHighlight>
-            <Typography variant="navigation">
-              {date.toLocaleDateString("fr-FR", { month: "long" })}
-            </Typography>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { weekday: "long" })}>
+              <Typography variant="navigation">
+                {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+              </Typography>
+            </Dynamic>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { day: "numeric" })}>
+              <NativeHeaderHighlight color="#D6502B">
+                {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+              </NativeHeaderHighlight>
+            </Dynamic>
+            <Dynamic animated key={date.toLocaleDateString("fr-FR", { month: "long" })}>
+              <Typography variant="navigation">
+                {date.toLocaleDateString("fr-FR", { month: "long" })}
+              </Typography>
+            </Dynamic>
           </Dynamic>
           <Dynamic animated>
             <ChevronDown color={colors.text} opacity={0.7} />
@@ -297,7 +343,12 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={addDemoEvent}
+          onPress={() => {
+            router.push({
+              pathname: "/(new)/event",
+              params: { date: date.toISOString() }
+            });
+          }}
         >
           <Plus color={colors.text} />
         </NativeHeaderPressable>

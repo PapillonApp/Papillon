@@ -29,7 +29,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const currentDate = selectedDate || date;
     setDate(currentDate);
     onDateChange?.(currentDate);
-    if (Platform.OS === "android") {setShowDatePicker(false);}
+    if (Platform.OS === "android") { setShowDatePicker(false); }
   };
 
   React.useEffect(() => {
@@ -38,13 +38,14 @@ const Calendar: React.FC<CalendarProps> = ({
     }
   }, [showDatePicker]);
 
-  if (!showDatePicker) {return null;}
+  if (!showDatePicker) { return null; }
 
-  if( Platform.OS === "android") {
+  if (Platform.OS === "android") {
     return (
       <DateTimePicker
         value={date}
         mode="date"
+        design="material"
         display="inline"
         accentColor={colors.primary}
         locale={Localization.getLocales()[0].languageTag}

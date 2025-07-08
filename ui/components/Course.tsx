@@ -21,7 +21,7 @@ type Variant = 'primary' | 'separator';
 interface CourseProps {
   id: string;
   name: string;
-  teacher?: { firstName: string; lastName: string };
+  teacher?: string;
   room?: string;
   color?: string;
   status?: {
@@ -142,7 +142,7 @@ const Course = React.memo(({
               }
             }}>
               <Stack
-                gap={4}
+                gap={2}
                 direction="vertical"
                 radius={18}
                 style={[
@@ -160,12 +160,19 @@ const Course = React.memo(({
                         <Leading stroke={"#606060"} />
                       </Icon>
                     )}
-                    <Typography color="light" variant="h4" style={status?.canceled || variant === "separator" ? styles.canceled : undefined}>
+                    <Typography
+                      color="light"
+                      variant="h5"
+                      style={[
+                        (status?.canceled || variant === "separator") ? styles.canceled : {},
+                        styles.label
+                      ]}
+                    >
                       {name}
                     </Typography>
                   </View>
                   {variant === "separator" && Leading && (
-                    <Typography color="light" variant="h5" style={{ color: "#60606080" }}>
+                    <Typography color="light" variant="h5" style={[{ color: "#60606080" }, styles.label]}>
                       {formatDuration(duration)}
                     </Typography>
                   )}
@@ -173,7 +180,7 @@ const Course = React.memo(({
                 {variant !== "separator" && (
                   <Stack direction="horizontal" hAlign="center" gap={12}>
                     <FilledMapIcon color={status?.canceled ? "#606060" : "white"} />
-                    <Typography color="light" variant="h4" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                    <Typography color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
                       {room}
                     </Typography>
                     <View
@@ -183,18 +190,20 @@ const Course = React.memo(({
                       ]}
                     />
                     <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
-                    <Typography color="light" variant="h4" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-                      {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
+                    <Typography color="light" variant="body1" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {teacher || t("Form_Organizer")}
                     </Typography>
                   </Stack>
                 )}
                 {status && !status.canceled && variant !== "separator" && (
-                  <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7 }}>
-                    <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
-                      <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                        {status.label}
-                      </Typography>
-                    </Stack>
+                  <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 2 : 0 }}>
+                    {status.label && status.label !== "" &&
+                      <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+                        <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                          {status.label}
+                        </Typography>
+                      </Stack>
+                    }
                     <Typography color="light" variant="h4" style={[styles.statusDuration]}>
                       {formatDuration(duration)}
                     </Typography>
@@ -247,6 +256,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignSelf: "stretch"
   },
+  label: {
+    fontSize: 18,
+    lineHeight: 22,
+    color: "#FFFFFF",
+    fontFamily: "bold",
+    flexShrink: 1
+  },
   canceled: {
     backgroundColor: "#E7E7E7",
     color: "#606060"
@@ -256,25 +272,28 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 6
   },
   room: {
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: "semibold",
   },
   statusLabel: {
     fontSize: 15
   },
   separator: {
     width: 2,
-    alignSelf: "stretch",
+    height: 20,
+    alignSelf: "center",
     borderRadius: 50,
     opacity: 0.5,
     backgroundColor: "#FFFFFF",
   },
   teacher: {
-    fontSize: 18,
+    fontSize: 16,
+    fontFamily: "semibold",
   },
   statusLabelContainer: {
     width: "auto",
     paddingHorizontal: 8,
-    paddingVertical: 4
+    paddingVertical: 0
   },
   statusDuration: {
     fontSize: 15,

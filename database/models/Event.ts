@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { field, relation } from '@nozbe/watermelondb/decorators';
 
 export default class Event extends Model {
   static table = 'events';
@@ -15,4 +15,6 @@ export default class Event extends Model {
   @field('status') status?: string;
   @field('canceled') canceled?: boolean;
   @field('readonly') readonly?: boolean;
+  @field('subject_id') subject_id?: string;
+  @relation('subjects', 'subject_id') subject: any;
 }

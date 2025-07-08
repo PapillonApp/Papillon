@@ -22,7 +22,7 @@
     "@expo/vector-icons": "^14.1.0",
     "@legendapp/list": "^1.0.19",
     "@nozbe/watermelondb": "^0.28.0",
-    "@react-native-community/datetimepicker": "8.4.1",
+    "@react-native-community/datetimepicker": "^8.4.2",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-menu/menu": "^1.2.3",
     "@react-native-segmented-control/segmented-control": "2.5.7",
