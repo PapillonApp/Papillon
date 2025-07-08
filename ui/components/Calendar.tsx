@@ -7,6 +7,7 @@ import * as Localization from "expo-localization";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import * as Haptics from "expo-haptics";
 import { useTheme } from "@react-navigation/native";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
 
 export interface CalendarProps {
   date?: Date;
@@ -60,7 +61,7 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: insets.top + 48,
+        top: runsIOS26() ? insets.top + 48 : 8,
         zIndex: 99999,
         width: "100%",
         height: "100%",

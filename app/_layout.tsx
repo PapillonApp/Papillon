@@ -15,6 +15,7 @@ import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DatabaseProvider } from "@/database/DatabaseProvider";
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -117,7 +118,12 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Combined effect for system UI updates to reduce effect overhead
   useEffect(() => {
-    SystemUI.setBackgroundColorAsync(backgroundColor);
+    if (runsIOS26()) {
+      SystemUI.setBackgroundColorAsync(backgroundColor);
+    }
+    else {
+      SystemUI.setBackgroundColorAsync("#000000");
+    }
     StatusBar.setBarStyle(statusBarStyle);
   }, [backgroundColor, statusBarStyle]);
 
