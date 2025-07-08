@@ -7,6 +7,8 @@
   "Tab_Grades": "Grades",
   "Tab_Profile": "Profile",
   "Tab_Page": "Page",
+  
+  "Tab_New_Event": "New event",
 
   "Tab_Calendar_Icals": "iCal Management",
   "Tab_Calendar_Icals_Description": "Manage your iCal URLs",
@@ -32,6 +34,10 @@
   "Context_Add": "Add",
 
   "Form_Title": "Title",
+  "Form_Location": "Location",
+  "Form_Organizer": "Organizer",
+  "Form_Start": "Start",
+  "Form_End": "End",
 
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?"
 }

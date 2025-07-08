@@ -8,6 +8,8 @@
   "Tab_Profile": "Profil",
   "Tab_Page": "Page",
 
+  "Tab_New_Event": "Nouvel événement",
+
   "Tab_Calendar_Icals": "Gestion des iCal",
   "Tab_Calendar_Icals_Description": "Gérer vos URL iCal",
 
@@ -32,6 +34,10 @@
   "Context_Add": "Ajouter",
 
   "Form_Title": "Titre",
+  "Form_Location": "Emplacement",
+  "Form_Organizer": "Organisateur",
+  "Form_Start": "Début",
+  "Form_End": "Fin",
 
   "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?"
 }

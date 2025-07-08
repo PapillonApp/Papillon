@@ -78,48 +78,6 @@ export default function TabOneScreen() {
     }
   }, [date]);
 
-  // Helper to create an event and link to subject
-  async function createEventWithSubject(eventData: {
-    title: string;
-    start: number;
-    end: number;
-    color?: string;
-    room?: string;
-    teacher?: string;
-    status?: string;
-    canceled?: boolean;
-    subject: { name: string; code?: string; color?: string };
-  }) {
-    await database.write(async () => {
-      // Try to find existing subject
-      let subject = await database.get<Subject>('subjects').query(Q.where('name', eventData.subject.name)).fetch();
-      let subjectId;
-      if (subject.length > 0) {
-        subjectId = subject[0].id;
-      } else {
-        // Create subject
-        const newSubject = await database.get<Subject>('subjects').create((s: Subject) => {
-          s.name = eventData.subject.name;
-          if (eventData.subject.code) s.code = eventData.subject.code;
-          if (eventData.subject.color) s.color = eventData.subject.color;
-        });
-        subjectId = newSubject.id;
-      }
-      // Create event
-      await database.get<Event>('events').create((ev: Event) => {
-        ev.title = eventData.title;
-        ev.start = eventData.start;
-        ev.end = eventData.end;
-        if (eventData.color) ev.color = eventData.color;
-        if (eventData.room) ev.room = eventData.room;
-        if (eventData.teacher) ev.teacher = eventData.teacher;
-        if (eventData.status) ev.status = eventData.status;
-        if (typeof eventData.canceled === 'boolean') ev.canceled = eventData.canceled;
-        ev.subject_id = subjectId;
-      });
-    });
-  }
-
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
   const windowWidth = Dimensions.get("window").width;
@@ -263,8 +221,8 @@ export default function TabOneScreen() {
           renderItem={({ item }) => (
             <Course
               id={item.id}
-              name={item.subject.name}
-              teacher={item.teacher ? { firstName: item.teacher, lastName: "" } : undefined}
+              name={item.subject.name ?? item.title}
+              teacher={item.teacher}
               room={item.room}
               color={(item.subject.color ?? item.color) || "#888888"}
               status={{ label: item.status || "", canceled: !!item.canceled }}
@@ -377,7 +335,12 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={addDemoEvent}
+          onPress={() => {
+            router.push({
+              pathname: "/(new)/event",
+              params: { date: date.toISOString() }
+            });
+          }}
         >
           <Plus color={colors.text} />
         </NativeHeaderPressable>

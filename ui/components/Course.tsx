@@ -21,7 +21,7 @@ type Variant = 'primary' | 'separator';
 interface CourseProps {
   id: string;
   name: string;
-  teacher?: { firstName: string; lastName: string };
+  teacher?: string;
   room?: string;
   color?: string;
   status?: {
@@ -191,7 +191,7 @@ const Course = React.memo(({
                     />
                     <FilledCircleUser color={status?.canceled ? "#606060" : "white"} />
                     <Typography color="light" variant="body1" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-                      {teacher?.lastName.toUpperCase() ?? "Professeur inconnu"} {teacher?.firstName.split('')[0].toLocaleUpperCase() ?? ""}.
+                      {teacher || t("Form_Organizer")}
                     </Typography>
                   </Stack>
                 )}
