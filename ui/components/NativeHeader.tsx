@@ -8,6 +8,8 @@ const styles = StyleSheet.create({
   side: {
     height: 36,
     minWidth: 36,
+    alignSelf: "center",
+    flexShrink: 1,
     flexDirection: "row",
     gap: 8,
     alignItems: "center",
@@ -83,7 +85,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
   const navigation = useNavigation();
   const propsRef = useRef(props);
   const childrenRef = useRef(children);
-  
+
   // Update refs without triggering re-renders
   propsRef.current = props;
   childrenRef.current = children;
@@ -99,7 +101,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
     );
 
     navigation.setOptions({ [headerKey]: renderComponent });
-    
+
     return () => {
       navigation.setOptions({ [headerKey]: undefined });
     };
@@ -128,7 +130,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   const propsRef = useRef(props);
   const childrenRef = useRef(children);
   const onSearchRef = useRef(onSearch);
-  
+
   // Update refs without triggering re-renders
   propsRef.current = props;
   childrenRef.current = children;
@@ -158,12 +160,12 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
       headerLargeTitle,
       headerSearchBarOptions: searchOptions,
     });
-    
+
     return () => {
-      navigation.setOptions({ 
-        headerTitle: undefined, 
-        headerLargeTitle: undefined, 
-        headerSearchBarOptions: undefined 
+      navigation.setOptions({
+        headerTitle: undefined,
+        headerLargeTitle: undefined,
+        headerSearchBarOptions: undefined
       });
     };
   }, [navigation, headerLargeTitle, search, placeholder]); // Minimal dependencies
@@ -182,7 +184,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
 
     return <Pressable {...props} style={styleFunction} />;
   }
-  
+
   // Static style - use cached version
   const style = getPressableStyle(props.style);
   return <Pressable {...props} style={style} />;
@@ -193,18 +195,18 @@ interface NativeHeaderHighlightProps extends ViewProps {
   color?: string;
 }
 
-const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({ 
-  children, 
-  color = DEFAULT_COLOR, 
+const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
+  children,
+  color = DEFAULT_COLOR,
   style,
-  ...props 
+  ...props
 }: NativeHeaderHighlightProps) {
   // Use cached background color
   const backgroundColor = color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
-  
+
   // Pre-compute style array once
   const viewStyle = style ? [styles.highlight, { backgroundColor }, style] : [styles.highlight, { backgroundColor }];
-  
+
   return (
     <View style={viewStyle} {...props}>
       {typeof children === 'string' ? (

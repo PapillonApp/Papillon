@@ -122,9 +122,7 @@ export default function NewEventScreen() {
         key={"saveIcon_save=" + canSave + inputTitle + inputLocation + inputOrganizer + inputStartDate.getTime() + inputEndDate.getTime()}
       >
         <NativeHeaderPressable disabled={!canSave} onPress={() => { saveEvent() }}>
-          <Icon style={{ opacity: canSave ? 1 : 0.5 }}>
-            <Check />
-          </Icon>
+          <Check style={{ opacity: canSave ? 1 : 0.5 }} color={canSave ? colors.primary : colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
@@ -194,11 +192,17 @@ export default function NewEventScreen() {
                   display="compact"
                   onChange={(event, date) => {
                     if (date) {
+                      // When changing the start date, update the date part of end date to match, but keep the time part
                       setInputStartDate(date);
-
-                      let newInputEndDate = date;
-                      newInputEndDate.setHours(inputEndDate.getHours(), inputEndDate.getMinutes(), 0, 0);
-                      setInputEndDate(newInputEndDate);
+                      setInputEndDate(prevEnd => {
+                        const newEnd = new Date(date);
+                        newEnd.setHours(prevEnd.getHours(), prevEnd.getMinutes(), 0, 0);
+                        // If new end is before or equal to new start, add 1 hour
+                        if (newEnd.getTime() <= date.getTime()) {
+                          newEnd.setTime(date.getTime() + 60 * 60 * 1000);
+                        }
+                        return newEnd;
+                      });
                     }
                   }}
                 />
@@ -271,7 +275,16 @@ export default function NewEventScreen() {
                   display="compact"
                   onChange={(event, date) => {
                     if (date) {
-                      setInputEndDate(date);
+                      // Only update the time part of end date, keep the date part
+                      setInputEndDate(prevEnd => {
+                        const newEnd = new Date(prevEnd);
+                        newEnd.setHours(date.getHours(), date.getMinutes(), 0, 0);
+                        // If new end is before or equal to start, move to next day
+                        if (newEnd.getTime() <= inputStartDate.getTime()) {
+                          newEnd.setDate(newEnd.getDate() + 1);
+                        }
+                        return newEnd;
+                      });
                     }
                   }}
                 />

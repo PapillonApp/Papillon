@@ -27,6 +27,7 @@ import { LegendList } from "@legendapp/list";
 import { t } from "i18next";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import Animated from 'react-native-reanimated';
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -80,6 +81,7 @@ export default function TabOneScreen() {
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
+  const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
@@ -192,13 +194,11 @@ export default function TabOneScreen() {
           style={styles.container}
           waitForInitialLayout
           contentContainerStyle={[
-            Platform.OS === "ios" ? {
-              paddingTop: headerHeight + 8,
+            {
+              paddingTop: globalPaddingTop,
               paddingHorizontal: 12,
               paddingBottom: bottomHeight + 12,
               gap: 4,
-            } : {
-              paddingHorizontal: 12,
             }
           ]}
           refreshControl={
