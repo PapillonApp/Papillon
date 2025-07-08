@@ -225,10 +225,10 @@ export default function TabOneScreen() {
           renderItem={({ item }) => (
             <Course
               id={item.id}
-              name={item.subject.name ?? item.title}
+              name={item.subject ? item.subject.name : item.title}
               teacher={item.teacher}
               room={item.room}
-              color={(item.subject.color ?? item.color) || "#888888"}
+              color={(item.subject ? item.subject.color : item.color) || "#888888"}
               status={{ label: item.status || "", canceled: !!item.canceled }}
               variant="primary"
               start={Math.floor(item.start / 1000)}
@@ -236,8 +236,8 @@ export default function TabOneScreen() {
               readonly={!!item.readonly}
               onPress={() => {
                 router.push({
-                  pathname: "./calendar/event/[id]",
-                  params: { id: item.id, title: item.title }
+                  pathname: "/(tabs)/calendar/event/[id]",
+                  params: { id: item.id, title: item.title || item.subject.name || item.subject.code || "Event" }
                 });
               }}
             />

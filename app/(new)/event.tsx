@@ -56,8 +56,8 @@ export default function NewEventScreen() {
   }, [inputTitle, inputLocation, inputOrganizer, inputStartDate, inputEndDate]);
 
 
-  // Helper to create an event and link to subject
-  async function createEventWithSubject(eventData: {
+  // Helper to create an event without linking to subject
+  async function createEvent(eventData: {
     title: string;
     start: number;
     end: number;
@@ -66,24 +66,8 @@ export default function NewEventScreen() {
     teacher?: string;
     status?: string;
     canceled?: boolean;
-    subject: { name: string; code?: string; color?: string };
   }) {
     await database.write(async () => {
-      // Try to find existing subject
-      let subject = await database.get<Subject>('subjects').query(Q.where('name', eventData.subject.name)).fetch();
-      let subjectId;
-      if (subject.length > 0) {
-        subjectId = subject[0].id;
-      } else {
-        // Create subject
-        const newSubject = await database.get<Subject>('subjects').create((s: Subject) => {
-          s.name = eventData.subject.name;
-          if (eventData.subject.code) s.code = eventData.subject.code;
-          if (eventData.subject.color) s.color = eventData.subject.color;
-        });
-        subjectId = newSubject.id;
-      }
-      // Create event
       await database.get<Event>('events').create((ev: Event) => {
         ev.title = eventData.title;
         ev.start = eventData.start;
@@ -93,7 +77,6 @@ export default function NewEventScreen() {
         if (eventData.teacher) ev.teacher = eventData.teacher;
         if (eventData.status) ev.status = eventData.status;
         if (typeof eventData.canceled === 'boolean') ev.canceled = eventData.canceled;
-        ev.subject_id = subjectId;
       });
     });
   }
@@ -110,11 +93,10 @@ export default function NewEventScreen() {
       room: inputLocation,
       teacher: inputOrganizer,
       status: null, // Default status
-      canceled: false, // Default not canceled
-      subject: { name: inputTitle } // Use title as subject name
+      canceled: false // Default not canceled
     };
 
-    createEventWithSubject(eventData)
+    createEvent(eventData)
       .then(() => {
         router.back();
       })
