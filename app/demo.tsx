@@ -21,41 +21,39 @@ export default function TabOneScreen() {
       <SectionTitle title={"Typography"} colors={colors} />
       <View style={styles.typographyContainer}>
         <Typography variant="h1">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="h2">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="h3">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="h4">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="h5">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="h6">
-              Lorem ipsum
+          Lorem ipsum
         </Typography>
         <Typography variant="body1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
         </Typography>
         <Typography variant="body2">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
         </Typography>
         <Typography variant="caption" color="secondary">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh.
         </Typography>
       </View>
       <SectionTitle title={"Timetable"} colors={colors} />
       <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
         <Course
+          id="id1"
           name="Traitement des données"
-          teacher={{
-            firstName: "Lucas",
-            lastName: "Martin"
-          }}
+          teacher="Martin"
           room="Bât. 12 amphi 4"
           color="#0095D6"
           status={{ label: "Prof. absent", canceled: false }}
@@ -65,20 +63,19 @@ export default function TabOneScreen() {
           onPress={() => log("Bât. 12 amphi 4")}
         />
         <Course
+          id="id1"
           name="Pause méridienne"
           variant="separator"
           leading={Hamburger}
           start={1750126049}
           end={1750133249}
           onPress={() => log("Bât. 12 amphi 4")}
-          
+
         />
         <Course
+          id="id"
           name="Anglais"
-          teacher={{
-            firstName: "Raphaël",
-            lastName: "Schröder"
-          }}
+          teacher="Vince Linise"
           room="Bât. 9 salle 6"
           color="#21A467"
           status={{ label: "Professeur absent", canceled: true }}
@@ -88,11 +85,9 @@ export default function TabOneScreen() {
           onPress={() => log("Bât. 12 amphi 4", "Bât. 9 salle 6")}
         />
         <Course
+          id="id2"
           name="Développement web"
-          teacher={{
-            firstName: "Vince",
-            lastName: "Linise"
-          }}
+          teacher="Vince Linise"
           room="Bât. 10 salle 16"
           color="#21A467"
           status={{ label: "Cours magistral", canceled: false }}
@@ -157,13 +152,13 @@ const SectionTitle = ({ title, colors }: SectionTitleProps) => (
     <Typography variant="h4" color="primary">
       {title}
     </Typography>
-    <View 
-      style={{ 
+    <View
+      style={{
         width: "100%",
         height: 2,
         borderRadius: 100,
         backgroundColor: colors.primary,
-      }} 
+      }}
     />
   </View>
 );
@@ -172,7 +167,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    
+
   },
   containerContent: {
     gap: 16,
