@@ -34,6 +34,11 @@ export async function updateAttendancePeriodsInCache <T extends Account> (accoun
 
       break;
     }
+    case AccountService.Appscho:{
+      log("No service set in multi-service space for feature \"Attendance\"", "appscho");
+      defaultPeriod = "Toutes";
+      break;
+    }
     case AccountService.Local: {
       if (account.identityProvider.identifier == "iut-lannion") {
         const { saveIUTLanPeriods } = await import("./iutlan/grades");
@@ -98,6 +103,10 @@ export async function updateAttendanceInCache <T extends Account> (account: T, p
     case AccountService.EcoleDirecte: {
       const { getAttendance } = await import("./ecoledirecte/attendance");
       attendance = await getAttendance(account);
+      break;
+    }
+    case AccountService.Appscho:{
+      log("No service set in multi-service space for feature \"Attendance\"", "appscho");
       break;
     }
     case AccountService.Local: {

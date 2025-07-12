@@ -4,6 +4,7 @@ export interface Information {
   id: string
   title?: string
   date: Date
+  picture?: string
   acknowledged: boolean
   attachments: Attachment[]
   content: string
