@@ -242,7 +242,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
         </NativeList>
 
         <NativeListHeader
-          label="Prénom et nom"
+          label="Mes informations"
         />
 
         <NativeList>
@@ -294,7 +294,7 @@ const SettingsProfile: Screen<"SettingsProfile"> = ({ navigation }) => {
         </NativeList>
 
         <NativeListHeader
-          label="Afficher sur l'accueil"
+          label="Afficher sur la page d'accueil"
         />
 
         <NativeList>

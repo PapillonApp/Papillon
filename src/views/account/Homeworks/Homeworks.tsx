@@ -365,8 +365,8 @@ const WeekView: Screen<"Homeworks"> = ({ route, navigation }) => {
               />
             ) : hideDone ? (
               <MissingItem
-                emoji="🌴"
-                title="Il ne reste rien à faire"
+                emoji="👏"
+                title="Il ne te reste rien à faire !"
                 description="Il n'y a aucun devoir non terminé pour cette semaine."
               />
             ) : hasServiceSetup ? (

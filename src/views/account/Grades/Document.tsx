@@ -13,7 +13,8 @@ import {
   UserMinus,
   UserPlus,
   Users,
-  Maximize2
+  Maximize2,
+  BadgeInfo,
 } from "lucide-react-native";
 import { getAverageDiffGrade } from "@/utils/grades/getAverages";
 import type { AverageDiffGrade } from "@/utils/grades/getAverages";
@@ -24,11 +25,13 @@ import { useGradesStore } from "@/stores/grades";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedEmoji from "@/components/Grades/AnimatedEmoji";
 import GradeModal from "@/components/Grades/GradeModal";
+import { useAlert } from "@/providers/AlertProvider";
 
 
 const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
   const { grade, allGrades = [] } = route.params;
   const theme = useTheme();
+  const { showAlert } = useAlert();
   const [modalOpen, setModalOpen] = useState(false);
   const [isReactionBeingTaken, setIsReactionBeingTaken] = useState(false);
 
@@ -177,7 +180,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         !grade.student.disabled && {
           icon: <Scale />,
           title: "Moyenne générale",
-          description: "Impact estimé sur la moyenne générale",
+          description: "Impact sur la moyenne générale",
           value:
                         gradeDiff.difference === undefined
                           ? "???"
@@ -200,7 +203,7 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         !grade.average.disabled && {
           icon: <School />,
           title: "Moyenne de la classe",
-          description: "Impact estimé sur la moyenne de la classe",
+          description: "Impact sur la moyenne de la classe",
           value:
                         classDiff.difference === undefined
                           ? "???"
@@ -471,7 +474,43 @@ const GradeDocument: Screen<"GradeDocument"> = ({ route, navigation }) => {
         <View style={{ paddingHorizontal: 16 }}>
           {lists.map((list, index) => (
             <View key={index}>
-              <NativeListHeader label={list.title} />
+              <NativeListHeader
+                label={list.title}
+                trailing={list.title === "Influence" ? (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 10,
+                      marginVertical: -3,
+                      marginTop: -4,
+                      backgroundColor: theme.colors.primary + "22",
+                    }}
+                    onPress={() => {
+                      showAlert({
+                        title: "À propos de l'influence",
+                        message: "Cette section t’indique comment cette note pourrait faire évoluer ta moyenne générale ainsi que celle de ta classe.\n\n⚠️ Il s’agit d’une estimation indicative, basée sur les notes enregistrées.",
+                        icon: <BadgeInfo />,
+                      });
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: theme.colors.primary,
+                        fontSize: 14.5,
+                        letterSpacing: 0.3,
+                        fontFamily: "semibold",
+                      }}
+                    >
+                      Qu'est-ce que c'est ?
+                    </Text>
+                  </TouchableOpacity>
+                ) : undefined}
+              />
+
               <NativeList>
                 {list.items.map(
                   (item, index) =>
