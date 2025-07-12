@@ -19,6 +19,7 @@ import {
   Plus,
   Sprout,
   Utensils,
+  QrCode,
 } from "lucide-react-native";
 
 import type { Screen } from "@/router/helpers/types";
@@ -323,7 +324,12 @@ const Menu: Screen<"Menu"> = ({ route, navigation }) => {
 
   return (
     <>
-      <PapillonHeader route={route} navigation={navigation} />
+      <PapillonHeader
+        route={route}
+        navigation={navigation}
+        rightButtonIcon={QrCode}
+        rightButtonNavigateTo="ChooseQrCode"
+      />
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         showsHorizontalScrollIndicator={false}

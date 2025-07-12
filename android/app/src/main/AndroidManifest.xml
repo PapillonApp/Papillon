@@ -122,6 +122,8 @@
     <package android:name="com.instagram.android"/>
     <package android:name="com.twitter.android"/>
     <package android:name="com.zhiliaoapp.musically"/>
+<<<<<<< HEAD
+=======
     <package android:name="com.facebook.katana"/>
     <package android:name="com.instagram.android"/>
     <package android:name="com.twitter.android"/>
@@ -130,6 +132,7 @@
     <package android:name="com.instagram.android"/>
     <package android:name="com.twitter.android"/>
     <package android:name="com.zhiliaoapp.musically"/>
+>>>>>>> upstream/main
     <intent>
       <action android:name="android.intent.action.VIEW"/>
       <category android:name="android.intent.category.BROWSABLE"/>
