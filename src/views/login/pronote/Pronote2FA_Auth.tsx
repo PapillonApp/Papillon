@@ -161,7 +161,7 @@ export const Pronote2FA_Auth: Screen<"Pronote2FA_Auth"> = ({
     pronote.startPresenceInterval(session);
     createStoredAccount(account);
     setLoading(false);
-    switchTo(account);
+    await switchTo(account);
 
     // We need to wait a tick to make sure the account is set before navigating.
     queueMicrotask(() => {

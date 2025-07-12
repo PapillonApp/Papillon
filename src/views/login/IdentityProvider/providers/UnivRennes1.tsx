@@ -59,7 +59,7 @@ const UnivRennes1_Login: Screen<"UnivRennes1_Login"> = ({ navigation }) => {
       };
 
       createStoredAccount(local_account);
-      switchTo(local_account);
+      await switchTo(local_account);
 
       queueMicrotask(() => {
         // Reset the navigation stack to the "Home" screen.

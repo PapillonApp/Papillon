@@ -116,7 +116,7 @@ const AccountSelector: Screen<"AccountSelector"> = ({ navigation }) => {
         const selectedAccount =
           accounts.find((account) => account.localID === lastOpenedAccountID) as PrimaryAccount
           ?? accounts.find((account) => !account.isExternal) as PrimaryAccount;
-        switchTo(selectedAccount);
+        await switchTo(selectedAccount);
       }
     }();
   }, [accounts]);
