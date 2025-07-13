@@ -1,24 +1,45 @@
 import { useCallback, useState } from "react";
 import React from "react";
-import { StyleSheet, View, SafeAreaView, Dimensions } from "react-native";
+import { View, Dimensions } from "react-native";
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
   useAnimatedStyle,
   interpolate,
-  Extrapolate,
+  Extrapolate, useScrollViewOffset, useAnimatedRef, AnimatedRef,
 } from "react-native-reanimated";
 
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { LinearTransition } from "react-native-reanimated";
-import { Animation } from "@/ui/utils/Animation";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/component/ScrollView";
 
-const { height: screenHeight } = Dimensions.get("window");
+//  <View style={styles.header}>
+//         <NativeHeaderTitle>
+//           <NativeHeaderTopPressable
+//             onPress={toggleDatePicker}
+//             layout={Animation(LinearTransition)}
+//           >
+//             <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+//               <Dynamic animated>
+//                 <Typography variant="navigation">Semaine</Typography>
+//               </Dynamic>
+//               <Dynamic animated>
+//                 <View style={styles.weekBox}>
+//                   <Typography variant="navigation" style={styles.weekText}>16</Typography>
+//                 </View>
+//               </Dynamic>
+//             </Dynamic>
+//           </NativeHeaderTopPressable>
+//         </NativeHeaderTitle>
+//       </View>
 
 export default function TabOneScreen() {
+  const insets = useSafeAreaInsets();
+
+  const scrollViewRef: AnimatedRef<AnimatedScrollView> = useAnimatedRef();
+  
+  const scrollOffset = useScrollViewOffset(scrollViewRef);
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
@@ -26,95 +47,65 @@ export default function TabOneScreen() {
 
   const scrollY = useSharedValue(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
+  const headerStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(scrollOffset.value, [0, 50], [0, 35], Extrapolate.EXTEND) },
+      { scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.5], Extrapolate.CLAMP) },
+    ],
+    opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
+  }));
 
-  const animatedScrollView = useAnimatedStyle(() => {
-    const topOffset = interpolate(
-      scrollY.value,
-      [0, 150],
-      [250, 0],
+  const modalStyle = useAnimatedStyle(() => ({
+    borderTopRightRadius: interpolate(
+      scrollOffset.value,
+      [0, 50 + insets.top + 125],
+      [25, 10],
       Extrapolate.CLAMP
-    );
-
-    return {
-      top: topOffset,
-      borderTopLeftRadius: interpolate(scrollY.value, [0, 150], [25, 0], Extrapolate.CLAMP),
-      borderTopRightRadius: interpolate(scrollY.value, [0, 150], [25, 0], Extrapolate.CLAMP),
-    };
-  });
+    ),
+    borderTopLeftRadius: interpolate(
+      scrollOffset.value,
+      [0, 50 + insets.top + 125],
+      [25, 10],
+      Extrapolate.CLAMP
+    ),
+  }));
 
   return (
-    <SafeAreaView style={styles.root}>
-      <View style={styles.header}>
-        <NativeHeaderTitle>
-          <NativeHeaderTopPressable
-            onPress={toggleDatePicker}
-            layout={Animation(LinearTransition)}
-          >
-            <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-              <Dynamic animated>
-                <Typography variant="navigation">Semaine</Typography>
-              </Dynamic>
-              <Dynamic animated>
-                <View style={styles.weekBox}>
-                  <Typography variant="navigation" style={styles.weekText}>16</Typography>
-                </View>
-              </Dynamic>
-            </Dynamic>
-          </NativeHeaderTopPressable>
-        </NativeHeaderTitle>
-      </View>
-
-      <Animated.ScrollView
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-        style={[styles.list, animatedScrollView]}
+    <Animated.ScrollView
+      ref={scrollViewRef}
+      scrollEventThrottle={16}
+      style={[{
+        flex: 1,
+        backgroundColor: "#F7E8F5",
+        paddingTop: 50 + insets.top,
+      }]}
+    >
+      <Animated.View
+        style={[{
+          height: 125,
+          alignItems: "center",
+          justifyContent: "center",
+        }, headerStyle]}
+      >
+        <Typography variant={"h1"}>3</Typography>
+        <Typography variant={"body1"}>tâches restantes cette semaine</Typography>
+      </Animated.View>
+      <Animated.View
+        style={[{
+          backgroundColor: "#FFF",
+          padding: 16,
+          paddingBottom: 16 + insets.bottom,
+        }, modalStyle]}
       >
         {Array.from({ length: 20 }).map((_, i) => (
-          <View key={i} style={{ marginBottom: 20 }}>
+          <View key={i}
+                style={{ marginBottom: 20 }}
+          >
             <Typography variant="h2">Item {i + 1}</Typography>
           </View>
         ))}
-      </Animated.ScrollView>
-    </SafeAreaView>
+      </Animated.View>
+
+    </Animated.ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#C54CB330",
-  },
-  header: {
-    height: 150,
-    backgroundColor: "red",
-    padding: 16,
-    justifyContent: "center",
-    zIndex: 1,
-  },
-  list: {
-    position: "absolute",
-    top: 200,
-    left: 0,
-    right: 0,
-    height: screenHeight,
-    backgroundColor: "white",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    zIndex: 2,
-  },
-  weekBox: {
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 8,
-    backgroundColor: "#9E00861A",
-  },
-  weekText: {
-    color: "#C54CB3",
-  },
-});
