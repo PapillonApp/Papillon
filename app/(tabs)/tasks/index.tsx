@@ -15,17 +15,18 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { CircularProgress } from "@/ui/components/CircularProgress";
+import Calendar from "@/ui/components/Calendar";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
 
   const scrollViewRef: AnimatedRef<AnimatedScrollView> = useAnimatedRef();
 
   const scrollOffset = useScrollViewOffset(scrollViewRef);
 
-  const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
@@ -63,6 +64,16 @@ export default function TabOneScreen() {
         paddingTop: 50 + insets.top,
       }]}
     >
+      <Calendar
+        key={"calendar-" + date.toISOString()}
+        date={date}
+        onDateChange={(newDate) => {
+          setDate(newDate);
+        }}
+        showDatePicker={showDatePicker}
+        setShowDatePicker={setShowDatePicker}
+      />
+
       <Animated.View
         style={[{
           height: 125,
