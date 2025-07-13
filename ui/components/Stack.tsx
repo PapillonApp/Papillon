@@ -27,7 +27,7 @@ const ALIGN_ITEMS_MAP: Record<Alignment, FlexAlignType> = {
 
 const JUSTIFY_CONTENT_MAP: Record<Alignment, ViewStyle["justifyContent"]> = {
   start: "flex-start",
-  center: "center", 
+  center: "center",
   end: "flex-end",
 } as const;
 
@@ -57,7 +57,7 @@ const COMMON_STYLES = StyleSheet.create({
     flexDirection: "column",
   },
   horizontal: {
-    width: "100%", 
+    width: "100%",
     flexDirection: "row",
   },
 });
@@ -78,7 +78,7 @@ const Stack: React.FC<StackProps> = React.memo(({
   ...rest
 }) => {
   // Generate cache key for style optimization
-  const cacheKey = React.useMemo(() => 
+  const cacheKey = React.useMemo(() =>
     `${direction}-${gap}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${backgroundColor || ''}-${radius}`,
     [direction, gap, padding, margin, vAlign, hAlign, inline, backgroundColor, radius]
   );
@@ -91,7 +91,7 @@ const Stack: React.FC<StackProps> = React.memo(({
 
     // Use pre-computed base styles
     const baseStyle = direction === "vertical" ? COMMON_STYLES.vertical : COMMON_STYLES.horizontal;
-    
+
     // Build style object with minimal allocations
     const dynamicStyle: ViewStyle = {
       gap,
@@ -105,11 +105,10 @@ const Stack: React.FC<StackProps> = React.memo(({
     if (backgroundColor) {
       dynamicStyle.backgroundColor = backgroundColor;
     }
-    
+
     if (radius > 0) {
       dynamicStyle.borderRadius = radius;
       dynamicStyle.borderCurve = "continuous";
-      dynamicStyle.overflow = "hidden";
     }
 
     // Handle inline with React Native compatible values
@@ -120,13 +119,13 @@ const Stack: React.FC<StackProps> = React.memo(({
     }
 
     const finalStyle = [baseStyle, dynamicStyle];
-    
+
     // Cache the result
     STYLE_CACHE.set(cacheKey, finalStyle);
-    
+
     // Cleanup cache if necessary
     cleanupCache();
-    
+
     return finalStyle;
   }, [cacheKey, direction, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]);
 
