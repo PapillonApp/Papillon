@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react";
 import React from "react";
-import { View, Dimensions } from "react-native";
+import { View } from "react-native";
 import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
   useAnimatedStyle,
   interpolate,
   Extrapolate, useScrollViewOffset, useAnimatedRef, AnimatedRef,
@@ -44,8 +42,6 @@ export default function TabOneScreen() {
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
-
-  const scrollY = useSharedValue(0);
 
   const headerStyle = useAnimatedStyle(() => ({
     transform: [
