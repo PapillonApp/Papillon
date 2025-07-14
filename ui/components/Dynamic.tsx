@@ -37,8 +37,8 @@ export const Dynamic = React.memo<DynamicProps>(({
     }
 
     return {
-      ...style,
       ...BASE_STYLE,
+      ...style,
       transformOrigin: origin,
     };
   }, [style, origin]);
@@ -46,7 +46,7 @@ export const Dynamic = React.memo<DynamicProps>(({
   // Memoize layout prop to avoid conditional evaluation on every render
   const layoutProp = useMemo(() =>
     animated ? ANIMATED_LAYOUT : undefined,
-    [animated]
+  [animated]
   );
 
   return (
