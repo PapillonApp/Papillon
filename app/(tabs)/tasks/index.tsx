@@ -219,7 +219,7 @@ export default function TabOneScreen() {
               <Search color={colors.text} />
             </NativeHeaderPressable>
           </NativeHeaderSide>
-          <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 25 }}>
+          <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20 }}>
             <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
               <Typography variant={"h1"} style={{ fontSize: 32 }} color={"#C54CB3"}>
                 3
