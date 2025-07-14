@@ -12,10 +12,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/component/ScrollView";
 import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Calendar from "@/ui/components/Calendar";
+import { AlignCenter, Search } from "lucide-react-native";
+import { useTheme } from "@react-navigation/native";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -30,6 +32,15 @@ export default function TabOneScreen() {
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
+
+
+  const [fullyScrolled, setFullyScrolled] = useState(false);
+  const scrollHandler = useCallback((event: any) => {
+    const isFullyScrolled = scrollOffset.value / windowHeight >= 0.2;
+    if (isFullyScrolled !== fullyScrolled) {
+      setFullyScrolled(isFullyScrolled);
+    }
+  }, [windowHeight, insets.top, fullyScrolled]);
 
   const headerStyle = useAnimatedStyle(() => ({
     transform: [
@@ -54,10 +65,13 @@ export default function TabOneScreen() {
     ),
   }));
 
+  const { colors } = useTheme();
+
   return (
     <Animated.ScrollView
       ref={scrollViewRef}
       scrollEventThrottle={16}
+      onScroll={scrollHandler}
       style={[{
         flex: 1,
         backgroundColor: "#F7E8F5",
@@ -81,23 +95,60 @@ export default function TabOneScreen() {
           justifyContent: "center",
         }, headerStyle]}
       >
-        <NativeHeaderTitle>
-          <NativeHeaderTopPressable
-            onPress={toggleDatePicker}
-            layout={Animation(LinearTransition)}
+        <NativeHeaderSide side="Left">
+          <NativeHeaderPressable
+            onPress={() => {
+              console.log("Add new grade pressed");
+            }}
           >
-            <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-              <Dynamic animated>
-                <Typography variant="navigation">Semaine</Typography>
+            <AlignCenter color={colors.text} />
+          </NativeHeaderPressable>
+        </NativeHeaderSide>
+        <NativeHeaderTitle key={`header-title-${fullyScrolled}`}>
+          <NativeHeaderTopPressable onPress={toggleDatePicker} layout={Animation(LinearTransition)}>
+            <Dynamic
+              style={
+                fullyScrolled
+                  ? { flexDirection: "column", alignItems: "center", gap: 4, marginTop: 10 }
+                  : { flexDirection: "column", alignItems: "center", gap: 4 }
+              }
+            >
+              <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Dynamic animated>
+                  <Typography variant="navigation">Semaine</Typography>
+                </Dynamic>
+                <Dynamic animated>
+                  <View
+                    style={{
+                      paddingVertical: 2,
+                      paddingHorizontal: 6,
+                      borderRadius: 8,
+                      backgroundColor: "#9E00861A",
+                    }}
+                  >
+                    <Typography variant="navigation" style={{ color: "#C54CB3" }}>
+                      16
+                    </Typography>
+                  </View>
+                </Dynamic>
               </Dynamic>
-              <Dynamic animated>
-                <View style={{ paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, backgroundColor: "#9E00861A"}}>
-                  <Typography variant="navigation" style={{ color: "#C54CB3" }}>16</Typography>
-                </View>
-              </Dynamic>
+              {fullyScrolled && (
+                <Dynamic animated key="tasks-visible">
+                  <Typography variant={"body2"} style={{ color: "#C54CB3" }}>Encore 3 tâches</Typography>
+                </Dynamic>
+              )}
             </Dynamic>
           </NativeHeaderTopPressable>
         </NativeHeaderTitle>
+        <NativeHeaderSide side="Right">
+          <NativeHeaderPressable
+            onPress={() => {
+              console.log("Add new grade pressed");
+            }}
+          >
+            <Search color={colors.text} />
+          </NativeHeaderPressable>
+        </NativeHeaderSide>
         <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 16 }}>
           <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
             <Typography variant={"h1"} style={{ fontSize: 32 }} color={"#C54CB3"}>3</Typography>
