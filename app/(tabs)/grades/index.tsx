@@ -36,7 +36,7 @@ export default function TabOneScreen() {
   const headerStyle = useAnimatedStyle(() => ({
     transform: [
       { translateY: interpolate(scrollOffset.value, [0, 50], [0, 35], Extrapolate.EXTEND) },
-      { scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.5], Extrapolate.CLAMP) },
+      { scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.8], Extrapolate.CLAMP) },
     ],
     opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
   }));
@@ -92,7 +92,7 @@ export default function TabOneScreen() {
           >
             <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <Dynamic animated>
-                <View style={{ paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, backgroundColor: "#FFFFFF"}}>
+                <View style={{ paddingVertical: 2, paddingHorizontal: 6, borderRadius: 8, backgroundColor: "#FFFFFF" }}>
                   <Typography variant="navigation" style={{ color: "#009EA7" }}>2025</Typography>
                 </View>
               </Dynamic>
@@ -109,7 +109,7 @@ export default function TabOneScreen() {
           <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
             <Stack direction={"horizontal"} gap={3} hAlign={"end"}>
               <Typography variant={"h1"} style={{ fontSize: 32 }} color={"#009EA7"}>15</Typography>
-              <Typography variant={"h2"} style={{ paddingBottom: 2}} color={"#009EA7"}>.72</Typography>
+              <Typography variant={"h2"} style={{ paddingBottom: 2 }} color={"#009EA7"}>.72</Typography>
               <Typography variant={"h5"} color={"#009EA7"}>/20</Typography>
             </Stack>
             <Stack direction={"horizontal"} hAlign={"center"} gap={3}>

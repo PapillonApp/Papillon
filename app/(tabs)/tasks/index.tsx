@@ -45,7 +45,7 @@ export default function TabOneScreen() {
   const headerStyle = useAnimatedStyle(() => ({
     transform: [
       { translateY: interpolate(scrollOffset.value, [0, 50], [0, 35], Extrapolate.EXTEND) },
-      { scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.5], Extrapolate.CLAMP) },
+      { scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.8], Extrapolate.CLAMP) },
     ],
     opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
   }));
@@ -156,7 +156,7 @@ export default function TabOneScreen() {
             <Typography variant={"title"} color={"#C54CB3"}>cette semaine</Typography>
           </Stack>
           <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }}>
-            <CircularProgress backgroundColor={"#FFFFFF"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"}/>
+            <CircularProgress backgroundColor={"#FFFFFF"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
           </View>
         </Stack>
       </Animated.View>
