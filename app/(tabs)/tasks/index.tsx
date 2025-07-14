@@ -13,7 +13,6 @@ import Animated, {
 import { Animation, PapillonFadeIn, PapillonFadeOut } from "@/ui/utils/Animation";
 import Typography from "@/ui/components/Typography";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/component/ScrollView";
 import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
@@ -26,6 +25,7 @@ import PatternBackground from "@/ui/components/PatternBackground";
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Circle, G, Path } from "react-native-svg";
+import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
 
 const PatternTile = ({ x, y }: { x: number; y: number }) => (
   <G opacity="0.24" transform={`translate(${x}, ${y})`}>
@@ -71,9 +71,6 @@ export default function TabOneScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
-  const scrollViewRef: AnimatedRef<AnimatedScrollView> = useAnimatedRef();
-
-  const scrollOffset = useScrollViewOffset(scrollViewRef);
 
   const windowHeight = Dimensions.get("window").height;
   const toggleDatePicker = useCallback(() => {
@@ -81,34 +78,20 @@ export default function TabOneScreen() {
   }, []);
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
-  const scrollHandler = useCallback(() => {
-    const isFullyScrolled = scrollOffset.value / windowHeight >= 0.2;
+  const scrollHandler = useCallback((scrollOffset: number) => {
+    const isFullyScrolled = scrollOffset / windowHeight >= 0.2;
     if (isFullyScrolled !== fullyScrolled) {
       setFullyScrolled(isFullyScrolled);
     }
   }, [windowHeight, fullyScrolled]);
 
-  const headerStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: interpolate(scrollOffset.value, [0, 50], [0, 35], Extrapolate.EXTEND),
-      },
-      {
-        scale: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [1, 0.5], Extrapolate.CLAMP),
-      },
-    ],
-    opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
-  }));
-
-  const modalStyle = useAnimatedStyle(() => ({
-    borderTopRightRadius: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [25, 10], Extrapolate.CLAMP),
-    borderTopLeftRadius: interpolate(scrollOffset.value, [0, 50 + insets.top + 125], [25, 10], Extrapolate.CLAMP),
-  }));
-
   const { colors } = useTheme();
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f7e8f5" }}>
+    <AnimatedModalLayout
+      onScrollOffsetChange={scrollHandler}
+      backgroundColor="#f7e8f5"
+      background={
       <MaskedView
         style={{
           position: 'absolute',
@@ -129,39 +112,9 @@ export default function TabOneScreen() {
       >
         <PatternBackground PatternTile={PatternTile} />
       </MaskedView>
-
-      <Animated.ScrollView
-        ref={scrollViewRef}
-        scrollEventThrottle={16}
-        onScroll={scrollHandler}
-        style={[
-          {
-            flex: 1,
-            backgroundColor: "transparent",
-            paddingTop: 50 + insets.top,
-          },
-        ]}
-      >
-        <Calendar
-          key={"calendar-" + date.toISOString()}
-          date={date}
-          onDateChange={(newDate) => {
-            setDate(newDate);
-          }}
-          showDatePicker={showDatePicker}
-          setShowDatePicker={setShowDatePicker}
-        />
-
-        <Animated.View
-          style={[
-            {
-              height: 125,
-              alignItems: "center",
-              justifyContent: "center",
-            },
-            headerStyle,
-          ]}
-        >
+      }
+      headerContent={
+      <>
           <NativeHeaderSide side="Left">
             <NativeHeaderPressable
               onPress={() => {
@@ -235,22 +188,12 @@ export default function TabOneScreen() {
               <CircularProgress backgroundColor={"#FFFFFF"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
             </View>
           </Stack>
-        </Animated.View>
+      </>
+    }
 
-        <Animated.View
-          style={[
-            {
-              boxShadow: "0px 0px 5px 0px rgba(0, 0, 0, 0.15)",
-              backgroundColor: "#FFF",
-              padding: 16,
-              paddingBottom: 16 + insets.bottom,
-            },
-            modalStyle,
-          ]}
-        >
-          <View style={{ height: windowHeight }}></View>
-        </Animated.View>
-      </Animated.ScrollView>
-    </View>
+      modalContent={
+                <View style={{ height: windowHeight }}></View>
+      }
+      />
   );
 }
