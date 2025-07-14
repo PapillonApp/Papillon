@@ -79,11 +79,16 @@ export default function TabOneScreen() {
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const scrollHandler = useCallback((scrollOffset: number) => {
-    const isFullyScrolled = scrollOffset / windowHeight >= 0.2;
-    if (isFullyScrolled !== fullyScrolled) {
-      setFullyScrolled(isFullyScrolled);
-    }
-  }, [windowHeight, fullyScrolled]);
+    const isFullyScrolled = scrollOffset >= 175;
+    setFullyScrolled(prev => {
+      if (prev !== isFullyScrolled) {
+        return isFullyScrolled;
+      }
+      return prev;
+    });
+  }, []);
+
+
 
   const { colors } = useTheme();
 
