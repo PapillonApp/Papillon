@@ -1,6 +1,7 @@
 import React, { ScrollView, StyleSheet, View } from "react-native";
-import { Hamburger } from "lucide-react-native";
+import { AlertCircle, AlertOctagon, Hamburger } from "lucide-react-native";
 
+import { ClockIcon } from "@/ui/components/Course";
 import Typography from "@/ui/components/Typography";
 import Course from "@/ui/components/Course";
 import { useTheme } from "@react-navigation/native";
@@ -53,10 +54,10 @@ export default function TabOneScreen() {
         <Course
           id="id1"
           name="Traitement des données"
-          teacher="Martin"
+          teacher="Baptive V."
           room="Bât. 12 amphi 4"
           color="#0095D6"
-          status={{ label: "Prof. absent", canceled: false }}
+          status={{ label: "Travail dirigé", canceled: false }}
           variant="primary"
           start={1750126049}
           end={1750129649}
@@ -77,7 +78,7 @@ export default function TabOneScreen() {
           name="Anglais"
           teacher="Vince Linise"
           room="Bât. 9 salle 6"
-          color="#21A467"
+          color="#6BAE00"
           status={{ label: "Professeur absent", canceled: true }}
           variant="primary"
           start={1750126049}
@@ -87,14 +88,31 @@ export default function TabOneScreen() {
         <Course
           id="id2"
           name="Développement web"
-          teacher="Vince Linise"
+          teacher="Alexandre P."
           room="Bât. 10 salle 16"
-          color="#21A467"
+          color="#6BAE00"
           status={{ label: "Cours magistral", canceled: false }}
           variant="primary"
           start={1750126049}
           end={1750130549}
           onPress={() => log("Bât. 12 amphi 4")}
+        />
+        <Course
+          id="id2"
+          name="Développement web"
+          teacher="Alexandre P."
+          room="Bât. 10 salle 16"
+          color="#C50066"
+          status={{ label: "Cours magistral", canceled: false }}
+          variant="primary"
+          start={1750126049}
+          end={1750130549}
+          onPress={() => log("Bât. 12 amphi 4")}
+          showTimes={false}
+          magicInfo={{
+            label: "Dans 20 minutes",
+            icon: ({ color }) => <ClockIcon color={color} />,
+          }}
         />
       </View>
       <SectionTitle title={"List & Item"} colors={colors} />
