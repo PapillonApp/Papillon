@@ -46,8 +46,8 @@ export interface Account {
  */
 export interface ServiceAccount {
     readonly id: string;
-    serviceId: Services;
     auth: Auth;
+    serviceId: Services;
     createdAt: string;
     updatedAt: string;
     additionals?: Record<string, string>;
@@ -63,7 +63,7 @@ export interface ServiceAccount {
 export interface Auth {
     accessToken?: string;
     refreshToken?: string;
-    additionals?: Record<string, string>;
+    additionals?: Record<string, string | number>;
 }
 
 export enum Services {

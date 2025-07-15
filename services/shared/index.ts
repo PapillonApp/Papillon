@@ -1,19 +1,28 @@
-import { Account } from "@/stores/account/types";
+import { Account, Auth } from "@/stores/account/types";
 import { SchoolServicePlugin } from "@/services/shared/types";
 import { Services } from "@/stores/account/types";
 import * as Network from "expo-network";
 import { error } from "@/utils/logger/logger";
+import { Pronote } from "@/services/pronote";
+
+type ClientMap = {
+  [Services.PRONOTE]?: Pronote;
+};
 
 export class AccountManager {
+  private clients: ClientMap = {};
+
   constructor(private account: Account) {}
 
-  async refreshAllAccounts(): Promise<void> {
-    const networkState = Network.useNetworkState()
+  async refreshAllAccounts(): Promise<Pronote | undefined> {
+    const networkState = Network.useNetworkState();
     if (networkState.isInternetReachable) {
       for (const service of this.account.services) {
         const plugin = this.getServicePlugin(service.serviceId);
         if (plugin) {
-          await plugin.refreshAccount(service.id);
+          const client = await plugin.refreshAccount(service.auth);
+          this.clients[service.serviceId] = client;
+          return client;
         }
 
         error("Unable to find the plugin for this ServiceAccount: " + service.serviceId, "AccountManager.refreshAllAccounts");
@@ -21,6 +30,7 @@ export class AccountManager {
     }
 
     error("Your device is not connected to the internet, please check your connection.", "AccountManager.refreshAllAccounts");
+    return undefined;
   }
 
   private getServicePlugin(service: Services): SchoolServicePlugin | null {
