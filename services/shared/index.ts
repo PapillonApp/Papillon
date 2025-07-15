@@ -5,12 +5,9 @@ import * as Network from "expo-network";
 import { error } from "@/utils/logger/logger";
 import { Pronote } from "@/services/pronote";
 
-type ClientMap = {
-  [Services.PRONOTE]?: Pronote;
-};
 
 export class AccountManager {
-  private clients: ClientMap = {};
+  private clients: Record<string, SchoolServicePlugin> = {};
 
   constructor(private account: Account) {}
 
