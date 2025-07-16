@@ -15,7 +15,7 @@ import Typography from "@/ui/components/Typography";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Calendar from "@/ui/components/Calendar";
@@ -26,6 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Circle, G, Path } from "react-native-svg";
 import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 const PatternTile = ({ x, y }: { x: number; y: number }) => (
   <G opacity="0.24" transform={`translate(${x}, ${y})`}>
@@ -79,7 +80,7 @@ export default function TabOneScreen() {
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const scrollHandler = useCallback((scrollOffset: number) => {
-    const isFullyScrolled = scrollOffset >= 175;
+    const isFullyScrolled = scrollOffset >= 120;
     setFullyScrolled(prev => {
       if (prev !== isFullyScrolled) {
         return isFullyScrolled;
@@ -132,36 +133,35 @@ export default function TabOneScreen() {
           <NativeHeaderTitle key={`header-title-${fullyScrolled}`}>
             <NativeHeaderTopPressable onPress={toggleDatePicker} layout={Animation(LinearTransition)}>
               <Dynamic
-                animated={false}
-                style={
-                  fullyScrolled
-                    ? { flexDirection: "column", alignItems: "center", gap: 4, marginTop: 10 }
-                    : { flexDirection: "column", alignItems: "center", gap: 4 }
-                }
+                animated={true}
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 4,
+                  marginTop: fullyScrolled ? 18 : undefined,
+                  width: 200,
+                }}
               >
-                <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, height: 30, marginBottom: -3 }}>
                   <Dynamic animated>
-                    <Typography variant="navigation">Semaine</Typography>
+                    <Typography inline variant="navigation">Semaine</Typography>
                   </Dynamic>
-                  <Dynamic animated>
-                    <View
-                      style={{
-                        paddingVertical: 2,
-                        paddingHorizontal: 6,
-                        borderRadius: 8,
-                        backgroundColor: "#9E00861A",
-                      }}
-                    >
-                      <Typography variant="navigation" style={{ color: "#C54CB3" }}>
-                        16
-                      </Typography>
-                    </View>
+                  <Dynamic animated style={{ marginTop: -3 }}>
+                    <NativeHeaderHighlight color="#C54CB3">
+                      16
+                    </NativeHeaderHighlight>
                   </Dynamic>
                 </Dynamic>
                 {fullyScrolled && (
-                  <Animated.View key="tasks-visible" entering={PapillonFadeIn} exiting={PapillonFadeOut}>
-                    <Typography variant={"body2"} style={{ color: "#C54CB3" }}>
-                      Encore 3 tâches
+                  <Animated.View
+                    style={{
+                      width: 200,
+                      alignItems: 'center',
+                    }}
+                    key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+                    <Typography inline variant={"body2"} style={{ color: "#C54CB3" }}>
+                      Encore 3 tâches restantes
                     </Typography>
                   </Animated.View>
                 )}
@@ -178,14 +178,14 @@ export default function TabOneScreen() {
             </NativeHeaderPressable>
           </NativeHeaderSide>
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
-            <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
+            <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
               <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
                 3
               </Typography>
-              <Typography inline variant={"title"} color={"#C54CB3"}>
+              <Typography inline variant={"title"} color={"secondary"}>
                 tâches restantes
               </Typography>
-              <Typography inline variant={"title"} color={"#C54CB3"}>
+              <Typography inline variant={"title"} color={"secondary"}>
                 cette semaine
               </Typography>
             </Stack>

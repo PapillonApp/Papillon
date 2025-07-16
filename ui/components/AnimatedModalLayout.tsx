@@ -8,6 +8,7 @@ import Animated, {
   useAnimatedRef, useDerivedValue, runOnJS,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import getCorners from "../utils/Corners";
 
 interface AnimatedModalLayoutProps {
   backgroundColor?: string;
@@ -18,12 +19,12 @@ interface AnimatedModalLayoutProps {
 }
 
 export default function AnimatedModalLayout({
-                                              backgroundColor = "#fff",
-                                              background,
-                                              headerContent,
-                                              modalContent,
-                                              onScrollOffsetChange
-                                            }: AnimatedModalLayoutProps) {
+  backgroundColor = "#fff",
+  background,
+  headerContent,
+  modalContent,
+  onScrollOffsetChange
+}: AnimatedModalLayoutProps) {
   const insets = useSafeAreaInsets();
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollViewRef);
@@ -33,6 +34,8 @@ export default function AnimatedModalLayout({
       runOnJS(onScrollOffsetChange)(scrollOffset.value);
     }
   }, [scrollOffset]);
+
+  const corners = getCorners();
 
   const headerStyle = useAnimatedStyle(() => ({
     transform: [
@@ -51,17 +54,19 @@ export default function AnimatedModalLayout({
     opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
   }));
 
+  console.log("Corners:", corners);
+
   const modalStyle = useAnimatedStyle(() => ({
     borderTopRightRadius: interpolate(
       scrollOffset.value,
       [0, 50 + insets.top + 125],
-      [25, 10],
+      [25, corners],
       Extrapolate.CLAMP
     ),
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
       [0, 50 + insets.top + 125],
-      [25, 10],
+      [25, corners],
       Extrapolate.CLAMP
     ),
   }));

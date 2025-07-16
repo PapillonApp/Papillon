@@ -13,7 +13,6 @@ const PapillonList = (a: any) =>
 const PapillonFade = {
   in: FadeInUp.duration(200).easing(Easing.out(Easing.ease)).withInitialValues({
     opacity: 0,
-    transform: [{ translateY: 6 }],
   }),
   out: FadeOut.duration(150).easing(Easing.in(Easing.ease)),
 };
