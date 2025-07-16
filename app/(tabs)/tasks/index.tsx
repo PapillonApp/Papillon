@@ -97,29 +97,29 @@ export default function TabOneScreen() {
       onScrollOffsetChange={scrollHandler}
       backgroundColor="#f7e8f5"
       background={
-      <MaskedView
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 350
-        }}
-        maskElement={
-          <LinearGradient
-            colors={['rgba(247, 232, 245, 0.00)', '#f7e8f5', 'rgba(247, 232, 245, 0.00)']}
-            locations={[0.1, 0.5, 0.8]}
-            start={{x: 0.9, y: 0.1}}
-            end={{x: 0, y: 0.7}}
-            style={{ flex: 1 }}
-          />
-        }
-      >
-        <PatternBackground PatternTile={PatternTile} />
-      </MaskedView>
+        <MaskedView
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 350
+          }}
+          maskElement={
+            <LinearGradient
+              colors={['rgba(247, 232, 245, 0.00)', '#f7e8f5', 'rgba(247, 232, 245, 0.00)']}
+              locations={[0.1, 0.5, 0.8]}
+              start={{ x: 0.9, y: 0.1 }}
+              end={{ x: 0, y: 0.7 }}
+              style={{ flex: 1 }}
+            />
+          }
+        >
+          <PatternBackground PatternTile={PatternTile} />
+        </MaskedView>
       }
       headerContent={
-      <>
+        <>
           <NativeHeaderSide side="Left">
             <NativeHeaderPressable
               onPress={() => {
@@ -177,15 +177,15 @@ export default function TabOneScreen() {
               <Search color={colors.text} />
             </NativeHeaderPressable>
           </NativeHeaderSide>
-          <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20 }}>
+          <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
-              <Typography variant={"h1"} style={{ fontSize: 32 }} color={"#C54CB3"}>
+              <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
                 3
               </Typography>
-              <Typography variant={"title"} color={"#C54CB3"}>
+              <Typography inline variant={"title"} color={"#C54CB3"}>
                 tâches restantes
               </Typography>
-              <Typography variant={"title"} color={"#C54CB3"}>
+              <Typography inline variant={"title"} color={"#C54CB3"}>
                 cette semaine
               </Typography>
             </Stack>
@@ -193,12 +193,12 @@ export default function TabOneScreen() {
               <CircularProgress backgroundColor={"#FFFFFF"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
             </View>
           </Stack>
-      </>
-    }
+        </>
+      }
 
       modalContent={
-                <View style={{ height: windowHeight }}></View>
+        <View style={{ height: windowHeight }}></View>
       }
-      />
+    />
   );
 }
