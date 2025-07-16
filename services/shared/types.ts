@@ -19,7 +19,7 @@ export interface SchoolServicePlugin {
   session: SessionHandle | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
-  getHomeworks?: () => Promise<Array<Homework>>;
+  getHomeworks?: (date: Date) => Promise<Array<Homework>>;
   getNews?: () => Promise<Array<News>>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }

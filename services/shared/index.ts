@@ -37,10 +37,10 @@ export class AccountManager {
     return undefined;
   }
 
-  async getAllHomeworks(): Promise<Array<Homework>> {
+  async getAllHomeworks(date: Date): Promise<Array<Homework>> {
     return (await this.fetchData<Homework[]>(
       Capabilities.HOMEWORK,
-      async client => client.getHomeworks ? await client.getHomeworks() : [],
+      async client => client.getHomeworks ? await client.getHomeworks(date) : [],
       { multiple: true }
     )) as Homework[];
   }
