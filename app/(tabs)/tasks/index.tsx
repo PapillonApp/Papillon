@@ -27,6 +27,8 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { Circle, G, Path } from "react-native-svg";
 import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import List from "@/ui/components/List";
+import Item from "@/ui/components/Item";
 
 const PatternTile = ({ x, y }: { x: number; y: number }) => (
   <G opacity="0.24" transform={`translate(${x}, ${y})`}>
@@ -79,24 +81,28 @@ export default function TabOneScreen() {
   }, []);
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+
   const scrollHandler = useCallback((scrollOffset: number) => {
-    const isFullyScrolled = scrollOffset >= 120;
-    setFullyScrolled(prev => {
-      if (prev !== isFullyScrolled) {
-        return isFullyScrolled;
-      }
-      return prev;
+    requestAnimationFrame(() => {
+      const isFullyScrolled = scrollOffset >= 120;
+      setFullyScrolled(prev => {
+        if (prev !== isFullyScrolled) {
+          return isFullyScrolled;
+        }
+        return prev;
+      });
     });
   }, []);
 
 
 
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors;
 
   return (
     <AnimatedModalLayout
       onScrollOffsetChange={scrollHandler}
-      backgroundColor="#f7e8f5"
+      backgroundColor={theme.dark ? "#2e0928" : "#f7e8f5"}
       background={
         <MaskedView
           style={{
@@ -139,8 +145,9 @@ export default function TabOneScreen() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 4,
-                  marginTop: fullyScrolled ? 18 : undefined,
                   width: 200,
+                  height: 60,
+                  paddingTop: fullyScrolled ? 6 : 0,
                 }}
               >
                 <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, height: 30, marginBottom: -3 }}>
@@ -190,15 +197,25 @@ export default function TabOneScreen() {
               </Typography>
             </Stack>
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }}>
-              <CircularProgress backgroundColor={"#FFFFFF"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
+              <CircularProgress backgroundColor={colors.text + "22"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
             </View>
           </Stack>
         </>
       }
 
       modalContent={
-        <View style={{ height: windowHeight }}></View>
+        <View>
+          <List>
+            {Array.from({ length: 100 }, (_, i) => (
+              <Item key={i}>
+                <Typography variant="body1" color="text">
+                  Tâche {i + 1}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </View>
       }
     />
   );
-}
+};
