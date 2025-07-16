@@ -18,12 +18,12 @@ interface AnimatedModalLayoutProps {
 }
 
 export default function AnimatedModalLayout({
-                                              backgroundColor = "#fff",
-                                              background,
-                                              headerContent,
-                                              modalContent,
-                                              onScrollOffsetChange
-                                            }: AnimatedModalLayoutProps) {
+  backgroundColor = "#fff",
+  background,
+  headerContent,
+  modalContent,
+  onScrollOffsetChange
+}: AnimatedModalLayoutProps) {
   const insets = useSafeAreaInsets();
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollViewRef);
