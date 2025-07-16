@@ -3,6 +3,9 @@ import { AccountKind, assignmentsFromWeek,createSessionHandle, loginToken } from
 import { Homework, ReturnFormat } from "@/services/shared/homework";
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
+import { fetchPronoteHomeworks } from "@/services/pronote/homework";
+import { error } from "@/utils/logger/logger";
+import { refreshPronoteAccount } from "@/services/pronote/refresh";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -14,56 +17,16 @@ export class Pronote implements SchoolServicePlugin {
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    const handle = createSessionHandle();
-    const auth = await loginToken(handle, {
-      url: String(credentials.additionals?.["instanceURL"] || ""),
-      kind:
-        (credentials.additionals?.["kind"] as AccountKind) ||
-        AccountKind.STUDENT,
-      username: String(credentials.additionals?.["username"] || ""),
-      token: String(credentials.refreshToken ?? ""),
-      deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
-    });
-
-    this.authData = {
-      accessToken: auth.token,
-      refreshToken: auth.token,
-      additionals: {
-        instanceURL: auth.url,
-        kind: auth.kind,
-        username: auth.username,
-        deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
-      },
-    };
-
+    this.authData = await refreshPronoteAccount(credentials);
     return this;
   }
 
   async getHomeworks(): Promise<Array<Homework>> {
-    const result: Homework[] = [];
-
     if (this.session) {
-      const homeworks = await assignmentsFromWeek(this.session, 1, 4);
-      for (const homework of homeworks) {
-        result.push({
-          id: homework.id,
-          subject: homework.subject.name,
-          content: homework.description,
-          dueDate: homework.deadline,
-          isDone: homework.done,
-          returnFormat: homework.return.kind === 1 ? ReturnFormat.PAPER : ReturnFormat.FILE_UPLOAD,
-          attachments: homework.attachments.map((attachment) => ({
-            type: attachment.kind,
-            name: attachment.name,
-            url: attachment.url,
-            createdByAccount: this.accountId
-          })),
-          evaluation: false,
-          custom: false,
-          createdByAccount: this.accountId
-        });
-      }
+      return await fetchPronoteHomeworks(this.session, this.accountId)
     }
-    return []
+
+    error("Session is not initialized. Please refresh the account first.", "Pronote.getHomeworks");
+    return [];
   }
 }
