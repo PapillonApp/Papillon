@@ -14,6 +14,6 @@ export interface Attachment extends GenericInterface {
 }
 
 export enum AttachmentType {
-  FILE,
-  LINK
+  LINK,
+  FILE
 }
