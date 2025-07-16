@@ -2,10 +2,10 @@ import { news as PawnoteNews, NewsInformation, SessionHandle } from "pawnote";
 import { News } from "@/services/shared/news";
 
 /**
- * Fetches homework assignments from PRONOTE for the current week.
+ * Fetches news from PRONOTE.
  * @param {SessionHandle} session - The session handle for the PRONOTE account.
  * @param {string} accountId - The ID of the account requesting the homeworks.
- * @returns {Promise<Homework[]>} A promise that resolves to an array of Homework objects.
+ * @returns {Promise<News[]>} A promise that resolves to an array of News objects.
  */
 export async function fetchPronoteNews(session: SessionHandle, accountId: string): Promise<News[]> {
   const result: News[] = [];
