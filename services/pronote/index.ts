@@ -1,4 +1,4 @@
-import { AccountKind, assignmentsFromWeek,createSessionHandle, loginToken } from "pawnote";
+import { AccountKind, assignmentsFromWeek, createSessionHandle, loginToken, SessionHandle } from "pawnote";
 
 import { Homework, ReturnFormat } from "@/services/shared/homework";
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
@@ -24,20 +24,19 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getHomeworks(): Promise<Array<Homework>> {
-    if (this.session) {
-      return await fetchPronoteHomeworks(this.session, this.accountId)
-    }
-
-    error("Session is not initialized. Please refresh the account first.", "Pronote.getHomeworks");
-    return [];
+    return this.fetchData(fetchPronoteHomeworks);
   }
 
   async getNews(): Promise<Array<News>> {
+    return this.fetchData(fetchPronoteNews);
+  }
+
+  private async fetchData<T>(fetchFn: (session: SessionHandle, accountId: string) => Promise<T[]>): Promise<T[]> {
     if (this.session) {
-      return await fetchPronoteNews(this.session, this.accountId)
+      return await fetchFn(this.session, this.accountId);
     }
 
-    error("Session is not initialized. Please refresh the account first.", "Pronote.getHomeworks");
+    error("Session is not initialized. Please refresh the account first.", `Pronote.${fetchFn.name}`);
     return [];
   }
 }

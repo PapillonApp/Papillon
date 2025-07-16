@@ -33,34 +33,47 @@ export class AccountManager {
   }
 
   async getAllHomeworks(): Promise<Array<Homework>> {
-    const homeworks: Homework[] = [];
-    if (this.hasInternetConnection()) {
-      for (const client of Object.values(this.clients)) {
-        if (client.capabilities.includes(Capabilities.HOMEWORK) && client.getHomeworks) {
-          const clientHomeworks = await client.getHomeworks();
-          homeworks.push(...clientHomeworks);
-        }
+    return this.fetchData(Capabilities.HOMEWORK, async (client) => {
+      if (client.getHomeworks) {
+        return await client.getHomeworks();
       }
-    }
-    return homeworks;
+      return [];
+    });
   }
 
   async getAllNews(): Promise<Array<News>> {
-    const news: News[] = [];
-    if (this.hasInternetConnection()) {
-      for (const client of Object.values(this.clients)) {
-        if (client.capabilities.includes(Capabilities.NEWS) && client.getNews) {
-          const clientNews = await client.getNews();
-          news.push(...clientNews);
-        }
+    return this.fetchData(Capabilities.NEWS, async (client) => {
+      if (client.getNews) {
+        return await client.getNews();
       }
-    }
-    return news;
+      return [];
+    });
   }
 
   private hasInternetConnection(): boolean {
     const networkState = Network.useNetworkState();
     return networkState.isInternetReachable ?? false;
+  }
+
+  private async fetchData<T>(capability: Capabilities, fetchFn: (client: SchoolServicePlugin) => Promise<T[]>): Promise<T[]> {
+    const data: T[] = [];
+    if (!this.hasInternetConnection()) {
+      error("No internet connection", "AccountManager.fetchData");
+      return data;
+    }
+
+    for (const client of Object.values(this.clients)) {
+      if (!client.capabilities.includes(capability)) continue;
+
+      try {
+        const fetched = await fetchFn(client);
+        data.push(...fetched);
+      } catch (err) {
+        error(`Failed to fetch data for capability ${capability}: ${String(err)}`, "AccountManager.fetchData");
+      }
+    }
+
+    return data;
   }
 
   private getServicePluginForAccount(service: ServiceAccount): SchoolServicePlugin | null {
