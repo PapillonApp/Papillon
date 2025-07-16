@@ -7,7 +7,7 @@ import { fetchPronoteHomeworks } from "@/services/pronote/homework";
 import { error } from "@/utils/logger/logger";
 import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { News } from "@/services/shared/news";
-import { fetchPronoteNews } from "@/services/pronote/news";
+import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -24,19 +24,29 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getHomeworks(): Promise<Array<Homework>> {
-    return this.fetchData(fetchPronoteHomeworks);
+    if (this.session) {
+      return fetchPronoteHomeworks(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getHomeworks");
+    return []
   }
 
   async getNews(): Promise<Array<News>> {
-    return this.fetchData(fetchPronoteNews);
-  }
-
-  private async fetchData<T>(fetchFn: (session: SessionHandle, accountId: string) => Promise<T[]>): Promise<T[]> {
     if (this.session) {
-      return await fetchFn(this.session, this.accountId);
+      return fetchPronoteNews(this.session, this.accountId);
     }
 
-    error("Session is not initialized. Please refresh the account first.", `Pronote.${fetchFn.name}`);
+    error("Session is not valid", "Pronote.getNews");
     return [];
+  }
+
+  async setNewsAsAcknowledged(news: News): Promise<News> {
+    if (this.session) {
+      return setPronoteNewsAsAcknowledged(this.session, news);
+    }
+
+    error("Session is not valid", "Pronote.setNewsAsAcknowledged");
+    return news;
   }
 }

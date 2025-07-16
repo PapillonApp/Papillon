@@ -21,6 +21,7 @@ export interface SchoolServicePlugin {
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
   getHomeworks?: () => Promise<Array<Homework>>;
   getNews?: () => Promise<Array<News>>;
+  setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
 
 /*

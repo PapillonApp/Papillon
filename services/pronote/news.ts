@@ -1,5 +1,6 @@
-import { news as PawnoteNews, NewsInformation, SessionHandle } from "pawnote";
+import { news as PawnoteNews, NewsInformation, newsInformationAcknowledge, SessionHandle } from "pawnote";
 import { News } from "@/services/shared/news";
+import { error } from "@/utils/logger/logger";
 
 /**
  * Fetches news from PRONOTE.
@@ -33,4 +34,20 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
   }
 
   return result;
+}
+
+export async function setPronoteNewsAsAcknowledged(
+  session: SessionHandle,
+  news: News
+): Promise<News> {
+  if (news.ref) {
+    await newsInformationAcknowledge(session, news.ref);
+    return {
+      ...news,
+      acknowledged: true,
+    };
+  }
+
+  error("Reference for news item is missing.", "setPronoteNewsAsAcknowledged");
+  return news;
 }

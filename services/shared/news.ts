@@ -1,5 +1,6 @@
 import { GenericInterface } from "@/services/shared/types";
 import { Attachment} from "@/services/shared/attachment";
+import { NewsInformation } from "pawnote";
 
 /**
  * This interface defines the general structure of a news item.
@@ -21,4 +22,5 @@ export interface News extends GenericInterface {
   content: string;
   author: string;
   category: string;
+  ref?: NewsInformation;
 }
