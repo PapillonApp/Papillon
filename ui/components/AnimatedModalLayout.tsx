@@ -14,6 +14,7 @@ interface AnimatedModalLayoutProps {
   background?: React.ReactNode;
   headerContent: React.ReactNode;
   modalContent: React.ReactNode;
+  headerHeight?: number;
   onScrollOffsetChange?: (offset: number) => void;
 }
 
@@ -22,6 +23,7 @@ export default function AnimatedModalLayout({
   background,
   headerContent,
   modalContent,
+  headerHeight = 125,
   onScrollOffsetChange
 }: AnimatedModalLayoutProps) {
   const insets = useSafeAreaInsets();
@@ -42,25 +44,25 @@ export default function AnimatedModalLayout({
       {
         scale: interpolate(
           scrollOffset.value,
-          [0, 50 + insets.top + 125],
+          [0, 50 + insets.top + headerHeight],
           [1, 0.5],
           Extrapolate.CLAMP
         ),
       },
     ],
-    opacity: interpolate(scrollOffset.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
+    opacity: interpolate(scrollOffset.value, [0, 50 + headerHeight], [1, 0], Extrapolate.CLAMP),
   }));
 
   const modalStyle = useAnimatedStyle(() => ({
     borderTopRightRadius: interpolate(
       scrollOffset.value,
-      [0, 50 + insets.top + 125],
+      [0, 50 + insets.top + headerHeight],
       [25, 10],
       Extrapolate.CLAMP
     ),
     borderTopLeftRadius: interpolate(
       scrollOffset.value,
-      [0, 50 + insets.top + 125],
+      [0, 50 + insets.top + headerHeight],
       [25, 10],
       Extrapolate.CLAMP
     ),
@@ -77,7 +79,7 @@ export default function AnimatedModalLayout({
           { paddingTop: 50 + insets.top },
         ]}
       >
-        <Animated.View style={[styles.header, headerStyle]}>
+        <Animated.View style={[styles.header, { height: headerHeight }, headerStyle]}>
           {headerContent}
         </Animated.View>
 
@@ -98,7 +100,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   header: {
-    height: 125,
     alignItems: "center",
     justifyContent: "center",
   },
