@@ -3,6 +3,7 @@ import { SessionHandle } from "pawnote";
 import { Pronote } from "@/services/pronote";
 import { Homework } from "@/services/shared/homework";
 import { Auth, Services } from "@/stores/account/types";
+import { News } from "@/services/shared/news";
 
 /** Represents a plugin for a school service.
  *
@@ -19,6 +20,7 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
   getHomeworks?: () => Promise<Array<Homework>>;
+  getNews?: () => Promise<Array<News>>;
 }
 
 /*
@@ -29,7 +31,7 @@ export interface SchoolServicePlugin {
 export enum Capabilities {
   REFRESH,
   HOMEWORK,
-  GRADES
+  NEWS
 }
 
 /**

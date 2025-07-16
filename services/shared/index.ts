@@ -6,6 +6,7 @@ import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Account, ServiceAccount } from "@/stores/account/types";
 import { Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
+import { News } from "@/services/shared/news";
 
 
 export class AccountManager {
@@ -14,8 +15,7 @@ export class AccountManager {
   constructor(private account: Account) {}
 
   async refreshAllAccounts(): Promise<Pronote | undefined> {
-    const networkState = Network.useNetworkState();
-    if (networkState.isInternetReachable) {
+    if (this.hasInternetConnection()) {
       for (const service of this.account.services) {
         const plugin = this.getServicePluginForAccount(service);
         if (plugin && plugin.capabilities.includes(Capabilities.REFRESH)) {
@@ -33,9 +33,8 @@ export class AccountManager {
   }
 
   async getAllHomeworks(): Promise<Array<Homework>> {
-    const networkState = Network.useNetworkState();
     const homeworks: Homework[] = [];
-    if (networkState.isInternetReachable) {
+    if (this.hasInternetConnection()) {
       for (const client of Object.values(this.clients)) {
         if (client.capabilities.includes(Capabilities.HOMEWORK) && client.getHomeworks) {
           const clientHomeworks = await client.getHomeworks();
@@ -44,6 +43,24 @@ export class AccountManager {
       }
     }
     return homeworks;
+  }
+
+  async getAllNews(): Promise<Array<News>> {
+    const news: News[] = [];
+    if (this.hasInternetConnection()) {
+      for (const client of Object.values(this.clients)) {
+        if (client.capabilities.includes(Capabilities.NEWS) && client.getNews) {
+          const clientNews = await client.getNews();
+          news.push(...clientNews);
+        }
+      }
+    }
+    return news;
+  }
+
+  private hasInternetConnection(): boolean {
+    const networkState = Network.useNetworkState();
+    return networkState.isInternetReachable ?? false;
   }
 
   private getServicePluginForAccount(service: ServiceAccount): SchoolServicePlugin | null {
