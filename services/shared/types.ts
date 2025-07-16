@@ -1,5 +1,8 @@
-import { Auth, Services } from "@/stores/account/types";
+import { SessionHandle } from "pawnote";
+
 import { Pronote } from "@/services/pronote";
+import { Homework } from "@/services/shared/homework";
+import { Auth, Services } from "@/stores/account/types";
 
 /** Represents a plugin for a school service.
  *
@@ -12,8 +15,10 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
+  session: SessionHandle | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
+  getHomeworks?: () => Promise<Array<Homework>>;
 }
 
 /*
