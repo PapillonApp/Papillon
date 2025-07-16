@@ -1,6 +1,11 @@
 import { Auth } from "@/stores/account/types";
 import { AccountKind, createSessionHandle, loginToken } from "pawnote";
 
+/**
+ * Refreshes the Pronote account credentials using the provided authentication data.
+ * @param credentials
+ * @returns {Promise<Auth>} A promise that resolves to the updated authentication data.
+ */
 export async function refreshPronoteAccount(
   credentials: Auth
 ): Promise<Auth> {

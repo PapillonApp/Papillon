@@ -1,6 +1,12 @@
 import { assignmentsFromWeek, SessionHandle } from "pawnote";
 import { Homework, ReturnFormat } from "@/services/shared/homework";
 
+/**
+  * Fetches homework assignments from PRONOTE for the current week.
+  * @param {SessionHandle} session - The session handle for the PRONOTE account.
+  * @param {string} accountId - The ID of the account requesting the homeworks.
+  * @returns {Promise<Homework[]>} A promise that resolves to an array of Homework objects.
+ */
 export async function fetchPronoteHomeworks(session: SessionHandle, accountId: string): Promise<Homework[]> {
   const result: Homework[] = [];
 

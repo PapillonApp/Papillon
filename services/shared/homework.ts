@@ -12,7 +12,7 @@ import { GenericInterface } from "@/services/shared/types";
  *  @property {Array<Attachment>} attachments - List of attachments related to the homework.
  *  @property {boolean} evaluation - Indicates whether the homework is subject to evaluation.
  *  @property {boolean} custom - Indicates whether the homework is custom or predefined.
- *  *  @property {string} createdByAccount - The local account ID of the user who created the homework, useful for the manager.
+ *  @property {string} createdByAccount - The local account ID of the user who created the homework, useful for the manager.
  */
 export interface Homework extends GenericInterface{
   id: string;
