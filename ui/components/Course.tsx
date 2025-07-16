@@ -15,6 +15,7 @@ import { ContextMenuView } from 'react-native-ios-context-menu';
 import { useTranslation } from "react-i18next";
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+import { truncatenateString } from "@/ui/utils/Truncatenate";
 
 type Variant = 'primary' | 'separator';
 
@@ -213,7 +214,7 @@ const Course = React.memo(({
                         (status?.canceled || variant === "separator") ? styles.canceled : {},
                       ]}
                     >
-                      {name}
+                      {truncatenateString(name, 30, "...")}
                     </Typography>
                   </View>
                   {variant === "separator" && Leading && (
@@ -236,12 +237,12 @@ const Course = React.memo(({
                         { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
                       ]}
                     />
-                    <Stack direction="horizontal" hAlign="center" gap={5}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 5, flexWrap: "wrap", width: "100%" }}>
                       <FilledCircleUser color={status?.canceled ? "#555555" : "white"} />
-                      <Typography color="light" variant="body1" style={[styles.teacher, ...(status?.canceled ? [styles.canceled] : [])]}>
-                        {teacher || t("Form_Organizer")}
+                      <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? {maxWidth: "40%"} : {maxWidth: "50%"}, ...(status?.canceled ? [styles.canceled] : [])]}>
+                        {truncatenateString(teacher || t("Form_Organizer"), 20, "...")}
                       </Typography>
-                    </Stack>
+                    </View>
                   </Stack>
                 )}
                 {status && !status.canceled && variant !== "separator" && (
@@ -358,6 +359,8 @@ const styles = StyleSheet.create({
   },
   teacher: {
     fontSize: 16,
+    flexShrink: 1,
+    maxWidth: "80%",
     fontFamily: "semibold",
   },
   statusLabelContainer: {
