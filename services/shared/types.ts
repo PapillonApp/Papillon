@@ -26,3 +26,12 @@ export enum Capabilities {
   HOMEWORK,
   GRADES
 }
+
+/**
+ * Represents a generic interface for objects that have a createdByAccount property.
+ *
+ * @property {string} createdByAccount - The local account that created the object, useful for the manager.
+ */
+export interface GenericInterface {
+  createdByAccount: string;
+}

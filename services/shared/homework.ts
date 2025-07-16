@@ -1,4 +1,5 @@
 import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 /**
  *  This interface defines the general structure of a homework object.
@@ -13,7 +14,7 @@ import { Attachment } from "@/services/shared/attachment";
  *  @property {boolean} custom - Indicates whether the homework is custom or predefined.
  *  *  @property {string} createdByAccount - The local account ID of the user who created the homework, useful for the manager.
  */
-export interface Homework {
+export interface Homework extends GenericInterface{
   id: string;
   subject: string;
   content: string;
@@ -23,7 +24,6 @@ export interface Homework {
   attachments: Array<Attachment>
   evaluation: boolean;
   custom: boolean;
-  createdByAccount: string;
 }
 
 export enum ReturnFormat {
