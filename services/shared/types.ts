@@ -10,7 +10,19 @@ import { Pronote } from "@/services/pronote";
 export interface SchoolServicePlugin {
   displayName: string;
   service: Services;
+  capabilities: Capabilities[];
   authData: Auth;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
+}
+
+/*
+  *
+  * Represents the capabilities of a school service plugin.
+  * Used to determine what features the plugin supports.
+ */
+export enum Capabilities {
+  REFRESH,
+  HOMEWORK,
+  GRADES
 }

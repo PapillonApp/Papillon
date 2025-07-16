@@ -1,10 +1,11 @@
-import { SchoolServicePlugin } from "@/services/shared/types";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
 import { AccountKind, createSessionHandle, loginToken } from "pawnote";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
+  capabilities = [Capabilities.HOMEWORK, Capabilities.GRADES];
   authData: Auth = {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {

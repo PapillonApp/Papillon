@@ -1,5 +1,5 @@
 import { Account, Auth } from "@/stores/account/types";
-import { SchoolServicePlugin } from "@/services/shared/types";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Services } from "@/stores/account/types";
 import * as Network from "expo-network";
 import { error } from "@/utils/logger/logger";
@@ -16,7 +16,7 @@ export class AccountManager {
     if (networkState.isInternetReachable) {
       for (const service of this.account.services) {
         const plugin = this.getServicePlugin(service.serviceId);
-        if (plugin) {
+        if (plugin && plugin.capabilities.includes(Capabilities.REFRESH)) {
           const client = await plugin.refreshAccount(service.auth);
           this.clients[service.serviceId] = client;
           return client;
