@@ -1,11 +1,12 @@
-import React from "react";
-import { View, Dimensions, StyleSheet } from "react-native";
+import React, { useRef, useMemo, Suspense, useCallback } from "react";
+import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
 import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
   useSharedValue,
   useAnimatedScrollHandler,
+  runOnJS,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import getCorners from "../utils/Corners";
@@ -16,8 +17,8 @@ interface AnimatedModalLayoutProps {
   background?: React.ReactNode;
   headerContent: React.ReactNode;
   modalContent: React.ReactNode;
-  headerHeight?: number;
   onScrollOffsetChange?: (offset: number) => void;
+  onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
 export default function AnimatedModalLayout({
@@ -25,90 +26,101 @@ export default function AnimatedModalLayout({
   background,
   headerContent,
   modalContent,
-  headerHeight = 125,
-  onScrollOffsetChange
+  onScrollOffsetChange,
+  onFullyScrolled
 }: AnimatedModalLayoutProps) {
+
+  // Remove deferred modal content rendering for fastest initial paint
   const insets = useSafeAreaInsets();
   const scrollY = useSharedValue(0);
+  const isScrolledPastThreshold = useSharedValue(false);
+
+  // Use useAnimatedScrollHandler outside of render for performance
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
+      'worklet';
       scrollY.value = event.contentOffset.y;
+
+      if (onFullyScrolled) {
+        const wasScrolledPast = isScrolledPastThreshold.value;
+        const isNowScrolledPast = event.contentOffset.y > 125;
+
+        if (wasScrolledPast !== isNowScrolledPast) {
+          isScrolledPastThreshold.value = isNowScrolledPast;
+          runOnJS(onFullyScrolled)(isNowScrolledPast);
+        }
+      }
     },
   });
-  // Optionally call onScrollOffsetChange in JS thread
-  React.useEffect(() => {
-    if (!onScrollOffsetChange) return;
-    const id = setInterval(() => {
-      onScrollOffsetChange(scrollY.value);
-    }, 100);
-    return () => clearInterval(id);
-  }, [onScrollOffsetChange, scrollY]);
 
-  const corners = getCorners();
+  // Memoize corners and theme for efficiency
+  const corners = useMemo(() => getCorners(), []);
   const { colors } = useTheme();
-  const windowHeight = Dimensions.get("window").height;
-
-  const headerStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: interpolate(
-          scrollOffset.value,
-          [0, 50 + insets.top + headerHeight],
-          [1, 0.5],
-          Extrapolate.CLAMP
-        ),
-      },
-      {
-        translateY: interpolate(
-          scrollY.value,
-          [0, 50 + insets.top + 125],
-          [0, -100],
-          Extrapolate.EXTEND
-        ),
-      }
-    ],
-    opacity: interpolate(scrollOffset.value, [0, 50 + headerHeight], [1, 0], Extrapolate.CLAMP),
-  }));
-
-  console.log("Corners:", corners);
-
-  const modalStyle = useAnimatedStyle(() => ({
-    borderTopRightRadius: interpolate(
-      scrollOffset.value,
-      [0, 50 + insets.top + headerHeight],
-      [25, 10],
-      Extrapolate.CLAMP
-    ),
-    borderTopLeftRadius: interpolate(
-      scrollOffset.value,
-      [0, 50 + insets.top + headerHeight],
-      [25, 10],
-      Extrapolate.CLAMP
-    ),
-    minHeight: windowHeight - (insets.bottom + 16 + 50 + insets.top + 125),
-  }));
-
+  const windowHeight = useMemo(() => Dimensions.get("window").height, []);
+  // Precompute constants for animation, memoized for efficiency
+  const headerHeight = 125;
+  const headerTop = useMemo(() => 50 + insets.top, [insets.top]);
+  const scrollRange = useMemo(() => headerTop + headerHeight, [headerTop]);
+  const modalPaddingBottom = useMemo(() => 16 + insets.bottom, [insets.bottom]);
+  const modalMinHeight = useMemo(() => windowHeight - (insets.bottom + 16 + 50 + insets.top + headerHeight), [windowHeight, insets.bottom, insets.top]);
+  // Use React.memo for modal and header content for best performance
+  const MemoHeaderContent = React.memo(() => <>{headerContent}</>);
+  const MemoModalContent = React.memo(() => <>{modalContent}</>);
+  // Move style memoization outside render
+  const scrollViewStyle = useMemo(() => [styles.scrollView, { paddingTop: headerTop + headerHeight }], [headerTop, headerHeight]);
+  const modalBaseStyle = useMemo(() => [styles.modal, { paddingBottom: modalPaddingBottom, backgroundColor: colors.background }], [modalPaddingBottom, colors.background]);
+  const headerStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      transform: [
+        {
+          scale: interpolate(
+            scrollY.value,
+            [0, scrollRange],
+            [1, 0.5],
+            Extrapolate.CLAMP
+          ),
+        },
+        {
+          translateY: interpolate(
+            scrollY.value,
+            [0, scrollRange],
+            [0, -100],
+            Extrapolate.EXTEND
+          ),
+        }
+      ],
+      opacity: interpolate(scrollY.value, [0, headerHeight + 50], [1, 0], Extrapolate.CLAMP),
+      willChange: 'transform, opacity', // Hint for native optimization
+    };
+  });
+  const modalStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      borderTopLeftRadius: 32,
+      borderTopRightRadius: 32,
+      minHeight: modalMinHeight,
+      borderCurve: 'continuous',
+      willChange: 'borderTopRightRadius, borderTopLeftRadius, minHeight', // Hint for native optimization
+    };
+  });
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {background}
       {/* Absolutely positioned animated header */}
-      <Animated.View style={[styles.header, headerStyle, styles.headerAbsolute, { top: 50 + insets.top }]}>
-        {headerContent}
+      <Animated.View style={[styles.header, headerStyle, styles.headerAbsolute, { top: headerTop }]}>
+        <MemoHeaderContent />
       </Animated.View>
       <Animated.ScrollView
-        scrollEventThrottle={16}
+        scrollEventThrottle={16} // Lower throttle for smoother scroll
         onScroll={scrollHandler}
-        style={[
-          styles.scrollView,
-          { paddingTop: 50 + insets.top + 125 }, // Add header height to padding
-        ]}
+        style={scrollViewStyle}
+        removeClippedSubviews // Unmount offscreen views for memory
       >
-        <Animated.View style={[styles.header, { height: headerHeight }, headerStyle]}>
-          {headerContent}
-        </Animated.View>
-
-        <Animated.View style={[styles.modal, { paddingBottom: 16 + insets.bottom }, modalStyle]}>
-          {modalContent}
+        <Animated.View style={[...modalBaseStyle, modalStyle]}>
+          <Suspense fallback={<ActivityIndicator />}>
+            <MemoModalContent />
+          </Suspense>
           {/* Invisible bottom extension to prevent background on bounce */}
           <View style={{ height: 40 }} />
           <View style={[styles.bottomExtension, { backgroundColor: colors.background }]} pointerEvents="none" />
@@ -127,6 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   header: {
+    height: 125,
     alignItems: "center",
     justifyContent: "center",
   },
