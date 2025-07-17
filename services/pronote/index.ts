@@ -7,7 +7,9 @@ import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { News } from "@/services/shared/news";
 import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
-import { fetchPronoteGrades, fetchPronotePeriods } from "@/services/pronote/grades";
+import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
+import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
+import { Attendance } from "@/services/shared/attendance";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -47,9 +49,25 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getNews");
   }
 
-  async getPeriods(): Promise<Array<Period>> {
+  async getGradesPeriods(): Promise<Array<Period>> {
     if (this.session) {
-      return fetchPronotePeriods(this.session, this.accountId);
+      return fetchPronoteGradePeriods(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
+  }
+
+  async getAttendanceForPeriod(period: string): Promise<Attendance> {
+    if (this.session) {
+      return fetchPronoteAttendance(this.session, this.accountId, period);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
+  }
+
+  async getAttendancePeriods(): Promise<Array<Period>> {
+    if (this.session) {
+      return fetchPronoteAttendancePeriods(this.session, this.accountId);
     }
 
     error("Session is not valid", "Pronote.getNews");

@@ -4,10 +4,11 @@ import { AttachmentType } from "@/services/shared/attachment";
 import { error } from "@/utils/logger/logger";
 
 /**
- * Fetches homework assignments from PRONOTE for the current week.
- * @param {SessionHandle} session - The session handle for the PRONOTE account.
+ * Fetches grades from PRONOTE for a specified period.
+ * @param {SessionHandle} session - The session handles for the PRONOTE account.
  * @param {string} accountId - The ID of the account requesting the homeworks.
- * @returns {Promise<Homework[]>} A promise that resolves to an array of Homework objects.
+ * @param {string} period - The name of the period for which to fetch grades.
+ * @returns {Promise<PeriodGrades>} A promise that resolves to PeriodGrades.
  */
 export async function fetchPronoteGrades(session: SessionHandle, accountId: string, period: string): Promise<PeriodGrades> {
   if (!session) {
@@ -34,7 +35,13 @@ export async function fetchPronoteGrades(session: SessionHandle, accountId: stri
   };
 }
 
-export async function fetchPronotePeriods(session: SessionHandle, accountId: string): Promise<Array<Period>> {
+/**
+ * Fetches all grade periods from PRONOTE.
+ * @param {SessionHandle} session - The session handle for the PRONOTE session.
+ * @param {string} accountId - The ID of the account making the request.
+ * @return {Promise<Array<Period>>} - A promise that resolves to an array of grade periods.
+ */
+export async function fetchPronoteGradePeriods(session: SessionHandle, accountId: string): Promise<Array<Period>> {
   const accountTab = session.user.resources[0].tabs.get(TabLocation.Grades);
   if (!accountTab) {
     error("Grades tab not found in session", "fetchPronotePeriods");
@@ -49,6 +56,11 @@ export async function fetchPronotePeriods(session: SessionHandle, accountId: str
   }));
 }
 
+/**
+ * Maps the grades overview to an array of subjects with their respective grades.
+ * @param grades
+ * @param accountId
+ */
 function mapSubjectGrades(grades: GradesOverview, accountId: string): Array<Subject> {
   const subjects: Array<Subject> = [];
 
@@ -98,6 +110,10 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Array<Subj
   return subjects;
 }
 
+/**
+ * Maps a GradeValue to a GradeScore.
+ * @param grade
+ */
 function mapGradeValueToScore(grade: GradeValue | undefined): GradeScore {
   if (typeof grade === "undefined")
     return { disabled: true, status: "Inconnu" };

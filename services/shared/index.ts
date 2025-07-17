@@ -6,6 +6,8 @@ import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 import { News } from "@/services/shared/news";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Attendance } from "@/services/shared/attendance";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -50,6 +52,38 @@ export class AccountManager {
       async client => client.getNews ? await client.getNews() : [],
       { multiple: true }
     )) as News[];
+  }
+
+  async getAllGradesForPeriod(period: string): Promise<PeriodGrades> {
+    return (await this.fetchData<PeriodGrades>(
+      Capabilities.GRADES,
+      async client => client.getGradesForPeriod ? await client.getGradesForPeriod(period) : error("getGradesForPeriod not implemented but the capability is set."),
+      { multiple: false }
+    )) as PeriodGrades;
+  }
+
+  async getAllGradesPeriods(): Promise<Array<Period>> {
+    return (await this.fetchData<Period[]>(
+      Capabilities.GRADES,
+      async client => client.getGradesPeriods ? await client.getGradesPeriods() : [],
+      { multiple: true }
+    )) as Period[];
+  }
+
+  async getAllAttendanceForPeriod(period: string): Promise<Attendance> {
+    return (await this.fetchData<Attendance>(
+      Capabilities.ATTENDANCE,
+      async client => client.getAttendanceForPeriod ? await client.getAttendanceForPeriod(period) : error("getGradesForPeriod not implemented but the capability is set."),
+      { multiple: false }
+    )) as Attendance;
+  }
+
+  async getAllAttendancePeriods(): Promise<Array<Period>> {
+    return (await this.fetchData<Period[]>(
+      Capabilities.ATTENDANCE,
+      async client => client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
+      { multiple: true }
+    )) as Period[];
   }
 
   async setNewsAsDone(news: News): Promise<News> {

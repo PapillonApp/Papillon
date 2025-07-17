@@ -5,6 +5,7 @@ import { Homework } from "@/services/shared/homework";
 import { Auth, Services } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Attendance } from "@/services/shared/attendance";
 
 /** Represents a plugin for a school service.
  *
@@ -23,7 +24,9 @@ export interface SchoolServicePlugin {
   getHomeworks?: (date: Date) => Promise<Array<Homework>>;
   getNews?: () => Promise<Array<News>>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
-  getPeriods?: () => Promise<Array<Period>>;
+  getGradesPeriods?: () => Promise<Array<Period>>;
+  getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
+  getAttendancePeriods?: () => Promise<Array<Period>>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
 
@@ -35,7 +38,9 @@ export interface SchoolServicePlugin {
 export enum Capabilities {
   REFRESH,
   HOMEWORK,
-  NEWS
+  NEWS,
+  GRADES,
+  ATTENDANCE
 }
 
 /**
