@@ -37,6 +37,7 @@
     "expo-blur": "~14.1.5",
     "expo-build-properties": "~0.14.8",
     "expo-dev-client": "~5.2.2",
+    "expo-device": "^7.1.4",
     "expo-font": "~13.3.2",
     "expo-haptics": "~14.1.4",
     "expo-linear-gradient": "~14.1.5",

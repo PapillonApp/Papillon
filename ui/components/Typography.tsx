@@ -98,6 +98,7 @@ interface TypographyProps extends TextProps {
   color?: Color | string;
   align?: Alignment;
   style?: TextStyle | TextStyle[];
+  inline?: boolean;
 }
 
 // Cache for computed color styles per theme
@@ -126,17 +127,18 @@ const Typography: React.FC<TypographyProps> = React.memo(
     variant = "body1",
     color = "text",
     align = "left",
+    inline = false,
     style,
     ...rest
   }) => {
     const { colors } = useTheme();
-    
+
     // Generate cache key for this specific combination
     const cacheKey = React.useMemo(() => {
       const hasCustomStyle = style != null;
-      const isCustomColor = typeof color === "string" && !(color in STATIC_COLORS) && 
-                            !["primary", "text", "secondary"].includes(color);
-      
+      const isCustomColor = typeof color === "string" && !(color in STATIC_COLORS) &&
+        !["primary", "text", "secondary"].includes(color);
+
       // Only cache if no custom styles or custom colors to avoid memory leaks
       if (!hasCustomStyle && !isCustomColor) {
         return `${variant}-${color}-${align}-${colors.primary}-${colors.text}`;
@@ -155,6 +157,17 @@ const Typography: React.FC<TypographyProps> = React.memo(
       const variantStyle = VARIANTS[variant];
       const alignStyle = ALIGNMENT_STYLES[align];
 
+      const inlineStyle: TextStyle = inline ? (() => {
+        let fontSize: number | undefined;
+        if (style) {
+          const flattened = Array.isArray(style) ? StyleSheet.flatten(style) : style;
+          fontSize = flattened.fontSize;
+        }
+        return {
+          lineHeight: fontSize ?? (variantStyle.fontSize ?? 1)
+        };
+      })() : {};
+
       let colorStyle: TextStyle;
       if (typeof color === "string" && color in colorStyles) {
         colorStyle = colorStyles[color as Color];
@@ -165,7 +178,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       }
 
       let finalStyle: TextStyle;
-      
+
       if (style) {
         // For custom styles, merge without caching to avoid memory leaks
         finalStyle = {
@@ -173,6 +186,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...alignStyle,
           ...colorStyle,
           ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
+          ...inlineStyle,
         };
       } else {
         // For common cases without custom styles, use optimized merging
@@ -180,8 +194,9 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...variantStyle,
           ...alignStyle,
           ...colorStyle,
+          ...inlineStyle,
         };
-        
+
         // Cache only common cases
         if (cacheKey) {
           styleCache.set(cacheKey, finalStyle);
@@ -200,27 +215,27 @@ const Typography: React.FC<TypographyProps> = React.memo(
     if (prevProps.color !== nextProps.color) return false;
     if (prevProps.align !== nextProps.align) return false;
     if (prevProps.children !== nextProps.children) return false;
-    
+
     // Shallow comparison for style prop
     if (prevProps.style !== nextProps.style) {
       if (!prevProps.style && !nextProps.style) return true;
       if (!prevProps.style || !nextProps.style) return false;
-      
+
       // For array styles, do shallow comparison
       if (Array.isArray(prevProps.style) && Array.isArray(nextProps.style)) {
         if (prevProps.style.length !== nextProps.style.length) return false;
         return prevProps.style.every((s, i) => s === (nextProps.style as TextStyle[])[i]);
       }
-      
+
       // For object styles, reference equality is sufficient for performance
       return prevProps.style === nextProps.style;
     }
-    
+
     // Check other TextProps that might affect rendering
     const textPropsToCheck: (keyof TextProps)[] = [
       'numberOfLines', 'ellipsizeMode', 'selectable', 'testID'
     ];
-    
+
     return textPropsToCheck.every(prop => prevProps[prop] === nextProps[prop]);
   }
 );
