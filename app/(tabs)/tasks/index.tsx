@@ -129,7 +129,7 @@ export default function TabOneScreen() {
   const modalContent = useMemo(() => (
     <View>
       <List>
-        {Array.from({ length: 100 }, (_, i) => (
+        {Array.from({ length: 20 }, (_, i) => (
           <Item key={i}>
             <Typography variant="body1" color="text">
               Tâche {i + 1}

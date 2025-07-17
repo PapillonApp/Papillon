@@ -17,7 +17,7 @@ interface AnimatedModalLayoutProps {
   background?: React.ReactNode;
   headerContent: React.ReactNode;
   modalContent: React.ReactNode;
-  onScrollOffsetChange?: (offset: number) => void;
+  height?: number; // Height of the header
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -26,9 +26,11 @@ export default function AnimatedModalLayout({
   background,
   headerContent,
   modalContent,
-  onScrollOffsetChange,
+  height = 125,
   onFullyScrolled
 }: AnimatedModalLayoutProps) {
+  // Precompute constants for animation, memoized for efficiency
+  const headerHeight = height;
 
   // Remove deferred modal content rendering for fastest initial paint
   const insets = useSafeAreaInsets();
@@ -43,7 +45,7 @@ export default function AnimatedModalLayout({
 
       if (onFullyScrolled) {
         const wasScrolledPast = isScrolledPastThreshold.value;
-        const isNowScrolledPast = event.contentOffset.y > 125;
+        const isNowScrolledPast = event.contentOffset.y > headerHeight;
 
         if (wasScrolledPast !== isNowScrolledPast) {
           isScrolledPastThreshold.value = isNowScrolledPast;
@@ -57,8 +59,6 @@ export default function AnimatedModalLayout({
   const corners = useMemo(() => getCorners(), []);
   const { colors } = useTheme();
   const windowHeight = useMemo(() => Dimensions.get("window").height, []);
-  // Precompute constants for animation, memoized for efficiency
-  const headerHeight = 125;
   const headerTop = useMemo(() => 50 + insets.top, [insets.top]);
   const scrollRange = useMemo(() => headerTop + headerHeight, [headerTop]);
   const modalPaddingBottom = useMemo(() => 16 + insets.bottom, [insets.bottom]);
@@ -108,7 +108,7 @@ export default function AnimatedModalLayout({
     <View style={[styles.container, { backgroundColor }]}>
       {background}
       {/* Absolutely positioned animated header */}
-      <Animated.View style={[styles.header, headerStyle, styles.headerAbsolute, { top: headerTop }]}>
+      <Animated.View style={[styles.header, headerStyle, styles.headerAbsolute, { top: headerTop, height: headerHeight }]}>
         <MemoHeaderContent />
       </Animated.View>
       <Animated.ScrollView
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   header: {
-    height: 125,
     alignItems: "center",
     justifyContent: "center",
   },
