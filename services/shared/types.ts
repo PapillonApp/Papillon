@@ -4,6 +4,7 @@ import { Pronote } from "@/services/pronote";
 import { Homework } from "@/services/shared/homework";
 import { Auth, Services } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
+import { Period, PeriodGrades } from "@/services/shared/grade";
 
 /** Represents a plugin for a school service.
  *
@@ -21,6 +22,8 @@ export interface SchoolServicePlugin {
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
   getHomeworks?: (date: Date) => Promise<Array<Homework>>;
   getNews?: () => Promise<Array<News>>;
+  getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
+  getPeriods?: () => Promise<Array<Period>>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
 

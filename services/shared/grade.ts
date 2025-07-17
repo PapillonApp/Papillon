@@ -7,7 +7,7 @@ export interface PeriodGrades extends GenericInterface {
   subjects: Array<Subject>;
 }
 
-export interface Subject extends GenericInterface {
+export interface Subject {
   id: string;
   name: string;
   studentAverage: GradeScore;
@@ -20,6 +20,7 @@ export interface Subject extends GenericInterface {
 
 export interface Grade extends GenericInterface {
   id: string;
+  subjectId: string;
   description: string;
   givenAt: Date;
   subjectFile?: Attachment;
@@ -27,14 +28,22 @@ export interface Grade extends GenericInterface {
   bonus?: boolean;
   optional?: boolean;
   outOf: GradeScore;
+  coefficient: number;
   studentScore: GradeScore;
   averageScore: GradeScore;
   minScore: GradeScore;
   maxScore: GradeScore;
 }
 
-export interface GradeScore extends GenericInterface {
+export interface GradeScore {
   value?: number;
   status?: string;
   disabled?: boolean;
+}
+
+export interface Period extends GenericInterface {
+  name: string
+  id?: string
+  start: Date
+  end: Date
 }

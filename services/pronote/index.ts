@@ -1,6 +1,4 @@
-import { AccountKind, assignmentsFromWeek, createSessionHandle, loginToken, SessionHandle } from "pawnote";
-
-import { Homework, ReturnFormat } from "@/services/shared/homework";
+import { Homework } from "@/services/shared/homework";
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Auth, Services } from "@/stores/account/types";
 import { fetchPronoteHomeworks } from "@/services/pronote/homework";
@@ -8,6 +6,8 @@ import { error } from "@/utils/logger/logger";
 import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { News } from "@/services/shared/news";
 import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { fetchPronoteGrades, fetchPronotePeriods } from "@/services/pronote/grades";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -29,7 +29,6 @@ export class Pronote implements SchoolServicePlugin {
     }
 
     error("Session is not valid", "Pronote.getHomeworks");
-    return []
   }
 
   async getNews(): Promise<Array<News>> {
@@ -38,7 +37,22 @@ export class Pronote implements SchoolServicePlugin {
     }
 
     error("Session is not valid", "Pronote.getNews");
-    return [];
+  }
+
+  async getGradesForPeriod(period: string): Promise<PeriodGrades> {
+    if (this.session) {
+      return fetchPronoteGrades(this.session, this.accountId, period);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
+  }
+
+  async getPeriods(): Promise<Array<Period>> {
+    if (this.session) {
+      return fetchPronotePeriods(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
   }
 
   async setNewsAsAcknowledged(news: News): Promise<News> {
@@ -47,6 +61,5 @@ export class Pronote implements SchoolServicePlugin {
     }
 
     error("Session is not valid", "Pronote.setNewsAsAcknowledged");
-    return news;
   }
 }

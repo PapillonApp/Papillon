@@ -50,12 +50,13 @@ function log(message: string, from?: string): void {
   console.log(entry);
 }
 
-function error(message: string, from?: string): void {
+function error(message: string, from?: string): never {
   const date = getIsoDate()
   const functionName = obtainFunctionName(from)
   const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(entry);
+  throw new Error(entry);
 }
 
 function warn(message: string, from?: string): void {

@@ -34,7 +34,6 @@ export class AccountManager {
       "Your device is not connected to the internet, please check your connection.",
       "AccountManager.refreshAllAccounts"
     );
-    return undefined;
   }
 
   async getAllHomeworks(date: Date): Promise<Array<Homework>> {
@@ -86,7 +85,6 @@ export class AccountManager {
   ): Promise<T | T[] | undefined> {
     if (!this.hasInternetConnection()) {
       error("Internet not reachable.");
-      return options?.multiple ? [] : undefined;
     }
 
     const availableClients = this.getAvailableClients(capability);
