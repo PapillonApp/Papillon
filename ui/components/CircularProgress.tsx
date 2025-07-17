@@ -17,21 +17,22 @@ type CircularProgressProps = {
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export const CircularProgress: FC<CircularProgressProps> = ({
+const CircularProgress: FC<CircularProgressProps> = ({
   radius,
   strokeWidth,
-  backgroundColor, 
+  backgroundColor,
   fill,
   percentageComplete,
 }) => {
+  // return (<></>);
+
   const innerRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * innerRadius;
 
   const strokeDashoffset = useSharedValue(circumference); // start at 0%
 
   useEffect(() => {
-    const invertedCompletion = (100 - percentageComplete) / 100;
-    strokeDashoffset.value = withTiming(circumference * invertedCompletion, {
+    strokeDashoffset.value = withTiming(circumference * (1 - percentageComplete / 100), {
       duration: 1500,
     });
   }, [percentageComplete]);
@@ -41,7 +42,7 @@ export const CircularProgress: FC<CircularProgressProps> = ({
   }));
 
   return (
-    <View style={[styles.container, { width: radius * 2, height: radius * 2 }]}>
+    <View style={[styles.container, { width: radius * 2, height: radius * 2 }]} key={`circular-progress-${radius}-${percentageComplete}`}>
       <Svg width={radius * 2} height={radius * 2}>
         <Circle
           cx={radius}
@@ -75,3 +76,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export { CircularProgress };
