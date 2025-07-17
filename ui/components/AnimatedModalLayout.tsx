@@ -16,6 +16,7 @@ interface AnimatedModalLayoutProps {
   background?: React.ReactNode;
   headerContent: React.ReactNode;
   modalContent: React.ReactNode;
+  headerHeight?: number;
   onScrollOffsetChange?: (offset: number) => void;
 }
 
@@ -24,6 +25,7 @@ export default function AnimatedModalLayout({
   background,
   headerContent,
   modalContent,
+  headerHeight = 125,
   onScrollOffsetChange
 }: AnimatedModalLayoutProps) {
   const insets = useSafeAreaInsets();
@@ -50,8 +52,8 @@ export default function AnimatedModalLayout({
     transform: [
       {
         scale: interpolate(
-          scrollY.value,
-          [0, 50 + insets.top + 125],
+          scrollOffset.value,
+          [0, 50 + insets.top + headerHeight],
           [1, 0.5],
           Extrapolate.CLAMP
         ),
@@ -65,22 +67,22 @@ export default function AnimatedModalLayout({
         ),
       }
     ],
-    opacity: interpolate(scrollY.value, [0, 50 + 125], [1, 0], Extrapolate.CLAMP),
+    opacity: interpolate(scrollOffset.value, [0, 50 + headerHeight], [1, 0], Extrapolate.CLAMP),
   }));
 
   console.log("Corners:", corners);
 
   const modalStyle = useAnimatedStyle(() => ({
     borderTopRightRadius: interpolate(
-      scrollY.value,
-      [0, 50 + insets.top + 125],
-      [25, corners],
+      scrollOffset.value,
+      [0, 50 + insets.top + headerHeight],
+      [25, 10],
       Extrapolate.CLAMP
     ),
     borderTopLeftRadius: interpolate(
-      scrollY.value,
-      [0, 50 + insets.top + 125],
-      [25, corners],
+      scrollOffset.value,
+      [0, 50 + insets.top + headerHeight],
+      [25, 10],
       Extrapolate.CLAMP
     ),
     minHeight: windowHeight - (insets.bottom + 16 + 50 + insets.top + 125),
@@ -101,7 +103,11 @@ export default function AnimatedModalLayout({
           { paddingTop: 50 + insets.top + 125 }, // Add header height to padding
         ]}
       >
-        <Animated.View style={[styles.modal, { paddingBottom: 16 + insets.bottom, backgroundColor: colors.background }, modalStyle]}>
+        <Animated.View style={[styles.header, { height: headerHeight }, headerStyle]}>
+          {headerContent}
+        </Animated.View>
+
+        <Animated.View style={[styles.modal, { paddingBottom: 16 + insets.bottom }, modalStyle]}>
           {modalContent}
           {/* Invisible bottom extension to prevent background on bounce */}
           <View style={{ height: 40 }} />
@@ -121,7 +127,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   header: {
-    height: 125,
     alignItems: "center",
     justifyContent: "center",
   },

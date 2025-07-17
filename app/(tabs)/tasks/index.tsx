@@ -22,7 +22,7 @@ import Calendar from "@/ui/components/Calendar";
 import { AlignCenter, Search } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import PatternBackground from "@/ui/components/PatternBackground";
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from "@react-native-masked-view/masked-view";
 import { Circle, G, Path } from "react-native-svg";
 import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
@@ -204,17 +204,7 @@ export default function TabOneScreen() {
       }
 
       modalContent={
-        <View>
-          <List>
-            {Array.from({ length: 100 }, (_, i) => (
-              <Item key={i}>
-                <Typography variant="body1" color="text">
-                  Tâche {i + 1}
-                </Typography>
-              </Item>
-            ))}
-          </List>
-        </View>
+        <View style={{ height: windowHeight }}></View>
       }
     />
   );
