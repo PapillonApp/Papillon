@@ -8,6 +8,7 @@ import { error } from "@/utils/logger/logger";
 import { News } from "@/services/shared/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -73,7 +74,7 @@ export class AccountManager {
   async getAllAttendanceForPeriod(period: string): Promise<Attendance> {
     return (await this.fetchData<Attendance>(
       Capabilities.ATTENDANCE,
-      async client => client.getAttendanceForPeriod ? await client.getAttendanceForPeriod(period) : error("getGradesForPeriod not implemented but the capability is set."),
+      async client => client.getAttendanceForPeriod ? await client.getAttendanceForPeriod(period) : error("getAllAttendanceForPeriod not implemented but the capability is set."),
       { multiple: false }
     )) as Attendance;
   }
@@ -84,6 +85,14 @@ export class AccountManager {
       async client => client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
       { multiple: true }
     )) as Period[];
+  }
+
+  async getAllWeeklyCanteenMenu(startDate: Date): Promise<Array<CanteenMenu>> {
+    return (await this.fetchData<CanteenMenu[]>(
+      Capabilities.CANTEEN_MENU,
+      async client => client.getWeeklyCanteenMenu ? await client.getWeeklyCanteenMenu(startDate) : [],
+      { multiple: true }
+    )) as CanteenMenu[];
   }
 
   async setNewsAsDone(news: News): Promise<News> {

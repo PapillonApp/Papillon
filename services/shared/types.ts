@@ -6,6 +6,7 @@ import { Auth, Services } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
 
 /** Represents a plugin for a school service.
  *
@@ -27,6 +28,7 @@ export interface SchoolServicePlugin {
   getGradesPeriods?: () => Promise<Array<Period>>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
   getAttendancePeriods?: () => Promise<Array<Period>>;
+  getWeeklyCanteenMenu?: (startDate: Date) => Promise<CanteenMenu[]>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
 
@@ -40,7 +42,8 @@ export enum Capabilities {
   HOMEWORK,
   NEWS,
   GRADES,
-  ATTENDANCE
+  ATTENDANCE,
+  CANTEEN_MENU
 }
 
 /**

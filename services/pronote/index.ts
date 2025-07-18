@@ -10,6 +10,8 @@ import { Period, PeriodGrades } from "@/services/shared/grade";
 import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
 import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
+import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -68,6 +70,14 @@ export class Pronote implements SchoolServicePlugin {
   async getAttendancePeriods(): Promise<Array<Period>> {
     if (this.session) {
       return fetchPronoteAttendancePeriods(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
+  }
+
+  async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
+    if (this.session) {
+      return fetchPronoteCanteenMenu(this.session, startDate);
     }
 
     error("Session is not valid", "Pronote.getNews");
