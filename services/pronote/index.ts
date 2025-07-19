@@ -12,6 +12,13 @@ import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/service
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
+import {
+  fetchPronoteChatMessages,
+  fetchPronoteChatRecipients,
+  fetchPronoteChats,
+  fetchPronoteRecipients, sendPronoteMessageInChat,
+} from "@/services/pronote/chat";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -48,7 +55,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteGrades(this.session, this.accountId, period);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getGradesForPeriod");
   }
 
   async getGradesPeriods(): Promise<Array<Period>> {
@@ -56,7 +63,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteGradePeriods(this.session, this.accountId);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getGradesPeriods");
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance> {
@@ -64,7 +71,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteAttendance(this.session, this.accountId, period);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getAttendanceForPeriod");
   }
 
   async getAttendancePeriods(): Promise<Array<Period>> {
@@ -72,7 +79,7 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteAttendancePeriods(this.session, this.accountId);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getAttendancePeriods");
   }
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
@@ -80,7 +87,47 @@ export class Pronote implements SchoolServicePlugin {
       return fetchPronoteCanteenMenu(this.session, startDate);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
+  }
+
+  async getChats(): Promise<Chat[]> {
+    if (this.session) {
+      return fetchPronoteChats(this.session, this.accountId);
+    }
+
+    error("Session is not valid", "Pronote.getChats");
+  }
+
+  async getChatRecipients(chat: Chat): Promise<Recipient[]> {
+    if (this.session) {
+      return fetchPronoteChatRecipients(this.session, chat);
+    }
+
+    error("Session is not valid", "Pronote.getChatRecipients");
+  }
+
+  async getChatMessages(chat: Chat): Promise<Message[]> {
+    if (this.session) {
+      return fetchPronoteChatMessages(this.session, this.accountId, chat);
+    }
+
+    error("Session is not valid", "Pronote.getChatMessages");
+  }
+
+  async getRecipientsAvailableForNewChat(): Promise<Recipient[]> {
+    if (this.session) {
+      return fetchPronoteRecipients(this.session);
+    }
+
+    error("Session is not valid", "Pronote.getRecipientsAvailableForNewChat");
+  }
+
+  async sendMessageInChat(chat: Chat, content: string): Promise<void> {
+    if (this.session) {
+      await sendPronoteMessageInChat(this.session, chat, content);
+    }
+
+    error("Session is not valid", "Pronote.sendMessageInChat");
   }
 
   async setNewsAsAcknowledged(news: News): Promise<News> {

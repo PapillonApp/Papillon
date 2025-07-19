@@ -9,6 +9,7 @@ import { News } from "@/services/shared/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -95,6 +96,50 @@ export class AccountManager {
     )) as CanteenMenu[];
   }
 
+  async getAllChats(): Promise<Array<Chat>> {
+    return (await this.fetchData<Chat[]>(
+      Capabilities.CHAT_READ,
+      async client => client.getChats ? await client.getChats() : [],
+      { multiple: true }
+    )) as Chat[];
+  }
+
+  async getChatRecipients(chat: Chat): Promise<Array<Recipient>> {
+    return (await this.fetchData<Recipient[]>(
+      Capabilities.CHAT_READ,
+      async client => client.getChatRecipients ? await client.getChatRecipients(chat) : [],
+      { multiple: true, clientId: chat.createdByAccount }
+    )) as Recipient[];
+  }
+
+  async getChatMessages(chat: Chat): Promise<Array<Message>> {
+    return (await this.fetchData<Message[]>(
+      Capabilities.CHAT_READ,
+      async client => client.getChatMessages ? await client.getChatMessages(chat) : [],
+      { multiple: true, clientId: chat.createdByAccount }
+    )) as Message[];
+  }
+
+  async getRecipientsAvailableForNewChat(): Promise<Array<Recipient>> {
+    return (await this.fetchData<Recipient[]>(
+      Capabilities.CHAT_READ,
+      async client => client.getRecipientsAvailableForNewChat ? await client.getRecipientsAvailableForNewChat() : [],
+      { multiple: true }
+    )) as Recipient[];
+  }
+
+  async sendMessageInChat(chat: Chat, content: string): Promise<void> {
+    await this.fetchData<void>(
+      Capabilities.CHAT_WRITE,
+      async client => {
+        if (client.sendMessageInChat) {
+          await client.sendMessageInChat(chat, content);
+        }
+      },
+      { multiple: true, clientId: chat.createdByAccount }
+    );
+  }
+
   async setNewsAsDone(news: News): Promise<News> {
     return (await this.fetchData<News>(
       Capabilities.NEWS,
@@ -124,10 +169,21 @@ export class AccountManager {
   private async fetchData<T>(
     capability: Capabilities,
     callback: (client: SchoolServicePlugin) => Promise<T>,
-    options?: { multiple?: boolean }
+    options?: { multiple?: boolean, clientId?: string }
   ): Promise<T | T[] | undefined> {
     if (!this.hasInternetConnection()) {
       error("Internet not reachable.");
+    }
+
+    if (options?.clientId !== undefined) {
+      const client = this.clients[options.clientId];
+      if (!client) {
+        error(`Client with ID ${options.clientId} not found.`);
+      }
+      if (!client.capabilities.includes(capability)) {
+        error(`Client with ID ${options.clientId} does not support capability ${capability}.`);
+      }
+      return await callback(client);
     }
 
     const availableClients = this.getAvailableClients(capability);
