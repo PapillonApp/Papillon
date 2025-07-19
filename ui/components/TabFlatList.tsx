@@ -223,6 +223,11 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
         ListFooterComponent={<View style={{ height: 80 }} />}
 
+        showsVerticalScrollIndicator={isScrolledPastThreshold.value}
+        scrollIndicatorInsets={{
+          top: 28
+        }}
+
         style={{
           flex: 1,
           zIndex: 9999,
