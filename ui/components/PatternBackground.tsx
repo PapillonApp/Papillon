@@ -6,7 +6,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const TILE_SIZE = 39.2;
 
-const PatternBackground = ({ PatternTile }: { PatternTile: React.ElementType }) => {
+const PatternBackground = ({ PatternTile, color }: { PatternTile: React.ElementType, color: string }) => {
   const cols = Math.ceil(screenWidth / TILE_SIZE);
   const rows = Math.ceil(screenHeight / TILE_SIZE);
 
@@ -19,6 +19,7 @@ const PatternBackground = ({ PatternTile }: { PatternTile: React.ElementType }) 
               key={`${row}-${col}`}
               x={col * TILE_SIZE}
               y={row * TILE_SIZE}
+              color={color}
             />
           ))
         )}

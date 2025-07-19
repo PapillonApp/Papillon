@@ -90,7 +90,7 @@ export default function AnimatedModalLayout({
           ),
         }
       ],
-      opacity: interpolate(scrollY.value, [0, headerHeight + 50], [1, 0], Extrapolate.CLAMP),
+      opacity: interpolate(scrollY.value, [0, headerHeight], [1, 0], Extrapolate.CLAMP),
       willChange: 'transform, opacity', // Hint for native optimization
     };
   });
@@ -116,6 +116,9 @@ export default function AnimatedModalLayout({
         onScroll={scrollHandler}
         style={scrollViewStyle}
         removeClippedSubviews // Unmount offscreen views for memory
+        snapToOffsets={[0, scrollRange - 110]} // Snap to header and modal positions
+        decelerationRate="fast" // Faster deceleration for smoother feel
+        snapToEnd={false} // Disable snap to end for better control
       >
         <Animated.View style={[...modalBaseStyle, modalStyle]}>
           <Suspense fallback={<ActivityIndicator />}>
