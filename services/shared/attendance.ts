@@ -2,10 +2,10 @@ import { GenericInterface } from "@/services/shared/types";
 import { Attachment } from "@/services/shared/attachment";
 
 export interface Attendance extends GenericInterface {
-  delays: Array<Delay>;
-  absences: Array<Absence>;
-  punishments: Array<Punishment>;
-  observations: Array<Observation>;
+  delays: Delay[];
+  absences: Absence[];
+  punishments: Punishment[];
+  observations: Observation[];
 }
 
 export interface Delay {

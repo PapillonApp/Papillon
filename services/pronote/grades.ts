@@ -41,7 +41,7 @@ export async function fetchPronoteGrades(session: SessionHandle, accountId: stri
  * @param {string} accountId - The ID of the account making the request.
  * @return {Promise<Array<Period>>} - A promise that resolves to an array of grade periods.
  */
-export async function fetchPronoteGradePeriods(session: SessionHandle, accountId: string): Promise<Array<Period>> {
+export async function fetchPronoteGradePeriods(session: SessionHandle, accountId: string): Promise<Period[]> {
   const accountTab = session.user.resources[0].tabs.get(TabLocation.Grades);
   if (!accountTab) {
     error("Grades tab not found in session", "fetchPronotePeriods");
@@ -61,10 +61,10 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
  * @param grades
  * @param accountId
  */
-function mapSubjectGrades(grades: GradesOverview, accountId: string): Array<Subject> {
-  const subjects: Array<Subject> = [];
+function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] {
+  const subjects: Subject[] = [];
 
-  const allMappedGrades: Array<Grade> = grades.grades.map(g => ({
+  const allMappedGrades: Grade[] = grades.grades.map(g => ({
     id: g.id,
     subjectId: g.subject.id,
     description: g.comment,

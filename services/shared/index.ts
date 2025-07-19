@@ -40,7 +40,7 @@ export class AccountManager {
     );
   }
 
-  async getAllHomeworks(date: Date): Promise<Array<Homework>> {
+  async getHomeworks(date: Date): Promise<Homework[]> {
     return (await this.fetchData<Homework[]>(
       Capabilities.HOMEWORK,
       async client => client.getHomeworks ? await client.getHomeworks(date) : [],
@@ -48,7 +48,7 @@ export class AccountManager {
     )) as Homework[];
   }
 
-  async getAllNews(): Promise<Array<News>> {
+  async getNews(): Promise<News[]> {
     return (await this.fetchData<News[]>(
       Capabilities.NEWS,
       async client => client.getNews ? await client.getNews() : [],
@@ -56,7 +56,7 @@ export class AccountManager {
     )) as News[];
   }
 
-  async getAllGradesForPeriod(period: string): Promise<PeriodGrades> {
+  async getGradesForPeriod(period: string): Promise<PeriodGrades> {
     return (await this.fetchData<PeriodGrades>(
       Capabilities.GRADES,
       async client => client.getGradesForPeriod ? await client.getGradesForPeriod(period) : error("getGradesForPeriod not implemented but the capability is set."),
@@ -64,7 +64,7 @@ export class AccountManager {
     )) as PeriodGrades;
   }
 
-  async getAllGradesPeriods(): Promise<Array<Period>> {
+  async getGradesPeriods(): Promise<Period[]> {
     return (await this.fetchData<Period[]>(
       Capabilities.GRADES,
       async client => client.getGradesPeriods ? await client.getGradesPeriods() : [],
@@ -72,7 +72,7 @@ export class AccountManager {
     )) as Period[];
   }
 
-  async getAllAttendanceForPeriod(period: string): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance> {
     return (await this.fetchData<Attendance>(
       Capabilities.ATTENDANCE,
       async client => client.getAttendanceForPeriod ? await client.getAttendanceForPeriod(period) : error("getAllAttendanceForPeriod not implemented but the capability is set."),
@@ -80,7 +80,7 @@ export class AccountManager {
     )) as Attendance;
   }
 
-  async getAllAttendancePeriods(): Promise<Array<Period>> {
+  async getAttendancePeriods(): Promise<Period[]> {
     return (await this.fetchData<Period[]>(
       Capabilities.ATTENDANCE,
       async client => client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
@@ -88,7 +88,7 @@ export class AccountManager {
     )) as Period[];
   }
 
-  async getAllWeeklyCanteenMenu(startDate: Date): Promise<Array<CanteenMenu>> {
+  async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
     return (await this.fetchData<CanteenMenu[]>(
       Capabilities.CANTEEN_MENU,
       async client => client.getWeeklyCanteenMenu ? await client.getWeeklyCanteenMenu(startDate) : [],
@@ -96,7 +96,7 @@ export class AccountManager {
     )) as CanteenMenu[];
   }
 
-  async getAllChats(): Promise<Array<Chat>> {
+  async getChats(): Promise<Chat[]> {
     return (await this.fetchData<Chat[]>(
       Capabilities.CHAT_READ,
       async client => client.getChats ? await client.getChats() : [],
@@ -104,7 +104,7 @@ export class AccountManager {
     )) as Chat[];
   }
 
-  async getChatRecipients(chat: Chat): Promise<Array<Recipient>> {
+  async getChatRecipients(chat: Chat): Promise<Recipient[]> {
     return (await this.fetchData<Recipient[]>(
       Capabilities.CHAT_READ,
       async client => client.getChatRecipients ? await client.getChatRecipients(chat) : [],
@@ -112,7 +112,7 @@ export class AccountManager {
     )) as Recipient[];
   }
 
-  async getChatMessages(chat: Chat): Promise<Array<Message>> {
+  async getChatMessages(chat: Chat): Promise<Message[]> {
     return (await this.fetchData<Message[]>(
       Capabilities.CHAT_READ,
       async client => client.getChatMessages ? await client.getChatMessages(chat) : [],
@@ -120,7 +120,7 @@ export class AccountManager {
     )) as Message[];
   }
 
-  async getRecipientsAvailableForNewChat(): Promise<Array<Recipient>> {
+  async getRecipientsAvailableForNewChat(): Promise<Recipient[]> {
     return (await this.fetchData<Recipient[]>(
       Capabilities.CHAT_READ,
       async client => client.getRecipientsAvailableForNewChat ? await client.getRecipientsAvailableForNewChat() : [],
@@ -155,8 +155,8 @@ export class AccountManager {
 
   private getAvailableClients(
     capatibility: Capabilities
-  ): Array<SchoolServicePlugin> {
-    const clients: Array<SchoolServicePlugin> = [];
+  ): SchoolServicePlugin[] {
+    const clients: SchoolServicePlugin[] = [];
     for (const client of Object.values(this.clients)) {
       if (client.capabilities.includes(capatibility)) {
         clients.push(client);

@@ -34,7 +34,7 @@ export class Pronote implements SchoolServicePlugin {
     return this;
   }
 
-  async getHomeworks(date: Date): Promise<Array<Homework>> {
+  async getHomeworks(date: Date): Promise<Homework[]> {
     if (this.session) {
       return fetchPronoteHomeworks(this.session, this.accountId, date);
     }
@@ -42,7 +42,7 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getHomeworks");
   }
 
-  async getNews(): Promise<Array<News>> {
+  async getNews(): Promise<News[]> {
     if (this.session) {
       return fetchPronoteNews(this.session, this.accountId);
     }
@@ -58,7 +58,7 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getGradesForPeriod");
   }
 
-  async getGradesPeriods(): Promise<Array<Period>> {
+  async getGradesPeriods(): Promise<Period[]> {
     if (this.session) {
       return fetchPronoteGradePeriods(this.session, this.accountId);
     }
@@ -74,7 +74,7 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getAttendanceForPeriod");
   }
 
-  async getAttendancePeriods(): Promise<Array<Period>> {
+  async getAttendancePeriods(): Promise<Period[]> {
     if (this.session) {
       return fetchPronoteAttendancePeriods(this.session, this.accountId);
     }

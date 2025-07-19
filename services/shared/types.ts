@@ -23,12 +23,12 @@ export interface SchoolServicePlugin {
   session: SessionHandle | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
-  getHomeworks?: (date: Date) => Promise<Array<Homework>>;
-  getNews?: () => Promise<Array<News>>;
+  getHomeworks?: (date: Date) => Promise<Homework[]>;
+  getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
-  getGradesPeriods?: () => Promise<Array<Period>>;
+  getGradesPeriods?: () => Promise<Period[]>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
-  getAttendancePeriods?: () => Promise<Array<Period>>;
+  getAttendancePeriods?: () => Promise<Period[]>;
   getWeeklyCanteenMenu?: (startDate: Date) => Promise<CanteenMenu[]>;
   getChats?: () => Promise<Chat[]>;
   getChatRecipients?: (chat: Chat) => Promise<Recipient[]>;

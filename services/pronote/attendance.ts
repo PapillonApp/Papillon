@@ -54,7 +54,7 @@ export async function fetchPronoteAttendance(session: SessionHandle, accountId: 
  * @param {string} accountId - The ID of the account making the request.
  * @return {Promise<Array<Period>>} - A promise that resolves to an array of attendance periods.
  */
-export async function fetchPronoteAttendancePeriods(session: SessionHandle, accountId: string): Promise<Array<Period>> {
+export async function fetchPronoteAttendancePeriods(session: SessionHandle, accountId: string): Promise<Period[]> {
   const attendanceTab = session.user.resources[0].tabs.get(TabLocation.Notebook);
   if (!attendanceTab) {
     error("Attendance tab not found in session", "fetchPronotePeriods");
@@ -73,7 +73,7 @@ export async function fetchPronoteAttendancePeriods(session: SessionHandle, acco
  * Maps a NotebookObservation[] to a shared Observation[].
  * @param observations
  */
-function mapObservations(observations: Array<NotebookObservation>): Array<Observation> {
+function mapObservations(observations: NotebookObservation[]): Observation[] {
   return observations.map(o => ({
     id: o.id,
     givenAt: o.date,
@@ -89,7 +89,7 @@ function mapObservations(observations: Array<NotebookObservation>): Array<Observ
  * Maps NotebookDelay[] to shared Delay[].
  * @param delays
  */
-function mapDelays(delays: Array<NotebookDelay>): Array<Delay> {
+function mapDelays(delays: NotebookDelay[]): Delay[] {
   return delays.map(d => ({
     id: d.id,
     givenAt: d.date,
@@ -103,7 +103,7 @@ function mapDelays(delays: Array<NotebookDelay>): Array<Delay> {
  * Maps NotebookAbsence[] to shared Absence[].
  * @param absences
  */
-function mapAbsences(absences: Array<NotebookAbsence>): Array<Absence> {
+function mapAbsences(absences: NotebookAbsence[]): Absence[] {
   return absences.map(a => ({
     id: a.id,
     from: a.startDate,
@@ -118,7 +118,7 @@ function mapAbsences(absences: Array<NotebookAbsence>): Array<Absence> {
  * @param punishments
  * @param accountId
  */
-function mapPunishments(punishments: Array<NotebookPunishment>, accountId: string): Array<Punishment> {
+function mapPunishments(punishments: NotebookPunishment[], accountId: string): Punishment[] {
   return punishments.map(p => ({
     id: p.id,
     givenAt: p.dateGiven,

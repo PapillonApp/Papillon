@@ -4,7 +4,7 @@ import { Attachment } from "@/services/shared/attachment";
 export interface PeriodGrades extends GenericInterface {
   studentOverall: GradeScore;
   classAverage: GradeScore;
-  subjects: Array<Subject>;
+  subjects: Subject[];
 }
 
 export interface Subject {
@@ -15,7 +15,7 @@ export interface Subject {
   maximum: GradeScore;
   minimum: GradeScore;
   outOf: GradeScore;
-  grades: Array<Grade>;
+  grades: Grade[];
 }
 
 export interface Grade extends GenericInterface {
