@@ -1,14 +1,9 @@
 import React, { useCallback, useState } from "react";
 import { View, Dimensions } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  Extrapolate, useScrollViewOffset, useAnimatedRef, AnimatedRef, LinearTransition,
-} from "react-native-reanimated";
+import { LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "@/ui/utils/Animation";
 import Typography from "@/ui/components/Typography";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderTitle } from "@/ui/components/NativeHeader";
@@ -18,7 +13,6 @@ import { useTheme } from "@react-navigation/native";
 import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
 
 export default function TabOneScreen() {
-  const insets = useSafeAreaInsets();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
@@ -53,7 +47,7 @@ export default function TabOneScreen() {
                 </Dynamic>
               </Dynamic>
             </NativeHeaderTopPressable>
-            </NativeHeaderTitle>
+          </NativeHeaderTitle>
           <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 16 }}>
             <Stack direction={"vertical"} gap={0} style={{ flex: 1 }}>
               <Stack direction={"horizontal"} gap={3} hAlign={"end"}>
