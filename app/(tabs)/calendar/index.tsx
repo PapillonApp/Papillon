@@ -40,8 +40,14 @@ export default function TabOneScreen() {
     setShowDatePicker((prev) => !prev);
   }, []);
 
+  let events: Event[] = [];
+
   // WatermelonDB events for the selected day
-  const events = useEventsForDay(date, refresh);
+  try {
+    events = useEventsForDay(date, refresh);
+  } catch (err) {
+    console.error("Error fetching events:", err);
+  }
 
   useEffect(() => {
     setIsRefreshing(false);
@@ -366,12 +372,14 @@ export default function TabOneScreen() {
         renderItem={renderDay}
         keyExtractor={(_, index) => String(index)}
         onScroll={onScroll}
+        decelerationRate={0.9}
+        disableIntervalMomentum={true}
+        snapToAlignment="center"
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumScrollEnd}
         style={{ flex: 1 }}
         contentContainerStyle={{ flexGrow: 1 }}
         snapToInterval={windowWidth}
-        decelerationRate={0.95}
         bounces={false}
         windowSize={3}
         maxToRenderPerBatch={2}
