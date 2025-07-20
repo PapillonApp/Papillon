@@ -10,6 +10,7 @@ import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -126,6 +127,22 @@ export class AccountManager {
       async client => client.getRecipientsAvailableForNewChat ? await client.getRecipientsAvailableForNewChat() : [],
       { multiple: true }
     )) as Recipient[];
+  }
+
+  async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+    return (await this.fetchData<CourseDay[]>(
+      Capabilities.TIMETABLE,
+      async client => client.getWeeklyTimetable ? await client.getWeeklyTimetable(date) : [],
+      { multiple: true }
+    )) as CourseDay[];
+  }
+
+  async getCourseResources(course: Course): Promise<CourseResource[]> {
+    return (await this.fetchData<CourseResource[]>(
+      Capabilities.TIMETABLE,
+      async client => client.getCourseResources ? await client.getCourseResources(course) : [],
+      { multiple: true, clientId: course.createdByAccount }
+    )) as CourseResource[];
   }
 
   async sendMessageInChat(chat: Chat, content: string): Promise<void> {

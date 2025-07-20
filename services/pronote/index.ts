@@ -19,6 +19,8 @@ import {
   fetchPronoteRecipients, sendPronoteMessageInChat,
 } from "@/services/pronote/chat";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { fetchPronoteCourseResources, fetchPronoteWeekTimetable } from "@/services/pronote/timetable";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -88,6 +90,22 @@ export class Pronote implements SchoolServicePlugin {
     }
 
     error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
+  }
+
+  async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+    if (this.session) {
+      return fetchPronoteWeekTimetable(this.session, this.accountId, date);
+    }
+
+    error("Session is not valid", "Pronote.getWeeklyTimetable");
+  }
+
+  async getCourseResources(course: Course): Promise<CourseResource[]> {
+    if (this.session) {
+      return fetchPronoteCourseResources(this.session, course);
+    }
+
+    error("Session is not valid", "Pronote.getWeeklyTimetable");
   }
 
   async getChats(): Promise<Chat[]> {

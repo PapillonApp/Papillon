@@ -57,7 +57,7 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
 }
 
 /**
- * Maps the grades overview to an array of subjects with their respective grades.
+ * Maps the grade overview to an array of subjects with their respective grades.
  * @param grades
  * @param accountId
  */

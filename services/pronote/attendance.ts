@@ -34,10 +34,10 @@ export async function fetchPronoteAttendance(session: SessionHandle, accountId: 
   }
 
   const attendance = await notebook(session, pawnotePeriod);
-  const delays = mapDelays(attendance.delays);
-  const absences = mapAbsences(attendance.absences);
-  const punishments = mapPunishments(attendance.punishments, accountId);
-  const observations = mapObservations(attendance.observations);
+  const delays = mapDelays(attendance.delays).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const absences = mapAbsences(attendance.absences).sort((a, b) => a.from.getTime() - b.from.getTime());
+  const punishments = mapPunishments(attendance.punishments, accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const observations = mapObservations(attendance.observations).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
 
   return {
     delays: delays,

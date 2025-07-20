@@ -18,7 +18,7 @@ export async function fetchPronoteCanteenMenu(
   return weeklyMenu.days.map(day => ({
     date: day.date,
     ...mapCanteenMenu(day),
-  }));
+  })).sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
 function mapCanteenMenu(menu: Menu): { lunch: Meal; dinner: Meal } {

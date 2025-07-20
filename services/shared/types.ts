@@ -8,6 +8,7 @@ import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 
 /** Represents a plugin for a school service.
  *
@@ -34,6 +35,8 @@ export interface SchoolServicePlugin {
   getChatRecipients?: (chat: Chat) => Promise<Recipient[]>;
   getChatMessages?: (chat: Chat) => Promise<Message[]>;
   getRecipientsAvailableForNewChat?: () => Promise<Recipient[]>;
+  getCourseResources?: (course: Course) => Promise<CourseResource[]>;
+  getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
@@ -51,7 +54,8 @@ export enum Capabilities {
   ATTENDANCE,
   CANTEEN_MENU,
   CHAT_READ,
-  CHAT_WRITE
+  CHAT_WRITE,
+  TIMETABLE
 }
 
 /**
