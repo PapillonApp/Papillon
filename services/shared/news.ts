@@ -18,7 +18,7 @@ export interface News extends GenericInterface {
   title?: string;
   createdAt: Date;
   acknowledged: boolean;
-  attachments: Array<Attachment>;
+  attachments: Attachment[];
   content: string;
   author: string;
   category: string;

@@ -49,5 +49,4 @@ export async function setPronoteNewsAsAcknowledged(
   }
 
   error("Reference for news item is missing.", "setPronoteNewsAsAcknowledged");
-  return news;
 }

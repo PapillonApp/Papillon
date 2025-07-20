@@ -53,7 +53,7 @@
     "expo-web-browser": "~14.2.0",
     "i18next": "^25.2.1",
     "lucide-react-native": "^0.511.0",
-    "pawnote": "^1.4.1",
+    "pawnote": "^1.6.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-i18next": "^15.5.2",

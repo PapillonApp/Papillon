@@ -4,6 +4,11 @@ import { Pronote } from "@/services/pronote";
 import { Homework } from "@/services/shared/homework";
 import { Auth, Services } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 
 /** Represents a plugin for a school service.
  *
@@ -19,8 +24,20 @@ export interface SchoolServicePlugin {
   session: SessionHandle | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote>;
-  getHomeworks?: (date: Date) => Promise<Array<Homework>>;
-  getNews?: () => Promise<Array<News>>;
+  getHomeworks?: (date: Date) => Promise<Homework[]>;
+  getNews?: () => Promise<News[]>;
+  getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
+  getGradesPeriods?: () => Promise<Period[]>;
+  getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
+  getAttendancePeriods?: () => Promise<Period[]>;
+  getWeeklyCanteenMenu?: (startDate: Date) => Promise<CanteenMenu[]>;
+  getChats?: () => Promise<Chat[]>;
+  getChatRecipients?: (chat: Chat) => Promise<Recipient[]>;
+  getChatMessages?: (chat: Chat) => Promise<Message[]>;
+  getRecipientsAvailableForNewChat?: () => Promise<Recipient[]>;
+  getCourseResources?: (course: Course) => Promise<CourseResource[]>;
+  getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
+  sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 }
 
@@ -32,7 +49,13 @@ export interface SchoolServicePlugin {
 export enum Capabilities {
   REFRESH,
   HOMEWORK,
-  NEWS
+  NEWS,
+  GRADES,
+  ATTENDANCE,
+  CANTEEN_MENU,
+  CHAT_READ,
+  CHAT_WRITE,
+  TIMETABLE
 }
 
 /**
