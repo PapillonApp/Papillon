@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { View, Dimensions, Image } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  Extrapolate, useScrollViewOffset, useAnimatedRef, AnimatedRef, LinearTransition,
+import {
+  LinearTransition,
 } from "react-native-reanimated";
 
 import { Animation } from "@/ui/utils/Animation";
@@ -13,10 +11,11 @@ import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { AlignCenter, ChevronDown, Ellipsis, Search } from "lucide-react-native";
+import { AlignCenter, ChevronDown, Ellipsis } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
-import AnimatedModalLayout from "@/ui/components/AnimatedModalLayout";
-import { CircularProgress } from "@/ui/components/CircularProgress";
+import TabFlatList from "@/ui/components/TabFlatList";
+import List from "@/ui/components/List";
+import Item from "@/ui/components/Item";
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -30,6 +29,12 @@ export default function TabOneScreen() {
 
   const theme = useTheme();
   const { colors } = useTheme();
+
+  const [fullyScrolled, setFullyScrolled] = useState(false);
+
+  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
+    setFullyScrolled(isFullyScrolled);
+  }, []);
 
 
   return (
@@ -71,23 +76,25 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <AnimatedModalLayout
+      <TabFlatList
         backgroundColor={theme.dark ? "#000000" : "#F0F0F0"}
         height={200}
-        background={
-          <Image
-            source={require('@/assets/images/background/profil.png')}
-            resizeMode="cover"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 350
-            }}
-          />
-        }
-        headerContent={
+        onFullyScrolled={handleFullyScrolled}
+        data={Array.from({ length: 100 }, (_, i) => `Tâche ${i + 1}`)}
+        renderItem={({ item, index }) => (
+          <List>
+            <Item>
+              <Typography variant="title">
+                {item}
+              </Typography>
+              <Typography variant="caption" color="secondary">
+                {`Détails de la tâche ${index + 1}`}
+              </Typography>
+            </Item>
+          </List>
+        )}
+        keyExtractor={(item) => item}
+        header={
           <>
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
