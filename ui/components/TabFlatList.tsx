@@ -96,7 +96,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
       if (onFullyScrolled) {
         const wasScrolledPast = isScrolledPastThreshold.value;
-        const isNowScrolledPast = event.contentOffset.y > headerInset;
+        const isNowScrolledPast = event.contentOffset.y > height - 24;
 
         if (wasScrolledPast !== isNowScrolledPast) {
           isScrolledPastThreshold.value = isNowScrolledPast;

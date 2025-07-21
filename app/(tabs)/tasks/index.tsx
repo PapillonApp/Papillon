@@ -74,7 +74,7 @@ export default function TabOneScreen() {
           <AlignCenter color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
-      <NativeHeaderTitle key={`header-title:` + fullyScrolled}>
+      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled}>
         <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
           <Dynamic
             animated={true}

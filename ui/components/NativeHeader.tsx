@@ -117,6 +117,7 @@ interface NativeHeaderTitleProps extends ViewProps {
   search?: boolean;
   placeholder?: string;
   onSearch?: (query: string) => void;
+  ignoreTouch?: boolean;
 }
 
 const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
@@ -125,6 +126,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   search = false,
   placeholder = "Rechercher",
   onSearch,
+  ignoreTouch,
   ...props
 }: NativeHeaderTitleProps) {
   const navigation = useNavigation();
@@ -146,7 +148,9 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
       <View style={[
         styles.title,
         Platform.OS === 'android' ? styles.titleAndroid : {},
-      ]} {...propsRef.current}>
+      ]} {...propsRef.current}
+        pointerEvents={ignoreTouch ? "none" : "auto"}
+      >
         {childrenRef.current}
       </View>
     );
