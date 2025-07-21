@@ -6,7 +6,7 @@ import { View } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
-import { AlignCenter, Search } from "lucide-react-native";
+import { AlignCenter, CheckCheck, Search } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
@@ -15,6 +15,7 @@ import { Animation } from "@/ui/utils/Animation";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Task from "@/ui/components/Task";
+import { t } from "i18next";
 
 const mockHomework = [
   {
@@ -45,7 +46,7 @@ const mockHomework = [
     attachments: '',
     evaluation: true,
     custom: false,
-    color: '#0b0080',
+    color: '#1869b5',
     progress: 0.85, // 85% completed
   },
   {
@@ -118,8 +119,12 @@ export default function TabOneScreen() {
     });
   }, []);
 
+  const leftHomeworks = React.useMemo(() => {
+    return (homework.filter((h) => h.progress < 1).length);
+  }, [homework]);
+
   const percentageComplete = React.useMemo(() => {
-    return 100 - ((homework.filter((h) => h.progress == 0).length) / homework.length * 100);
+    return ((homework.length - leftHomeworks) / homework.length * 100);
   }, [homework]);
 
   const renderItem = useCallback(({ item, index }) => (
@@ -145,17 +150,27 @@ export default function TabOneScreen() {
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
-            <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-              <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
-                {homework.filter((h) => h.progress == 0).length}
-              </Typography>
-              <Typography inline variant={"title"} color={"secondary"}>
-                tâches restantes
-              </Typography>
-              <Typography inline variant={"title"} color={"secondary"}>
-                cette semaine
-              </Typography>
-            </Stack>
+            <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
+              {leftHomeworks > 0 ? (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`}>
+                    <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
+                      {leftHomeworks}
+                    </Typography>
+                  </Dynamic>
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
+                  </Typography>
+                </Stack>
+              ) : (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
+                  </Typography>
+                </Stack>
+              )}
+            </Dynamic>
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }}>
               <CircularProgress
                 backgroundColor={colors.text + "22"}
@@ -180,7 +195,7 @@ export default function TabOneScreen() {
           <AlignCenter color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
-      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled}>
+      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled + ":" + leftHomeworks}>
         <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
           <Dynamic
             animated={true}
@@ -211,9 +226,16 @@ export default function TabOneScreen() {
                   alignItems: 'center',
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-                <Typography inline variant={"body2"} style={{ color: "#C54CB3" }}>
-                  Encore 3 tâches restantes
-                </Typography>
+                <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
+                  <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
+                    {leftHomeworks > 1 ?
+                      t('Tasks_Nav_Left', { count: leftHomeworks }) :
+                      leftHomeworks === 1 ?
+                        t('Tasks_Nav_One') :
+                        t('Tasks_Nav_Completed')
+                    }
+                  </Typography>
+                </Dynamic>
               </Reanimated.View>
             )}
           </Dynamic>

@@ -42,5 +42,13 @@
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
 
   "Tab_Calendar_Empty": "No events found.",
-  "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started."
+  "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
+
+  "Tasks_LeftHomeworks_Title": "remaining tasks",
+  "Tasks_LeftHomeworks_Time": "this week",
+  "Tasks_Done_AllTasks": "All tasks",
+  "Tasks_Done_CompletedTasks": "have been completed",
+  "Tasks_Nav_Left": "Still {{count}} task(s) to do",
+  "Tasks_Nav_One": "Only one task left to do",
+  "Tasks_Nav_Completed": "Everything is done!"
 }

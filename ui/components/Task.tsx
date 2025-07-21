@@ -1,10 +1,11 @@
 import { useTheme } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Typography from './Typography';
 import Stack from './Stack';
+import * as Localization from "expo-localization";
 
-import Reanimated, { LinearTransition } from 'react-native-reanimated';
+import Reanimated, { LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Animation } from '../utils/Animation';
 import { Dynamic } from './Dynamic';
 import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
@@ -41,19 +42,34 @@ const Task = ({
   const notStarted = currentProgress === 0;
   const completed = currentProgress === 1;
 
-  const changeProgress = useCallback(() => {
-    // change to random progress for demonstration
-    const newProgress = Math.random();
+  const toggleProgress = useCallback(() => {
+    const newProgress = currentProgress !== 1 ? 1 : 0;
+    setCurrentProgress(newProgress);
     if (onProgressChange) {
       onProgressChange(newProgress);
     }
-  }, []);
+  }, [currentProgress, onProgressChange]);
 
   const resetProgress = useCallback(() => {
     if (onProgressChange) {
       onProgressChange(0);
     }
   }, []);
+
+  const screenWidth = Dimensions.get('window').width; // Get screen width for percentage calculation
+
+  const [isPressed, setIsPressed] = React.useState(false);
+
+  const animatedChipStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
+        { translateY: withSpring(isPressed ? -2 : 0) },
+      ],
+      boxShadow: isPressed ? '0 1px 15px rgba(0,0,0,0.2)' : '0 0px 5px rgba(0,0,0,0.1)',
+      borderColor: isPressed ? colors.text + '40' : colors.text + '22',
+    };
+  }, [isPressed, colors.text]);
 
   return (
     <AnimatedPressable
@@ -86,10 +102,11 @@ const Task = ({
       </Typography>
       <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
         <AnimatedPressable
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
+          onPress={toggleProgress}
           layout={Animation(LinearTransition, "list")}
-          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }]}
-          onPress={changeProgress}
-          onLongPress={resetProgress}
+          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }, animatedChipStyle]}
         >
           {(notStarted || completed) && (
             <Dynamic animated layout={Animation(LinearTransition, "list")}>
@@ -107,17 +124,17 @@ const Task = ({
                 layout={Animation(LinearTransition, "list")}
                 style={[
                   styles.progressContainer,
-                  { borderColor: colors.text + '55' }
+                  { backgroundColor: colors.text + '12' }
                 ]}>
                 <Reanimated.View
                   layout={Animation(LinearTransition, "list")}
-                  style={[styles.progress, { width: (currentProgress * 100) + "%", backgroundColor: color }]}
+                  style={[styles.progress, { width: currentProgress * 70, backgroundColor: color }]} // Use numeric width
                 />
               </Reanimated.View>
             </Dynamic>
           )}
 
-          <Dynamic animated layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
+          <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
             {!notStarted && !completed && (
               <Typography variant='body2'>
                 {Math.ceil(currentProgress * 100)}%
@@ -134,9 +151,7 @@ const Task = ({
 
         <AnimatedPressable
           layout={Animation(LinearTransition, "list")}
-          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }]}
-          onPress={changeProgress}
-          onLongPress={resetProgress}
+          style={[styles.chip, backgroundStyle]}
         >
           <Calendar
             size={20}
@@ -146,7 +161,7 @@ const Task = ({
           <Typography variant='body2' color='text'>
             {formatDistanceToNow(date, {
               addSuffix: true,
-              locale: fr,
+              locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
             })}
           </Typography>
         </AnimatedPressable>
@@ -177,14 +192,13 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     width: 70,
-    height: 18,
+    height: 6,
     borderRadius: 40,
-    overflow: 'hidden',
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
+    justifyContent: 'center',
+
   },
   progress: {
-    height: '100%',
+    height: 12,
     borderRadius: 40,
   },
 });

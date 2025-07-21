@@ -244,7 +244,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           borderCurve: 'continuous',
           padding: padding,
           paddingTop: padding - 12,
-          gap: gap
+          gap: gap,
+
         }}
       />
     </>
