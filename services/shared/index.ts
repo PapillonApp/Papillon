@@ -1,10 +1,9 @@
 import * as Network from "expo-network";
 
-import { Pronote } from "@/services/pronote";
 import { Homework } from "@/services/shared/homework";
 import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
-import { error } from "@/utils/logger/logger";
+import { error, log, warn } from "@/utils/logger/logger";
 import { News } from "@/services/shared/news";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
@@ -17,28 +16,44 @@ export class AccountManager {
 
   constructor(private account: Account) {}
 
-  async refreshAllAccounts(): Promise<Pronote | undefined> {
-    if (this.hasInternetConnection()) {
-      for (const service of this.account.services) {
+  async refreshAllAccounts(): Promise<boolean> {
+    log("We're refreshing all services for the account " + this.account.id);
+
+    if (!(await this.hasInternetConnection())) {
+      error(
+        "Your device is not connected to the internet.",
+        "AccountManager.refreshAllAccounts"
+      );
+    }
+
+    let refreshedAtLeastOne = false;
+
+    for (const service of this.account.services) {
+      try {
+        log("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
+
         if (plugin && plugin.capabilities.includes(Capabilities.REFRESH)) {
           const client = await plugin.refreshAccount(service.auth);
-          this.clients[service.serviceId] = client;
-          return client;
+          this.clients[service.id] = client;
+          refreshedAtLeastOne = true;
+          log("Successfully refreshed " + service.id);
+        } else {
+          error(
+            `Plugin not found or REFRESH capability missing for service: ${service.serviceId}`,
+            "AccountManager.refreshAllAccounts"
+          );
         }
-
+      } catch (e) {
         error(
-          "Unable to find the plugin for this ServiceAccount: " +
-            service.serviceId,
+          `Failed to refresh account for service ${service.serviceId}: ${e}`,
           "AccountManager.refreshAllAccounts"
         );
       }
     }
 
-    error(
-      "Your device is not connected to the internet, please check your connection.",
-      "AccountManager.refreshAllAccounts"
-    );
+    log("Finished refreshing process for all services, services refreshed: " + Object.keys(this.clients).length);
+    return refreshedAtLeastOne;
   }
 
   async getHomeworks(date: Date): Promise<Homework[]> {
@@ -165,8 +180,8 @@ export class AccountManager {
     )) as News;
   }
 
-  private hasInternetConnection(): boolean {
-    const networkState = Network.useNetworkState();
+  private async hasInternetConnection(): Promise<boolean> {
+    const networkState = await Network.getNetworkStateAsync();
     return networkState.isInternetReachable ?? false;
   }
 
@@ -206,11 +221,11 @@ export class AccountManager {
     const availableClients = this.getAvailableClients(capability);
 
     if (options?.multiple) {
-      const results: T[] = [];
-      for (const client of availableClients) {
-        results.push(...((await callback(client)) as T[]));
-      }
-      return results;
+      const results = await Promise.all(
+        availableClients.map(client => callback(client) as Promise<T[]>)
+      );
+
+      return results.flat();
     }
 
     for (const client of availableClients) {
@@ -224,11 +239,15 @@ export class AccountManager {
     service: ServiceAccount
   ): SchoolServicePlugin | null {
     switch (service.serviceId) {
-      case Services.PRONOTE:
-        return new (require("@/services/pronote/index").Pronote)(service.id);
-      default:
-        console.warn(`Service plugin for ${service} not implemented.`);
-        return null;
+    case Services.PRONOTE:
+    { const pronoteModule = require("@/services/pronote/index");
+      const plugin = new pronoteModule.Pronote(service.id);
+      return plugin;
+    }
+
+    default:
+      warn(`Service plugin for ${service.serviceId} not implemented.`);
+      return null;
     }
   }
 }

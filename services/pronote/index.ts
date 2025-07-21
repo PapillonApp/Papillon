@@ -21,18 +21,21 @@ import {
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { fetchPronoteCourseResources, fetchPronoteWeekTimetable } from "@/services/pronote/timetable";
+import { SessionHandle } from "pawnote";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
-  capabilities = [Capabilities.HOMEWORK, Capabilities.NEWS];
-  session = undefined;
+  capabilities = [Capabilities.HOMEWORK, Capabilities.NEWS, Capabilities.REFRESH];
+  session : SessionHandle | undefined = undefined;
   authData: Auth = {};
 
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    this.authData = await refreshPronoteAccount(credentials);
+    const refresh = (await refreshPronoteAccount(credentials));
+    this.authData = refresh.auth;
+    this.session = refresh.session;
     return this;
   }
 
