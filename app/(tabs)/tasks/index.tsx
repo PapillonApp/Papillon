@@ -14,6 +14,88 @@ import Reanimated, { LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
+import Task from "@/ui/components/Task";
+
+const mockHomework = [
+  {
+    homeworkId: 'hw-001',
+    subjectId: 'math',
+    subjectName: 'Mathématiques',
+    title: 'Exercices 12 à 18 p.76',
+    content: 'Faire les exercices 1, 2 et 3 de la page 200 et voir les infos sur beaucoup d’infos il faut resumer',
+    dueDate: 1721606400000, // timestamp
+    isDone: false,
+    returnFormat: 1,
+    attachments: 'math_exercices.pdf',
+    evaluation: false,
+    custom: false,
+    color: '#558000',
+    progress: 0, // 0% completed
+  },
+  {
+    homeworkId: 'hw-002',
+    subjectId: 'eng',
+    subjectEmoji: '🇬🇧',
+    subjectName: 'Anglais',
+    title: 'Essay: "The impact of technology on youth"',
+    content: 'Write a 500-word essay discussing the impact of technology on youth culture and education.',
+    dueDate: 1721692800000,
+    isDone: true,
+    returnFormat: 2,
+    attachments: '',
+    evaluation: true,
+    custom: false,
+    color: '#0b0080',
+    progress: 0.85, // 85% completed
+  },
+  {
+    homeworkId: 'hw-003',
+    subjectId: 'cs',
+    subjectEmoji: '💻',
+    subjectName: 'Informatique',
+    title: 'Build a to-do app with React',
+    content: 'Create a simple to-do application using React. Include features like adding, deleting, and marking tasks as complete.',
+    dueDate: 1721865600000,
+    isDone: false,
+    returnFormat: 0,
+    evaluation: true,
+    custom: true,
+    color: '#804f00',
+    progress: 1, // 100% completed
+  },
+  {
+    homeworkId: 'hw-004',
+    subjectId: 'history',
+    subjectName: 'Histoire',
+    subjectEmoji: '📜',
+    title: 'Read chapter 4 + summary',
+    content: 'Read chapter 4 of the textbook and write a summary of the key points discussed.',
+    dueDate: 1721952000000,
+    isDone: false,
+    returnFormat: 1,
+    attachments: 'chapter4.pdf',
+    evaluation: false,
+    custom: false,
+    color: '#800060',
+    progress: 0.5, // 50% completed
+  },
+  {
+    homeworkId: 'hw-005',
+    subjectId: 'science',
+    subjectName: 'Sciences',
+    subjectEmoji: '🔬',
+    title: 'Group project: Ecosystem poster',
+    content: 'Work in groups to create a poster about a specific ecosystem. Include information about flora, fauna, and environmental issues.',
+    dueDate: 1722124800000,
+    isDone: true,
+    returnFormat: 2,
+    evaluation: true,
+    custom: true,
+    color: '#008042',
+    progress: 0.75, // 75% completed
+  },
+];
+
 
 export default function TabOneScreen() {
   const theme = useTheme();
@@ -25,13 +107,27 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+  const [homework, setHomework] = useState(mockHomework);
+  const TaskMemo = React.memo(Task);
+
+  const onProgressChange = useCallback((index: number, newProgress: number) => {
+    setHomework((prev) => {
+      if (prev[index].progress === newProgress) return prev;
+      const updated = [...prev];
+      updated[index] = { ...updated[index], progress: newProgress };
+      return updated;
+    });
+  }, []);
+
   return (
     <>
       <TabFlatList
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        data={Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`)}
+        data={homework}
         onFullyScrolled={handleFullyScrolled}
+        recycleItems={true}
+        gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
@@ -51,18 +147,19 @@ export default function TabOneScreen() {
           </Stack>
         )}
         renderItem={({ item, index }) => (
-          <List>
-            <Item>
-              <Typography variant="title">
-                {item}
-              </Typography>
-              <Typography variant="caption" color="secondary">
-                {`Détails de la tâche ${index + 1}`}
-              </Typography>
-            </Item>
-          </List>
+          <TaskMemo
+            subject={item.subjectName}
+            emoji={item.subjectEmoji}
+            color={item.color}
+            title={item.title}
+            description={item.content}
+            date={new Date(item.dueDate)}
+            progress={item.progress}
+            onProgressChange={(newProgress) => onProgressChange(index, newProgress)}
+
+          />
         )}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.homeworkId}
       />
 
       <NativeHeaderSide side="Left">

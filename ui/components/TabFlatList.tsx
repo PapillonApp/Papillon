@@ -4,7 +4,7 @@ import React from "react";
 import { Dimensions, FlatList, FlatListProps, Image, ListRenderItem, View } from "react-native";
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import MaskedView from "@react-native-masked-view/masked-view";
 
 import PatternBackground from "./PatternBackground";
@@ -12,7 +12,7 @@ import { X } from "lucide-react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { Circle, G, Path } from "react-native-svg";
 
-import { LegendList } from "@legendapp/list";
+import { LegendList, LegendListProps } from "@legendapp/list";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 
@@ -55,7 +55,7 @@ const PatternTile = ({ x, y, color }: { x: number; y: number, color: string }) =
   </G>
 );
 
-interface TabFlatListProps extends FlatListProps {
+interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   data: any[];
   header?: React.ReactNode;
   renderItem: ListRenderItem<any>;
@@ -64,6 +64,7 @@ interface TabFlatListProps extends FlatListProps {
   foregroundColor?: string;
   height?: number;
   padding?: number;
+  gap?: number;
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -76,6 +77,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   foregroundColor = "#29947A",
   height = 120,
   padding = 16,
+  gap = 0,
   onFullyScrolled,
   ...rest
 }) => {
@@ -131,6 +133,16 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
       willChange: 'transform, opacity', // Hint for native optimization
     };
   });
+
+  const isScrolledPastThresholdDerived = useDerivedValue(() => isScrolledPastThreshold.value);
+  const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
+
+  useAnimatedReaction(
+    () => isScrolledPastThresholdDerived.value,
+    (currentValue) => {
+      runOnJS(setShowScrollIndicator)(currentValue);
+    }
+  );
 
   return (
     <>
@@ -211,26 +223,25 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
       {/* FlatList */}
       <AnimatedLegendList
-        data={data ?? []}
-        renderItem={renderItem ?? (() => null)}
-        keyExtractor={keyExtractor ?? (() => "")}
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
 
         onScroll={scrollHandler}
-        scrollEventThrottle={16}
         /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
         decelerationRate="normal" // Faster deceleration for smoother feel
         snapToEnd={false} // Disable snap to end for better control
 
-        ListFooterComponent={<View style={{ height: 80 }} />}
+        ListFooterComponent={<View style={{ height: 92 }} />}
 
-        showsVerticalScrollIndicator={isScrolledPastThreshold.value}
+        showsVerticalScrollIndicator={showScrollIndicator}
         scrollIndicatorInsets={{
           top: 28
         }}
 
         style={{
           flex: 1,
-          zIndex: 9999,
+          zIndex: 9999
         }}
 
         contentContainerStyle={{
@@ -241,6 +252,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           borderCurve: 'continuous',
           padding: padding,
           paddingTop: padding - 12,
+          gap: gap
         }}
       />
     </>
