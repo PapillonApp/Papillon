@@ -72,7 +72,7 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getHomeworksFromWatermelon(date),
         saveToCache: async (data: Homework[]) => {
-          await useAddHomeworkToDatabase()(data);
+          await useAddHomeworkToDatabase(data);
         },
       }
     );
@@ -219,17 +219,10 @@ export class AccountManager {
     return networkState.isInternetReachable ?? false;
   }
 
-  private getAvailableClients(
-    capatibility: Capabilities
-  ): SchoolServicePlugin[] {
-    const clients: SchoolServicePlugin[] = [];
-    for (const client of Object.values(this.clients)) {
-      if (client.capabilities.includes(capatibility)) {
-        clients.push(client);
-      }
-    }
-
-    return clients;
+  private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
+    return Object.values(this.clients).filter(client =>
+      client.capabilities.includes(capability)
+    );
   }
 
   private async fetchData<T>(
@@ -250,7 +243,6 @@ export class AccountManager {
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
     const hasInternet = await this.hasInternetConnection();
-
     if (!hasInternet) {
       warn("No internet connection, using fallback if available.");
       if (options?.fallback) {
