@@ -33,7 +33,7 @@ export class Pronote implements SchoolServicePlugin {
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    const refresh = (await refreshPronoteAccount(credentials));
+    const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
     return this;
