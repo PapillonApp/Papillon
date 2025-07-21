@@ -1,8 +1,8 @@
-import { useHomeworkForWeek } from "@/database/useHomework";
+import { getHomeworksFromCache } from "@/database/useHomework";
 import { Homework } from "@/services/shared/homework";
 
 export async function getHomeworksFromWatermelon(date: Date): Promise<Homework[]> {
-  return useHomeworkForWeek(getWeekNumberFromDate(date));
+  return getHomeworksFromCache(getWeekNumberFromDate(date));
 }
 
 export function getWeekNumberFromDate(date: Date): number {

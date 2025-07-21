@@ -1,14 +1,30 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Model, Q } from "@nozbe/watermelondb";
-import { useDatabase } from './DatabaseProvider';
+import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import Homework from './models/Homework';
 import { Homework as SharedHomework } from "@/services/shared/homework";
 import { parseJson } from "ajv/lib/runtime/parseJson";
 import { Attachment } from "@/services/shared/attachment";
+import { warn } from "@/utils/logger/logger";
+
+function mapHomeworkToShared(homework: Homework): SharedHomework {
+  return {
+    id: homework.id,
+    subject: homework.subject,
+    content: homework.content,
+    dueDate: new Date(homework.dueDate),
+    isDone: homework.isDone,
+    returnFormat: homework.returnFormat,
+    attachments: parseJsonArray(homework.attachments) as Attachment[],
+    evaluation: homework.evaluation,
+    custom: homework.custom,
+    createdByAccount: homework.createdByAccount,
+  };
+}
 
 export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
   const database = useDatabase();
-  const [homeworksWithSubjects, setHomeworksWithSubjects] = useState<SharedHomework[]>([]);
+  const [homeworks, setHomeworks] = useState<SharedHomework[]>([]);
 
   useEffect(() => {
     const { start, end } = getDateRangeOfWeek(weekNumber);
@@ -17,81 +33,82 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
       Q.where('dueDate', Q.between(start.getTime(), end.getTime()))
     );
 
-    const subscription = query.observe().subscribe((homeworks) => {
-      const homeworksWithSubjects: SharedHomework[] = homeworks.map(homework => ({
-        id: homework.id,
-        subject: homework.subject,
-        content: homework.content,
-        dueDate: new Date(homework.dueDate),
-        isDone: homework.isDone,
-        returnFormat: homework.returnFormat,
-        attachments: parseJsonArray(homework.attachments) as unknown as Attachment[],
-        evaluation: homework.evaluation,
-        custom: homework.custom,
-        createdByAccount: homework.createdByAccount,
-      }));
-      setHomeworksWithSubjects(homeworksWithSubjects.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime()));
-    });
+    const sub = query.observe().subscribe(homeworks =>
+      setHomeworks(
+        homeworks.map(mapHomeworkToShared).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
+      )
+    );
 
-    return () => subscription.unsubscribe();
+    return () => sub.unsubscribe();
   }, [weekNumber, refresh, database]);
 
-  return homeworksWithSubjects;
+  return homeworks;
 }
 
-export function useAddHomeworkToDatabase() {
-  const database = useDatabase();
+export async function getHomeworksFromCache(weekNumber: number): Promise<SharedHomework[]> {
+  try {
+    const database = getDatabaseInstance();
+    const { start, end } = getDateRangeOfWeek(weekNumber);
 
-  return useCallback(async (givenHomeworks: SharedHomework[]) => {
-    for (const givenHomework of givenHomeworks) {
-      const existing = await database.get('homework').query(
-        Q.where('homeworkId', givenHomework.id)
-      ).fetch();
+    const homeworks = await database
+      .get<Homework>('homework')
+      .query(Q.where('dueDate', Q.between(start.getTime(), end.getTime())))
+      .fetch();
 
-      if (existing.length > 0) {
-        return;
-      }
+    return homeworks
+      .map(mapHomeworkToShared)
+      .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+  } catch (e) {
+    warn(String(e));
+    return [];
+  }
+}
 
-      await database.write(async () => {
-        await database.get('homework').create((record: Model) => {
-          const homework = record as Homework;
+export async function useAddHomeworkToDatabase(homeworks: SharedHomework[]) {
+  const db = getDatabaseInstance();
 
-          homework.createdByAccount = givenHomework.createdByAccount;
-          homework.homeworkId = givenHomework.id;
-          homework.subjectId = givenHomework.subject;
-          homework.content = givenHomework.content;
-          homework.dueDate = givenHomework.dueDate.getTime();
-          homework.isDone = givenHomework.isDone;
-          homework.returnFormat = givenHomework.returnFormat;
-          homework.attachments = JSON.stringify(givenHomework.attachments);
-          homework.evaluation = givenHomework.evaluation;
-          homework.custom = givenHomework.custom;
+  for (const hw of homeworks) {
+    const existing = await db.get('homework').query(
+      Q.where('homeworkId', hw.id)
+    ).fetch();
+
+    if (existing.length > 0) continue;
+
+    await db.write(async () => {
+      await db.get('homework').create((record: Model) => {
+        const homework = record as Homework;
+        Object.assign(homework, {
+          homeworkId: hw.id,
+          subjectId: hw.subject,
+          content: hw.content,
+          dueDate: hw.dueDate.getTime(),
+          isDone: hw.isDone,
+          returnFormat: hw.returnFormat,
+          attachments: JSON.stringify(hw.attachments),
+          evaluation: hw.evaluation,
+          custom: hw.custom,
+          createdByAccount: hw.createdByAccount,
         });
       });
-    }
-  }, [database]);
+    });
+  }
 }
 
-export function getDateRangeOfWeek(weekNumber: number, year: number = new Date().getFullYear()) {
-  const simple = new Date(year, 0, 1 + (weekNumber - 1) * 7);
-  const dayOfWeek = simple.getDay();
-  const ISOweekStart = new Date(simple);
-  if (dayOfWeek <= 4) {
-    ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-  } else {
-    ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
-  }
-  const ISOweekEnd = new Date(ISOweekStart);
-  ISOweekEnd.setDate(ISOweekStart.getDate() + 6);
-  ISOweekStart.setHours(0, 0, 0, 0);
-  ISOweekEnd.setHours(23, 59, 59, 999);
-  return { start: ISOweekStart, end: ISOweekEnd };
+export function getDateRangeOfWeek(weekNumber: number, year = new Date().getFullYear()) {
+  const janFirst = new Date(year, 0, 1);
+  const daysOffset = (weekNumber - 1) * 7;
+  const weekStart = new Date(janFirst.setDate(janFirst.getDate() + daysOffset));
+  const day = weekStart.getDay();
+  const diff = weekStart.getDate() - day + (day <= 4 ? 1 : 8);
+  const start = new Date(weekStart.setDate(diff));
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
 }
 
-export function parseJsonArray(s: string, pos: number = 0): unknown[] {
-  const result = parseJson(s, pos)
-  if (Array.isArray(result)) {
-    return result
-  }
-  return []
+export function parseJsonArray(s: string, pos = 0): unknown[] {
+  const result = parseJson(s, pos);
+  return Array.isArray(result) ? result : [];
 }
