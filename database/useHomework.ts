@@ -42,23 +42,33 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
 export function useAddHomeworkToDatabase() {
   const database = useDatabase();
 
-  return useCallback(async (givenHomework: SharedHomework) => {
-    await database.write(async () => {
-      await database.get('homework').create((record: Model) => {
-        const homework = record as Homework;
+  return useCallback(async (givenHomeworks: SharedHomework[]) => {
+    for (const givenHomework of givenHomeworks) {
+      const existing = await database.get('homework').query(
+        Q.where('homeworkId', givenHomework.id)
+      ).fetch();
 
-        homework.createdByAccount = givenHomework.createdByAccount;
-        homework.homeworkId = givenHomework.id;
-        homework.subjectId = givenHomework.subject;
-        homework.content = givenHomework.content;
-        homework.dueDate = givenHomework.dueDate.getTime();
-        homework.isDone = givenHomework.isDone;
-        homework.returnFormat = givenHomework.returnFormat;
-        homework.attachments = JSON.stringify(givenHomework.attachments);
-        homework.evaluation = givenHomework.evaluation;
-        homework.custom = givenHomework.custom;
+      if (existing.length > 0) {
+        return;
+      }
+
+      await database.write(async () => {
+        await database.get('homework').create((record: Model) => {
+          const homework = record as Homework;
+
+          homework.createdByAccount = givenHomework.createdByAccount;
+          homework.homeworkId = givenHomework.id;
+          homework.subjectId = givenHomework.subject;
+          homework.content = givenHomework.content;
+          homework.dueDate = givenHomework.dueDate.getTime();
+          homework.isDone = givenHomework.isDone;
+          homework.returnFormat = givenHomework.returnFormat;
+          homework.attachments = JSON.stringify(givenHomework.attachments);
+          homework.evaluation = givenHomework.evaluation;
+          homework.custom = givenHomework.custom;
+        });
       });
-    });
+    }
   }, [database]);
 }
 
