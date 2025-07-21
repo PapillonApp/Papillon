@@ -39,5 +39,16 @@
   "Form_Start": "Début",
   "Form_End": "Fin",
 
-  "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?"
+  "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
+
+  "Tab_Calendar_Empty": "Aucun événement trouvé.",
+  "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
+
+  "Tasks_LeftHomeworks_Title": "tâches restantes",
+  "Tasks_LeftHomeworks_Time": "cette semaine",
+  "Tasks_Done_AllTasks": "Toutes les tâches",
+  "Tasks_Done_CompletedTasks": "ont été complétées",
+  "Tasks_Nav_Left": "Encore {{count}} tâche(s) à faire",
+  "Tasks_Nav_One": "Plus qu'une tâche à faire",
+  "Tasks_Nav_Completed": "Tout est terminé !"
 }

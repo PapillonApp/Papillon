@@ -83,6 +83,13 @@ const ALIGNMENT_STYLES = StyleSheet.create({
   justify: { textAlign: "justify" as const },
 });
 
+const WEIGHT_STYLES = StyleSheet.create({
+  regular: { fontFamily: FONT_FAMILIES.regular },
+  medium: { fontFamily: FONT_FAMILIES.medium },
+  semibold: { fontFamily: FONT_FAMILIES.semibold },
+  bold: { fontFamily: FONT_FAMILIES.bold },
+});
+
 // Static color values to avoid string concatenation
 const STATIC_COLORS = {
   light: "#FFFFFF",
@@ -99,6 +106,7 @@ interface TypographyProps extends TextProps {
   align?: Alignment;
   style?: TextStyle | TextStyle[];
   inline?: boolean;
+  weight?: keyof typeof WEIGHT_STYLES;
 }
 
 // Cache for computed color styles per theme
@@ -128,6 +136,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
     color = "text",
     align = "left",
     inline = false,
+    weight,
     style,
     ...rest
   }) => {
@@ -156,6 +165,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       const colorStyles = getColorsStyles(colors);
       const variantStyle = VARIANTS[variant];
       const alignStyle = ALIGNMENT_STYLES[align];
+      const weightStyle = WEIGHT_STYLES[weight] || null;
 
       const inlineStyle: TextStyle = inline ? (() => {
         let fontSize: number | undefined;
@@ -187,6 +197,8 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...colorStyle,
           ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
           ...inlineStyle,
+          ...weightStyle,
+          ...style,
         };
       } else {
         // For common cases without custom styles, use optimized merging
@@ -195,6 +207,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...alignStyle,
           ...colorStyle,
           ...inlineStyle,
+          ...weightStyle,
         };
 
         // Cache only common cases
