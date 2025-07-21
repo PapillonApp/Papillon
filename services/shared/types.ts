@@ -66,3 +66,9 @@ export enum Capabilities {
 export interface GenericInterface {
   createdByAccount: string;
 }
+
+export type FetchOptions<T> = {
+  clientId?: string;
+  fallback?: () => Promise<T>;
+  saveToCache?: (data: T) => Promise<void>;
+};
