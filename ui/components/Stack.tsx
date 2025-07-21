@@ -63,7 +63,7 @@ const COMMON_STYLES = StyleSheet.create({
 });
 
 // Memoized Stack component for extreme performance
-const Stack: React.FC<StackProps> = React.memo(({
+const Stack: React.FC<StackProps> = ({
   direction = "vertical",
   gap = 4,
   padding = 0,
@@ -134,22 +134,7 @@ const Stack: React.FC<StackProps> = React.memo(({
       {children}
     </View>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison for maximum performance
-  return (
-    prevProps.direction === nextProps.direction &&
-    prevProps.gap === nextProps.gap &&
-    prevProps.padding === nextProps.padding &&
-    prevProps.margin === nextProps.margin &&
-    prevProps.vAlign === nextProps.vAlign &&
-    prevProps.hAlign === nextProps.hAlign &&
-    prevProps.inline === nextProps.inline &&
-    prevProps.backgroundColor === nextProps.backgroundColor &&
-    prevProps.radius === nextProps.radius &&
-    prevProps.style === nextProps.style &&
-    prevProps.children === nextProps.children
-  );
-});
+};
 
 // Set display name for debugging
 Stack.displayName = 'Stack';

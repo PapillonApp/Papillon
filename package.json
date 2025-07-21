@@ -23,6 +23,7 @@
     "@expo/vector-icons": "^14.1.0",
     "@legendapp/list": "^1.0.19",
     "@nozbe/watermelondb": "^0.28.0",
+    "@react-native-community/datetimepicker": "8.4.1",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-menu/menu": "^1.2.3",
     "@react-native-segmented-control/segmented-control": "2.5.7",
@@ -30,6 +31,7 @@
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/native-stack": "^7.3.10",
     "@types/uuid": "^10.0.0",
+    "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "expo": "^53.0.20",
@@ -72,8 +74,7 @@
     "react-native-webview": "13.13.5",
     "typescript-eslint": "^8.34.0",
     "uuid": "^11.1.0",
-    "zustand": "^5.0.4",
-    "@react-native-community/datetimepicker": "8.4.1"
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

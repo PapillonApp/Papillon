@@ -108,7 +108,6 @@ export default function TabOneScreen() {
   }, []);
 
   const [homework, setHomework] = useState(mockHomework);
-  const TaskMemo = React.memo(Task);
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
     setHomework((prev) => {
@@ -119,6 +118,23 @@ export default function TabOneScreen() {
     });
   }, []);
 
+  const percentageComplete = React.useMemo(() => {
+    return 100 - ((homework.filter((h) => h.progress == 0).length) / homework.length * 100);
+  }, [homework]);
+
+  const renderItem = useCallback(({ item, index }) => (
+    <Task
+      subject={item.subjectName}
+      emoji={item.subjectEmoji}
+      color={item.color}
+      title={item.title}
+      description={item.content}
+      date={item.dueDate}
+      progress={item.progress}
+      onProgressChange={(newProgress) => onProgressChange(index, newProgress)}
+    />
+  ), [onProgressChange]);
+
   return (
     <>
       <TabFlatList
@@ -126,13 +142,12 @@ export default function TabOneScreen() {
         foregroundColor="#9E0086"
         data={homework}
         onFullyScrolled={handleFullyScrolled}
-        recycleItems={true}
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
               <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
-                3
+                {homework.filter((h) => h.progress == 0).length}
               </Typography>
               <Typography inline variant={"title"} color={"secondary"}>
                 tâches restantes
@@ -142,23 +157,17 @@ export default function TabOneScreen() {
               </Typography>
             </Stack>
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }}>
-              <CircularProgress backgroundColor={colors.text + "22"} percentageComplete={75} radius={35} strokeWidth={7} fill={"#C54CB3"} />
+              <CircularProgress
+                backgroundColor={colors.text + "22"}
+                percentageComplete={percentageComplete}
+                radius={35}
+                strokeWidth={7}
+                fill={"#C54CB3"}
+              />
             </View>
           </Stack>
         )}
-        renderItem={({ item, index }) => (
-          <TaskMemo
-            subject={item.subjectName}
-            emoji={item.subjectEmoji}
-            color={item.color}
-            title={item.title}
-            description={item.content}
-            date={new Date(item.dueDate)}
-            progress={item.progress}
-            onProgressChange={(newProgress) => onProgressChange(index, newProgress)}
-
-          />
-        )}
+        renderItem={renderItem}
         keyExtractor={(item) => item.homeworkId}
       />
 

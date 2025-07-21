@@ -1,11 +1,16 @@
 import { useTheme } from '@react-navigation/native';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Typography from './Typography';
 import Stack from './Stack';
 
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
+
+import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
+import { fr } from 'date-fns/locale';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -22,29 +27,33 @@ const Task = ({
   const theme = useTheme();
   const { colors } = theme;
 
-  const backgroundStyle = {
+  const backgroundStyle = useMemo(() => ({
     backgroundColor: colors.card,
     borderColor: colors.border,
-  };
+  }), [colors.card, colors.border]);
 
-  console.log("Task component rendered with progress:", progress);
+  const [currentProgress, setCurrentProgress] = React.useState(() => progress);
 
-  const notStarted = progress === 0;
-  const completed = progress === 1;
+  React.useEffect(() => {
+    setCurrentProgress(progress);
+  }, [progress]);
 
-  const changeProgress = () => {
+  const notStarted = currentProgress === 0;
+  const completed = currentProgress === 1;
+
+  const changeProgress = useCallback(() => {
     // change to random progress for demonstration
     const newProgress = Math.random();
     if (onProgressChange) {
       onProgressChange(newProgress);
     }
-  };
+  }, []);
 
-  const resetProgress = () => {
+  const resetProgress = useCallback(() => {
     if (onProgressChange) {
       onProgressChange(0);
     }
-  };
+  }, []);
 
   return (
     <AnimatedPressable
@@ -63,10 +72,10 @@ const Task = ({
           {subject}
         </Typography>
         <Typography variant='body2' weight='medium' color="secondary">
-          {date.toLocaleDateString('fr-FR', {
+          {/*new Date(date).toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'short',
-          })}
+          })*/}
         </Typography>
       </Stack>
       <Typography variant='h5' weight='bold' style={{ marginBottom: 4, lineHeight: 24 }}>
@@ -77,37 +86,69 @@ const Task = ({
       </Typography>
       <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
         <AnimatedPressable
-          layout={Animation(LinearTransition)}
-          style={[styles.chip, backgroundStyle]}
+          layout={Animation(LinearTransition, "list")}
+          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }]}
           onPress={changeProgress}
           onLongPress={resetProgress}
         >
-          <Reanimated.View
-            layout={Animation(LinearTransition)}
-            style={[
-              styles.progressContainer,
-              { borderColor: colors.text + '55' },
-              notStarted && styles.notStarted
-            ]}>
-            {!notStarted && !completed && (
-              <Reanimated.View
-                layout={Animation(LinearTransition)}
-                style={[styles.progress, { width: Math.ceil(progress * 100), backgroundColor: color }]}
-              />
-            )}
-          </Reanimated.View>
+          {(notStarted || completed) && (
+            <Dynamic animated layout={Animation(LinearTransition, "list")}>
+              {notStarted ? (
+                <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
+              ) : (
+                <CheckCheck size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
+              )}
+            </Dynamic>
+          )}
 
           {!notStarted && !completed && (
-            <Typography variant='body2'>
-              {Math.ceil(progress * 100)}%
-            </Typography>
+            <Dynamic animated>
+              <Reanimated.View
+                layout={Animation(LinearTransition, "list")}
+                style={[
+                  styles.progressContainer,
+                  { borderColor: colors.text + '55' }
+                ]}>
+                <Reanimated.View
+                  layout={Animation(LinearTransition, "list")}
+                  style={[styles.progress, { width: (currentProgress * 100) + "%", backgroundColor: color }]}
+                />
+              </Reanimated.View>
+            </Dynamic>
           )}
 
-          {notStarted && (
-            <Typography variant='body2' color='secondary'>
-              Commencer
-            </Typography>
-          )}
+          <Dynamic animated layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
+            {!notStarted && !completed && (
+              <Typography variant='body2'>
+                {Math.ceil(currentProgress * 100)}%
+              </Typography>
+            )}
+
+            {(notStarted || completed) && (
+              <Typography variant='body2' color='secondary'>
+                {notStarted ? "Commencer" : "Terminé"}
+              </Typography>
+            )}
+          </Dynamic>
+        </AnimatedPressable>
+
+        <AnimatedPressable
+          layout={Animation(LinearTransition, "list")}
+          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }]}
+          onPress={changeProgress}
+          onLongPress={resetProgress}
+        >
+          <Calendar
+            size={20}
+            strokeWidth={2.5}
+            color={colors.text}
+          />
+          <Typography variant='body2' color='text'>
+            {formatDistanceToNow(date, {
+              addSuffix: true,
+              locale: fr,
+            })}
+          </Typography>
         </AnimatedPressable>
       </Stack>
     </AnimatedPressable>
@@ -132,9 +173,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    overflow: 'hidden',
   },
   progressContainer: {
-    width: 100,
+    width: 70,
     height: 18,
     borderRadius: 40,
     overflow: 'hidden',
@@ -145,10 +187,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 40,
   },
-  notStarted: {
-    width: 18,
-    height: 18,
-  }
 });
 
 export default Task;

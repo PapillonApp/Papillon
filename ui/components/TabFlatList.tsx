@@ -56,10 +56,7 @@ const PatternTile = ({ x, y, color }: { x: number; y: number, color: string }) =
 );
 
 interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
-  data: any[];
-  header?: React.ReactNode;
-  renderItem: ListRenderItem<any>;
-  keyExtractor: (item: any) => string;
+  header: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
   height?: number;
@@ -69,10 +66,7 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
 }
 
 const TabFlatList: React.FC<TabFlatListProps> = ({
-  data,
   header,
-  renderItem,
-  keyExtractor,
   backgroundColor = "#F7E8F5",
   foregroundColor = "#29947A",
   height = 120,
@@ -223,9 +217,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
       {/* FlatList */}
       <AnimatedLegendList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
+        {...rest}
 
         onScroll={scrollHandler}
         /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
