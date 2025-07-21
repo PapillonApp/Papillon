@@ -1,5 +1,5 @@
 import { Auth } from "@/stores/account/types";
-import { AccountKind, createSessionHandle, loginToken } from "pawnote";
+import { AccountKind, createSessionHandle, loginToken, SessionHandle } from "pawnote";
 
 /**
  * Refreshes the Pronote account credentials using the provided authentication data.
@@ -8,7 +8,7 @@ import { AccountKind, createSessionHandle, loginToken } from "pawnote";
  */
 export async function refreshPronoteAccount(
   credentials: Auth
-): Promise<Auth> {
+): Promise<{auth: Auth, session: SessionHandle}> {
   const handle = createSessionHandle();
   const auth = await loginToken(handle, {
     url: String(credentials.additionals?.["instanceURL"] || ""),
@@ -19,13 +19,16 @@ export async function refreshPronoteAccount(
   });
 
   return {
-    accessToken: auth.token,
-    refreshToken: auth.token,
-    additionals: {
-      instanceURL: auth.url,
-      kind: auth.kind,
-      username: auth.username,
-      deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
+    auth: {
+      accessToken: auth.token,
+      refreshToken: auth.token,
+      additionals: {
+        instanceURL: auth.url,
+        kind: auth.kind,
+        username: auth.username,
+        deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
+      },
     },
+    session: handle
   };
 }

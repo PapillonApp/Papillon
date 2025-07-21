@@ -9,6 +9,8 @@ import Stack from "@/ui/components/Stack";
 import * as pronote from "pawnote";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import { error, log } from "@/utils/logger/logger";
+import { AccountManager } from "@/services/shared";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -22,9 +24,28 @@ export default function TabOneScreen() {
     });
   }
 
+  const InitManager = async () => {
+    log("Initalizing AccountManager");
+    const accounts = useAccountStore.getState().accounts
+    if (accounts.length === 0) {
+      error("No accounts found in the store. Please log in first.");
+    }
+    useAccountStore.getState().setLastUsedAccount(accounts[0].id)
+    log("Last used account set to:", accounts[0].id);
+    const manager = new AccountManager(accounts[0]);
+    await manager.refreshAllAccounts()
+    console.log(manager);
+    const homeworks = await manager.getHomeworks(new Date());
+    console.log(homeworks);
+  }
+
   const  loginDemoAccount = async () => {
     try {
       setLoading(true);
+      const accounts = useAccountStore.getState().accounts;
+      for (const account of accounts) {
+        useAccountStore.getState().removeAccount(account)
+      }
       const uuid = generateUUID();
 
       const session = pronote.createSessionHandle();
@@ -94,6 +115,13 @@ export default function TabOneScreen() {
           loading={loading}
           variant="outline"
           onPress={() => loginDemoAccount()}
+        />
+        <Button
+          title="Init AccountManager"
+          inline
+          loading={loading}
+          variant="outline"
+          onPress={() => InitManager()}
         />
       </Stack>
     </ScrollView>
