@@ -1,7 +1,10 @@
 import * as Network from "expo-network";
-
 import { Homework } from "@/services/shared/homework";
-import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
+import {
+  Capabilities,
+  FetchOptions,
+  SchoolServicePlugin,
+} from "@/services/shared/types";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 import { News } from "@/services/shared/news";
@@ -10,6 +13,8 @@ import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { useAddHomeworkToDatabase } from "@/database/useHomework";
+import { getHomeworksFromWatermelon } from "@/services/shared/cache";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -34,8 +39,7 @@ export class AccountManager {
         const plugin = this.getServicePluginForAccount(service);
 
         if (plugin && plugin.capabilities.includes(Capabilities.REFRESH)) {
-          const client = await plugin.refreshAccount(service.auth);
-          this.clients[service.id] = client;
+          this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
           log("Successfully refreshed " + service.id);
         } else {
@@ -52,132 +56,162 @@ export class AccountManager {
       }
     }
 
-    log("Finished refreshing process for all services, services refreshed: " + Object.keys(this.clients).length);
+    log(
+      "Finished refreshing process for all services, services refreshed: " +
+        Object.keys(this.clients).length
+    );
     return refreshedAtLeastOne;
   }
 
   async getHomeworks(date: Date): Promise<Homework[]> {
-    return (await this.fetchData<Homework[]>(
+    return await this.fetchData(
       Capabilities.HOMEWORK,
-      async client => client.getHomeworks ? await client.getHomeworks(date) : [],
-      { multiple: true }
-    )) as Homework[];
+      async client =>
+        client.getHomeworks ? await client.getHomeworks(date) : [],
+      {
+        multiple: true,
+        fallback: async () => getHomeworksFromWatermelon(date),
+        saveToCache: async (data: Homework[]) => {
+          await useAddHomeworkToDatabase()(data);
+        },
+      }
+    );
   }
 
   async getNews(): Promise<News[]> {
-    return (await this.fetchData<News[]>(
+    return await this.fetchData(
       Capabilities.NEWS,
-      async client => client.getNews ? await client.getNews() : [],
+      async client => (client.getNews ? await client.getNews() : []),
       { multiple: true }
-    )) as News[];
+    );
   }
 
   async getGradesForPeriod(period: string): Promise<PeriodGrades> {
-    return (await this.fetchData<PeriodGrades>(
-      Capabilities.GRADES,
-      async client => client.getGradesForPeriod ? await client.getGradesForPeriod(period) : error("getGradesForPeriod not implemented but the capability is set."),
-      { multiple: false }
-    )) as PeriodGrades;
+    return await this.fetchData(Capabilities.GRADES, async client => {
+      if (!client.getGradesForPeriod) {
+        throw new Error(
+          "getGradesForPeriod not implemented but the capability is set."
+        );
+      }
+      return await client.getGradesForPeriod(period);
+    });
   }
 
   async getGradesPeriods(): Promise<Period[]> {
-    return (await this.fetchData<Period[]>(
+    return await this.fetchData(
       Capabilities.GRADES,
-      async client => client.getGradesPeriods ? await client.getGradesPeriods() : [],
+      async client =>
+        client.getGradesPeriods ? await client.getGradesPeriods() : [],
       { multiple: true }
-    )) as Period[];
+    );
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance> {
-    return (await this.fetchData<Attendance>(
-      Capabilities.ATTENDANCE,
-      async client => client.getAttendanceForPeriod ? await client.getAttendanceForPeriod(period) : error("getAllAttendanceForPeriod not implemented but the capability is set."),
-      { multiple: false }
-    )) as Attendance;
+    return await this.fetchData(Capabilities.ATTENDANCE, async client => {
+      if (!client.getAttendanceForPeriod) {
+        throw new Error(
+          "getAllAttendanceForPeriod not implemented but the capability is set."
+        );
+      }
+      return await client.getAttendanceForPeriod(period);
+    });
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
-    return (await this.fetchData<Period[]>(
+    return await this.fetchData(
       Capabilities.ATTENDANCE,
-      async client => client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
+      async client =>
+        client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
       { multiple: true }
-    )) as Period[];
+    );
   }
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
-    return (await this.fetchData<CanteenMenu[]>(
+    return await this.fetchData(
       Capabilities.CANTEEN_MENU,
-      async client => client.getWeeklyCanteenMenu ? await client.getWeeklyCanteenMenu(startDate) : [],
+      async client =>
+        client.getWeeklyCanteenMenu
+          ? await client.getWeeklyCanteenMenu(startDate)
+          : [],
       { multiple: true }
-    )) as CanteenMenu[];
+    );
   }
 
   async getChats(): Promise<Chat[]> {
-    return (await this.fetchData<Chat[]>(
+    return await this.fetchData(
       Capabilities.CHAT_READ,
-      async client => client.getChats ? await client.getChats() : [],
+      async client => (client.getChats ? await client.getChats() : []),
       { multiple: true }
-    )) as Chat[];
+    );
   }
 
   async getChatRecipients(chat: Chat): Promise<Recipient[]> {
-    return (await this.fetchData<Recipient[]>(
+    return await this.fetchData(
       Capabilities.CHAT_READ,
-      async client => client.getChatRecipients ? await client.getChatRecipients(chat) : [],
+      async client =>
+        client.getChatRecipients ? await client.getChatRecipients(chat) : [],
       { multiple: true, clientId: chat.createdByAccount }
-    )) as Recipient[];
+    );
   }
 
   async getChatMessages(chat: Chat): Promise<Message[]> {
-    return (await this.fetchData<Message[]>(
+    return await this.fetchData(
       Capabilities.CHAT_READ,
-      async client => client.getChatMessages ? await client.getChatMessages(chat) : [],
+      async client =>
+        client.getChatMessages ? await client.getChatMessages(chat) : [],
       { multiple: true, clientId: chat.createdByAccount }
-    )) as Message[];
+    );
   }
 
   async getRecipientsAvailableForNewChat(): Promise<Recipient[]> {
-    return (await this.fetchData<Recipient[]>(
+    return await this.fetchData(
       Capabilities.CHAT_READ,
-      async client => client.getRecipientsAvailableForNewChat ? await client.getRecipientsAvailableForNewChat() : [],
+      async client =>
+        client.getRecipientsAvailableForNewChat
+          ? await client.getRecipientsAvailableForNewChat()
+          : [],
       { multiple: true }
-    )) as Recipient[];
+    );
   }
 
   async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
-    return (await this.fetchData<CourseDay[]>(
+    return await this.fetchData(
       Capabilities.TIMETABLE,
-      async client => client.getWeeklyTimetable ? await client.getWeeklyTimetable(date) : [],
+      async client =>
+        client.getWeeklyTimetable ? await client.getWeeklyTimetable(date) : [],
       { multiple: true }
-    )) as CourseDay[];
+    );
   }
 
   async getCourseResources(course: Course): Promise<CourseResource[]> {
-    return (await this.fetchData<CourseResource[]>(
+    return await this.fetchData(
       Capabilities.TIMETABLE,
-      async client => client.getCourseResources ? await client.getCourseResources(course) : [],
+      async client =>
+        client.getCourseResources
+          ? await client.getCourseResources(course)
+          : [],
       { multiple: true, clientId: course.createdByAccount }
-    )) as CourseResource[];
+    );
   }
 
   async sendMessageInChat(chat: Chat, content: string): Promise<void> {
-    await this.fetchData<void>(
+    return await this.fetchData(
       Capabilities.CHAT_WRITE,
       async client => {
         if (client.sendMessageInChat) {
           await client.sendMessageInChat(chat, content);
         }
       },
-      { multiple: true, clientId: chat.createdByAccount }
+      { clientId: chat.createdByAccount }
     );
   }
 
   async setNewsAsDone(news: News): Promise<News> {
-    return (await this.fetchData<News>(
-      Capabilities.NEWS,
-      async client => client.setNewsAsAcknowledged ? await client.setNewsAsAcknowledged(news) : news,
-      { multiple: false }
-    )) as News;
+    return await this.fetchData(Capabilities.NEWS, async client =>
+      client.setNewsAsAcknowledged
+        ? await client.setNewsAsAcknowledged(news)
+        : news
+    );
   }
 
   private async hasInternetConnection(): Promise<boolean> {
@@ -200,49 +234,97 @@ export class AccountManager {
 
   private async fetchData<T>(
     capability: Capabilities,
+    callback: (client: SchoolServicePlugin) => Promise<T[]>,
+    options?: FetchOptions<T[]> & { multiple: true }
+  ): Promise<T[]>;
+
+  private async fetchData<T>(
+    capability: Capabilities,
     callback: (client: SchoolServicePlugin) => Promise<T>,
-    options?: { multiple?: boolean, clientId?: string }
-  ): Promise<T | T[] | undefined> {
-    if (!this.hasInternetConnection()) {
-      error("Internet not reachable.");
-    }
+    options?: FetchOptions<T> & { multiple?: false }
+  ): Promise<T>;
 
-    if (options?.clientId !== undefined) {
-      const client = this.clients[options.clientId];
-      if (!client) {
-        error(`Client with ID ${options.clientId} not found.`);
+  private async fetchData<T>(
+    capability: Capabilities,
+    callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
+    options?: FetchOptions<T | T[]> & { multiple?: boolean }
+  ): Promise<T | T[]> {
+    const hasInternet = await this.hasInternetConnection();
+
+    if (!hasInternet) {
+      warn("No internet connection, using fallback if available.");
+      if (options?.fallback) {
+        return await options.fallback();
       }
-      if (!client.capabilities.includes(capability)) {
-        error(`Client with ID ${options.clientId} does not support capability ${capability}.`);
+      error("Internet not reachable and no fallback provided.");
+    }
+
+    try {
+      if (options?.clientId !== undefined) {
+        const client = this.clients[options.clientId];
+        if (!client) {
+          error("Client ID missing");
+        }
+        if (!client.capabilities.includes(capability)) {
+          error(
+            "Capability " +
+              capability +
+              " not supported by client " +
+              options.clientId
+          );
+        }
+        const result = await callback(client);
+        if (options.saveToCache) {
+          await options.saveToCache(result);
+        }
+        return result;
       }
-      return await callback(client);
+
+      const availableClients = this.getAvailableClients(capability);
+
+      if (options?.multiple) {
+        const results = await Promise.all(
+          availableClients.map(client => callback(client) as Promise<T[]>)
+        );
+        const combinedResult = results.flat();
+
+        if (options?.saveToCache) {
+          await options.saveToCache(combinedResult);
+        }
+
+        return combinedResult;
+      }
+      for (const client of availableClients) {
+        try {
+          const result = await callback(client);
+          if (options?.saveToCache) {
+            await options.saveToCache(result);
+          }
+          return result;
+        } catch (clientError) {
+          warn(`Client failed, trying next: ${clientError}`);
+        }
+      }
+    } catch (e) {
+      if (options?.fallback) {
+        return await options.fallback();
+      }
+      throw e;
     }
 
-    const availableClients = this.getAvailableClients(capability);
-
-    if (options?.multiple) {
-      const results = await Promise.all(
-        availableClients.map(client => callback(client) as Promise<T[]>)
-      );
-
-      return results.flat();
-    }
-
-    for (const client of availableClients) {
-      return await callback(client);
-    }
-
-    return options?.multiple ? [] : undefined;
+    error(
+      "An error occurred while fetching data for capability: " + capability
+    );
   }
 
   private getServicePluginForAccount(
     service: ServiceAccount
   ): SchoolServicePlugin | null {
     switch (service.serviceId) {
-    case Services.PRONOTE:
-    { const pronoteModule = require("@/services/pronote/index");
-      const plugin = new pronoteModule.Pronote(service.id);
-      return plugin;
+    case Services.PRONOTE: {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/pronote/index");
+      return new pronoteModule.Pronote(service.id);
     }
 
     default:
