@@ -217,7 +217,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        snapToOffsets={[0, height - 16]} // Snap to header and modal positions
+        /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
         decelerationRate="normal" // Faster deceleration for smoother feel
         snapToEnd={false} // Disable snap to end for better control
 
