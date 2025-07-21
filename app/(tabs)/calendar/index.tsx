@@ -220,10 +220,10 @@ export default function TabOneScreen() {
           keyExtractor={(item) => item.id}
           ListEmptyComponent={() => (
             <View style={styles.containerContent}>
-              <Typography variant="title" color="secondary">
+              <Typography variant="title" color="secondary" align="center">
                 {t("Tab_Calendar_Empty")}
               </Typography>
-              <Typography variant="caption" color="secondary">
+              <Typography variant="caption" color="secondary" align="center">
                 {t("Tab_Calendar_Empty_Description")}
               </Typography>
             </View>

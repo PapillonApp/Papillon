@@ -39,5 +39,8 @@
   "Form_Start": "Start",
   "Form_End": "End",
 
-  "Confirm_DeleteEvent": "Are you sure you want to delete this event?"
+  "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
+
+  "Tab_Calendar_Empty": "No events found.",
+  "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started."
 }
