@@ -34,5 +34,19 @@ export const mySchema = appSchema({
         { name: 'color', type: 'string', isOptional: true },
       ],
     }),
+    tableSchema({
+      name: 'homework',
+      columns: [
+        { name: 'homeworkId', type: 'string' },
+        { name: 'subjectId', type: 'string' },
+        { name: 'content', type: 'string' },
+        { name: 'dueDate', type: 'number' },
+        { name: 'isDone', type: 'boolean' },
+        { name: 'returnFormat', type: 'number' },
+        { name: "attachments", type: 'string', isOptional: true },
+        { name: 'evaluation', type: 'boolean' },
+        { name: 'custom', type: 'boolean' },
+      ],
+    }),
   ],
 });

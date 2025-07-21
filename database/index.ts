@@ -4,6 +4,7 @@ import { mySchema } from './schema';
 import Event from './models/Event';
 import Ical from './models/Ical';
 import Subject from './models/Subject';
+import Homework from "@/database/models/Homework";
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,
@@ -11,5 +12,5 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Event, Ical, Subject],
+  modelClasses: [Event, Ical, Subject, Homework],
 });

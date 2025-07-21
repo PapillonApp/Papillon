@@ -1,0 +1,20 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+import { Model } from '@nozbe/watermelondb';
+import { field, relation } from "@nozbe/watermelondb/decorators";
+
+export default class Homework extends Model {
+  static table = 'homework';
+
+  @field('createdByAccount') createdByAccount: string;
+  @field('homeworkId') homeworkId: string;
+  @field('subjectId') subjectId?: string;
+  @relation('subjects', 'subjectId') subject: any;
+  @field('content') content: string;
+  @field('dueDate') dueDate: number;
+  @field('isDone') isDone: boolean;
+  @field('returnFormat') returnFormat: number;
+  @field('attachments') attachments: string;
+  @field('evaluation') evaluation: boolean;
+  @field('custom') custom: boolean;
+}
