@@ -12,12 +12,9 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import Reanimated, { FadeInDown, Easing, FadeInUp, FadeOutDown, FadeOutUp, LinearTransition, SlideInUp } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
-import List from "@/ui/components/List";
-import Item from "@/ui/components/Item";
 import Task from "@/ui/components/Task";
 import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
-import Svg, { Path } from "react-native-svg";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const mockHomework = [
