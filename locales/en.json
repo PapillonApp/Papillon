@@ -54,7 +54,7 @@
   "Tasks_Week": "Week",
   "Tasks_NoTasks_Title": "No tasks",
   "Tasks_NoTasks_ForWeek": "for week {{week}}",
-  "Tasks_NoTasks_Nav": "No tasks",
-  "Task_Start": "Start",
+  "Tasks_NoTasks_Nav": "No tasks left",
+  "Task_Start": "To do",
   "Task_Complete": "Done"
 }
