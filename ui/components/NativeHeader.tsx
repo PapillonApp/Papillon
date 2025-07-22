@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titleAndroid: {
-    marginHorizontal: 8,
+    marginHorizontal: 16,
     alignItems: "center",
     justifyContent: "flex-start",
     maxWidth: 300,

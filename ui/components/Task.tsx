@@ -13,6 +13,7 @@ import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
 import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale';
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
+import { t } from 'i18next';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -69,9 +70,7 @@ const Task = ({
         { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
         { translateY: withSpring(isPressed ? -2 : 0) },
       ],
-      shadowColor: isPressed ? '#00000044' : '#00000022',
-      shadowRadius: isPressed ? 10 : 3,
-      shadowOffset: isPressed ? { width: 0, height: 2 } : { width: 0, height: 0 },
+      boxShadow: isPressed ? '0px 2px 10px rgba(0, 0, 0, 0.24)' : '0px 0px 3px rgba(0, 0, 0, 0.22)',
       borderColor: completed ? color + "88" : isPressed ? colors.text + '40' : colors.text + '22',
     };
   }, [isPressed, colors.text]);
@@ -167,7 +166,7 @@ const Task = ({
 
               {(notStarted || completed) && (
                 <Typography variant='body2' color={!notStarted ? color : 'secondary'}>
-                  {notStarted ? "Commencer" : "Terminé"}
+                  {notStarted ? t('Task_Start') : t('Task_Complete')}
                 </Typography>
               )}
             </Dynamic>
@@ -205,15 +204,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     borderRadius: 16,
     borderCurve: 'continuous',
+    elevation: 1,
   },
   chip: {
     height: 42,
     paddingHorizontal: 12,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.22)',
     borderRadius: 160,
     borderCurve: 'continuous',
     flexDirection: 'row',
