@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -6,7 +6,7 @@ import { FlatList, View, Text, Pressable } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
-import { AlignCenter, CheckCheck, Search } from "lucide-react-native";
+import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
@@ -129,44 +129,40 @@ export default function TabOneScreen() {
     });
   }, [selectedWeek]);
 
+  const lengthHomeworks = React.useMemo(() => {
+    return currentHomework.length;
+  }, [currentHomework]);
+
   const leftHomeworks = React.useMemo(() => {
     return (currentHomework.filter((h) => h.progress < 1).length);
   }, [currentHomework]);
 
   const percentageComplete = React.useMemo(() => {
-    return ((currentHomework.length - leftHomeworks) / currentHomework.length * 100);
-  }, [currentHomework, leftHomeworks]);
+    return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
+  }, [lengthHomeworks, leftHomeworks]);
 
-  const renderItem = useMemo(() => ({ item, index }) => (
+  type HomeworkItem = typeof mockHomework[number];
+
+  const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => (
     <Task
       subject={item.subjectName}
       emoji={item.subjectEmoji}
       color={item.color}
       title={item.title}
       description={item.content}
-      date={item.dueDate}
+      date={new Date(item.dueDate)}
       progress={item.progress}
-      onProgressChange={(newProgress) => onProgressChange(index, newProgress)}
+      index={index}
+      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />
   ), [onProgressChange]);
 
-  const WeekPickerRef = React.useRef<FlatList>(null);
+  const keyExtractor = useCallback((item: HomeworkItem) => item.homeworkId, []);
+
+  const memoizedData = useMemo(() => currentHomework, [currentHomework]);
+
   const [showWeekPicker, setShowWeekPicker] = useState(false);
-
-  // on scrolled picker, update selected week
-  const handleWeekScroll = useCallback((event) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const itemWidth = 60; // width of each item in the picker
-    const index = Math.round(contentOffsetX / itemWidth);
-    if (index < 0 || index >= 56) return; // prevent out of bounds
-    requestAnimationFrame(() => {
-      setSelectedWeek(index);
-    });
-  }, []);
-
-  const toggleWeekPicker = useCallback(() => {
-    setShowWeekPicker((prev) => !prev);
-  }, [showWeekPicker, selectedWeek]);
+  const WeekPickerRef = useRef<FlatList>(null);
 
   const layoutPicker = useCallback(() => {
     if (WeekPickerRef.current) {
@@ -178,22 +174,44 @@ export default function TabOneScreen() {
     }
   }, [selectedWeek]);
 
+  const handleWeekScroll = useCallback((event: { nativeEvent: { contentOffset: { x: number } } }) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const itemWidth = 60; // width of each item in the picker
+    const index = Math.round(contentOffsetX / itemWidth);
+    if (index < 0 || index >= 56) return; // prevent out of bounds
+    requestAnimationFrame(() => {
+      setSelectedWeek(index);
+    });
+  }, []);
+
+  const toggleWeekPicker = useCallback(() => {
+    setShowWeekPicker((prev) => !prev);
+  }, []);
+
   return (
     <>
       <TabFlatList
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        data={currentHomework}
+        data={memoizedData}
         initialNumToRender={2}
         recycleItems={true}
         estimatedItemSize={212}
         onFullyScrolled={handleFullyScrolled}
+        itemLayoutAnimation={LinearTransition}
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
-              {leftHomeworks > 0 ? (
+              {lengthHomeworks === 0 ? (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
+                  </Typography>
+                </Stack>
+              ) : (leftHomeworks > 0 ? (
                 <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
                   <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`}>
                     <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
@@ -211,12 +229,12 @@ export default function TabOneScreen() {
                     {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
                   </Typography>
                 </Stack>
-              )}
+              ))}
             </Dynamic>
-            <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }} key={`circular-progress-week-ct:${selectedWeek}`}>
               <CircularProgress
                 backgroundColor={colors.text + "22"}
-                percentageComplete={percentageComplete}
+                percentageComplete={lengthHomeworks === 0 ? 0 : percentageComplete}
                 radius={35}
                 strokeWidth={7}
                 fill={"#C54CB3"}
@@ -225,7 +243,7 @@ export default function TabOneScreen() {
           </Stack>
         )}
         renderItem={renderItem}
-        keyExtractor={(item) => item.homeworkId}
+        keyExtractor={keyExtractor}
       />
 
       {/* Picker */}
@@ -265,14 +283,12 @@ export default function TabOneScreen() {
               layoutPicker();
             }}
             data={Array.from({ length: 56 }, (_, i) => i)}
-            initialNumToRender={6}
             initialScrollIndex={selectedWeek}
             getItemLayout={(data, index) => (
               { length: 60, offset: 60 * index, index }
             )}
             keyExtractor={(item) => "picker:" + item.toString()}
             horizontal
-            maxToRenderPerBatch={2}
             removeClippedSubviews={true}
             showsHorizontalScrollIndicator={false}
             style={{
@@ -374,11 +390,13 @@ export default function TabOneScreen() {
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
                   <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
-                    {leftHomeworks > 1 ?
-                      t('Tasks_Nav_Left', { count: leftHomeworks }) :
-                      leftHomeworks === 1 ?
-                        t('Tasks_Nav_One') :
-                        t('Tasks_Nav_Completed')
+                    {lengthHomeworks === 0 ?
+                      t('Tasks_NoTasks_Nav') :
+                      leftHomeworks > 1 ?
+                        t('Tasks_Nav_Left', { count: leftHomeworks }) :
+                        leftHomeworks === 1 ?
+                          t('Tasks_Nav_One') :
+                          t('Tasks_Nav_Completed')
                     }
                   </Typography>
                 </Dynamic>

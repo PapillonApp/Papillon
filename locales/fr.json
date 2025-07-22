@@ -51,5 +51,8 @@
   "Tasks_Nav_Left": "Encore {{count}} tâche(s) à faire",
   "Tasks_Nav_One": "Plus qu'une tâche à faire",
   "Tasks_Nav_Completed": "Tout est terminé !",
-  "Tasks_Week": "Semaine"
+  "Tasks_Week": "Semaine",
+  "Tasks_NoTasks_Title": "Aucune tâche",
+  "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
+  "Tasks_NoTasks_Nav": "Aucune tâche"
 }

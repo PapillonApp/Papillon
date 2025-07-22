@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 
 type CircularProgressProps = {
   strokeWidth: number;
@@ -44,7 +45,12 @@ const CircularProgress: FC<CircularProgressProps> = ({
   }));
 
   return (
-    <View style={[styles.container, { width: radius * 2, height: radius * 2 }]} key={`circular-progress-${radius}-${percentageComplete}`}>
+    <Animated.View
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+      style={[styles.container, { width: radius * 2, height: radius * 2 }]}
+      key={`circular-progress-${radius}`}
+    >
       <Svg width={radius * 2} height={radius * 2}>
         <Circle
           cx={radius}
@@ -68,7 +74,7 @@ const CircularProgress: FC<CircularProgressProps> = ({
           fill="transparent"
         />
       </Svg>
-    </View>
+    </Animated.View>
   );
 };
 
