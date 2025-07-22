@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useNavigation } from "expo-router";
 import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform, TouchableNativeFeedback } from "react-native";
 import Typography from "./Typography";
+import { useTheme } from "@react-navigation/native";
 
 // Pre-computed styles for maximum performance
 const styles = StyleSheet.create({
@@ -86,6 +87,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
   const navigation = useNavigation();
   const propsRef = useRef(props);
   const childrenRef = useRef(children);
+  const theme = useTheme();
 
   // Update refs without triggering re-renders
   propsRef.current = props;
@@ -106,7 +108,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
     return () => {
       navigation.setOptions({ [headerKey]: undefined });
     };
-  }, [navigation, side]); // Only side and navigation as dependencies
+  }, [navigation, side, theme]); // Add theme as a dependency
 
   return null;
 });
