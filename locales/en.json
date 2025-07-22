@@ -50,5 +50,9 @@
   "Tasks_Done_CompletedTasks": "have been completed",
   "Tasks_Nav_Left": "Still {{count}} task(s) to do",
   "Tasks_Nav_One": "Only one task left to do",
-  "Tasks_Nav_Completed": "Everything is done!"
+  "Tasks_Nav_Completed": "Everything is done!",
+  "Tasks_Week": "Week",
+  "Tasks_NoTasks_Title": "No tasks",
+  "Tasks_NoTasks_ForWeek": "for week {{week}}",
+  "Tasks_NoTasks_Nav": "No tasks"
 }

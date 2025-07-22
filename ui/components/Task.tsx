@@ -5,13 +5,14 @@ import Typography from './Typography';
 import Stack from './Stack';
 import * as Localization from "expo-localization";
 
-import Reanimated, { LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Animation } from '../utils/Animation';
 import { Dynamic } from './Dynamic';
 import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
 
 import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale';
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -23,7 +24,9 @@ const Task = ({
   subject = "Mathématiques",
   date = new Date(),
   progress = 0,
-  onProgressChange,
+  index = undefined,
+  onPress = () => { },
+  onProgressChange = () => { },
 }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -66,106 +69,128 @@ const Task = ({
         { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
         { translateY: withSpring(isPressed ? -2 : 0) },
       ],
-      boxShadow: isPressed ? '0 1px 15px rgba(0,0,0,0.2)' : '0 0px 5px rgba(0,0,0,0.1)',
-      borderColor: isPressed ? colors.text + '40' : colors.text + '22',
+      shadowColor: isPressed ? '#00000044' : '#00000022',
+      shadowRadius: isPressed ? 10 : 3,
+      shadowOffset: isPressed ? { width: 0, height: 2 } : { width: 0, height: 0 },
+      borderColor: completed ? color + "88" : isPressed ? colors.text + '40' : colors.text + '22',
     };
   }, [isPressed, colors.text]);
 
   return (
     <AnimatedPressable
+      onPress={onPress}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
       style={[
         styles.container,
         backgroundStyle,
+        {
+          transformOrigin: 'center top',
+        }
       ]}
+      onLayout={/*(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        console.log(`Task size: ${width}x${height}`);
+      }*/ undefined} // Uncomment to log size
+      layout={Animation(LinearTransition, "list")}
     >
-      <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{ marginBottom: 10 }}>
-        <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>
-          <Text style={{ fontSize: 12 }}>
-            {emoji}
-          </Text>
-        </Stack>
-        <Typography variant='body1' weight='semibold' color={color} style={{ flex: 1 }}>
-          {subject}
-        </Typography>
-        <Typography variant='body2' weight='medium' color="secondary">
-          {/*new Date(date).toLocaleDateString('fr-FR', {
+
+      <LayoutAnimationConfig skipEntering skipExiting>
+        <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{ marginBottom: 10 }}>
+          <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>
+            <Text style={{ fontSize: 12 }}>
+              {emoji}
+            </Text>
+          </Stack>
+          <Typography variant='body1' weight='semibold' color={color} style={{ flex: 1 }}>
+            {subject}
+          </Typography>
+          <Typography variant='body2' weight='medium' color="secondary">
+            {/*new Date(date).toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'short',
           })*/}
+          </Typography>
+        </Stack>
+        <Typography variant='h5' weight='bold' style={{ marginBottom: 4, lineHeight: 24 }}>
+          {title}
         </Typography>
-      </Stack>
-      <Typography variant='h5' weight='bold' style={{ marginBottom: 4, lineHeight: 24 }}>
-        {title}
-      </Typography>
-      <Typography variant='body1' color='secondary' style={{ lineHeight: 20 }}>
-        {description}
-      </Typography>
-      <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
-        <AnimatedPressable
-          onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
-          onPress={toggleProgress}
-          layout={Animation(LinearTransition, "list")}
-          style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }, animatedChipStyle]}
-        >
-          {(notStarted || completed) && (
-            <Dynamic animated layout={Animation(LinearTransition, "list")}>
-              {notStarted ? (
-                <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
-              ) : (
-                <CheckCheck size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
-              )}
-            </Dynamic>
-          )}
-
-          {!notStarted && !completed && (
-            <Dynamic animated>
-              <Reanimated.View
+        <Typography variant='body1' color='secondary' style={{ lineHeight: 20 }}>
+          {description}
+        </Typography>
+        <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
+          <AnimatedPressable
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}
+            onPress={toggleProgress}
+            layout={Animation(LinearTransition, "list")}
+            style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
+          >
+            {(notStarted || completed) && (
+              <Dynamic
+                animated
                 layout={Animation(LinearTransition, "list")}
-                style={[
-                  styles.progressContainer,
-                  { backgroundColor: colors.text + '12' }
-                ]}>
+                entering={PapillonZoomIn}
+                exiting={PapillonZoomOut}
+                key={'progress-icon:' + (notStarted ? "a" : "b")}
+              >
+                {notStarted ? (
+                  <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
+                ) : (
+                  <CheckCheck size={20} strokeWidth={2.5} opacity={1} color={color} />
+                )}
+              </Dynamic>
+            )}
+
+            {!notStarted && !completed && (
+              <Dynamic animated>
                 <Reanimated.View
                   layout={Animation(LinearTransition, "list")}
-                  style={[styles.progress, { width: currentProgress * 70, backgroundColor: color }]} // Use numeric width
-                />
-              </Reanimated.View>
+                  style={[
+                    styles.progressContainer,
+                    { backgroundColor: colors.text + '12' }
+                  ]}>
+                  <Reanimated.View
+                    layout={Animation(LinearTransition, "list")}
+                    style={[styles.progress, { width: currentProgress * 70, backgroundColor: color }]} // Use numeric width
+                  />
+                </Reanimated.View>
+              </Dynamic>
+            )}
+
+            <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
+              {!notStarted && !completed && (
+                <Typography variant='body2'>
+                  {Math.ceil(currentProgress * 100)}%
+                </Typography>
+              )}
+
+              {(notStarted || completed) && (
+                <Typography variant='body2' color={!notStarted ? color : 'secondary'}>
+                  {notStarted ? "Commencer" : "Terminé"}
+                </Typography>
+              )}
             </Dynamic>
-          )}
+          </AnimatedPressable>
 
-          <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
-            {!notStarted && !completed && (
-              <Typography variant='body2'>
-                {Math.ceil(currentProgress * 100)}%
-              </Typography>
-            )}
-
-            {(notStarted || completed) && (
-              <Typography variant='body2' color='secondary'>
-                {notStarted ? "Commencer" : "Terminé"}
-              </Typography>
-            )}
-          </Dynamic>
-        </AnimatedPressable>
-
-        <AnimatedPressable
-          layout={Animation(LinearTransition, "list")}
-          style={[styles.chip, backgroundStyle]}
-        >
-          <Calendar
-            size={20}
-            strokeWidth={2.5}
-            color={colors.text}
-          />
-          <Typography variant='body2' color='text'>
-            {formatDistanceToNow(date, {
-              addSuffix: true,
-              locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
-            })}
-          </Typography>
-        </AnimatedPressable>
-      </Stack>
+          <AnimatedPressable
+            layout={Animation(LinearTransition, "list")}
+            style={[styles.chip, backgroundStyle]}
+          >
+            <Calendar
+              size={20}
+              strokeWidth={2.5}
+              color={colors.text}
+            />
+            <Typography variant='body2' color='text'>
+              {formatDistanceToNow(date, {
+                addSuffix: true,
+                locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
+              })}
+            </Typography>
+          </AnimatedPressable>
+        </Stack>
+      </LayoutAnimationConfig>
     </AnimatedPressable>
   );
 }
@@ -174,7 +199,10 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderWidth: 1,
-    boxShadow: '0 0px 5px rgba(0,0,0,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     borderRadius: 16,
     borderCurve: 'continuous',
   },
@@ -182,7 +210,10 @@ const styles = StyleSheet.create({
     height: 42,
     paddingHorizontal: 12,
     borderWidth: 1,
-    boxShadow: '0 0px 5px rgba(0,0,0,0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     borderRadius: 160,
     borderCurve: 'continuous',
     flexDirection: 'row',
