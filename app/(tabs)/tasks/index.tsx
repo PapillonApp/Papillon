@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable, Platform } from "react-native";
+import { FlatList, View, Text, Pressable, Platform, Dimensions, useWindowDimensions } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
@@ -102,6 +102,7 @@ export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
   const headerHeight = useHeaderHeight();
+  const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(16);
@@ -196,6 +197,7 @@ export default function TabOneScreen() {
         initialNumToRender={2}
         recycleItems={true}
         estimatedItemSize={212}
+        numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         itemLayoutAnimation={LinearTransition}
         gap={16}

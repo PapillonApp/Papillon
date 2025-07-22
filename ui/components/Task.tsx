@@ -63,12 +63,13 @@ const Task = ({
   const screenWidth = Dimensions.get('window').width; // Get screen width for percentage calculation
 
   const [isPressed, setIsPressed] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const animatedChipStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
-        { translateY: withSpring(isPressed ? -2 : 0) },
+        { translateY: withSpring(isHovered ? -4 : isPressed ? -2 : 0) },
       ],
       boxShadow: isPressed ? '0px 2px 10px rgba(0, 0, 0, 0.24)' : '0px 0px 3px rgba(0, 0, 0, 0.22)',
       borderColor: completed ? color + "88" : isPressed ? colors.text + '40' : colors.text + '22',
@@ -121,6 +122,8 @@ const Task = ({
           <AnimatedPressable
             onPressIn={() => setIsPressed(true)}
             onPressOut={() => setIsPressed(false)}
+            onHoverIn={() => setIsHovered(true)}
+            onHoverOut={() => setIsHovered(false)}
             onPress={toggleProgress}
             layout={Animation(LinearTransition, "list")}
             style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
