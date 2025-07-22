@@ -1,7 +1,7 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Dimensions, FlatList, FlatListProps, Image, ListRenderItem, View } from "react-native";
+import { Dimensions, FlatList, Platform, FlatListProps, Image, ListRenderItem, View } from "react-native";
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
@@ -138,118 +138,124 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     }
   );
 
-  return (
-    <>
-      {/* Header */}
-      <View
-        style={{
-          height: finalHeight,
-          paddingTop: headerInset,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 9999,
-        }}
-      >
-        <Reanimated.View
-          style={[
-            {
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: finalHeight,
-              width: '100%',
-            },
-            headerStyle,
-          ]}>
-          {header}
-        </Reanimated.View>
-      </View>
-
-      <MaskedView
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 350,
-          zIndex: 999,
-          backgroundColor: backgroundColor,
-        }}
-        maskElement={
-          <LinearGradient
-            colors={['rgba(247, 232, 245, 0.00)', '#f7e8f5', 'rgba(247, 232, 245, 0.00)']}
-            locations={[0.1, 0.5, 0.8]}
-            start={{ x: 0.99, y: 0.0 }}
-            end={{ x: 0, y: 0.7 }}
-            style={{ flex: 1 }}
-          />
-        }
-      >
-        <Image
-          source={require('@/assets/images/patterns/dots.png')}
-          tintColor={foregroundColor}
-          resizeMethod="resize"
+  try {
+    return (
+      <>
+        {/* Header */}
+        <View
           style={{
-            width: '100%',
-            height: '100%',
+            height: finalHeight,
+            paddingTop: headerInset,
             position: 'absolute',
             top: 0,
             left: 0,
-            opacity: 0.10,
+            right: 0,
+            zIndex: 9999,
+          }}
+        >
+          <Reanimated.View
+            style={[
+              {
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: finalHeight,
+                width: '100%',
+              },
+              headerStyle,
+            ]}>
+            {header}
+          </Reanimated.View>
+        </View>
+
+        <MaskedView
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 350,
+            zIndex: 999,
+            backgroundColor: backgroundColor,
+          }}
+          maskElement={
+            <LinearGradient
+              colors={['rgba(247, 232, 245, 0.00)', '#f7e8f5', 'rgba(247, 232, 245, 0.00)']}
+              locations={[0.1, 0.5, 0.8]}
+              start={{ x: 0.99, y: 0.0 }}
+              end={{ x: 0, y: 0.7 }}
+              style={{ flex: 1 }}
+            />
+          }
+        >
+          <Image
+            source={require('@/assets/images/patterns/dots.png')}
+            tintColor={foregroundColor}
+            resizeMethod="resize"
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              opacity: 0.10,
+            }}
+          />
+        </MaskedView>
+
+        {/* Background */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: backgroundColor,
+          }}
+        >
+        </View>
+
+        {/* FlatList */}
+        <AnimatedLegendList
+          {...rest}
+
+          onScroll={scrollHandler}
+          /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
+          decelerationRate="normal" // Faster deceleration for smoother feel
+          snapToEnd={false} // Disable snap to end for better control
+
+          ListFooterComponent={<View style={{ height: Platform.OS === 'android' ? 180 : 92 }} />}
+
+          showsVerticalScrollIndicator={Platform.OS === 'android' ? false : showScrollIndicator}
+          scrollIndicatorInsets={{
+            top: 28
+          }}
+
+          style={{
+            flex: 1,
+            zIndex: 9999
+          }}
+
+          contentContainerStyle={{
+            minHeight: screenHeight,
+            backgroundColor: colors.background,
+            marginTop: finalHeight,
+            borderRadius: 28,
+            borderCurve: 'continuous',
+            padding: padding,
+            paddingTop: padding - 12,
+            gap: gap,
+
           }}
         />
-      </MaskedView>
-
-      {/* Background */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: backgroundColor,
-        }}
-      >
-      </View>
-
-      {/* FlatList */}
-      <AnimatedLegendList
-        {...rest}
-
-        onScroll={scrollHandler}
-        /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
-        decelerationRate="normal" // Faster deceleration for smoother feel
-        snapToEnd={false} // Disable snap to end for better control
-
-        ListFooterComponent={<View style={{ height: 92 }} />}
-
-        showsVerticalScrollIndicator={showScrollIndicator}
-        scrollIndicatorInsets={{
-          top: 28
-        }}
-
-        style={{
-          flex: 1,
-          zIndex: 9999
-        }}
-
-        contentContainerStyle={{
-          minHeight: screenHeight,
-          backgroundColor: colors.background,
-          marginTop: finalHeight,
-          borderRadius: 28,
-          borderCurve: 'continuous',
-          padding: padding,
-          paddingTop: padding - 12,
-          gap: gap,
-
-        }}
-      />
-    </>
-  )
+      </>
+    )
+  }
+  catch (error) {
+    console.error("Error rendering TabFlatList:", error);
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+  }
 };
 
 export default TabFlatList;

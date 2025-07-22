@@ -2,15 +2,15 @@ import React, { useCallback, useMemo, useState, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable } from "react-native";
+import { FlatList, View, Text, Pressable, Platform } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
 import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
+import Reanimated, { FadeInDown, Easing, FadeInUp, FadeOutDown, FadeOutUp, LinearTransition, SlideInUp } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
@@ -18,6 +18,7 @@ import Task from "@/ui/components/Task";
 import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Svg, { Path } from "react-native-svg";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const mockHomework = [
   {
@@ -213,7 +214,7 @@ export default function TabOneScreen() {
                 </Stack>
               ) : (leftHomeworks > 0 ? (
                 <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`}>
+                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
                     <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
                       {leftHomeworks}
                     </Typography>
@@ -245,6 +246,23 @@ export default function TabOneScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
       />
+
+      {!runsIOS26() && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: headerHeight,
+            backgroundColor: colors.card,
+            zIndex: 1000000,
+            elevation: 4,
+          }}
+        />
+      )}
 
       {/* Picker */}
       {showWeekPicker && (
@@ -363,12 +381,12 @@ export default function TabOneScreen() {
             animated={true}
             style={{
               flexDirection: "column",
-              alignItems: "center",
+              alignItems: Platform.OS === 'android' ? "left" : "center",
               justifyContent: "center",
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: fullyScrolled ? 6 : 0,
+              marginTop: Platform.OS === 'android' ? -2 : fullyScrolled ? 6 : 0,
             }}
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, height: 30, marginBottom: -3 }}>
@@ -385,7 +403,7 @@ export default function TabOneScreen() {
               <Reanimated.View
                 style={{
                   width: 200,
-                  alignItems: 'center',
+                  alignItems: Platform.OS === 'android' ? "left" : 'center',
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
