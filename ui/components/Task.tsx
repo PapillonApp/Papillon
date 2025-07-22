@@ -12,6 +12,7 @@ import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
 
 import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale';
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -23,7 +24,8 @@ const Task = ({
   subject = "Mathématiques",
   date = new Date(),
   progress = 0,
-  onProgressChange,
+  onPress = () => { },
+  onProgressChange = () => { },
 }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -73,10 +75,21 @@ const Task = ({
 
   return (
     <AnimatedPressable
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+      onPress={onPress}
       style={[
         styles.container,
         backgroundStyle,
+        {
+          transformOrigin: 'center top',
+        }
       ]}
+      onLayout={/*(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        console.log(`Task size: ${width}x${height}`);
+      }*/ undefined} // Uncomment to log size
+      layout={Animation(LinearTransition, "list")}
     >
       <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{ marginBottom: 10 }}>
         <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>

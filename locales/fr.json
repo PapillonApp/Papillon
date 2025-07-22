@@ -50,5 +50,6 @@
   "Tasks_Done_CompletedTasks": "ont été complétées",
   "Tasks_Nav_Left": "Encore {{count}} tâche(s) à faire",
   "Tasks_Nav_One": "Plus qu'une tâche à faire",
-  "Tasks_Nav_Completed": "Tout est terminé !"
+  "Tasks_Nav_Completed": "Tout est terminé !",
+  "Tasks_Week": "Semaine"
 }

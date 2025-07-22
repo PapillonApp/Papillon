@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { View } from "react-native";
+import { FlatList, View, Text, Pressable } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
@@ -16,6 +16,8 @@ import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Task from "@/ui/components/Task";
 import { t } from "i18next";
+import { useHeaderHeight } from "@react-navigation/elements";
+import Svg, { Path } from "react-native-svg";
 
 const mockHomework = [
   {
@@ -101,33 +103,41 @@ const mockHomework = [
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
+  const headerHeight = useHeaderHeight();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState(16);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-  const [homework, setHomework] = useState(mockHomework);
+  const [homework, setHomework] = useState({
+    16: mockHomework,
+  });
+
+  const currentHomework = React.useMemo(() => {
+    return homework[selectedWeek] || [];
+  }, [homework, selectedWeek]);
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
     setHomework((prev) => {
-      if (prev[index].progress === newProgress) return prev;
-      const updated = [...prev];
+      if (prev[selectedWeek][index].progress === newProgress) return prev;
+      const updated = [...prev[selectedWeek]];
       updated[index] = { ...updated[index], progress: newProgress };
-      return updated;
+      return { ...prev, [selectedWeek]: updated };
     });
-  }, []);
+  }, [selectedWeek]);
 
   const leftHomeworks = React.useMemo(() => {
-    return (homework.filter((h) => h.progress < 1).length);
-  }, [homework]);
+    return (currentHomework.filter((h) => h.progress < 1).length);
+  }, [currentHomework]);
 
   const percentageComplete = React.useMemo(() => {
-    return ((homework.length - leftHomeworks) / homework.length * 100);
-  }, [homework]);
+    return ((currentHomework.length - leftHomeworks) / currentHomework.length * 100);
+  }, [currentHomework, leftHomeworks]);
 
-  const renderItem = useCallback(({ item, index }) => (
+  const renderItem = useMemo(() => ({ item, index }) => (
     <Task
       subject={item.subjectName}
       emoji={item.subjectEmoji}
@@ -140,12 +150,44 @@ export default function TabOneScreen() {
     />
   ), [onProgressChange]);
 
+  const WeekPickerRef = React.useRef<FlatList>(null);
+  const [showWeekPicker, setShowWeekPicker] = useState(false);
+
+  // on scrolled picker, update selected week
+  const handleWeekScroll = useCallback((event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const itemWidth = 60; // width of each item in the picker
+    const index = Math.round(contentOffsetX / itemWidth);
+    if (index < 0 || index >= 56) return; // prevent out of bounds
+    requestAnimationFrame(() => {
+      setSelectedWeek(index);
+    });
+  }, []);
+
+  const toggleWeekPicker = useCallback(() => {
+    setShowWeekPicker((prev) => !prev);
+  }, [showWeekPicker, selectedWeek]);
+
+  const layoutPicker = useCallback(() => {
+    if (WeekPickerRef.current) {
+      const offset = selectedWeek * 60;
+      WeekPickerRef.current.scrollToOffset({
+        offset,
+        animated: false,
+      });
+    }
+  }, [selectedWeek]);
+
   return (
     <>
       <TabFlatList
+        waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        data={homework}
+        data={currentHomework}
+        initialNumToRender={2}
+        recycleItems={true}
+        estimatedItemSize={212}
         onFullyScrolled={handleFullyScrolled}
         gap={16}
         header={(
@@ -186,6 +228,108 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.homeworkId}
       />
 
+      {/* Picker */}
+      {showWeekPicker && (
+        <Reanimated.View
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+          style={{
+            height: 60,
+            width: 300,
+            backgroundColor: colors.card,
+            borderRadius: 16,
+            boxShadow: "0px 0px 32px rgba(0, 0, 0, 0.25)",
+            position: "absolute",
+            top: headerHeight - 6,
+            alignSelf: "center",
+            zIndex: 1000000,
+            transformOrigin: "center top",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              alignSelf: "center",
+              top: 5,
+              height: 50,
+              width: 50,
+              borderRadius: 16,
+              borderCurve: "continuous",
+              borderWidth: 2,
+              borderColor: "#C54CB3",
+            }}
+          />
+
+          <FlatList
+            onLayout={() => {
+              layoutPicker();
+            }}
+            data={Array.from({ length: 56 }, (_, i) => i)}
+            initialNumToRender={6}
+            initialScrollIndex={selectedWeek}
+            getItemLayout={(data, index) => (
+              { length: 60, offset: 60 * index, index }
+            )}
+            keyExtractor={(item) => "picker:" + item.toString()}
+            horizontal
+            maxToRenderPerBatch={2}
+            removeClippedSubviews={true}
+            showsHorizontalScrollIndicator={false}
+            style={{
+              flexGrow: 0,
+              height: 100,
+              width: 300,
+            }}
+            contentContainerStyle={{
+              alignItems: "center",
+              gap: 0,
+              paddingLeft: 300 / 2 - 30, // center the picker
+              paddingRight: 300 / 2 - 30, // center the picker
+            }}
+            snapToInterval={60}
+            decelerationRate="fast"
+            ref={WeekPickerRef}
+            onScroll={handleWeekScroll}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => {
+                  setSelectedWeek(item);
+                  setShowWeekPicker(false);
+                }}
+                style={[
+                  {
+                    width: 40,
+                    height: 40,
+                    margin: 10,
+                    borderRadius: 12,
+                    borderCurve: "continuous",
+                    backgroundColor: colors.background,
+                    borderColor: colors.text + "22",
+                    borderWidth: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
+                  item === selectedWeek && {
+                    backgroundColor: "#C54CB3",
+                    boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
+                  }
+                ]}
+              >
+                <Text
+                  style={{
+                    color: item === selectedWeek ? "#FFF" : colors.text,
+                    fontSize: 16,
+                    fontFamily: item === selectedWeek ? "bold" : "medium",
+                  }}
+                >
+                  {item}
+                </Text>
+              </Pressable>
+            )}
+          />
+        </Reanimated.View>
+      )}
+
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
@@ -195,8 +339,10 @@ export default function TabOneScreen() {
           <AlignCenter color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
-      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled + ":" + leftHomeworks}>
-        <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
+      <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
+        <NativeHeaderTopPressable layout={Animation(LinearTransition)} onPress={() => {
+          toggleWeekPicker();
+        }}>
           <Dynamic
             animated={true}
             style={{
@@ -211,11 +357,11 @@ export default function TabOneScreen() {
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
-                <Typography inline variant="navigation">Semaine</Typography>
+                <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
                 <NativeHeaderHighlight color="#C54CB3">
-                  16
+                  {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
             </Dynamic>
