@@ -12,7 +12,7 @@ import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
 
 import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale';
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -72,7 +72,7 @@ const Task = ({
       shadowColor: isPressed ? '#00000044' : '#00000022',
       shadowRadius: isPressed ? 10 : 3,
       shadowOffset: isPressed ? { width: 0, height: 2 } : { width: 0, height: 0 },
-      borderColor: isPressed ? colors.text + '40' : colors.text + '22',
+      borderColor: completed ? color + "88" : isPressed ? colors.text + '40' : colors.text + '22',
     };
   }, [isPressed, colors.text]);
 
@@ -124,14 +124,20 @@ const Task = ({
             onPressOut={() => setIsPressed(false)}
             onPress={toggleProgress}
             layout={Animation(LinearTransition, "list")}
-            style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22' }, animatedChipStyle]}
+            style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
           >
             {(notStarted || completed) && (
-              <Dynamic animated layout={Animation(LinearTransition, "list")}>
+              <Dynamic
+                animated
+                layout={Animation(LinearTransition, "list")}
+                entering={PapillonZoomIn}
+                exiting={PapillonZoomOut}
+                key={'progress-icon:' + (notStarted ? "a" : "b")}
+              >
                 {notStarted ? (
                   <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
                 ) : (
-                  <CheckCheck size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
+                  <CheckCheck size={20} strokeWidth={2.5} opacity={1} color={color} />
                 )}
               </Dynamic>
             )}
@@ -160,7 +166,7 @@ const Task = ({
               )}
 
               {(notStarted || completed) && (
-                <Typography variant='body2' color='secondary'>
+                <Typography variant='body2' color={!notStarted ? color : 'secondary'}>
                   {notStarted ? "Commencer" : "Terminé"}
                 </Typography>
               )}
