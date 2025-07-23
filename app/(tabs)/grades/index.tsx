@@ -371,11 +371,11 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.ui.key}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%" }}>
-              <Typography variant="h2" color="primary">
+            <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
+              <Typography variant="h1" color="primary">
                 {average.toFixed(2)}
               </Typography>
-              <Typography variant="caption" color="secondary">
+              <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
                 /20
               </Typography>
             </Stack>
