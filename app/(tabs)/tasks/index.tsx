@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable, Platform } from "react-native";
+import { FlatList, View, Text, Pressable, Platform, Dimensions, useWindowDimensions } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
@@ -12,12 +12,9 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import Reanimated, { FadeInDown, Easing, FadeInUp, FadeOutDown, FadeOutUp, LinearTransition, SlideInUp } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
-import List from "@/ui/components/List";
-import Item from "@/ui/components/Item";
 import Task from "@/ui/components/Task";
 import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
-import Svg, { Path } from "react-native-svg";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const mockHomework = [
@@ -25,7 +22,8 @@ const mockHomework = [
     homeworkId: 'hw-001',
     subjectId: 'math',
     subjectName: 'Mathématiques',
-    title: 'Exercices 12 à 18 p.76',
+    subjectEmoji: '📚',
+    title: 'Exercices de mathématiques',
     content: 'Faire les exercices 1, 2 et 3 de la page 200 et voir les infos sur beaucoup d’infos il faut resumer',
     dueDate: 1721606400000, // timestamp
     isDone: false,
@@ -105,6 +103,7 @@ export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
   const headerHeight = useHeaderHeight();
+  const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(16);
@@ -199,6 +198,7 @@ export default function TabOneScreen() {
         initialNumToRender={2}
         recycleItems={true}
         estimatedItemSize={212}
+        numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         itemLayoutAnimation={LinearTransition}
         gap={16}
