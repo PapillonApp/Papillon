@@ -22,7 +22,8 @@ const mockHomework = [
     homeworkId: 'hw-001',
     subjectId: 'math',
     subjectName: 'Mathématiques',
-    title: 'Exercices 12 à 18 p.76',
+    subjectEmoji: '📚',
+    title: 'Exercices de mathématiques',
     content: 'Faire les exercices 1, 2 et 3 de la page 200 et voir les infos sur beaucoup d’infos il faut resumer',
     dueDate: 1721606400000, // timestamp
     isDone: false,
