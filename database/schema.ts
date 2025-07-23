@@ -46,7 +46,23 @@ export const mySchema = appSchema({
         { name: "attachments", type: 'string', isOptional: true },
         { name: 'evaluation', type: 'boolean' },
         { name: 'custom', type: 'boolean' },
+        { name: 'createdByAccount', type: "string" }
       ],
     }),
+    tableSchema({
+      name: 'news',
+      columns: [
+        { name: 'newsId', type: 'string' },
+        { name: 'newsId', type: 'string' },
+        { name: 'title', type: 'string' },
+        { name: 'createdAt', type: 'number' },
+        { name: 'acknowledged', type: 'boolean' },
+        { name: "attachments", type: 'string', isOptional: true },
+        { name: 'content', type: 'string' },
+        { name: 'author', type: 'string' },
+        { name: 'category', type: 'string' },
+        { name: 'createdByAccount', type: "string" }
+      ],
+    })
   ],
 });
