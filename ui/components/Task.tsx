@@ -1,16 +1,16 @@
 import { useTheme } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
-import { Dimensions, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
 import Typography from './Typography';
 import Stack from './Stack';
 import * as Localization from "expo-localization";
 
-import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Animation } from '../utils/Animation';
 import { Dynamic } from './Dynamic';
 import { Calendar, CheckCheck, CircleDashed } from 'lucide-react-native';
 
-import { format, formatDistance, formatDistanceToNow, formatRelative, subDays } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale';
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
 import { t } from 'i18next';
@@ -79,7 +79,7 @@ const Task: React.FC<TaskProps> = ({
   const [isHovered, setIsHovered] = React.useState(false);
 
   const currentDate = useMemo(() => {
-    if (!date) return undefined;
+    if (!date) {return undefined;}
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       return undefined;

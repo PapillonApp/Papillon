@@ -116,26 +116,26 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] 
  */
 function mapGradeValueToScore(grade: GradeValue | undefined): GradeScore {
   if (typeof grade === "undefined")
-    return { disabled: true, status: "Inconnu" };
+  {return { disabled: true, status: "Inconnu" };}
 
   switch (grade.kind) {
-    case GradeKind.Grade:
-      return { value: grade.points ?? 0 };
-    case GradeKind.NotGraded:
-      return { disabled: true, status: "N. Not." };
-    case GradeKind.Absent:
-      return { disabled: true, status: "Abs." };
-    case GradeKind.AbsentZero:
-      return { value: 0, disabled: false, status: "Abs.*" };
-    case GradeKind.Exempted:
-      return { disabled: true, status: "Disp." };
-    case GradeKind.Unfit:
-      return { disabled: true, status: "Disp." };
-    case GradeKind.Unreturned:
-      return { disabled: true, status: "N. Rendu" };
-    case GradeKind.UnreturnedZero:
-      return { value: 0, disabled: false, status: "N. Rendu*" };
-    default:
-      return { disabled: true, status: "Inconnu" };
+  case GradeKind.Grade:
+    return { value: grade.points ?? 0 };
+  case GradeKind.NotGraded:
+    return { disabled: true, status: "N. Not." };
+  case GradeKind.Absent:
+    return { disabled: true, status: "Abs." };
+  case GradeKind.AbsentZero:
+    return { value: 0, disabled: false, status: "Abs.*" };
+  case GradeKind.Exempted:
+    return { disabled: true, status: "Disp." };
+  case GradeKind.Unfit:
+    return { disabled: true, status: "Disp." };
+  case GradeKind.Unreturned:
+    return { disabled: true, status: "N. Rendu" };
+  case GradeKind.UnreturnedZero:
+    return { value: 0, disabled: false, status: "N. Rendu*" };
+  default:
+    return { disabled: true, status: "Inconnu" };
   }
 }

@@ -142,16 +142,16 @@ export async function fetchPronoteCourseResources(
 
 const mapCourseStatus = (course: TimetableClassLesson): CourseStatus | undefined => {
   switch (course.status) {
-    case "Cours annulé":
-      return CourseStatus.CANCELED;
-    case "Prof. absent":
-      return CourseStatus.CANCELED;
-    case "Classe absente":
-      return CourseStatus.CANCELED;
-    case "Prof./pers. absent":
-      return CourseStatus.CANCELED;
-    case "Sortie pédagogique":
-      return CourseStatus.CANCELED;
+  case "Cours annulé":
+    return CourseStatus.CANCELED;
+  case "Prof. absent":
+    return CourseStatus.CANCELED;
+  case "Classe absente":
+    return CourseStatus.CANCELED;
+  case "Prof./pers. absent":
+    return CourseStatus.CANCELED;
+  case "Sortie pédagogique":
+    return CourseStatus.CANCELED;
   }
 
   if (course.test) {

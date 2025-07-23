@@ -1,14 +1,12 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Dimensions, FlatList, Platform, FlatListProps, Image, ListRenderItem, View } from "react-native";
-import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Dimensions, Platform, FlatListProps, Image, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import MaskedView from "@react-native-masked-view/masked-view";
 
-import PatternBackground from "./PatternBackground";
-import { X } from "lucide-react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { Circle, G, Path } from "react-native-svg";
 

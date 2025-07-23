@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo, useCallback, useState, useRef } from "react";
 import { ViewProps, StyleProp, ViewStyle } from "react-native";
-import Reanimated, { EntryExitTransition, LinearTransition, runOnJS } from "react-native-reanimated";
+import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 import { LegendList } from "@legendapp/list";
 
 import { Animation } from "../utils/Animation";
@@ -59,13 +59,13 @@ const DEFAULT_PADDING: ViewStyle = Object.freeze({
 
 // Optimized padding style checker with early returns
 const hasPaddingStyle = (style: any): boolean => {
-  if (!style) return false;
-  if (typeof style !== "object") return false;
+  if (!style) {return false;}
+  if (typeof style !== "object") {return false;}
   
   if (Array.isArray(style)) {
     // Use for loop for better performance than .some()
     for (let i = 0; i < style.length; i++) {
-      if (hasPaddingStyle(style[i])) return true;
+      if (hasPaddingStyle(style[i])) {return true;}
     }
     return false;
   }
@@ -109,15 +109,15 @@ const isItemComponent = (element: React.ReactElement): boolean => {
     if (cachedName === displayName) {
       const result = displayName === "Item";
       itemTypeCache.set(elementType, result);
-      if (typeName) itemStringCache.set(typeName, result);
+      if (typeName) {itemStringCache.set(typeName, result);}
       return result;
     }
   }
   
   const isItem = displayName === "Item" || elementType === Item;
   itemTypeCache.set(elementType, isItem);
-  if (typeName) itemStringCache.set(typeName, isItem);
-  if (displayName) displayNameCache.set(elementType, displayName);
+  if (typeName) {itemStringCache.set(typeName, isItem);}
+  if (displayName) {displayNameCache.set(elementType, displayName);}
   return isItem;
 };
 
@@ -184,15 +184,15 @@ const processChildrenBatch = (
 
 // Custom comparison function for children array
 const areChildrenEqual = (prevChildren: React.ReactNode, nextChildren: React.ReactNode): boolean => {
-  if (prevChildren === nextChildren) return true;
+  if (prevChildren === nextChildren) {return true;}
   
   const prevArray = React.Children.toArray(prevChildren);
   const nextArray = React.Children.toArray(nextChildren);
   
-  if (prevArray.length !== nextArray.length) return false;
+  if (prevArray.length !== nextArray.length) {return false;}
   
   for (let i = 0; i < prevArray.length; i++) {
-    if (prevArray[i] !== nextArray[i]) return false;
+    if (prevArray[i] !== nextArray[i]) {return false;}
   }
   
   return true;
@@ -225,7 +225,7 @@ const List: React.FC<ListProps> = React.memo(
 
     // Optimized contentContainerStyle processing
     const mergedContentContainerStyle = useMemo(() => {
-      if (!contentContainerStyle) return null;
+      if (!contentContainerStyle) {return null;}
       return Array.isArray(contentContainerStyle)
         ? contentContainerStyle.filter(Boolean) as ViewStyle[]
         : [contentContainerStyle] as ViewStyle[];
@@ -380,11 +380,11 @@ const List: React.FC<ListProps> = React.memo(
     // --- INTELLIGENT VIRTUALIZATION WITH ADAPTIVE THRESHOLDS ---
     // Use smart detection based on item count and device performance
     const shouldUseVirtualization = useMemo(() => {
-      if (!data) return false;
+      if (!data) {return false;}
       const itemCount = childrenData.length;
       
       // Always virtualize for large lists
-      if (itemCount >= VIRTUALIZATION_THRESHOLD) return true;
+      if (itemCount >= VIRTUALIZATION_THRESHOLD) {return true;}
       
       // For medium lists, check if items are complex (have many props/styles)
       if (itemCount >= MEMOIZATION_THRESHOLD) {
@@ -401,7 +401,7 @@ const List: React.FC<ListProps> = React.memo(
 
     // Ultra-fast key extractor with pre-computed strings
     const keyExtractor = useCallback((item: ChildMeta) => {
-      if (typeof item.key === 'string') return item.key;
+      if (typeof item.key === 'string') {return item.key;}
       return String(item.key);
     }, []);
 
@@ -435,17 +435,17 @@ const List: React.FC<ListProps> = React.memo(
   // Ultra-optimized comparison function with early exits and minimal work
   (prevProps, nextProps) => {
     // Early exit for identical object references (fastest possible case)
-    if (prevProps === nextProps) return true;
+    if (prevProps === nextProps) {return true;}
     
     // Critical props comparison with early exits (ordered by likelihood of change)
-    if (prevProps.data !== nextProps.data) return false;
-    if (prevProps.children !== nextProps.children) return false;
-    if (prevProps.disablePadding !== nextProps.disablePadding) return false;
-    if (prevProps.style !== nextProps.style) return false;
-    if (prevProps.contentContainerStyle !== nextProps.contentContainerStyle) return false;
-    if (prevProps.entering !== nextProps.entering) return false;
-    if (prevProps.exiting !== nextProps.exiting) return false;
-    if (prevProps.disableItemAnimation !== nextProps.disableItemAnimation) return false;
+    if (prevProps.data !== nextProps.data) {return false;}
+    if (prevProps.children !== nextProps.children) {return false;}
+    if (prevProps.disablePadding !== nextProps.disablePadding) {return false;}
+    if (prevProps.style !== nextProps.style) {return false;}
+    if (prevProps.contentContainerStyle !== nextProps.contentContainerStyle) {return false;}
+    if (prevProps.entering !== nextProps.entering) {return false;}
+    if (prevProps.exiting !== nextProps.exiting) {return false;}
+    if (prevProps.disableItemAnimation !== nextProps.disableItemAnimation) {return false;}
     
     return true;
   }
