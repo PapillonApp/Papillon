@@ -9,23 +9,31 @@ const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.c
 
 
 export interface GradeProps {
+  isFirst?: boolean;
   isLast?: boolean;
   title: string;
   date: number;
   score: number;
   outOf: number;
+  color?: string; // Optional color prop for custom styling
 }
 
 const Grade: React.FC<GradeProps> = React.memo(
-  ({ isLast, title, date, score, outOf }) => {
+  ({ isFirst, isLast, title, date, score, outOf, color }) => {
     const theme = useTheme();
     const { colors } = theme;
 
     const formattedDate = useMemo(
-      () => new Date(date).toLocaleDateString(),
+      () => new Date(date).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      }),
       [date]
     );
     const formattedScore = useMemo(() => score.toFixed(2), [score]);
+
+    console.log("Rendering Grade:", title, isFirst, isLast);
 
     const styles = useMemo(
       () =>
@@ -41,12 +49,16 @@ const Grade: React.FC<GradeProps> = React.memo(
             shadowRadius: 3,
             shadowOpacity: 1,
             elevation: 1,
+            borderCurve: "continuous",
           },
           lastItem: {
             marginBottom: 16,
-            borderBottomLeftRadius: 16,
-            borderBottomRightRadius: 16,
-            borderCurve: "continuous",
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          },
+          firstItem: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
           },
           stackPadding: {
             paddingHorizontal: 4,
@@ -61,7 +73,7 @@ const Grade: React.FC<GradeProps> = React.memo(
     return (
       <Reanimated.View
         layout={ListGradesLayoutTransition}
-        style={[styles.container, isLast && styles.lastItem]}
+        style={[styles.container, isLast && styles.lastItem, isFirst && styles.firstItem]}
       >
         <Stack
           direction="horizontal"
@@ -71,7 +83,7 @@ const Grade: React.FC<GradeProps> = React.memo(
         >
           <Stack inline style={styles.flexContainer} gap={0}>
             <Typography variant="title">{title}</Typography>
-            <Typography variant="caption" color="secondary">
+            <Typography variant="body2" color="secondary" inline style={{ marginTop: 2, marginBottom: 2 }}>
               {formattedDate}
             </Typography>
           </Stack>
@@ -80,10 +92,17 @@ const Grade: React.FC<GradeProps> = React.memo(
             hAlign="end"
             vAlign="end"
             inline
-            gap={0}
+            gap={1}
+            backgroundColor={color + "33"}
+            style={{
+              marginTop: 2,
+              paddingHorizontal: 10,
+              paddingVertical: 0,
+              borderRadius: 20,
+            }}
           >
-            <Typography variant="body1">{formattedScore}</Typography>
-            <Typography variant="caption" color="secondary">
+            <Typography variant="h5" color={color}>{formattedScore}</Typography>
+            <Typography variant="caption" color={color} style={{ marginBottom: 4 }}>
               /{outOf}
             </Typography>
           </Stack>

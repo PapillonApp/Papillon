@@ -144,6 +144,18 @@ const subjects = [
         coef: 1,
         subjectId: "phy",
       },
+      {
+        id: "phy-3",
+        title: "TP électricité 2",
+        date: 1705795200000, // 20/01
+        score: 19.0,
+        outOf: 20,
+        min: 10.0,
+        max: 19.0,
+        avg: 14.5,
+        coef: 1,
+        subjectId: "phy",
+      },
     ]
   },
   {
@@ -206,18 +218,6 @@ const subjects = [
         max: 18.0,
         avg: 12.0,
         coef: 2,
-        subjectId: "hist",
-      },
-      {
-        id: "hist-2",
-        title: "Exposé sur la décolonisation",
-        date: 1705622400000, // 19/01
-        score: 12.5,
-        outOf: 20,
-        min: 8.5,
-        max: 17.0,
-        avg: 12.3,
-        coef: 1,
         subjectId: "hist",
       },
     ]
@@ -340,10 +340,12 @@ export default function TabOneScreen() {
       return (
         <Grade
           isLast={item.ui.isLast}
+          isFirst={item.ui.isFirst}
           title={grade.title}
           date={grade.date}
           score={grade.score}
           outOf={grade.outOf}
+          color={subjects.find(s => s.id === grade.subjectId)?.color || colors.primary}
         />
       );
     }

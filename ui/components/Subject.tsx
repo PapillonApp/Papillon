@@ -53,7 +53,7 @@ const Subject: React.FC<SubjectProps> = ({
           <Typography variant="body1" weight="bold" color={color}>
             {average.toFixed(2)}
           </Typography>
-          <Typography variant="caption" weight="medium" color="secondary">
+          <Typography variant="caption" weight="semibold" color="secondary" style={{ fontSize: 13, opacity: 0.8 }}>
             {`/${outOf}`}
           </Typography>
         </Stack>
@@ -67,18 +67,20 @@ const styles = StyleSheet.create({
     borderColor: "#00000022",
     borderWidth: 1,
     borderBottomWidth: 0,
-    padding: 8,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    padding: 6,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     borderCurve: "continuous",
     shadowColor: "rgba(0,0,0,0.1)",
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 3,
     shadowOpacity: 1,
     elevation: 1,
+    paddingBottom: 6 + 24,
+    marginBottom: -24,
   },
   emojiContainer: {
-    width: 32,
+    width: 34,
     aspectRatio: 1,
     borderRadius: 20,
     backgroundColor: "#ffffff63",
@@ -92,8 +94,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradeContainer: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
 });
 
