@@ -136,7 +136,7 @@ export async function fetchPronoteRecipients(
   }
 
   const alLRecipients = await Promise.all(
-    session.user!.resources.flatMap(resource =>
+    session.user.resources.flatMap(resource =>
       [
         EntityKind.Teacher,
         EntityKind.Personal

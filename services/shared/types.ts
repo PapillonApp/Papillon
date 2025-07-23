@@ -1,14 +1,14 @@
 import { SessionHandle } from "pawnote";
 
 import { Pronote } from "@/services/pronote";
-import { Homework } from "@/services/shared/homework";
-import { Auth, Services } from "@/stores/account/types";
-import { News } from "@/services/shared/news";
-import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { Auth, Services } from "@/stores/account/types";
 
 /** Represents a plugin for a school service.
  *
@@ -65,6 +65,7 @@ export enum Capabilities {
  */
 export interface GenericInterface {
   createdByAccount: string;
+  fromCache?: boolean;
 }
 
 export type FetchOptions<T> = {

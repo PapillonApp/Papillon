@@ -1,5 +1,14 @@
 import * as Network from "expo-network";
+
+import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
+import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
+import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
+import { News } from "@/services/shared/news";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import {
   Capabilities,
   FetchOptions,
@@ -7,14 +16,6 @@ import {
 } from "@/services/shared/types";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
-import { News } from "@/services/shared/news";
-import { Period, PeriodGrades } from "@/services/shared/grade";
-import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
-import { Chat, Message, Recipient } from "@/services/shared/chat";
-import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
-import { useAddHomeworkToDatabase } from "@/database/useHomework";
-import { getHomeworksFromWatermelon } from "@/services/shared/cache";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -24,12 +25,7 @@ export class AccountManager {
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
 
-    if (!(await this.hasInternetConnection())) {
-      error(
-        "Your device is not connected to the internet.",
-        "AccountManager.refreshAllAccounts"
-      );
-    }
+    this.handleHasInternet();
 
     let refreshedAtLeastOne = false;
 
@@ -70,9 +66,9 @@ export class AccountManager {
         client.getHomeworks ? await client.getHomeworks(date) : [],
       {
         multiple: true,
-        fallback: async () => getHomeworksFromWatermelon(date),
+        fallback: async () => getHomeworksFromCache(getWeekNumberFromDate(date)),
         saveToCache: async (data: Homework[]) => {
-          await useAddHomeworkToDatabase(data);
+          await addHomeworkToDatabase(data);
         },
       }
     );
@@ -82,7 +78,13 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.NEWS,
       async client => (client.getNews ? await client.getNews() : []),
-      { multiple: true }
+      { 
+        multiple: true,
+        fallback: async () => getNewsFromCache(),
+        saveToCache: async (data: News[]) => {
+          await addNewsToDatabase(data);
+        }
+      }
     );
   }
 
@@ -212,11 +214,6 @@ export class AccountManager {
         ? await client.setNewsAsAcknowledged(news)
         : news
     );
-  }
-
-  private async hasInternetConnection(): Promise<boolean> {
-    const networkState = await Network.getNetworkStateAsync();
-    return networkState.isInternetReachable ?? false;
   }
 
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {

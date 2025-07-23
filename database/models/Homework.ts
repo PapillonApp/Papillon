@@ -4,12 +4,12 @@ import { Model } from '@nozbe/watermelondb';
 import { field, relation } from "@nozbe/watermelondb/decorators";
 
 export default class Homework extends Model {
-  static table = 'homework';
+  static readonly table = 'homework';
 
   @field('createdByAccount') createdByAccount: string;
   @field('homeworkId') homeworkId: string;
   @field('subjectId') subjectId?: string;
-  @relation('subjects', 'subjectId') subject: any;
+  @relation('subjects', 'subjectId') subject: string;
   @field('content') content: string;
   @field('dueDate') dueDate: number;
   @field('isDone') isDone: boolean;

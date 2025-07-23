@@ -1,6 +1,7 @@
-import { GenericInterface } from "@/services/shared/types";
-import { Attachment} from "@/services/shared/attachment";
 import { NewsInformation } from "pawnote";
+
+import { Attachment} from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 /**
  * This interface defines the general structure of a news item.
