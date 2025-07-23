@@ -52,7 +52,7 @@ export const Dynamic = React.memo<DynamicProps>(({
   // Memoize layout prop to avoid conditional evaluation on every render
   const layoutProp = useMemo(() =>
     animated ? layout && ANIMATED_LAYOUT : undefined,
-    [animated]
+  [animated]
   );
 
   return (

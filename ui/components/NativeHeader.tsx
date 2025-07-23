@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "expo-router";
-import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform, TouchableNativeFeedback } from "react-native";
+import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform } from "react-native";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 // Pre-computed style arrays to avoid array creation on every render
 const PRESSABLE_STYLE_CACHE = new WeakMap();
 const getPressableStyle = (userStyle: any) => {
-  if (!userStyle) return styles.pressable;
+  if (!userStyle) {return styles.pressable;}
   if (PRESSABLE_STYLE_CACHE.has(userStyle)) {
     return PRESSABLE_STYLE_CACHE.get(userStyle);
   }
@@ -143,7 +143,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
 
   useEffect(() => {
     const handleSearch = (e: any) => {
-      if (onSearchRef.current) onSearchRef.current(e.nativeEvent.text);
+      if (onSearchRef.current) {onSearchRef.current(e.nativeEvent.text);}
     };
 
     const renderTitle = () => (
@@ -151,7 +151,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
         styles.title,
         Platform.OS === 'android' ? styles.titleAndroid : {},
       ]} {...propsRef.current}
-        pointerEvents={ignoreTouch ? "none" : "auto"}
+      pointerEvents={ignoreTouch ? "none" : "auto"}
       >
         {childrenRef.current}
       </View>

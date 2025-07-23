@@ -2,15 +2,15 @@ import React, { useCallback, useMemo, useState, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable, Platform, Dimensions, useWindowDimensions } from "react-native";
+import { FlatList, View, Text, Pressable, Platform, useWindowDimensions } from "react-native";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import Stack from "@/ui/components/Stack";
 import { useTheme } from "@react-navigation/native";
 import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
-import Reanimated, { FadeInDown, Easing, FadeInUp, FadeOutDown, FadeOutUp, LinearTransition, SlideInUp } from "react-native-reanimated";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
+import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import Task from "@/ui/components/Task";
 import { t } from "i18next";
@@ -122,7 +122,7 @@ export default function TabOneScreen() {
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
     setHomework((prev) => {
-      if (prev[selectedWeek][index].progress === newProgress) return prev;
+      if (prev[selectedWeek][index].progress === newProgress) {return prev;}
       const updated = [...prev[selectedWeek]];
       updated[index] = { ...updated[index], progress: newProgress };
       return { ...prev, [selectedWeek]: updated };
@@ -178,7 +178,7 @@ export default function TabOneScreen() {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const itemWidth = 60; // width of each item in the picker
     const index = Math.round(contentOffsetX / itemWidth);
-    if (index < 0 || index >= 56) return; // prevent out of bounds
+    if (index < 0 || index >= 56) {return;} // prevent out of bounds
     requestAnimationFrame(() => {
       setSelectedWeek(index);
     });

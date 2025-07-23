@@ -1,15 +1,13 @@
-import React, { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import React, { Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
 
-import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { CalendarDays, Check, Clock1, Clock10Icon, Clock4Icon, HeadingIcon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
+import { CalendarDays, Check, Clock4Icon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
 import Icon from "@/ui/components/Icon";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
-import { Q } from '@nozbe/watermelondb';
 
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
@@ -33,7 +31,7 @@ export default function NewEventScreen() {
 
   const [inputStartDate, setInputStartDate] = useState(new Date());
 
-  let inHour = new Date();
+  const inHour = new Date();
   inHour.setHours(new Date().getHours() + 1, 0, 0, 0); // Set to one hour later
 
   const [inputEndDate, setInputEndDate] = useState(inHour);
@@ -72,17 +70,17 @@ export default function NewEventScreen() {
         ev.title = eventData.title;
         ev.start = eventData.start;
         ev.end = eventData.end;
-        if (eventData.color) ev.color = eventData.color;
-        if (eventData.room) ev.room = eventData.room;
-        if (eventData.teacher) ev.teacher = eventData.teacher;
-        if (eventData.status) ev.status = eventData.status;
-        if (typeof eventData.canceled === 'boolean') ev.canceled = eventData.canceled;
+        if (eventData.color) {ev.color = eventData.color;}
+        if (eventData.room) {ev.room = eventData.room;}
+        if (eventData.teacher) {ev.teacher = eventData.teacher;}
+        if (eventData.status) {ev.status = eventData.status;}
+        if (typeof eventData.canceled === 'boolean') {ev.canceled = eventData.canceled;}
       });
     });
   }
 
   const saveEvent = useCallback(async () => {
-    if (!canSave) return;
+    if (!canSave) {return;}
 
     // Create event data
     const eventData = {

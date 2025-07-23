@@ -80,14 +80,14 @@ const Stack: React.FC<StackProps> = ({
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
     `${direction}-${gap}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${backgroundColor || ''}-${radius}`,
-    [direction, gap, padding, margin, vAlign, hAlign, inline, backgroundColor, radius]
+  [direction, gap, padding, margin, vAlign, hAlign, inline, backgroundColor, radius]
   );
 
   // Ultra-optimized style computation with caching
   const computedStyle = React.useMemo(() => {
     // Check cache first
     const cached = STYLE_CACHE.get(cacheKey);
-    if (cached) return cached;
+    if (cached) {return cached;}
 
     // Use pre-computed base styles
     const baseStyle = direction === "vertical" ? COMMON_STYLES.vertical : COMMON_STYLES.horizontal;

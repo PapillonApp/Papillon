@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Q } from '@nozbe/watermelondb';
 import { useDatabase } from './DatabaseProvider';
 import Ical from './models/Ical';
 

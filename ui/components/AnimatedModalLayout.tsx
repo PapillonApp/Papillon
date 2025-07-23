@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, Suspense, useCallback } from "react";
+import React, { useMemo, Suspense } from "react";
 import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
 import Animated, {
   useAnimatedStyle,

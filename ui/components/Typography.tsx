@@ -159,7 +159,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       // Try cache first for common cases
       if (cacheKey) {
         const cached = styleCache.get(cacheKey);
-        if (cached) return cached;
+        if (cached) {return cached;}
       }
 
       const colorStyles = getColorsStyles(colors);
@@ -224,19 +224,19 @@ const Typography: React.FC<TypographyProps> = React.memo(
   // Custom comparison for even better performance
   (prevProps, nextProps) => {
     // Fast equality checks for most common props
-    if (prevProps.variant !== nextProps.variant) return false;
-    if (prevProps.color !== nextProps.color) return false;
-    if (prevProps.align !== nextProps.align) return false;
-    if (prevProps.children !== nextProps.children) return false;
+    if (prevProps.variant !== nextProps.variant) {return false;}
+    if (prevProps.color !== nextProps.color) {return false;}
+    if (prevProps.align !== nextProps.align) {return false;}
+    if (prevProps.children !== nextProps.children) {return false;}
 
     // Shallow comparison for style prop
     if (prevProps.style !== nextProps.style) {
-      if (!prevProps.style && !nextProps.style) return true;
-      if (!prevProps.style || !nextProps.style) return false;
+      if (!prevProps.style && !nextProps.style) {return true;}
+      if (!prevProps.style || !nextProps.style) {return false;}
 
       // For array styles, do shallow comparison
       if (Array.isArray(prevProps.style) && Array.isArray(nextProps.style)) {
-        if (prevProps.style.length !== nextProps.style.length) return false;
+        if (prevProps.style.length !== nextProps.style.length) {return false;}
         return prevProps.style.every((s, i) => s === (nextProps.style as TextStyle[])[i]);
       }
 

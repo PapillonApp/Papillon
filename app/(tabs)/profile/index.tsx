@@ -11,7 +11,7 @@ import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { AlignCenter, ChevronDown, Ellipsis } from "lucide-react-native";
+import { AlignCenter, Ellipsis } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import TabFlatList from "@/ui/components/TabFlatList";
 import List from "@/ui/components/List";
