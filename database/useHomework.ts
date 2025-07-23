@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
 import { Model, Q } from "@nozbe/watermelondb";
+import { parseJson } from "ajv/lib/runtime/parseJson";
+import { useEffect, useState } from "react";
+
+import { Attachment } from "@/services/shared/attachment";
+import { Homework as SharedHomework } from "@/services/shared/homework";
+import { generateId } from "@/utils/generateId";
+import { warn } from "@/utils/logger/logger";
+
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import Homework from './models/Homework';
-import { Homework as SharedHomework } from "@/services/shared/homework";
-import { parseJson } from "ajv/lib/runtime/parseJson";
-import { Attachment } from "@/services/shared/attachment";
-import { warn } from "@/utils/logger/logger";
 
 function mapHomeworkToShared(homework: Homework): SharedHomework {
   return {
@@ -64,21 +67,22 @@ export async function getHomeworksFromCache(weekNumber: number): Promise<SharedH
   }
 }
 
-export async function useAddHomeworkToDatabase(homeworks: SharedHomework[]) {
+export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   const db = getDatabaseInstance();
 
   for (const hw of homeworks) {
+    const id = generateId(hw.subject + hw.content + hw.dueDate.toISOString() + hw.createdByAccount)
     const existing = await db.get('homework').query(
       Q.where('homeworkId', hw.id)
     ).fetch();
 
-    if (existing.length > 0) continue;
+    if (existing.length > 0) {continue;}
 
     await db.write(async () => {
       await db.get('homework').create((record: Model) => {
         const homework = record as Homework;
         Object.assign(homework, {
-          homeworkId: hw.id,
+          homeworkId: id,
           subjectId: hw.subject,
           content: hw.content,
           dueDate: hw.dueDate.getTime(),
@@ -88,6 +92,7 @@ export async function useAddHomeworkToDatabase(homeworks: SharedHomework[]) {
           evaluation: hw.evaluation,
           custom: hw.custom,
           createdByAccount: hw.createdByAccount,
+          fromCache: true
         });
       });
     });
@@ -111,4 +116,10 @@ export function getDateRangeOfWeek(weekNumber: number, year = new Date().getFull
 export function parseJsonArray(s: string, pos = 0): unknown[] {
   const result = parseJson(s, pos);
   return Array.isArray(result) ? result : [];
+}
+
+export function getWeekNumberFromDate(date: Date): number {
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  const days = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.ceil((days + startOfYear.getDay() + 1) / 7);
 }
