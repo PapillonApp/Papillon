@@ -22,6 +22,7 @@ function mapHomeworkToShared(homework: Homework): SharedHomework {
     evaluation: homework.evaluation,
     custom: homework.custom,
     createdByAccount: homework.createdByAccount,
+    fromCache: true
   };
 }
 

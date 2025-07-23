@@ -86,6 +86,7 @@ function mapNewsToShared(news: News): SharedNews {
     content: news.content,
     author: news.author,
     category: news.category,
-    createdByAccount: news.createdByAccount
+    createdByAccount: news.createdByAccount,
+    fromCache: true
   };
 }
