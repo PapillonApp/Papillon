@@ -122,7 +122,7 @@ export default function TabOneScreen() {
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
     setHomework((prev) => {
-      if (prev[selectedWeek][index].progress === newProgress) {return prev;}
+      if (prev[selectedWeek][index].progress === newProgress) { return prev; }
       const updated = [...prev[selectedWeek]];
       updated[index] = { ...updated[index], progress: newProgress };
       return { ...prev, [selectedWeek]: updated };
@@ -178,7 +178,7 @@ export default function TabOneScreen() {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const itemWidth = 60; // width of each item in the picker
     const index = Math.round(contentOffsetX / itemWidth);
-    if (index < 0 || index >= 56) {return;} // prevent out of bounds
+    if (index < 0 || index >= 56) { return; } // prevent out of bounds
     requestAnimationFrame(() => {
       setSelectedWeek(index);
     });
@@ -194,6 +194,7 @@ export default function TabOneScreen() {
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
+        pattern="checks"
         data={memoizedData}
         initialNumToRender={2}
         recycleItems={true}
@@ -251,16 +252,24 @@ export default function TabOneScreen() {
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: headerHeight,
-            backgroundColor: colors.card,
-            zIndex: 1000000,
-            elevation: 4,
-          }}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
         />
       )}
 
@@ -386,15 +395,15 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: Platform.OS === 'android' ? -2 : fullyScrolled ? 6 : 0,
+              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#C54CB3">
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
@@ -404,6 +413,7 @@ export default function TabOneScreen() {
                 style={{
                   width: 200,
                   alignItems: Platform.OS === 'android' ? "left" : 'center',
+                  marginTop: !runsIOS26() ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
