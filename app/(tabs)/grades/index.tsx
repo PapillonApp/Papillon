@@ -10,6 +10,10 @@ import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 import { it } from "date-fns/locale";
 import { Animation } from "@/ui/utils/Animation";
 import { useHeaderHeight } from "@react-navigation/elements";
+import Grade from "@/ui/components/Grade";
+import Subject from "@/ui/components/Subject";
+
+export const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
 const sortings = [
   { label: "Alphabétique", value: "alphabetical" },
@@ -216,7 +220,7 @@ export default function TabOneScreen() {
     return sortedSubjects.flatMap((subject) => {
       const grades = subject.grades
         .slice() // Create a shallow copy to avoid mutating the original array
-        .sort((a, b) => a.date - b.date);
+        .sort((a, b) => b.date - a.date);
 
       return [
         { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id } },
@@ -233,54 +237,35 @@ export default function TabOneScreen() {
     });
   }, [sorting]);
 
-  const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
-  const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => {
+  // Optimized renderItem function with useCallback
+  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
     if (item.type === "header") {
       const { subject } = item;
       return (
-        <Reanimated.View
-          layout={ListGradesLayoutTransition}
-          style={{
-            backgroundColor: subject.color,
-            padding: 10,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            borderCurve: 'continuous',
-          }}
-        >
-          <Typography variant="body1">
-            {`${subject.icon} ${subject.name} - Moyenne: ${subject.average.student}`}
-          </Typography>
-        </Reanimated.View>
-      );
-    } else if (item.type === "grade") {
-      const { grade } = item;
-      return (
-        <Reanimated.View
-          layout={ListGradesLayoutTransition}
-          style={[
-            {
-              padding: 10,
-              borderWidth: 1,
-              backgroundColor: colors.card,
-              borderColor: "#ccc",
-              borderTopWidth: 0,
-            },
-            item.ui.isLast && {
-              marginBottom: 10,
-              borderBottomLeftRadius: 16,
-              borderBottomRightRadius: 16,
-              borderCurve: 'continuous',
-            }
-          ]}
-        >
-          <Typography variant="body2">
-            {`${grade.title} (${new Date(grade.date).toLocaleDateString()}): ${grade.score}/${grade.outOf}`}
-          </Typography>
-        </Reanimated.View>
+        <Subject
+          color={subject.color}
+          emoji={subject.icon}
+          name={subject.name}
+          average={subject.average.student}
+          outOf={20} // Assuming outOf is always 20 for simplicity
+        />
       );
     }
+
+    if (item.type === "grade") {
+      const { grade } = item;
+      return (
+        <Grade
+          isLast={item.ui.isLast}
+          title={grade.title}
+          date={grade.date}
+          score={grade.score}
+          outOf={grade.outOf}
+        />
+      );
+    }
+
     return null;
   }, []);
 
