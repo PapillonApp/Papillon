@@ -19,7 +19,7 @@ import { getHomeworksFromWatermelon } from "@/services/shared/cache";
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
 
-  constructor(private account: Account) {}
+  constructor(private readonly account: Account) {}
 
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
@@ -38,7 +38,7 @@ export class AccountManager {
         log("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
 
-        if (plugin && plugin.capabilities.includes(Capabilities.REFRESH)) {
+        if (plugin?.capabilities.includes(Capabilities.REFRESH)) {
           this.clients[service.id] = await plugin.refreshAccount(service.auth);
           refreshedAtLeastOne = true;
           log("Successfully refreshed " + service.id);
@@ -225,6 +225,18 @@ export class AccountManager {
     );
   }
 
+  private async handleHasInternet<T>(options?: FetchOptions<T | T[]>): Promise<T | T[] | void> {
+    const networkState = await Network.getNetworkStateAsync();
+    const hasInternet = networkState.isInternetReachable ?? false;
+    if (!hasInternet) {
+      warn("No internet connection, using fallback if available.");
+      if (options?.fallback) {
+        return await options.fallback();
+      }
+      throw new Error("Internet not reachable and no fallback provided.");
+    }
+  }
+  
   private async fetchData<T>(
     capability: Capabilities,
     callback: (client: SchoolServicePlugin) => Promise<T[]>,
@@ -242,15 +254,7 @@ export class AccountManager {
     callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
-    const hasInternet = await this.hasInternetConnection();
-    if (!hasInternet) {
-      warn("No internet connection, using fallback if available.");
-      if (options?.fallback) {
-        return await options.fallback();
-      }
-      error("Internet not reachable and no fallback provided.");
-    }
-
+    this.handleHasInternet<T>(options);
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
@@ -286,17 +290,6 @@ export class AccountManager {
 
         return combinedResult;
       }
-      for (const client of availableClients) {
-        try {
-          const result = await callback(client);
-          if (options?.saveToCache) {
-            await options.saveToCache(result);
-          }
-          return result;
-        } catch (clientError) {
-          warn(`Client failed, trying next: ${clientError}`);
-        }
-      }
     } catch (e) {
       if (options?.fallback) {
         return await options.fallback();
@@ -311,17 +304,13 @@ export class AccountManager {
 
   private getServicePluginForAccount(
     service: ServiceAccount
-  ): SchoolServicePlugin | null {
-    switch (service.serviceId) {
-    case Services.PRONOTE: {
+  ): SchoolServicePlugin {
+    if (service.serviceId === Services.PRONOTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const pronoteModule = require("@/services/pronote/index");
       return new pronoteModule.Pronote(service.id);
     }
 
-    default:
-      warn(`Service plugin for ${service.serviceId} not implemented.`);
-      return null;
-    }
+    error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }
