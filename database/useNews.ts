@@ -1,13 +1,34 @@
 import { Model, Q } from "@nozbe/watermelondb";
+import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
 import { News as SharedNews } from "@/services/shared/news";
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
 
-import { getDatabaseInstance } from "./DatabaseProvider";
+import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import News from "./models/News";
 import { parseJsonArray } from "./useHomework";
+
+export function useNews(refresh = 0) {
+  const database = useDatabase();
+  const [homeworks, setHomeworks] = useState<SharedNews[]>([]);
+
+  useEffect(() => {
+
+    const query = database.get<News>('homework').query();
+
+    const sub = query.observe().subscribe(news =>
+      setHomeworks(
+        news.map(mapNewsToShared).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      )
+    );
+
+    return () => sub.unsubscribe();
+  }, [refresh, database]);
+
+  return homeworks;
+}
 
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
