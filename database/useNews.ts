@@ -46,7 +46,7 @@ export async function addNewsToDatabase(news: SharedNews[]) {
         Object.assign(news, {
           newsId: id,
           title: nw.title ?? "",
-          createdAt: nw.createdAt,
+          createdAt: nw.createdAt.getTime(),
           acknowledged: nw.acknowledged,
           attachments: JSON.stringify(nw.attachments),
           content: nw.content,
