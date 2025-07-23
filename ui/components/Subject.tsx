@@ -1,10 +1,11 @@
 import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Typography from "./Typography";
-import Reanimated from "react-native-reanimated";
-import { ListGradesLayoutTransition } from "@/app/(tabs)/grades";
+import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import Stack from "./Stack";
+
+const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
 export interface SubjectProps {
   color: string;
