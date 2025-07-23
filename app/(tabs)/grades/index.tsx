@@ -1,21 +1,73 @@
 import React, { useCallback, useState, useMemo } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
-import { NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { useWindowDimensions, View } from "react-native";
+import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
+import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
+
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
-import { it } from "date-fns/locale";
-import { Animation } from "@/ui/utils/Animation";
+import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+import Grade from "@/ui/components/Grade";
+import Subject from "@/ui/components/Subject";
+import Stack from "@/ui/components/Stack";
+import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
+import Icon from "@/ui/components/Icon";
+import { Filter, RefreshCcw, Search } from "lucide-react-native";
+import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
+import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { Animation } from "@/ui/utils/Animation";
 
 const sortings = [
-  { label: "Alphabétique", value: "alphabetical" },
-  { label: "Moyennes", value: "averages" },
-  { label: "Date", value: "date" }, // Added new sorting option
+  {
+    label: "Alphabétique",
+    value: "alphabetical",
+    icon: {
+      ios: "character",
+      android: "ic_alphabetical",
+    }
+  },
+  {
+    label: "Moyennes",
+    value: "averages",
+    icon: {
+      ios: "chart.xyaxis.line",
+      android: "ic_averages",
+    }
+  },
+  {
+    label: "Date",
+    value: "date",
+    icon: {
+      ios: "calendar",
+      android: "ic_date",
+    }
+  },
 ];
+
+const avgAlgorithms = [
+  {
+    label: "Moyenne générale",
+    subtitle: "Toutes les notes",
+    value: "subject",
+    algorithm: (grades) => PapillonSubjectAvg(grades)
+  },
+  {
+    label: "Moyenne des matières",
+    subtitle: "Pondération",
+    value: "weighted",
+    algorithm: (grades) => PapillonWeightedAvg(grades)
+  },
+  {
+    label: "Médiane",
+    subtitle: "Toutes les notes",
+    value: "median",
+    algorithm: (grades) => PapillonMedian(grades)
+  },
+]
 
 const subjects = [
   {
@@ -39,6 +91,8 @@ const subjects = [
         min: 7.5,
         max: 18.0,
         avg: 12.2,
+        coef: 1,
+        subjectId: "fran",
       },
       {
         id: "fran-2",
@@ -49,6 +103,8 @@ const subjects = [
         min: 6.0,
         max: 16.0,
         avg: 10.5,
+        coef: 1,
+        subjectId: "fran",
       },
     ]
   },
@@ -73,6 +129,8 @@ const subjects = [
         min: 9.0,
         max: 17.0,
         avg: 12.3,
+        coef: 1,
+        subjectId: "phy",
       },
       {
         id: "phy-2",
@@ -83,6 +141,8 @@ const subjects = [
         min: 10.0,
         max: 19.0,
         avg: 14.5,
+        coef: 1,
+        subjectId: "phy",
       },
     ]
   },
@@ -107,6 +167,8 @@ const subjects = [
         min: 10.0,
         max: 19.5,
         avg: 13.6,
+        coef: 1,
+        subjectId: "math",
       },
       {
         id: "math-2",
@@ -117,6 +179,8 @@ const subjects = [
         min: 6.0,
         max: 18.0,
         avg: 12.5,
+        coef: 1,
+        subjectId: "math",
       },
     ]
   },
@@ -141,6 +205,8 @@ const subjects = [
         min: 6.0,
         max: 18.0,
         avg: 12.0,
+        coef: 2,
+        subjectId: "hist",
       },
       {
         id: "hist-2",
@@ -151,6 +217,8 @@ const subjects = [
         min: 8.5,
         max: 17.0,
         avg: 12.3,
+        coef: 1,
+        subjectId: "hist",
       },
     ]
   },
@@ -160,7 +228,7 @@ const subjects = [
     icon: "🇬🇧",
     color: "#3F51B5",
     average: {
-      student: 5.4,
+      student: 10.15,
       classAvg: 14.2,
       min: 10.5,
       max: 19.2,
@@ -170,21 +238,23 @@ const subjects = [
         id: "eng-1",
         title: "Compréhension orale",
         date: 1705027200000, // 11/01
-        score: 14.5,
-        outOf: 20,
+        score: 4.5,
+        outOf: 10,
         min: 10.0,
         max: 18.5,
         avg: 13.8,
+        subjectId: "eng",
       },
       {
         id: "eng-2",
         title: "Expression écrite",
         date: 1705881600000, // 21/01
-        score: 16.3,
+        score: 11.3,
         outOf: 20,
         min: 12.0,
         max: 19.2,
         avg: 14.6,
+        subjectId: "eng",
       },
     ]
   },
@@ -196,7 +266,23 @@ export default function TabOneScreen() {
   const headerHeight = useHeaderHeight();
   const windowDimensions = useWindowDimensions();
 
+  const [fullyScrolled, setFullyScrolled] = useState(false);
+
+  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
+    setFullyScrolled(isFullyScrolled);
+  }, []);
+
   const [sorting, setSorting] = useState("alphabetical");
+  const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
+
+  const average = useMemo(() => {
+    const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
+    const grades = subjects.flatMap(subject => subject.grades);
+    if (algorithm) {
+      return algorithm.algorithm(grades);
+    }
+    return 0; // Default average if no algorithm is found
+  }, [currentAlgorithm, subjects]);
 
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
@@ -216,7 +302,7 @@ export default function TabOneScreen() {
     return sortedSubjects.flatMap((subject) => {
       const grades = subject.grades
         .slice() // Create a shallow copy to avoid mutating the original array
-        .sort((a, b) => a.date - b.date);
+        .sort((a, b) => b.date - a.date);
 
       return [
         { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id } },
@@ -233,81 +319,169 @@ export default function TabOneScreen() {
     });
   }, [sorting]);
 
-  const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
-  const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => {
+  // Optimized renderItem function with useCallback
+  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
     if (item.type === "header") {
       const { subject } = item;
       return (
-        <Reanimated.View
-          layout={ListGradesLayoutTransition}
-          style={{
-            backgroundColor: subject.color,
-            padding: 10,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            borderCurve: 'continuous',
-          }}
-        >
-          <Typography variant="body1">
-            {`${subject.icon} ${subject.name} - Moyenne: ${subject.average.student}`}
-          </Typography>
-        </Reanimated.View>
-      );
-    } else if (item.type === "grade") {
-      const { grade } = item;
-      return (
-        <Reanimated.View
-          layout={ListGradesLayoutTransition}
-          style={[
-            {
-              padding: 10,
-              borderWidth: 1,
-              backgroundColor: colors.card,
-              borderColor: "#ccc",
-              borderTopWidth: 0,
-            },
-            item.ui.isLast && {
-              marginBottom: 10,
-              borderBottomLeftRadius: 16,
-              borderBottomRightRadius: 16,
-              borderCurve: 'continuous',
-            }
-          ]}
-        >
-          <Typography variant="body2">
-            {`${grade.title} (${new Date(grade.date).toLocaleDateString()}): ${grade.score}/${grade.outOf}`}
-          </Typography>
-        </Reanimated.View>
+        <Subject
+          color={subject.color}
+          emoji={subject.icon}
+          name={subject.name}
+          average={subject.average.student}
+          outOf={20} // Assuming outOf is always 20 for simplicity
+        />
       );
     }
+
+    if (item.type === "grade") {
+      const { grade } = item;
+      return (
+        <Grade
+          isLast={item.ui.isLast}
+          title={grade.title}
+          date={grade.date}
+          score={grade.score}
+          outOf={grade.outOf}
+        />
+      );
+    }
+
     return null;
   }, []);
 
   return (
     <>
-      <NativeHeaderTitle>
-        <View style={{ width: 300, height: 50 }}>
-          <SegmentedControl
-            values={sortings.map(s => s.label)}
-            selectedIndex={sortings.findIndex(s => s.value === sorting)}
-            onChange={(event) => {
-              const selectedValue = sortings[event.nativeEvent.selectedSegmentIndex].value;
-              setSorting(selectedValue);
-              console.log("Selected sorting:", selectedValue);
-              // Handle sorting logic here
-            }}
-          />
-        </View>
-      </NativeHeaderTitle>
       <TabFlatList
-        backgroundColor={theme.dark ? "#092f45" : "#e8f2f7"}
-        foregroundColor="#00689cff"
-        height={0}
+        waitForInitialLayout
+        backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
+        foregroundColor="#29947A"
+        pattern="checks"
+        initialNumToRender={2}
+        recycleItems={true}
+        estimatedItemSize={80}
+        onFullyScrolled={handleFullyScrolled}
+        height={120}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
+        header={(
+          <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
+            <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%" }}>
+              <Typography variant="h2" color="primary">
+                {average.toFixed(2)}
+              </Typography>
+              <Typography variant="caption" color="secondary">
+                /20
+              </Typography>
+            </Stack>
+            <Typography variant="title" color="primary" align="left">
+              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
+            </Typography>
+            <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
+              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
+            </Typography>
+          </View>
+        )}
       />
+
+      {!runsIOS26() && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
+        />
+      )}
+
+      <NativeHeaderTitle>
+        <Typography variant="navigation">
+          Notes
+        </Typography>
+      </NativeHeaderTitle>
+
+      <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting + ":" + currentAlgorithm}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("sort:")) {
+              const selectedSorting = actionId.replace("sort:", "");
+              setSorting(selectedSorting);
+            } else if (actionId.startsWith("algorithm:")) {
+              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              setCurrentAlgorithm(selectedAlgorithm);
+            }
+          }}
+          actions={[
+            {
+              id: 'sorting',
+              title: 'Tri par',
+              image: Platform.select({
+                ios: 'line.3.horizontal.decrease',
+                android: 'ic_sort',
+              }),
+              imageColor: colors.text,
+              subactions: sortings.map((s) => ({
+                id: "sort:" + s.value,
+                title: s.label,
+                state: sorting === s.value ? "on" : "off",
+                image: Platform.select({
+                  ios: s.icon.ios,
+                  android: s.icon.android,
+                }),
+                imageColor: colors.text,
+
+              })),
+            },
+            {
+              id: 'algorithm',
+              title: 'Moyenne par',
+              image: Platform.select({
+                ios: 'chart.pie',
+                android: 'ic_algorithm',
+              }),
+              imageColor: colors.text,
+              subactions: avgAlgorithms.map((a) => ({
+                id: "algorithm:" + a.value,
+                title: a.label,
+                subtitle: a.subtitle,
+                state: currentAlgorithm === a.value ? "on" : "off",
+              })),
+            },
+          ]}
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <Icon>
+              <Filter />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide>
+
+      <NativeHeaderSide side="Right">
+        <NativeHeaderPressable>
+          <Icon>
+            <Search />
+          </Icon>
+        </NativeHeaderPressable>
+      </NativeHeaderSide>
     </>
   );
 }
