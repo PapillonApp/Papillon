@@ -79,7 +79,7 @@ const Task: React.FC<TaskProps> = ({
   const [isHovered, setIsHovered] = React.useState(false);
 
   const currentDate = useMemo(() => {
-    if (!date) {return undefined;}
+    if (!date) { return undefined; }
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       return undefined;
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    borderRadius: 16,
+    borderRadius: 24,
     borderCurve: 'continuous',
     elevation: 1,
   },

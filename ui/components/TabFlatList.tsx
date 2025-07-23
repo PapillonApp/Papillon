@@ -27,6 +27,7 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   pattern?: keyof typeof patterns;
   height?: number;
   padding?: number;
+  radius?: number;
   gap?: number;
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
@@ -38,6 +39,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   pattern,
   height = 120,
   padding = 16,
+  radius = 28,
   gap = 0,
   onFullyScrolled,
   ...rest
@@ -210,10 +212,10 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             minHeight: screenHeight,
             backgroundColor: colors.background,
             marginTop: finalHeight,
-            borderRadius: 28,
+            borderRadius: radius,
             borderCurve: 'continuous',
             padding: padding,
-            paddingTop: padding - 12,
+            paddingTop: padding - 15,
             gap: gap,
 
           }}

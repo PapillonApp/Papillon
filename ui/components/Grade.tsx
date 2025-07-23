@@ -53,12 +53,12 @@ const Grade: React.FC<GradeProps> = React.memo(
           },
           lastItem: {
             marginBottom: 16,
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
+            borderBottomLeftRadius: 22,
+            borderBottomRightRadius: 22,
           },
           firstItem: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            borderTopLeftRadius: 22,
+            borderTopRightRadius: 22,
           },
           stackPadding: {
             paddingHorizontal: 4,
