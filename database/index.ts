@@ -4,6 +4,7 @@ import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import Homework from "@/database/models/Homework";
 
 import Event from './models/Event';
+import Period from './models/Grades';
 import Ical from './models/Ical';
 import News from './models/News';
 import Subject from './models/Subject';
@@ -15,5 +16,5 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Event, Ical, Subject, Homework, News],
+  modelClasses: [Event, Ical, Subject, Homework, News, Period],
 });

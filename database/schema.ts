@@ -53,7 +53,6 @@ export const mySchema = appSchema({
       name: 'news',
       columns: [
         { name: 'newsId', type: 'string' },
-        { name: 'newsId', type: 'string' },
         { name: 'title', type: 'string' },
         { name: 'createdAt', type: 'number' },
         { name: 'acknowledged', type: 'boolean' },
@@ -61,6 +60,16 @@ export const mySchema = appSchema({
         { name: 'content', type: 'string' },
         { name: 'author', type: 'string' },
         { name: 'category', type: 'string' },
+        { name: 'createdByAccount', type: "string" }
+      ],
+    }),
+    tableSchema({
+      name: 'periods',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'id', type: 'string' },
+        { name: 'start', type: 'number' },
+        { name: 'end', type: 'number' },
         { name: 'createdByAccount', type: "string" }
       ],
     })

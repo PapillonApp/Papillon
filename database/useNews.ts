@@ -12,14 +12,14 @@ import { parseJsonArray } from "./useHomework";
 
 export function useNews(refresh = 0) {
   const database = useDatabase();
-  const [homeworks, setHomeworks] = useState<SharedNews[]>([]);
+  const [news, setNews] = useState<SharedNews[]>([]);
 
   useEffect(() => {
 
     const query = database.get<News>('homework').query();
 
     const sub = query.observe().subscribe(news =>
-      setHomeworks(
+      setNews(
         news.map(mapNewsToShared).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
       )
     );
@@ -27,7 +27,7 @@ export function useNews(refresh = 0) {
     return () => sub.unsubscribe();
   }, [refresh, database]);
 
-  return homeworks;
+  return news;
 }
 
 export async function addNewsToDatabase(news: SharedNews[]) {
