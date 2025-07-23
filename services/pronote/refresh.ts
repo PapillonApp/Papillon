@@ -1,6 +1,7 @@
-import { Auth } from "@/stores/account/types";
 import { AccountKind, createSessionHandle, loginToken, SessionHandle } from "pawnote";
+
 import { useAccountStore } from "@/stores/account";
+import { Auth } from "@/stores/account/types";
 
 /**
  * Refreshes the Pronote account credentials using the provided authentication data.

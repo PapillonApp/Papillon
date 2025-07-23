@@ -1,6 +1,7 @@
 import { Food as PawnoteFood, Meal as PawnoteMeal, Menu, menus, SessionHandle } from "pawnote";
-import { error } from "@/utils/logger/logger";
+
 import { CanteenMenu, Food, Meal } from "@/services/shared/canteen";
+import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteCanteenMenu(
   session: SessionHandle,

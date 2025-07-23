@@ -7,9 +7,10 @@ import {
   SessionHandle,
   TabLocation,
 } from "pawnote";
+
+import { Absence, Attendance, Delay, Observation, Punishment } from "@/services/shared/attendance";
 import { Period } from "@/services/shared/grade";
 import { error } from "@/utils/logger/logger";
-import { Absence, Attendance, Delay, Observation, Punishment } from "@/services/shared/attendance";
 
 /**
  * Fetches student Notebook from PRONOTE for a specified periot.

@@ -7,8 +7,9 @@ import {
   SessionHandle,
   TabLocation,
 } from "pawnote";
-import { error } from "@/utils/logger/logger";
+
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteChats(
   session: SessionHandle,
