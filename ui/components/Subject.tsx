@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     borderColor: "#00000022",
     borderWidth: 1,
     borderBottomWidth: 0,
-    padding: 6,
+    padding: 8,
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
     borderCurve: "continuous",
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     shadowOpacity: 1,
     elevation: 1,
-    paddingBottom: 6 + 24,
+    paddingBottom: 8 + 24,
     marginBottom: -24,
   },
   emojiContainer: {
