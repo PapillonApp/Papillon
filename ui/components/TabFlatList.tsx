@@ -14,49 +14,17 @@ import { LegendList, LegendListProps } from "@legendapp/list";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 
-const PatternTile = ({ x, y, color }: { x: number; y: number, color: string }) => (
-  <G opacity="0.24" transform={`translate(${x}, ${y})`}>
-    <Path
-      d="M3.2583 -2.20435L8.44284 4.98312M13.6274 12.1706L8.44284 4.98312M15.6303 -0.201414L8.44284 4.98312M1.25537 10.1677L8.44284 4.98312"
-      stroke={color}
-      strokeOpacity="0.27"
-      strokeWidth={3}
-      strokeLinecap="round"
-    />
-    <Path
-      d="M21.1685 22.625L26.353 29.8125M31.5375 36.9999L26.353 29.8125M33.5405 24.6279L26.353 29.8125M19.1655 34.997L26.353 29.8125"
-      stroke={color}
-      strokeOpacity="0.27"
-      strokeWidth={3}
-      strokeLinecap="round"
-    />
-    <Circle
-      cx="29.8125"
-      cy="8.44284"
-      r="6.26654"
-      transform="rotate(9.19595 29.8125 8.44284)"
-      stroke={color}
-      strokeOpacity="0.27"
-      fill={"transparent"}
-      strokeWidth={3}
-    />
-    <Circle
-      cx="4.98312"
-      cy="26.353"
-      r="6.26654"
-      transform="rotate(9.19595 4.98312 26.353)"
-      stroke={color}
-      strokeOpacity="0.27"
-      strokeWidth={3}
-      fill={"transparent"}
-    />
-  </G>
-);
+const patterns = {
+  dots: require('@/assets/images/patterns/dots.png'),
+  checks: require('@/assets/images/patterns/checks.png'),
+  grades: require('@/assets/images/patterns/grades.png'),
+};
 
 interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
-  header: React.ReactNode;
+  header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
+  pattern?: keyof typeof patterns;
   height?: number;
   padding?: number;
   gap?: number;
@@ -67,6 +35,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   header,
   backgroundColor = "#F7E8F5",
   foregroundColor = "#29947A",
+  pattern,
   height = 120,
   padding = 16,
   gap = 0,
@@ -186,19 +155,21 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             />
           }
         >
-          <Image
-            source={require('@/assets/images/patterns/dots.png')}
-            tintColor={foregroundColor}
-            resizeMethod="resize"
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              opacity: 0.10,
-            }}
-          />
+          {patterns[pattern] && pattern && (
+            <Image
+              source={patterns[pattern]}
+              tintColor={foregroundColor}
+              resizeMethod="resize"
+              style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                opacity: 0.10,
+              }}
+            />
+          )}
         </MaskedView>
 
         {/* Background */}
