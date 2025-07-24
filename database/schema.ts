@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 7, // incremented version
+  version: 8,
   tables: [
     tableSchema({
       name: 'events',
