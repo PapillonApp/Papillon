@@ -44,8 +44,8 @@ export class PeriodGrades extends Model {
 
   @field('id') id: string;
   @field('createdByAccount') createdByAccount: string;
-  @field('studentOverall') studentOverall: string;
-  @field('classAverage') classAverage: string;
+  @field('studentOverall') studentOverall: GradeScore;
+  @field('classAverage') classAverage: GradeScore;
   @field('periodId') periodId: string;
 
   @relation('periods', 'periodId') period: Period;

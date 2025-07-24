@@ -1,6 +1,6 @@
 import * as Network from "expo-network";
 
-import { addPeriodGradesToDatabase, addPeriodsToDatabase, getPeriodsFromCache } from "@/database/useGrades";
+import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { Attendance } from "@/services/shared/attendance";
@@ -99,6 +99,7 @@ export class AccountManager {
       return await client.getGradesForPeriod(period);
     }, {
       multiple: false,
+      fallback: async () => getGradePeriodsFromCache(period),
       saveToCache: async (data: PeriodGrades) => {
         await addPeriodGradesToDatabase(data, period);
       }

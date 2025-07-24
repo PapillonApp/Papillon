@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { Attachment } from "@/services/shared/attachment";
 import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
 import { generateId } from "@/utils/generateId";
-import { warn } from "@/utils/logger/logger";
+import { error, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
+import { mapSubjectToShared } from "./useSubject";
 
 export function usePeriods(refresh = 0) {
   const database = useDatabase();
@@ -151,7 +152,7 @@ function mapPeriodToShared(period: Period): SharedPeriod {
   }
 }
 
-function mapGradeToShared(grade: Grade): SharedGrade {
+export function mapGradeToShared(grade: Grade): SharedGrade {
   return {
     id: grade.id,
     subjectId: grade.subjectId ?? "",
@@ -169,5 +170,29 @@ function mapGradeToShared(grade: Grade): SharedGrade {
     maxScore: grade.maxScore,
     fromCache: true,
     createdByAccount: grade.createdByAccount
+  }
+}
+
+export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {
+  try {
+    const database = getDatabaseInstance();
+    const id = generateId(period)
+    const periodgrades = await database
+      .get<PeriodGrades>('periodgrades')
+      .query(Q.where('id', id))
+      .fetch();
+
+    return mapPeriodGradesToShared(periodgrades[0])
+  } catch (e) {
+    error(String(e));
+  }
+}
+
+function mapPeriodGradesToShared(data: PeriodGrades): SharedPeriodGrades {
+  return {
+    studentOverall: data.studentOverall,
+    classAverage: data.classAverage,
+    subjects: data.subjects.map(mapSubjectToShared),
+    createdByAccount: data.createdByAccount
   }
 }
