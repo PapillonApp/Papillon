@@ -29,9 +29,14 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'subjects',
       columns: [
+        { name: 'subjectId', type: 'string' },
         { name: 'name', type: 'string' },
-        { name: 'code', type: 'string', isOptional: true },
-        { name: 'color', type: 'string', isOptional: true },
+        { name: 'studentAverage', type: 'string' },
+        { name: 'classAverage', type: 'string' },
+        { name: 'maximum', type: 'string' },
+        { name: 'minimum', type: 'string' },
+        { name: 'outOf', type: 'string' },
+        { name: 'periodGradeId', type: 'string', isOptional: true }
       ],
     }),
     tableSchema({
@@ -72,6 +77,36 @@ export const mySchema = appSchema({
         { name: 'end', type: 'number' },
         { name: 'createdByAccount', type: "string" }
       ],
+    }),
+    tableSchema({
+      name: 'grades',
+      columns: [
+        { name: 'createByAccount', type: 'string' },
+        { name: 'id', type: 'string' },
+        { name: 'subjectId', type: 'string', isOptional: true },
+        { name: 'description', type: 'string' },
+        { name: 'givenAt', type: 'number' },
+        { name: 'subjectFile', type: 'string', isOptional: true },
+        { name: 'correctionFile', type: 'string', isOptional: true },
+        { name: 'bonus', type: 'boolean', isOptional: true },
+        { name: 'optional', type: 'boolean', isOptional: true },
+        { name: 'outOf', type: 'number' },
+        { name: 'coefficient', type: 'number' },
+        { name: 'studentScore', type: 'number' },
+        { name: 'averageScore', type: 'number' },
+        { name: 'minScore', type: 'number' },
+        { name: 'maxScore', type: 'number' }
+      ],
+    }),
+    tableSchema({
+      name: 'periodgrades',
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'periodId', type: 'string' },
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'studentOverall', type: 'string' },
+        { name: 'classAverage', type: 'string' }
+      ]
     })
   ],
 });

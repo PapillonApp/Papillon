@@ -1,6 +1,7 @@
-import { GenericInterface } from "@/services/shared/types";
-import { Attachment } from "@/services/shared/attachment";
 import { Discussion, NewDiscussionRecipient } from "pawnote";
+
+import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 export interface Chat extends GenericInterface {
   id: string;

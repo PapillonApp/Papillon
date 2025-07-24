@@ -1,12 +1,14 @@
 import { Model, Q } from "@nozbe/watermelondb";
+import { parseJson } from "ajv/lib/runtime/parseJson";
 import { useEffect, useState } from "react";
 
-import { Period as SharedPeriod } from "@/services/shared/grade";
+import { Attachment } from "@/services/shared/attachment";
+import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
-import Period from "./models/Grades";
+import { Grade, Period, PeriodGrades } from "./models/Grades";
 
 export function usePeriods(refresh = 0) {
   const database = useDatabase();
@@ -31,15 +33,15 @@ export function usePeriods(refresh = 0) {
 export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
   const db = getDatabaseInstance();
   for (const item of periods) {
-    const id = generateId(item.name + item.id + item.start + item.end + item.createdByAccount)
-    const existing = await db.get('news').query(
-      Q.where("newsId", id)
+    const id = generateId(item.name + item.createdByAccount)
+    const existing = await db.get('periods').query(
+      Q.where("id", id)
     )
 
     if (existing.length > 0) {continue;}
 
     await db.write(async () => {
-      await db.get('news').create((record: Model) => {
+      await db.get('periods').create((record: Model) => {
         const period = record as Period;
         Object.assign(period, {
           id: id,
@@ -58,7 +60,7 @@ export async function getPeriodsFromCache(): Promise<SharedPeriod[]> {
     const database = getDatabaseInstance();
 
     const period = await database
-      .get<Period>('news')
+      .get<Period>('periods')
       .query()
       .fetch();
 
@@ -71,6 +73,73 @@ export async function getPeriodsFromCache(): Promise<SharedPeriod[]> {
   }
 }
 
+export async function addGradesToDatabase(grades: SharedGrade[], subject: string) {
+  const db = getDatabaseInstance();
+  for (const item of grades) {
+    const id = generateId(item.createdByAccount + item.description + item.givenAt + item.studentScore.value)
+    const existing = await db.get('grades').query(
+      Q.where("id", id)
+    )
+
+    if (existing.length > 0) {continue;}
+
+    await db.write(async () => {
+      await db.get('grades').create((record: Model) => {
+        const grade = record as Grade
+        Object.assign(grade, {
+          id: id,
+          createdByAccount: item.createdByAccount,
+          subjectId: generateId(subject),
+          description: item.description,
+          givenAt: item.givenAt.getTime(),
+          subjectFiles: JSON.stringify(item.subjectFile),
+          correctionFile: JSON.stringify(item.correctionFile),
+          bonus: item.bonus,
+          optional: item.optional,
+          outOf: item.outOf,
+          coefficient: item.coefficient,
+          studentScore: item.studentScore,
+          averageScore: item.averageScore,
+          minScore: item.minScore,
+          maxScore: item.maxScore
+        })
+      })
+    })
+  }
+}
+
+export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period: string) {
+  const db = getDatabaseInstance();
+  const id = generateId(period + item.createdByAccount);
+
+  const existing = await db.get('periodgrades').query(
+    Q.where("id", id)
+  ).fetch();
+
+  await db.write(async () => {
+    if (existing.length > 0) {
+      await existing[0].update((record: Model) => {
+        const periodGrade = record as PeriodGrades;
+        Object.assign(periodGrade, {
+          createdByAccount: item.createdByAccount,
+          studentOverall: item.studentOverall,
+          classAverage: item.classAverage
+        });
+      });
+    } else {
+      await db.get('periodgrades').create((record: Model) => {
+        const periodGrade = record as PeriodGrades;
+        Object.assign(periodGrade, {
+          id: id,
+          createdByAccount: item.createdByAccount,
+          studentOverall: item.studentOverall,
+          classAverage: item.classAverage
+        });
+      });
+    }
+  });
+}
+
 function mapPeriodToShared(period: Period): SharedPeriod {
   return {
     name: period.name,
@@ -79,5 +148,26 @@ function mapPeriodToShared(period: Period): SharedPeriod {
     end: new Date(period.end),
     createdByAccount: period.createdByAccount,
     fromCache: true
+  }
+}
+
+function mapGradeToShared(grade: Grade): SharedGrade {
+  return {
+    id: grade.id,
+    subjectId: grade.subjectId ?? "",
+    description: grade.description,
+    givenAt: new Date(grade.givenAt),
+    subjectFile: parseJson(grade.subjectFile ?? "", 0) as Attachment,
+    correctionFile: parseJson(grade.correctionFile ?? "", 0) as Attachment,
+    bonus: grade.bonus,
+    optional: grade.optional,
+    outOf: grade.outOf,
+    coefficient: grade.coefficient,
+    studentScore: grade.studentScore,
+    averageScore: grade.averageScore,
+    minScore: grade.minScore,
+    maxScore: grade.maxScore,
+    fromCache: true,
+    createdByAccount: grade.createdByAccount
   }
 }

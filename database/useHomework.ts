@@ -13,7 +13,7 @@ import Homework from './models/Homework';
 function mapHomeworkToShared(homework: Homework): SharedHomework {
   return {
     id: homework.id,
-    subject: homework.subject,
+    subject: homework.subject.name,
     content: homework.content,
     dueDate: new Date(homework.dueDate),
     isDone: homework.isDone,
@@ -84,7 +84,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
         const homework = record as Homework;
         Object.assign(homework, {
           homeworkId: id,
-          subjectId: hw.subject,
+          subjectId: generateId(hw.subject),
           content: hw.content,
           dueDate: hw.dueDate.getTime(),
           isDone: hw.isDone,

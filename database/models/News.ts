@@ -4,7 +4,7 @@ import { Model } from '@nozbe/watermelondb';
 import { field } from "@nozbe/watermelondb/decorators";
 
 export default class News extends Model {
-  static readonly table = 'news';
+  static table = 'news';
 
   @field('createdByAccount') createdByAccount: string;
   @field('newsId') newsId: string;

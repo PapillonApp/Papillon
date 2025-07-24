@@ -3,13 +3,15 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation } from "@nozbe/watermelondb/decorators";
 
+import Subject from './Subject';
+
 export default class Homework extends Model {
-  static readonly table = 'homework';
+  static table = 'homework';
 
   @field('createdByAccount') createdByAccount: string;
   @field('homeworkId') homeworkId: string;
-  @field('subjectId') subjectId?: string;
-  @relation('subjects', 'subjectId') subject: string;
+  @field('subjectId') subjectId: string;
+  @relation('subjects', 'subjectId') subject: Subject;
   @field('content') content: string;
   @field('dueDate') dueDate: number;
   @field('isDone') isDone: boolean;

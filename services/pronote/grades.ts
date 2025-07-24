@@ -64,7 +64,7 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
  */
 function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] {
   const subjects: Subject[] = [];
-
+  
   const allMappedGrades: Grade[] = grades.grades.map(g => ({
     id: g.id,
     subjectId: g.subject.id,
