@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo, useRef } from "react";
+import React, { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -289,7 +289,12 @@ export default function TabOneScreen() {
   }, [currentAlgorithm, subjects]);
 
   const [shownAverage, setShownAverage] = useState(average);
-  const [selectionDate, setSelectionDate] = useState(null);
+  const [selectionDate, setSelectionDate] = useState<number | null>(null);
+
+  // Update shownAverage when algorithm changes
+  React.useEffect(() => {
+    setShownAverage(average);
+  }, [average]);
 
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
@@ -359,7 +364,7 @@ export default function TabOneScreen() {
     return null;
   }, []);
 
-  function getAverageHistory(grades: { date: number; score: number; outOf: number; }[]) {
+  const getAverageHistory = useCallback((grades: any[]) => {
     // Sort grades by date in ascending order
     const sortedGrades = [...grades].sort((a, b) => a.date - b.date);
 
@@ -369,7 +374,9 @@ export default function TabOneScreen() {
     // Iterate through the sorted grades and calculate the average progressively
     sortedGrades.forEach((currentGrade, index) => {
       const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
-      const currentAverage = PapillonSubjectAvg(gradesUpToCurrent);
+
+      // use currentAlgorithm to determine the average calculation method
+      const currentAverage = avgAlgorithms.find(a => a.value === currentAlgorithm)?.algorithm(gradesUpToCurrent) || 0;
 
       averageHistory.push({
         date: new Date(currentGrade.date).getTime(),
@@ -378,55 +385,77 @@ export default function TabOneScreen() {
     });
 
     return averageHistory;
-  }
+  }, [currentAlgorithm]);
 
   const currentAverageHistory = useMemo(() => {
     const grades = subjects.flatMap(subject => subject.grades);
     return getAverageHistory(grades);
-  }, [subjects]);
+  }, [subjects, currentAlgorithm]);
 
   const graphAxis = useMemo(() => {
     return {
-      xAxis: currentAverageHistory.map(item => new Date(item.date)),
+      xAxis: currentAverageHistory.map(item => new Date(item.date).getTime()),
       yAxis: currentAverageHistory.map(item => item.average),
     };
   }, [currentAverageHistory]);
 
   const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
 
-  const GradesGraph = useCallback(() => {
-    return (
-      <ReanimatedGraph
-        ref={graphRef}
-        xAxis={graphAxis.xAxis}
-        yAxis={graphAxis.yAxis}
-        color="#29947A"
-        showXAxisLegend={false}
-        showYAxisLegend={false}
-        showExtremeValues={false}
-        widthRatio={0.95}
-        height={100}
-        showBlinkingDot={true}
-        selectionLines={"none"}
-        animationDuration={400}
-        showSelectionDot={true}
-        gestureEnabled={true}
-        smoothAnimation={false}
-        onGestureUpdate={(x, y, index) => {
-          const selectedAverage = currentAverageHistory[index]?.average || 0;
-          setShownAverage(selectedAverage);
-          setSelectionDate(currentAverageHistory[index]?.date || null);
-        }}
-        onGestureEnd={() => {
-          setShownAverage(average);
-          setSelectionDate(null);
-        }}
-        containerStyle={{
-          marginLeft: -32,
-        }}
-      />
-    );
+  const handleGestureUpdate = useCallback((x: number, y: number, index: number) => {
+    const selectedAverage = currentAverageHistory[index]?.average || 0;
+    setShownAverage(selectedAverage);
+    setSelectionDate(currentAverageHistory[index]?.date || null);
+  }, [currentAverageHistory]);
+
+  const handleGestureEnd = useCallback(() => {
+    setShownAverage(average);
+    setSelectionDate(null);
+  }, [average]);
+
+  useEffect(() => {
+    if (graphRef.current) {
+      graphRef.current.updateData(graphAxis);
+    }
   }, [graphAxis]);
+
+  const GradesGraph = useMemo(() => {
+    return (
+      <View
+        style={{
+          width: windowDimensions.width + 42,
+          marginLeft: -42,
+          height: 100,
+          maxWidth: 500,
+        }}
+      >
+        <ReanimatedGraph
+          ref={graphRef}
+          xAxis={graphAxis.xAxis}
+          yAxis={graphAxis.yAxis}
+          color="#29947A"
+          showXAxisLegend={false}
+          showYAxisLegend={false}
+          showExtremeValues={false}
+          widthRatio={0.9}
+          strokeWidth={5}
+          type="curve"
+          height={110}
+          showBlinkingDot={true}
+          blinkingDotRadius={0}
+          blinkingDotExpansion={15 + 2}
+          selectionLines={"none"}
+          animationDuration={400}
+          showSelectionDot={true}
+          selectionDotExpansion={15}
+          selectionDotRadius={2}
+          gestureEnabled={true}
+          smoothAnimation={true}
+          onGestureUpdate={handleGestureUpdate}
+          onGestureEnd={handleGestureEnd}
+        />
+      </View>
+    );
+  }, [graphAxis.xAxis, graphAxis.yAxis, windowDimensions.width, handleGestureUpdate, handleGestureEnd]);
 
   return (
     <>
@@ -440,13 +469,13 @@ export default function TabOneScreen() {
         recycleItems={true}
         estimatedItemSize={80}
         onFullyScrolled={handleFullyScrolled}
-        height={184}
+        height={170}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
         header={(
-          <View style={{ paddingHorizontal: 20, paddingVertical: 18, paddingTop: headerHeight - 36, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            <GradesGraph />
+          <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
+            {GradesGraph}
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>

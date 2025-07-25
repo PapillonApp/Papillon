@@ -104,7 +104,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
         scrollY.value,
         [0, finalHeight],
         [finalHeight, 0],
-        Extrapolate.CLAMP
+        Extrapolate.EXTEND
       ),
     };
   });
@@ -211,6 +211,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
           decelerationRate="normal" // Faster deceleration for smoother feel
           snapToEnd={false} // Disable snap to end for better control
+          scrollEventThrottle={16} // Update scroll position every frame
 
           ListFooterComponent={<View style={{ height: Platform.OS === 'android' ? 180 : 92 }} />}
 
