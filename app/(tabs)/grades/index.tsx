@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -6,6 +6,7 @@ import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
+import ReanimatedGraph, { ReanimatedGraphPublicMethods } from '@birdwingo/react-native-reanimated-graph';
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -20,6 +21,9 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { Animation } from "@/ui/utils/Animation";
+import Button from "@/ui/components/Button";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 const sortings = [
   {
@@ -284,6 +288,14 @@ export default function TabOneScreen() {
     return 0; // Default average if no algorithm is found
   }, [currentAlgorithm, subjects]);
 
+  const [shownAverage, setShownAverage] = useState(average);
+  const [selectionDate, setSelectionDate] = useState<number | null>(null);
+
+  // Update shownAverage when algorithm changes
+  React.useEffect(() => {
+    setShownAverage(average);
+  }, [average]);
+
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
     const sortedSubjects = [...subjects].sort((a, b) => {
@@ -319,7 +331,6 @@ export default function TabOneScreen() {
     });
   }, [sorting]);
 
-
   // Optimized renderItem function with useCallback
   const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
     if (item.type === "header") {
@@ -353,6 +364,99 @@ export default function TabOneScreen() {
     return null;
   }, []);
 
+  const getAverageHistory = useCallback((grades: any[]) => {
+    // Sort grades by date in ascending order
+    const sortedGrades = [...grades].sort((a, b) => a.date - b.date);
+
+    // Initialize an array to store the average history
+    const averageHistory: { date: number; average: number; }[] = [];
+
+    // Iterate through the sorted grades and calculate the average progressively
+    sortedGrades.forEach((currentGrade, index) => {
+      const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
+
+      // use currentAlgorithm to determine the average calculation method
+      const currentAverage = avgAlgorithms.find(a => a.value === currentAlgorithm)?.algorithm(gradesUpToCurrent) || 0;
+
+      averageHistory.push({
+        date: new Date(currentGrade.date).getTime(),
+        average: currentAverage,
+      });
+    });
+
+    return averageHistory;
+  }, [currentAlgorithm]);
+
+  const currentAverageHistory = useMemo(() => {
+    const grades = subjects.flatMap(subject => subject.grades);
+    return getAverageHistory(grades);
+  }, [subjects, currentAlgorithm]);
+
+  const graphAxis = useMemo(() => {
+    return {
+      xAxis: currentAverageHistory.map(item => new Date(item.date).getTime()),
+      yAxis: currentAverageHistory.map(item => item.average),
+    };
+  }, [currentAverageHistory]);
+
+  const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
+
+  const handleGestureUpdate = useCallback((x: number, y: number, index: number) => {
+    const selectedAverage = currentAverageHistory[index]?.average || 0;
+    setShownAverage(selectedAverage);
+    setSelectionDate(currentAverageHistory[index]?.date || null);
+  }, [currentAverageHistory]);
+
+  const handleGestureEnd = useCallback(() => {
+    setShownAverage(average);
+    setSelectionDate(null);
+  }, [average]);
+
+  useEffect(() => {
+    if (graphRef.current) {
+      graphRef.current.updateData(graphAxis);
+    }
+  }, [graphAxis]);
+
+  const GradesGraph = useMemo(() => {
+    return (
+      <View
+        style={{
+          width: windowDimensions.width + 42,
+          marginLeft: -42,
+          height: 100,
+          maxWidth: 500,
+        }}
+      >
+        <ReanimatedGraph
+          ref={graphRef}
+          xAxis={graphAxis.xAxis}
+          yAxis={graphAxis.yAxis}
+          color="#29947A"
+          showXAxisLegend={false}
+          showYAxisLegend={false}
+          showExtremeValues={false}
+          widthRatio={0.9}
+          strokeWidth={5}
+          type="curve"
+          height={110}
+          showBlinkingDot={true}
+          blinkingDotRadius={0}
+          blinkingDotExpansion={15 + 2}
+          selectionLines={"none"}
+          animationDuration={400}
+          showSelectionDot={true}
+          selectionDotExpansion={15}
+          selectionDotRadius={2}
+          gestureEnabled={true}
+          smoothAnimation={true}
+          onGestureUpdate={handleGestureUpdate}
+          onGestureEnd={handleGestureEnd}
+        />
+      </View>
+    );
+  }, [graphAxis.xAxis, graphAxis.yAxis, windowDimensions.width, handleGestureUpdate, handleGestureEnd]);
+
   return (
     <>
       <TabFlatList
@@ -365,26 +469,40 @@ export default function TabOneScreen() {
         recycleItems={true}
         estimatedItemSize={80}
         onFullyScrolled={handleFullyScrolled}
-        height={120}
+        height={170}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
+            {GradesGraph}
+
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
-              <Typography variant="h1" color="primary">
-                {average.toFixed(2)}
-              </Typography>
-              <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
-                /20
-              </Typography>
+              <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>
+                <Typography variant="h1" color="primary">
+                  {shownAverage.toFixed(2)}
+                </Typography>
+              </Dynamic>
+              <Dynamic animated>
+                <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
+                  /20
+                </Typography>
+              </Dynamic>
             </Stack>
             <Typography variant="title" color="primary" align="left">
               {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
             </Typography>
-            <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
-              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
-            </Typography>
+            <Dynamic animated key={"selectionDate:" + selectionDate + ":" + currentAlgorithm} style={{ transformOrigin: "top left" }}>
+              <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
+                {selectionDate ?
+                  "au " + new Date(selectionDate).toLocaleDateString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })
+                  : avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
+              </Typography>
+            </Dynamic>
           </View>
         )}
       />

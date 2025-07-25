@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.27.1",
-    "@birdwingo/react-native-reanimated-graph": "^1.1.4",
+    "@birdwingo/react-native-reanimated-graph": "github:ecnivtwelve/react-native-reanimated-graph",
     "@bottom-tabs/react-navigation": "^0.9.2",
     "@expo/ui": "~0.1.1-alpha.10",
     "@expo/vector-icons": "^14.1.0",

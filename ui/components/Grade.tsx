@@ -33,8 +33,6 @@ const Grade: React.FC<GradeProps> = React.memo(
     );
     const formattedScore = useMemo(() => score.toFixed(2), [score]);
 
-    console.log("Rendering Grade:", title, isFirst, isLast);
-
     const styles = useMemo(
       () =>
         StyleSheet.create({

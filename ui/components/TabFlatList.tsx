@@ -51,18 +51,20 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const headerInset = useHeaderHeight() - 10;
   const finalHeight = height + headerInset;
 
-  const scrollY = useSharedValue(0);
-  const isScrolledPastThreshold = useSharedValue(false);
+  // Memoize shared values for scroll position and threshold
+  const scrollY = React.useRef(useSharedValue(0)).current;
+  const isScrolledPastThreshold = React.useRef(useSharedValue(false)).current;
 
+  // Memoize scroll handler for performance
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       'worklet';
-      scrollY.value = event.contentOffset.y;
+      const y = event.contentOffset.y;
+      scrollY.value = y;
 
       if (onFullyScrolled) {
         const wasScrolledPast = isScrolledPastThreshold.value;
-        const isNowScrolledPast = event.contentOffset.y > height - 24;
-
+        const isNowScrolledPast = y > height - 24;
         if (wasScrolledPast !== isNowScrolledPast) {
           isScrolledPastThreshold.value = isNowScrolledPast;
           runOnJS(onFullyScrolled)(isNowScrolledPast);
@@ -71,13 +73,15 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     }
   });
 
+  // Memoize header animation style for performance
   const headerStyle = useAnimatedStyle(() => {
     'worklet';
+    const y = scrollY.value;
     return {
       transform: [
         {
           scale: interpolate(
-            scrollY.value,
+            y,
             [0, finalHeight],
             [1, 0.5],
             Extrapolate.CLAMP
@@ -85,21 +89,37 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
         },
         {
           translateY: interpolate(
-            scrollY.value,
+            y,
             [0, finalHeight],
             [0, -100],
             Extrapolate.EXTEND
           ),
         }
       ],
-      opacity: interpolate(scrollY.value, [0, finalHeight - 150], [1, 0], Extrapolate.CLAMP),
-      willChange: 'transform, opacity', // Hint for native optimization
+      opacity: interpolate(y, [0, finalHeight - 150], [1, 0], Extrapolate.CLAMP),
+      willChange: 'transform, opacity',
     };
-  });
+  }, [finalHeight]);
 
+  // Memoize header container style for performance
+  const headerContainerStyle = useAnimatedStyle(() => {
+    'worklet';
+    const y = scrollY.value;
+    return {
+      height: interpolate(
+        y,
+        [0, finalHeight],
+        [finalHeight, 0],
+        Extrapolate.EXTEND
+      ),
+    };
+  }, [finalHeight]);
+
+  // Memoize derived value and scroll indicator state
   const isScrolledPastThresholdDerived = useDerivedValue(() => isScrolledPastThreshold.value);
   const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
 
+  // Use useAnimatedReaction directly (not inside useEffect)
   useAnimatedReaction(
     () => isScrolledPastThresholdDerived.value,
     (currentValue) => {
@@ -111,31 +131,35 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     return (
       <>
         {/* Header */}
-        <View
-          style={{
-            height: finalHeight,
-            paddingTop: headerInset,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-          }}
+        <Reanimated.View
+          style={[
+            {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10001,
+              overflow: 'hidden',
+            },
+            headerContainerStyle
+          ]}
         >
-          <Reanimated.View
-            style={[
-              {
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: finalHeight,
-                width: '100%',
-              },
-              headerStyle,
-            ]}>
-            {header}
-          </Reanimated.View>
-        </View>
+          <View style={{ height: finalHeight, paddingTop: headerInset }}>
+            <Reanimated.View
+              style={[
+                {
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: finalHeight,
+                  width: '100%',
+                },
+                headerStyle,
+              ]}>
+              {header}
+            </Reanimated.View>
+          </View>
+        </Reanimated.View>
 
         <MaskedView
           style={{
@@ -157,9 +181,9 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             />
           }
         >
-          {patterns[pattern] && pattern && (
+          {pattern && patterns[pattern] ? (
             <Image
-              source={patterns[pattern]}
+              source={patterns[pattern] as any}
               tintColor={foregroundColor}
               resizeMethod="resize"
               style={{
@@ -171,7 +195,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
                 opacity: 0.10,
               }}
             />
-          )}
+          ) : null}
         </MaskedView>
 
         {/* Background */}
@@ -195,6 +219,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           /* snapToOffsets={[0, height - 16]} // Snap to header and modal positions */
           decelerationRate="normal" // Faster deceleration for smoother feel
           snapToEnd={false} // Disable snap to end for better control
+          // scrollEventThrottle is not supported by LegendList, so removed for type safety
 
           ListFooterComponent={<View style={{ height: Platform.OS === 'android' ? 180 : 92 }} />}
 
@@ -205,7 +230,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
           style={{
             flex: 1,
-            zIndex: 9999
+            zIndex: 9999,
+            pointerEvents: 'box-none',
           }}
 
           contentContainerStyle={{
@@ -217,14 +243,14 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             padding: padding,
             paddingTop: padding - 15,
             gap: gap,
-
+            pointerEvents: 'box-none',
           }}
+          pointerEvents="none"
         />
       </>
     )
   }
   catch (error) {
-    console.error("Error rendering TabFlatList:", error);
     return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
 };
