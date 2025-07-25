@@ -97,6 +97,18 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     };
   });
 
+  const headerContainerStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      height: interpolate(
+        scrollY.value,
+        [0, finalHeight],
+        [finalHeight, 0],
+        Extrapolate.CLAMP
+      ),
+    };
+  });
+
   const isScrolledPastThresholdDerived = useDerivedValue(() => isScrolledPastThreshold.value);
   const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
 
@@ -111,31 +123,35 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     return (
       <>
         {/* Header */}
-        <View
-          style={{
-            height: finalHeight,
-            paddingTop: headerInset,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-          }}
+        <Reanimated.View
+          style={[
+            {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10001,
+              overflow: 'hidden',
+            },
+            headerContainerStyle
+          ]}
         >
-          <Reanimated.View
-            style={[
-              {
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: finalHeight,
-                width: '100%',
-              },
-              headerStyle,
-            ]}>
-            {header}
-          </Reanimated.View>
-        </View>
+          <View style={{ height: finalHeight, paddingTop: headerInset }}>
+            <Reanimated.View
+              style={[
+                {
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: finalHeight,
+                  width: '100%',
+                },
+                headerStyle,
+              ]}>
+              {header}
+            </Reanimated.View>
+          </View>
+        </Reanimated.View>
 
         <MaskedView
           style={{
@@ -205,7 +221,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
           style={{
             flex: 1,
-            zIndex: 9999
+            zIndex: 9999,
+            pointerEvents: 'box-none',
           }}
 
           contentContainerStyle={{
@@ -217,8 +234,9 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             padding: padding,
             paddingTop: padding - 15,
             gap: gap,
-
+            pointerEvents: 'box-none',
           }}
+          pointerEvents="none"
         />
       </>
     )

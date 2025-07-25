@@ -21,6 +21,7 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { Animation } from "@/ui/utils/Animation";
+import Button from "@/ui/components/Button";
 
 const sortings = [
   {
