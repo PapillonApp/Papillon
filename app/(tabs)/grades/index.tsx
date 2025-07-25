@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useRef } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -6,6 +6,7 @@ import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
+import ReanimatedGraph, { ReanimatedGraphPublicMethods } from '@birdwingo/react-native-reanimated-graph';
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -353,6 +354,68 @@ export default function TabOneScreen() {
     return null;
   }, []);
 
+  function getAverageHistory(grades: { date: number; score: number; outOf: number; }[]) {
+    // Sort grades by date in ascending order
+    const sortedGrades = [...grades].sort((a, b) => a.date - b.date);
+
+    // Initialize an array to store the average history
+    const averageHistory: { date: number; average: number; }[] = [];
+
+    // Iterate through the sorted grades and calculate the average progressively
+    sortedGrades.forEach((currentGrade, index) => {
+      const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
+      const currentAverage = PapillonSubjectAvg(gradesUpToCurrent);
+
+      averageHistory.push({
+        date: new Date(currentGrade.date).getTime(),
+        average: currentAverage,
+      });
+    });
+
+    return averageHistory;
+  }
+
+  const currentAverageHistory = useMemo(() => {
+    const grades = subjects.flatMap(subject => subject.grades);
+    return getAverageHistory(grades);
+  }, [subjects]);
+
+  const graphAxis = useMemo(() => {
+    return {
+      xAxis: currentAverageHistory.map(item => new Date(item.date)),
+      yAxis: currentAverageHistory.map(item => item.average),
+    };
+  }, [currentAverageHistory]);
+
+  const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
+
+  const GradesGraph = useCallback(() => {
+    return (
+      <ReanimatedGraph
+        ref={graphRef}
+        xAxis={graphAxis.xAxis}
+        yAxis={graphAxis.yAxis}
+        color="#29947A"
+        showXAxisLegend={false}
+        showYAxisLegend={false}
+        showExtremeValues={false}
+        widthRatio={0.95}
+        height={100}
+        showBlinkingDot={true}
+        selectionLines={"none"}
+        animationDuration={400}
+        showSelectionDot={true}
+        gestureEnabled={true}
+        showGrid={true}
+        showSelectionLines={true}
+        showSelectionLinesOnScroll={true}
+        containerStyle={{
+          marginLeft: -32,
+        }}
+      />
+    );
+  }, [graphAxis]);
+
   return (
     <>
       <TabFlatList
@@ -365,12 +428,14 @@ export default function TabOneScreen() {
         recycleItems={true}
         estimatedItemSize={80}
         onFullyScrolled={handleFullyScrolled}
-        height={120}
+        height={184}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
         header={(
-          <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
+          <View style={{ paddingHorizontal: 20, paddingVertical: 18, paddingTop: headerHeight - 36, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
+            <GradesGraph />
+
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Typography variant="h1" color="primary">
                 {average.toFixed(2)}
