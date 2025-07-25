@@ -1,6 +1,7 @@
 import * as Network from "expo-network";
 
 import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
+import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/useCanteen";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
@@ -163,7 +164,13 @@ export class AccountManager {
         client.getWeeklyCanteenMenu
           ? await client.getWeeklyCanteenMenu(startDate)
           : [],
-      { multiple: true }
+      { 
+        multiple: true,
+        fallback: async () => getCanteenMenuFromCache(startDate),
+        saveToCache: async (data: CanteenMenu[]) => {
+          await addCanteenMenuToDatabase(data);
+        }
+      }
     );
   }
 
