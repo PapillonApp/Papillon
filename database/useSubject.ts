@@ -5,7 +5,6 @@ import { generateId } from "@/utils/generateId";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
 import Subject from "./models/Subject";
-import { mapGradeToShared } from "./useGrades";
 
 export async function addSubjectsToDatabase(
   subjects: SharedSubject[],
@@ -27,27 +26,14 @@ export async function addSubjectsToDatabase(
         Object.assign(subject, {
           subjectId: id,
           name: item.name,
-          studentAverage: item.studentAverage,
-          classAverage: item.classAverage,
-          maximum: item.maximum,
-          minimum: item.minimum,
-          outOf: item.outOf,
+          studentAverage: JSON.stringify(item.studentAverage),
+          classAverage: JSON.stringify(item.classAverage),
+          maximum: JSON.stringify(item.maximum),
+          minimum: JSON.stringify(item.minimum),
+          outOf: JSON.stringify(item.outOf),
           periodGradeId: periodGradeId ?? null
         });
       });
     });
-  }
-}
-
-export function mapSubjectToShared(subject: Subject): SharedSubject {
-  return {
-    id: subject.subjectId,
-    name: subject.name,
-    studentAverage: subject.studentAverage,
-    classAverage: subject.classAverage,
-    maximum: subject.maximum,
-    minimum: subject.minimum,
-    outOf: subject.outOf,
-    grades: subject.grades.map(mapGradeToShared)
   }
 }

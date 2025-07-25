@@ -1,15 +1,13 @@
 import { Model, Q } from "@nozbe/watermelondb";
-import { parseJson } from "ajv/lib/runtime/parseJson";
 import { useEffect, useState } from "react";
 
-import { Attachment } from "@/services/shared/attachment";
 import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
 import { generateId } from "@/utils/generateId";
 import { error, warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
+import { mapPeriodGradesToShared,mapPeriodToShared } from "./mappers/grade";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
-import { mapSubjectToShared } from "./useSubject";
 
 export function usePeriods(refresh = 0) {
   const database = useDatabase();
@@ -37,7 +35,7 @@ export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
     const id = generateId(item.name + item.createdByAccount)
     const existing = await db.get('periods').query(
       Q.where("id", id)
-    )
+    ).fetch();
 
     if (existing.length > 0) {continue;}
 
@@ -47,7 +45,7 @@ export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
         Object.assign(period, {
           id: id,
           name: item.name,
-          createByAccount: item.createdByAccount,
+          createdByAccount: item.createdByAccount,
           start: item.start.getTime(),
           end: item.end.getTime()
         })
@@ -93,16 +91,16 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
           subjectId: generateId(subject),
           description: item.description,
           givenAt: item.givenAt.getTime(),
-          subjectFiles: JSON.stringify(item.subjectFile),
+          subjectFile: JSON.stringify(item.subjectFile),
           correctionFile: JSON.stringify(item.correctionFile),
           bonus: item.bonus,
           optional: item.optional,
-          outOf: item.outOf,
+          outOf: JSON.stringify(item.outOf),
           coefficient: item.coefficient,
-          studentScore: item.studentScore,
-          averageScore: item.averageScore,
-          minScore: item.minScore,
-          maxScore: item.maxScore
+          studentScore: JSON.stringify(item.studentScore),
+          averageScore: JSON.stringify(item.averageScore),
+          minScore: JSON.stringify(item.minScore),
+          maxScore: JSON.stringify(item.maxScore)
         })
       })
     })
@@ -141,38 +139,6 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
   });
 }
 
-function mapPeriodToShared(period: Period): SharedPeriod {
-  return {
-    name: period.name,
-    id: period.id,
-    start: new Date(period.start),
-    end: new Date(period.end),
-    createdByAccount: period.createdByAccount,
-    fromCache: true
-  }
-}
-
-export function mapGradeToShared(grade: Grade): SharedGrade {
-  return {
-    id: grade.id,
-    subjectId: grade.subjectId ?? "",
-    description: grade.description,
-    givenAt: new Date(grade.givenAt),
-    subjectFile: parseJson(grade.subjectFile ?? "", 0) as Attachment,
-    correctionFile: parseJson(grade.correctionFile ?? "", 0) as Attachment,
-    bonus: grade.bonus,
-    optional: grade.optional,
-    outOf: grade.outOf,
-    coefficient: grade.coefficient,
-    studentScore: grade.studentScore,
-    averageScore: grade.averageScore,
-    minScore: grade.minScore,
-    maxScore: grade.maxScore,
-    fromCache: true,
-    createdByAccount: grade.createdByAccount
-  }
-}
-
 export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {
   try {
     const database = getDatabaseInstance();
@@ -185,14 +151,5 @@ export async function getGradePeriodsFromCache(period: string): Promise<SharedPe
     return mapPeriodGradesToShared(periodgrades[0])
   } catch (e) {
     error(String(e));
-  }
-}
-
-function mapPeriodGradesToShared(data: PeriodGrades): SharedPeriodGrades {
-  return {
-    studentOverall: data.studentOverall,
-    classAverage: data.classAverage,
-    subjects: data.subjects.map(mapSubjectToShared),
-    createdByAccount: data.createdByAccount
   }
 }
