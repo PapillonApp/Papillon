@@ -1,5 +1,6 @@
 import * as Network from "expo-network";
 
+import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
@@ -122,14 +123,22 @@ export class AccountManager {
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance> {
-    return await this.fetchData(Capabilities.ATTENDANCE, async client => {
-      if (!client.getAttendanceForPeriod) {
-        throw new Error(
-          "getAllAttendanceForPeriod not implemented but the capability is set."
-        );
-      }
-      return await client.getAttendanceForPeriod(period);
-    });
+    return await this.fetchData(
+      Capabilities.ATTENDANCE, async client => {
+        if (!client.getAttendanceForPeriod) {
+          throw new Error(
+            "getAllAttendanceForPeriod not implemented but the capability is set."
+          );
+        }
+        return await client.getAttendanceForPeriod(period);
+      },
+      {
+        multiple: false,
+        fallback: async () => getAttendanceFromCache(period),
+        saveToCache: async (data: Attendance) => {
+          await addAttendanceToDatabase(data, period);
+        }
+      });
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
@@ -137,7 +146,13 @@ export class AccountManager {
       Capabilities.ATTENDANCE,
       async client =>
         client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
-      { multiple: true }
+      { 
+        multiple: true,
+        fallback: async () => getPeriodsFromCache(),
+        saveToCache: async (data: Period[]) =>  {
+          await addPeriodsToDatabase(data)
+        }
+      }
     );
   }
 

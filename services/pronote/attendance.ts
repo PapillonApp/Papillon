@@ -136,7 +136,7 @@ function mapPunishments(punishments: NotebookPunishment[], accountId: string): P
       }))
     },
     reason: {
-      text: p.reasons,
+      text: p.reasons.join(", "),
       circumstances: p.circumstances,
       documents: p.circumstancesDocuments.map((attachment) => ({
         type: attachment.kind,
