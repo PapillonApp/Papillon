@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
+import Reanimated, { EntryExitAnimationFunction, LayoutAnimation, LinearTransition } from "react-native-reanimated";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Animation } from "../utils/Animation";
 
@@ -8,6 +8,9 @@ type DynamicProps = {
   animated?: boolean;
   style?: React.CSSProperties;
   origin?: "left" | "right" | "top" | "bottom" | "center";
+  layout?: LayoutAnimation;
+  entering?: EntryExitAnimationFunction;
+  exiting?: EntryExitAnimationFunction;
 };
 
 // Pre-compute animations to avoid function calls on every render
@@ -25,6 +28,9 @@ export const Dynamic = React.memo<DynamicProps>(({
   animated,
   style,
   origin = "center",
+  layout = ANIMATED_LAYOUT,
+  entering = APPEAR_IN,
+  exiting = APPEAR_OUT,
   ...rest
 }) => {
   // Memoize the computed style to prevent object recreation
@@ -45,15 +51,15 @@ export const Dynamic = React.memo<DynamicProps>(({
 
   // Memoize layout prop to avoid conditional evaluation on every render
   const layoutProp = useMemo(() =>
-    animated ? ANIMATED_LAYOUT : undefined,
+    animated ? layout && ANIMATED_LAYOUT : undefined,
   [animated]
   );
 
   return (
     <Reanimated.View
-      entering={APPEAR_IN}
-      exiting={APPEAR_OUT}
-      layout={layoutProp}
+      entering={animated ? entering : undefined}
+      exiting={animated ? exiting : undefined}
+      layout={animated && (layout ?? layoutProp)}
       // @ts-expect-error - Reanimated types are not fully compatible with React Native types
       style={computedStyle}
       {...rest}

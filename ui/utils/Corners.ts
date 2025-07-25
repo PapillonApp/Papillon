@@ -53,7 +53,7 @@ const radiuses = [
 let cachedCornerRadius: number | undefined;
 
 const getCorners = (): number => {
-  if (cachedCornerRadius !== undefined) return cachedCornerRadius;
+  if (cachedCornerRadius !== undefined) {return cachedCornerRadius;}
 
   let modelName = Device.modelName;
   if (!modelName || modelName.toLowerCase().includes("simulator")) {

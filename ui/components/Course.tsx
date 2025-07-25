@@ -11,7 +11,6 @@ import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
 
-import { ContextMenuView } from 'react-native-ios-context-menu';
 import { useTranslation } from "react-i18next";
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";

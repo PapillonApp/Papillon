@@ -1,7 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "expo-router";
-import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform, TouchableNativeFeedback } from "react-native";
+import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform } from "react-native";
 import Typography from "./Typography";
+import { useTheme } from "@react-navigation/native";
+
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance
 const styles = StyleSheet.create({
@@ -25,7 +30,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titleAndroid: {
-    marginHorizontal: 8,
+    marginHorizontal: 16,
     alignItems: "center",
     justifyContent: "flex-start",
     maxWidth: 300,
@@ -53,7 +58,7 @@ const styles = StyleSheet.create({
 // Pre-computed style arrays to avoid array creation on every render
 const PRESSABLE_STYLE_CACHE = new WeakMap();
 const getPressableStyle = (userStyle: any) => {
-  if (!userStyle) return styles.pressable;
+  if (!userStyle) { return styles.pressable; }
   if (PRESSABLE_STYLE_CACHE.has(userStyle)) {
     return PRESSABLE_STYLE_CACHE.get(userStyle);
   }
@@ -86,6 +91,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
   const navigation = useNavigation();
   const propsRef = useRef(props);
   const childrenRef = useRef(children);
+  const theme = useTheme();
 
   // Update refs without triggering re-renders
   propsRef.current = props;
@@ -106,7 +112,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
     return () => {
       navigation.setOptions({ [headerKey]: undefined });
     };
-  }, [navigation, side]); // Only side and navigation as dependencies
+  }, [navigation, side, theme]); // Add theme as a dependency
 
   return null;
 });
@@ -117,6 +123,7 @@ interface NativeHeaderTitleProps extends ViewProps {
   search?: boolean;
   placeholder?: string;
   onSearch?: (query: string) => void;
+  ignoreTouch?: boolean;
 }
 
 const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
@@ -125,6 +132,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   search = false,
   placeholder = "Rechercher",
   onSearch,
+  ignoreTouch,
   ...props
 }: NativeHeaderTitleProps) {
   const navigation = useNavigation();
@@ -139,14 +147,16 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
 
   useEffect(() => {
     const handleSearch = (e: any) => {
-      if (onSearchRef.current) onSearchRef.current(e.nativeEvent.text);
+      if (onSearchRef.current) { onSearchRef.current(e.nativeEvent.text); }
     };
 
     const renderTitle = () => (
       <View style={[
         styles.title,
         Platform.OS === 'android' ? styles.titleAndroid : {},
-      ]} {...propsRef.current}>
+      ]} {...propsRef.current}
+        pointerEvents={ignoreTouch ? "none" : "auto"}
+      >
         {childrenRef.current}
       </View>
     );
@@ -175,38 +185,82 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
 });
 
 const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: PressableProps) {
-  // Pre-optimized style function using cache
+  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    opacity.value = withTiming(runsIOS26() ? 0.5 : 0.3, { duration: 20 });
+    scale.value = withTiming(0.9, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    opacity.value = withTiming(1, { duration: 150 });
+    scale.value = withTiming(1, { duration: 150 });
+  };
+
   if (typeof props.style === 'function') {
     const styleFunction = (state: PressableStateCallbackType) => {
       const userStyle = props.style as (state: PressableStateCallbackType) => any;
       const styleResult = userStyle(state);
-      return getPressableStyle(styleResult);
+      return [getPressableStyle(styleResult), animatedStyle];
     };
 
-    return <Pressable {...props} style={styleFunction} />;
+    return (
+      <AnimatedPressable
+        {...props}
+        style={styleFunction}
+        onPressIn={(e) => {
+          handlePressIn();
+          props.onPressIn?.(e);
+        }}
+        onPressOut={(e) => {
+          handlePressOut();
+          props.onPressOut?.(e);
+        }}
+      />
+    );
   }
 
-  // Static style - use cached version
-  const style = getPressableStyle(props.style);
-  return <Pressable {...props} style={style} />;
+  const style = [getPressableStyle(props.style), animatedStyle];
+  return (
+    <AnimatedPressable
+      {...props}
+      style={style}
+      onPressIn={(e) => {
+        handlePressIn();
+        props.onPressIn?.(e);
+      }}
+      onPressOut={(e) => {
+        handlePressOut();
+        props.onPressOut?.(e);
+      }}
+    />
+  );
 });
 
 interface NativeHeaderHighlightProps extends ViewProps {
   children?: React.ReactNode;
   color?: string;
+  light?: boolean;
 }
 
 const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   children,
   color = DEFAULT_COLOR,
+  light = false,
   style,
   ...props
 }: NativeHeaderHighlightProps) {
   // Use cached background color
-  const backgroundColor = color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
+  const backgroundColor = light ? 'transparent' : color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
 
   // Pre-compute style array once
-  const viewStyle = style ? [styles.highlight, { backgroundColor }, style] : [styles.highlight, { backgroundColor }];
+  const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, light ? { padding: 0 } : {}];
 
   return (
     <View style={viewStyle} {...props}>

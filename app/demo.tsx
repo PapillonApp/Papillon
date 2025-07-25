@@ -1,5 +1,5 @@
 import React, { ScrollView, StyleSheet, View } from "react-native";
-import { AlertCircle, AlertOctagon, Hamburger } from "lucide-react-native";
+import { Hamburger } from "lucide-react-native";
 
 import { ClockIcon } from "@/ui/components/Course";
 import Typography from "@/ui/components/Typography";

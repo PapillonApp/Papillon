@@ -81,7 +81,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   }, [scale, opacity]);
 
   const backgroundColor = useMemo(() => {
-    if (disabled) return colorsList.text + '30'; // Light color with 30% opacity for disabled state
+    if (disabled) { return colorsList.text + '30'; } // Light color with 30% opacity for disabled state
 
     switch (variant) {
       case 'outline':

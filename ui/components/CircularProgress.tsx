@@ -1,11 +1,12 @@
 import React, { FC, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 
 type CircularProgressProps = {
   strokeWidth: number;
@@ -29,20 +30,27 @@ const CircularProgress: FC<CircularProgressProps> = ({
   const innerRadius = radius - strokeWidth / 2;
   const circumference = 2 * Math.PI * innerRadius;
 
-  const strokeDashoffset = useSharedValue(circumference); // start at 0%
+  const initialOffset = circumference * (1 - percentageComplete / 100);
+  const strokeDashoffset = useSharedValue(initialOffset); // Initialize with correct value
 
   useEffect(() => {
-    strokeDashoffset.value = withTiming(circumference * (1 - percentageComplete / 100), {
-      duration: 1500,
+    const newOffset = circumference * (1 - percentageComplete / 100);
+    strokeDashoffset.value = withTiming(newOffset, {
+      duration: 500,
     });
-  }, [percentageComplete]);
+  }, [percentageComplete, circumference, strokeDashoffset]); // Added dependencies to ensure proper updates
 
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: strokeDashoffset.value,
   }));
 
   return (
-    <View style={[styles.container, { width: radius * 2, height: radius * 2 }]} key={`circular-progress-${radius}-${percentageComplete}`}>
+    <Animated.View
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+      style={[styles.container, { width: radius * 2, height: radius * 2 }]}
+      key={`circular-progress-${radius}`}
+    >
       <Svg width={radius * 2} height={radius * 2}>
         <Circle
           cx={radius}
@@ -66,7 +74,7 @@ const CircularProgress: FC<CircularProgressProps> = ({
           fill="transparent"
         />
       </Svg>
-    </View>
+    </Animated.View>
   );
 };
 

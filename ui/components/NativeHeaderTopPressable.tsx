@@ -43,7 +43,7 @@ const NativeHeaderTopPressable = React.memo(function NativeHeaderTopPressable({
   }, [opacity]);
 
   const handlePress = useCallback(() => {
-    if (onPress) onPress();
+    if (onPress) {onPress();}
   }, [onPress]);
 
   return (

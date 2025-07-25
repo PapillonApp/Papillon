@@ -1,7 +1,6 @@
 import {
   DarkTheme as NativeDarkTheme,
   DefaultTheme as NativeDefaultTheme,
-  Theme,
 } from "@react-navigation/native";
 
 const PrimaryAccentColor = {

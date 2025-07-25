@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo } from "react";
 import { View, ViewProps } from "react-native";
 
 import { LEADING_TYPE } from "./Item";
@@ -28,7 +28,7 @@ const enhanceChildrenOptimized = (
   children: React.ReactNode, 
   childColor: string
 ): React.ReactNode => {
-  if (!children) return children;
+  if (!children) {return children;}
   
   // Fast path for single child (most common case)
   if (React.isValidElement(children)) {
