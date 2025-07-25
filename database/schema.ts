@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 8,
+  version: 9,
   tables: [
     tableSchema({
       name: 'events',
@@ -81,7 +81,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'grades',
       columns: [
-        { name: 'createByAccount', type: 'string' },
+        { name: 'createdByAccount', type: 'string' },
         { name: 'id', type: 'string' },
         { name: 'subjectId', type: 'string', isOptional: true },
         { name: 'description', type: 'string' },
@@ -106,6 +106,63 @@ export const mySchema = appSchema({
         { name: 'createdByAccount', type: 'string' },
         { name: 'studentOverall', type: 'string' },
         { name: 'classAverage', type: 'string' }
+      ]
+    }),
+    tableSchema({
+      name: "attendance",
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'period', type: 'string' }
+      ]
+    }),
+    tableSchema({
+      name: "delays",
+      columns: [
+        { name: 'givenAt', type: 'number' },
+        { name: 'reason', type: 'string', isOptional: true },
+        { name: 'justified', type: 'boolean' },
+        { name: 'duration', type: 'number' },
+        { name: 'attendance_id', type: 'string' }
+      ]
+    }),
+    tableSchema({
+      name: "observations",
+      columns: [
+        { name: 'givenAt', type: 'number' },
+        { name: 'sectionName', type: 'string' },
+        { name: 'sectionType', type: 'string' },
+        { name: 'subjectName', type: 'string', isOptional: true },
+        { name: 'shouldParentsJustify', type: 'boolean' },
+        { name: 'reason', type: 'string' },
+        { name: 'attendance_id', type: 'string' }
+      ]
+    }),
+    tableSchema({
+      name: "absences",
+      columns: [
+        { name: 'from', type: 'number' },
+        { name: 'to', type: 'number' },
+        { name: 'reason', type: 'string', isOptional: true },
+        { name: 'justified', type: 'boolean' },
+        { name: 'attendance_id', type: 'string' }
+      ]
+    }),
+    tableSchema({
+      name: "punishments",
+      columns: [
+        { name: 'givenAt', type: 'number' },
+        { name: 'givenBy', type: 'string' },
+        { name: 'exclusion', type: 'boolean' },
+        { name: 'duringLesson', type: 'boolean' },
+        { name: 'nature', type: 'string' },
+        { name: 'duration', type: 'number' },
+        { name: 'homeworkDocumentsRaw', type: 'string' },
+        { name: 'reasonDocumentsRaw', type: 'string' },
+        { name: 'homeworkText', type: 'string' },
+        { name: 'reasonText', type: 'string' },
+        { name: 'reasonCircumstances', type: 'string' },
+        { name: 'attendance_id', type: 'string' }
       ]
     })
   ],
