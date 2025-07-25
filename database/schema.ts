@@ -164,6 +164,16 @@ export const mySchema = appSchema({
         { name: 'reasonCircumstances', type: 'string' },
         { name: 'attendance_id', type: 'string' }
       ]
+    }),
+    tableSchema({
+      name: "canteenmenus",
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'date', type: 'number' },
+        { name: 'lunch', type: 'string', isOptional: true },
+        { name: 'dinner', type: 'string', isOptional: true },
+        { name: 'createdByAccount', type: 'string' }
+      ]
     })
   ],
 });
