@@ -3,8 +3,6 @@
 import { Model } from '@nozbe/watermelondb';
 import { children, field } from "@nozbe/watermelondb/decorators";
 
-import { GradeScore } from '@/services/shared/grade';
-
 import Subject from './Subject';
 
 export class Period extends Model {
@@ -21,7 +19,7 @@ export class Period extends Model {
 export class Grade extends Model {
   static table = 'grades'
 
-  @field('createByAccount') createdByAccount: string;
+  @field('createdByAccount') createdByAccount: string;
   @field('id') id: string;
   @field('subjectId') subjectId?: string;
   @relation('subjects', 'subjectId') subject: Subject;
@@ -31,12 +29,32 @@ export class Grade extends Model {
   @field('correctionFile') correctionFile?: string;
   @field('bonus') bonus?: boolean;
   @field('optional') optional?: boolean;
-  @field('outOf') outOf: GradeScore;
   @field('coefficient') coefficient: number;
-  @field('studentScore') studentScore: GradeScore;
-  @field('averageScore') averageScore: GradeScore;
-  @field('minScore') minScore: GradeScore;
-  @field('maxScore') maxScore: GradeScore;
+	@field('outOf') outOfRaw: string;
+	@field('studentScore') studentScoreRaw: string;
+	@field('averageScore') averageScoreRaw: string;
+	@field('minScore') minScoreRaw: string;
+	@field('maxScore') maxScoreRaw: string;
+
+	get outOf(): GradeScore {
+	  return JSON.parse(this.outOfRaw || '{}');
+	}
+
+	get studentScore(): GradeScore {
+	  return JSON.parse(this.studentScoreRaw || '{}');
+	}
+
+	get averageScore(): GradeScore {
+	  return JSON.parse(this.averageScoreRaw || '{}');
+	}
+
+	get minScore(): GradeScore {
+	  return JSON.parse(this.minScoreRaw || '{}');
+	}
+
+	get maxScore(): GradeScore {
+	  return JSON.parse(this.maxScoreRaw || '{}');
+	}
 }
 
 export class PeriodGrades extends Model {
@@ -44,10 +62,18 @@ export class PeriodGrades extends Model {
 
   @field('id') id: string;
   @field('createdByAccount') createdByAccount: string;
-  @field('studentOverall') studentOverall: GradeScore;
-  @field('classAverage') classAverage: GradeScore;
+  @field('studentOverall') studentOverallRaw: string;
+  @field('classAverage') classAverageRaw: string;
   @field('periodId') periodId: string;
 
   @relation('periods', 'periodId') period: Period;
   @children('subjects') subjects: Subject[];
+
+  get studentOverall(): GradeScore {
+    return JSON.parse(this.studentOverallRaw || '{}');
+  }
+
+  get classAverage(): GradeScore {
+    return JSON.parse(this.classAverageRaw || '{}');
+  }
 }

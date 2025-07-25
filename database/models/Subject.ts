@@ -12,13 +12,33 @@ export default class Subject extends Model {
 
   @field('subjectId') subjectId: string;
   @field('name') name: string;
-  @field('studentAverage') studentAverage: GradeScore;
-  @field('classAverage') classAverage: GradeScore;
-  @field('maximum') maximum: GradeScore;
-  @field('minimum') minimum: GradeScore;
-  @field('outOf') outOf: GradeScore;
+  @field('studentAverage') studentAverageRaw: string;
+  @field('classAverage') classAverageRaw: string;
+  @field('maximum') maximumRaw: string;
+  @field('minimum') minimumRaw: string;
+  @field('outOf') outOfRaw: string;
   @field('periodGradeId') periodGradeId: string;
 
   @relation('periodgrades', 'periodGradeId') periodGrade: PeriodGrades;
   @children('grades') grades: Grade[];
+
+  get studentAverage(): GradeScore {
+    return JSON.parse(this.studentAverageRaw || '{}');
+  }
+
+  get classAverage(): GradeScore {
+    return JSON.parse(this.classAverageRaw || '{}');
+  }
+
+  get maximum(): GradeScore {
+    return JSON.parse(this.maximumRaw || '{}');
+  }
+
+  get minimum(): GradeScore {
+    return JSON.parse(this.minimumRaw || '{}');
+  }
+
+  get outOf(): GradeScore {
+    return JSON.parse(this.outOfRaw || '{}');
+  }
 }
