@@ -59,17 +59,17 @@ const DEFAULT_PADDING: ViewStyle = Object.freeze({
 
 // Optimized padding style checker with early returns
 const hasPaddingStyle = (style: any): boolean => {
-  if (!style) {return false;}
-  if (typeof style !== "object") {return false;}
-  
+  if (!style) { return false; }
+  if (typeof style !== "object") { return false; }
+
   if (Array.isArray(style)) {
     // Use for loop for better performance than .some()
     for (let i = 0; i < style.length; i++) {
-      if (hasPaddingStyle(style[i])) {return true;}
+      if (hasPaddingStyle(style[i])) { return true; }
     }
     return false;
   }
-  
+
   return !!(
     style.padding != null ||
     style.paddingHorizontal != null ||
@@ -88,12 +88,12 @@ const displayNameCache = new WeakMap<any, string>();
 
 const isItemComponent = (element: React.ReactElement): boolean => {
   const elementType = element.type as any;
-  
+
   // Tier 1: WeakMap cache (fastest)
   if (itemTypeCache.has(elementType)) {
     return itemTypeCache.get(elementType)!;
   }
-  
+
   // Tier 2: String cache for common cases
   const typeName = elementType?.name || elementType?.displayName;
   if (typeName && itemStringCache.has(typeName)) {
@@ -101,7 +101,7 @@ const isItemComponent = (element: React.ReactElement): boolean => {
     itemTypeCache.set(elementType, result);
     return result;
   }
-  
+
   // Tier 3: Full check with caching
   const displayName = elementType?.displayName;
   if (displayName && displayNameCache.has(elementType)) {
@@ -109,15 +109,15 @@ const isItemComponent = (element: React.ReactElement): boolean => {
     if (cachedName === displayName) {
       const result = displayName === "Item";
       itemTypeCache.set(elementType, result);
-      if (typeName) {itemStringCache.set(typeName, result);}
+      if (typeName) { itemStringCache.set(typeName, result); }
       return result;
     }
   }
-  
+
   const isItem = displayName === "Item" || elementType === Item;
   itemTypeCache.set(elementType, isItem);
-  if (typeName) {itemStringCache.set(typeName, isItem);}
-  if (displayName) {displayNameCache.set(elementType, displayName);}
+  if (typeName) { itemStringCache.set(typeName, isItem); }
+  if (displayName) { displayNameCache.set(elementType, displayName); }
   return isItem;
 };
 
@@ -135,18 +135,18 @@ interface ChildMeta {
 
 // Batch processing for child metadata generation
 const processChildrenBatch = (
-  children: React.ReactNode[], 
+  children: React.ReactNode[],
   disablePadding: boolean,
   startIndex: number = 0
 ): ChildMeta[] => {
   const count = children.length;
   const result: ChildMeta[] = new Array(count);
-  
+
   // Process in batches to prevent blocking
   for (let i = 0; i < count; i++) {
     const child = children[i];
     const index = startIndex + i;
-    
+
     if (!React.isValidElement(child)) {
       result[i] = {
         child,
@@ -160,13 +160,13 @@ const processChildrenBatch = (
       } as const;
       continue;
     }
-    
+
     const childProps = child.props as any;
     const hasDisabledPadding = childProps?.disableListPadding;
     const isItem = isItemComponent(child);
     const hasStylePadding = hasPaddingStyle(childProps?.style);
     const needsPadding = !disablePadding && !hasDisabledPadding && !isItem && !hasStylePadding;
-    
+
     result[i] = {
       child,
       isValidElement: true,
@@ -178,23 +178,23 @@ const processChildrenBatch = (
       index,
     } as const;
   }
-  
+
   return result;
 };
 
 // Custom comparison function for children array
 const areChildrenEqual = (prevChildren: React.ReactNode, nextChildren: React.ReactNode): boolean => {
-  if (prevChildren === nextChildren) {return true;}
-  
+  if (prevChildren === nextChildren) { return true; }
+
   const prevArray = React.Children.toArray(prevChildren);
   const nextArray = React.Children.toArray(nextChildren);
-  
-  if (prevArray.length !== nextArray.length) {return false;}
-  
+
+  if (prevArray.length !== nextArray.length) { return false; }
+
   for (let i = 0; i < prevArray.length; i++) {
-    if (prevArray[i] !== nextArray[i]) {return false;}
+    if (prevArray[i] !== nextArray[i]) { return false; }
   }
-  
+
   return true;
 };
 
@@ -210,7 +210,7 @@ const List: React.FC<ListProps> = React.memo(
     ...rest
   }) => {
     const { colors } = useTheme();
-    
+
     // Memoize container style with stable object references
     const containerStyle = useMemo(() => {
       const baseStyle = {
@@ -225,7 +225,7 @@ const List: React.FC<ListProps> = React.memo(
 
     // Optimized contentContainerStyle processing
     const mergedContentContainerStyle = useMemo(() => {
-      if (!contentContainerStyle) {return null;}
+      if (!contentContainerStyle) { return null; }
       return Array.isArray(contentContainerStyle)
         ? contentContainerStyle.filter(Boolean) as ViewStyle[]
         : [contentContainerStyle] as ViewStyle[];
@@ -284,24 +284,24 @@ const List: React.FC<ListProps> = React.memo(
 
     // Style cache for dynamic styles to prevent object creation
     const styleCache = useRef(new Map<string, ViewStyle[]>()).current;
-    
+
     // Pre-computed style variants for common cases
-    const borderStyle = useMemo(() => Object.freeze({ 
-      borderBottomColor, 
-      borderBottomWidth: BORDER_BOTTOM_WIDTH 
+    const borderStyle = useMemo(() => Object.freeze({
+      borderBottomColor,
+      borderBottomWidth: BORDER_BOTTOM_WIDTH
     }), [borderBottomColor]);
-    
+
     const paddingBorderStyle = useMemo(() => Object.freeze([
       ...staticItemStyle,
       borderStyle,
       DEFAULT_PADDING
     ]), [staticItemStyle, borderStyle]);
-    
+
     const paddingOnlyStyle = useMemo(() => Object.freeze([
       ...staticItemStyle,
       DEFAULT_PADDING
     ]), [staticItemStyle]);
-    
+
     const borderOnlyStyle = useMemo(() => Object.freeze([
       ...staticItemStyle,
       borderStyle
@@ -322,14 +322,14 @@ const List: React.FC<ListProps> = React.memo(
     const renderItem = useCallback(
       ({ item, index }: { item: ChildMeta; index: number }) => {
         const isLastVisible = lastVisibleIndex === index;
-        
+
         if (!item.isValidElement) {
           return <React.Fragment key={item.key}>{item.child}</React.Fragment>;
         }
-        
+
         // Use pre-computed styles for common cases (zero allocation)
         let itemStyle: readonly ViewStyle[] = staticItemStyle;
-        
+
         if (item.borderBottomWidth > 0 && item.needsPadding) {
           itemStyle = paddingBorderStyle;
         } else if (item.needsPadding) {
@@ -337,17 +337,17 @@ const List: React.FC<ListProps> = React.memo(
         } else if (item.borderBottomWidth > 0) {
           itemStyle = borderOnlyStyle;
         }
-        
+
         // Clone element props once for better performance
-        const childProps = React.isValidElement(item.child) ? { 
-          isLastVisible, 
-          isLast: item.isLast 
+        const childProps = React.isValidElement(item.child) ? {
+          isLastVisible,
+          isLast: item.isLast
         } : undefined;
-        
-        const childElement = childProps 
+
+        const childElement = childProps
           ? React.cloneElement(item.child as any, childProps)
           : item.child;
-        
+
         // Use plain View if animation is disabled (faster)
         if (rest.disableItemAnimation) {
           return (
@@ -356,7 +356,7 @@ const List: React.FC<ListProps> = React.memo(
             </Reanimated.View>
           );
         }
-        
+
         return (
           <Reanimated.View
             key={item.key}
@@ -368,11 +368,11 @@ const List: React.FC<ListProps> = React.memo(
         );
       },
       [
-        staticItemStyle, 
-        paddingBorderStyle, 
-        paddingOnlyStyle, 
+        staticItemStyle,
+        paddingBorderStyle,
+        paddingOnlyStyle,
         borderOnlyStyle,
-        rest.disableItemAnimation, 
+        rest.disableItemAnimation,
         lastVisibleIndex
       ]
     );
@@ -380,12 +380,12 @@ const List: React.FC<ListProps> = React.memo(
     // --- INTELLIGENT VIRTUALIZATION WITH ADAPTIVE THRESHOLDS ---
     // Use smart detection based on item count and device performance
     const shouldUseVirtualization = useMemo(() => {
-      if (!data) {return false;}
+      if (!data) { return false; }
       const itemCount = childrenData.length;
-      
+
       // Always virtualize for large lists
-      if (itemCount >= VIRTUALIZATION_THRESHOLD) {return true;}
-      
+      if (itemCount >= VIRTUALIZATION_THRESHOLD) { return true; }
+
       // For medium lists, check if items are complex (have many props/styles)
       if (itemCount >= MEMOIZATION_THRESHOLD) {
         const sampleItem = childrenData[0];
@@ -395,13 +395,13 @@ const List: React.FC<ListProps> = React.memo(
           return hasComplexProps;
         }
       }
-      
+
       return false;
     }, [data, childrenData]);
 
     // Ultra-fast key extractor with pre-computed strings
     const keyExtractor = useCallback((item: ChildMeta) => {
-      if (typeof item.key === 'string') {return item.key;}
+      if (typeof item.key === 'string') { return item.key; }
       return String(item.key);
     }, []);
 
@@ -426,7 +426,6 @@ const List: React.FC<ListProps> = React.memo(
             onViewableItemsChanged={onViewableItemsChanged}
           />
         ) : (
-          // Non-virtualized rendering for small lists - ultra-optimized
           childrenData.map(item => renderItem({ item, index: item.index }))
         )}
       </Reanimated.View>
@@ -435,18 +434,18 @@ const List: React.FC<ListProps> = React.memo(
   // Ultra-optimized comparison function with early exits and minimal work
   (prevProps, nextProps) => {
     // Early exit for identical object references (fastest possible case)
-    if (prevProps === nextProps) {return true;}
-    
+    if (prevProps === nextProps) { return true; }
+
     // Critical props comparison with early exits (ordered by likelihood of change)
-    if (prevProps.data !== nextProps.data) {return false;}
-    if (prevProps.children !== nextProps.children) {return false;}
-    if (prevProps.disablePadding !== nextProps.disablePadding) {return false;}
-    if (prevProps.style !== nextProps.style) {return false;}
-    if (prevProps.contentContainerStyle !== nextProps.contentContainerStyle) {return false;}
-    if (prevProps.entering !== nextProps.entering) {return false;}
-    if (prevProps.exiting !== nextProps.exiting) {return false;}
-    if (prevProps.disableItemAnimation !== nextProps.disableItemAnimation) {return false;}
-    
+    if (prevProps.data !== nextProps.data) { return false; }
+    if (prevProps.children !== nextProps.children) { return false; }
+    if (prevProps.disablePadding !== nextProps.disablePadding) { return false; }
+    if (prevProps.style !== nextProps.style) { return false; }
+    if (prevProps.contentContainerStyle !== nextProps.contentContainerStyle) { return false; }
+    if (prevProps.entering !== nextProps.entering) { return false; }
+    if (prevProps.exiting !== nextProps.exiting) { return false; }
+    if (prevProps.disableItemAnimation !== nextProps.disableItemAnimation) { return false; }
+
     return true;
   }
 );

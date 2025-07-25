@@ -224,7 +224,6 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     )
   }
   catch (error) {
-    console.error("Error rendering TabFlatList:", error);
     return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
 };
