@@ -1,11 +1,10 @@
 import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { MoreVertical, Plus } from "lucide-react-native";
-import React, { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { MoreVertical } from "lucide-react-native";
+import React, { Alert, Platform, ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { log } from '@/utils/logger/logger';
 import { useEventById } from '@/database/useEventsById';
 
 import { useEffect, useLayoutEffect, useState } from 'react';

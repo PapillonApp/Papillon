@@ -83,6 +83,13 @@ const ALIGNMENT_STYLES = StyleSheet.create({
   justify: { textAlign: "justify" as const },
 });
 
+const WEIGHT_STYLES = StyleSheet.create({
+  regular: { fontFamily: FONT_FAMILIES.regular },
+  medium: { fontFamily: FONT_FAMILIES.medium },
+  semibold: { fontFamily: FONT_FAMILIES.semibold },
+  bold: { fontFamily: FONT_FAMILIES.bold },
+});
+
 // Static color values to avoid string concatenation
 const STATIC_COLORS = {
   light: "#FFFFFF",
@@ -99,6 +106,7 @@ interface TypographyProps extends TextProps {
   align?: Alignment;
   style?: TextStyle | TextStyle[];
   inline?: boolean;
+  weight?: keyof typeof WEIGHT_STYLES;
 }
 
 // Cache for computed color styles per theme
@@ -128,6 +136,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
     color = "text",
     align = "left",
     inline = false,
+    weight,
     style,
     ...rest
   }) => {
@@ -150,12 +159,13 @@ const Typography: React.FC<TypographyProps> = React.memo(
       // Try cache first for common cases
       if (cacheKey) {
         const cached = styleCache.get(cacheKey);
-        if (cached) return cached;
+        if (cached) { return cached; }
       }
 
       const colorStyles = getColorsStyles(colors);
       const variantStyle = VARIANTS[variant];
       const alignStyle = ALIGNMENT_STYLES[align];
+      const weightStyle = WEIGHT_STYLES[weight] || null;
 
       const inlineStyle: TextStyle = inline ? (() => {
         let fontSize: number | undefined;
@@ -185,6 +195,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...variantStyle,
           ...alignStyle,
           ...colorStyle,
+          ...weightStyle, // Ensure weightStyle is merged here
           ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
           ...inlineStyle,
         };
@@ -194,6 +205,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...variantStyle,
           ...alignStyle,
           ...colorStyle,
+          ...weightStyle, // Ensure weightStyle is merged here
           ...inlineStyle,
         };
 
@@ -211,19 +223,19 @@ const Typography: React.FC<TypographyProps> = React.memo(
   // Custom comparison for even better performance
   (prevProps, nextProps) => {
     // Fast equality checks for most common props
-    if (prevProps.variant !== nextProps.variant) return false;
-    if (prevProps.color !== nextProps.color) return false;
-    if (prevProps.align !== nextProps.align) return false;
-    if (prevProps.children !== nextProps.children) return false;
+    if (prevProps.variant !== nextProps.variant) { return false; }
+    if (prevProps.color !== nextProps.color) { return false; }
+    if (prevProps.align !== nextProps.align) { return false; }
+    if (prevProps.children !== nextProps.children) { return false; }
 
     // Shallow comparison for style prop
     if (prevProps.style !== nextProps.style) {
-      if (!prevProps.style && !nextProps.style) return true;
-      if (!prevProps.style || !nextProps.style) return false;
+      if (!prevProps.style && !nextProps.style) { return true; }
+      if (!prevProps.style || !nextProps.style) { return false; }
 
       // For array styles, do shallow comparison
       if (Array.isArray(prevProps.style) && Array.isArray(nextProps.style)) {
-        if (prevProps.style.length !== nextProps.style.length) return false;
+        if (prevProps.style.length !== nextProps.style.length) { return false; }
         return prevProps.style.every((s, i) => s === (nextProps.style as TextStyle[])[i]);
       }
 

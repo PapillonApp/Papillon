@@ -11,7 +11,7 @@ import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { AlignCenter, ChevronDown, Ellipsis } from "lucide-react-native";
+import { AlignCenter, Ellipsis } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import TabFlatList from "@/ui/components/TabFlatList";
 import List from "@/ui/components/List";
@@ -49,20 +49,27 @@ export default function TabOneScreen() {
           <AlignCenter color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
-      <NativeHeaderTitle key={`header-title`}>
-        <NativeHeaderTopPressable onPress={toggleDatePicker} layout={Animation(LinearTransition)}>
+      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled}>
+        <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
           <Dynamic
-            animated={false}
-            style={{ flexDirection: "column", alignItems: "center", gap: 4 }}
+            animated={true}
+            style={{
+              flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4,
+              marginTop: fullyScrolled ? 6 : 0
+            }}
           >
-            <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
               <Dynamic animated>
-                <Typography variant="navigation">Mon profil</Typography>
-              </Dynamic>
-              <Dynamic animated>
-                <ChevronDown color={colors.text} opacity={0.7} />
+                <Typography inline variant="navigation">Mon profil</Typography>
               </Dynamic>
             </Dynamic>
+            {fullyScrolled && (
+              <Dynamic animated>
+                <Typography inline variant="body2" color="secondary">
+                  Lucas Lavajo
+                </Typography>
+              </Dynamic>
+            )}
           </Dynamic>
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>

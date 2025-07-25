@@ -156,7 +156,7 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
 
   // Memoized icon component to prevent re-renders
   const IconComponent = useMemo(() => {
-    if (!alert.icon || typeof alert.icon !== "string") return null;
+    if (!alert.icon || typeof alert.icon !== "string") {return null;}
     return LucideIcons[alert.icon as keyof typeof LucideIcons] as ComponentType<any>;
   }, [alert.icon]);
 

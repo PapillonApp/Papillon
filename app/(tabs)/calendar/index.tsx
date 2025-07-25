@@ -1,15 +1,12 @@
 import { useEventsForDay } from "@/database/useEvents";
-import { database } from "@/database";
 import Event from "@/database/models/Event";
-import Subject from '@/database/models/Subject';
-import { Link, useNavigation, useRouter } from "expo-router";
-import { CalendarDaysIcon, CalendarIcon, ChevronDown, Hamburger, ListFilter, Plus, Search } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
 import React, { useRef } from "react";
-import { Alert, FlatList, Platform, RefreshControl, ScrollView, StyleSheet, Text, View, Dimensions } from "react-native";
+import { FlatList, Platform, RefreshControl, StyleSheet, View, Dimensions } from "react-native";
 
 import { useHeaderHeight } from '@react-navigation/elements';
 
-import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -22,11 +19,9 @@ import { MenuView } from '@react-native-menu/menu';
 import { useCallback, useEffect, useState } from "react";
 import Calendar from "@/ui/components/Calendar";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { Q } from '@nozbe/watermelondb';
 import { LegendList } from "@legendapp/list";
 import { t } from "i18next";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
-import Animated from 'react-native-reanimated';
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function TabOneScreen() {
@@ -166,13 +161,13 @@ export default function TabOneScreen() {
 
     // Shallow compare function
     function shallowEqual(objA: any, objB: any) {
-      if (objA === objB) return true;
-      if (!objA || !objB) return false;
+      if (objA === objB) {return true;}
+      if (!objA || !objB) {return false;}
       const keysA = Object.keys(objA);
       const keysB = Object.keys(objB);
-      if (keysA.length !== keysB.length) return false;
-      for (let key of keysA) {
-        if (objA[key] !== objB[key]) return false;
+      if (keysA.length !== keysB.length) {return false;}
+      for (const key of keysA) {
+        if (objA[key] !== objB[key]) {return false;}
       }
       return true;
     }
@@ -184,10 +179,10 @@ export default function TabOneScreen() {
         if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
           next[ev.id] = cache[ev.id];
           return cache[ev.id];
-        } else {
-          next[ev.id] = ev;
-          return ev;
-        }
+        } 
+        next[ev.id] = ev;
+        return ev;
+        
       });
       eventCache.current = next;
       return result;
@@ -220,10 +215,10 @@ export default function TabOneScreen() {
           keyExtractor={(item) => item.id}
           ListEmptyComponent={() => (
             <View style={styles.containerContent}>
-              <Typography variant="title" color="secondary">
+              <Typography variant="title" color="secondary" align="center">
                 {t("Tab_Calendar_Empty")}
               </Typography>
-              <Typography variant="caption" color="secondary">
+              <Typography variant="caption" color="secondary" align="center">
                 {t("Tab_Calendar_Empty_Description")}
               </Typography>
             </View>

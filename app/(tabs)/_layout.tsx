@@ -5,11 +5,10 @@ import {
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
 
-import { AlertProvider } from "@/ui/components/AlertProvider";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -28,7 +27,7 @@ const IS_ANDROID = Platform.OS === 'android';
 const ICONS = {
   home: IS_IOS_WITH_PADDING ?
     require('@/assets/icons/home_padding.svg')
-  : require('@/assets/icons/home.svg'),
+    : require('@/assets/icons/home.svg'),
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
   tasks: IS_IOS_WITH_PADDING ? require('@/assets/icons/tasks_padding.svg') : require('@/assets/icons/tasks.svg'),
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
