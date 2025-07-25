@@ -22,6 +22,8 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { Animation } from "@/ui/utils/Animation";
 import Button from "@/ui/components/Button";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 const sortings = [
   {
@@ -286,6 +288,9 @@ export default function TabOneScreen() {
     return 0; // Default average if no algorithm is found
   }, [currentAlgorithm, subjects]);
 
+  const [shownAverage, setShownAverage] = useState(average);
+  const [selectionDate, setSelectionDate] = useState(null);
+
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
     const sortedSubjects = [...subjects].sort((a, b) => {
@@ -320,7 +325,6 @@ export default function TabOneScreen() {
       ];
     });
   }, [sorting]);
-
 
   // Optimized renderItem function with useCallback
   const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
@@ -407,9 +411,16 @@ export default function TabOneScreen() {
         animationDuration={400}
         showSelectionDot={true}
         gestureEnabled={true}
-        showGrid={true}
-        showSelectionLines={true}
-        showSelectionLinesOnScroll={true}
+        smoothAnimation={false}
+        onGestureUpdate={(x, y, index) => {
+          const selectedAverage = currentAverageHistory[index]?.average || 0;
+          setShownAverage(selectedAverage);
+          setSelectionDate(currentAverageHistory[index]?.date || null);
+        }}
+        onGestureEnd={() => {
+          setShownAverage(average);
+          setSelectionDate(null);
+        }}
         containerStyle={{
           marginLeft: -32,
         }}
@@ -438,19 +449,31 @@ export default function TabOneScreen() {
             <GradesGraph />
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
-              <Typography variant="h1" color="primary">
-                {average.toFixed(2)}
-              </Typography>
-              <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
-                /20
-              </Typography>
+              <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>
+                <Typography variant="h1" color="primary">
+                  {shownAverage.toFixed(2)}
+                </Typography>
+              </Dynamic>
+              <Dynamic animated>
+                <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
+                  /20
+                </Typography>
+              </Dynamic>
             </Stack>
             <Typography variant="title" color="primary" align="left">
               {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
             </Typography>
-            <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
-              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
-            </Typography>
+            <Dynamic animated key={"selectionDate:" + selectionDate + ":" + currentAlgorithm} style={{ transformOrigin: "top left" }}>
+              <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
+                {selectionDate ?
+                  "au " + new Date(selectionDate).toLocaleDateString("fr-FR", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })
+                  : avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
+              </Typography>
+            </Dynamic>
           </View>
         )}
       />
