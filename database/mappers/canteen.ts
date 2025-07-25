@@ -6,6 +6,7 @@ export function mapCanteenMenuToShared(menu: CanteenMenu): SharedCanteenMenu {
     date: new Date(menu.date),
     lunch: menu.lunch,
     dinner: menu.dinner,
-    createdByAccount: menu.createdByAccount
+    createdByAccount: menu.createdByAccount,
+    fromCache: true
   }
 }

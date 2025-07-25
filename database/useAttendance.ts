@@ -174,7 +174,8 @@ export async function getAttendanceFromCache(period: string): Promise<SharedAtte
       delays: mapDelaysToShared(att.delays),
       absences: mapAbsencesToShared(att.absences),
       punishments: mapPunishmentsToShared(att.punishments),
-      observations: mapObservationsToShared(att.observations)
+      observations: mapObservationsToShared(att.observations),
+      fromCache: true
     };
   } catch (err) {
     error("Failed to fetch attendance from cache", String(err));
