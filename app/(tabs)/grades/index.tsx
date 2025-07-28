@@ -7,6 +7,7 @@ import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
 import { LineGraph } from 'react-native-graph';
+import { t } from "i18next";
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -25,54 +26,6 @@ import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { set } from "date-fns";
-
-const sortings = [
-  {
-    label: "Alphabétique",
-    value: "alphabetical",
-    icon: {
-      ios: "character",
-      android: "ic_alphabetical",
-    }
-  },
-  {
-    label: "Moyennes",
-    value: "averages",
-    icon: {
-      ios: "chart.xyaxis.line",
-      android: "ic_averages",
-    }
-  },
-  {
-    label: "Date",
-    value: "date",
-    icon: {
-      ios: "calendar",
-      android: "ic_date",
-    }
-  },
-];
-
-const avgAlgorithms = [
-  {
-    label: "Moyenne générale",
-    subtitle: "Toutes les notes",
-    value: "subject",
-    algorithm: (grades) => PapillonSubjectAvg(grades)
-  },
-  {
-    label: "Moyenne des matières",
-    subtitle: "Pondération",
-    value: "weighted",
-    algorithm: (grades) => PapillonWeightedAvg(grades)
-  },
-  {
-    label: "Médiane",
-    subtitle: "Toutes les notes",
-    value: "median",
-    algorithm: (grades) => PapillonMedian(grades)
-  },
-]
 
 const subjects = [
   {
@@ -272,6 +225,56 @@ export default function TabOneScreen() {
   const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+  const sortings = [
+    {
+      label: t("Grades_Sorting_Alphabetical"),
+      value: "alphabetical",
+      icon: {
+        ios: "character",
+        android: "ic_alphabetical",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Averages"),
+      value: "averages",
+      icon: {
+        ios: "chart.xyaxis.line",
+        android: "ic_averages",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Date"),
+      value: "date",
+      icon: {
+        ios: "calendar",
+        android: "ic_date",
+      }
+    },
+  ];
+
+  const avgAlgorithms = [
+    {
+      label: t("Grades_Avg_All_Title"),
+      short: t("Grades_Avg_All_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "subject",
+      algorithm: (grades) => PapillonSubjectAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Subject_Title"),
+      short: t("Grades_Avg_Subject_Short"),
+      subtitle: t("Grades_Method_Weighted"),
+      value: "weighted",
+      algorithm: (grades) => PapillonWeightedAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Median_Title"),
+      short: t("Grades_Avg_Median_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "median",
+      algorithm: (grades) => PapillonMedian(grades)
+    },
+  ]
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -531,10 +534,32 @@ export default function TabOneScreen() {
         />
       )}
 
-      <NativeHeaderTitle>
-        <Typography variant="navigation">
-          Notes
-        </Typography>
+      <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled}>
+        <Dynamic
+          animated={true}
+          style={{
+            flexDirection: "column",
+            alignItems: Platform.OS === 'android' ? "left" : "center",
+            justifyContent: "center",
+            gap: 4,
+            width: 200,
+            height: 60,
+            marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+          }}
+        >
+          <Dynamic animated>
+            <Typography variant="navigation">
+              {t("Tab_Grades")}
+            </Typography>
+          </Dynamic>
+          {fullyScrolled && (
+            <Dynamic animated>
+              <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
+                {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {shownAverage.toFixed(2)}/20
+              </Typography>
+            </Dynamic>
+          )}
+        </Dynamic>
       </NativeHeaderTitle>
 
       <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting + ":" + currentAlgorithm}>
@@ -552,7 +577,7 @@ export default function TabOneScreen() {
           actions={[
             {
               id: 'sorting',
-              title: 'Tri par',
+              title: t("Grades_Menu_SortBy"),
               image: Platform.select({
                 ios: 'line.3.horizontal.decrease',
                 android: 'ic_sort',
@@ -572,7 +597,7 @@ export default function TabOneScreen() {
             },
             {
               id: 'algorithm',
-              title: 'Moyenne par',
+              title: t("Grades_Menu_AverageBy"),
               image: Platform.select({
                 ios: 'chart.pie',
                 android: 'ic_algorithm',

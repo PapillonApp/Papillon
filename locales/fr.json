@@ -56,5 +56,22 @@
   "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
   "Tasks_NoTasks_Nav": "Aucune tâche",
   "Task_Start": "À faire",
-  "Task_Complete": "Terminé"
+  "Task_Complete": "Terminé",
+
+  "Grades_Avg_All_Title": "Moyenne générale",
+  "Grades_Avg_All_Short": "Moy. générale",
+  "Grades_Avg_Subject_Title": "Moyenne des matières",
+  "Grades_Avg_Subject_Short": "Moy. matières",
+  "Grades_Avg_Median_Title": "Médiane",
+  "Grades_Avg_Median_Short": "Médiane",
+
+  "Grades_Method_AllGrades": "Toutes les notes",
+  "Grades_Method_Weighted": "Pondération",
+
+  "Grades_Sorting_Alphabetical": "Alphabétique",
+  "Grades_Sorting_Averages": "Moyennes",
+  "Grades_Sorting_Date": "Date",
+
+  "Grades_Menu_SortBy": "Tri par",
+  "Grades_Menu_AverageBy": "Moyenne par"
 }
