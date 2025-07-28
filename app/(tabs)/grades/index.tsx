@@ -2,7 +2,7 @@ import React, { useCallback, useState, useMemo, useRef, useEffect } from "react"
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { Platform, Pressable, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
@@ -429,24 +429,30 @@ export default function TabOneScreen() {
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
     >
-      <LineGraph
-        points={graphAxis}
-        animated={true}
-        color="#29947A"
-        enablePanGesture={true}
-        onPointSelected={handleGestureUpdate}
-        onGestureEnd={handleGestureEnd}
-        verticalPadding={30}
-        horizontalPadding={30}
-        lineThickness={5}
-        panGestureDelay={0}
-        enableIndicator={true}
-        indicatorPulsating={true}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      />
+      <React.Suspense fallback={
+        <View style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color="#29947A" />
+        </View>
+      }>
+        <LineGraph
+          points={graphAxis}
+          animated={true}
+          color="#29947A"
+          enablePanGesture={true}
+          onPointSelected={handleGestureUpdate}
+          onGestureEnd={handleGestureEnd}
+          verticalPadding={30}
+          horizontalPadding={30}
+          lineThickness={5}
+          panGestureDelay={0}
+          enableIndicator={true}
+          indicatorPulsating={true}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      </React.Suspense>
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
