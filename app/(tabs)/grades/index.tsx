@@ -6,7 +6,7 @@ import { Platform, Pressable, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
-import ReanimatedGraph, { ReanimatedGraphPublicMethods } from '@birdwingo/react-native-reanimated-graph';
+import { LineGraph } from 'react-native-graph';
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -24,6 +24,7 @@ import { Animation } from "@/ui/utils/Animation";
 import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import { set } from "date-fns";
 
 const sortings = [
   {
@@ -393,18 +394,19 @@ export default function TabOneScreen() {
   }, [subjects, currentAlgorithm]);
 
   const graphAxis = useMemo(() => {
-    return {
-      xAxis: currentAverageHistory.map(item => new Date(item.date).getTime()),
-      yAxis: currentAverageHistory.map(item => item.average),
-    };
+    const newGraph = currentAverageHistory.map(item => ({
+      value: item.average,
+      date: new Date(item.date)
+    }));
+
+    return newGraph;
   }, [currentAverageHistory]);
 
   const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
 
-  const handleGestureUpdate = useCallback((x: number, y: number, index: number) => {
-    const selectedAverage = currentAverageHistory[index]?.average || 0;
-    setShownAverage(selectedAverage);
-    setSelectionDate(currentAverageHistory[index]?.date || null);
+  const handleGestureUpdate = useCallback((p) => {
+    setShownAverage(p.value);
+    setSelectionDate(p.date.getTime());
   }, [currentAverageHistory]);
 
   const handleGestureEnd = useCallback(() => {
@@ -412,50 +414,41 @@ export default function TabOneScreen() {
     setSelectionDate(null);
   }, [average]);
 
-  useEffect(() => {
-    if (graphRef.current) {
-      graphRef.current.updateData(graphAxis);
-    }
-  }, [graphAxis]);
-
-  const GradesGraph = useMemo(() => {
-    return (
-      <View
+  const GradesGraph = useCallback(() => (
+    <Reanimated.View
+      key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
+      style={{
+        width: windowDimensions.width + 36 - 8,
+        height: 120,
+        position: 'absolute',
+        top: -20,
+        left: -36,
+        right: 0,
+        zIndex: 1000,
+      }}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+    >
+      <LineGraph
+        points={graphAxis}
+        animated={true}
+        color="#29947A"
+        enablePanGesture={true}
+        onPointSelected={handleGestureUpdate}
+        onGestureEnd={handleGestureEnd}
+        verticalPadding={30}
+        horizontalPadding={30}
+        lineThickness={5}
+        panGestureDelay={0}
+        enableIndicator={true}
+        indicatorPulsating={true}
         style={{
-          width: windowDimensions.width + 42,
-          marginLeft: -42,
-          height: 100,
-          maxWidth: 500,
+          width: "100%",
+          height: "100%",
         }}
-      >
-        <ReanimatedGraph
-          ref={graphRef}
-          xAxis={graphAxis.xAxis}
-          yAxis={graphAxis.yAxis}
-          color="#29947A"
-          showXAxisLegend={false}
-          showYAxisLegend={false}
-          showExtremeValues={false}
-          widthRatio={0.9}
-          strokeWidth={5}
-          type="curve"
-          height={110}
-          showBlinkingDot={true}
-          blinkingDotRadius={0}
-          blinkingDotExpansion={15 + 2}
-          selectionLines={"none"}
-          animationDuration={400}
-          showSelectionDot={true}
-          selectionDotExpansion={15}
-          selectionDotRadius={2}
-          gestureEnabled={true}
-          smoothAnimation={true}
-          onGestureUpdate={handleGestureUpdate}
-          onGestureEnd={handleGestureEnd}
-        />
-      </View>
-    );
-  }, [graphAxis.xAxis, graphAxis.yAxis, windowDimensions.width, handleGestureUpdate, handleGestureEnd]);
+      />
+    </Reanimated.View>
+  ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
   return (
     <>
@@ -475,7 +468,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.ui.key}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            {GradesGraph}
+            <GradesGraph />
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>
