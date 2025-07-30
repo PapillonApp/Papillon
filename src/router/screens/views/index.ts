@@ -90,20 +90,16 @@ export default [
     presentation: "formSheet",
     headerShown: true,
     sheetCornerRadius: 16,
-    sheetAllowedDetents: [0.6, 1],
+    sheetAllowedDetents: "all",
     sheetGrabberVisible: true,
-    // @ts-expect-error
-    sheetInitialDetentIndex: 0,
   }),
   createScreen("CustomizeHeader", CustomizeHeader, {
     headerTitle: "Personnaliser",
     presentation: "formSheet",
     headerShown: true,
     sheetCornerRadius: 16,
-    sheetAllowedDetents: [0.5, 0.7],
+    sheetAllowedDetents: "all",
     sheetGrabberVisible: true,
-    // @ts-expect-error
-    sheetInitialDetentIndex: 0,
   }),
   createScreen("GradeSubject", GradeSubjectScreen, {
     headerTitle: "Détail de la matière",

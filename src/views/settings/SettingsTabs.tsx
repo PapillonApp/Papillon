@@ -127,7 +127,7 @@ const SettingsTabs = () => {
               ? { ...defaultTab, enabled: storedTab.enabled, installed: true }
               : null;
           })
-          .filter((tab) => tab !== null);
+          .filter((tab): tab is NonNullable<typeof tab> => tab !== null);
 
         const newTabsFound: Tab[] = defaultTabs.filter((defaultTab) => !storedTabs.some((storedTab) => storedTab.name === defaultTab.tab)).map((tab) => ({ ...tab, installed: true }));
 

@@ -34,7 +34,7 @@ const SettingsMultiServiceSpace: Screen<"SettingsMultiServiceSpace"> = ({ naviga
   const insets = useSafeAreaInsets();
   const space = route.params.space;
   const accounts = useAccounts();
-  const availableAccounts = accounts.accounts.filter(account => !account.isExternal && !(account.service == AccountService.PapillonMultiService));
+  const availableAccounts = accounts.accounts.filter((account): account is PrimaryAccount => !account.isExternal && !(account.service == AccountService.PapillonMultiService));
   const deleteMultiServiceSpace = useMultiService(store => store.remove);
   const updateMultiServiceSpace = useMultiService(store => store.update);
   const setMultiServiceSpaceAccountFeature = useMultiService(store => store.setFeatureAccount);

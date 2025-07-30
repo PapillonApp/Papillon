@@ -82,7 +82,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
         menuConfig={{
           menuTitle: "",
           // @ts-ignore
-          menuItems: data.filter((item) => item !== null).map((item, index) => {
+          menuItems: data.filter((item): item is NonNullable<typeof item> => item !== null).map((item, index) => {
             return {
               actionKey: "action-"+index.toString(),
               actionTitle: typeof item === "string" ? item : item.label,
@@ -153,7 +153,7 @@ const PapillonPicker: React.FC<PapillonPickerProps> = ({
             }}
             tint={theme.dark ? "dark" : "light"}
           >
-            {data.filter((item) => item !== null).map((item, index) => {
+            {data.filter((item): item is NonNullable<typeof item> => item !== null).map((item, index) => {
               // check if item is a string or a component
               const isNotString = typeof item !== "string";
 

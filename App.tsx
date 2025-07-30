@@ -6,7 +6,7 @@ import { LogBox, AppState } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAccounts, useCurrentAccount } from "@/stores/account";
-import { AccountService } from "@/stores/account/types";
+import { AccountService, PrimaryAccount } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
 import { isExpoGo } from "@/utils/native/expoGoAlert";
 import { atobPolyfill, btoaPolyfill } from "js-base64";
@@ -31,7 +31,7 @@ export default function App () {
   const [appState, setAppState] = useState(AppState.currentState);
   const currentAccount = useCurrentAccount((store) => store.account);
   const switchTo = useCurrentAccount((store) => store.switchTo);
-  const accounts = useAccounts((store) => store.accounts).filter(account => !account.isExternal);
+  const accounts = useAccounts((store) => store.accounts).filter((account): account is PrimaryAccount => !account.isExternal);
 
   const defined = useFlagsStore(state => state.defined);
   const [fontsLoaded] = useFonts(getToLoadFonts(defined));

@@ -4,7 +4,7 @@ import { PrimaryAccount } from "@/stores/account/types";
 export const getAccounts = (): PrimaryAccount[] => {
   return useAccounts
     .getState()
-    .accounts.filter((account) => !account.isExternal);
+    .accounts.filter((account): account is PrimaryAccount => !account.isExternal);
 };
 
 export const getSwitchToFunction = () => {
