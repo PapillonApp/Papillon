@@ -16,6 +16,8 @@ import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import {getToLoadFonts} from "@/consts/Fonts";
 import { useFlagsStore } from "@/stores/flags";
+import { safeAsync, safeAsyncVoid } from "@/utils/async/safeAsync";
+import ErrorBoundary from "@/components/Global/ErrorBoundary";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -76,9 +78,10 @@ export default function App () {
       );
       for (const account of accounts) {
         if (account.localID === currentAccount.localID) {
-          await switchTo(account).catch((error) => {
-            log(`Error during switchTo: ${error}`, "RefreshToken");
-          });
+          await safeAsync(
+            () => switchTo(account),
+            "RefreshToken switchTo"
+          );
           break;
         }
       }
@@ -93,14 +96,19 @@ export default function App () {
 
       if (nextAppState === "active") {
         if (!isExpoGo()) {
-          const notifee = (await import("@notifee/react-native")).default;
-          await notifee.setBadgeCount(0);
-          await notifee.cancelAllNotifications();
+          await safeAsync(async () => {
+            const notifee = (await import("@notifee/react-native")).default;
+            await notifee.setBadgeCount(0);
+            await notifee.cancelAllNotifications();
+          }, "AppState active notification cleanup");
         }
-        await handleBackgroundState();
+        await safeAsync(() => handleBackgroundState(), "AppState active background state");
       } else if (nextAppState.match(/inactive|background/)) {
         const now = Date.now();
-        await AsyncStorage.setItem("@background_timestamp", now.toString());
+        safeAsyncVoid(
+          () => AsyncStorage.setItem("@background_timestamp", now.toString()),
+          "AppState background timestamp save"
+        );
       }
       setAppState(nextAppState);
     });
@@ -132,8 +140,10 @@ export default function App () {
   if (!fontsLoaded) return null;
 
   return (
-    <SoundHapticsProvider>
-      <Router />
-    </SoundHapticsProvider>
+    <ErrorBoundary>
+      <SoundHapticsProvider>
+        <Router />
+      </SoundHapticsProvider>
+    </ErrorBoundary>
   );
 }
