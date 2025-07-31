@@ -24,12 +24,12 @@ export function mapGradeToShared(grade: Grade): SharedGrade {
     correctionFile: JSON.parse(grade.correctionFile ?? "") as Attachment,
     bonus: grade.bonus,
     optional: grade.optional,
-    outOf: grade.outOf(),
+    outOf: grade.outOf,
     coefficient: grade.coefficient,
-    studentScore: grade.studentScore(),
-    averageScore: grade.averageScore(),
-    minScore: grade.minScore(),
-    maxScore: grade.maxScore(),
+    studentScore: grade.studentScore,
+    averageScore: grade.averageScore,
+    minScore: grade.minScore,
+    maxScore: grade.maxScore,
     fromCache: true,
     createdByAccount: grade.createdByAccount
   }
@@ -37,8 +37,8 @@ export function mapGradeToShared(grade: Grade): SharedGrade {
 
 export function mapPeriodGradesToShared(data: PeriodGrades): SharedPeriodGrades {
   return {
-    studentOverall: data.studentOverall(),
-    classAverage: data.classAverage(),
+    studentOverall: data.studentOverall,
+    classAverage: data.classAverage,
     subjects: data.subjects.map(mapSubjectToShared),
     createdByAccount: data.createdByAccount
   }

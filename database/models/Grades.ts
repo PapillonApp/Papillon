@@ -3,6 +3,8 @@
 import { Model } from '@nozbe/watermelondb';
 import { children, field, relation } from "@nozbe/watermelondb/decorators";
 
+import { GradeScore } from '@/services/shared/grade';
+
 import Subject from './Subject';
 
 export class Period extends Model {
@@ -44,23 +46,23 @@ export class Grade extends Model {
 	@field('minScore') minScoreRaw: string;
 	@field('maxScore') maxScoreRaw: string;
 
-	get outOf(): any {
+	get outOf(): GradeScore {
 	  return JSON.parse(this.outOfRaw || '{}');
 	}
 
-	get studentScore(): any {
+	get studentScore(): GradeScore {
 	  return JSON.parse(this.studentScoreRaw || '{}');
 	}
 
-	get averageScore(): any {
+	get averageScore(): GradeScore {
 	  return JSON.parse(this.averageScoreRaw || '{}');
 	}
 
-	get minScore(): any {
+	get minScore(): GradeScore {
 	  return JSON.parse(this.minScoreRaw || '{}');
 	}
 
-	get maxScore(): any {
+	get maxScore(): GradeScore {
 	  return JSON.parse(this.maxScoreRaw || '{}');
 	}
 }
@@ -82,11 +84,11 @@ export class PeriodGrades extends Model {
   @relation('periods', 'periodId') period: Period;
   @children('subjects') subjects: Subject[];
 
-  get studentOverall(): any {
+  get studentOverall(): GradeScore {
     return JSON.parse(this.studentOverallRaw || '{}');
   }
 
-  get classAverage(): any {
+  get classAverage(): GradeScore {
     return JSON.parse(this.classAverageRaw || '{}');
   }
 }

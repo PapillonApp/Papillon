@@ -4,7 +4,7 @@ import { Subject as SharedSubject } from "@/services/shared/grade";
 
 export function mapSubjectToShared(subject: Subject): SharedSubject {
   return {
-    id: subject.subjectId,
+    id: subject.id,
     name: subject.name,
     studentAverage: subject.studentAverage,
     classAverage: subject.classAverage,

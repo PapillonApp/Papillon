@@ -5,6 +5,7 @@ import { generateId } from "@/utils/generateId";
 import { error } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
+import { mapChatsToShared, mapMessagesToShared, mapRecipientsToShared } from "./mappers/chats";
 import { Chat, Message, Recipient } from "./models/Chat";
 
 export async function addChatsToDatabase(chats: SharedChat[]) {
@@ -93,5 +94,44 @@ export async function addMessagesToDatabase(chat: SharedChat, messages: SharedMe
         })
       })
     })
+  }
+}
+
+export async function getChatsFromCache(): Promise<SharedChat[]> {
+  try {
+    const database = getDatabaseInstance();
+    const chats = await database.get<Chat>('chats').query();
+
+    return mapChatsToShared(chats)
+  } catch (e) {
+    error(String(e));
+  }
+}
+
+export async function getRecipientsFromCache(chat: SharedChat): Promise<SharedRecipient[]> {
+  try {
+    const database = getDatabaseInstance();
+    const chatId = generateId(chat.createdByAccount + chat.subject + chat.date);
+    const recipients = await database.get<Recipient>('recipients').query(
+      Q.where('chatId', chatId)
+    ).fetch();
+
+    return mapRecipientsToShared(recipients);
+  } catch (e) {
+    error(String(e));
+  }
+}
+
+export async function getMessagesFromCache(chat: SharedChat): Promise<SharedMessage[]> {
+  try {
+    const database = getDatabaseInstance();
+    const chatId = generateId(chat.createdByAccount + chat.subject + chat.date);
+    const messages = await database.get<Message>('messages').query(
+      Q.where('chatId', chatId)
+    ).fetch();
+
+    return mapMessagesToShared(messages);
+  } catch (e) {
+    error(String(e));
   }
 }
