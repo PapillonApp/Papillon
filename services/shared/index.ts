@@ -6,6 +6,7 @@ import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, get
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
+import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
@@ -237,7 +238,13 @@ export class AccountManager {
       Capabilities.TIMETABLE,
       async client =>
         client.getWeeklyTimetable ? await client.getWeeklyTimetable(date) : [],
-      { multiple: true }
+      { 
+        multiple: true,
+        fallback: async () => getCoursesFromCache(date),
+        saveToCache: async (data: CourseDay[]) => {
+          await addCourseDayToDatabase(data)
+        }
+      }
     );
   }
 
