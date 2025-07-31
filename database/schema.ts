@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 12,
+  version: 13,
   tables: [
     tableSchema({
       name: 'events',
@@ -205,5 +205,23 @@ export const mySchema = appSchema({
         { name: 'chatId', type: 'string', isIndexed: true }
       ]
     }),
+    tableSchema({
+      name: "courses",
+      columns: [
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'courseId', type: 'string' },
+        { name: 'subject', type: 'string' },
+        { name: 'type', type: 'number' },
+        { name: 'from', type: 'number' },
+        { name: 'to', type: 'number' },
+        { name: 'additionalInfo', type: 'string', isOptional: true },
+        { name: 'room', type: 'string', isOptional: true },
+        { name: 'teacher', type: 'string', isOptional: true },
+        { name: 'group', type: 'string', isOptional: true },
+        { name: 'backgroundColor', type: 'string', isOptional: true },
+        { name: 'status', type: 'number', isOptional: true },
+        { name: 'url', type: 'string', isOptional: true }
+      ]
+    })
   ],
 });
