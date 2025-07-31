@@ -190,7 +190,8 @@ export const mySchema = appSchema({
       columns: [
         { name: 'id', type: 'string' },
         { name: 'name', type: 'string' },
-        { name: 'class', type: 'string', isOptional: true }
+        { name: 'class', type: 'string', isOptional: true },
+        { name: 'chatId', type: 'string' }
       ]
     }),
     tableSchema({
@@ -201,7 +202,8 @@ export const mySchema = appSchema({
         { name: 'author', type: 'string' },
         { name: 'subject', type: 'string' },
         { name: 'date', type: 'number' },
-        { name: 'attachments', type: 'string' }
+        { name: 'attachments', type: 'string' },
+        { name: 'chatId', type: 'string' }
       ]
     }),
   ],

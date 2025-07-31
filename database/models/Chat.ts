@@ -22,7 +22,7 @@ export class Recipient extends Model {
 	@field('id') id: string;
 	@field('name') name: string;
 	@field('class') class?: string;
-	@relation('chats', 'id') chat;
+	@relation('chats', 'chatId') chat: Chat;
 }
 
 export class Message extends Model {
@@ -34,5 +34,5 @@ export class Message extends Model {
 	@field('subject') subject: string;
 	@field('date') date: number;
 	@field('attachments') attachments: string;
-	@relation('chats', 'id') chat: Chat;
+	@relation('chats', 'chatId') chat: Chat;
 }

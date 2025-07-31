@@ -56,7 +56,7 @@ export async function addRecipientsToDatabase(chat: SharedChat, messages: Shared
           id: id,
           name: item.name,
           class: item.class,
-          chat: dbChat
+          chatId: chatId
         })
       })
     })
@@ -89,7 +89,7 @@ export async function addMessagesToDatabase(chat: SharedChat, messages: SharedMe
           author: item.author,
           date: item.date.getTime(),
           attachments: JSON.stringify(item.attachments),
-          chat: dbChat
+          chatId: chatId
         })
       })
     })

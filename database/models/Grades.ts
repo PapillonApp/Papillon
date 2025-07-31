@@ -21,7 +21,6 @@ export class Grade extends Model {
 
   @field('createdByAccount') createdByAccount: string;
   @field('id') id: string;
-  @field('subjectId') subjectId?: string;
   @relation('subjects', 'subjectId') subject: Subject;
   @field('description') description: string;
   @field('givenAt') givenAt: number;
