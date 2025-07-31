@@ -1,4 +1,4 @@
-import { SessionHandle } from "pawnote";
+import { SessionHandle, TabLocation } from "pawnote";
 
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
@@ -27,7 +27,7 @@ import { error } from "@/utils/logger/logger";
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
-  capabilities = [Capabilities.HOMEWORK, Capabilities.NEWS, Capabilities.REFRESH];
+  capabilities: Capabilities[] = [Capabilities.REFRESH];
   session : SessionHandle | undefined = undefined;
   authData: Auth = {};
 
@@ -37,6 +37,24 @@ export class Pronote implements SchoolServicePlugin {
     const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
+
+    const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
+      [TabLocation.Assignments]: Capabilities.HOMEWORK,
+      [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_WRITE],
+      [TabLocation.Grades]: Capabilities.GRADES,
+      [TabLocation.Notebook]: Capabilities.ATTENDANCE,
+      [TabLocation.News]: Capabilities.NEWS,
+      [TabLocation.Menus]: Capabilities.CANTEEN_MENU,
+      [TabLocation.Timetable]: Capabilities.TIMETABLE,
+    };
+
+    for (const tab of this.session.user.authorizations.tabs) {
+      const capability = tabCapabilities[tab];
+      if (capability) {
+        this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));
+      }
+    }
+		
     return this;
   }
 
