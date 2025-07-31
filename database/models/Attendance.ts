@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { Model, Relation } from '@nozbe/watermelondb';
+import { Model } from '@nozbe/watermelondb';
 import { children, field, relation } from '@nozbe/watermelondb/decorators';
 
 import { Attachment } from '@/services/shared/attachment';
@@ -18,10 +18,10 @@ export class Attendance extends Model {
   @field('createdByAccount') createdByAccount: string;
   @field('period') period: string;
 
-  @children('delays') delays!: Relation<Delay>;
-  @children('absences') absences!: Relation<Absence>;
-  @children('observations') observations!: Relation<Observation>;
-  @children('punishments') punishments!: Relation<Punishment>;
+  @children('delays') delays!: Query<Delay>;
+  @children('absences') absences!: Query<Absence>;
+  @children('observations') observations!: Query<Observation>;
+  @children('punishments') punishments!: Query<Punishment>;
 }
 
 export class Delay extends Model {
