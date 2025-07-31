@@ -21,8 +21,8 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
 		
     await db.write(async () => {
       await db.get('canteenmenus').create((record: Model) => {
-        const subject = record as CanteenMenu;
-        Object.assign(subject, {
+        const menu = record as CanteenMenu;
+        Object.assign(menu, {
           id: id,
           date: item.date.getTime(),
           lunch: JSON.stringify(item.lunch),

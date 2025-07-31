@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 10,
+  version: 11,
   tables: [
     tableSchema({
       name: 'events',
@@ -174,6 +174,35 @@ export const mySchema = appSchema({
         { name: 'dinner', type: 'string', isOptional: true },
         { name: 'createdByAccount', type: 'string' }
       ]
-    })
+    }),
+    tableSchema({
+      name: "chats",
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'subject', type: 'string' },
+        { name: 'recipient', type: 'string', isOptional: true },
+        { name: 'creator', type: 'string', isOptional: true },
+        { name: 'date', type: 'number' }
+      ]
+    }),
+    tableSchema({
+      name: "recipients",
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'name', type: 'string' },
+        { name: 'class', type: 'string', isOptional: true }
+      ]
+    }),
+    tableSchema({
+      name: "messages",
+      columns: [
+        { name: 'id', type: 'string' },
+        { name: 'content', type: 'string' },
+        { name: 'author', type: 'string' },
+        { name: 'subject', type: 'string' },
+        { name: 'date', type: 'number' },
+        { name: 'attachments', type: 'string' }
+      ]
+    }),
   ],
 });

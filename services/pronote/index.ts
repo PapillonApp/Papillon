@@ -90,7 +90,7 @@ export class Pronote implements SchoolServicePlugin {
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
     if (this.session) {
-      return fetchPronoteCanteenMenu(this.session, startDate);
+      return fetchPronoteCanteenMenu(this.session, this.accountId, startDate);
     }
 
     error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
