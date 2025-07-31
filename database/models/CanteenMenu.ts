@@ -8,7 +8,7 @@ import { Meal } from '@/services/shared/canteen';
 export default class CanteenMenu extends Model {
   static table = "canteenmenus";
 
-	@field('id') id: string;
+	@field('menuId') id: string;
 	@field('date') date: number;
 	@field('lunch') lunchRaw: string;
 	@field('dinner') mealRaw: string;

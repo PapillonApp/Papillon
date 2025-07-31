@@ -14,7 +14,7 @@ export class Period extends Model {
 
   @field('createdByAccount') createdByAccount: string;
   @field('name') name: string;
-  @field('id') id: string;
+  @field('periodId') id: string;
   @field('start') start: number;
   @field('end') end: number;
   @children('periodgrades') grades: PeriodGrades[];
@@ -28,7 +28,7 @@ export class Grade extends Model {
   };
 
   @field('createdByAccount') createdByAccount: string;
-  @field('id') id: string;
+  @field('gradeId') id: string;
   @field('subjectId') subjectId?: string;
   @relation('subjects', 'subjectId') subject?: Subject;
   @field('description') description: string;
@@ -73,7 +73,7 @@ export class PeriodGrades extends Model {
     subjects: { type: 'has_many', foreignKey: 'periodGradeId' },
   };
 
-  @field('id') id: string;
+  @field('periodGradeId') id: string;
   @field('createdByAccount') createdByAccount: string;
   @field('studentOverall') studentOverallRaw: string;
   @field('classAverage') classAverageRaw: string;

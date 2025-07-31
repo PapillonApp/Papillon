@@ -71,7 +71,7 @@ export const mySchema = appSchema({
       name: 'periods',
       columns: [
         { name: 'name', type: 'string' },
-        { name: 'id', type: 'string' },
+        { name: 'periodId', type: 'string' },
         { name: 'start', type: 'number' },
         { name: 'end', type: 'number' },
         { name: 'createdByAccount', type: "string" }
@@ -81,7 +81,7 @@ export const mySchema = appSchema({
       name: 'grades',
       columns: [
         { name: 'createdByAccount', type: 'string' },
-        { name: 'id', type: 'string' },
+        { name: 'gradeId', type: 'string' },
         { name: 'subjectId', type: 'string', isOptional: true },
         { name: 'description', type: 'string' },
         { name: 'givenAt', type: 'number' },
@@ -100,7 +100,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'periodgrades',
       columns: [
-        { name: 'id', type: 'string' },
+        { name: 'periodGradeId', type: 'string' },
         { name: 'periodId', type: 'string', isIndexed: true },
         { name: 'createdByAccount', type: 'string' },
         { name: 'studentOverall', type: 'string' },
@@ -110,7 +110,6 @@ export const mySchema = appSchema({
     tableSchema({
       name: "attendance",
       columns: [
-        { name: 'id', type: 'string' },
         { name: 'createdByAccount', type: 'string' },
         { name: 'period', type: 'string' }
       ]
@@ -167,7 +166,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: "canteenmenus",
       columns: [
-        { name: 'id', type: 'string' },
+        { name: 'menuId', type: 'string' },
         { name: 'date', type: 'number' },
         { name: 'lunch', type: 'string', isOptional: true },
         { name: 'dinner', type: 'string', isOptional: true },
@@ -177,7 +176,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: "chats",
       columns: [
-        { name: 'id', type: 'string' },
+        { name: 'chatId', type: 'string' },
         { name: 'subject', type: 'string' },
         { name: 'recipient', type: 'string', isOptional: true },
         { name: 'creator', type: 'string', isOptional: true },
@@ -188,7 +187,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: "recipients",
       columns: [
-        { name: 'id', type: 'string' },
+        { name: 'recipientId', type: 'string' },
         { name: 'name', type: 'string' },
         { name: 'class', type: 'string', isOptional: true },
         { name: 'chatId', type: 'string', isIndexed: true }
@@ -197,7 +196,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: "messages",
       columns: [
-        { name: 'id', type: 'string' },
+        { name: 'messageId', type: 'string' },
         { name: 'content', type: 'string' },
         { name: 'author', type: 'string' },
         { name: 'subject', type: 'string' },

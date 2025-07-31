@@ -267,6 +267,8 @@ export class AccountManager {
       }
       throw new Error("Internet not reachable and no fallback provided.");
     }
+
+    return undefined;
   }
   
   private async fetchData<T>(
@@ -286,7 +288,10 @@ export class AccountManager {
     callback: (client: SchoolServicePlugin) => Promise<T | T[]>,
     options?: FetchOptions<T | T[]> & { multiple?: boolean }
   ): Promise<T | T[]> {
-    this.handleHasInternet<T>(options);
+    const resultFromFallback = await this.handleHasInternet<T>(options);
+    if (resultFromFallback !== undefined) {
+      return resultFromFallback;
+    }
     try {
       if (options?.clientId !== undefined) {
         const client = this.clients[options.clientId];
