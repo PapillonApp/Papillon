@@ -1,9 +1,11 @@
 import { Food as PawnoteFood, Meal as PawnoteMeal, Menu, menus, SessionHandle } from "pawnote";
-import { error } from "@/utils/logger/logger";
+
 import { CanteenMenu, Food, Meal } from "@/services/shared/canteen";
+import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteCanteenMenu(
   session: SessionHandle,
+  accountId: string,
   date: Date
 ): Promise<CanteenMenu[]> {
   if (!session) {
@@ -17,6 +19,7 @@ export async function fetchPronoteCanteenMenu(
 
   return weeklyMenu.days.map(day => ({
     date: day.date,
+    createdByAccount: accountId,
     ...mapCanteenMenu(day),
   })).sort((a, b) => a.date.getTime() - b.date.getTime());
 }

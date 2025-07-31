@@ -8,8 +8,9 @@ import {
   timetableFromWeek,
   translateToWeekNumber,
 } from "pawnote";
-import { error } from "@/utils/logger/logger";
+
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
+import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteWeekTimetable(
   session: SessionHandle,
@@ -141,15 +142,12 @@ export async function fetchPronoteCourseResources(
 }
 
 const mapCourseStatus = (course: TimetableClassLesson): CourseStatus | undefined => {
+  // eslint-disable-next-line default-case
   switch (course.status) {
   case "Cours annulé":
-    return CourseStatus.CANCELED;
   case "Prof. absent":
-    return CourseStatus.CANCELED;
   case "Classe absente":
-    return CourseStatus.CANCELED;
   case "Prof./pers. absent":
-    return CourseStatus.CANCELED;
   case "Sortie pédagogique":
     return CourseStatus.CANCELED;
   }

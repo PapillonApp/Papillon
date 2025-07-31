@@ -1,4 +1,6 @@
-export interface CanteenMenu {
+import { GenericInterface } from "./types";
+
+export interface CanteenMenu extends GenericInterface {
   date: Date;
   lunch?: Meal;
   dinner?: Meal;

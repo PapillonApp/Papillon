@@ -1,16 +1,6 @@
-import { Homework } from "@/services/shared/homework";
-import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
-import { Auth, Services } from "@/stores/account/types";
-import { fetchPronoteHomeworks } from "@/services/pronote/homework";
-import { error } from "@/utils/logger/logger";
-import { refreshPronoteAccount } from "@/services/pronote/refresh";
-import { News } from "@/services/shared/news";
-import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
-import { Period, PeriodGrades } from "@/services/shared/grade";
-import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
+import { SessionHandle } from "pawnote";
+
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
-import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
 import {
   fetchPronoteChatMessages,
@@ -18,10 +8,21 @@ import {
   fetchPronoteChats,
   fetchPronoteRecipients, sendPronoteMessageInChat,
 } from "@/services/pronote/chat";
-import { Chat, Message, Recipient } from "@/services/shared/chat";
-import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
+import { fetchPronoteHomeworks } from "@/services/pronote/homework";
+import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
+import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { fetchPronoteCourseResources, fetchPronoteWeekTimetable } from "@/services/pronote/timetable";
-import { SessionHandle } from "pawnote";
+import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { News } from "@/services/shared/news";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
+import { Auth, Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
@@ -33,7 +34,7 @@ export class Pronote implements SchoolServicePlugin {
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    const refresh = (await refreshPronoteAccount(credentials));
+    const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
     return this;
@@ -89,7 +90,7 @@ export class Pronote implements SchoolServicePlugin {
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
     if (this.session) {
-      return fetchPronoteCanteenMenu(this.session, startDate);
+      return fetchPronoteCanteenMenu(this.session, this.accountId, startDate);
     }
 
     error("Session is not valid", "Pronote.getWeeklyCanteenMenu");

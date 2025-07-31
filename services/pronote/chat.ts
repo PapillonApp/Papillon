@@ -7,8 +7,9 @@ import {
   SessionHandle,
   TabLocation,
 } from "pawnote";
-import { error } from "@/utils/logger/logger";
+
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteChats(
   session: SessionHandle,
@@ -136,7 +137,7 @@ export async function fetchPronoteRecipients(
   }
 
   const alLRecipients = await Promise.all(
-    session.user!.resources.flatMap(resource =>
+    session.user.resources.flatMap(resource =>
       [
         EntityKind.Teacher,
         EntityKind.Personal
