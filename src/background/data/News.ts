@@ -72,7 +72,7 @@ const fetchNews = async (): Promise<Information[]> => {
             page: "NewsItem",
             parameters: {
               important: false,
-              isED: account.service === AccountService.EcoleDirecte,
+              isED: false, // EcoleDirecte no longer supported
               message: JSON.stringify(differences[0]),
             }
           }

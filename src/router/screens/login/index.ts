@@ -1,10 +1,7 @@
 import createScreen from "@/router/helpers/create-screen";
 
 import pronote from "./pronote";
-import ecoledirecte from "./ecoledirecte";
 import ServiceSelector from "@/views/login/ServiceSelector";
-import skolengo from "./skolengo";
-import identityProvider from "./identityProvider";
 import { Platform } from "react-native";
 
 export default [
@@ -17,7 +14,4 @@ export default [
   }),
 
   ...pronote,
-  ...ecoledirecte,
-  ...skolengo,
-  ...identityProvider,
 ] as const;

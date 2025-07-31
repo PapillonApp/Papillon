@@ -1,14 +1,4 @@
 import type pronote from "pawnote";
-import type { Account as PawdirecteAccount, Session as PawdirecteSession } from "pawdirecte";
-import type { Client as ARDClient } from "pawrd";
-import { Client as TurboselfClient } from "turboself-api";
-import { Client as AliseClient, BookingDay } from "alise-api";
-import type ScolengoAPI from "scolengo-api";
-import { Configuration, Identification } from "ezly";
-import type MultiAPI from "esup-multi.js";
-import { SkolengoAuthConfig } from "@/services/skolengo/skolengo-types";
-import { User as ScolengoAPIUser } from "scolengo-api/types/models/Common";
-import { OnlinePayments } from "pawrd/dist";
 
 export interface Tab {
   name: string
@@ -111,19 +101,7 @@ export interface CurrentAccountStore {
 
 export enum AccountService {
   Pronote,
-  // For the future...
-  EcoleDirecte,
-  Skolengo,
-  Local,
-  WebResto,
-  Turboself,
-  ARD,
-  Parcoursup,
-  Onisep,
-  Multi,
-  Izly,
-  Alise,
-  PapillonMultiService
+  Local
 }
 
 /**
@@ -147,14 +125,6 @@ interface BaseAccount {
   personalization: Partial<Personalization>;
 }
 
-interface BaseExternalAccount {
-  localID: string
-  isExternal: true
-  username: string
-  linkedExternalLocalIDs?: string[]
-  data: Record<string, unknown>
-}
-
 export interface PronoteAccount extends BaseAccount {
   service: AccountService.Pronote;
   instance?: pronote.SessionHandle;
@@ -166,44 +136,6 @@ export interface PronoteAccount extends BaseAccount {
   providers: string[];
   serviceData: Record<string, unknown>;
   associatedAccountsLocalIDs?: undefined
-}
-
-export interface EcoleDirecteAccount extends BaseAccount {
-  profilePictureURL: string;
-  service: AccountService.EcoleDirecte;
-  instance: {};
-  authentication: {
-    session: PawdirecteSession
-    account: PawdirecteAccount
-  }
-  identityProvider?: undefined
-  associatedAccountsLocalIDs?: undefined
-  providers: string[];
-  serviceData: Record<string, unknown>;
-}
-
-export interface SkolengoAccount extends BaseAccount {
-  service: AccountService.Skolengo;
-  instance?: ScolengoAPI.Skolengo;
-  authentication: SkolengoAuthConfig;
-  userInfo: ScolengoAPIUser;
-  identityProvider?: undefined;
-  providers: string[];
-  serviceData: Record<string, unknown>;
-  associatedAccountsLocalIDs?: undefined
-}
-
-export interface MultiAccount extends BaseAccount {
-  service: AccountService.Multi
-  instance?: MultiAPI.Multi
-  authentication: {
-    instanceURL: string
-    refreshAuthToken: string
-  }
-  identityProvider?: undefined
-  associatedAccountsLocalIDs?: undefined
-  providers: string[]
-  serviceData: Record<string, unknown>
 }
 
 export interface LocalAccount extends BaseAccount {
@@ -229,86 +161,13 @@ export interface LocalAccount extends BaseAccount {
   associatedAccountsLocalIDs?: undefined
 }
 
-export interface PapillonMultiServiceSpace extends BaseAccount {
-  service: AccountService.PapillonMultiService
-  instance: null | string
-  authentication: null
-  identityProvider: {
-    name: string,
-    identifier: undefined,
-    rawData: undefined
-  },
-  associatedAccountsLocalIDs: string[]
-  providers: string[]
-  serviceData: Record<string, unknown>
-}
-
-
-export interface TurboselfAccount extends BaseExternalAccount {
-  service: AccountService.Turboself
-  instance: undefined
-  authentication: {
-    session: TurboselfClient
-    username: string
-    password: string
-  }
-}
-
-export interface AliseAccount extends BaseExternalAccount {
-  service: AccountService.Alise
-  instance: undefined
-  authentication: {
-    session: AliseClient
-    schoolID: string
-    username: string
-    password: string
-    bookings: BookingDay[]
-    mealPrice: number
-  }
-}
-
-export interface ARDAccount extends BaseExternalAccount {
-  service: AccountService.ARD
-  instance?: ARDClient
-  authentication: {
-    pid: string
-    username: string
-    password: string
-    schoolID: string
-    balances: OnlinePayments
-    mealPrice: number
-  }
-}
-
-export interface IzlyAccount extends BaseExternalAccount {
-  service: AccountService.Izly
-  instance?: Identification
-  authentication: {
-    secret: string
-    identification: Identification
-    configuration: Configuration
-  }
-}
-
 export type PrimaryAccount = (
   | PronoteAccount
-  | EcoleDirecteAccount
-  | SkolengoAccount
-  | MultiAccount
   | LocalAccount
-  | PapillonMultiServiceSpace
 );
-export type ExternalAccount = (
-  | TurboselfAccount
-  | ARDAccount
-  | IzlyAccount
-  | AliseAccount
-);
+export type ExternalAccount = never;
 
-export type Account = (
-  | PrimaryAccount
-  | ExternalAccount
-);
+export type Account = PrimaryAccount;
 
 export interface AccountsStore {
   lastOpenedAccountID: string | null

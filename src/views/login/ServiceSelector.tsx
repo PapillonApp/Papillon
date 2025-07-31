@@ -11,7 +11,7 @@ import ButtonCta from "@/components/FirstInstallation/ButtonCta";
 import MaskStars from "@/components/FirstInstallation/MaskStars";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
 import GetV6Data from "@/utils/login/GetV6Data";
-import { Check, School, WifiOff } from "lucide-react-native";
+import { Check, WifiOff } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import useSoundHapticsWrapper from "@/utils/native/playSoundHaptics";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
@@ -24,8 +24,8 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const { isOnline } = useOnlineStatus();
   const { showAlert } = useAlert();
 
-  type Services = "pronote" | "ed" | "skolengo";
-  const [service, setService] = useState<Services | null>(null);
+  type Services = "pronote";
+  const [service, setService] = useState<Services | null>("pronote");
 
   const [v6Data, setV6Data] = useState<any | null>(null);
 
@@ -58,35 +58,6 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
         playSound(LEson);
       },
     },
-    {
-      name: "ed",
-      title: "ÉcoleDirecte",
-      image: require("../../../assets/images/service_ed.png"),
-      login: () => {
-        navigation.navigate("EcoleDirecteCredentials");
-        playSound(LEson);
-      }
-    },
-    {
-      name: "skolengo",
-      title: "Skolengo",
-      image: require("../../../assets/images/service_skolengo.png"),
-      login: () => {
-        navigation.navigate("SkolengoAuthenticationSelector");
-        playSound(LEson);
-      }
-    },
-    {
-      name: "university",
-      title: "Enseignement supérieur",
-      subtitle: "Universités, IUT, écoles, etc.",
-      image: require("../../../assets/images/service_skolengo.png"),
-      icon: <School />,
-      login: () => {
-        navigation.navigate("IdentityProviderSelector");
-        playSound(LEson);
-      }
-    },
   ];
 
   return (
@@ -94,7 +65,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <MaskStars />
 
       <PapillonShineBubble
-        message="Pour commencer, quel est ton service scolaire ?"
+        message="Connecte-toi à PRONOTE pour commencer !"
         numberOfLines={2}
         width={260}
         offsetTop={"20%"}
@@ -181,7 +152,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <View style={styles.buttons}>
         <ButtonCta
           primary
-          value="Confirmer"
+          value="Se connecter à PRONOTE"
           disabled={service === null}
           onPress={
             isOnline

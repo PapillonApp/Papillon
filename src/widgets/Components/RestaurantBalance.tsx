@@ -32,14 +32,9 @@ const RestaurantBalanceWidget = forwardRef(({
       setHidden(true);
       setLoading(true);
       const balances: Balance[] = [];
-      for (const account of linkedAccounts) {
-        if (account.service === AccountService.Turboself || account.service === AccountService.ARD) {
-          const balance = await balanceFromExternal(account);
-          balances.push(...balance);
-        }
-      }
-      setBalances(balances.filter(balance => balance.label.toLowerCase() !== "cafetaria"));
-      setHidden(balances.length === 0 || balances.every(balance => balance.remaining === 0));
+      // No external restaurant services supported in this version
+      setBalances([]);
+      setHidden(true); // Always hidden since no services are supported
       setLoading(false);
     }();
   }, [linkedAccounts, setHidden]);

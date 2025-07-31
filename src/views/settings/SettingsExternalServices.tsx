@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, View } from "react-native";
 import type { Screen } from "@/router/helpers/types";
 import { usePapillonTheme as useTheme } from "@/utils/ui/theme";
-import { GraduationCap, Utensils, BookOpen, School, BookmarkMinus, Compass, Check, Trash2, BadgeInfo } from "lucide-react-native";
+import { GraduationCap, Check, Trash2, BadgeInfo } from "lucide-react-native";
 import ExternalServicesContainerCard from "@/components/Settings/ExternalServicesContainerCard";
 import {
   NativeList,
@@ -17,18 +17,7 @@ import { useAlert } from "@/providers/AlertProvider";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },
-  [AccountService.EcoleDirecte]: { icon: BookOpen, name: "École Directe" },
-  [AccountService.Skolengo]: { icon: School, name: "Skolengo" },
-  [AccountService.WebResto]: { icon: Utensils, name: "Web Resto" },
-  [AccountService.Turboself]: { icon: Utensils, name: "Turboself" },
-  [AccountService.ARD]: { icon: Utensils, name: "ARD" },
-  [AccountService.Izly]: { icon: Utensils, name: "Izly" },
-  [AccountService.Alise]: { icon: Utensils, name: "Alise" },
-  [AccountService.Parcoursup]: { icon: BookmarkMinus, name: "Parcoursup" },
-  [AccountService.Onisep]: { icon: Compass, name: "Onisep" },
-  [AccountService.Local]: { icon: GraduationCap, name: "Local" },
-  [AccountService.Multi]: { icon: GraduationCap, name: "Polytechnique Hauts-de-France" },
-  [AccountService.PapillonMultiService]: { icon: GraduationCap, name: "Environnement virtuel Papillon" }
+  [AccountService.Local]: { icon: GraduationCap, name: "Local" }
 };
 
 const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
@@ -92,49 +81,11 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
 
       <View>
         <NativeList>
-          <NativeItem
-            onPress={() => {
-              navigation.navigate("ExternalAccountSelector");
-            }}
-            leading={
-              <NativeIcon
-                icon={<Utensils />}
-                color={"#006B6B"}
-              />}
-          >
-            <NativeText variant="title">Ajouter une cantine</NativeText>
-          </NativeItem>
+          <NativeText variant="title" style={{ textAlign: "center", margin: 20, opacity: 0.5 }}>
+            Services externes non disponibles dans cette version
+          </NativeText>
         </NativeList>
       </View>
-
-      {filteredAccounts.length > 0 && (
-        <View>
-          <NativeListHeader
-            label="Comptes externes"
-          />
-          <NativeList>
-            {filteredAccounts.map((account) => (
-              <NativeItem
-                key={account.localID}
-                onPress={() => showAccountInfo(account)}
-                leading={
-                  <NativeIcon
-                    icon={getServiceIcon(account.service)}
-                    color={"#006B6B"}
-                  />
-                }
-              >
-                <View>
-                  <NativeText variant="title">{getServiceName(account.service)}</NativeText>
-                  <NativeText variant="subtitle">
-                    {account.isExternal ? account.username : `${account.studentName?.first} ${account.studentName?.last}`}
-                  </NativeText>
-                </View>
-              </NativeItem>
-            ))}
-          </NativeList>
-        </View>
-      )}
     </ScrollView>
   );
 };

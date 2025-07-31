@@ -27,19 +27,16 @@ const SettingsSupport: Screen<"SettingsSupport"> = ({ navigation }) => {
   const [description, setDescription] = useState<string>();
 
   const currentAccount = useCurrentAccount((store) => store.account!);
-  const AccountType = AccountService[currentAccount.service] !== "Local" && currentAccount.service !== AccountService.PapillonMultiService ? AccountService[currentAccount.service] : currentAccount.identityProvider ? currentAccount.identityProvider.name : "Compte local";
+  const AccountType = AccountService[currentAccount.service] !== "Local" ? AccountService[currentAccount.service] : currentAccount.identityProvider ? currentAccount.identityProvider.name : "Compte local";
 
   const cantineAccounts = useAccounts((state) =>
     state.accounts.filter((acc) =>
-      [AccountService.Turboself, AccountService.ARD, AccountService.Izly, AccountService.Alise].includes(acc.service)
+      false // No external cantine services supported anymore
     )
   );
 
   const serviceNames: Partial<Record<AccountService, string>> = {
-    [AccountService.Turboself]: "Turboself",
-    [AccountService.ARD]: "ARD",
-    [AccountService.Izly]: "Izly",
-    [AccountService.Alise]: "Alise",
+    // No external services supported
   };
 
   const cantineServices = cantineAccounts
