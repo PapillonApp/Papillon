@@ -5,6 +5,7 @@ import Homework from "@/database/models/Homework";
 
 import { Absence, Attendance, Delay, Observation, Punishment } from './models/Attendance';
 import CanteenMenu from './models/CanteenMenu';
+import { Chat, Message, Recipient } from './models/Chat';
 import Event from './models/Event';
 import { Grade, Period, PeriodGrades } from './models/Grades';
 import Ical from './models/Ical';
@@ -18,5 +19,5 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Event, Ical, Subject, Homework, News, Period, Grade, PeriodGrades, Attendance, Delay, Observation, Absence, Punishment, CanteenMenu],
+  modelClasses: [Event, Ical, Subject, Homework, News, Period, Grade, PeriodGrades, Attendance, Delay, Observation, Absence, Punishment, CanteenMenu, Chat, Message, Recipient],
 });

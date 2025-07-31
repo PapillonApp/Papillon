@@ -15,7 +15,7 @@ export const mySchema = appSchema({
         { name: 'status', type: 'string', isOptional: true },
         { name: 'canceled', type: 'boolean', isOptional: true },
         { name: 'readonly', type: 'boolean', isOptional: true },
-        { name: 'subject_id', type: 'string', isOptional: true },
+        { name: 'subject_id', type: 'string', isOptional: true, isIndexed: true },
       ],
     }),
     tableSchema({
@@ -29,14 +29,13 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'subjects',
       columns: [
-        { name: 'subjectId', type: 'string' },
         { name: 'name', type: 'string' },
         { name: 'studentAverage', type: 'string' },
         { name: 'classAverage', type: 'string' },
         { name: 'maximum', type: 'string' },
         { name: 'minimum', type: 'string' },
         { name: 'outOf', type: 'string' },
-        { name: 'periodGradeId', type: 'string', isOptional: true }
+        { name: 'periodGradeId', type: 'string', isOptional: true, isIndexed: true }
       ],
     }),
     tableSchema({
@@ -90,19 +89,19 @@ export const mySchema = appSchema({
         { name: 'correctionFile', type: 'string', isOptional: true },
         { name: 'bonus', type: 'boolean', isOptional: true },
         { name: 'optional', type: 'boolean', isOptional: true },
-        { name: 'outOf', type: 'number' },
         { name: 'coefficient', type: 'number' },
-        { name: 'studentScore', type: 'number' },
-        { name: 'averageScore', type: 'number' },
-        { name: 'minScore', type: 'number' },
-        { name: 'maxScore', type: 'number' }
+        { name: 'outOf', type: 'string' },
+        { name: 'studentScore', type: 'string' },
+        { name: 'averageScore', type: 'string' },
+        { name: 'minScore', type: 'string' },
+        { name: 'maxScore', type: 'string' }
       ],
     }),
     tableSchema({
       name: 'periodgrades',
       columns: [
         { name: 'id', type: 'string' },
-        { name: 'periodId', type: 'string' },
+        { name: 'periodId', type: 'string', isIndexed: true },
         { name: 'createdByAccount', type: 'string' },
         { name: 'studentOverall', type: 'string' },
         { name: 'classAverage', type: 'string' }
@@ -123,7 +122,7 @@ export const mySchema = appSchema({
         { name: 'reason', type: 'string', isOptional: true },
         { name: 'justified', type: 'boolean' },
         { name: 'duration', type: 'number' },
-        { name: 'attendance_id', type: 'string' }
+        { name: 'attendanceId', type: 'string', isIndexed: true }
       ]
     }),
     tableSchema({
@@ -135,7 +134,7 @@ export const mySchema = appSchema({
         { name: 'subjectName', type: 'string', isOptional: true },
         { name: 'shouldParentsJustify', type: 'boolean' },
         { name: 'reason', type: 'string' },
-        { name: 'attendance_id', type: 'string' }
+        { name: 'attendanceId', type: 'string', isIndexed: true }
       ]
     }),
     tableSchema({
@@ -145,7 +144,7 @@ export const mySchema = appSchema({
         { name: 'to', type: 'number' },
         { name: 'reason', type: 'string', isOptional: true },
         { name: 'justified', type: 'boolean' },
-        { name: 'attendance_id', type: 'string' }
+        { name: 'attendanceId', type: 'string', isIndexed: true }
       ]
     }),
     tableSchema({
@@ -162,7 +161,7 @@ export const mySchema = appSchema({
         { name: 'homeworkText', type: 'string' },
         { name: 'reasonText', type: 'string' },
         { name: 'reasonCircumstances', type: 'string' },
-        { name: 'attendance_id', type: 'string' }
+        { name: 'attendanceId', type: 'string', isIndexed: true }
       ]
     }),
     tableSchema({
@@ -182,7 +181,8 @@ export const mySchema = appSchema({
         { name: 'subject', type: 'string' },
         { name: 'recipient', type: 'string', isOptional: true },
         { name: 'creator', type: 'string', isOptional: true },
-        { name: 'date', type: 'number' }
+        { name: 'date', type: 'number' },
+        { name: 'createdByAccount', type: 'string' }
       ]
     }),
     tableSchema({
@@ -191,7 +191,7 @@ export const mySchema = appSchema({
         { name: 'id', type: 'string' },
         { name: 'name', type: 'string' },
         { name: 'class', type: 'string', isOptional: true },
-        { name: 'chatId', type: 'string' }
+        { name: 'chatId', type: 'string', isIndexed: true }
       ]
     }),
     tableSchema({
@@ -203,7 +203,7 @@ export const mySchema = appSchema({
         { name: 'subject', type: 'string' },
         { name: 'date', type: 'number' },
         { name: 'attachments', type: 'string' },
-        { name: 'chatId', type: 'string' }
+        { name: 'chatId', type: 'string', isIndexed: true }
       ]
     }),
   ],

@@ -1,12 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { Model } from '@nozbe/watermelondb';
-import { children, field } from "@nozbe/watermelondb/decorators";
+import { children, field, relation } from "@nozbe/watermelondb/decorators";
 
 import Subject from './Subject';
 
 export class Period extends Model {
   static table = 'periods';
+
+  static associations = {
+    periodgrades: { type: 'has_many', foreignKey: 'periodId' },
+  };
 
   @field('createdByAccount') createdByAccount: string;
   @field('name') name: string;
@@ -17,11 +21,16 @@ export class Period extends Model {
 }
 
 export class Grade extends Model {
-  static table = 'grades'
+  static table = 'grades';
+
+  static associations = {
+    subjects: { type: 'belongs_to', key: 'subjectId' },
+  };
 
   @field('createdByAccount') createdByAccount: string;
   @field('id') id: string;
-  @relation('subjects', 'subjectId') subject: Subject;
+  @field('subjectId') subjectId?: string;
+  @relation('subjects', 'subjectId') subject?: Subject;
   @field('description') description: string;
   @field('givenAt') givenAt: number;
   @field('subjectFile') subjectFile?: string;
@@ -35,29 +44,34 @@ export class Grade extends Model {
 	@field('minScore') minScoreRaw: string;
 	@field('maxScore') maxScoreRaw: string;
 
-	get outOf(): GradeScore {
+	get outOf(): any {
 	  return JSON.parse(this.outOfRaw || '{}');
 	}
 
-	get studentScore(): GradeScore {
+	get studentScore(): any {
 	  return JSON.parse(this.studentScoreRaw || '{}');
 	}
 
-	get averageScore(): GradeScore {
+	get averageScore(): any {
 	  return JSON.parse(this.averageScoreRaw || '{}');
 	}
 
-	get minScore(): GradeScore {
+	get minScore(): any {
 	  return JSON.parse(this.minScoreRaw || '{}');
 	}
 
-	get maxScore(): GradeScore {
+	get maxScore(): any {
 	  return JSON.parse(this.maxScoreRaw || '{}');
 	}
 }
 
 export class PeriodGrades extends Model {
   static table = 'periodgrades';
+
+  static associations = {
+    periods: { type: 'belongs_to', key: 'periodId' },
+    subjects: { type: 'has_many', foreignKey: 'periodGradeId' },
+  };
 
   @field('id') id: string;
   @field('createdByAccount') createdByAccount: string;
@@ -68,11 +82,11 @@ export class PeriodGrades extends Model {
   @relation('periods', 'periodId') period: Period;
   @children('subjects') subjects: Subject[];
 
-  get studentOverall(): GradeScore {
+  get studentOverall(): any {
     return JSON.parse(this.studentOverallRaw || '{}');
   }
 
-  get classAverage(): GradeScore {
+  get classAverage(): any {
     return JSON.parse(this.classAverageRaw || '{}');
   }
 }

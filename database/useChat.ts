@@ -33,24 +33,24 @@ export async function addChatsToDatabase(chats: SharedChat[]) {
   }
 }
 
-export async function addRecipientsToDatabase(chat: SharedChat, messages: SharedRecipient[]) {
+export async function addRecipientsToDatabase(chat: SharedChat, recipients: SharedRecipient[]) {
   const db = getDatabaseInstance();
   const chatId = generateId(chat.createdByAccount + chat.subject + chat.date)
-  const dbChat = db.get('chats').find(chatId);
+  const dbChat = await db.get('chats').find(chatId);
   if (!dbChat) {
     error("We're unable to find the chat in cache, please rehydrate chats before...")
   }
 
-  for (const item of messages) {
+  for (const item of recipients) {
     const id = generateId(chatId + item.name + item.class)
-    const existing = await db.get('chats').query(
+    const existing = await db.get('recipients').query(
       Q.where('id', id)
     ).fetch();
 
     if (existing.length > 0) {continue;}
 		
     await db.write(async () => {
-      await db.get('messages').create((record: Model) => {
+      await db.get('recipients').create((record: Model) => {
         const recipient = record as Recipient;
         Object.assign(recipient, {
           id: id,
@@ -66,14 +66,14 @@ export async function addRecipientsToDatabase(chat: SharedChat, messages: Shared
 export async function addMessagesToDatabase(chat: SharedChat, messages: SharedMessage[]) {
   const db = getDatabaseInstance();
   const chatId = generateId(chat.createdByAccount + chat.subject + chat.date)
-  const dbChat = db.get('chats').find(chatId);
+  const dbChat = await db.get('chats').find(chatId);
   if (!dbChat) {
     error("We're unable to find the chat in cache, please rehydrate chats before...")
   }
 
   for (const item of messages) {
     const id = generateId(chatId + item.content + item.author + item.date + item.subject)
-    const existing = await db.get('chats').query(
+    const existing = await db.get('messages').query(
       Q.where('id', id)
     ).fetch();
 

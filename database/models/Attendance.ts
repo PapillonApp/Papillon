@@ -1,10 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { Model } from '@nozbe/watermelondb';
+import { Model, Relation } from '@nozbe/watermelondb';
 import { children, field, relation } from '@nozbe/watermelondb/decorators';
+
+import { Attachment } from '@/services/shared/attachment';
 
 export class Attendance extends Model {
   static table = "attendance";
+
+  static associations = {
+    delays: { type: 'has_many', foreignKey: 'attendanceId' },
+    absences: { type: 'has_many', foreignKey: 'attendanceId' },
+    observations: { type: 'has_many', foreignKey: 'attendanceId' },
+    punishments: { type: 'has_many', foreignKey: 'attendanceId' },
+  };
 
   @field('createdByAccount') createdByAccount: string;
   @field('period') period: string;
@@ -18,15 +27,24 @@ export class Attendance extends Model {
 export class Delay extends Model {
   static table = "delays";
 
+  static associations = {
+    attendance: { type: 'belongs_to', key: 'attendanceId' },
+  };
+
   @field('givenAt') givenAt: number;
   @field('reason') reason?: string;
   @field('justified') justified: boolean;
   @field('duration') duration: number;
+  @field('attendanceId') attendanceId: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 }
 
 export class Observation extends Model {
   static table = "observations";
+
+  static associations = {
+    attendance: { type: 'belongs_to', key: 'attendanceId' },
+  };
 
   @field('givenAt') givenAt: number;
   @field('sectionName') sectionName: string;
@@ -34,21 +52,31 @@ export class Observation extends Model {
   @field('subjectName') subjectName?: string;
   @field('shouldParentsJustify') shouldParentsJustify: boolean;
   @field('reason') reason?: string;
+  @field('attendanceId') attendanceId: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 }
 
 export class Absence extends Model {
   static table = "absences";
 
+  static associations = {
+    attendance: { type: 'belongs_to', key: 'attendanceId' },
+  };
+
   @field('from') from: number;
   @field('to') to: number;
   @field('reason') reason?: string;
   @field('justified') justified: boolean;
+  @field('attendanceId') attendanceId: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 }
 
 export class Punishment extends Model {
   static table = "punishments";
+
+  static associations = {
+    attendance: { type: 'belongs_to', key: 'attendanceId' },
+  };
 
   @field('givenAt') givenAt: number;
   @field('givenBy') givenBy: string;
@@ -62,6 +90,7 @@ export class Punishment extends Model {
   @field('homeworkText') homeworkText: string;
   @field('reasonText') reasonText: string;
   @field('reasonCircumstances') reasonCircumstances: string;
+  @field('attendanceId') attendanceId: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 
   get homeworkDocuments(): Attachment[] {

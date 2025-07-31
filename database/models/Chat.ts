@@ -1,32 +1,46 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { Model } from '@nozbe/watermelondb';
-import { field, relation } from '@nozbe/watermelondb/decorators';
+import { Model, Relation } from '@nozbe/watermelondb';
+import { children, field, relation } from '@nozbe/watermelondb/decorators';
 
 export class Chat extends Model {
   static table = 'chats';
 	
+  static associations = {
+    recipients: { type: 'has_many', foreignKey: 'chatId' },
+    messages: { type: 'has_many', foreignKey: 'chatId' },
+  };
+
 	@field('createdByAccount') createdByAccount: string;
 	@field('id') id: string;
 	@field('subject') subject: string;
 	@field('recipient') recipient?: string;
 	@field('creator') creator?: string;
 	@field('date') date: number;
-	@relation('recipients', 'id') recipients?: Recipient[];
-	@children('messages') messages?: Message[];
+	@children('recipients') recipients?: Relation<Recipient>;
+	@children('messages') messages?: Relation<Message>;
 }
 
 export class Recipient extends Model {
   static table = 'recipients';
 
+  static associations = {
+    chats: { type: 'belongs_to', key: 'chatId' },
+  };
+
 	@field('id') id: string;
 	@field('name') name: string;
 	@field('class') class?: string;
+	@field('chatId') chatId: string;
 	@relation('chats', 'chatId') chat: Chat;
 }
 
 export class Message extends Model {
   static table = 'messages';
+
+  static associations = {
+    chats: { type: 'belongs_to', key: 'chatId' },
+  };
 
 	@field('id') id: string;
 	@field('content') content: string;
@@ -34,5 +48,6 @@ export class Message extends Model {
 	@field('subject') subject: string;
 	@field('date') date: number;
 	@field('attachments') attachments: string;
+	@field('chatId') chatId: string;
 	@relation('chats', 'chatId') chat: Chat;
 }

@@ -8,6 +8,10 @@ import Subject from './Subject';
 export default class Homework extends Model {
   static table = 'homework';
 
+  static associations = {
+    subjects: { type: 'belongs_to', key: 'subjectId' },
+  };
+
   @field('createdByAccount') createdByAccount: string;
   @field('homeworkId') homeworkId: string;
   @field('subjectId') subjectId: string;
