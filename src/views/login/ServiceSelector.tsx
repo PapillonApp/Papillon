@@ -2,6 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import { Image, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Reanimated, { LinearTransition, FlipInXDown } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 import {RouteParameters, Screen} from "@/router/helpers/types";
 
@@ -20,6 +21,7 @@ import { useAlert } from "@/providers/AlertProvider";
 const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const theme = useTheme();
   const { colors } = theme;
+  const { t } = useTranslation();
 
   const { isOnline } = useOnlineStatus();
   const { showAlert } = useAlert();
@@ -51,7 +53,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
   const services = [
     {
       name: "pronote",
-      title: "PRONOTE",
+      title: t("service.pronote"),
       image: require("../../../assets/images/service_pronote.png"),
       login: () => {
         navigation.navigate("PronoteAuthenticationSelector");
@@ -65,7 +67,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <MaskStars />
 
       <PapillonShineBubble
-        message="Connecte-toi à PRONOTE pour commencer !"
+        message={t("login.connectMessage")}
         numberOfLines={2}
         width={260}
         offsetTop={"20%"}
@@ -152,20 +154,19 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
       <View style={styles.buttons}>
         <ButtonCta
           primary
-          value="Se connecter à PRONOTE"
+          value={t("login.connectToPronote")}
           disabled={service === null}
           onPress={
             isOnline
               ? services.find((srv) => srv.name === service)?.login
               : () => {
                 showAlert({
-                  title: "Information",
-                  message:
-                      "Pour poursuivre la connexion, tu dois être connecté à Internet. Vérifie ta connexion Internet et réessaie",
+                  title: t("login.internetRequired"),
+                  message: t("login.internetRequiredMessage"),
                   icon: <WifiOff />,
                   actions: [
                     {
-                      title: "OK",
+                      title: t("login.ok"),
                       icon: <Check />,
                     },
                   ],
@@ -176,7 +177,7 @@ const ServiceSelector: Screen<"ServiceSelector"> = ({ navigation }) => {
 
         {v6Data && v6Data.restore && (
           <ButtonCta
-            value="Importer mon compte"
+            value={t("login.importAccount")}
             onPress={() => navigation.navigate("PronoteV6Import", { data: v6Data.data })}
           />
         )}

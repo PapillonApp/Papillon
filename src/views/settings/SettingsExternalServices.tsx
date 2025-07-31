@@ -14,6 +14,7 @@ import {
 import { AccountService } from "@/stores/account/types";
 import { useAccounts } from "@/stores/account";
 import { useAlert } from "@/providers/AlertProvider";
+import { useTranslation } from "react-i18next";
 
 const serviceConfig = {
   [AccountService.Pronote]: { icon: GraduationCap, name: "Pronote" },
@@ -27,6 +28,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
   const accounts = useAccounts((state) => state.accounts);
   const removeAccount = useAccounts((state) => state.remove);
   const { showAlert } = useAlert();
+  const { t } = useTranslation();
 
   const getServiceIcon = (service: AccountService) => {
     const IconComponent = serviceConfig[service]?.icon || GraduationCap;
@@ -82,7 +84,7 @@ const SettingsExternalServices: Screen<"SettingsExternalServices"> = ({
       <View>
         <NativeList>
           <NativeText variant="title" style={{ textAlign: "center", margin: 20, opacity: 0.5 }}>
-            Services externes non disponibles dans cette version
+            {t("settings.externalServicesUnavailable")}
           </NativeText>
         </NativeList>
       </View>

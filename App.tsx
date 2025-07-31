@@ -18,6 +18,7 @@ import {getToLoadFonts} from "@/consts/Fonts";
 import { useFlagsStore } from "@/stores/flags";
 import { safeAsync, safeAsyncVoid } from "@/utils/async/safeAsync";
 import ErrorBoundary from "@/components/Global/ErrorBoundary";
+import "@/i18n"; // Initialize i18n system
 
 SplashScreen.preventAutoHideAsync();
 
