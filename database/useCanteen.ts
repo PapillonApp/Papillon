@@ -53,7 +53,7 @@ export async function getCanteenMenuFromCache(startDate: Date): Promise<SharedCa
   }
 }
 
-function getWeekRangeForDate(date: Date) {
+export function getWeekRangeForDate(date: Date) {
   const day = date.getDay();
   const diffToMonday = (day === 0 ? -6 : 1) - day;
   const start = new Date(date);
