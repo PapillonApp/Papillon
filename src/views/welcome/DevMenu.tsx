@@ -282,10 +282,59 @@ const DevMenu: Screen<"DevMenu"> = ({ navigation }) => {
                     id: "test",
                     title: "Coucou, c'est Papillon 👋",
                     subtitle: "Test",
-                    body: "Si tu me vois, c'est que tout fonctionne correctement !",
+                    body: "Si tu me vois, c'est que tout marche correctement !",
                   },
                   "Test"
                 );
+                setTimeout(() => {
+                  setLoading(false);
+                }, 500);
+              }}
+            />
+            <NativeItem
+              title={"Test des suggestions françaises"}
+              trailing={
+                loading ? (
+                  <View>
+                    <PapillonSpinner
+                      strokeWidth={3}
+                      size={22}
+                      color={theme.colors.text}
+                    />
+                  </View>
+                ) : undefined
+              }
+              disabled={loading}
+              onPress={async () => {
+                setLoading(true);
+                // Import the French preferences utility
+                const { checkFrenchPreferences, getFrenchSuggestionMessage } = await import("@/utils/language/french-preferences");
+                
+                const testText = "Ça fonctionne très bien cette fonctionnalité !";
+                const suggestions = checkFrenchPreferences(testText);
+                
+                if (suggestions.length > 0) {
+                  const suggestionMsg = getFrenchSuggestionMessage(suggestions);
+                  await papillonNotify(
+                    {
+                      id: "french-suggestion",
+                      title: "Suggestion linguistique 🇫🇷",
+                      subtitle: "Amélioration du français",
+                      body: suggestionMsg,
+                    },
+                    "Language"
+                  );
+                } else {
+                  await papillonNotify(
+                    {
+                      id: "french-good",
+                      title: "Excellent français ! 👌",
+                      subtitle: "Langue parfaite",
+                      body: "Aucune suggestion nécessaire, votre français est impeccable !",
+                    },
+                    "Language"
+                  );
+                }
                 setTimeout(() => {
                   setLoading(false);
                 }, 500);

@@ -4,6 +4,7 @@ import type { Recipient } from "./shared/Recipient";
 import {getFeatureAccount} from "@/utils/multiservice";
 import {MultiServiceFeature} from "@/stores/multiService/types";
 import {log} from "@/utils/logger/logger";
+import { checkFrenchPreferences, getFrenchSuggestionMessage } from "@/utils/language/french-preferences";
 
 export const getChats = async <T extends Account> (account: T): Promise<Array<Chat>> => {
   switch (account.service) {
@@ -63,6 +64,13 @@ export const getChatRecipients = async <T extends Account> (account: T, chat: Ch
 };
 
 export const sendMessageInChat = async <T extends Account> (account: T, chat: Chat, content: string): Promise<void> => {
+  // Gentle educational feature: check for French language preferences
+  const suggestions = checkFrenchPreferences(content);
+  if (suggestions.length > 0) {
+    const suggestionMsg = getFrenchSuggestionMessage(suggestions);
+    log(`💡 Language suggestion: ${suggestionMsg}`, "language-preferences");
+  }
+
   switch (account.service) {
     case AccountService.Pronote: {
       const { sendMessageInChat } = await import("./pronote/chats");
@@ -129,6 +137,20 @@ export const createDiscussionRecipients = async <T extends Account> (account: T)
 };
 
 export const createDiscussion = async <T extends Account> (account: T, subject: string, content: string, recipients: Recipient[]): Promise<void> => {
+  // Gentle educational feature: check for French language preferences in both subject and content
+  const subjectSuggestions = checkFrenchPreferences(subject);
+  const contentSuggestions = checkFrenchPreferences(content);
+  
+  if (subjectSuggestions.length > 0) {
+    const suggestionMsg = getFrenchSuggestionMessage(subjectSuggestions);
+    log(`💡 Language suggestion for subject: ${suggestionMsg}`, "language-preferences");
+  }
+  
+  if (contentSuggestions.length > 0) {
+    const suggestionMsg = getFrenchSuggestionMessage(contentSuggestions);
+    log(`💡 Language suggestion for content: ${suggestionMsg}`, "language-preferences");
+  }
+
   switch (account.service) {
     case AccountService.Pronote: {
       const { createDiscussion } = await import("./pronote/chats");
