@@ -2,6 +2,7 @@ import * as Network from "expo-network";
 
 import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
 import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/useCanteen";
+import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
@@ -178,7 +179,13 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.CHAT_READ,
       async client => (client.getChats ? await client.getChats() : []),
-      { multiple: true }
+      {
+        multiple: true,
+        fallback: async () => getChatsFromCache(),
+        saveToCache: async (data: Chat[]) => {
+          await addChatsToDatabase(data)
+        }
+      }
     );
   }
 
@@ -187,7 +194,14 @@ export class AccountManager {
       Capabilities.CHAT_READ,
       async client =>
         client.getChatRecipients ? await client.getChatRecipients(chat) : [],
-      { multiple: true, clientId: chat.createdByAccount }
+      { 
+        multiple: true, 
+        clientId: chat.createdByAccount,
+        fallback: async () => getRecipientsFromCache(chat),
+        saveToCache: async (data: Recipient[]) => {
+          await addRecipientsToDatabase(chat, data)
+        }
+      }
     );
   }
 
@@ -196,7 +210,14 @@ export class AccountManager {
       Capabilities.CHAT_READ,
       async client =>
         client.getChatMessages ? await client.getChatMessages(chat) : [],
-      { multiple: true, clientId: chat.createdByAccount }
+      { 
+        multiple: true, 
+        clientId: chat.createdByAccount,
+        fallback: async () => getMessagesFromCache(chat),
+        saveToCache: async (data: Message[]) => {
+          await addMessagesToDatabase(chat, data)
+        }
+      }
     );
   }
 
