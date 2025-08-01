@@ -10,6 +10,7 @@ export interface AccountsStorage {
     removeAccount: (account: Account) => void;
     addAccount: (account: Account) => void;
     setLastUsedAccount: (accountId: string) => void;
+    updateServiceAuthData: (serviceId: string, authData: Auth) => void;
 }
 
 /**

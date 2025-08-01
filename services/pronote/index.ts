@@ -1,16 +1,6 @@
-import { Homework } from "@/services/shared/homework";
-import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
-import { Auth, Services } from "@/stores/account/types";
-import { fetchPronoteHomeworks } from "@/services/pronote/homework";
-import { error } from "@/utils/logger/logger";
-import { refreshPronoteAccount } from "@/services/pronote/refresh";
-import { News } from "@/services/shared/news";
-import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
-import { Period, PeriodGrades } from "@/services/shared/grade";
-import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
+import { SessionHandle, TabLocation } from "pawnote";
+
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
-import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
 import {
   fetchPronoteChatMessages,
@@ -18,24 +8,53 @@ import {
   fetchPronoteChats,
   fetchPronoteRecipients, sendPronoteMessageInChat,
 } from "@/services/pronote/chat";
-import { Chat, Message, Recipient } from "@/services/shared/chat";
-import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
+import { fetchPronoteHomeworks } from "@/services/pronote/homework";
+import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
+import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { fetchPronoteCourseResources, fetchPronoteWeekTimetable } from "@/services/pronote/timetable";
-import { SessionHandle } from "pawnote";
+import { Attendance } from "@/services/shared/attendance";
+import { CanteenMenu } from "@/services/shared/canteen";
+import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { News } from "@/services/shared/news";
+import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
+import { Auth, Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 
 export class Pronote implements SchoolServicePlugin {
   displayName = "PRONOTE";
   service = Services.PRONOTE;
-  capabilities = [Capabilities.HOMEWORK, Capabilities.NEWS, Capabilities.REFRESH];
+  capabilities: Capabilities[] = [Capabilities.REFRESH];
   session : SessionHandle | undefined = undefined;
   authData: Auth = {};
 
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
-    const refresh = (await refreshPronoteAccount(credentials));
+    const refresh = (await refreshPronoteAccount(this.accountId, credentials));
     this.authData = refresh.auth;
     this.session = refresh.session;
+
+    const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
+      [TabLocation.Assignments]: Capabilities.HOMEWORK,
+      [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_WRITE],
+      [TabLocation.Grades]: Capabilities.GRADES,
+      [TabLocation.Notebook]: Capabilities.ATTENDANCE,
+      [TabLocation.News]: Capabilities.NEWS,
+      [TabLocation.Menus]: Capabilities.CANTEEN_MENU,
+      [TabLocation.Timetable]: Capabilities.TIMETABLE,
+    };
+
+    for (const tab of this.session.user.authorizations.tabs) {
+      const capability = tabCapabilities[tab];
+      if (capability) {
+        this.capabilities.push(...(Array.isArray(capability) ? capability : [capability]));
+      }
+    }
+		
     return this;
   }
 
@@ -89,7 +108,7 @@ export class Pronote implements SchoolServicePlugin {
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
     if (this.session) {
-      return fetchPronoteCanteenMenu(this.session, startDate);
+      return fetchPronoteCanteenMenu(this.session, this.accountId, startDate);
     }
 
     error("Session is not valid", "Pronote.getWeeklyCanteenMenu");

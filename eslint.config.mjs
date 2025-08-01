@@ -1,11 +1,11 @@
-import globals from "globals";
 import js from "@eslint/js";
-import pluginReact from "eslint-plugin-react";
-import prettierConfig from "eslint-config-prettier";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import tseslint from "typescript-eslint";
-import unusedImports from "eslint-plugin-unused-imports";
 import { defineConfig } from "eslint/config";
+import prettierConfig from "eslint-config-prettier";
+import pluginReact from "eslint-plugin-react";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import unusedImports from "eslint-plugin-unused-imports";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
   {
@@ -63,10 +63,8 @@ export default defineConfig([
       "no-var": "error",
       "no-warning-comments": "warn",
       "prefer-promise-reject-errors": "error",
-      // Suppression des règles de tri automatique des imports
-      // "simple-import-sort/imports": "warn",
-      // "simple-import-sort/exports": "warn",
-      // Règles pour les imports inutilisés
+      "simple-import-sort/imports": "warn",
+      "simple-import-sort/exports": "warn",
       "@typescript-eslint/no-unused-vars": "off", // Désactiver la règle de base
       "unused-imports/no-unused-imports": "error", // Supprimer automatiquement les imports inutilisés
       "unused-imports/no-unused-vars": [

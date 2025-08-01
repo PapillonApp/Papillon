@@ -1,5 +1,5 @@
-import { GenericInterface } from "@/services/shared/types";
 import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 export interface PeriodGrades extends GenericInterface {
   studentOverall: GradeScore;
