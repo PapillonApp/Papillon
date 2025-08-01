@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 import { createMMKVStorage } from '../global'
 import { AccountsStorage, Auth } from "./types";
+import { getEncryptionKeyFromKeychain } from '../global/encryption';
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
@@ -29,7 +30,7 @@ export const useAccountStore = create<AccountsStorage>()(
     }),
     {
       name: 'account-storage',
-      storage: createMMKVStorage<AccountsStorage>("account-storage", "edit-the-key-in-future"),
+      storage: createMMKVStorage<AccountsStorage>("account-storage", await getEncryptionKeyFromKeychain()),
     }
   )
 )
