@@ -18,7 +18,7 @@ export default function TabOneScreen() {
 
   const generateUUID = () => {
     // Generate a random UUID (version 4)
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
@@ -39,7 +39,7 @@ export default function TabOneScreen() {
     console.log(homeworks);
   }
 
-  const  loginDemoAccount = async () => {
+  const loginDemoAccount = async () => {
     try {
       setLoading(true);
       const accounts = useAccountStore.getState().accounts;
@@ -89,7 +89,7 @@ export default function TabOneScreen() {
       console.error("Failed to log in:", error);
     }
   };
-    
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -107,6 +107,11 @@ export default function TabOneScreen() {
         <Button
           title="Papillon DevMode"
           onPress={() => router.navigate("/devmode")}
+        />
+
+        <Button
+          title="Papillon Magic+"
+          onPress={() => router.navigate("/ai")}
         />
 
         <Button

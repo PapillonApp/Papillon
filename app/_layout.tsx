@@ -66,6 +66,11 @@ const DEMO_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
 }
 
+const AI_SCREEN_OPTIONS = {
+  headerTitle: "AI",
+  headerBackButtonDisplayMode: "minimal" as const,
+}
+
 export default function RootLayout() {
   const [loaded, error] = useFonts(FONT_CONFIG);
 
@@ -137,6 +142,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+              <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
             </Stack>
