@@ -7,6 +7,8 @@ import { Homework } from "../shared/homework";
 import { fetchSkolengoHomeworks } from "./homework";
 import { News } from "../shared/news";
 import { fetchSkolengoNews } from "./news";
+import { fetchSkolengoGradePeriods, fetchSkolengoGradesForPeriod } from "./grades";
+import { Period, PeriodGrades } from "../shared/grade";
 
 export class Skolengo implements SchoolServicePlugin {
 	displayName = "Skolengo";
@@ -59,5 +61,21 @@ export class Skolengo implements SchoolServicePlugin {
 		}
 
 		error("Session is not valid", "Skolengo.getNews");
+	}
+
+	async getGradesForPeriod(period: string): Promise<PeriodGrades> {
+		if (this.session) {
+			return fetchSkolengoGradesForPeriod(this.session, this.accountId, period);
+		}
+		
+		error("Session is not valid", "Skolengo.getGradesForPeriod")
+	}
+
+	async getGradesPeriods(): Promise<Period[]> {
+		if (this.session) {
+			return fetchSkolengoGradePeriods(this.session, this.accountId);
+		}
+
+		error("Session is not valid", "Skolengo.getGradesPeriods")
 	}
 }
