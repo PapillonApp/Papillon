@@ -5,6 +5,8 @@ import { refreshSkolengoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { Homework } from "../shared/homework";
 import { fetchSkolengoHomeworks } from "./homework";
+import { News } from "../shared/news";
+import { fetchSkolengoNews } from "./news";
 
 export class Skolengo implements SchoolServicePlugin {
 	displayName = "Skolengo";
@@ -44,11 +46,18 @@ export class Skolengo implements SchoolServicePlugin {
 	}
 
 	async getHomeworks(weekNumber: number): Promise<Homework[]> {
-			if (this.session) {
-				return fetchSkolengoHomeworks(this.session, this.accountId, weekNumber);
-			}
-	
-			error("Session is not valid", "Pronote.getHomeworks");
+		if (this.session) {
+			return fetchSkolengoHomeworks(this.session, this.accountId, weekNumber);
 		}
-	
+
+		error("Session is not valid", "Skolengo.getHomeworks");
+	}
+
+	async getNews(): Promise<News[]> {
+		if (this.session) {
+			return fetchSkolengoNews(this.session, this.accountId);
+		}
+
+		error("Session is not valid", "Skolengo.getNews");
+	}
 }
