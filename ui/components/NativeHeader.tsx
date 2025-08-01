@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
   title: {
     height: 36,
     width: "100%",
-    maxWidth: 200,
     flexDirection: "row",
     gap: 4,
     alignItems: "center",
@@ -123,6 +122,7 @@ interface NativeHeaderTitleProps extends ViewProps {
   search?: boolean;
   placeholder?: string;
   onSearch?: (query: string) => void;
+  maxWidth?: number;
   ignoreTouch?: boolean;
 }
 
@@ -133,6 +133,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
   placeholder = "Rechercher",
   onSearch,
   ignoreTouch,
+  maxWidth,
   ...props
 }: NativeHeaderTitleProps) {
   const navigation = useNavigation();
@@ -153,6 +154,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
     const renderTitle = () => (
       <View style={[
         styles.title,
+        { maxWidth: maxWidth ?? 200 },
         Platform.OS === 'android' ? styles.titleAndroid : {},
       ]} {...propsRef.current}
         pointerEvents={ignoreTouch ? "none" : "auto"}
