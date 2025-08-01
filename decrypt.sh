@@ -1,63 +1,66 @@
 #!/bin/bash
 
-# Papillon Code Decryption Script
-# This script decrypts the encrypted source files back to their original state
+# Papillon Complete Code Decryption Script
+# This script decrypts the single encrypted archive back to original source files
 
 echo "🔓 Starting Papillon code decryption..."
 
-# Check if files are encrypted
-if [ ! -f ".encryption_status" ]; then
-    echo "❌ No encrypted files found. Run encrypt.sh first."
+# Check if encrypted bundle exists
+if [ ! -f "papillon_encrypted.dat" ]; then
+    echo "❌ No encrypted bundle found. Run encrypt_all.sh first."
     exit 1
 fi
 
-# Function to decrypt a file
-decrypt_file() {
-    local encrypted_file="$1"
-    local original_file="${encrypted_file%.enc}"
-    local key="PAPILLON_SECURITY_2024"
+if [ ! -f ".encryption_bundle_status" ]; then
+    echo "❌ No encryption status found. Bundle may be corrupted."
+    exit 1
+fi
+
+# Create temporary directory for decryption
+TEMP_DIR="/tmp/papillon_decrypt_$$"
+mkdir -p "$TEMP_DIR"
+
+# Define encryption key
+ENCRYPTION_KEY="PAPILLON_SECURITY_BUNDLE_2024"
+
+echo "🔓 Decrypting source archive..."
+
+# Decrypt the archive
+openssl enc -aes-256-cbc -d -salt -in "papillon_encrypted.dat" -out "$TEMP_DIR/papillon_source.tar.gz" -pass pass:"$ENCRYPTION_KEY"
+
+if [ $? -eq 0 ] && [ -s "$TEMP_DIR/papillon_source.tar.gz" ]; then
+    echo "✅ Archive decrypted successfully!"
     
-    if [ ! -f "$encrypted_file" ]; then
-        return 1
-    fi
+    # Extract the archive
+    echo "📦 Extracting source files..."
+    tar -xzf "$TEMP_DIR/papillon_source.tar.gz"
     
-    # Try OpenSSL decryption first
-    openssl enc -aes-256-cbc -d -salt -in "$encrypted_file" -out "$original_file" -pass pass:"$key" 2>/dev/null
-    
-    if [ $? -eq 0 ] && [ -s "$original_file" ]; then
-        echo "✓ Decrypted: $encrypted_file -> $original_file"
-        rm "$encrypted_file"
-        return 0
-    else
-        # Fallback to base64 decoding
-        rm -f "$original_file" 2>/dev/null
-        tr 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijkl' 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' < "$encrypted_file" | base64 -d > "$original_file"
+    if [ $? -eq 0 ]; then
+        echo "✅ Source files extracted successfully!"
         
-        if [ -s "$original_file" ]; then
-            echo "✓ Decrypted (fallback): $encrypted_file -> $original_file"
-            rm "$encrypted_file"
-            return 0
-        else
-            echo "❌ Failed to decrypt: $encrypted_file"
-            rm -f "$original_file"
-            return 1
-        fi
+        # Count restored files
+        RESTORED_COUNT=$(find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.json" \) ! -path "./node_modules/*" ! -path "./.git/*" | wc -l)
+        
+        # Remove encryption artifacts
+        rm -f "papillon_encrypted.dat"
+        rm -f ".encryption_bundle_status"
+        
+        echo ""
+        echo "🔓 Decryption complete!"
+        echo "📁 Restored $RESTORED_COUNT source files"
+        echo "💻 You can now build and develop the application normally"
+        echo ""
+        echo "ℹ️  To encrypt again for security, run: ./encrypt_all.sh"
+        
+    else
+        echo "❌ Failed to extract archive!"
+        exit 1
     fi
-}
+    
+else
+    echo "❌ Failed to decrypt archive!"
+    exit 1
+fi
 
-# Find and decrypt all .enc files
-find . -name "*.enc" | grep -v node_modules | grep -v .git | while read encrypted_file; do
-    if [ -f "$encrypted_file" ]; then
-        decrypt_file "$encrypted_file"
-    fi
-done
-
-# Remove encryption status marker
-rm -f .encryption_status
-
-echo ""
-echo "🔓 Decryption complete!"
-echo "📁 All source files have been restored to their original state"
-echo "💻 You can now build and develop the application normally"
-echo ""
-echo "ℹ️  To encrypt again for security, run: ./encrypt.sh"
+# Cleanup
+rm -rf "$TEMP_DIR"
