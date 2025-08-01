@@ -37,3 +37,23 @@ yarn-error.*
 *.tsbuildinfo
 
 .idea/
+
+# PAPILLON SECURITY: Only encrypted versions are committed
+# Original source files are excluded, only .enc versions allowed
+*.ts
+*.tsx
+*.js
+*.jsx
+!decrypt.sh
+!encrypt.sh
+
+# Allow encrypted config files to be committed
+!*.config.js.enc
+!babel.config.js.enc
+!metro.config.js.enc
+!react-native.config.js.enc
+!eslint.config.js.enc
+!app.config.ts.enc
+
+# Encryption status
+.encryption_status
