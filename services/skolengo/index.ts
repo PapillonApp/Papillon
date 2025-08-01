@@ -1,6 +1,6 @@
 import { Auth, Services } from "@/stores/account/types";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { Skolengo as SkolengoSession } from "skolengojs";
+import { Permissions, Skolengo as SkolengoSession } from "skolengojs";
 import { refreshSkolengoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { Homework } from "../shared/homework";
@@ -9,7 +9,7 @@ import { fetchSkolengoHomeworks } from "./homework";
 export class Skolengo implements SchoolServicePlugin {
 	displayName = "Skolengo";
 	service = Services.SKOLENGO;
-	capabilities: Capabilities[] = [Capabilities.REFRESH];
+	capabilities: Capabilities[] = [Capabilities.REFRESH, Capabilities.NEWS];
 	session: SkolengoSession | undefined = undefined;
 	authData: Auth = {};
 
@@ -23,6 +23,22 @@ export class Skolengo implements SchoolServicePlugin {
 		const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session))
 		this.authData = refresh.auth
 		this.session = refresh.session
+
+		const tabCapabilities: Partial<Record<Permissions, Capabilities>> = {
+      [Permissions.READ_ASSIGNMENTS]: Capabilities.HOMEWORK,
+			[Permissions.READ_MESSAGES]: Capabilities.CHAT_READ,
+			[Permissions.WRITE_MESSAGES]: Capabilities.CHAT_WRITE,
+			[Permissions.READ_ABSENCE_FILES]: Capabilities.ATTENDANCE,
+			[Permissions.READ_LESSONS]: Capabilities.TIMETABLE,
+			[Permissions.READ_EVALUATIONS]: Capabilities.GRADES
+    };
+
+		for (const permission of this.session.permissions) {
+			const capability = tabCapabilities[permission];
+			if (capability) {
+				this.capabilities.push(capability)
+			}
+		}
 
 		return this;
 	}
