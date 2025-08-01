@@ -26,7 +26,7 @@ export interface SchoolServicePlugin {
   session: SessionHandle | SkolengoSession | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
-  getHomeworks?: (date: Date) => Promise<Homework[]>;
+  getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
