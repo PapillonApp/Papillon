@@ -58,9 +58,9 @@ export class Pronote implements SchoolServicePlugin {
     return this;
   }
 
-  async getHomeworks(date: Date): Promise<Homework[]> {
+  async getHomeworks(weekNumber: number): Promise<Homework[]> {
     if (this.session) {
-      return fetchPronoteHomeworks(this.session, this.accountId, date);
+      return fetchPronoteHomeworks(this.session, this.accountId, weekNumber);
     }
 
     error("Session is not valid", "Pronote.getHomeworks");
