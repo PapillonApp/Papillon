@@ -2,7 +2,7 @@ import React, { useCallback, useState, useMemo, useRef, useEffect } from "react"
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { ActivityIndicator, Platform, Pressable, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
@@ -16,7 +16,7 @@ import Subject from "@/ui/components/Subject";
 import Stack from "@/ui/components/Stack";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import Icon from "@/ui/components/Icon";
-import { Filter, RefreshCcw, Search } from "lucide-react-native";
+import { Filter, NotebookTabs, RefreshCcw, Search } from "lucide-react-native";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -26,6 +26,17 @@ import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { set } from "date-fns";
+
+const transformPeriodName = (name: string) => {
+  // return only digits
+  let newName = name.replace(/[^0-9]/g, '').trim();
+
+  if (newName.length === 0) {
+    newName = name[0].toUpperCase();
+  }
+
+  return newName.toString()[0];
+}
 
 const subjects = [
   {
@@ -218,6 +229,27 @@ const subjects = [
   },
 ];
 
+const periodsData = [
+  {
+    id: "period-1",
+    name: "Semestre 1",
+    startDate: new Date(2023, 8, 1).getTime(), // 1er septembre 2023
+    endDate: new Date(2023, 11, 31).getTime(), // 31 décembre 2023
+  },
+  {
+    id: "period-2",
+    name: "Semestre 2",
+    startDate: new Date(2024, 0, 1).getTime(), // 1er janvier 2024
+    endDate: new Date(2024, 2, 31).getTime(), // 31 mars 2024
+  },
+  {
+    id: "period-hors",
+    name: "Hors période",
+    startDate: new Date(2023, 8, 1).getTime(), // 1er septembre 2023
+    endDate: new Date(2024, 2, 31).getTime(), // 31 mars 2024
+  },
+];
+
 export default function TabOneScreen() {
   const theme = useTheme();
   const { colors } = theme;
@@ -282,6 +314,9 @@ export default function TabOneScreen() {
 
   const [sorting, setSorting] = useState("alphabetical");
   const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
+
+  const periods = useMemo(() => periodsData, []);
+  const [currentPeriod, setCurrentPeriod] = useState(periods[0].id);
 
   const average = useMemo(() => {
     const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
@@ -620,12 +655,60 @@ export default function TabOneScreen() {
         </MenuView>
       </NativeHeaderSide>
 
-      <NativeHeaderSide side="Right">
-        <NativeHeaderPressable>
-          <Icon>
-            <Search />
-          </Icon>
-        </NativeHeaderPressable>
+      <NativeHeaderSide side="Right" key={"right -side-period:" + currentPeriod}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("period:")) {
+              const selectedPeriodId = actionId.replace("period:", "");
+              setCurrentPeriod(selectedPeriodId);
+            }
+          }}
+          actions={
+            periods.map((period) => ({
+              id: "period:" + period.id,
+              title: period.name,
+              subtitle: `${new Date(period.startDate).toLocaleDateString("fr-FR", {
+                month: "short",
+                year: "numeric",
+              })} - ${new Date(period.endDate).toLocaleDateString("fr-FR", {
+                month: "short",
+                year: "numeric",
+              })}`,
+              state: currentPeriod === period.id ? "on" : "off",
+            }))
+          }
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <View
+              style={{
+                position: "absolute",
+                right: 3,
+                top: 3,
+                backgroundColor: colors.primary,
+                width: 16,
+                height: 16,
+                borderRadius: 60,
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 12,
+                  fontFamily: "bold",
+                }}
+              >
+                {transformPeriodName(periods.find(p => p.id === currentPeriod)?.name || t("Grades_Menu_CurrentPeriod"))}
+              </Text>
+            </View>
+            <Icon>
+              <NotebookTabs />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
       </NativeHeaderSide>
     </>
   );
