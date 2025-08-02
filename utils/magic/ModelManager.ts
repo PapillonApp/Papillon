@@ -65,7 +65,7 @@ class ModelManager {
     return cleaned;
   }
 
-  tokenize(text: string): number[] {
+  tokenize(text: string, verbose: boolean = false): number[] {
     const words = this.cleanText(text).split(/\s+/);
     const sequence: number[] = [];
     const unknownWords: string[] = [];
@@ -84,23 +84,30 @@ class ModelManager {
       sequence.push(0);
     }
 
-    if (unknownWords.length) {
-      log("[UNKNOWN WORDS]", unknownWords.join(", "));
+    if (verbose && unknownWords.length) {
+      log(`[UNKNOWN WORDS] ${unknownWords.join(", ")}`);
     }
     return sequence.slice(0, this.maxLen);
   }
 
-  async predict(text: string): Promise<ModelPrediction> {
+  async predict(
+    text: string,
+    verbose: boolean = false
+  ): Promise<ModelPrediction> {
     if (!this.model) {
       throw new Error("Model not loaded");
     }
 
-    log("Running prediction for:", text);
-    log("Tokenizing text:", text);
+    if (verbose) {
+      log(`Running prediction for: ${text}`);
+      log(`Tokenizing text: ${text}`);
+    }
 
-    const seq = this.tokenize(text);
-    log("[CLEAN TEXT]", this.cleanText(text));
-    log("[TOKENIZED]", seq.join(", "));
+    const seq = this.tokenize(text, verbose);
+    if (verbose) {
+      log(`[CLEAN TEXT] ${this.cleanText(text)}`);
+      log(`[TOKENIZED] ${seq.join(", ")}`);
+    }
 
     const inputArr = new Float32Array(this.maxLen);
     for (let i = 0; i < seq.length && i < this.maxLen; i++) {
@@ -129,7 +136,7 @@ class ModelManager {
       return { scores, predicted, labelScores };
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : String(e);
-      log("[PREDICT ERROR]", errorMessage);
+      log(`[PREDICT ERROR] ${errorMessage}`);
       throw e;
     }
   }
