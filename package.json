@@ -76,6 +76,7 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "react-native-worklets": "^0.4.0",
+    "skolengojs": "^1.1.1",
     "typescript-eslint": "^8.34.0",
     "uuid": "^11.1.0",
     "zustand": "^5.0.4"

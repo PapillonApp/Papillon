@@ -1,5 +1,7 @@
 import { NewsInformation } from "pawnote";
 
+import { News as SkolengoNews } from "skolengojs";
+
 import { Attachment} from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
 
@@ -23,5 +25,5 @@ export interface News extends GenericInterface {
   content: string;
   author: string;
   category: string;
-  ref?: NewsInformation;
+  ref?: NewsInformation | SkolengoNews;
 }
