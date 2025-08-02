@@ -78,12 +78,17 @@ export default function AIScreen() {
       {result && (
         <View style={styles.resultBox}>
           <Text style={styles.resultText}>🔍 Prédiction: {result.predicted}</Text>
-          <Text style={styles.resultText}>📊 Scores par label:</Text>
-          {Object.entries(result.labelScores || {}).map(([label, score]) => (
-            <Text key={label} style={styles.labelScoreText}>
-              • {label}: {(score as number).toFixed(4)}
-            </Text>
-          ))}
+          <Text style={styles.resultText}>📊 Probabilités par label:</Text>
+          {Object.entries(result.labelScores || {})
+            .sort(([, a], [, b]) => (b as number) - (a as number)) // Trier par probabilité décroissante
+            .map(([label, score]) => (
+              <Text key={label} style={[
+                styles.labelScoreText,
+                label === result.predicted ? styles.predictedLabel : {}
+              ]}>
+                {label === result.predicted ? '🎯 ' : '   '}{label}: {((score as number) * 100).toFixed(2)}%
+              </Text>
+            ))}
         </View>
       )}
 
@@ -187,6 +192,10 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     textAlign: 'left',
     fontFamily: 'monospace',
+  },
+  predictedLabel: {
+    fontWeight: 'bold',
+    color: '#2e7d32',
   },
   testSection: {
     marginTop: 30,

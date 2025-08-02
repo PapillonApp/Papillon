@@ -68,7 +68,7 @@ const DEMO_SCREEN_OPTIONS = {
 
 const AI_SCREEN_OPTIONS = {
   headerTitle: "AI",
-  headerBackButtonDisplayMode: "minimal" as const,
+  headerShown: false,
 }
 
 export default function RootLayout() {
