@@ -9,6 +9,12 @@ import { News } from "../shared/news";
 import { fetchSkolengoNews } from "./news";
 import { fetchSkolengoGradePeriods, fetchSkolengoGradesForPeriod } from "./grades";
 import { Period, PeriodGrades } from "../shared/grade";
+import { Attendance } from "../shared/attendance";
+import { fetchSkolengoAttendance } from "./attendance";
+import { CourseDay } from "../shared/timetable";
+import { fetchSkolengoTimetable } from "./timetable";
+import { Chat, Message, Recipient } from "../shared/chat";
+import { createSkolengoMail, fetchSkolengoChatMessages, fetchSkolengoChatRecipients, fetchSkolengoChats } from "./chat";
 
 export class Skolengo implements SchoolServicePlugin {
 	displayName = "Skolengo";
@@ -31,7 +37,7 @@ export class Skolengo implements SchoolServicePlugin {
 		const tabCapabilities: Partial<Record<Permissions, Capabilities>> = {
       [Permissions.READ_ASSIGNMENTS]: Capabilities.HOMEWORK,
 			[Permissions.READ_MESSAGES]: Capabilities.CHAT_READ,
-			[Permissions.WRITE_MESSAGES]: Capabilities.CHAT_WRITE,
+			[Permissions.WRITE_MESSAGES]: Capabilities.CHAT_CREATE,
 			[Permissions.READ_ABSENCE_FILES]: Capabilities.ATTENDANCE,
 			[Permissions.READ_LESSONS]: Capabilities.TIMETABLE,
 			[Permissions.READ_EVALUATIONS]: Capabilities.GRADES
@@ -77,5 +83,53 @@ export class Skolengo implements SchoolServicePlugin {
 		}
 
 		error("Session is not valid", "Skolengo.getGradesPeriods")
+	}
+
+	async getAttendanceForPeriod(): Promise <Attendance> {
+		if (this.session) {
+			return fetchSkolengoAttendance(this.session, this.accountId);
+		}
+
+		error ("Session is not valid", "Skolengo.getAttendanceForPeriod")
+	}
+
+	async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+		if (this.session) {
+			return fetchSkolengoTimetable(this.session, this.accountId, date)
+		}
+		
+		error("Session is not valid", "Skolengo.getWeeklyTimetable")
+	}
+
+	async getChats(): Promise<Chat[]> {
+		if (this.session) {
+			return fetchSkolengoChats(this.session, this.accountId)
+		}
+
+		error("Session is not valid", "Skolengo.getChats")
+	}
+
+	async getChatRecipients(chat: Chat): Promise<Recipient[]> {
+		if (this.session) {
+			return fetchSkolengoChatRecipients(chat)
+		}
+
+		error("Session is not valid", "Skolengo.getChatsRecipients")
+	}
+
+	async getChatMessages(chat: Chat): Promise<Message[]> {
+		if (this.session) {
+			return fetchSkolengoChatMessages(chat)
+		}
+
+		error("Session is not valid", "Skolengo.getChatMessages")
+	}
+	
+	async createMail(subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]): Promise<Chat> {
+		if (this.session) {
+			return createSkolengoMail(this.session, this.accountId, subject, content, recipients, cc, bcc)
+		}
+
+		error("Session is not valid", "Skolengo.createMail")
 	}
 }
