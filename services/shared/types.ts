@@ -41,6 +41,7 @@ export interface SchoolServicePlugin {
   getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
+	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
 }
 
 /*
@@ -54,9 +55,11 @@ export enum Capabilities {
   NEWS,
   GRADES,
   ATTENDANCE,
+	ATTENDANCE_PERIODS,
   CANTEEN_MENU,
   CHAT_READ,
-  CHAT_WRITE,
+  CHAT_CREATE,
+	CHAT_REPLY,
   TIMETABLE
 }
 

@@ -146,7 +146,7 @@ export class AccountManager {
 
   async getAttendancePeriods(): Promise<Period[]> {
     return await this.fetchData(
-      Capabilities.ATTENDANCE,
+      Capabilities.ATTENDANCE_PERIODS,
       async client =>
         client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
       { 
@@ -261,7 +261,7 @@ export class AccountManager {
 
   async sendMessageInChat(chat: Chat, content: string): Promise<void> {
     return await this.fetchData(
-      Capabilities.CHAT_WRITE,
+      Capabilities.CHAT_REPLY,
       async client => {
         if (client.sendMessageInChat) {
           await client.sendMessageInChat(chat, content);
@@ -275,7 +275,22 @@ export class AccountManager {
     return await this.fetchData(Capabilities.NEWS, async client =>
       client.setNewsAsAcknowledged
         ? await client.setNewsAsAcknowledged(news)
-        : news
+        : news,
+				{ multiple: false, clientId: news.createdByAccount }
+    );
+  }
+
+  async createMail(accountId: string, subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]): Promise<Chat> {
+    return await this.fetchData(
+      Capabilities.CHAT_CREATE,
+      async client => {
+        if (client.createMail) {
+          return await client.createMail(subject, content, recipients, cc, bcc)
+        } else {
+          throw new Error("createMail not implemented")
+        }
+      },
+      { multiple: false, clientId: accountId }
     );
   }
 
