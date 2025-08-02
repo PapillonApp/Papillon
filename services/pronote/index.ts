@@ -3,6 +3,7 @@ import { SessionHandle, TabLocation } from "pawnote";
 import { fetchPronoteAttendance, fetchPronoteAttendancePeriods } from "@/services/pronote/attendance";
 import { fetchPronoteCanteenMenu } from "@/services/pronote/canteen";
 import {
+	createPronoteMail,
   fetchPronoteChatMessages,
   fetchPronoteChatRecipients,
   fetchPronoteChats,
@@ -40,9 +41,9 @@ export class Pronote implements SchoolServicePlugin {
 
     const tabCapabilities: Partial<Record<TabLocation, Capabilities | Capabilities[]>> = {
       [TabLocation.Assignments]: Capabilities.HOMEWORK,
-      [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_WRITE],
+      [TabLocation.Discussions]: [Capabilities.CHAT_READ, Capabilities.CHAT_REPLY, Capabilities.CHAT_CREATE],
       [TabLocation.Grades]: Capabilities.GRADES,
-      [TabLocation.Notebook]: Capabilities.ATTENDANCE,
+      [TabLocation.Notebook]: [Capabilities.ATTENDANCE, Capabilities.ATTENDANCE_PERIODS],
       [TabLocation.News]: Capabilities.NEWS,
       [TabLocation.Menus]: Capabilities.CANTEEN_MENU,
       [TabLocation.Timetable]: Capabilities.TIMETABLE,
@@ -177,4 +178,12 @@ export class Pronote implements SchoolServicePlugin {
 
     error("Session is not valid", "Pronote.setNewsAsAcknowledged");
   }
+
+	async createMail(subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
+		if (this.session) {
+			return createPronoteMail(this.session, this.accountId, subject, content, recipients)
+		}
+
+		error("Session is not valid", "Skolengo.createMail")
+	}
 }
