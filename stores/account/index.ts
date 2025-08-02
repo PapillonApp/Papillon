@@ -4,6 +4,19 @@ import { persist } from 'zustand/middleware'
 import { createMMKVStorage } from '../global'
 import { AccountsStorage, Auth } from "./types";
 import { getEncryptionKeyFromKeychain } from '../global/encryption';
+import { log } from '@/utils/logger/logger';
+
+const createInitialStorage = () => {
+  let storage = createMMKVStorage<AccountsStorage>("account-storage");
+  log("Non-encrypted account storage created");
+  
+  getEncryptionKeyFromKeychain().then(encryptionKey => {
+    log("Upgrading non-encrypted account storage to encrypted storage");
+    storage = createMMKVStorage<AccountsStorage>("account-storage", encryptionKey);
+  });
+  
+  return storage;
+};
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
@@ -30,7 +43,7 @@ export const useAccountStore = create<AccountsStorage>()(
     }),
     {
       name: 'account-storage',
-      storage: createMMKVStorage<AccountsStorage>("account-storage", await getEncryptionKeyFromKeychain()),
+      storage: createInitialStorage(),
     }
   )
 )
