@@ -1,3 +1,4 @@
+import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs"
 
 /**
@@ -67,11 +68,12 @@ export interface ServiceAccount {
 export interface Auth {
     accessToken?: string;
     refreshToken?: string;
-		session?: Skolengo;
+		session?: Skolengo | Session;
     additionals?: Record<string, string | number>;
 }
 
 export enum Services {
     PRONOTE,
-		SKOLENGO
+		SKOLENGO,
+		ECOLEDIRECTE
 }

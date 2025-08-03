@@ -30,7 +30,7 @@ export class Skolengo implements SchoolServicePlugin {
 			error("This account seems to not be initialized")
 		}
 
-		const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session))
+		const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session as SkolengoSession))
 		this.authData = refresh.auth
 		this.session = refresh.session
 

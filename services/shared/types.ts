@@ -11,6 +11,8 @@ import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Skolengo } from "../skolengo";
+import { EcoleDirecte } from "../ecoledirecte";
+import { Account, Session } from "pawdirecte";
 
 /** Represents a plugin for a school service.
  *
@@ -23,9 +25,10 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | SkolengoSession | undefined;
+	accounts?: Account[];
+  session: SessionHandle | SkolengoSession | Session | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
