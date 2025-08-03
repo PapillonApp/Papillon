@@ -12,27 +12,25 @@ import { error } from "@/utils/logger/logger";
 export async function fetchPronoteNews(session: SessionHandle, accountId: string): Promise<News[]> {
   const result: News[] = [];
 
-  if (session) {
-    const news = await PawnoteNews(session) as unknown as NewsInformation[];
-    for (const item of news) {
-      result.push({
-        id: item.id,
-        title: item.title,
-        createdAt: item.creationDate,
-        acknowledged: item.read,
-        attachments: item.attachments.map((attachment) => ({
-          type: attachment.kind,
-          name: attachment.name,
-          url: attachment.url,
-          createdByAccount: accountId,
-        })),
-        content: item.content,
-        author: item.author,
-        category: item.category.name,
-        createdByAccount: accountId,
-      });
-    }
-  }
+	const news = await PawnoteNews(session) as unknown as NewsInformation[];
+	for (const item of news) {
+		result.push({
+			id: item.id,
+			title: item.title,
+			createdAt: item.creationDate,
+			acknowledged: item.read,
+			attachments: item.attachments.map((attachment) => ({
+				type: attachment.kind,
+				name: attachment.name,
+				url: attachment.url,
+				createdByAccount: accountId,
+			})),
+			content: item.content,
+			author: item.author,
+			category: item.category.name,
+			createdByAccount: accountId,
+		});
+	}
 
   return result;
 }
@@ -42,11 +40,11 @@ export async function setPronoteNewsAsAcknowledged(
   news: News
 ): Promise<News> {
   if (news.ref) {
-    await newsInformationAcknowledge(session, news.ref);
-    return {
-      ...news,
-      acknowledged: true,
-    };
+	await newsInformationAcknowledge(session, news.ref as NewsInformation);
+	return {
+	  ...news,
+	  acknowledged: true,
+	};
   }
 
   error("Reference for news item is missing.", "setPronoteNewsAsAcknowledged");

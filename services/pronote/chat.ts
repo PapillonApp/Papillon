@@ -3,7 +3,7 @@ import {
   discussionRecipients,
   discussions,
   discussionSendMessage,
-  EntityKind, newDiscussionRecipients,
+  EntityKind, newDiscussion, NewDiscussionRecipient, newDiscussionRecipients,
   SessionHandle,
   TabLocation,
 } from "pawnote";
@@ -53,6 +53,10 @@ export async function fetchPronoteChatRecipients(
     error("Chat reference is undefined", "fetchPronoteChatRecipients");
   }
 
+  if (!('participantsMessageID' in chat.ref)) {
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
+  }
+
   const recipients = await discussionRecipients(session, chat.ref);
   return recipients.map((recipient) => {
     const [namePart, classPart] = recipient.name.split("(");
@@ -81,6 +85,10 @@ export async function fetchPronoteChatMessages(
 
   if (!chat.ref) {
     error("Chat reference is undefined", "fetchPronoteChatMessages");
+  }
+
+	if (!('participantsMessageID' in chat.ref)) {
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
   const messages = await discussionMessages(session, chat.ref, true)
@@ -121,6 +129,10 @@ export async function sendPronoteMessageInChat(
     error("Chat reference is undefined", "fetchPronoteChatMessages");
   }
 
+	if (!('participantsMessageID' in chat.ref)) {
+    error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
+  }
+
   await discussionSendMessage(session, chat.ref, content)
 }
 
@@ -157,4 +169,20 @@ export async function fetchPronoteRecipients(
       ref: recipient
     };
   });
+}
+
+export async function createPronoteMail(session: SessionHandle, accountId: string, subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
+	await newDiscussion(session, subject, content, sharedToPronoteRecipient(recipients))
+	return {
+		id: "",
+		subject: subject,
+		recipient: recipients.map(r => r.name).join(", "),
+		creator: session.user.name,
+		date: new Date(),
+		createdByAccount: accountId
+	}
+}
+
+function sharedToPronoteRecipient(recipients: Recipient[]): NewDiscussionRecipient[] {
+  return recipients.map(recipient => recipient.ref).filter((ref): ref is NewDiscussionRecipient => ref !== undefined);
 }

@@ -9,6 +9,8 @@ import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
+import { Skolengo as SkolengoSession } from "skolengojs";
+import { Skolengo } from "../skolengo";
 
 /** Represents a plugin for a school service.
  *
@@ -21,10 +23,10 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | undefined;
+  session: SessionHandle | SkolengoSession | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote>;
-  getHomeworks?: (date: Date) => Promise<Homework[]>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
+  getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
@@ -39,6 +41,7 @@ export interface SchoolServicePlugin {
   getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
+	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
 }
 
 /*
@@ -52,9 +55,11 @@ export enum Capabilities {
   NEWS,
   GRADES,
   ATTENDANCE,
+	ATTENDANCE_PERIODS,
   CANTEEN_MENU,
   CHAT_READ,
-  CHAT_WRITE,
+  CHAT_CREATE,
+	CHAT_REPLY,
   TIMETABLE
 }
 
