@@ -10,7 +10,7 @@ import {
   fetchPronoteRecipients, sendPronoteMessageInChat,
 } from "@/services/pronote/chat";
 import { fetchPronoteGradePeriods, fetchPronoteGrades } from "@/services/pronote/grades";
-import { fetchPronoteHomeworks } from "@/services/pronote/homework";
+import { fetchPronoteHomeworks, setPronoteHomeworkAsDone } from "@/services/pronote/homework";
 import { fetchPronoteNews, setPronoteNewsAsAcknowledged } from "@/services/pronote/news";
 import { refreshPronoteAccount } from "@/services/pronote/refresh";
 import { fetchPronoteCourseResources, fetchPronoteWeekTimetable } from "@/services/pronote/timetable";
@@ -178,6 +178,13 @@ export class Pronote implements SchoolServicePlugin {
 
     error("Session is not valid", "Pronote.setNewsAsAcknowledged");
   }
+
+	async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
+		if (this.session) {
+			return setPronoteHomeworkAsDone(this.session, homework, state)
+		}
+		error("Session is not valid", "Pronote.setHomeworkCompletion")
+	}
 
 	async createMail(subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
 		if (this.session) {
