@@ -4,7 +4,7 @@ import { Permissions, Skolengo as SkolengoSession } from "skolengojs";
 import { refreshSkolengoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { Homework } from "../shared/homework";
-import { fetchSkolengoHomeworks } from "./homework";
+import { fetchSkolengoHomeworks, setSkolengoHomeworkAsDone } from "./homework";
 import { News } from "../shared/news";
 import { fetchSkolengoNews } from "./news";
 import { fetchSkolengoGradePeriods, fetchSkolengoGradesForPeriod } from "./grades";
@@ -123,6 +123,10 @@ export class Skolengo implements SchoolServicePlugin {
 		}
 
 		error("Session is not valid", "Skolengo.getChatMessages")
+	}
+
+	async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
+		return setSkolengoHomeworkAsDone(this.accountId, homework, state)
 	}
 	
 	async createMail(subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]): Promise<Chat> {
