@@ -18,16 +18,16 @@ export class EcoleDirecte implements SchoolServicePlugin {
 		Capabilities.TIMETABLE
 	];
 	session: Session | undefined = undefined;
-	accounts: Account[] = []
+	account: Account | undefined = undefined;
 	authData: Auth = {};
 
 	constructor(public accountId: string) {}
 
 	async refreshAccount(credentials: Auth): Promise<EcoleDirecte> {
 		const refresh = (await refreshEDAccount(this.accountId, credentials))
-		
+
 		this.authData = refresh.auth
-		this.accounts = refresh.accounts
+		this.account = refresh.account
 		this.session = refresh.session
 
 		return this;

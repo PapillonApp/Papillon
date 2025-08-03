@@ -25,7 +25,6 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-	accounts?: Account[];
   session: SessionHandle | SkolengoSession | Session | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
