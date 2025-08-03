@@ -1,5 +1,5 @@
-import { GenericInterface } from "@/services/shared/types";
 import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 export interface PeriodGrades extends GenericInterface {
   studentOverall: GradeScore;
@@ -12,8 +12,8 @@ export interface Subject {
   name: string;
   studentAverage: GradeScore;
   classAverage: GradeScore;
-  maximum: GradeScore;
-  minimum: GradeScore;
+  maximum?: GradeScore;
+  minimum?: GradeScore;
   outOf: GradeScore;
   grades: Grade[];
 }
@@ -29,10 +29,10 @@ export interface Grade extends GenericInterface {
   optional?: boolean;
   outOf: GradeScore;
   coefficient: number;
-  studentScore: GradeScore;
-  averageScore: GradeScore;
-  minScore: GradeScore;
-  maxScore: GradeScore;
+  studentScore?: GradeScore;
+  averageScore?: GradeScore;
+  minScore?: GradeScore;
+  maxScore?: GradeScore;
 }
 
 export interface GradeScore {

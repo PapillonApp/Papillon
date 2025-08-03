@@ -1,5 +1,5 @@
-import { GenericInterface } from "@/services/shared/types";
 import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
 
 export interface Attendance extends GenericInterface {
   delays: Delay[];
@@ -53,7 +53,7 @@ export interface Punishment {
   };
 
   reason: {
-    text: string[];
+    text: string;
     circumstances: string;
     documents: Attachment[];
   };

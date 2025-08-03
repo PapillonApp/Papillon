@@ -7,9 +7,10 @@ import {
   SessionHandle,
   TabLocation,
 } from "pawnote";
+
+import { Absence, Attendance, Delay, Observation, Punishment } from "@/services/shared/attendance";
 import { Period } from "@/services/shared/grade";
 import { error } from "@/utils/logger/logger";
-import { Absence, Attendance, Delay, Observation, Punishment } from "@/services/shared/attendance";
 
 /**
  * Fetches student Notebook from PRONOTE for a specified periot.
@@ -135,7 +136,7 @@ function mapPunishments(punishments: NotebookPunishment[], accountId: string): P
       }))
     },
     reason: {
-      text: p.reasons,
+      text: p.reasons.join(", "),
       circumstances: p.circumstances,
       documents: p.circumstancesDocuments.map((attachment) => ({
         type: attachment.kind,

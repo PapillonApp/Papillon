@@ -1,6 +1,7 @@
 import { GradeKind, GradesOverview, gradesOverview, GradeValue, SessionHandle, TabLocation } from "pawnote";
-import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
+
 import { AttachmentType } from "@/services/shared/attachment";
+import { Grade, GradeScore, Period, PeriodGrades, Subject } from "@/services/shared/grade";
 import { error } from "@/utils/logger/logger";
 
 /**
@@ -63,7 +64,7 @@ export async function fetchPronoteGradePeriods(session: SessionHandle, accountId
  */
 function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] {
   const subjects: Subject[] = [];
-
+  
   const allMappedGrades: Grade[] = grades.grades.map(g => ({
     id: g.id,
     subjectId: g.subject.id,

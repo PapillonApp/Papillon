@@ -56,5 +56,22 @@
   "Tasks_NoTasks_ForWeek": "for week {{week}}",
   "Tasks_NoTasks_Nav": "No tasks left",
   "Task_Start": "To do",
-  "Task_Complete": "Done"
+  "Task_Complete": "Done",
+
+  "Grades_Avg_All_Title": "Overall average",
+  "Grades_Avg_All_Short": "Overall avg.",
+  "Grades_Avg_Subject_Title": "Overall average",
+  "Grades_Avg_Subject_Short": "Overall avg.",
+  "Grades_Avg_Median_Title": "Median",
+  "Grades_Avg_Median_Short": "Median",
+  
+  "Grades_Method_AllGrades": "All grades",
+  "Grades_Method_Weighted": "Weighted",
+
+  "Grades_Sorting_Alphabetical": "Alphabetical",
+  "Grades_Sorting_Averages": "Averages",
+  "Grades_Sorting_Date": "Date",
+
+  "Grades_Menu_SortBy": "Sort by",
+  "Grades_Menu_AverageBy": "Average by",
 }

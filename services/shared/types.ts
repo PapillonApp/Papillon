@@ -1,14 +1,16 @@
 import { SessionHandle } from "pawnote";
 
 import { Pronote } from "@/services/pronote";
-import { Homework } from "@/services/shared/homework";
-import { Auth, Services } from "@/stores/account/types";
-import { News } from "@/services/shared/news";
-import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Attendance } from "@/services/shared/attendance";
 import { CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
+import { Period, PeriodGrades } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
+import { Auth, Services } from "@/stores/account/types";
+import { Skolengo as SkolengoSession } from "skolengojs";
+import { Skolengo } from "../skolengo";
 
 /** Represents a plugin for a school service.
  *
@@ -21,10 +23,10 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | undefined;
+  session: SessionHandle | SkolengoSession | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote>;
-  getHomeworks?: (date: Date) => Promise<Homework[]>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
+  getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
@@ -39,6 +41,7 @@ export interface SchoolServicePlugin {
   getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
+	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
 }
 
 /*
@@ -52,9 +55,11 @@ export enum Capabilities {
   NEWS,
   GRADES,
   ATTENDANCE,
+	ATTENDANCE_PERIODS,
   CANTEEN_MENU,
   CHAT_READ,
-  CHAT_WRITE,
+  CHAT_CREATE,
+	CHAT_REPLY,
   TIMETABLE
 }
 
@@ -65,4 +70,11 @@ export enum Capabilities {
  */
 export interface GenericInterface {
   createdByAccount: string;
+  fromCache?: boolean;
 }
+
+export type FetchOptions<T> = {
+  clientId?: string;
+  fallback?: () => Promise<T>;
+  saveToCache?: (data: T) => Promise<void>;
+};

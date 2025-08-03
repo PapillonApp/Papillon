@@ -1,5 +1,7 @@
 import { assignmentsFromWeek, SessionHandle, translateToWeekNumber } from "pawnote";
+
 import { Homework, ReturnFormat } from "@/services/shared/homework";
+import { getDateRangeOfWeek, getWeekNumberFromDate } from "@/database/useHomework";
 
 /**
   * Fetches homework assignments from PRONOTE for the current week.
@@ -7,10 +9,11 @@ import { Homework, ReturnFormat } from "@/services/shared/homework";
   * @param {string} accountId - The ID of the account requesting the homeworks.
   * @returns {Promise<Homework[]>} A promise that resolves to an array of Homework objects.
  */
-export async function fetchPronoteHomeworks(session: SessionHandle, accountId: string, date: Date): Promise<Homework[]> {
+export async function fetchPronoteHomeworks(session: SessionHandle, accountId: string, weekNumberRaw: number): Promise<Homework[]> {
   const result: Homework[] = [];
 
-  const weekNumber = translateToWeekNumber(date, session.instance.firstMonday);
+	const { start } = getDateRangeOfWeek(weekNumberRaw)
+  const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
 
   if (session) {
     const homeworks = await assignmentsFromWeek(session, weekNumber);

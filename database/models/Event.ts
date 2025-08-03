@@ -6,6 +6,10 @@ import { field, relation } from '@nozbe/watermelondb/decorators';
 export default class Event extends Model {
   static table = 'events';
 
+  static associations = {
+    subjects: { type: 'belongs_to', key: 'subject_id' },
+  };
+
   @field('title') title!: string;
   @field('start') start!: number;
   @field('end') end!: number;

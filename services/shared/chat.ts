@@ -1,6 +1,8 @@
-import { GenericInterface } from "@/services/shared/types";
-import { Attachment } from "@/services/shared/attachment";
 import { Discussion, NewDiscussionRecipient } from "pawnote";
+
+import { Attachment } from "@/services/shared/attachment";
+import { GenericInterface } from "@/services/shared/types";
+import { Mail, Recipients } from "skolengojs";
 
 export interface Chat extends GenericInterface {
   id: string;
@@ -8,14 +10,14 @@ export interface Chat extends GenericInterface {
   recipient?: string;
   creator?: string;
   date: Date;
-  ref?: Discussion;
+  ref?: Discussion | Mail;
 }
 
 export interface Recipient {
   id: string;
   name: string;
   class?: string;
-  ref?: NewDiscussionRecipient
+  ref?: NewDiscussionRecipient | Recipients
 }
 
 export interface Message {

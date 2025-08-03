@@ -2,11 +2,12 @@ import React, { useCallback, useState, useMemo, useRef, useEffect } from "react"
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { Platform, Pressable, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
-import ReanimatedGraph, { ReanimatedGraphPublicMethods } from '@birdwingo/react-native-reanimated-graph';
+import { LineGraph } from 'react-native-graph';
+import { t } from "i18next";
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -15,7 +16,7 @@ import Subject from "@/ui/components/Subject";
 import Stack from "@/ui/components/Stack";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import Icon from "@/ui/components/Icon";
-import { Filter, RefreshCcw, Search } from "lucide-react-native";
+import { Filter, NotebookTabs, RefreshCcw, Search } from "lucide-react-native";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -24,54 +25,18 @@ import { Animation } from "@/ui/utils/Animation";
 import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import { set } from "date-fns";
 
-const sortings = [
-  {
-    label: "Alphabétique",
-    value: "alphabetical",
-    icon: {
-      ios: "character",
-      android: "ic_alphabetical",
-    }
-  },
-  {
-    label: "Moyennes",
-    value: "averages",
-    icon: {
-      ios: "chart.xyaxis.line",
-      android: "ic_averages",
-    }
-  },
-  {
-    label: "Date",
-    value: "date",
-    icon: {
-      ios: "calendar",
-      android: "ic_date",
-    }
-  },
-];
+const transformPeriodName = (name: string) => {
+  // return only digits
+  let newName = name.replace(/[^0-9]/g, '').trim();
 
-const avgAlgorithms = [
-  {
-    label: "Moyenne générale",
-    subtitle: "Toutes les notes",
-    value: "subject",
-    algorithm: (grades) => PapillonSubjectAvg(grades)
-  },
-  {
-    label: "Moyenne des matières",
-    subtitle: "Pondération",
-    value: "weighted",
-    algorithm: (grades) => PapillonWeightedAvg(grades)
-  },
-  {
-    label: "Médiane",
-    subtitle: "Toutes les notes",
-    value: "median",
-    algorithm: (grades) => PapillonMedian(grades)
-  },
-]
+  if (newName.length === 0) {
+    newName = name[0].toUpperCase();
+  }
+
+  return newName.toString()[0];
+}
 
 const subjects = [
   {
@@ -264,6 +229,27 @@ const subjects = [
   },
 ];
 
+const periodsData = [
+  {
+    id: "period-1",
+    name: "Semestre 1",
+    startDate: new Date(2023, 8, 1).getTime(), // 1er septembre 2023
+    endDate: new Date(2023, 11, 31).getTime(), // 31 décembre 2023
+  },
+  {
+    id: "period-2",
+    name: "Semestre 2",
+    startDate: new Date(2024, 0, 1).getTime(), // 1er janvier 2024
+    endDate: new Date(2024, 2, 31).getTime(), // 31 mars 2024
+  },
+  {
+    id: "period-hors",
+    name: "Hors période",
+    startDate: new Date(2023, 8, 1).getTime(), // 1er septembre 2023
+    endDate: new Date(2024, 2, 31).getTime(), // 31 mars 2024
+  },
+];
+
 export default function TabOneScreen() {
   const theme = useTheme();
   const { colors } = theme;
@@ -271,6 +257,56 @@ export default function TabOneScreen() {
   const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+  const sortings = [
+    {
+      label: t("Grades_Sorting_Alphabetical"),
+      value: "alphabetical",
+      icon: {
+        ios: "character",
+        android: "ic_alphabetical",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Averages"),
+      value: "averages",
+      icon: {
+        ios: "chart.xyaxis.line",
+        android: "ic_averages",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Date"),
+      value: "date",
+      icon: {
+        ios: "calendar",
+        android: "ic_date",
+      }
+    },
+  ];
+
+  const avgAlgorithms = [
+    {
+      label: t("Grades_Avg_All_Title"),
+      short: t("Grades_Avg_All_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "subject",
+      algorithm: (grades) => PapillonSubjectAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Subject_Title"),
+      short: t("Grades_Avg_Subject_Short"),
+      subtitle: t("Grades_Method_Weighted"),
+      value: "weighted",
+      algorithm: (grades) => PapillonWeightedAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Median_Title"),
+      short: t("Grades_Avg_Median_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "median",
+      algorithm: (grades) => PapillonMedian(grades)
+    },
+  ]
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -278,6 +314,9 @@ export default function TabOneScreen() {
 
   const [sorting, setSorting] = useState("alphabetical");
   const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
+
+  const periods = useMemo(() => periodsData, []);
+  const [currentPeriod, setCurrentPeriod] = useState(periods[0].id);
 
   const average = useMemo(() => {
     const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
@@ -393,18 +432,19 @@ export default function TabOneScreen() {
   }, [subjects, currentAlgorithm]);
 
   const graphAxis = useMemo(() => {
-    return {
-      xAxis: currentAverageHistory.map(item => new Date(item.date).getTime()),
-      yAxis: currentAverageHistory.map(item => item.average),
-    };
+    const newGraph = currentAverageHistory.map(item => ({
+      value: item.average,
+      date: new Date(item.date)
+    }));
+
+    return newGraph;
   }, [currentAverageHistory]);
 
   const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
 
-  const handleGestureUpdate = useCallback((x: number, y: number, index: number) => {
-    const selectedAverage = currentAverageHistory[index]?.average || 0;
-    setShownAverage(selectedAverage);
-    setSelectionDate(currentAverageHistory[index]?.date || null);
+  const handleGestureUpdate = useCallback((p) => {
+    setShownAverage(p.value);
+    setSelectionDate(p.date.getTime());
   }, [currentAverageHistory]);
 
   const handleGestureEnd = useCallback(() => {
@@ -412,50 +452,47 @@ export default function TabOneScreen() {
     setSelectionDate(null);
   }, [average]);
 
-  useEffect(() => {
-    if (graphRef.current) {
-      graphRef.current.updateData(graphAxis);
-    }
-  }, [graphAxis]);
-
-  const GradesGraph = useMemo(() => {
-    return (
-      <View
-        style={{
-          width: windowDimensions.width + 42,
-          marginLeft: -42,
-          height: 100,
-          maxWidth: 500,
-        }}
-      >
-        <ReanimatedGraph
-          ref={graphRef}
-          xAxis={graphAxis.xAxis}
-          yAxis={graphAxis.yAxis}
+  const GradesGraph = useCallback(() => (
+    <Reanimated.View
+      key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
+      style={{
+        width: windowDimensions.width + 36 - 8,
+        height: 120,
+        position: 'absolute',
+        top: -20,
+        left: -36,
+        right: 0,
+        zIndex: 1000,
+      }}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+    >
+      <React.Suspense fallback={
+        <View style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color="#29947A" />
+        </View>
+      }>
+        <LineGraph
+          points={graphAxis}
+          animated={true}
           color="#29947A"
-          showXAxisLegend={false}
-          showYAxisLegend={false}
-          showExtremeValues={false}
-          widthRatio={0.9}
-          strokeWidth={5}
-          type="curve"
-          height={110}
-          showBlinkingDot={true}
-          blinkingDotRadius={0}
-          blinkingDotExpansion={15 + 2}
-          selectionLines={"none"}
-          animationDuration={400}
-          showSelectionDot={true}
-          selectionDotExpansion={15}
-          selectionDotRadius={2}
-          gestureEnabled={true}
-          smoothAnimation={true}
-          onGestureUpdate={handleGestureUpdate}
+          enablePanGesture={true}
+          onPointSelected={handleGestureUpdate}
           onGestureEnd={handleGestureEnd}
+          verticalPadding={30}
+          horizontalPadding={30}
+          lineThickness={5}
+          panGestureDelay={0}
+          enableIndicator={true}
+          indicatorPulsating={true}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
         />
-      </View>
-    );
-  }, [graphAxis.xAxis, graphAxis.yAxis, windowDimensions.width, handleGestureUpdate, handleGestureEnd]);
+      </React.Suspense>
+    </Reanimated.View>
+  ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
   return (
     <>
@@ -475,7 +512,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.ui.key}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            {GradesGraph}
+            <GradesGraph />
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>
@@ -532,10 +569,32 @@ export default function TabOneScreen() {
         />
       )}
 
-      <NativeHeaderTitle>
-        <Typography variant="navigation">
-          Notes
-        </Typography>
+      <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled}>
+        <Dynamic
+          animated={true}
+          style={{
+            flexDirection: "column",
+            alignItems: Platform.OS === 'android' ? "left" : "center",
+            justifyContent: "center",
+            gap: 4,
+            width: 200,
+            height: 60,
+            marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+          }}
+        >
+          <Dynamic animated>
+            <Typography variant="navigation">
+              {t("Tab_Grades")}
+            </Typography>
+          </Dynamic>
+          {fullyScrolled && (
+            <Dynamic animated>
+              <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
+                {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {shownAverage.toFixed(2)}/20
+              </Typography>
+            </Dynamic>
+          )}
+        </Dynamic>
       </NativeHeaderTitle>
 
       <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting + ":" + currentAlgorithm}>
@@ -553,7 +612,7 @@ export default function TabOneScreen() {
           actions={[
             {
               id: 'sorting',
-              title: 'Tri par',
+              title: t("Grades_Menu_SortBy"),
               image: Platform.select({
                 ios: 'line.3.horizontal.decrease',
                 android: 'ic_sort',
@@ -573,7 +632,7 @@ export default function TabOneScreen() {
             },
             {
               id: 'algorithm',
-              title: 'Moyenne par',
+              title: t("Grades_Menu_AverageBy"),
               image: Platform.select({
                 ios: 'chart.pie',
                 android: 'ic_algorithm',
@@ -596,12 +655,60 @@ export default function TabOneScreen() {
         </MenuView>
       </NativeHeaderSide>
 
-      <NativeHeaderSide side="Right">
-        <NativeHeaderPressable>
-          <Icon>
-            <Search />
-          </Icon>
-        </NativeHeaderPressable>
+      <NativeHeaderSide side="Right" key={"right -side-period:" + currentPeriod}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("period:")) {
+              const selectedPeriodId = actionId.replace("period:", "");
+              setCurrentPeriod(selectedPeriodId);
+            }
+          }}
+          actions={
+            periods.map((period) => ({
+              id: "period:" + period.id,
+              title: period.name,
+              subtitle: `${new Date(period.startDate).toLocaleDateString("fr-FR", {
+                month: "short",
+                year: "numeric",
+              })} - ${new Date(period.endDate).toLocaleDateString("fr-FR", {
+                month: "short",
+                year: "numeric",
+              })}`,
+              state: currentPeriod === period.id ? "on" : "off",
+            }))
+          }
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <View
+              style={{
+                position: "absolute",
+                right: 3,
+                top: 3,
+                backgroundColor: colors.primary,
+                width: 16,
+                height: 16,
+                borderRadius: 60,
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 12,
+                  fontFamily: "bold",
+                }}
+              >
+                {transformPeriodName(periods.find(p => p.id === currentPeriod)?.name || t("Grades_Menu_CurrentPeriod"))}
+              </Text>
+            </View>
+            <Icon>
+              <NotebookTabs />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
       </NativeHeaderSide>
     </>
   );
