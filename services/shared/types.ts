@@ -30,7 +30,7 @@ export interface SchoolServicePlugin {
   refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
-  getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
+  getGradesForPeriod?: (period: Period) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
   getAttendancePeriods?: () => Promise<Period[]>;

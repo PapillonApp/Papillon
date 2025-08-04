@@ -75,9 +75,9 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getNews");
   }
 
-  async getGradesForPeriod(period: string): Promise<PeriodGrades> {
+  async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
     if (this.session) {
-      return fetchPronoteGrades(this.session, this.accountId, period);
+      return fetchPronoteGrades(this.session, this.accountId, period.id!);
     }
 
     error("Session is not valid", "Pronote.getGradesForPeriod");

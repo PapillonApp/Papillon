@@ -21,7 +21,7 @@ export interface Homework extends GenericInterface{
   content: string;
   dueDate: Date;
   isDone: boolean;
-  returnFormat: ReturnFormat;
+  returnFormat?: ReturnFormat;
   attachments: Attachment[];
   evaluation: boolean;
   custom: boolean;
