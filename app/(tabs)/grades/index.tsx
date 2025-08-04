@@ -16,7 +16,7 @@ import Subject from "@/ui/components/Subject";
 import Stack from "@/ui/components/Stack";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import Icon from "@/ui/components/Icon";
-import { Filter, NotebookTabs, RefreshCcw, Search } from "lucide-react-native";
+import { ChartAreaIcon, Filter, NotebookTabs, RefreshCcw, Search, StarIcon } from "lucide-react-native";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -25,7 +25,9 @@ import { Animation } from "@/ui/utils/Animation";
 import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { set } from "date-fns";
+import { set, sub } from "date-fns";
+import { LegendList } from "@legendapp/list";
+import { he, it } from "date-fns/locale";
 
 const transformPeriodName = (name: string) => {
   // return only digits
@@ -494,6 +496,135 @@ export default function TabOneScreen() {
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
+  const LatestGradeItem = useCallback(({ item }) => (
+    <View key={item.id}
+      style={{
+        width: 220,
+        height: 150,
+        borderRadius: 24,
+        borderCurve: "continuous",
+        borderColor: colors.border,
+        borderWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        backgroundColor: (subjects.find(s => s.id === item.subjectId)?.color || colors.primary) + "33",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          gap: 8,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+        }}
+      >
+        <Text>
+          {item.subjectId ? subjects.find(s => s.id === item.subjectId)?.icon : "❓"}
+        </Text>
+        <Typography variant="body1" color={(subjects.find(s => s.id === item.subjectId)?.color || colors.primary)} style={{ flex: 1 }} numberOfLines={1} weight="semibold">
+          {item.subjectId ? subjects.find(s => s.id === item.subjectId)?.name : t("Grades_Unknown_Subject")}
+        </Typography>
+        <Typography variant="body1" color={(subjects.find(s => s.id === item.subjectId)?.color || colors.primary)} numberOfLines={1}>
+          {new Date(item.date).toLocaleDateString("fr-FR", {
+            day: "2-digit",
+            month: "short",
+          })}
+        </Typography>
+      </View>
+      <View
+        style={{
+          paddingHorizontal: 12,
+          paddingVertical: 12,
+          flexDirection: "column",
+          gap: 4,
+          backgroundColor: colors.card,
+          borderRadius: 24,
+          borderCurve: "continuous",
+          flex: 1,
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
+        <Typography variant="title" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
+          {item.title}
+        </Typography>
+        <View style={{
+          flexDirection: "row",
+          alignSelf: "flex-start",
+          justifyContent: "flex-start",
+          alignItems: "flex-end",
+          gap: 4,
+          borderRadius: 120,
+          paddingHorizontal: 7,
+          paddingVertical: 3,
+          backgroundColor: (subjects.find(s => s.id === item.subjectId)?.color || colors.primary) + "33",
+        }}>
+          <Typography variant="h4" color={(subjects.find(s => s.id === item.subjectId)?.color || colors.primary)}>
+            {item.score.toFixed(2)}
+          </Typography>
+          <Typography variant="body1" inline color={(subjects.find(s => s.id === item.subjectId)?.color || colors.primary)} style={{ marginBottom: 2 }}>
+            / {item.outOf}
+          </Typography>
+        </View>
+      </View>
+    </View>
+  ), [colors, subjects]);
+
+  const LatestGrades = useCallback(() => (
+    <>
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <StarIcon size={18} />
+        </Icon>
+        <Typography>
+          Nouvelles notes
+        </Typography>
+      </Stack>
+      <LegendList
+        horizontal
+        keyExtractor={(item) => item.id}
+        data={subjects.flatMap(subject => subject.grades).sort((a, b) => b.date - a.date)}
+        renderItem={({ item }) => (
+          <LatestGradeItem item={item} />
+        )}
+        style={{
+          height: 150,
+          marginBottom: 16,
+          overflow: "visible",
+        }}
+        contentContainerStyle={{
+          display: "flex",
+          flexDirection: "row",
+          overflow: "visible",
+          gap: 10,
+        }}
+        showsHorizontalScrollIndicator={false}
+      />
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <ChartAreaIcon size={18} />
+        </Icon>
+        <Typography>
+          Mes notes
+        </Typography>
+      </Stack>
+    </>
+  ), [subjects, colors]);
+
   return (
     <>
       <TabFlatList
@@ -542,6 +673,7 @@ export default function TabOneScreen() {
             </Dynamic>
           </View>
         )}
+        ListHeaderComponent={<LatestGrades />}
       />
 
       {!runsIOS26() && fullyScrolled && (
