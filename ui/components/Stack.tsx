@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 
@@ -8,12 +9,16 @@ type Alignment = "start" | "center" | "end";
 interface StackProps extends ViewProps {
   direction?: Direction;
   gap?: number;
-  padding?: number;
+  padding?: number | [number, number];
+  height?: number;
+  width?: number;
   margin?: number;
   vAlign?: Alignment;
   hAlign?: Alignment;
   inline?: boolean;
+  flex?: boolean;
   backgroundColor?: string;
+  card?: boolean; // Utilisé pour les cartes
   radius?: number;
   style?: ViewStyle | ViewStyle[];
 }
@@ -66,28 +71,34 @@ const COMMON_STYLES = StyleSheet.create({
 const Stack: React.FC<StackProps> = ({
   direction = "vertical",
   gap = 4,
+  width,
+  height,
   padding = 0,
   margin = 0,
   vAlign = "start",
   hAlign = "start",
   inline = false,
+  flex = false,
   backgroundColor,
   radius = 0,
+  card = false,
   style,
   children,
   ...rest
 }) => {
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${backgroundColor || ''}-${radius}`,
-  [direction, gap, padding, margin, vAlign, hAlign, inline, backgroundColor, radius]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, flex, backgroundColor, radius, card]
   );
+
+  const { colors } = useTheme();
 
   // Ultra-optimized style computation with caching
   const computedStyle = React.useMemo(() => {
     // Check cache first
     const cached = STYLE_CACHE.get(cacheKey);
-    if (cached) {return cached;}
+    if (cached) { return cached; }
 
     // Use pre-computed base styles
     const baseStyle = direction === "vertical" ? COMMON_STYLES.vertical : COMMON_STYLES.horizontal;
@@ -95,8 +106,12 @@ const Stack: React.FC<StackProps> = ({
     // Build style object with minimal allocations
     const dynamicStyle: ViewStyle = {
       gap,
-      padding,
+      padding: !(padding instanceof Array) ? padding : undefined,
+      paddingHorizontal: padding instanceof Array ? padding[0] : undefined,
+      paddingVertical: padding instanceof Array ? padding[1] : undefined,
       margin,
+      width: width,
+      height: height,
       alignItems: ALIGN_ITEMS_MAP[hAlign],
       justifyContent: JUSTIFY_CONTENT_MAP[vAlign],
     };
@@ -114,8 +129,22 @@ const Stack: React.FC<StackProps> = ({
     // Handle inline with React Native compatible values
     if (inline) {
       dynamicStyle.alignSelf = "center";
-      dynamicStyle.width = "auto";
-      dynamicStyle.flex = 0;
+      dynamicStyle.width = width !== undefined ? width : "auto";
+      dynamicStyle.flex = flex ? 1 : 0;
+    }
+
+    if (card) {
+      dynamicStyle.borderRadius = radius || 20;
+      dynamicStyle.borderCurve = "continuous";
+      dynamicStyle.shadowColor = "#000000";
+      dynamicStyle.shadowOffset = { width: 0, height: 0 };
+      dynamicStyle.shadowOpacity = 0.16;
+      dynamicStyle.shadowRadius = 1.5;
+      dynamicStyle.elevation = 2;
+      dynamicStyle.overflow = "visible"; // Ensure shadows are visible
+      dynamicStyle.borderColor = colors.text + "25";
+      dynamicStyle.borderWidth = 0.5;
+      dynamicStyle.backgroundColor = backgroundColor || colors.background; // Default to theme background
     }
 
     const finalStyle = [baseStyle, dynamicStyle];

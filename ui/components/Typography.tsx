@@ -150,10 +150,10 @@ const Typography: React.FC<TypographyProps> = React.memo(
 
       // Only cache if no custom styles or custom colors to avoid memory leaks
       if (!hasCustomStyle && !isCustomColor) {
-        return `${variant}-${color}-${align}-${colors.primary}-${colors.text}`;
+        return `${variant}-${color}-${align}-${inline}-${colors.primary}-${colors.text}`;
       }
       return null;
-    }, [variant, color, align, colors.primary, colors.text, style]);
+    }, [variant, color, align, inline, colors.primary, colors.text, style]);
 
     const computedStyle = React.useMemo(() => {
       // Try cache first for common cases
