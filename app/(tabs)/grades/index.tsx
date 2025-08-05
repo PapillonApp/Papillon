@@ -628,7 +628,7 @@ export default function TabOneScreen() {
   return (
     <>
       <TabFlatList
-        radius={34}
+        radius={36}
         waitForInitialLayout
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"

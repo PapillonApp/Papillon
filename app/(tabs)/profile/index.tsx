@@ -149,8 +149,8 @@ function Cards() {
 
   return (
     <Pressable>
-      <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={"#F0F0F0"}>
-        <CreditCardIcon style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
+      <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+        <CreditCardIcon color={colors.text} style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
         <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
           Mes cartes
         </Typography>
@@ -249,7 +249,7 @@ export default function TabOneScreen() {
       </NativeHeaderSide>
 
       <TabFlatList
-        backgroundColor={theme.dark ? "#000000" : "#F0F0F0"}
+        backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}
         height={200}
         onFullyScrolled={handleFullyScrolled}
         data={["tabs", "news", "cards", "apps"]}
@@ -274,7 +274,7 @@ export default function TabOneScreen() {
                   Lucas Lavajo
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline style={{ borderWidth: 1, borderColor: colors.border, paddingHorizontal: 12, paddingVertical: 5 }}>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                     <Icon>
                       <BackpackIcon size={20} opacity={0.7} />
                     </Icon>
@@ -282,7 +282,7 @@ export default function TabOneScreen() {
                       T6
                     </Typography>
                   </Stack>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline style={{ borderWidth: 1, borderColor: colors.border, paddingHorizontal: 12, paddingVertical: 5 }}>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                     <Icon>
                       <SchoolIcon size={20} opacity={0.7} />
                     </Icon>

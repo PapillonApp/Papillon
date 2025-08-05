@@ -19,6 +19,7 @@ interface StackProps extends ViewProps {
   flex?: boolean;
   backgroundColor?: string;
   card?: boolean; // Utilisé pour les cartes
+  flat?: boolean; // Utilisé pour les listes plates
   radius?: number;
   style?: ViewStyle | ViewStyle[];
 }
@@ -82,17 +83,18 @@ const Stack: React.FC<StackProps> = ({
   backgroundColor,
   radius = 0,
   card = false,
+  flat = false,
   style,
   children,
   ...rest
 }) => {
+  const { colors } = useTheme();
+
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
-    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, flex, backgroundColor, radius, card]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${colors}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, colors, flex, backgroundColor, radius, card]
   );
-
-  const { colors } = useTheme();
 
   // Ultra-optimized style computation with caching
   const computedStyle = React.useMemo(() => {
@@ -136,14 +138,14 @@ const Stack: React.FC<StackProps> = ({
     if (card) {
       dynamicStyle.borderRadius = radius || 20;
       dynamicStyle.borderCurve = "continuous";
-      dynamicStyle.shadowColor = "#000000";
+      dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
       dynamicStyle.shadowOffset = { width: 0, height: 0 };
-      dynamicStyle.shadowOpacity = 0.16;
+      dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
       dynamicStyle.shadowRadius = 1.5;
       dynamicStyle.elevation = 2;
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
-      dynamicStyle.borderWidth = 0.5;
+      dynamicStyle.borderWidth = flat ? 1 : 0.5;
       dynamicStyle.backgroundColor = backgroundColor || colors.background; // Default to theme background
     }
 
