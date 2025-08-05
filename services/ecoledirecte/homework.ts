@@ -1,4 +1,4 @@
-import { Account, Document, Session, studentHomeworks } from "pawdirecte";
+import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
 import { Homework } from "../shared/homework";
 import { Attachment, AttachmentType } from "../shared/attachment";
 
@@ -38,7 +38,15 @@ function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
 	}))
 }
 
-// From https://github.com/PapillonApp/Papillon/blob/main/src/utils/epochWeekNumber.ts#L23
+export async function setEDHomeworkAsDone(session: Session, account: Account, homework: Homework, state?: boolean): Promise<Homework> {
+	await setHomeworkState(session, account, Number(homework.id), state ?? !homework.isDone)
+	return {
+		...homework,
+		isDone: state ?? !homework.isDone
+	}
+}
+
+// From https://github.com/PapillonApp/Papillon/blob/main/src/utils/epochWeekNumber.ts
 
 const EPOCH_WN_CONFIG = {
   setHour: 6, // We are in Europe, so we set the hour to 6 UTC to avoid any problem with the timezone (= 2h in the morning in Summer Paris timezone)
