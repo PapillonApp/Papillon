@@ -62,11 +62,12 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
       const y = event.contentOffset.y;
       scrollY.value = y;
 
-      if (onFullyScrolled) {
-        const wasScrolledPast = isScrolledPastThreshold.value;
-        const isNowScrolledPast = y > height - 24;
-        if (wasScrolledPast !== isNowScrolledPast) {
-          isScrolledPastThreshold.value = isNowScrolledPast;
+
+      const wasScrolledPast = isScrolledPastThreshold.value;
+      const isNowScrolledPast = y > height - 24;
+      if (wasScrolledPast !== isNowScrolledPast) {
+        isScrolledPastThreshold.value = isNowScrolledPast;
+        if (onFullyScrolled) {
           runOnJS(onFullyScrolled)(isNowScrolledPast);
         }
       }
@@ -143,6 +144,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             },
             headerContainerStyle
           ]}
+          pointerEvents={showScrollIndicator ? "none" : "auto"}
         >
           <View style={{ height: finalHeight, paddingTop: headerInset }}>
             <Reanimated.View
@@ -231,7 +233,6 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           style={{
             flex: 1,
             zIndex: 9999,
-            pointerEvents: 'box-none',
           }}
 
           contentContainerStyle={{
@@ -243,9 +244,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             padding: padding,
             paddingTop: padding - 15,
             gap: gap,
-            pointerEvents: 'box-none',
           }}
-          pointerEvents="none"
         />
       </>
     )
