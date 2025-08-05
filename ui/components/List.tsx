@@ -216,6 +216,8 @@ const List: React.FC<ListProps> = React.memo(
       const baseStyle = {
         ...BASE_CONTAINER_STYLE,
         backgroundColor: colors.card,
+        borderColor: colors.border,
+        borderWidth: 0.5,
       };
       return style ? [baseStyle, style] : baseStyle;
     }, [colors.card, style]);
