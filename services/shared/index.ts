@@ -4,7 +4,7 @@ import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useA
 import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/useCanteen";
 import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
-import { addHomeworkToDatabase, getDateRangeOfWeek, getHomeworksFromCache, getWeekNumberFromDate } from "@/database/useHomework";
+import { addHomeworkToDatabase, getHomeworksFromCache } from "@/database/useHomework";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";

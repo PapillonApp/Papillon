@@ -1,9 +1,9 @@
 import { Lesson, Skolengo } from "skolengojs";
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
-import { getWeekRangeForDate } from "@/database/useCanteen";
+import { getDateRangeOfWeek } from "@/database/useHomework";
 
-export async function fetchSkolengoTimetable(session: Skolengo, accountId: string, date: Date): Promise<CourseDay[]> {
-	const { start, end } = getWeekRangeForDate(date)
+export async function fetchSkolengoTimetable(session: Skolengo, accountId: string, weekNumber: number): Promise<CourseDay[]> {
+	const { start, end } = getDateRangeOfWeek(weekNumber)
 	const timetable = await session.GetTimetable(start, end)
 	return timetable.map(day => ({
 		date: day.date,

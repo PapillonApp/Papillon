@@ -11,11 +11,12 @@ import {
 
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
+import { getDateRangeOfWeek } from "@/database/useHomework";
 
 export async function fetchPronoteWeekTimetable(
   session: SessionHandle,
   accountId: string,
-  date: Date
+  weekNumberRaw: number
 ): Promise<CourseDay[]> {
   if (!session) {
     error("Session is undefined", "fetchPronoteTimetable");
@@ -27,8 +28,9 @@ export async function fetchPronoteWeekTimetable(
   if (!timetableTab) {
     error("Timetable tab not found in session", "fetchPronoteTimetable");
   }
-
-  const weekNumber = translateToWeekNumber(date, session.instance.firstMonday);
+	
+	const { start } = getDateRangeOfWeek(weekNumberRaw)
+  const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
   const timetable = await timetableFromWeek(session, weekNumber);
 
   parseTimetable(session, timetable, {
