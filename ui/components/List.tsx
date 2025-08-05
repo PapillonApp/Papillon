@@ -14,7 +14,9 @@ interface ListProps extends ViewProps {
   contentContainerStyle?: StyleProp<ViewStyle>;
   entering?: EntryExitTransition;
   exiting?: EntryExitTransition;
+  radius?: number; // NEW: radius for rounded corners
   disableItemAnimation?: boolean; // NEW: disables Reanimated.View for each item
+  marginBottom?: number; // NEW: margin bottom for the list container
   // Performance monitoring (dev only)
   __PERF_MONITOR__?: boolean;
 }
@@ -37,8 +39,6 @@ const MEMOIZATION_THRESHOLD = 10; // Use heavy memoization for 10+ items
 const BASE_CONTAINER_STYLE: ViewStyle = Object.freeze({
   flex: 1,
   width: "100%",
-  marginBottom: 12,
-  borderRadius: 20,
   borderCurve: "continuous",
   shadowColor: "#000000",
   shadowOffset: { width: 0, height: 0 },
@@ -207,6 +207,8 @@ const List: React.FC<ListProps> = React.memo(
     contentContainerStyle,
     entering,
     exiting,
+    radius = 20,
+    marginBottom = 12,
     ...rest
   }) => {
     const { colors } = useTheme();
@@ -218,9 +220,11 @@ const List: React.FC<ListProps> = React.memo(
         backgroundColor: colors.card,
         borderColor: colors.border,
         borderWidth: 0.5,
+        borderRadius: radius,
+        marginBottom: marginBottom,
       };
       return style ? [baseStyle, style] : baseStyle;
-    }, [colors.card, style]);
+    }, [colors.card, style, __DEV__ && radius]);
 
     // Memoize border color with hex optimization
     const borderBottomColor = useMemo(() => `${colors.text}${OPACITY_HEX}`, [colors.text]);
