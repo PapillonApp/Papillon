@@ -58,7 +58,7 @@ export default function TabOneScreen() {
               marginTop: fullyScrolled ? 6 : 0
             }}
           >
-            <Dynamic style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">Mon profil</Typography>
               </Dynamic>
