@@ -149,8 +149,8 @@ function Cards() {
 
   return (
     <Pressable>
-      <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={"#F0F0F0"}>
-        <CreditCardIcon style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
+      <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+        <CreditCardIcon color={colors.text} style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
         <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
           Mes cartes
         </Typography>
@@ -249,7 +249,7 @@ export default function TabOneScreen() {
       </NativeHeaderSide>
 
       <TabFlatList
-        backgroundColor={theme.dark ? "#000000" : "#F0F0F0"}
+        backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}
         height={200}
         onFullyScrolled={handleFullyScrolled}
         data={["tabs", "news", "cards", "apps"]}
