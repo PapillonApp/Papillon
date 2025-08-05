@@ -85,7 +85,7 @@ export class Skolengo implements SchoolServicePlugin {
 		error("Session is not valid", "Skolengo.getGradesPeriods")
 	}
 
-	async getAttendanceForPeriod(): Promise <Attendance> {
+	async getAttendanceForPeriod(): Promise<Attendance> {
 		if (this.session) {
 			return fetchSkolengoAttendance(this.session, this.accountId);
 		}
@@ -93,9 +93,9 @@ export class Skolengo implements SchoolServicePlugin {
 		error ("Session is not valid", "Skolengo.getAttendanceForPeriod")
 	}
 
-	async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+	async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
 		if (this.session) {
-			return fetchSkolengoTimetable(this.session, this.accountId, date)
+			return fetchSkolengoTimetable(this.session, this.accountId, weekNumber)
 		}
 		
 		error("Session is not valid", "Skolengo.getWeeklyTimetable")

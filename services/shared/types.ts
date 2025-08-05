@@ -40,7 +40,7 @@ export interface SchoolServicePlugin {
   getChatMessages?: (chat: Chat) => Promise<Message[]>;
   getRecipientsAvailableForNewChat?: () => Promise<Recipient[]>;
   getCourseResources?: (course: Course) => Promise<CourseResource[]>;
-  getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
+  getWeeklyTimetable?: (weekNumber: number) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
