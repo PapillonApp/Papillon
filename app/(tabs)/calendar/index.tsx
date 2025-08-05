@@ -161,13 +161,13 @@ export default function TabOneScreen() {
 
     // Shallow compare function
     function shallowEqual(objA: any, objB: any) {
-      if (objA === objB) {return true;}
-      if (!objA || !objB) {return false;}
+      if (objA === objB) { return true; }
+      if (!objA || !objB) { return false; }
       const keysA = Object.keys(objA);
       const keysB = Object.keys(objB);
-      if (keysA.length !== keysB.length) {return false;}
+      if (keysA.length !== keysB.length) { return false; }
       for (const key of keysA) {
-        if (objA[key] !== objB[key]) {return false;}
+        if (objA[key] !== objB[key]) { return false; }
       }
       return true;
     }
@@ -179,10 +179,10 @@ export default function TabOneScreen() {
         if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
           next[ev.id] = cache[ev.id];
           return cache[ev.id];
-        } 
+        }
         next[ev.id] = ev;
         return ev;
-        
+
       });
       eventCache.current = next;
       return result;
@@ -326,7 +326,7 @@ export default function TabOneScreen() {
               </Typography>
             </Dynamic>
             <Dynamic animated key={date.toLocaleDateString("fr-FR", { day: "numeric" })}>
-              <NativeHeaderHighlight color="#D6502B">
+              <NativeHeaderHighlight color="#D6502B" style={{ marginBottom: 0 }}>
                 {date.toLocaleDateString("fr-FR", { day: "numeric" })}
               </NativeHeaderHighlight>
             </Dynamic>
