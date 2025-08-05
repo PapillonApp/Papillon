@@ -274,7 +274,7 @@ export default function TabOneScreen() {
                   Lucas Lavajo
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline style={{ borderWidth: 1, borderColor: colors.border, paddingHorizontal: 12, paddingVertical: 5 }}>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                     <Icon>
                       <BackpackIcon size={20} opacity={0.7} />
                     </Icon>
@@ -282,7 +282,7 @@ export default function TabOneScreen() {
                       T6
                     </Typography>
                   </Stack>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline style={{ borderWidth: 1, borderColor: colors.border, paddingHorizontal: 12, paddingVertical: 5 }}>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                     <Icon>
                       <SchoolIcon size={20} opacity={0.7} />
                     </Icon>
