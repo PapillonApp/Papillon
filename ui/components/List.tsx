@@ -44,7 +44,7 @@ const BASE_CONTAINER_STYLE: ViewStyle = Object.freeze({
   shadowOffset: { width: 0, height: 0 },
   shadowOpacity: 0.16,
   shadowRadius: 1.5,
-  elevation: 2,
+  elevation: 1,
 });
 
 const BASE_ITEM_STYLE: ViewStyle = Object.freeze({

@@ -6,11 +6,16 @@ import Typography from "@/ui/components/Typography";
 import { useRouter } from "expo-router";
 import { BellDotIcon, ChevronLeft, ChevronRight, CogIcon, BookIcon, PaletteIcon, CreditCardIcon, AccessibilityIcon, SparklesIcon, HeartIcon, InfoIcon, User2Icon, SquaresExcludeIcon } from "lucide-react-native";
 import React from "react";
-import { Image, ScrollView } from "react-native";
+import { Image, Platform, ScrollView } from "react-native";
 import { t } from "i18next";
+import { HeaderBackButton } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const SettingsIndex = () => {
   const router = useRouter();
+  const theme = useTheme();
+  const { colors } = theme;
 
   const SettingsList = [
     {
@@ -103,7 +108,8 @@ const SettingsIndex = () => {
   return (
     <>
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior="always"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 16, gap: 6 }}
       >
         {SettingsList.map((category, cIndex) => (
@@ -148,13 +154,18 @@ const SettingsIndex = () => {
         ))}
       </ScrollView>
 
-      <NativeHeaderSide side="Left">
-        <NativeHeaderPressable onPress={() => router.back()}>
-          <Icon>
-            <ChevronLeft size={32} strokeWidth={2} style={{ marginLeft: -2 }} />
-          </Icon>
-        </NativeHeaderPressable>
-      </NativeHeaderSide>
+      {Platform.OS === 'ios' && (
+        <NativeHeaderSide side="Left">
+          <HeaderBackButton
+            tintColor={(runsIOS26() || Platform.OS === 'android') ? colors.text : colors.primary}
+            onPress={() => router.back()}
+
+            style={{
+              marginLeft: (runsIOS26() || Platform.OS === 'android') ? 3 : -32,
+            }}
+          />
+        </NativeHeaderSide>
+      )}
     </>
   );
 };

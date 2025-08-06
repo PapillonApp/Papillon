@@ -14,6 +14,7 @@ export default function Layout() {
         options={{
           headerShown: true,
           headerTitle: t("Tab_Profile"),
+          headerTransparent: true,
         }}
       />
     </Stack>

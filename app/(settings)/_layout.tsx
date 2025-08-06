@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export default function Layout() {
         name="settings"
         options={{
           headerTitle: t("Tab_Settings"),
-          headerLargeTitle: true,
+          headerLargeTitle: runsIOS26(),
           headerBackVisible: true,
         }}
       />
@@ -28,7 +29,6 @@ export default function Layout() {
         name="services"
         options={{
           headerTitle: t("Settings_Services_Title"),
-          headerLargeTitle: true,
         }}
       />
     </Stack>
