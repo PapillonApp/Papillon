@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useRef } from "react";
+import React, { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import TabFlatList from "@/ui/components/TabFlatList";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
@@ -16,113 +16,77 @@ import Task from "@/ui/components/Task";
 import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-
-const mockHomework = [
-  {
-    homeworkId: 'hw-001',
-    subjectId: 'math',
-    subjectName: 'Mathématiques',
-    subjectEmoji: '📚',
-    title: 'Exercices de mathématiques',
-    content: 'Faire les exercices 1, 2 et 3 de la page 200 et voir les infos sur beaucoup d’infos il faut resumer',
-    dueDate: 1721606400000, // timestamp
-    isDone: false,
-    returnFormat: 1,
-    attachments: 'math_exercices.pdf',
-    evaluation: false,
-    custom: false,
-    color: '#558000',
-    progress: 0, // 0% completed
-  },
-  {
-    homeworkId: 'hw-002',
-    subjectId: 'eng',
-    subjectEmoji: '🇬🇧',
-    subjectName: 'Anglais',
-    title: 'Essay: "The impact of technology on youth"',
-    content: 'Write a 500-word essay discussing the impact of technology on youth culture and education.',
-    dueDate: 1721692800000,
-    isDone: true,
-    returnFormat: 2,
-    attachments: '',
-    evaluation: true,
-    custom: false,
-    color: '#1869b5',
-    progress: 0.85, // 85% completed
-  },
-  {
-    homeworkId: 'hw-003',
-    subjectId: 'cs',
-    subjectEmoji: '💻',
-    subjectName: 'Informatique',
-    title: 'Build a to-do app with React',
-    content: 'Create a simple to-do application using React. Include features like adding, deleting, and marking tasks as complete.',
-    dueDate: 1721865600000,
-    isDone: false,
-    returnFormat: 0,
-    evaluation: true,
-    custom: true,
-    color: '#804f00',
-    progress: 1, // 100% completed
-  },
-  {
-    homeworkId: 'hw-004',
-    subjectId: 'history',
-    subjectName: 'Histoire',
-    subjectEmoji: '📜',
-    title: 'Read chapter 4 + summary',
-    content: 'Read chapter 4 of the textbook and write a summary of the key points discussed.',
-    dueDate: 1721952000000,
-    isDone: false,
-    returnFormat: 1,
-    attachments: 'chapter4.pdf',
-    evaluation: false,
-    custom: false,
-    color: '#800060',
-    progress: 0.5, // 50% completed
-  },
-  {
-    homeworkId: 'hw-005',
-    subjectId: 'science',
-    subjectName: 'Sciences',
-    subjectEmoji: '🔬',
-    title: 'Group project: Ecosystem poster',
-    content: 'Work in groups to create a poster about a specific ecosystem. Include information about flora, fauna, and environmental issues.',
-    dueDate: 1722124800000,
-    isDone: true,
-    returnFormat: 2,
-    evaluation: true,
-    custom: true,
-    color: '#008042',
-    progress: 0.75, // 75% completed
-  },
-];
-
+import { Homework } from "@/services/shared/homework";
+import { getManager } from "@/services/shared";
+import { useAlert } from "@/ui/components/AlertProvider";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
 
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
   const headerHeight = useHeaderHeight();
+  const alert = useAlert()
   const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState(16);
+  const [selectedWeek, setSelectedWeek] = useState(53);
+
+  const manager = getManager();
+
+  useEffect(() => {
+    const fetchHomeworks = async () => {
+      const result = await manager.getHomeworks(selectedWeek);
+      setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+    };
+
+    fetchHomeworks();
+  }, [selectedWeek]);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-  const [homework, setHomework] = useState({
-    16: mockHomework,
-  });
+  const [homework, setHomework] = useState<Record<number, Homework[]>>({});
 
   const currentHomework = React.useMemo(() => {
     return homework[selectedWeek] || [];
   }, [homework, selectedWeek]);
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
+    const updateHomeworkCompletion = async (homeworkItem: Homework, index: number) => {
+      try {
+        const manager = getManager();
+        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, true);
+        setHomework((prev) => {
+          const updated = [...prev[selectedWeek]];
+          updated[index] = updatedHomework;
+          return { ...prev, [selectedWeek]: updated };
+        });
+      } catch (error) {
+        alert.showAlert({
+          title: "Une erreur est survenue",
+          message: "Ce devoir n'a pas été mis à jour",
+          description: "Nous n'avons pas réussi à mettre à jour l'état du devoir, si ce devoir est important, merci de vous rendre sur l'application officiel de votre établissement afin de définir son état.",
+          color: "#D60046",
+          icon: "TriangleAlert",
+          technical: String(error)
+        });
+      }
+    };
+
     setHomework((prev) => {
-      if (prev[selectedWeek][index].progress === newProgress) { return prev; }
+      if (!prev[selectedWeek] || !prev[selectedWeek][index]) {
+        return prev;
+      }
+
+      if (prev[selectedWeek][index].progress === newProgress) {
+        return prev;
+      }
+
+      updateHomeworkCompletion(prev[selectedWeek][index], index);
+
       const updated = [...prev[selectedWeek]];
       updated[index] = { ...updated[index], progress: newProgress };
       return { ...prev, [selectedWeek]: updated };
@@ -134,30 +98,29 @@ export default function TabOneScreen() {
   }, [currentHomework]);
 
   const leftHomeworks = React.useMemo(() => {
-    return (currentHomework.filter((h) => h.progress < 1).length);
+    return (currentHomework.filter((h) => !h.isDone).length);
   }, [currentHomework]);
 
   const percentageComplete = React.useMemo(() => {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
   }, [lengthHomeworks, leftHomeworks]);
 
-  type HomeworkItem = typeof mockHomework[number];
-
-  const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => (
+  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
     <Task
-      subject={item.subjectName}
-      emoji={item.subjectEmoji}
-      color={item.color}
-      title={item.title}
-      description={item.content}
+      subject={getSubjectName(item.subject)}
+      emoji={getSubjectEmoji(item.subject)}
+      title={""}
+      color={getSubjectColor(item.subject)}
+      description={item.content.replace(/<[^>]*>/g, "")}
       date={new Date(item.dueDate)}
-      progress={item.progress}
+      progress={item.isDone ? 1 : 0}
       index={index}
+      fromCache={item.fromCache ?? false}
       onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />
   ), [onProgressChange]);
 
-  const keyExtractor = useCallback((item: HomeworkItem) => item.homeworkId, []);
+  const keyExtractor = useCallback((item: Homework) => item.id, []);
 
   const memoizedData = useMemo(() => currentHomework, [currentHomework]);
 
@@ -188,6 +151,32 @@ export default function TabOneScreen() {
     setShowWeekPicker((prev) => !prev);
   }, []);
 
+  function getStatusText() {
+    switch (lengthHomeworks) {
+      case 0:
+        return t('Tasks_NoTasks_Nav');
+      case 1:
+        return t('Tasks_Nav_One');
+      default:
+        return t('Tasks_Nav_Left', { count: leftHomeworks });
+    }
+  }
+
+  function marginTop(): number {
+    if (runsIOS26()) {
+      if (fullyScrolled) {
+        return 6
+      }
+      return 0
+    }
+
+    if (Platform.OS === 'ios') {
+      return -4
+    }
+
+    return -2
+  }
+
   return (
     <>
       <TabFlatList
@@ -202,7 +191,6 @@ export default function TabOneScreen() {
         estimatedItemSize={212}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
-        itemLayoutAnimation={LinearTransition}
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
@@ -396,7 +384,7 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: marginTop(),
             }}
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
@@ -413,20 +401,13 @@ export default function TabOneScreen() {
               <Reanimated.View
                 style={{
                   width: 200,
-                  alignItems: Platform.OS === 'android' ? "left" : 'center',
+                  alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
                   marginTop: !runsIOS26() ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
                   <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
-                    {lengthHomeworks === 0 ?
-                      t('Tasks_NoTasks_Nav') :
-                      leftHomeworks > 1 ?
-                        t('Tasks_Nav_Left', { count: leftHomeworks }) :
-                        leftHomeworks === 1 ?
-                          t('Tasks_Nav_One') :
-                          t('Tasks_Nav_Completed')
-                    }
+                    {getStatusText()}
                   </Typography>
                 </Dynamic>
               </Reanimated.View>
