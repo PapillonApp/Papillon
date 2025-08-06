@@ -11,6 +11,8 @@ import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Skolengo } from "../skolengo";
+import { EcoleDirecte } from "../ecoledirecte";
+import { Account, Session } from "pawdirecte";
 
 /** Represents a plugin for a school service.
  *
@@ -23,12 +25,12 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | SkolengoSession | undefined;
+  session: SessionHandle | SkolengoSession | Session | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
-  getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
+  getGradesForPeriod?: (period: Period) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
   getAttendancePeriods?: () => Promise<Period[]>;
@@ -38,7 +40,7 @@ export interface SchoolServicePlugin {
   getChatMessages?: (chat: Chat) => Promise<Message[]>;
   getRecipientsAvailableForNewChat?: () => Promise<Recipient[]>;
   getCourseResources?: (course: Course) => Promise<CourseResource[]>;
-  getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
+  getWeeklyTimetable?: (weekNumber: number) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;

@@ -56,7 +56,7 @@ export async function setSkolengoHomeworkAsDone(accountId: string, homework: Hom
 		content: state.html,
 		dueDate: state.dueDateTime,
 		isDone: state.done,
-		returnFormat: state.deliverWorkOnline ? ReturnFormat.FILE_UPLOAD : ReturnFormat.PAPER,
+		returnFormat: state.deliverWorkOnline ? ReturnFormat.FILE_UPLOAD : undefined,
 		attachments: attachments,
 		evaluation: false,
 		custom: false,

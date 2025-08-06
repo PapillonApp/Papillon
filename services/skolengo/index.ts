@@ -30,7 +30,7 @@ export class Skolengo implements SchoolServicePlugin {
 			error("This account seems to not be initialized")
 		}
 
-		const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session))
+		const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session as SkolengoSession))
 		this.authData = refresh.auth
 		this.session = refresh.session
 
@@ -69,9 +69,9 @@ export class Skolengo implements SchoolServicePlugin {
 		error("Session is not valid", "Skolengo.getNews");
 	}
 
-	async getGradesForPeriod(period: string): Promise<PeriodGrades> {
+	async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
 		if (this.session) {
-			return fetchSkolengoGradesForPeriod(this.session, this.accountId, period);
+			return fetchSkolengoGradesForPeriod(this.session, this.accountId, period.id!);
 		}
 		
 		error("Session is not valid", "Skolengo.getGradesForPeriod")
@@ -85,7 +85,7 @@ export class Skolengo implements SchoolServicePlugin {
 		error("Session is not valid", "Skolengo.getGradesPeriods")
 	}
 
-	async getAttendanceForPeriod(): Promise <Attendance> {
+	async getAttendanceForPeriod(): Promise<Attendance> {
 		if (this.session) {
 			return fetchSkolengoAttendance(this.session, this.accountId);
 		}
@@ -93,9 +93,9 @@ export class Skolengo implements SchoolServicePlugin {
 		error ("Session is not valid", "Skolengo.getAttendanceForPeriod")
 	}
 
-	async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+	async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
 		if (this.session) {
-			return fetchSkolengoTimetable(this.session, this.accountId, date)
+			return fetchSkolengoTimetable(this.session, this.accountId, weekNumber)
 		}
 		
 		error("Session is not valid", "Skolengo.getWeeklyTimetable")
