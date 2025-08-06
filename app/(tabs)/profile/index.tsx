@@ -226,19 +226,17 @@ export default function TabOneScreen() {
             animated={true}
             style={{
               flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4,
-              marginTop: fullyScrolled ? 6 : 0
+              marginTop: fullyScrolled ? 6 : 0,
+              width: 200,
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
-              <Dynamic animated>
-                <Typography inline variant="navigation">Mon profil</Typography>
-              </Dynamic>
-            </Dynamic>
             {fullyScrolled && (
-              <Dynamic animated>
-                <Typography inline variant="body2" color="secondary">
-                  Lucas Lavajo
-                </Typography>
+              <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
+                <Dynamic animated>
+                  <Typography inline variant="navigation">
+                    {t("Settings_Account_Title")}
+                  </Typography>
+                </Dynamic>
               </Dynamic>
             )}
           </Dynamic>
@@ -272,7 +270,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item + "a"}
         header={
           <>
-            <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20 }}>
+            <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
                 <Image
                   source={require('@/assets/images/default_profile.jpg')}
