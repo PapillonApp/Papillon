@@ -4,9 +4,9 @@ import { error } from "@/utils/logger/logger";
 
 export async function fetchEDAttendance(session: Session, account: Account, accountId: string): Promise<Attendance> {
 	const attendance = await studentAttendance(session, account);
-	const punishments = mapEcoleDirectePunishments(attendance.punishments);
-	const exemptions = mapEcoleDirectePunishments(attendance.exemptions);
-	const absences = mapEcoleDirecteAbsences(attendance.absences);
+	const punishments = mapEcoleDirectePunishments(attendance.punishments, accountId);
+	const exemptions = mapEcoleDirectePunishments(attendance.exemptions, accountId);
+	const absences = mapEcoleDirecteAbsences(attendance.absences, accountId);
 	return {
 		absences: absences,
 		punishments: [...punishments, ...exemptions],
@@ -16,7 +16,7 @@ export async function fetchEDAttendance(session: Session, account: Account, acco
 	}
 }
 
-function mapEcoleDirecteAbsences(data: AttendanceItem[]): Absence[] {
+function mapEcoleDirecteAbsences(data: AttendanceItem[], accountId: string): Absence[] {
 	return data.map(item => {
 		const { start, end } = mapStringToDates(item.displayDate);
 		return {
@@ -24,12 +24,13 @@ function mapEcoleDirecteAbsences(data: AttendanceItem[]): Absence[] {
 			from: start,
 			to: end,
 			reason: item.reason,
-			justified: item.justified
+			justified: item.justified,
+			createdByAccount: accountId
 		};
 	});
 }
 
-function mapEcoleDirectePunishments(data: AttendanceItem[]): Punishment[] {
+function mapEcoleDirectePunishments(data: AttendanceItem[], accountId: string): Punishment[] {
 	return data.map(item => ({
 		id: String(item.id),
 		givenAt: item.dateOfEvent,
@@ -47,6 +48,7 @@ function mapEcoleDirectePunishments(data: AttendanceItem[]): Punishment[] {
 		},
 		nature: "",
 		duration: mapStringToDuration(item.displayDate) ?? 0,
+		createdByAccount: accountId
 	}))
 }
 

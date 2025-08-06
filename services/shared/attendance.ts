@@ -8,7 +8,7 @@ export interface Attendance extends GenericInterface {
   observations: Observation[];
 }
 
-export interface Delay {
+export interface Delay extends GenericInterface {
   id: string;
   givenAt: Date;
   reason?: string;
@@ -33,7 +33,7 @@ export interface Observation {
   reason?: string;
 }
 
-export interface Absence {
+export interface Absence extends GenericInterface {
   id: string;
   from: Date;
   to: Date;
