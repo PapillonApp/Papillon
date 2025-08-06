@@ -11,13 +11,14 @@ import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { AlignCenter, ArrowUpRight, BackpackIcon, BookIcon, BookOpenIcon, BookOpenTextIcon, CreditCardIcon, Ellipsis, MessageCircleIcon, SchoolIcon, SofaIcon, StarIcon } from "lucide-react-native";
+import { AlignCenter, ArrowUpRight, BackpackIcon, BookIcon, BookOpenIcon, BookOpenTextIcon, CreditCardIcon, Ellipsis, MessageCircleIcon, SchoolIcon, Settings2, SettingsIcon, SofaIcon, StarIcon } from "lucide-react-native";
 import { useTheme } from "@react-navigation/native";
 import TabFlatList from "@/ui/components/TabFlatList";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Icon from "@/ui/components/Icon";
 import adjust from "@/utils/adjustColor";
+import { useRouter } from "expo-router";
 
 function Tabs() {
   const enabledTabs = [
@@ -187,6 +188,8 @@ export default function TabOneScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
+  const router = useRouter();
+
   const windowHeight = Dimensions.get('window').height;
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
@@ -241,10 +244,12 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Pressed");
+            router.push("/(settings)/settings");
           }}
         >
-          <Ellipsis color={colors.text} />
+          <Icon>
+            <SettingsIcon />
+          </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
@@ -267,7 +272,7 @@ export default function TabOneScreen() {
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
                 <Image
-                  source={require('@/assets/images/icon.png')}
+                  source={require('@/assets/images/default_profile.jpg')}
                   style={{ width: 75, height: 75, borderRadius: 500 }}
                 />
                 <Typography variant={"h3"} color="text">
