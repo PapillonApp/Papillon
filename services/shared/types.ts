@@ -74,6 +74,7 @@ export enum Capabilities {
 export interface GenericInterface {
   createdByAccount: string;
   fromCache?: boolean;
+	kidName?: string;
 }
 
 export type FetchOptions<T> = {
