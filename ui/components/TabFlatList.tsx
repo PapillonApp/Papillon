@@ -11,6 +11,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { Circle, G, Path } from "react-native-svg";
 
 import { LegendList, LegendListProps } from "@legendapp/list";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 
@@ -50,6 +51,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const screenHeight = Dimensions.get('window').height;
   const headerInset = useHeaderHeight() - 10;
   const finalHeight = height + headerInset;
+  const tabBarHeight = useBottomTabBarHeight();
 
   // Memoize shared values for scroll position and threshold
   const scrollY = React.useRef(useSharedValue(0)).current;
@@ -223,7 +225,22 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           snapToEnd={false} // Disable snap to end for better control
           // scrollEventThrottle is not supported by LegendList, so removed for type safety
 
-          ListFooterComponent={<View style={{ height: Platform.OS === 'android' ? 180 : 92 }} />}
+          ListFooterComponent={
+            <>
+              <View style={{ height: tabBarHeight + 12 }} />
+
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: -995,
+                  left: -100,
+                  height: 1000,
+                  width: Dimensions.get('window').width + 200,
+                  backgroundColor: colors.background,
+                }}
+              />
+            </>
+          }
 
           showsVerticalScrollIndicator={Platform.OS === 'android' ? false : showScrollIndicator}
           scrollIndicatorInsets={{
@@ -236,13 +253,14 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           }}
 
           contentContainerStyle={{
-            minHeight: screenHeight,
+            minHeight: screenHeight - finalHeight,
             backgroundColor: colors.background,
             marginTop: finalHeight,
-            borderRadius: radius,
+            borderTopLeftRadius: radius,
+            borderTopRightRadius: radius,
             borderCurve: 'continuous',
             padding: padding,
-            paddingTop: padding - 15,
+            paddingVertical: padding - 8,
             gap: gap,
           }}
         />
