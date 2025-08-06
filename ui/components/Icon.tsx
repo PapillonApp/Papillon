@@ -7,6 +7,7 @@ import { LEADING_TYPE } from "./Item";
 interface IconProps extends ViewProps {
   children?: React.ReactNode;
   color?: string;
+  opacity?: number;
 }
 
 // Pre-computed frozen style objects for maximum performance
@@ -25,39 +26,48 @@ const WHITE_COLOR = "#ffffff";
 
 // Optimized child enhancement function using direct array operations
 const enhanceChildrenOptimized = (
-  children: React.ReactNode, 
+  children: React.ReactNode,
   childColor: string
 ): React.ReactNode => {
-  if (!children) {return children;}
-  
+  if (!children) { return children; }
+
   // Fast path for single child (most common case)
   if (React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, { 
-      color: childColor 
+    const childProps = (children as React.ReactElement<any>).props;
+    if (childProps.color !== undefined) {
+      return children;
+    }
+    return React.cloneElement(children as React.ReactElement<any>, {
+      color: childColor
     });
   }
-  
   // Batch processing for multiple children
   return React.Children.map(children, (child) => {
-    return React.isValidElement(child) 
-      ? React.cloneElement(child as React.ReactElement<any>, { color: childColor })
-      : child;
+    if (React.isValidElement(child)) {
+      const childProps = (child as React.ReactElement<any>).props;
+      if (childProps.color !== undefined) {
+        return child;
+      }
+      return React.cloneElement(child as React.ReactElement<any>, { color: childColor });
+    }
+    return child;
   });
 };
 
 const Icon = React.memo<IconProps>(({
   children,
   color,
+  opacity,
   style,
   ...rest
 }) => {
   const { colors } = useTheme();
-  
+
   // Ultra-fast memoization with optimized dependencies
   const { containerStyle, childColor, enhancedChildren } = useMemo(() => {
     const hasColor = Boolean(color);
     const currentChildColor = hasColor ? WHITE_COLOR : colors.text;
-    
+
     // Use cache for color computations
     let colorData = colorCache.get(`${color || 'none'}-${colors.text}`);
     if (!colorData) {
@@ -74,11 +84,13 @@ const Icon = React.memo<IconProps>(({
       }
       colorCache.set(`${color || 'none'}-${colors.text}`, colorData);
     }
-    
+
+    // Add opacity to the container style if provided
+    const opacityStyle = opacity !== undefined ? { opacity } : {};
     return {
-      containerStyle: hasColor 
-        ? [COLORED_ICON_STYLE, { backgroundColor: colorData.backgroundColor }, style]
-        : [EMPTY_STYLE, style],
+      containerStyle: hasColor
+        ? [COLORED_ICON_STYLE, { backgroundColor: colorData.backgroundColor }, opacityStyle, style]
+        : [EMPTY_STYLE, opacityStyle, style],
       childColor: colorData.childColor,
       enhancedChildren: enhanceChildrenOptimized(children, colorData.childColor)
     };

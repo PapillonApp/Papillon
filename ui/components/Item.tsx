@@ -65,16 +65,16 @@ const DEFAULT_CONTENT_STYLE = Object.freeze({
 // Optimized areEqual with early returns and minimal key checking
 function areEqual(prev: ListProps, next: ListProps) {
   // Quick reference equality check
-  if (prev === next) {return true;}
+  if (prev === next) { return true; }
 
   // Check most likely to change props first
-  if (prev.isLast !== next.isLast) {return false;}
-  if (prev.animate !== next.animate) {return false;}
-  if (prev.onPress !== next.onPress) {return false;}
-  if (prev.onPressIn !== next.onPressIn) {return false;}
-  if (prev.onPressOut !== next.onPressOut) {return false;}
-  if (prev.style !== next.style) {return false;}
-  if (prev.contentContainerStyle !== next.contentContainerStyle) {return false;}
+  if (prev.isLast !== next.isLast) { return false; }
+  if (prev.animate !== next.animate) { return false; }
+  if (prev.onPress !== next.onPress) { return false; }
+  if (prev.onPressIn !== next.onPressIn) { return false; }
+  if (prev.onPressOut !== next.onPressOut) { return false; }
+  if (prev.style !== next.style) { return false; }
+  if (prev.contentContainerStyle !== next.contentContainerStyle) { return false; }
 
   // Children comparison last (most expensive)
   return prev.children === next.children;
@@ -111,11 +111,15 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
   }, []);
 
   const handlePressIn = useCallback((event: any) => {
-    if (isAnimatingRef.current || !hasOnPress) {
-      if (!hasOnPress) {event?.preventDefault?.();}
+    if (!hasOnPress) {
+      event?.preventDefault?.();
       return;
     }
 
+    // If animation is running, reset it before starting again
+    if (isAnimatingRef.current) {
+      animationValue.value = 0;
+    }
     isAnimatingRef.current = true;
     animationValue.value = withTiming(1, {
       duration: 100,
@@ -127,12 +131,12 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
   const setAnimatingFalse = () => { isAnimatingRef.current = false; };
   const handlePressOut = useCallback((event: any) => {
-    if (!isAnimatingRef.current) {return;}
+    // if (!isAnimatingRef.current) { return; }
 
     animationValue.value = withSpring(0, {
       mass: 1,
-      damping: 20,
-      stiffness: 300
+      damping: 15, // increased for faster stop
+      stiffness: 800 // increased for faster return
     }, () => {
       'worklet';
       runOnJS(setAnimatingFalse)();
@@ -143,7 +147,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
   // Extremely optimized children sorting with minimal allocations
   const sortedChildren = useMemo(() => {
-    if (!children) {return null;}
+    if (!children) { return null; }
 
     let leading: React.ReactNode[] | null = null;
     let trailing: React.ReactNode[] | null = null;
@@ -153,17 +157,17 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
       if (React.isValidElement(child)) {
         const childType = (child.type as any)?.__ITEM_TYPE__;
         if (childType === LEADING_TYPE) {
-          if (!leading) {leading = [];}
+          if (!leading) { leading = []; }
           leading.push(child);
         } else if (childType === TRAILING_TYPE) {
-          if (!trailing) {trailing = [];}
+          if (!trailing) { trailing = []; }
           trailing.push(child);
         } else {
-          if (!others) {others = [];}
+          if (!others) { others = []; }
           others.push(child);
         }
       } else if (child != null) {
-        if (!others) {others = [];}
+        if (!others) { others = []; }
         others.push(child);
       }
     });
@@ -188,7 +192,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
       borderBottomWidth: 0.5,
       borderBottomColor: borderColor,
     }
-  , [isLast, borderColor]);
+    , [isLast, borderColor]);
 
   const containerStyle = useMemo(() => {
     if (style) {
@@ -199,7 +203,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
   const contentStyle = useMemo(() =>
     contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE
-  , [contentContainerStyle]);
+    , [contentContainerStyle]);
 
   // Early return if no children to render
   if (!sortedChildren) {
