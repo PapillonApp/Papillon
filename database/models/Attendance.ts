@@ -36,6 +36,7 @@ export class Delay extends Model {
   @field('justified') justified: boolean;
   @field('duration') duration: number;
   @field('attendanceId') attendanceId: string;
+	@field('kidName') kidName: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 }
 
@@ -68,6 +69,7 @@ export class Absence extends Model {
   @field('reason') reason?: string;
   @field('justified') justified: boolean;
   @field('attendanceId') attendanceId: string;
+	@field('kidName') kidName: string;
   @relation('attendance', 'attendanceId') attendance: Attendance;
 }
 
