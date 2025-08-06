@@ -13,6 +13,7 @@ export default class Homework extends Model {
   };
 
   @field('createdByAccount') createdByAccount: string;
+	@field('kidName') kidName: string;
   @field('homeworkId') homeworkId: string;
   @field('subjectId') subjectId: string;
   @relation('subjects', 'subjectId') subject: Subject;

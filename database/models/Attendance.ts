@@ -16,6 +16,7 @@ export class Attendance extends Model {
   };
 
   @field('createdByAccount') createdByAccount: string;
+	@field('kidName') kidName?: string;
   @field('period') period: string;
 
   @children('delays') delays!: Query<Delay>;
