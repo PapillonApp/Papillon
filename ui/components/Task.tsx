@@ -20,6 +20,7 @@ const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 interface TaskProps {
   title: string;
   description: string;
+  fromCache?: boolean;
   color?: string;
   emoji?: string;
   subject?: string;
@@ -34,6 +35,7 @@ interface TaskProps {
 const Task: React.FC<TaskProps> = ({
   title,
   description,
+  fromCache,
   color = "#888888",
   emoji,
   subject,
@@ -200,6 +202,7 @@ const Task: React.FC<TaskProps> = ({
                   onPressOut={() => setIsPressed(false)}
                   onHoverIn={() => setIsHovered(true)}
                   onHoverOut={() => setIsHovered(false)}
+                  disabled={fromCache}
                   onPress={toggleProgress}
                   layout={Animation(LinearTransition, "list")}
                   style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
