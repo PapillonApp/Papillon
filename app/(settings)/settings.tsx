@@ -6,8 +6,7 @@ import Typography from "@/ui/components/Typography";
 import { useRouter } from "expo-router";
 import { BellDotIcon, ChevronLeft, ChevronRight, CogIcon, BookIcon, PaletteIcon, CreditCardIcon, AccessibilityIcon, SparklesIcon, HeartIcon, InfoIcon, User2Icon, SquaresExcludeIcon } from "lucide-react-native";
 import React from "react";
-import { Image, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Image, ScrollView } from "react-native";
 import { t } from "i18next";
 
 const SettingsIndex = () => {
@@ -27,6 +26,7 @@ const SettingsIndex = () => {
           title: t('Settings_Services_Title'),
           icon: <SquaresExcludeIcon />,
           color: "#888888",
+          onPress: () => router.push('/(settings)/services'),
         },
       ],
     },
@@ -109,7 +109,7 @@ const SettingsIndex = () => {
         {SettingsList.map((category, cIndex) => (
           <List key={cIndex}>
             {category.content.map((item, index) => (
-              <Item key={index} onPress={() => { }}>
+              <Item key={index} onPress={() => { item.onPress && item.onPress() }}>
                 {item.avatar && (
                   <Leading>
                     <Image
@@ -151,7 +151,7 @@ const SettingsIndex = () => {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable onPress={() => router.back()}>
           <Icon>
-            <ChevronLeft size={32} strokeWidth={1.8} style={{ marginLeft: -2 }} />
+            <ChevronLeft size={32} strokeWidth={2} style={{ marginLeft: -2 }} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
