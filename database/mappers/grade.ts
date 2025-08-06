@@ -10,6 +10,7 @@ export function mapPeriodToShared(period: Period): SharedPeriod {
     start: new Date(period.start),
     end: new Date(period.end),
     createdByAccount: period.createdByAccount,
+		kidName: period.kidName,
     fromCache: true
   }
 }

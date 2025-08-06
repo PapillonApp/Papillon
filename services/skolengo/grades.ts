@@ -1,4 +1,4 @@
-import { Grade as SkolengoGrade, Skolengo, Subject as SkolengoSubjects } from "skolengojs";
+import { Grade as SkolengoGrade, Skolengo, Subject as SkolengoSubjects, Kind } from "skolengojs";
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
 
 export async function fetchSkolengoGradesForPeriod(session: Skolengo, accountId: string, period: string): Promise<PeriodGrades> {
@@ -21,14 +21,35 @@ export async function fetchSkolengoGradesForPeriod(session: Skolengo, accountId:
 }
 
 export async function fetchSkolengoGradePeriods(session: Skolengo, accountId: string): Promise<Period[]> {
-	const periods = (await session.GetGradesSettings()).periods
-	return periods.map(period => ({
-		name: period.label,
-		id: period.id,
-		start: period.startDate,
-		end: period.endDate,
-		createdByAccount: accountId
-	}))
+	const result: Period[] = []
+	
+	if (session.kind === Kind.STUDENT) {
+		const periods = (await session.GetGradesSettings()).periods
+		for (const period of periods) {
+			result.push({
+				name: period.label,
+				id: period.id,
+				start: period.startDate,
+				end: period.endDate,
+				createdByAccount: accountId
+			})
+		}
+	} else {
+		for (const kid of session.kids ?? []) {
+			const periods = (await kid.GetGradesSettings()).periods
+			for (const period of periods) {
+				result.push({
+					name: period.label,
+					id: period.id,
+					start: period.startDate,
+					end: period.endDate,
+					createdByAccount: accountId,
+					kidName: `${kid.firstName} ${kid.lastName}`
+				})
+			}		
+		}
+	}
+	return result
 }
 
 function mapSkolengoGrades(grades: SkolengoGrade[], accountId: string): Grade[] {

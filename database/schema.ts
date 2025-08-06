@@ -75,7 +75,8 @@ export const mySchema = appSchema({
         { name: 'periodId', type: 'string' },
         { name: 'start', type: 'number' },
         { name: 'end', type: 'number' },
-        { name: 'createdByAccount', type: "string" }
+        { name: 'createdByAccount', type: "string" },
+				{ name: 'kidName', type: "string", isOptional: true }
       ],
     }),
     tableSchema({
