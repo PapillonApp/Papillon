@@ -15,7 +15,7 @@ const SettingsIndex = () => {
 
   const SettingsList = [
     {
-      title: t('Settings_General'),
+      title: t('Settings_Profile'),
       content: [
         {
           title: t('Settings_Account_Title'),
@@ -57,18 +57,33 @@ const SettingsIndex = () => {
           icon: <CreditCardIcon />,
           color: "#0092A8",
         },
+      ],
+    },
+    {
+      title: t('Settings_More'),
+      content: [
         {
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
           icon: <AccessibilityIcon />,
           color: "#0038A8",
         },
+      ],
+    },
+    {
+      title: t('Settings_AI'),
+      content: [
         {
           title: t('Settings_MagicPlus_Title'),
           description: t('Settings_MagicPlus_Description'),
           icon: <SparklesIcon />,
           color: "#5D00A8",
         },
+      ],
+    },
+    {
+      title: t('Settings_More'),
+      content: [
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
