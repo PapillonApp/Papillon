@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 16,
+  version: 17,
   tables: [
     tableSchema({
       name: 'events',
@@ -214,6 +214,7 @@ export const mySchema = appSchema({
       name: "courses",
       columns: [
         { name: 'createdByAccount', type: 'string' },
+				{ name: 'kidName', type: 'string', isOptional: true },
         { name: 'courseId', type: 'string' },
         { name: 'subject', type: 'string' },
         { name: 'type', type: 'number' },
