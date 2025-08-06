@@ -25,6 +25,7 @@ export interface Homework extends GenericInterface{
   attachments: Attachment[];
   evaluation: boolean;
   custom: boolean;
+  progress?: number;
 	ref?: Assignment;
 }
 
