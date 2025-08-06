@@ -20,6 +20,15 @@ export default function Layout() {
         options={{
           headerTitle: t("Tab_Settings"),
           headerLargeTitle: true,
+          headerBackVisible: true,
+        }}
+      />
+
+      <Stack.Screen
+        name="services"
+        options={{
+          headerTitle: t("Settings_Services_Title"),
+          headerLargeTitle: true,
         }}
       />
     </Stack>

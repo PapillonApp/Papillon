@@ -135,7 +135,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
             <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
-              <Stack.Screen name="(settings)" options={{ headerShown: false, presentation: "modal" }} />
+              <Stack.Screen name="(settings)" options={{ headerShown: false }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
