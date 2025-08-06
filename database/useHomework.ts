@@ -22,6 +22,7 @@ function mapHomeworkToShared(homework: Homework): SharedHomework {
     evaluation: homework.evaluation,
     custom: homework.custom,
     createdByAccount: homework.createdByAccount,
+		kidName: homework.kidName,
     fromCache: true
   };
 }
@@ -71,7 +72,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   const db = getDatabaseInstance();
 
   for (const hw of homeworks) {
-    const id = generateId(hw.subject + hw.content + hw.dueDate.toISOString() + hw.createdByAccount)
+    const id = generateId(hw.subject + hw.content + hw.dueDate.toISOString() + hw.createdByAccount + hw.kidName)
     const existing = await db.get('homework').query(
       Q.where('homeworkId', hw.id)
     ).fetch();
@@ -92,6 +93,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
           evaluation: hw.evaluation,
           custom: hw.custom,
           createdByAccount: hw.createdByAccount,
+					kidName: hw.kidName,
           fromCache: true
         });
       });

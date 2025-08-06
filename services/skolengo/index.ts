@@ -1,6 +1,6 @@
 import { Auth, Services } from "@/stores/account/types";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { Permissions, Skolengo as SkolengoSession } from "skolengojs";
+import { Kind, Permissions, Skolengo as SkolengoSession } from "skolengojs";
 import { refreshSkolengoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { Homework } from "../shared/homework";
@@ -15,6 +15,8 @@ import { CourseDay } from "../shared/timetable";
 import { fetchSkolengoTimetable } from "./timetable";
 import { Chat, Message, Recipient } from "../shared/chat";
 import { createSkolengoMail, fetchSkolengoChatMessages, fetchSkolengoChatRecipients, fetchSkolengoChats } from "./chat";
+import { Kid } from "../shared/kid";
+import { fetchSkolengoKids } from "./kid";
 
 export class Skolengo implements SchoolServicePlugin {
 	displayName = "Skolengo";
@@ -50,7 +52,17 @@ export class Skolengo implements SchoolServicePlugin {
 			}
 		}
 
+		if (this.session.kind === Kind.PARENT) this.capabilities.push(Capabilities.HAVE_KIDS)
+
 		return this;
+	}
+
+	getKids(): Kid[] {
+		if (this.session) {
+			return fetchSkolengoKids(this.session, this.accountId)
+		}
+
+		error("Session is not valid", "Skolengo.getKids");
 	}
 
 	async getHomeworks(weekNumber: number): Promise<Homework[]> {
@@ -69,8 +81,12 @@ export class Skolengo implements SchoolServicePlugin {
 		error("Session is not valid", "Skolengo.getNews");
 	}
 
-	async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
-		if (this.session) {
+	async getGradesForPeriod(period: Period, kid?: Kid): Promise<PeriodGrades> {
+		if (kid?.ref) {
+			return fetchSkolengoGradesForPeriod(kid.ref, this.accountId, period.id!)
+		}
+		
+		if (this.session && this.session.kind === Kind.STUDENT ) {
 			return fetchSkolengoGradesForPeriod(this.session, this.accountId, period.id!);
 		}
 		

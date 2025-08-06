@@ -7,6 +7,7 @@ export default class Course extends Model {
   static table = 'courses';
 
   @field('createdByAccount') createdByAccount: string;
+	@field('kidName') kidName: string;
   @field('courseId') courseId: string;
 	@field('subject') subject: string;
 	@field('type') type: number;

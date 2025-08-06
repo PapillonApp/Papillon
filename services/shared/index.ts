@@ -22,6 +22,7 @@ import {
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
+import { Kid } from "./kid";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -63,6 +64,17 @@ export class AccountManager {
         Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
+  }
+
+  async getKids(): Promise<Kid[]> {
+    return await this.fetchData(
+      Capabilities.HAVE_KIDS,
+      async client =>
+        client.getKids ? client.getKids() : [],
+      {
+        multiple: true
+      }
+    );
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {

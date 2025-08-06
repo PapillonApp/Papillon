@@ -36,7 +36,8 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             group: item.group,
             backgroundColor: item.backgroundColor,
             status: item.status,
-            url: item.url
+            url: item.url,
+						kidName: item.kidName
           })
         })
       })

@@ -13,6 +13,7 @@ import { Skolengo as SkolengoSession } from "skolengojs";
 import { Skolengo } from "../skolengo";
 import { EcoleDirecte } from "../ecoledirecte";
 import { Account, Session } from "pawdirecte";
+import { Kid } from "./kid";
 
 /** Represents a plugin for a school service.
  *
@@ -28,9 +29,10 @@ export interface SchoolServicePlugin {
   session: SessionHandle | SkolengoSession | Session | undefined;
 
   refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
+	getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
-  getGradesForPeriod?: (period: Period) => Promise<PeriodGrades>;
+  getGradesForPeriod?: (period: Period, kid?: Kid) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
   getAttendancePeriods?: () => Promise<Period[]>;
@@ -63,7 +65,8 @@ export enum Capabilities {
   CHAT_READ,
   CHAT_CREATE,
 	CHAT_REPLY,
-  TIMETABLE
+  TIMETABLE,
+	HAVE_KIDS
 }
 
 /**
@@ -74,6 +77,7 @@ export enum Capabilities {
 export interface GenericInterface {
   createdByAccount: string;
   fromCache?: boolean;
+	kidName?: string;
 }
 
 export type FetchOptions<T> = {
