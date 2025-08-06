@@ -21,6 +21,7 @@ import {
 } from "@/services/shared/types";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
+import { useAccountStore } from "@/stores/account";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -93,7 +94,7 @@ export class AccountManager {
     );
   }
 
-  async getGradesForPeriod(period: string): Promise<PeriodGrades> {
+  async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
     return await this.fetchData(Capabilities.GRADES, async client => {
       if (!client.getGradesForPeriod) {
         throw new Error(
@@ -103,9 +104,9 @@ export class AccountManager {
       return await client.getGradesForPeriod(period);
     }, {
       multiple: false,
-      fallback: async () => getGradePeriodsFromCache(period),
+      fallback: async () => getGradePeriodsFromCache(period.name),
       saveToCache: async (data: PeriodGrades) => {
-        await addPeriodGradesToDatabase(data, period);
+        await addPeriodGradesToDatabase(data, period.name);
       }
     });
   }
@@ -233,14 +234,14 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(date: Date): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
-        client.getWeeklyTimetable ? await client.getWeeklyTimetable(date) : [],
-      { 
+        client.getWeeklyTimetable ? await client.getWeeklyTimetable(weekNumber) : [],
+      {
         multiple: true,
-        fallback: async () => getCoursesFromCache(date),
+        fallback: async () => getCoursesFromCache(weekNumber),
         saveToCache: async (data: CourseDay[]) => {
           await addCourseDayToDatabase(data)
         }
@@ -403,3 +404,32 @@ export class AccountManager {
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }
+
+let globalManager: AccountManager | null = null;
+
+export const initializeAccountManager = async (accountId?: string): Promise<AccountManager> => {
+  if (!accountId) {
+    const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
+    if (!lastUsedAccount) {
+      error("No account ID provided and no last used account found.");
+    }
+    accountId = lastUsedAccount;
+  }
+  const account = useAccountStore.getState().accounts.find(acc => acc.id === accountId);
+  
+  if (!account) {
+    error("Account not found for ID: " + accountId);
+  }
+
+  const manager = new AccountManager(account);
+  await manager.refreshAllAccounts();
+  globalManager = manager;
+  return manager;
+};
+
+export const getManager = (): AccountManager => {
+  if (!globalManager) {
+    error("Account manager not initialized. Call initializeAccountManager first.");
+  }
+  return globalManager;
+};

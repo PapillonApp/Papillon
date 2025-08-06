@@ -8,6 +8,7 @@ import { getDatabaseInstance } from "./DatabaseProvider"
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getWeekRangeForDate } from "./useCanteen";
+import { getDateRangeOfWeek } from "./useHomework";
 
 export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   const db = getDatabaseInstance();
@@ -43,10 +44,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   }
 }
 
-export async function getCoursesFromCache(startDate: Date): Promise<SharedCourseDay[]> {
+export async function getCoursesFromCache(weekNumber: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    const { start, end } = getWeekRangeForDate(startDate);
+    const { start, end } = getDateRangeOfWeek(weekNumber);
 
     const courses = await database
       .get<Course>('courses')
