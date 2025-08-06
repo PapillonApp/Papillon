@@ -10,7 +10,7 @@ import { Absence, Attendance, Delay, Observation, Punishment } from "./models/At
 
 export async function addAttendanceToDatabase(attendance: SharedAttendance, period: string) {
   const db = getDatabaseInstance();
-  const id = generateId(attendance.createdByAccount + period);
+  const id = generateId(attendance.createdByAccount + period + attendance.kidName);
 
   await db.write(async () => {
     const existing = await db.get('attendance').query(Q.where('id', id)).fetch();
@@ -20,6 +20,7 @@ export async function addAttendanceToDatabase(attendance: SharedAttendance, peri
 
       await existingAttendance.update(record => {
         record.createdByAccount = attendance.createdByAccount;
+        record.kidName = attendance.kidName ?? undefined;
         record.period = period;
       });
 
@@ -173,8 +174,8 @@ export async function getAttendanceFromCache(period: string): Promise<SharedAtte
     const att = attendance[0];
     return {
       createdByAccount: att.createdByAccount,
-      delays: mapDelaysToShared(att.delays),
-      absences: mapAbsencesToShared(att.absences),
+      delays: mapDelaysToShared(att.delays, att),
+      absences: mapAbsencesToShared(att.absences, att),
       punishments: mapPunishmentsToShared(att.punishments),
       observations: mapObservationsToShared(att.observations),
       fromCache: true
