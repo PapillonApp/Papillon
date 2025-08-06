@@ -14,7 +14,8 @@ const SettingsServices = () => {
   return (
     <ScrollView
       contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior="automatic"
+      contentInsetAdjustmentBehavior="always"
+      style={{ flex: 1 }}
     >
       {accountStore.lastUsedAccount && (
         <List>

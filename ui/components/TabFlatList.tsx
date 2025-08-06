@@ -227,18 +227,20 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
           ListFooterComponent={
             <>
-              <View style={{ height: tabBarHeight + 12 }} />
+              <View style={{ height: Platform.OS === 'ios' ? tabBarHeight + 12 : 220 }} />
 
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: -995,
-                  left: -100,
-                  height: 1000,
-                  width: Dimensions.get('window').width + 200,
-                  backgroundColor: colors.background,
-                }}
-              />
+              {Platform.OS === 'ios' && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: -995,
+                    left: -100,
+                    height: 1000,
+                    width: Dimensions.get('window').width + 200,
+                    backgroundColor: colors.background,
+                  }}
+                />
+              )}
             </>
           }
 

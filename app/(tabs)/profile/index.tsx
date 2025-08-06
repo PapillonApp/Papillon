@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
-import { View, Dimensions, Image, Pressable } from "react-native";
+import { View, Dimensions, Image, Pressable, Platform } from "react-native";
 import {
+  FadeInUp,
+  FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
 
@@ -20,6 +22,10 @@ import Icon from "@/ui/components/Icon";
 import adjust from "@/utils/adjustColor";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+
+import Reanimated from "react-native-reanimated";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 function Tabs() {
   const enabledTabs = [
@@ -191,6 +197,8 @@ export default function TabOneScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
+  const headerHeight = useHeaderHeight();
+
   const router = useRouter();
 
   const windowHeight = Dimensions.get('window').height;
@@ -210,7 +218,6 @@ export default function TabOneScreen() {
 
   return (
     <>
-
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
@@ -302,6 +309,31 @@ export default function TabOneScreen() {
           </>
         }
       />
+
+      {!runsIOS26() && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
+        />
+      )}
     </>
   );
 }

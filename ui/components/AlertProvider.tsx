@@ -65,21 +65,21 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const showAlert = useCallback((alert: Alert) => {
     const alertId = alert.id || `alert_${Date.now()}_${Math.random()}`;
     const alertWithId = { ...alert, id: alertId };
-    
+
     setAlerts((prevAlerts) => [...prevAlerts, alertWithId]);
-    
+
     // Clear existing timeout if alert is updated
     const existingTimeout = timeoutRefs.current.get(alertId);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
-    
+
     // Automatically remove the alert after 5 seconds
     const timeout = setTimeout(() => {
       setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
     }, 5000);
-    
+
     timeoutRefs.current.set(alertId, timeout);
   }, []);
 
@@ -156,7 +156,7 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
 
   // Memoized icon component to prevent re-renders
   const IconComponent = useMemo(() => {
-    if (!alert.icon || typeof alert.icon !== "string") {return null;}
+    if (!alert.icon || typeof alert.icon !== "string") { return null; }
     return LucideIcons[alert.icon as keyof typeof LucideIcons] as ComponentType<any>;
   }, [alert.icon]);
 
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 3,
     // Add elevation for Android performance
-    elevation: 2,
+    elevation: 1,
   },
   iconContainer: {
     // Empty for now, can be used for icon-specific optimizations
