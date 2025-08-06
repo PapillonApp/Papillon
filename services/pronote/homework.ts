@@ -15,7 +15,6 @@ export async function fetchPronoteHomeworks(session: SessionHandle, accountId: s
 
 	const { start } = getDateRangeOfWeek(weekNumberRaw)
   const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
-
   if (session) {
     const homeworks = await assignmentsFromWeek(session, weekNumber);
     for (const homework of homeworks) {
@@ -48,9 +47,14 @@ export async function setPronoteHomeworkAsDone(session: SessionHandle, homework:
 		error("You can't set data from cache as done.")
 	}
 
-	await assignmentStatus(session, homework.id, status || !homework.isDone)
+  try {
+      await assignmentStatus(session, homework.id, status || !homework.isDone)
+  } catch (err) {
+    error(String(err))
+  }
 	return {
 		...homework,
-		isDone: status || !homework.isDone
+		isDone: status || !homework.isDone,
+    progress: (status || !homework.isDone) === true ? 1 : 0
 	}
 }
