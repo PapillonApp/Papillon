@@ -8,75 +8,76 @@ import { BellDotIcon, ChevronLeft, ChevronRight, CogIcon, BookIcon, PaletteIcon,
 import React from "react";
 import { Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { t } from "i18next";
 
 const SettingsIndex = () => {
   const router = useRouter();
 
   const SettingsList = [
     {
-      title: "Général",
+      title: t('Settings_General'),
       content: [
         {
-          title: "Lucas Lavajo",
-          description: "Mon compte",
+          title: t('Settings_Account_Title'),
+          description: t('Settings_Account_Description'),
           avatar: require('@/assets/images/default_profile.jpg'),
           color: "#888888",
         },
         {
-          title: "Services liés",
+          title: t('Settings_Services_Title'),
           icon: <SquaresExcludeIcon />,
           color: "#888888",
         },
       ],
     },
     {
-      title: "Général",
+      title: t('Settings_General'),
       content: [
         {
-          title: "Notifications",
-          description: "Alertes, fréquence...",
+          title: t('Settings_Notifications_Title'),
+          description: t('Settings_Notifications_Description'),
           icon: <BellDotIcon />,
           color: "#A80000",
         },
         {
-          title: "Matières",
-          description: "Nom, couleur, police...",
+          title: t('Settings_Subjects_Title'),
+          description: t('Settings_Subjects_Description'),
           icon: <BookIcon />,
           color: "#A84E00",
         },
         {
-          title: "Personnalisation",
-          description: "Thèmes, couleurs...",
+          title: t('Settings_Personalization_Title'),
+          description: t('Settings_Personalization_Description'),
           icon: <PaletteIcon />,
           color: "#7EA800",
         },
         {
-          title: "Cartes",
-          description: "Cantine, accès...",
+          title: t('Settings_Cards_Title'),
+          description: t('Settings_Cards_Description'),
           icon: <CreditCardIcon />,
           color: "#0092A8",
         },
         {
-          title: "Accessibilité",
-          description: "Affichage, son...",
+          title: t('Settings_Accessibility_Title'),
+          description: t('Settings_Accessibility_Description'),
           icon: <AccessibilityIcon />,
           color: "#0038A8",
         },
         {
-          title: "Magic+",
-          description: "Fonctionnalités intelligentes",
+          title: t('Settings_MagicPlus_Title'),
+          description: t('Settings_MagicPlus_Description'),
           icon: <SparklesIcon />,
           color: "#5D00A8",
         },
         {
-          title: "Faire un don",
-          description: "Soutenir le projet",
+          title: t('Settings_Donate_Title'),
+          description: t('Settings_Donate_Description'),
           icon: <HeartIcon />,
           color: "#EFA400",
         },
         {
-          title: "À propos",
-          description: "version 8.0.0",
+          title: t('Settings_About_Title'),
+          description: t('Settings_About_Description'),
           icon: <InfoIcon />,
           color: "#797979",
         }

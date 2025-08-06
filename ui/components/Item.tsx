@@ -135,8 +135,8 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
     animationValue.value = withSpring(0, {
       mass: 1,
-      damping: 15, // increased for faster stop
-      stiffness: 800 // increased for faster return
+      damping: 15,
+      stiffness: 300
     }, () => {
       'worklet';
       runOnJS(setAnimatingFalse)();
