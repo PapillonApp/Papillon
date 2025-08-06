@@ -19,21 +19,24 @@ import Item from "@/ui/components/Item";
 import Icon from "@/ui/components/Icon";
 import adjust from "@/utils/adjustColor";
 import { useRouter } from "expo-router";
+import { t } from "i18next";
 
 function Tabs() {
   const enabledTabs = [
     {
       icon: SofaIcon,
-      title: "Assiduité",
+      title: t("Profile_Attendance_Title"),
       unread: 1,
-      denominator: "absence(s)",
+      denominator: t("Profile_Attendance_Denominator_Single"),
+      denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
     },
     {
       icon: MessageCircleIcon,
-      title: "Discussions",
+      title: t("Profile_Discussions_Title"),
       unread: 2,
-      denominator: "non lu(e)s",
+      denominator: t("Profile_Discussions_Denominator_Single"),
+      denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
     }
   ];
@@ -59,7 +62,7 @@ function Tabs() {
             <tab.icon size={24} color={tab.unread > 0 ? tab.color : colors.text} />
             <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
               <Typography inline variant="title" color={tab.unread > 0 ? tab.color : colors.text}>{tab.title}</Typography>
-              <Typography inline variant="caption" color={tab.unread > 0 ? tab.color : "secondary"}>{tab.unread > 0 ? `${tab.unread} ${tab.denominator}` : "Ouvrir"}</Typography>
+              <Typography inline variant="caption" color={tab.unread > 0 ? tab.color : "secondary"}>{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
             </Stack>
           </Stack>
         </Pressable>
@@ -115,12 +118,12 @@ function News() {
           style={{ flex: 1 }}
           variant="h5"
         >
-          Actualités
+          {t("Profile_News_Title")}
         </Typography>
         <Pressable>
           <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
             <Typography style={{ marginBottom: -3 }} inline color="secondary">
-              {newsItems.length} nouvelles
+              {newsItems.length} {newsItems.length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
             </Typography>
             <Icon style={{ opacity: 0.5 }}>
               <ArrowUpRight size={20} />
@@ -153,7 +156,7 @@ function Cards() {
       <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
         <CreditCardIcon color={colors.text} style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
         <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
-          Mes cartes
+          {t("Profile_Cards_Title")}
         </Typography>
 
         <View
@@ -276,7 +279,7 @@ export default function TabOneScreen() {
                   style={{ width: 75, height: 75, borderRadius: 500 }}
                 />
                 <Typography variant={"h3"} color="text">
-                  Lucas Lavajo
+                  {t("Settings_Account_Title")}
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
                   <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
