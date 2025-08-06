@@ -7,10 +7,12 @@ import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 
 import * as pronote from "pawnote";
-import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
-import { error, log } from "@/utils/logger/logger";
-import { AccountManager } from "@/services/shared";
+import { log } from "@/utils/logger/logger";
+import { initializeAccountManager } from "@/services/shared";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { useAccountStore } from "@/stores/account";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -18,28 +20,17 @@ export default function TabOneScreen() {
 
   const generateUUID = () => {
     // Generate a random UUID (version 4)
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
 
   const InitManager = async () => {
-    log("Initalizing AccountManager");
-    const accounts = useAccountStore.getState().accounts
-    if (accounts.length === 0) {
-      error("No accounts found in the store. Please log in first.");
-    }
-    useAccountStore.getState().setLastUsedAccount(accounts[0].id)
-    log("Last used account set to:", accounts[0].id);
-    const manager = new AccountManager(accounts[0]);
-    await manager.refreshAllAccounts()
-    console.log(manager);
-    const homeworks = await manager.getHomeworks(new Date());
-    console.log(homeworks);
+    getSubjectEmoji("français")
   }
 
-  const  loginDemoAccount = async () => {
+  const loginDemoAccount = async () => {
     try {
       setLoading(true);
       const accounts = useAccountStore.getState().accounts;
@@ -54,10 +45,10 @@ export default function TabOneScreen() {
         deviceUUID: uuid,
         kind: pronote.AccountKind.STUDENT,
         username: "demonstration",
-        password: "12345678",
+        password: "E2hgDv918W33",
       });
       console.log("First logged in successfully:", auth);
-
+      useAccountStore.getState().setLastUsedAccount(uuid);
       useAccountStore.getState().addAccount({
         id: uuid,
         firstName: "Demo",
@@ -81,7 +72,7 @@ export default function TabOneScreen() {
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),
       });
-
+      await initializeAccountManager();
       Alert.alert("Success", "You are now logged in to the Papillon demo account!");
       setLoading(false);
     } catch (error) {
@@ -89,7 +80,7 @@ export default function TabOneScreen() {
       console.error("Failed to log in:", error);
     }
   };
-    
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -117,7 +108,7 @@ export default function TabOneScreen() {
           onPress={() => loginDemoAccount()}
         />
         <Button
-          title="Init AccountManager"
+          title="Test"
           inline
           loading={loading}
           variant="outline"
