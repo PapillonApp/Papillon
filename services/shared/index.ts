@@ -5,6 +5,7 @@ import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/us
 import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache } from "@/database/useHomework";
+import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
@@ -73,7 +74,11 @@ export class AccountManager {
       async client =>
         client.getKids ? client.getKids() : [],
       {
-        multiple: true
+        multiple: true,
+        fallback: async () => getKidsFromCache(),
+        saveToCache: async(data: Kid[]) => {
+          await addKidToDatabase(data);
+        }
       }
     );
   }
