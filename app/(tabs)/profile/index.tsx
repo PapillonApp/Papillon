@@ -1,31 +1,30 @@
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { t } from "i18next";
+import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
-import { View, Dimensions, Image, Pressable, Platform } from "react-native";
+import { Dimensions, Image, Platform,Pressable, View } from "react-native";
 import {
   FadeInUp,
   FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
-
-import { Animation } from "@/ui/utils/Animation";
-import Typography from "@/ui/components/Typography";
+import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Stack from "@/ui/components/Stack";
+
 import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import Item from "@/ui/components/Item";
+import List from "@/ui/components/List";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { AlignCenter, ArrowUpRight, BackpackIcon, BookIcon, BookOpenIcon, BookOpenTextIcon, CreditCardIcon, Ellipsis, MessageCircleIcon, SchoolIcon, Settings2, SettingsIcon, SofaIcon, StarIcon } from "lucide-react-native";
-import { useTheme } from "@react-navigation/native";
+import Stack from "@/ui/components/Stack";
 import TabFlatList from "@/ui/components/TabFlatList";
-import List from "@/ui/components/List";
-import Item from "@/ui/components/Item";
-import Icon from "@/ui/components/Icon";
-import adjust from "@/utils/adjustColor";
-import { useRouter } from "expo-router";
-import { t } from "i18next";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-
-import Reanimated from "react-native-reanimated";
-import { useHeaderHeight } from "@react-navigation/elements";
+import adjust from "@/utils/adjustColor";
 
 function Tabs() {
   const enabledTabs = [

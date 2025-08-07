@@ -19,9 +19,9 @@ import {
   FetchOptions,
   SchoolServicePlugin,
 } from "@/services/shared/types";
+import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
-import { useAccountStore } from "@/stores/account";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -277,16 +277,16 @@ export class AccountManager {
       client.setNewsAsAcknowledged
         ? await client.setNewsAsAcknowledged(news)
         : news,
-				{ multiple: false, clientId: news.createdByAccount }
+    { multiple: false, clientId: news.createdByAccount }
     );
   }
 
-	async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
+  async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
     return await this.fetchData(Capabilities.HOMEWORK, async client =>
       client.setHomeworkCompletion
         ? await client.setHomeworkCompletion(homework)
         : homework,
-				{ multiple: false, clientId: homework.createdByAccount }
+    { multiple: false, clientId: homework.createdByAccount }
     );
   }
 
@@ -296,9 +296,9 @@ export class AccountManager {
       async client => {
         if (client.createMail) {
           return await client.createMail(subject, content, recipients, cc, bcc)
-        } else {
-          throw new Error("createMail not implemented")
-        }
+        } 
+        throw new Error("createMail not implemented")
+        
       },
       { multiple: false, clientId: accountId }
     );

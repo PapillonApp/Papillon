@@ -1,16 +1,17 @@
-import React, { useMemo, Suspense } from "react";
-import { View, Dimensions, StyleSheet, ActivityIndicator } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import React, { Suspense,useMemo } from "react";
+import { ActivityIndicator,Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  interpolate,
   Extrapolate,
-  useSharedValue,
-  useAnimatedScrollHandler,
+  interpolate,
   runOnJS,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import getCorners from "../utils/Corners";
-import { useTheme } from "@react-navigation/native";
 
 interface AnimatedModalLayoutProps {
   backgroundColor?: string;

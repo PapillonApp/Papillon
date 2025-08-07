@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import Reanimated, { EntryExitAnimationFunction, LayoutAnimation, LinearTransition } from "react-native-reanimated";
-import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+
 import { Animation } from "../utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 type DynamicProps = {
   children?: React.ReactNode;

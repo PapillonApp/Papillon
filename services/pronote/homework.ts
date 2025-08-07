@@ -1,7 +1,7 @@
 import { assignmentsFromWeek, assignmentStatus, SessionHandle, translateToWeekNumber } from "pawnote";
 
-import { Homework, ReturnFormat } from "@/services/shared/homework";
 import { getDateRangeOfWeek } from "@/database/useHomework";
+import { Homework, ReturnFormat } from "@/services/shared/homework";
 import { error } from "@/utils/logger/logger";
 
 /**
@@ -13,7 +13,7 @@ import { error } from "@/utils/logger/logger";
 export async function fetchPronoteHomeworks(session: SessionHandle, accountId: string, weekNumberRaw: number): Promise<Homework[]> {
   const result: Homework[] = [];
 
-	const { start } = getDateRangeOfWeek(weekNumberRaw)
+  const { start } = getDateRangeOfWeek(weekNumberRaw)
   const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
   if (session) {
     const homeworks = await assignmentsFromWeek(session, weekNumber);
@@ -43,18 +43,18 @@ export async function fetchPronoteHomeworks(session: SessionHandle, accountId: s
 }
 
 export async function setPronoteHomeworkAsDone(session: SessionHandle, homework: Homework, status?: boolean): Promise<Homework> {
-	if (homework.fromCache) {
-		error("You can't set data from cache as done.")
-	}
+  if (homework.fromCache) {
+    error("You can't set data from cache as done.")
+  }
 
   try {
-      await assignmentStatus(session, homework.id, status || !homework.isDone)
+    await assignmentStatus(session, homework.id, status || !homework.isDone)
   } catch (err) {
     error(String(err))
   }
-	return {
-		...homework,
-		isDone: status || !homework.isDone,
+  return {
+    ...homework,
+    isDone: status || !homework.isDone,
     progress: (status || !homework.isDone) === true ? 1 : 0
-	}
+  }
 }

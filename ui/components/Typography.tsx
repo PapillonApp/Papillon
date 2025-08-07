@@ -1,7 +1,8 @@
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
+
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {

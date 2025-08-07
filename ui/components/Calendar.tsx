@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { View, Platform, Pressable } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import List from "./List";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Localization from "expo-localization";
-import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import * as Haptics from "expo-haptics";
 import { useTheme } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
+import * as Localization from "expo-localization";
+import React, { useState } from "react";
+import { Platform, Pressable,View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { runsIOS26 } from "../utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+import List from "./List";
 
 export interface CalendarProps {
   date?: Date;

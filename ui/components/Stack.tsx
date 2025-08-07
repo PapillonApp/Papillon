@@ -93,7 +93,7 @@ const Stack: React.FC<StackProps> = ({
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
     `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${colors}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
-    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, colors, flex, backgroundColor, radius, card]
+  [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, colors, flex, backgroundColor, radius, card]
   );
 
   // Ultra-optimized style computation with caching

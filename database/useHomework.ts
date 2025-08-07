@@ -52,7 +52,7 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
 export async function getHomeworksFromCache(weekNumber: number): Promise<SharedHomework[]> {
   try {
     const database = getDatabaseInstance();
-		const {start, end} = getDateRangeOfWeek(weekNumber);
+    const {start, end} = getDateRangeOfWeek(weekNumber);
     const homeworks = await database
       .get<Homework>('homework')
       .query(Q.where('dueDate', Q.between(start.getTime(), end.getTime())))

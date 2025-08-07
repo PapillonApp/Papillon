@@ -84,22 +84,22 @@ const Button: React.FC<ButtonProps> = React.memo(({
     if (disabled) { return colorsList.text + '30'; } // Light color with 30% opacity for disabled state
 
     switch (variant) {
-      case 'outline':
-        return 'transparent';
-      case 'light':
-        return colorsList[color as Color] + '30';
-      case 'primary':
-      default:
-        return colorsList[color as Color];
+    case 'outline':
+      return 'transparent';
+    case 'light':
+      return colorsList[color as Color] + '30';
+    case 'primary':
+    default:
+      return colorsList[color as Color];
     }
   }, [variant, colorsList, color, disabled]);
 
   const textColor = useMemo(() => {
     switch (variant) {
-      case 'primary':
-        return colorsList.light;
-      default:
-        return colorsList[color as Color];
+    case 'primary':
+      return colorsList.light;
+    default:
+      return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
 

@@ -1,33 +1,28 @@
-import React, { useCallback, useState, useMemo, useRef, useEffect } from "react";
-import TabFlatList from "@/ui/components/TabFlatList";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { ActivityIndicator, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-
-import { MenuView, MenuComponentRef } from '@react-native-menu/menu';
-import { LineGraph } from 'react-native-graph';
-import { t } from "i18next";
-
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import Reanimated, { Easing, FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-import Grade from "@/ui/components/Grade";
-import Subject from "@/ui/components/Subject";
-import Stack from "@/ui/components/Stack";
-import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import Icon from "@/ui/components/Icon";
-import { ChartAreaIcon, Filter, NotebookTabs, RefreshCcw, Search, StarIcon } from "lucide-react-native";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
-import PapillonMedian from "@/utils/grades/algorithms/median";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Animation } from "@/ui/utils/Animation";
-import Button from "@/ui/components/Button";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { set, sub } from "date-fns";
 import { LegendList } from "@legendapp/list";
-import { he, it } from "date-fns/locale";
+import {MenuView } from '@react-native-menu/menu';
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import { ChartAreaIcon, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
+import React, { useCallback,useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
+import { LineGraph } from 'react-native-graph';
+import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
+
+import { Dynamic } from "@/ui/components/Dynamic";
+import Grade from "@/ui/components/Grade";
+import Icon from "@/ui/components/Icon";
+import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import Stack from "@/ui/components/Stack";
+import Subject from "@/ui/components/Subject";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import PapillonMedian from "@/utils/grades/algorithms/median";
+import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
+import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
 const transformPeriodName = (name: string) => {
   // return only digits

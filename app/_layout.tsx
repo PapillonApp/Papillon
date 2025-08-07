@@ -7,15 +7,15 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback,useEffect, useMemo } from 'react';
 import { Platform, StatusBar, useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { DatabaseProvider } from "@/database/DatabaseProvider";
 import { AlertProvider } from '@/ui/components/AlertProvider';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DatabaseProvider } from "@/database/DatabaseProvider";
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 export {
   // Catch any errors thrown by the Layout component.

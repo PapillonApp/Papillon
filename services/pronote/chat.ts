@@ -87,7 +87,7 @@ export async function fetchPronoteChatMessages(
     error("Chat reference is undefined", "fetchPronoteChatMessages");
   }
 
-	if (!('participantsMessageID' in chat.ref)) {
+  if (!('participantsMessageID' in chat.ref)) {
     error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
@@ -129,7 +129,7 @@ export async function sendPronoteMessageInChat(
     error("Chat reference is undefined", "fetchPronoteChatMessages");
   }
 
-	if (!('participantsMessageID' in chat.ref)) {
+  if (!('participantsMessageID' in chat.ref)) {
     error("Chat reference is not a Discussion type", "fetchPronoteChatRecipients");
   }
 
@@ -172,15 +172,15 @@ export async function fetchPronoteRecipients(
 }
 
 export async function createPronoteMail(session: SessionHandle, accountId: string, subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
-	await newDiscussion(session, subject, content, sharedToPronoteRecipient(recipients))
-	return {
-		id: "",
-		subject: subject,
-		recipient: recipients.map(r => r.name).join(", "),
-		creator: session.user.name,
-		date: new Date(),
-		createdByAccount: accountId
-	}
+  await newDiscussion(session, subject, content, sharedToPronoteRecipient(recipients))
+  return {
+    id: "",
+    subject: subject,
+    recipient: recipients.map(r => r.name).join(", "),
+    creator: session.user.name,
+    date: new Date(),
+    createdByAccount: accountId
+  }
 }
 
 function sharedToPronoteRecipient(recipients: Recipient[]): NewDiscussionRecipient[] {

@@ -1,27 +1,25 @@
-import { useEventsForDay } from "@/database/useEvents";
-import Event from "@/database/models/Event";
+import { LegendList } from "@legendapp/list";
+import { MenuView } from '@react-native-menu/menu';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { t } from "i18next";
 import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
 import React, { useRef } from "react";
-import { FlatList, Platform, RefreshControl, StyleSheet, View, Dimensions } from "react-native";
-
-import { useHeaderHeight } from '@react-navigation/elements';
-
-import Course from "@/ui/components/Course";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Animation } from "@/ui/utils/Animation";
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-
-import { LinearTransition } from "react-native-reanimated";
-import { MenuView } from '@react-native-menu/menu';
 import { useCallback, useEffect, useState } from "react";
-import Calendar from "@/ui/components/Calendar";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { LegendList } from "@legendapp/list";
-import { t } from "i18next";
+import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { LinearTransition } from "react-native-reanimated";
+
+import Event from "@/database/models/Event";
+import { useEventsForDay } from "@/database/useEvents";
+import Calendar from "@/ui/components/Calendar";
+import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function TabOneScreen() {
