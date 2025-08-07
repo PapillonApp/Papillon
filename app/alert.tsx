@@ -1,15 +1,13 @@
-import React, { Platform, Pressable, Text, View } from "react-native";
-import { useState, type ComponentType } from "react";
-import * as LucideIcons from "lucide-react-native";
-
-import Typography from "@/ui/components/Typography";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import Button from "@/ui/components/Button";
 import { useTheme } from "@react-navigation/native";
-
-
-import Reanimated, { LinearTransition, Easing } from "react-native-reanimated";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import * as LucideIcons from "lucide-react-native";
+import { type ComponentType,useState } from "react";
 import { useTranslation } from "react-i18next";
+import React, { Platform, Pressable, Text, View } from "react-native";
+import Reanimated, { Easing,LinearTransition } from "react-native-reanimated";
+
+import Button from "@/ui/components/Button";
+import Typography from "@/ui/components/Typography";
 
 export default function AlertModal() {
   const { t } = useTranslation();

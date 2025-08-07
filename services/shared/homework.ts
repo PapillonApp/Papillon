@@ -1,6 +1,7 @@
+import { Assignment } from "skolengojs";
+
 import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
-import { Assignment } from "skolengojs";
 
 /**
  *  This interface defines the general structure of a homework object.

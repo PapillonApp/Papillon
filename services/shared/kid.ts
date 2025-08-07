@@ -1,4 +1,5 @@
 import { Skolengo } from "skolengojs";
+
 import { GenericInterface } from "./types";
 
 export interface Kid extends GenericInterface {

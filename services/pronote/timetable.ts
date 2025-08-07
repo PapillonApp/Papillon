@@ -9,9 +9,9 @@ import {
   translateToWeekNumber,
 } from "pawnote";
 
+import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
-import { getDateRangeOfWeek } from "@/database/useHomework";
 
 export async function fetchPronoteWeekTimetable(
   session: SessionHandle,
@@ -29,7 +29,7 @@ export async function fetchPronoteWeekTimetable(
     error("Timetable tab not found in session", "fetchPronoteTimetable");
   }
 	
-	const { start } = getDateRangeOfWeek(weekNumberRaw)
+  const { start } = getDateRangeOfWeek(weekNumberRaw)
   const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
   const timetable = await timetableFromWeek(session, weekNumber);
 

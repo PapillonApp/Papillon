@@ -20,7 +20,7 @@ export const useAccountStore = create<AccountsStorage>()(
               services: account.services.map((service) =>
                 service.id === serviceId ? { ...service, auth: authData } : service
               ),
-           };
+            };
           }
           return account;
         }),
@@ -34,12 +34,12 @@ export const useAccountStore = create<AccountsStorage>()(
               customisation: {
                 ...account.customisation,
                 subjects: {
-                ...account.customisation?.subjects,
-                [subject]: {
-                  emoji: account.customisation?.subjects?.[subject]?.emoji || '',
-                  name: account.customisation?.subjects?.[subject]?.name || '',
-                  color: color
-                }
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: account.customisation?.subjects?.[subject]?.emoji || '',
+                    name: account.customisation?.subjects?.[subject]?.name || '',
+                    color: color
+                  }
                 }
               }
             };
@@ -55,12 +55,12 @@ export const useAccountStore = create<AccountsStorage>()(
               customisation: {
                 ...account.customisation,
                 subjects: {
-                ...account.customisation?.subjects,
-                [subject]: {
-                  emoji: emoji,
-                  color: account.customisation?.subjects?.[subject]?.color || '',
-                  name: account.customisation?.subjects?.[subject]?.name || '',
-                }
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: emoji,
+                    color: account.customisation?.subjects?.[subject]?.color || '',
+                    name: account.customisation?.subjects?.[subject]?.name || '',
+                  }
                 }
               }
             };
@@ -76,12 +76,12 @@ export const useAccountStore = create<AccountsStorage>()(
               customisation: {
                 ...account.customisation,
                 subjects: {
-                ...account.customisation?.subjects,
-                [subject]: {
-                  emoji: account.customisation?.subjects?.[subject]?.emoji || '',
-                  color: account.customisation?.subjects?.[subject]?.color || '',
-                  name: name,
-                }
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: account.customisation?.subjects?.[subject]?.emoji || '',
+                    color: account.customisation?.subjects?.[subject]?.color || '',
+                    name: name,
+                  }
                 }
               }
             };

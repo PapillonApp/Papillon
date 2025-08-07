@@ -1,17 +1,13 @@
+import { LegendList, LegendListProps } from "@legendapp/list";
+import MaskedView from "@react-native-masked-view/masked-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Dimensions, Platform, FlatListProps, Image, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
-import MaskedView from "@react-native-masked-view/masked-view";
-
-import LinearGradient from "react-native-linear-gradient";
-import { Circle, G, Path } from "react-native-svg";
-
-import { LegendList, LegendListProps } from "@legendapp/list";
+import { Dimensions, FlatListProps, Image, Platform, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import LinearGradient from "react-native-linear-gradient";
+import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 

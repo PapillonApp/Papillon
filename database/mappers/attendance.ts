@@ -8,8 +8,8 @@ export function mapDelaysToShared(delays: Delay[], parent: Attendance): SharedDe
     reason: delay.reason,
     justified: delay.justified,
     duration: delay.duration,
-		createdByAccount: parent.createdByAccount,
-		kidName: parent.kidName
+    createdByAccount: parent.createdByAccount,
+    kidName: parent.kidName
   }));
 }
 
@@ -20,8 +20,8 @@ export function mapAbsencesToShared(absences: Absence[], parent: Attendance): Sh
     to: new Date(absence.to),
     reason: absence.reason,
     justified: absence.justified,
-		createdByAccount: parent.createdByAccount,
-		kidName: parent.kidName
+    createdByAccount: parent.createdByAccount,
+    kidName: parent.kidName
   }));
 }
 

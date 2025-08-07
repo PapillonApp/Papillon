@@ -1,49 +1,50 @@
 import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
-import { Homework } from "../shared/homework";
+
 import { Attachment, AttachmentType } from "../shared/attachment";
+import { Homework } from "../shared/homework";
 
 export async function fetchEDHomeworks(
-	session: Session,
-	account: Account,
-	accountId: string,
-	weekNumber: number
+  session: Session,
+  account: Account,
+  accountId: string,
+  weekNumber: number
 ): Promise<Homework[]> {
-	const weekdays = weekNumberToDaysList(weekNumber);
-	const allHomeworks = await Promise.all(
-		weekdays.map(day =>
-			studentHomeworks(session, account, day.toISOString().split("T")[0]).then(res =>
-				res.homeworks.map(hw => ({
-					id: String(hw.id),
-					subject: hw.subject,
-					content: hw.content,
-					dueDate: day,
-					isDone: hw.done,
-					attachments: mapEDAttachments(hw.attachments, accountId),
-					evaluation: hw.exam,
-					custom: false,
-					createdByAccount: accountId
-				}))
-			)
-		)
-	);
-	return allHomeworks.flat();
+  const weekdays = weekNumberToDaysList(weekNumber);
+  const allHomeworks = await Promise.all(
+    weekdays.map(day =>
+      studentHomeworks(session, account, day.toISOString().split("T")[0]).then(res =>
+        res.homeworks.map(hw => ({
+          id: String(hw.id),
+          subject: hw.subject,
+          content: hw.content,
+          dueDate: day,
+          isDone: hw.done,
+          attachments: mapEDAttachments(hw.attachments, accountId),
+          evaluation: hw.exam,
+          custom: false,
+          createdByAccount: accountId
+        }))
+      )
+    )
+  );
+  return allHomeworks.flat();
 }
 
 function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
-	return data.map(att => ({
-		type: AttachmentType.FILE,
-		name: att.name,
-		url: att.name,
-		createdByAccount: accountId
-	}))
+  return data.map(att => ({
+    type: AttachmentType.FILE,
+    name: att.name,
+    url: att.name,
+    createdByAccount: accountId
+  }))
 }
 
 export async function setEDHomeworkAsDone(session: Session, account: Account, homework: Homework, state?: boolean): Promise<Homework> {
-	await setHomeworkState(session, account, Number(homework.id), state ?? !homework.isDone)
-	return {
-		...homework,
-		isDone: state ?? !homework.isDone
-	}
+  await setHomeworkState(session, account, Number(homework.id), state ?? !homework.isDone)
+  return {
+    ...homework,
+    isDone: state ?? !homework.isDone
+  }
 }
 
 // From https://github.com/PapillonApp/Papillon/blob/main/src/utils/epochWeekNumber.ts

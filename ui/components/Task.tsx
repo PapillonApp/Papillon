@@ -1,19 +1,18 @@
 import { useTheme } from '@react-navigation/native';
-import React, { useCallback, useMemo } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
-import Typography from './Typography';
-import Stack from './Stack';
-import * as Localization from "expo-localization";
-
-import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { Animation } from '../utils/Animation';
-import { Dynamic } from './Dynamic';
-import { Calendar, CheckCheck, CircleDashed, Sparkle, SparklesIcon } from 'lucide-react-native';
-
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale';
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
+import * as Localization from "expo-localization";
 import { t } from 'i18next';
+import { Calendar, CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
+import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+
+import { Animation } from '../utils/Animation';
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
+import { Dynamic } from './Dynamic';
+import Stack from './Stack';
+import Typography from './Typography';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 

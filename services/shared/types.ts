@@ -1,4 +1,6 @@
+import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
+import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
@@ -9,10 +11,9 @@ import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
-import { Skolengo as SkolengoSession } from "skolengojs";
-import { Skolengo } from "../skolengo";
+
 import { EcoleDirecte } from "../ecoledirecte";
-import { Account, Session } from "pawdirecte";
+import { Skolengo } from "../skolengo";
 import { Kid } from "./kid";
 
 /** Represents a plugin for a school service.

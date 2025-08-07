@@ -1,20 +1,20 @@
-import { database } from "@/database";
 import { LucideIcon, Trash2Icon } from "lucide-react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Path, Svg } from "react-native-svg";
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
+import { Path, Svg } from "react-native-svg";
 
+import { database } from "@/database";
+import { truncatenateString } from "@/ui/utils/Truncatenate";
+
+import { Animation } from "../utils/Animation";
 import { formatDuration } from "../utils/Duration";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
-
-import { useTranslation } from "react-i18next";
-import { Animation } from "../utils/Animation";
-import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import { truncatenateString } from "@/ui/utils/Truncatenate";
 
 type Variant = 'primary' | 'separator';
 

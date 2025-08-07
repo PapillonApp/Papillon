@@ -12,8 +12,8 @@ import News from '@/database/models/News';
 import Subject from '@/database/models/Subject';
 import Course from '@/database/models/Timetable';
 
-import { mySchema } from './schema';
 import Kid from './models/Kid';
+import { mySchema } from './schema';
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,

@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { useNavigation } from "expo-router";
-import { Pressable, PressableProps, View, ViewProps, StyleSheet, PressableStateCallbackType, Platform } from "react-native";
-import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
-
+import { useNavigation } from "expo-router";
+import React, { useEffect, useRef } from "react";
+import { Platform,Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+
 import { runsIOS26 } from "../utils/IsLiquidGlass";
+import Typography from "./Typography";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance
@@ -157,7 +157,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
         { maxWidth: maxWidth ?? 200 },
         Platform.OS === 'android' ? styles.titleAndroid : {},
       ]} {...propsRef.current}
-        pointerEvents={ignoreTouch ? "none" : "auto"}
+      pointerEvents={ignoreTouch ? "none" : "auto"}
       >
         {childrenRef.current}
       </View>
@@ -277,4 +277,4 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   );
 });
 
-export { NativeHeaderSide, NativeHeaderTitle, NativeHeaderPressable, NativeHeaderHighlight };
+export { NativeHeaderHighlight,NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle };

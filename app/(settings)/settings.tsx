@@ -1,15 +1,16 @@
+import { HeaderBackButton } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { t } from "i18next";
+import { AccessibilityIcon, BellDotIcon, BookIcon, ChevronRight, CreditCardIcon, HeartIcon, InfoIcon, PaletteIcon, SparklesIcon, SquaresExcludeIcon } from "lucide-react-native";
+import React from "react";
+import { Image, Platform, ScrollView } from "react-native";
+
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
-import { useRouter } from "expo-router";
-import { BellDotIcon, ChevronLeft, ChevronRight, CogIcon, BookIcon, PaletteIcon, CreditCardIcon, AccessibilityIcon, SparklesIcon, HeartIcon, InfoIcon, User2Icon, SquaresExcludeIcon } from "lucide-react-native";
-import React from "react";
-import { Image, Platform, ScrollView } from "react-native";
-import { t } from "i18next";
-import { HeaderBackButton } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const SettingsIndex = () => {

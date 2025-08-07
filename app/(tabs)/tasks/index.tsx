@@ -1,24 +1,25 @@
-import React, { useCallback, useMemo, useState, useRef, useEffect } from "react";
-import TabFlatList from "@/ui/components/TabFlatList";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable, Platform, useWindowDimensions } from "react-native";
-import { CircularProgress } from "@/ui/components/CircularProgress";
-import Stack from "@/ui/components/Stack";
-import { useTheme } from "@react-navigation/native";
-import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
-import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-import { Animation } from "@/ui/utils/Animation";
-import Task from "@/ui/components/Task";
-import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { Homework } from "@/services/shared/homework";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
+import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
+import { FlatList, Platform, Pressable, Text, useWindowDimensions,View } from "react-native";
+import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+
 import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
 import { useAlert } from "@/ui/components/AlertProvider";
+import { CircularProgress } from "@/ui/components/CircularProgress";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Stack from "@/ui/components/Stack";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Task from "@/ui/components/Task";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -153,12 +154,12 @@ export default function TabOneScreen() {
 
   function getStatusText() {
     switch (lengthHomeworks) {
-      case 0:
-        return t('Tasks_NoTasks_Nav');
-      case 1:
-        return t('Tasks_Nav_One');
-      default:
-        return t('Tasks_Nav_Left', { count: leftHomeworks });
+    case 0:
+      return t('Tasks_NoTasks_Nav');
+    case 1:
+      return t('Tasks_Nav_One');
+    default:
+      return t('Tasks_Nav_Left', { count: leftHomeworks });
     }
   }
 
