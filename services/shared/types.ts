@@ -15,6 +15,9 @@ import { Auth, Services } from "@/stores/account/types";
 import { EcoleDirecte } from "../ecoledirecte";
 import { Skolengo } from "../skolengo";
 import { Kid } from "./kid";
+import { Client } from "turboself-api";
+import { TurboSelf } from "../turboself";
+import { Balance } from "./balance";
 
 /** Represents a plugin for a school service.
  *
@@ -27,9 +30,9 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | SkolengoSession | Session | undefined;
+  session: SessionHandle | SkolengoSession | Session | Client | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf>;
 	getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
@@ -48,6 +51,7 @@ export interface SchoolServicePlugin {
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
 	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
+	getCanteenBalances?: () => Promise<Balance[]>
 }
 
 /*
@@ -67,7 +71,11 @@ export enum Capabilities {
   CHAT_CREATE,
 	CHAT_REPLY,
   TIMETABLE,
-	HAVE_KIDS
+	HAVE_KIDS,
+	CANTEEN_BALANCE,
+	CANTEEN_HISTORY,
+	CANTEEN_BOOKINGS,
+	CANTEEN_QRCODE
 }
 
 /**

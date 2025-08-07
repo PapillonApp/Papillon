@@ -25,6 +25,8 @@ import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
 import { Kid } from "./kid";
+import { Balance } from "./balance";
+import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -322,6 +324,21 @@ export class AccountManager {
     );
   }
 
+	async getCanteenBalances(): Promise<Balance[]> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BALANCE,
+      async client =>
+        client.getCanteenBalances ? await client.getCanteenBalances() : [],
+      {
+        multiple: true,
+				fallback: async () => getBalancesFromCache(),
+				saveToCache: async (data: Balance[]) => {
+					await addBalancesToDatabase(data)
+				}
+      }
+    );
+  }
+
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
       client.capabilities.includes(capability)
@@ -447,7 +464,8 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    warn("Account manager not initialized. Call initializeAccountManager first.");
+    error("Account manager not initialized. Call initializeAccountManager first.");
   }
+
   return globalManager;
 };
