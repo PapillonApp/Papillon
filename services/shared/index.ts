@@ -447,7 +447,7 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    error("Account manager not initialized. Call initializeAccountManager first.");
+    warn("Account manager not initialized. Call initializeAccountManager first.");
   }
   return globalManager;
 };

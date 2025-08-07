@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { t } from "i18next";
 import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
-import { Dimensions, Image, Platform,Pressable, View } from "react-native";
+import { Dimensions, Image, Platform, Pressable, View } from "react-native";
 import {
   FadeInUp,
   FadeOutUp,
@@ -12,6 +12,8 @@ import {
 } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import * as Papicons from '@getpapillon/papicons';
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
@@ -29,7 +31,7 @@ import adjust from "@/utils/adjustColor";
 function Tabs() {
   const enabledTabs = [
     {
-      icon: SofaIcon,
+      icon: Papicons.Chair,
       title: t("Profile_Attendance_Title"),
       unread: 1,
       denominator: t("Profile_Attendance_Denominator_Single"),
@@ -37,7 +39,7 @@ function Tabs() {
       color: "#C50066",
     },
     {
-      icon: MessageCircleIcon,
+      icon: Papicons.TextBubble,
       title: t("Profile_Discussions_Title"),
       unread: 2,
       denominator: t("Profile_Discussions_Denominator_Single"),
@@ -64,7 +66,9 @@ function Tabs() {
             radius={200}
             backgroundColor={tab.unread > 0 ? adjust(tab.color, theme.dark ? -0.85 : 0.85) : colors.card}
           >
-            <tab.icon size={24} color={tab.unread > 0 ? tab.color : colors.text} />
+            <Icon papicon size={24} fill={tab.unread > 0 ? tab.color : colors.text}>
+              <tab.icon />
+            </Icon>
             <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
               <Typography inline variant="title" color={tab.unread > 0 ? tab.color : colors.text}>{tab.title}</Typography>
               <Typography inline variant="caption" color={tab.unread > 0 ? tab.color : "secondary"}>{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
@@ -112,12 +116,14 @@ function News() {
         }}
         backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
       >
-        <BookOpenTextIcon
-          color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-          size={22}
-          strokeWidth={2.2}
-          style={{ marginLeft: 8 }}
-        />
+        <Icon
+          fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          size={24}
+          style={{ marginLeft: 8, marginRight: 0 }}
+          papicon
+        >
+          <Papicons.Newspaper />
+        </Icon>
         <Typography
           color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
           style={{ flex: 1 }}
@@ -130,8 +136,8 @@ function News() {
             <Typography style={{ marginBottom: -3 }} inline color="secondary">
               {newsItems.length} {newsItems.length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
             </Typography>
-            <Icon style={{ opacity: 0.5 }}>
-              <ArrowUpRight size={20} />
+            <Icon papicon opacity={0.5} size={20}>
+              <Papicons.Arrow />
             </Icon>
           </Stack>
         </Pressable>
@@ -159,7 +165,14 @@ function Cards() {
   return (
     <Pressable>
       <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
-        <CreditCardIcon color={colors.text} style={{ opacity: 0.8 }} size={22} strokeWidth={2.2} />
+        <Icon
+          fill={colors.text}
+          opacity={0.6}
+          size={24}
+          papicon
+        >
+          <Papicons.Card />
+        </Icon>
         <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
           {t("Profile_Cards_Title")}
         </Typography>
@@ -223,7 +236,9 @@ export default function TabOneScreen() {
             console.log("Pressed");
           }}
         >
-          <AlignCenter color={colors.text} />
+          <Icon papicon>
+            <Papicons.Menu />
+          </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
       <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled}>
@@ -254,8 +269,8 @@ export default function TabOneScreen() {
             router.push("/(settings)/settings");
           }}
         >
-          <Icon>
-            <SettingsIcon />
+          <Icon papicon>
+            <Papicons.Settings />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -287,16 +302,16 @@ export default function TabOneScreen() {
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
                   <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                    <Icon>
-                      <BackpackIcon size={20} opacity={0.7} />
+                    <Icon papicon opacity={0.5}>
+                      <Papicons.Ghost />
                     </Icon>
                     <Typography variant={"body1"} color="secondary">
                       T6
                     </Typography>
                   </Stack>
                   <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                    <Icon>
-                      <SchoolIcon size={20} opacity={0.7} />
+                    <Icon papicon opacity={0.5}>
+                      <Papicons.Student />
                     </Icon>
                     <Typography variant={"body1"} color="secondary">
                       Lycée Frédéric Bazille
