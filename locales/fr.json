@@ -42,7 +42,7 @@
 
   "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
-  "Tab_Calendar_Empty": "Aucun événement trouvé.",
+  "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
 
   "Tasks_LeftHomeworks_Title": "tâches restantes",
@@ -54,6 +54,7 @@
   "Tasks_Nav_Completed": "Tout est terminé !",
   "Tasks_Week": "Semaine",
   "Tasks_NoTasks_Title": "Aucune tâche",
+  "Tasks_NoTasks_Description": "Il n'y a pas de tâches prévues pour cette semaine. Profites-en pour te reposer !",
   "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
   "Tasks_NoTasks_Nav": "Aucune tâche",
   "Task_Start": "À faire",
@@ -76,6 +77,9 @@
 
   "Grades_Menu_SortBy": "Tri par",
   "Grades_Menu_AverageBy": "Moyenne par",
+
+  "Grades_Empty_Title": "Aucune note",
+  "Grades_Empty_Description": "Vous n'avez pas encore été noté sur cette période.",
 
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",

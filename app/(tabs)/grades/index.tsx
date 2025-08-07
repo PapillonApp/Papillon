@@ -1,10 +1,10 @@
 import { LegendList } from "@legendapp/list";
-import {MenuView } from '@react-native-menu/menu';
+import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import { ChartAreaIcon, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
-import React, { useCallback,useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
 import { LineGraph } from 'react-native-graph';
 import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
@@ -23,6 +23,28 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
+
+import * as Papicons from '@getpapillon/papicons';
+
+const EmptyListComponent = memo(() => (
+  <Dynamic animated key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      margin={16}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons.Grades />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Grades_Empty_Title')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Grades_Empty_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
 
 const transformPeriodName = (name: string) => {
   // return only digits
@@ -636,6 +658,7 @@ export default function TabOneScreen() {
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
+        ListEmptyComponent={<EmptyListComponent />}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
             <GradesGraph />

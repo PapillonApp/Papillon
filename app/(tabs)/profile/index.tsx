@@ -2,7 +2,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
-import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon } from "lucide-react-native";
+import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon, User2Icon, UserCircle2, UserPenIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { Dimensions, Image, Platform, Pressable, View } from "react-native";
 import {
@@ -236,8 +236,8 @@ export default function TabOneScreen() {
             console.log("Pressed");
           }}
         >
-          <Icon papicon>
-            <Papicons.Menu />
+          <Icon>
+            <UserPenIcon />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -269,8 +269,8 @@ export default function TabOneScreen() {
             router.push("/(settings)/settings");
           }}
         >
-          <Icon papicon>
-            <Papicons.Settings />
+          <Icon>
+            <SettingsIcon />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>

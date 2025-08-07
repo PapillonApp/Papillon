@@ -5,9 +5,9 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
 import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
+import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { LinearTransition } from "react-native-reanimated";
 
@@ -21,6 +21,30 @@ import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+
+import * as Papicons from '@getpapillon/papicons';
+import Stack from "@/ui/components/Stack";
+import Icon from "@/ui/components/Icon";
+
+const EmptyListComponent = memo(() => (
+  <Dynamic animated key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      margin={16}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons.Calendar />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Tab_Calendar_Empty')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Tab_Calendar_Empty_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -211,16 +235,7 @@ export default function TabOneScreen() {
             />
           }
           keyExtractor={(item) => item.id}
-          ListEmptyComponent={() => (
-            <View style={styles.containerContent}>
-              <Typography variant="title" color="secondary" align="center">
-                {t("Tab_Calendar_Empty")}
-              </Typography>
-              <Typography variant="caption" color="secondary" align="center">
-                {t("Tab_Calendar_Empty_Description")}
-              </Typography>
-            </View>
-          )}
+          ListEmptyComponent={<EmptyListComponent />}
           renderItem={({ item }) => (
             <Course
               id={item.id}

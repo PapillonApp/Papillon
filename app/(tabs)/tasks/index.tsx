@@ -2,8 +2,8 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
-import React, { useCallback, useEffect,useMemo, useRef, useState } from "react";
-import { FlatList, Platform, Pressable, Text, useWindowDimensions,View } from "react-native";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 
 import { getManager } from "@/services/shared";
@@ -24,6 +24,29 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
+import * as Papicons from '@getpapillon/papicons';
+import Icon from "@/ui/components/Icon";
+
+const EmptyListComponent = memo(() => (
+  <Dynamic animated key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      margin={16}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons.Check />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Tasks_NoTasks_Title')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Tasks_NoTasks_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
+
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
@@ -33,6 +56,7 @@ export default function TabOneScreen() {
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(53);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const manager = getManager();
 
@@ -106,6 +130,29 @@ export default function TabOneScreen() {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
   }, [lengthHomeworks, leftHomeworks]);
 
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    const fetchHomeworks = async () => {
+      try {
+        const result = await manager.getHomeworks(selectedWeek);
+        setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+      } catch (error) {
+        alert.showAlert({
+          title: "Erreur de chargement",
+          message: "Impossible de charger les devoirs",
+          description: "Veuillez vérifier votre connexion internet et réessayer.",
+          color: "#D60046",
+          icon: "TriangleAlert",
+          technical: String(error)
+        });
+      } finally {
+        setIsRefreshing(false);
+      }
+    };
+
+    fetchHomeworks();
+  }, [selectedWeek, manager, alert]);
+
   const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
     <Task
       subject={getSubjectName(item.subject)}
@@ -154,12 +201,12 @@ export default function TabOneScreen() {
 
   function getStatusText() {
     switch (lengthHomeworks) {
-    case 0:
-      return t('Tasks_NoTasks_Nav');
-    case 1:
-      return t('Tasks_Nav_One');
-    default:
-      return t('Tasks_Nav_Left', { count: leftHomeworks });
+      case 0:
+        return t('Tasks_NoTasks_Nav');
+      case 1:
+        return t('Tasks_Nav_One');
+      default:
+        return t('Tasks_Nav_Left', { count: leftHomeworks });
     }
   }
 
@@ -192,6 +239,13 @@ export default function TabOneScreen() {
         estimatedItemSize={212}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={100}
+          />
+        }
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
@@ -236,6 +290,7 @@ export default function TabOneScreen() {
         )}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        ListEmptyComponent={<EmptyListComponent />}
       />
 
       {!runsIOS26() && fullyScrolled && (

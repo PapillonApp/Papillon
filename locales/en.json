@@ -42,7 +42,7 @@
 
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
 
-  "Tab_Calendar_Empty": "No events found.",
+  "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
 
   "Tasks_LeftHomeworks_Title": "remaining tasks",
@@ -54,6 +54,7 @@
   "Tasks_Nav_Completed": "Everything is done!",
   "Tasks_Week": "Week",
   "Tasks_NoTasks_Title": "No tasks",
+  "Tasks_NoTasks_Description": "There are no tasks scheduled for this week. Enjoy your break!",
   "Tasks_NoTasks_ForWeek": "for week {{week}}",
   "Tasks_NoTasks_Nav": "No tasks left",
   "Task_Start": "To do",
@@ -76,6 +77,9 @@
 
   "Grades_Menu_SortBy": "Sort by",
   "Grades_Menu_AverageBy": "Average by",
+
+  "Grades_Empty_Title": "No grades",
+  "Grades_Empty_Description": "You haven't been graded yet for this period.",
 
   "Profile_Attendance_Title": "Attendance",
   "Profile_Attendance_Denominator_Single": "delay",
