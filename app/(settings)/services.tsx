@@ -1,12 +1,13 @@
+import { UserX2Icon } from "lucide-react-native";
+import React from "react";
+import { ScrollView } from "react-native";
+
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { UserX2Icon } from "lucide-react-native";
-import React from "react";
-import { ScrollView, View } from "react-native";
 
 const SettingsServices = () => {
   const accountStore = useAccountStore();

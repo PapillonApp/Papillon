@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo, useRef } from "react";
 import { Pressable, PressableProps } from "react-native";
-import Reanimated, { Easing, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming, runOnJS } from "react-native-reanimated";
+import Reanimated, { Easing, LinearTransition, runOnJS,useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
@@ -192,7 +192,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
       borderBottomWidth: 0.5,
       borderBottomColor: borderColor,
     }
-    , [isLast, borderColor]);
+  , [isLast, borderColor]);
 
   const containerStyle = useMemo(() => {
     if (style) {
@@ -203,7 +203,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
   const contentStyle = useMemo(() =>
     contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE
-    , [contentContainerStyle]);
+  , [contentContainerStyle]);
 
   // Early return if no children to render
   if (!sortedChildren) {

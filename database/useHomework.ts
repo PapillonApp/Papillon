@@ -22,7 +22,7 @@ function mapHomeworkToShared(homework: Homework): SharedHomework {
     evaluation: homework.evaluation,
     custom: homework.custom,
     createdByAccount: homework.createdByAccount,
-		kidName: homework.kidName,
+    kidName: homework.kidName,
     fromCache: true
   };
 }
@@ -53,7 +53,7 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
 export async function getHomeworksFromCache(weekNumber: number): Promise<SharedHomework[]> {
   try {
     const database = getDatabaseInstance();
-		const {start, end} = getDateRangeOfWeek(weekNumber);
+    const {start, end} = getDateRangeOfWeek(weekNumber);
     const homeworks = await database
       .get<Homework>('homework')
       .query(Q.where('dueDate', Q.between(start.getTime(), end.getTime())))
@@ -93,7 +93,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
           evaluation: hw.evaluation,
           custom: hw.custom,
           createdByAccount: hw.createdByAccount,
-					kidName: hw.kidName,
+          kidName: hw.kidName,
           fromCache: true
         });
       });

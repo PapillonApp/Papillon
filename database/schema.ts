@@ -51,7 +51,7 @@ export const mySchema = appSchema({
         { name: 'evaluation', type: 'boolean' },
         { name: 'custom', type: 'boolean' },
         { name: 'createdByAccount', type: "string" },
-				{ name: 'kidName', type: "string", isOptional: true }
+        { name: 'kidName', type: "string", isOptional: true }
       ],
     }),
     tableSchema({
@@ -76,7 +76,7 @@ export const mySchema = appSchema({
         { name: 'start', type: 'number' },
         { name: 'end', type: 'number' },
         { name: 'createdByAccount', type: "string" },
-				{ name: 'kidName', type: "string", isOptional: true }
+        { name: 'kidName', type: "string", isOptional: true }
       ],
     }),
     tableSchema({
@@ -113,7 +113,7 @@ export const mySchema = appSchema({
       name: "attendance",
       columns: [
         { name: 'createdByAccount', type: 'string' },
-				{ name: 'kidName', type: 'string', isOptional: true },
+        { name: 'kidName', type: 'string', isOptional: true },
         { name: 'period', type: 'string' }
       ]
     }),
@@ -125,7 +125,7 @@ export const mySchema = appSchema({
         { name: 'justified', type: 'boolean' },
         { name: 'duration', type: 'number' },
         { name: 'attendanceId', type: 'string', isIndexed: true },
-				{ name: 'kidName', type: 'string', isOptional: true }
+        { name: 'kidName', type: 'string', isOptional: true }
       ]
     }),
     tableSchema({
@@ -148,7 +148,7 @@ export const mySchema = appSchema({
         { name: 'reason', type: 'string', isOptional: true },
         { name: 'justified', type: 'boolean' },
         { name: 'attendanceId', type: 'string', isIndexed: true },
-				{ name: 'kidName', type: 'string', isOptional: true }
+        { name: 'kidName', type: 'string', isOptional: true }
       ]
     }),
     tableSchema({
@@ -214,7 +214,7 @@ export const mySchema = appSchema({
       name: "courses",
       columns: [
         { name: 'createdByAccount', type: 'string' },
-				{ name: 'kidName', type: 'string', isOptional: true },
+        { name: 'kidName', type: 'string', isOptional: true },
         { name: 'courseId', type: 'string' },
         { name: 'subject', type: 'string' },
         { name: 'type', type: 'number' },
@@ -229,16 +229,16 @@ export const mySchema = appSchema({
         { name: 'url', type: 'string', isOptional: true }
       ]
     }),
-		tableSchema({
-			name: "kids",
-			columns:[
-				{ name: 'createdByAccount', type: 'string' },
-				{ name: 'kidId', type: 'string' },
-				{ name: 'firstName', type: 'string' },
-				{ name: 'lastName', type: 'string' },
-				{ name: 'class', type: 'string' },
-				{ name: 'dateOfBirth', type: 'number' },
-			]
-		})
+    tableSchema({
+      name: "kids",
+      columns:[
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'kidId', type: 'string' },
+        { name: 'firstName', type: 'string' },
+        { name: 'lastName', type: 'string' },
+        { name: 'class', type: 'string' },
+        { name: 'dateOfBirth', type: 'number' },
+      ]
+    })
   ],
 });

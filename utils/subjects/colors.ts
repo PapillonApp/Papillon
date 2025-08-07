@@ -1,17 +1,18 @@
 import { useAccountStore } from "@/stores/account";
+
 import { cleanSubjectName } from "./name";
 
 export function getSubjectColor(subject: string): string {
-    const cleanedName = cleanSubjectName(subject)
-    const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
-    const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
-    if (subjectProperties && subjectProperties.color !== "") {
-        return subjectProperties.color;
-    }
+  const cleanedName = cleanSubjectName(subject)
+  const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
+  const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
+  if (subjectProperties && subjectProperties.color !== "") {
+    return subjectProperties.color;
+  }
 
-    const color = getRandomColor()
-    useAccountStore.getState().setSubjectColor(cleanedName, getRandomColor())
-    return color;
+  const color = getRandomColor()
+  useAccountStore.getState().setSubjectColor(cleanedName, getRandomColor())
+  return color;
 }
 
 export function getRandomColor() {

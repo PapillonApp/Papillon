@@ -1,16 +1,15 @@
 import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { t } from 'i18next';
 import { MoreVertical } from "lucide-react-native";
+import { useEffect, useLayoutEffect, useState } from 'react';
 import React, { Alert, Platform, ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { useEventById } from '@/database/useEventsById';
-
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { NativeHeaderPressable, NativeHeaderSide } from '@/ui/components/NativeHeader';
 import { useDatabase } from '@/database/DatabaseProvider';
-import { t } from 'i18next';
+import { useEventById } from '@/database/useEventsById';
+import { NativeHeaderPressable, NativeHeaderSide } from '@/ui/components/NativeHeader';
 
 export default function TabOneScreen() {
   const { id, title } = useLocalSearchParams();

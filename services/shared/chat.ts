@@ -1,8 +1,8 @@
 import { Discussion, NewDiscussionRecipient } from "pawnote";
+import { Mail, Recipients } from "skolengojs";
 
 import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
-import { Mail, Recipients } from "skolengojs";
 
 export interface Chat extends GenericInterface {
   id: string;

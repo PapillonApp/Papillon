@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, LinearTransition } from "react-native-reanimated";
+import Reanimated, { LinearTransition,useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+
 import { Animation } from "@/ui/utils/Animation";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);

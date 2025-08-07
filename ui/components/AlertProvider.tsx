@@ -1,35 +1,33 @@
+import * as LucideIcons from "lucide-react-native";
+import type { ComponentType } from "react";
 import React, {
   createContext,
   ReactNode,
-  useContext,
-  useState,
   useCallback,
+  useContext,
+  useEffect,
   useMemo,
   useRef,
-  useEffect,
+  useState,
 } from "react";
-
-import { Animation } from '../utils/Animation';
-
-import type { ComponentType } from "react";
-import * as LucideIcons from "lucide-react-native";
-
 import {
   Pressable,
   StyleSheet,
 } from "react-native";
-
 import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 
+import { Animation } from '../utils/Animation';
+
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 
-import Typography from "./Typography";
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import { useTheme } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import Typography from "./Typography";
 
 // Extend Alert type with unique ID for better performance
 type Alert = {

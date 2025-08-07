@@ -7,7 +7,6 @@ import { warn } from "@/utils/logger/logger";
 import { getDatabaseInstance } from "./DatabaseProvider"
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
-import { getWeekRangeForDate } from "./useCanteen";
 import { getDateRangeOfWeek } from "./useHomework";
 
 export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
@@ -37,7 +36,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             backgroundColor: item.backgroundColor,
             status: item.status,
             url: item.url,
-						kidName: item.kidName
+            kidName: item.kidName
           })
         })
       })

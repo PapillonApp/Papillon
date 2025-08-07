@@ -97,7 +97,7 @@ function mapDelays(delays: NotebookDelay[], accountId: string): Delay[] {
     reason: d.reason,
     justified: d.justified,
     duration: d.minutes,
-		createdByAccount: accountId
+    createdByAccount: accountId
   }));
 }
 
@@ -112,7 +112,7 @@ function mapAbsences(absences: NotebookAbsence[], accountId: string): Absence[] 
     to: a.endDate,
     reason: a.reason,
     justified: a.justified,
-		createdByAccount: accountId
+    createdByAccount: accountId
   }));
 }
 

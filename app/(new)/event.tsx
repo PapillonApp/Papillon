@@ -1,20 +1,19 @@
-import React, { Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
-
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { CalendarDays, Check, Clock4Icon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
-import Icon from "@/ui/components/Icon";
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import Item, { Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import Typography from "@/ui/components/Typography";
-
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
 import * as Localization from "expo-localization";
-import Stack from "@/ui/components/Stack";
+import { useRouter } from "expo-router";
+import { CalendarDays, Check, Clock4Icon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import React, { Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
+
 import { useDatabase } from "@/database/DatabaseProvider";
+import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 export default function NewEventScreen() {
   const router = useRouter();

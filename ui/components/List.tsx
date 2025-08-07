@@ -1,8 +1,8 @@
-import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useCallback, useState, useRef } from "react";
-import { ViewProps, StyleProp, ViewStyle } from "react-native";
-import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 import { LegendList } from "@legendapp/list";
+import { useTheme } from "@react-navigation/native";
+import React, { useCallback, useMemo, useRef,useState } from "react";
+import { StyleProp, ViewProps, ViewStyle } from "react-native";
+import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import Item from "./Item";

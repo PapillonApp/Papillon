@@ -40,7 +40,7 @@ export async function addAttendanceToDatabase(attendance: SharedAttendance, peri
             justified: delay.justified,
             duration: delay.duration,
             attendanceId: id,
-						kidName: delay.kidName
+            kidName: delay.kidName
           });
         });
       }
@@ -53,7 +53,7 @@ export async function addAttendanceToDatabase(attendance: SharedAttendance, peri
             reason: absence.reason,
             justified: absence.justified,
             attendanceId: id,
-						kidName: absence.kidName
+            kidName: absence.kidName
           });
         });
       }

@@ -1,15 +1,14 @@
+import { t } from "i18next";
+import { Calendar, Link2Icon, TypeIcon } from "lucide-react-native";
 import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput } from "react-native";
 
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
-import Typography from "@/ui/components/Typography";
-import { t } from "i18next";
-import Icon from "@/ui/components/Icon";
-
-import { Calendar, Link2Icon, TypeIcon } from "lucide-react-native";
+import { useAddIcal, useIcals, useRemoveIcal } from "@/database/useIcals";
 import Button from "@/ui/components/Button";
-import { useIcals, useAddIcal, useRemoveIcal } from "@/database/useIcals";
+import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Typography from "@/ui/components/Typography";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");

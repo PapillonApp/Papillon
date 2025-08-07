@@ -1,17 +1,14 @@
 import { useRouter } from "expo-router";
+import * as pronote from "pawnote";
 import { useState } from "react";
 import React, { Alert, ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
-
-import * as pronote from "pawnote";
-import { Services } from "@/stores/account/types";
-import { log } from "@/utils/logger/logger";
-import { initializeAccountManager } from "@/services/shared";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { useAccountStore } from "@/stores/account";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
 export default function TabOneScreen() {
