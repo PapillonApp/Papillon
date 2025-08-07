@@ -51,7 +51,8 @@ export async function addNewsToDatabase(news: SharedNews[]) {
           attachments: JSON.stringify(nw.attachments),
           content: nw.content,
           author: nw.author,
-          category: nw.category
+          category: nw.category,
+					createdByAccount: nw.createdByAccount
         })
       })
     })
