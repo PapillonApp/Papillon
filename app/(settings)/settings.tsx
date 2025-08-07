@@ -15,6 +15,7 @@ import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { it } from "date-fns/locale";
+import TableFlatList from "@/ui/components/TableFlatList";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -120,56 +121,26 @@ const SettingsIndex = () => {
 
   return (
     <>
-      <ScrollView
-        contentInsetAdjustmentBehavior="always"
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, gap: 6 }}
-      >
-        {SettingsList.map((category, cIndex) => (
-          <List key={cIndex}>
-            {category.content.map((item, index) => (
-              <Item key={index} onPress={() => { item.onPress && item.onPress() }}>
-                {item.avatar && (
-                  <Leading>
-                    <Image
-                      source={item.avatar}
-                      style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
-                    />
-                  </Leading>
-                )}
-                {item.papicon ? (
-                  <Icon papicon opacity={0.5}>
-                    {item.papicon}
-                  </Icon>
-                ) : item.icon && (
-                  <Icon opacity={0.5}>
-                    {item.icon}
-                  </Icon>
-                )}
-                {item.title &&
-                  <Typography variant="title">
-                    {item.title}
-                  </Typography>
-                }
-                {item.description &&
-                  <Typography variant="caption" color="secondary">
-                    {item.description}
-                  </Typography>
-                }
-                <Trailing>
-                  <Icon>
-                    <ChevronRight
-                      size={24}
-                      strokeWidth={2}
-                      style={{ marginRight: -8, opacity: 0.7 }}
-                    />
-                  </Icon>
-                </Trailing>
-              </Item>
-            ))}
-          </List>
-        ))}
-      </ScrollView>
+      <TableFlatList
+        contentInsetAdjustmentBehavior="automatic"
+        sections={SettingsList.map(section => ({
+          title: section.title,
+          hideTitle: true,
+          items: section.content.map(item => ({
+            title: item.title,
+            description: item.description,
+            icon: item.icon,
+            leading: item.avatar ? (
+              <Image
+                source={item.avatar}
+                style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
+              />
+            ) : null,
+            papicon: item.papicon,
+            onPress: item.onPress,
+          })),
+        }))}
+      />
 
       {Platform.OS === 'ios' && (
         <NativeHeaderSide side="Left">

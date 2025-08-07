@@ -11,7 +11,8 @@ export default function Layout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerLargeTitle: false
+    headerLargeTitle: runsIOS26(),
+    headerBackVisible: true,
   }), []);
 
   return (
@@ -20,8 +21,6 @@ export default function Layout() {
         name="settings"
         options={{
           headerTitle: t("Tab_Settings"),
-          headerLargeTitle: runsIOS26(),
-          headerBackVisible: true,
         }}
       />
 
