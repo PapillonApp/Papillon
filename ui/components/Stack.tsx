@@ -88,12 +88,13 @@ const Stack: React.FC<StackProps> = ({
   children,
   ...rest
 }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { colors } = theme;
 
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${colors}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
-  [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, colors, flex, backgroundColor, radius, card]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card]
   );
 
   // Ultra-optimized style computation with caching
