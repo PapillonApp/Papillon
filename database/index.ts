@@ -14,6 +14,8 @@ import Course from '@/database/models/Timetable';
 
 import Kid from './models/Kid';
 import { mySchema } from './schema';
+import { Balance } from './models/Balance';
+import CanteenHistoryItem from './models/CanteenHistory';
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,
@@ -21,5 +23,27 @@ const adapter = new SQLiteAdapter({
 
 export const database = new Database({
   adapter,
-  modelClasses: [Event, Ical, Subject, Homework, News, Period, Grade, PeriodGrades, Attendance, Delay, Observation, Absence, Punishment, CanteenMenu, Chat, Message, Recipient, Course, Kid],
+  modelClasses: [
+    Event,
+    Ical,
+    Subject, 
+    Homework,
+    News,
+    Period,
+    Grade,
+    PeriodGrades,
+    Attendance,
+    Delay,
+    Observation,
+    Absence,
+    Punishment,
+    CanteenMenu,
+    Chat,
+    Message,
+    Recipient,
+    Course,
+    Kid,
+    Balance,
+    CanteenHistoryItem
+  ],
 });

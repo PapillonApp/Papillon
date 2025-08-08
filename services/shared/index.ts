@@ -1,7 +1,7 @@
 import * as Network from "expo-network";
 
 import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
-import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/useCanteen";
+import { addCanteenMenuToDatabase, addCanteenTransactionToDatabase, getCanteenMenuFromCache, getCanteenTransactionsFromCache } from "@/database/useCanteen";
 import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache } from "@/database/useHomework";
@@ -9,7 +9,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -25,6 +25,8 @@ import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
 import { Kid } from "./kid";
+import { Balance } from "./balance";
+import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -302,7 +304,7 @@ export class AccountManager {
   async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
     return await this.fetchData(Capabilities.HOMEWORK, async client =>
       client.setHomeworkCompletion
-        ? await client.setHomeworkCompletion(homework)
+        ? await client.setHomeworkCompletion(homework, state)
         : homework,
     { multiple: false, clientId: homework.createdByAccount }
     );
@@ -322,6 +324,67 @@ export class AccountManager {
     );
   }
 
+	async getCanteenBalances(): Promise<Balance[]> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BALANCE,
+      async client =>
+        client.getCanteenBalances ? await client.getCanteenBalances() : [],
+      {
+        multiple: true,
+				fallback: async () => getBalancesFromCache(),
+				saveToCache: async (data: Balance[]) => {
+					await addBalancesToDatabase(data)
+				}
+      }
+    );
+  }
+
+  async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_HISTORY,
+      async client =>
+        client.getCanteenTransactionsHistory ? await client.getCanteenTransactionsHistory() : [],
+      {
+        multiple: true,
+        fallback: async () => getCanteenTransactionsFromCache(),
+        saveToCache: async (data: CanteenHistoryItem[]) => {
+          await addCanteenTransactionToDatabase(data)
+        }
+      }
+    )
+  }
+
+	async getCanteenQRCodes(): Promise<QRCode[]> {
+		return await this.fetchData(
+			Capabilities.CANTEEN_QRCODE,
+			async client =>
+				client.getCanteenQRCodes ? await client.getCanteenQRCodes() : [],
+			{
+				multiple: true
+			}
+		)
+	}
+
+	async getCanteenBookingWeek(weekNumber: number): Promise<BookingDay[]> {
+		return await this.fetchData(
+			Capabilities.CANTEEN_BOOKINGS,
+			async client =>
+				client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
+			{
+				multiple: true
+			}
+		)
+	}
+
+  async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
+    return await this.fetchData(Capabilities.CANTEEN_BOOKINGS, async client =>
+      client.setMealAsBooked
+        ? await client.setMealAsBooked(meal, booked)
+        : meal,
+    	{ multiple: false, clientId: meal.createdByAccount }
+    );
+  }
+
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
       client.capabilities.includes(capability)
@@ -338,8 +401,6 @@ export class AccountManager {
       }
       throw new Error("Internet not reachable and no fallback provided.");
     }
-
-    return undefined;
   }
   
   private async fetchData<T>(
@@ -419,6 +480,24 @@ export class AccountManager {
       return new pronoteModule.Pronote(service.id);
     }
 
+		if (service.serviceId === Services.SKOLENGO) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/skolengo/index");
+      return new pronoteModule.Skolengo(service.id);
+    }
+
+		if (service.serviceId === Services.ECOLEDIRECTE) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/ecoledirecte/index");
+      return new pronoteModule.EcoleDirecte(service.id);
+    }
+
+		if (service.serviceId === Services.TURBOSELF) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/turboself/index");
+      return new pronoteModule.TurboSelf(service.id);
+    }
+
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }
@@ -447,7 +526,8 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    warn("Account manager not initialized. Call initializeAccountManager first.");
+    error("Account manager not initialized. Call initializeAccountManager first.");
   }
+
   return globalManager;
 };

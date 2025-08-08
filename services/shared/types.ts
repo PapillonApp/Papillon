@@ -4,7 +4,7 @@ import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -15,6 +15,9 @@ import { Auth, Services } from "@/stores/account/types";
 import { EcoleDirecte } from "../ecoledirecte";
 import { Skolengo } from "../skolengo";
 import { Kid } from "./kid";
+import { Client } from "turboself-api";
+import { TurboSelf } from "../turboself";
+import { Balance } from "./balance";
 
 /** Represents a plugin for a school service.
  *
@@ -27,9 +30,9 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | SkolengoSession | Session | undefined;
+  session: SessionHandle | SkolengoSession | Session | Client | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte>;
+  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf>;
 	getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
@@ -48,6 +51,11 @@ export interface SchoolServicePlugin {
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
 	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
+	getCanteenBalances?: () => Promise<Balance[]>;
+  getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
+	getCanteenQRCodes?: () => Promise<QRCode[]>;
+	getCanteenBookingWeek?: (weekNumber: number) => Promise<BookingDay[]>;
+	setMealAsBooked?: (meal: Booking, booked?: boolean) => Promise<Booking>;
 }
 
 /*
@@ -67,7 +75,11 @@ export enum Capabilities {
   CHAT_CREATE,
 	CHAT_REPLY,
   TIMETABLE,
-	HAVE_KIDS
+	HAVE_KIDS,
+	CANTEEN_BALANCE,
+	CANTEEN_HISTORY,
+	CANTEEN_BOOKINGS,
+	CANTEEN_QRCODE
 }
 
 /**
