@@ -436,6 +436,24 @@ export class AccountManager {
       return new pronoteModule.Pronote(service.id);
     }
 
+		if (service.serviceId === Services.SKOLENGO) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/skolengo/index");
+      return new pronoteModule.Skolengo(service.id);
+    }
+
+		if (service.serviceId === Services.ECOLEDIRECTE) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/ecoledirecte/index");
+      return new pronoteModule.EcoleDirecte(service.id);
+    }
+
+		if (service.serviceId === Services.TURBOSELF) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pronoteModule = require("@/services/turboself/index");
+      return new pronoteModule.TurboSelf(service.id);
+    }
+
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }

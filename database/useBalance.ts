@@ -23,6 +23,7 @@ export async function addBalancesToDatabase(balances: SharedBalance[]) {
 					createdByAccount: balance.createdByAccount,
 					balanceId: id,
 					currency: balance.currency,
+					amount: balance.amount,
 					lunchRemaining: balance.lunchRemaining,
 					lunchPrice: balance.lunchPrice,
 					label: balance.label

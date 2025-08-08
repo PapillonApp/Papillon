@@ -10,6 +10,7 @@ export class TurboSelf implements SchoolServicePlugin {
 	displayName = "TurboSelf";
 	service = Services.TURBOSELF
 	capabilities: Capabilities[] = [
+		Capabilities.REFRESH,
 		Capabilities.CANTEEN_BALANCE,
 		Capabilities.CANTEEN_BOOKINGS,
 		Capabilities.CANTEEN_HISTORY,
