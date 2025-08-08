@@ -1,6 +1,6 @@
 import { LegendList } from '@legendapp/list';
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, FlatListProps, View } from 'react-native';
 import Item, { Leading, Trailing } from './Item';
 import Typography from './Typography';
 import Icon from './Icon';
@@ -35,13 +35,12 @@ interface Section {
   items: Array<SectionItem>;
 }
 
-interface TableFlatListProps {
+interface TableFlatListProps extends FlatListProps<SectionItem> {
   sections: Array<Section>;
   engine?: 'FlatList' | 'LegendList';
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
   style?: React.CSSProperties;
   contentContainerStyle?: React.CSSProperties;
-  listProps?: any; // Additional props for the list component
 }
 
 const TableFlatList: React.FC<TableFlatListProps> = ({
@@ -50,7 +49,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   contentInsetAdjustmentBehavior = 'never',
   style = {},
   contentContainerStyle = {},
-  listProps = {},
+  ...rest
 }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -172,7 +171,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
           </Stack>
         ) : null
       )}
-      {...listProps}
+      {...rest}
     />
   )
 };
