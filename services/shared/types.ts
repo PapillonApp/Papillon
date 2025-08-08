@@ -4,7 +4,7 @@ import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenHistoryItem, CanteenMenu } from "@/services/shared/canteen";
+import { CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -53,6 +53,7 @@ export interface SchoolServicePlugin {
 	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
 	getCanteenBalances?: () => Promise<Balance[]>;
   getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
+	getCanteenQRCodes?: () => Promise<QRCode[]>;
 }
 
 /*

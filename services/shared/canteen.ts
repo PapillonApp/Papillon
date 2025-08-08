@@ -26,3 +26,13 @@ export interface CanteenHistoryItem extends GenericInterface {
   currency: string;
   amount: number;
 }
+
+export interface QRCode extends GenericInterface {
+	type: QRType,
+	data: string
+}
+
+export enum QRType {
+	QRCode,
+	Barcode
+}

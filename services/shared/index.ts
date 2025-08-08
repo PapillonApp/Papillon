@@ -9,7 +9,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenHistoryItem, CanteenMenu } from "@/services/shared/canteen";
+import { CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -353,6 +353,17 @@ export class AccountManager {
       }
     )
   }
+
+	async getCanteenQRCodes(): Promise<QRCode[]> {
+		return await this.fetchData(
+			Capabilities.CANTEEN_QRCODE,
+			async client =>
+				client.getCanteenQRCodes ? await client.getCanteenQRCodes() : [],
+			{
+				multiple: true
+			}
+		)
+	}
 
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
