@@ -338,7 +338,7 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { weekday: "long" })}
               </Typography>
             </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { day: "numeric" })}>
+            <Dynamic animated>
               <NativeHeaderHighlight color="#D6502B" style={{ marginBottom: 0 }}>
                 {date.toLocaleDateString("fr-FR", { day: "numeric" })}
               </NativeHeaderHighlight>

@@ -101,7 +101,7 @@ type Variant = keyof typeof VARIANTS;
 type Color = "primary" | "text" | "secondary" | "light" | "danger";
 type Alignment = keyof typeof ALIGNMENT_STYLES;
 
-interface TypographyProps extends TextProps {
+export interface TypographyProps extends TextProps {
   variant?: Variant;
   color?: Color | string;
   align?: Alignment;

@@ -7,7 +7,7 @@ import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } 
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
 import { LineGraph } from 'react-native-graph';
-import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
+import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
@@ -26,6 +26,7 @@ import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
 import * as Papicons from '@getpapillon/papicons';
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -673,10 +674,10 @@ export default function TabOneScreen() {
             <GradesGraph />
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
-              <Dynamic animated key={"shownAverage:" + shownAverage.toFixed(2)}>
-                <Typography variant="h1" color="primary">
+              <Dynamic animated>
+                <AnimatedNumber variant="h1" color="primary">
                   {shownAverage.toFixed(2)}
-                </Typography>
+                </AnimatedNumber>
               </Dynamic>
               <Dynamic animated>
                 <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
@@ -684,10 +685,12 @@ export default function TabOneScreen() {
                 </Typography>
               </Dynamic>
             </Stack>
-            <Typography variant="title" color="primary" align="left">
-              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
-            </Typography>
-            <Dynamic animated key={"selectionDate:" + selectionDate + ":" + currentAlgorithm} style={{ transformOrigin: "top left" }}>
+            <Dynamic animated entering={FadeIn.duration(100)} exiting={FadeOut.duration(100)} key={"currentAlgorithm:" + currentAlgorithm}>
+              <Typography variant="title" color="primary" align="left">
+                {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
+              </Typography>
+            </Dynamic>
+            <Dynamic animated entering={FadeIn.duration(100)} exiting={FadeOut.duration(100)} key={"selectionDate:" + selectionDate + ":" + currentAlgorithm}>
               <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
                 {selectionDate ?
                   "au " + new Date(selectionDate).toLocaleDateString("fr-FR", {
@@ -749,6 +752,10 @@ export default function TabOneScreen() {
                 year: "numeric",
               })}`,
               state: currentPeriod === period.id ? "on" : "off",
+              image: Platform.select({
+                ios: (getPeriodNumber(period.name || "0")) + ".calendar"
+              }),
+              imageColor: colors.text,
             }))
           }
         >
