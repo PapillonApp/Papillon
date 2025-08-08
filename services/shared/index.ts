@@ -355,8 +355,6 @@ export class AccountManager {
       }
       throw new Error("Internet not reachable and no fallback provided.");
     }
-
-    return undefined;
   }
   
   private async fetchData<T>(
