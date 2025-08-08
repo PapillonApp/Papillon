@@ -38,7 +38,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, ...rest }: An
         return {
           initialValues: {
             opacity: 0,
-            transform: [{ translateY: 0 - distance }, { scale: 0.5 }],
+            transform: [{ translateY: 0 - distance }, { scale: 0.2 }],
           },
           animations: {
             opacity: withDelay(delay, withSpring(1, { duration })),
