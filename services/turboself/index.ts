@@ -5,9 +5,10 @@ import { refreshTurboSelfAccount } from "./refresh";
 import { Balance } from "../shared/balance";
 import { error } from "@/utils/logger/logger";
 import { fetchTurboSelfBalance } from "./balance";
-import { CanteenHistoryItem, QRCode } from "../shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, QRCode } from "../shared/canteen";
 import { fetchTurboSelfHistory } from "./history";
 import { fetchTurboSelfQRCode } from "./qrcode";
+import { fetchTurboSelfBookingsWeek, setTurboSelfMealBookState } from "./booking";
 
 export class TurboSelf implements SchoolServicePlugin {
 	displayName = "TurboSelf";
@@ -55,5 +56,17 @@ export class TurboSelf implements SchoolServicePlugin {
 		}
 
 		error("Session is not valid", "TurboSelf.getCanteenQRCodes")
+	}
+	
+	async getCanteenBookingWeek(weekNumber: number): Promise<BookingDay[]> {
+		if (this.session) {
+			return fetchTurboSelfBookingsWeek(this.session, this.accountId, weekNumber)
+		}
+
+		error("Session is not valid", "TurboSelf.getCanteenBookingWeek")
+	}
+
+	async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
+		return setTurboSelfMealBookState(meal, booked)
 	}
 }

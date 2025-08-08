@@ -1,4 +1,5 @@
 import { GenericInterface } from "./types";
+import { BookingDay as TurboBookingDay } from "turboself-api";
 
 export interface CanteenMenu extends GenericInterface {
   date: Date;
@@ -35,4 +36,17 @@ export interface QRCode extends GenericInterface {
 export enum QRType {
 	QRCode,
 	Barcode
+}
+
+export interface BookingDay {
+	date: Date,
+	available: Booking[]
+}
+
+export interface Booking extends GenericInterface  {
+	id: string,
+	label: string,
+	canBook: boolean,
+	booked: boolean,
+	ref?: TurboBookingDay
 }

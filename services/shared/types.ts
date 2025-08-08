@@ -4,7 +4,7 @@ import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -54,6 +54,8 @@ export interface SchoolServicePlugin {
 	getCanteenBalances?: () => Promise<Balance[]>;
   getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
 	getCanteenQRCodes?: () => Promise<QRCode[]>;
+	getCanteenBookingWeek?: (weekNumber: number) => Promise<BookingDay[]>;
+	setMealAsBooked?: (meal: Booking, booked?: boolean) => Promise<Booking>;
 }
 
 /*

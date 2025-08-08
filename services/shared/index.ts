@@ -9,7 +9,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -304,7 +304,7 @@ export class AccountManager {
   async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
     return await this.fetchData(Capabilities.HOMEWORK, async client =>
       client.setHomeworkCompletion
-        ? await client.setHomeworkCompletion(homework)
+        ? await client.setHomeworkCompletion(homework, state)
         : homework,
     { multiple: false, clientId: homework.createdByAccount }
     );
@@ -364,6 +364,26 @@ export class AccountManager {
 			}
 		)
 	}
+
+	async getCanteenBookingWeek(weekNumber: number): Promise<BookingDay[]> {
+		return await this.fetchData(
+			Capabilities.CANTEEN_BOOKINGS,
+			async client =>
+				client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
+			{
+				multiple: true
+			}
+		)
+	}
+
+  async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
+    return await this.fetchData(Capabilities.CANTEEN_BOOKINGS, async client =>
+      client.setMealAsBooked
+        ? await client.setMealAsBooked(meal, booked)
+        : meal,
+    	{ multiple: false, clientId: meal.createdByAccount }
+    );
+  }
 
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
