@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { AlignCenter, CheckCheck, ChevronDown, Search, SquareDashed } from "lucide-react-native";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
-import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
 import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
@@ -26,6 +26,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import * as Papicons from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -251,34 +252,36 @@ export default function TabOneScreen() {
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
-            <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
-              {lengthHomeworks === 0 ? (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
-                  </Typography>
-                </Stack>
-              ) : (leftHomeworks > 0 ? (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
-                    <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
-                      {leftHomeworks}
+            <LayoutAnimationConfig skipEntering>
+              <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
+                {lengthHomeworks === 0 ? (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
                     </Typography>
-                  </Dynamic>
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
-                  </Typography>
-                </Stack>
-              ) : (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
-                  </Typography>
-                </Stack>
-              ))}
-            </Dynamic>
+                  </Stack>
+                ) : (leftHomeworks > 0 ? (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
+                      <AnimatedNumber inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
+                        {leftHomeworks}
+                      </AnimatedNumber>
+                    </Dynamic>
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
+                    </Typography>
+                  </Stack>
+                ) : (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Dynamic>
+            </LayoutAnimationConfig>
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }} key={`circular-progress-week-ct:${selectedWeek}`}>
               <CircularProgress
                 backgroundColor={colors.text + "22"}
