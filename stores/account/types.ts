@@ -83,5 +83,6 @@ export interface Auth {
 export enum Services {
     PRONOTE,
 		SKOLENGO,
-		ECOLEDIRECTE
+		ECOLEDIRECTE,
+		TURBOSELF
 }

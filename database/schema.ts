@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 17,
+  version: 19,
   tables: [
     tableSchema({
       name: 'events',
@@ -238,6 +238,29 @@ export const mySchema = appSchema({
         { name: 'lastName', type: 'string' },
         { name: 'class', type: 'string' },
         { name: 'dateOfBirth', type: 'number' },
+      ]
+    }),
+		tableSchema({
+			name: "balances",
+			columns: [
+				{ name: 'createdByAccount', type: 'string' },
+				{ name: 'balanceId', type: 'string' },
+				{ name: 'amount', type: 'number' },
+				{ name: 'currency', type: 'string' },
+				{ name: 'lunchRemaining', type: 'number' },
+				{ name: 'lunchPrice', type: 'number' },
+				{ name: 'label', type: 'string' }
+			]
+		}),
+    tableSchema({
+      name: "canteentransactions",
+      columns: [
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'transactionId', type: 'string' },
+        { name: 'date', type: 'number' },
+        { name: 'label', type: 'string' },
+        { name: 'currency', type: 'string' },
+        { name: 'amount', type: 'number' },
       ]
     })
   ],
