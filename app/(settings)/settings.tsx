@@ -2,27 +2,26 @@ import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
-import { AccessibilityIcon, BellDotIcon, BookIcon, ChevronRight, CreditCardIcon, HeartIcon, InfoIcon, PaletteIcon, SparklesIcon, SquaresExcludeIcon } from "lucide-react-native";
-import React from "react";
-import { Image, Platform, ScrollView } from "react-native";
+import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
+import React, { useCallback } from "react";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import { Image, Platform, Pressable, View } from "react-native";
 
 import * as Papicons from '@getpapillon/papicons';
 
-import Icon from "@/ui/components/Icon";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { it } from "date-fns/locale";
 import TableFlatList from "@/ui/components/TableFlatList";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
 
 const SettingsIndex = () => {
   const router = useRouter();
   const theme = useTheme();
   const { colors } = theme;
 
-  const SettingsList = [
+  const AccountSettingsList = [
     {
       title: t('Settings_Profile'),
       content: [
@@ -31,49 +30,12 @@ const SettingsIndex = () => {
           description: t('Settings_Account_Description'),
           avatar: require('@/assets/images/default_profile.jpg'),
           color: "#888888",
-        },
-        {
-          title: t('Settings_Services_Title'),
-          icon: <SquaresExcludeIcon />,
-          papicon: <Papicons.User />,
-          color: "#888888",
-          onPress: () => router.push('/(settings)/services'),
-        },
+          tags: ["T6", "Université Paris 8"]
+        }
       ],
-    },
-    {
-      title: t('Settings_General'),
-      content: [
-        {
-          title: t('Settings_Notifications_Title'),
-          description: t('Settings_Notifications_Description'),
-          papicon: <Papicons.Bell />,
-          icon: <BellDotIcon />,
-          color: "#A80000",
-        },
-        {
-          title: t('Settings_Subjects_Title'),
-          description: t('Settings_Subjects_Description'),
-          papicon: <Papicons.Calendar />,
-          icon: <BookIcon />,
-          color: "#A84E00",
-        },
-        {
-          title: t('Settings_Personalization_Title'),
-          description: t('Settings_Personalization_Description'),
-          papicon: <Papicons.Palette />,
-          icon: <PaletteIcon />,
-          color: "#7EA800",
-        },
-        {
-          title: t('Settings_Cards_Title'),
-          description: t('Settings_Cards_Description'),
-          papicon: <Papicons.Card />,
-          icon: <CreditCardIcon />,
-          color: "#0092A8",
-        },
-      ],
-    },
+    }
+  ];
+  const MoreSettingsList = [
     {
       title: t('Settings_More'),
       content: [
@@ -84,23 +46,6 @@ const SettingsIndex = () => {
           icon: <AccessibilityIcon />,
           color: "#0038A8",
         },
-      ],
-    },
-    {
-      title: t('Settings_AI'),
-      content: [
-        {
-          title: t('Settings_MagicPlus_Title'),
-          description: t('Settings_MagicPlus_Description'),
-          papicon: <Papicons.Sparkles />,
-          icon: <SparklesIcon />,
-          color: "#5D00A8",
-        },
-      ],
-    },
-    {
-      title: t('Settings_More'),
-      content: [
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
@@ -116,40 +61,124 @@ const SettingsIndex = () => {
           color: "#797979",
         }
       ]
+    }
+  ]
+
+  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string }> = [
+    {
+      icon: <Papicons.Palette />,
+      title: "Personnalisation",
+      description: "Thèmes, matières...",
+      color: "#17C300"
     },
-  ];
+    {
+      icon: <Papicons.Bell />,
+      title: "Notifications",
+      description: "Alertes, fréquence...",
+      color: "#DD9B00"
+    },
+    {
+      icon: <Papicons.Card />,
+      title: "Cartes",
+      description: "Cantine, accès",
+      color: "#0059DD"
+    },
+    {
+      icon: <Papicons.Sparkles />,
+      title: "Magic+",
+      description: "Fonctions I.A",
+      color: "#DD007D"
+    }
+  ]
+
+  const RenderBigButtons = useCallback(() => {
+    return (
+      <Stack direction="vertical" gap={15}>
+        {Array.from({ length: Math.ceil(BigButtons.length / 2) }, (_, rowIndex) => (
+          <Stack key={rowIndex} direction="horizontal" gap={15}>
+            {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, buttonIndex) => (
+              <Pressable style={{ flex: 1, width: "50%" }} key={button.title}>
+                <Stack
+                  flex
+                  card
+                  direction="vertical"
+                  gap={14}
+                  padding={16}
+                  radius={25}
+                  backgroundColor={adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                >
+                  <Icon papicon size={24} fill={button.color}>
+                    {button.icon}
+                  </Icon>
+                  <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
+                    <Typography inline variant="title" color={button.color}>{button.title}</Typography>
+                    <Typography inline variant="caption" color={button.color}>{button.description}</Typography>
+                  </Stack>
+                </Stack>
+              </Pressable>
+            ))}
+          </Stack>
+        ))}
+      </Stack>
+    );
+  }, [])
 
   return (
     <>
-      <TableFlatList
-        contentInsetAdjustmentBehavior="automatic"
-        sections={SettingsList.map(section => ({
-          title: section.title,
-          hideTitle: true,
-          items: section.content.map(item => ({
-            title: item.title,
-            description: item.description,
-            icon: item.icon,
-            leading: item.avatar ? (
-              <Image
-                source={item.avatar}
-                style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
-              />
-            ) : null,
-            papicon: item.papicon,
-            onPress: item.onPress,
-          })),
-        }))}
-      />
-
+      <View style={{ flex: 1, height: "auto", justifyContent: "flex-start" }}>
+        <TableFlatList
+          sections={AccountSettingsList.map(section => ({
+            title: section.title,
+            hideTitle: true,
+            items: section.content.map(item => ({
+              title: item.title,
+              description: item.description,
+              icon: ('icon' in item ? item.icon : undefined) as React.ReactNode,
+              leading: 'avatar' in item && item.avatar ? (
+                <Image
+                  source={item.avatar}
+                  style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
+                />
+              ) : null,
+              papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
+              onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
+              tags: 'tags' in item ? item.tags as string[] | undefined : undefined
+            })),
+          }))}
+        />
+        <TableFlatList
+          sections={[]}
+          ListHeaderComponent={RenderBigButtons}
+        />
+        <TableFlatList
+          sections={MoreSettingsList.map(section => ({
+            title: section.title,
+            hideTitle: true,
+            items: section.content.map(item => ({
+              title: item.title,
+              description: item.description,
+              icon: ('icon' in item ? item.icon : undefined) as React.ReactNode,
+              leading: 'avatar' in item && item.avatar ? (
+                <Image
+                  source={item.avatar}
+                  style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
+                />
+              ) : null,
+              papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
+              onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
+              tags: 'tags' in item ? item.tags as string[] | undefined : undefined
+            })),
+          }))}
+        />
+      </View>
       {Platform.OS === 'ios' && (
         <NativeHeaderSide side="Left">
           <HeaderBackButton
-            tintColor={(runsIOS26() || Platform.OS === 'android') ? colors.text : colors.primary}
+            tintColor={runsIOS26() ? colors.text : colors.primary}
             onPress={() => router.back()}
 
             style={{
-              marginLeft: (runsIOS26() || Platform.OS === 'android') ? 3 : -32,
+              marginLeft: runsIOS26() ? 3 : -32,
             }}
           />
         </NativeHeaderSide>
