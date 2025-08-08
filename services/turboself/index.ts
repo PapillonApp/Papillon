@@ -5,6 +5,8 @@ import { refreshTurboSelfAccount } from "./refresh";
 import { Balance } from "../shared/balance";
 import { error } from "@/utils/logger/logger";
 import { fetchTurboSelfBalance } from "./balance";
+import { CanteenHistoryItem } from "../shared/canteen";
+import { fetchTurboSelfHistory } from "./history";
 
 export class TurboSelf implements SchoolServicePlugin {
 	displayName = "TurboSelf";
@@ -36,5 +38,13 @@ export class TurboSelf implements SchoolServicePlugin {
 		}
 
 		error("Session is not valid", "TurboSelf.getCanteenBalances");
+	}
+
+	async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
+		if (this.session) {
+			return fetchTurboSelfHistory(this.session, this.accountId)
+		}
+		
+		error("Session is not valid", "TurboSelf.getCanteenTransactionsHistory")
 	}
 }
