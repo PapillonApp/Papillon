@@ -1,7 +1,7 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
+import { AlignCenter, CheckCheck, ChevronDown, Search, SquareDashed } from "lucide-react-native";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
@@ -200,7 +200,7 @@ export default function TabOneScreen() {
   }, []);
 
   function getStatusText() {
-    switch (lengthHomeworks) {
+    switch (leftHomeworks) {
       case 0:
         return t('Tasks_NoTasks_Nav');
       case 1:
@@ -209,6 +209,8 @@ export default function TabOneScreen() {
         return t('Tasks_Nav_Left', { count: leftHomeworks });
     }
   }
+
+  const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
 
   function marginTop(): number {
     if (runsIOS26()) {
@@ -452,6 +454,10 @@ export default function TabOneScreen() {
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
+
+              <Dynamic animated>
+                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+              </Dynamic>
             </Dynamic>
             {fullyScrolled && (
               <Reanimated.View
@@ -463,7 +469,7 @@ export default function TabOneScreen() {
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
                   <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
-                    {getStatusText()}
+                    {statusText}
                   </Typography>
                 </Dynamic>
               </Reanimated.View>
