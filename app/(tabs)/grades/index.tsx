@@ -752,6 +752,10 @@ export default function TabOneScreen() {
                 year: "numeric",
               })}`,
               state: currentPeriod === period.id ? "on" : "off",
+              image: Platform.select({
+                ios: (getPeriodNumber(period.name || "0")) + ".calendar"
+              }),
+              imageColor: colors.text,
             }))
           }
         >
