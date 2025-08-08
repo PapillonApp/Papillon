@@ -19,3 +19,10 @@ export interface Food {
   name: string;
   allergens?: string[];
 }
+
+export interface CanteenHistoryItem extends GenericInterface {
+  date: Date;
+  label: string;
+  currency: string;
+  amount: number;
+}

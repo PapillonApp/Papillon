@@ -1,7 +1,7 @@
 import * as Network from "expo-network";
 
 import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
-import { addCanteenMenuToDatabase, getCanteenMenuFromCache } from "@/database/useCanteen";
+import { addCanteenMenuToDatabase, addCanteenTransactionToDatabase, getCanteenMenuFromCache, getCanteenTransactionsFromCache } from "@/database/useCanteen";
 import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
 import { addHomeworkToDatabase, getHomeworksFromCache } from "@/database/useHomework";
@@ -9,7 +9,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
+import { CanteenHistoryItem, CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -337,6 +337,21 @@ export class AccountManager {
 				}
       }
     );
+  }
+
+  async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_HISTORY,
+      async client =>
+        client.getCanteenTransactionsHistory ? await client.getCanteenTransactionsHistory() : [],
+      {
+        multiple: true,
+        fallback: async () => getCanteenTransactionsFromCache(),
+        saveToCache: async (data: CanteenHistoryItem[]) => {
+          await addCanteenTransactionToDatabase(data)
+        }
+      }
+    )
   }
 
   private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {

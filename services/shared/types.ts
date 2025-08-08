@@ -4,7 +4,7 @@ import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
+import { CanteenHistoryItem, CanteenMenu } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -51,7 +51,8 @@ export interface SchoolServicePlugin {
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
 	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
 	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
-	getCanteenBalances?: () => Promise<Balance[]>
+	getCanteenBalances?: () => Promise<Balance[]>;
+  getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
 }
 
 /*
