@@ -3,7 +3,7 @@ import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import { ChartAreaIcon, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
+import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
 import { LineGraph } from 'react-native-graph';
@@ -12,7 +12,7 @@ import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
 import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Subject from "@/ui/components/Subject";
 import TabFlatList from "@/ui/components/TabFlatList";
@@ -25,6 +25,7 @@ import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
 import * as Papicons from '@getpapillon/papicons';
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -46,7 +47,15 @@ const EmptyListComponent = memo(() => (
   </Dynamic>
 ));
 
-const transformPeriodName = (name: string) => {
+const getPeriodName = (name: string) => {
+  // return only digits
+  let digits = name.replace(/[^0-9]/g, '').trim();
+  let newName = name.replace(digits, '').trim();
+
+  return newName;
+}
+
+const getPeriodNumber = (name: string) => {
   // return only digits
   let newName = name.replace(/[^0-9]/g, '').trim();
 
@@ -719,93 +728,7 @@ export default function TabOneScreen() {
         />
       )}
 
-      <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled}>
-        <Dynamic
-          animated={true}
-          style={{
-            flexDirection: "column",
-            alignItems: Platform.OS === 'android' ? "left" : "center",
-            justifyContent: "center",
-            gap: 4,
-            width: 200,
-            height: 60,
-            marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
-          }}
-        >
-          <Dynamic animated>
-            <Typography variant="navigation">
-              {t("Tab_Grades")}
-            </Typography>
-          </Dynamic>
-          {fullyScrolled && (
-            <Dynamic animated>
-              <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
-                {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {shownAverage.toFixed(2)}/20
-              </Typography>
-            </Dynamic>
-          )}
-        </Dynamic>
-      </NativeHeaderTitle>
-
-      <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting + ":" + currentAlgorithm}>
-        <MenuView
-          onPressAction={({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
-            if (actionId.startsWith("sort:")) {
-              const selectedSorting = actionId.replace("sort:", "");
-              setSorting(selectedSorting);
-            } else if (actionId.startsWith("algorithm:")) {
-              const selectedAlgorithm = actionId.replace("algorithm:", "");
-              setCurrentAlgorithm(selectedAlgorithm);
-            }
-          }}
-          actions={[
-            {
-              id: 'sorting',
-              title: t("Grades_Menu_SortBy"),
-              image: Platform.select({
-                ios: 'line.3.horizontal.decrease',
-                android: 'ic_sort',
-              }),
-              imageColor: colors.text,
-              subactions: sortings.map((s) => ({
-                id: "sort:" + s.value,
-                title: s.label,
-                state: sorting === s.value ? "on" : "off",
-                image: Platform.select({
-                  ios: s.icon.ios,
-                  android: s.icon.android,
-                }),
-                imageColor: colors.text,
-
-              })),
-            },
-            {
-              id: 'algorithm',
-              title: t("Grades_Menu_AverageBy"),
-              image: Platform.select({
-                ios: 'chart.pie',
-                android: 'ic_algorithm',
-              }),
-              imageColor: colors.text,
-              subactions: avgAlgorithms.map((a) => ({
-                id: "algorithm:" + a.value,
-                title: a.label,
-                subtitle: a.subtitle,
-                state: currentAlgorithm === a.value ? "on" : "off",
-              })),
-            },
-          ]}
-        >
-          <NativeHeaderPressable onPress={() => { }}>
-            <Icon>
-              <Filter />
-            </Icon>
-          </NativeHeaderPressable>
-        </MenuView>
-      </NativeHeaderSide>
-
-      <NativeHeaderSide side="Right" key={"right -side-period:" + currentPeriod}>
+      <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled + ":" + currentPeriod}>
         <MenuView
           onPressAction={({ nativeEvent }) => {
             const actionId = nativeEvent.event;
@@ -829,37 +752,101 @@ export default function TabOneScreen() {
             }))
           }
         >
+          <Dynamic
+            animated={true}
+            style={{
+              flexDirection: "column",
+              alignItems: Platform.OS === 'android' ? "left" : "center",
+              justifyContent: "center",
+              gap: 4,
+              width: 200,
+              height: 60,
+              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+            }}
+          >
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+              <Dynamic animated>
+                <Typography inline variant="navigation">{getPeriodName(periods.find(p => p.id === currentPeriod)?.name || t("Grades_Menu_CurrentPeriod"))}</Typography>
+              </Dynamic>
+              <Dynamic animated style={{ marginTop: -3 }}>
+                <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                  {getPeriodNumber(periods.find(p => p.id === currentPeriod)?.name || t("Grades_Menu_CurrentPeriod"))}
+                </NativeHeaderHighlight>
+              </Dynamic>
+              <Dynamic animated>
+                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+              </Dynamic>
+            </Dynamic>
+            {fullyScrolled && (
+              <Dynamic animated>
+                <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
+                  {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {shownAverage.toFixed(2)}/20
+                </Typography>
+              </Dynamic>
+            )}
+          </Dynamic>
+        </MenuView>
+      </NativeHeaderTitle >
+
+      <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("sort:")) {
+              const selectedSorting = actionId.replace("sort:", "");
+              setSorting(selectedSorting);
+            } else if (actionId.startsWith("algorithm:")) {
+              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              setCurrentAlgorithm(selectedAlgorithm);
+            }
+          }}
+          actions={
+            sortings.map((s) => ({
+              id: "sort:" + s.value,
+              title: s.label,
+              state: sorting === s.value ? "on" : "off",
+              image: Platform.select({
+                ios: s.icon.ios,
+                android: s.icon.android,
+              }),
+              imageColor: colors.text,
+            }))
+          }
+        >
           <NativeHeaderPressable onPress={() => { }}>
-            <View
-              style={{
-                position: "absolute",
-                right: 3,
-                top: 3,
-                backgroundColor: colors.primary,
-                width: 16,
-                height: 16,
-                borderRadius: 60,
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1000,
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 12,
-                  fontFamily: "bold",
-                }}
-              >
-                {transformPeriodName(periods.find(p => p.id === currentPeriod)?.name || t("Grades_Menu_CurrentPeriod"))}
-              </Text>
-            </View>
             <Icon>
-              <NotebookTabs />
+              <Filter />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
+
+      <NativeHeaderSide side="Right" key={"right-side-grades:" + currentAlgorithm}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("sort:")) {
+              const selectedSorting = actionId.replace("sort:", "");
+              setSorting(selectedSorting);
+            } else if (actionId.startsWith("algorithm:")) {
+              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              setCurrentAlgorithm(selectedAlgorithm);
+            }
+          }}
+          actions={avgAlgorithms.map((a) => ({
+            id: "algorithm:" + a.value,
+            title: a.label,
+            subtitle: a.subtitle,
+            state: currentAlgorithm === a.value ? "on" : "off",
+          }))}
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <Icon>
+              <ChartPie />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide >
     </>
   );
 }
