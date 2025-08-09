@@ -1,5 +1,6 @@
 import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
+import { Assignment } from "skolengojs";
 
 /**
  *  This interface defines the general structure of a homework object.
@@ -24,6 +25,7 @@ export interface Homework extends GenericInterface{
   attachments: Attachment[];
   evaluation: boolean;
   custom: boolean;
+	ref?: Assignment;
 }
 
 export enum ReturnFormat {

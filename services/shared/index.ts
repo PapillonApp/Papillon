@@ -280,6 +280,15 @@ export class AccountManager {
     );
   }
 
+	async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
+    return await this.fetchData(Capabilities.HOMEWORK, async client =>
+      client.setHomeworkCompletion
+        ? await client.setHomeworkCompletion(homework)
+        : homework,
+				{ multiple: false, clientId: homework.createdByAccount }
+    );
+  }
+
   async createMail(accountId: string, subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]): Promise<Chat> {
     return await this.fetchData(
       Capabilities.CHAT_CREATE,
