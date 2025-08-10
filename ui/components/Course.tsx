@@ -229,8 +229,9 @@ const Course = React.memo(({
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                       <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                         <Papicons.MapPin />
-                      </Icon>                      <Typography color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
-                        {room}
+                      </Icon>
+                      <Typography color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                        {room || t("No_Course_Room")}
                       </Typography>
                     </View>
                     <View
