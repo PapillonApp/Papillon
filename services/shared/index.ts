@@ -114,22 +114,22 @@ export class AccountManager {
     );
   }
 
-  async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
-    return await this.fetchData(Capabilities.GRADES, async client => {
-      if (!client.getGradesForPeriod) {
-        throw new Error(
-          "getGradesForPeriod not implemented but the capability is set."
-        );
-      }
-      return await client.getGradesForPeriod(period);
-    }, {
-      multiple: false,
-      fallback: async () => getGradePeriodsFromCache(period.name),
-      saveToCache: async (data: PeriodGrades) => {
-        await addPeriodGradesToDatabase(data, period.name);
-      }
-    });
-  }
+
+    async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
+      return await this.fetchData(
+        Capabilities.GRADES,
+        async client =>
+          client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
+        { 
+          multiple: false,
+          clientId,
+          fallback: async () => getGradePeriodsFromCache(period.name),
+          saveToCache: async (data: PeriodGrades) => {
+            await addPeriodGradesToDatabase(data, period.name);
+          }
+        }
+      );
+    }
 
   async getGradesPeriods(): Promise<Period[]> {
     return await this.fetchData(
@@ -460,6 +460,7 @@ export class AccountManager {
         return combinedResult;
       }
     } catch (e) {
+      console.log(e)
       if (options?.fallback) {
         return await options.fallback();
       }

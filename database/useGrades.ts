@@ -75,7 +75,7 @@ export async function getPeriodsFromCache(): Promise<SharedPeriod[]> {
 export async function addGradesToDatabase(grades: SharedGrade[], subject: string) {
   const db = getDatabaseInstance();
   for (const item of grades) {
-    const id = generateId(item.createdByAccount + item.description + item.givenAt + item.studentScore.value)
+    const id = generateId(item.createdByAccount + item.description + item.givenAt)
     const existing = await db.get('grades').query(
       Q.where("id", id)
     )
@@ -121,8 +121,8 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
         const periodGrade = record as PeriodGrades;
         Object.assign(periodGrade, {
           createdByAccount: item.createdByAccount,
-          studentOverall: item.studentOverall,
-          classAverage: item.classAverage
+          studentOverallRaw: JSON.stringify(item.studentOverall),
+          classAverageRaw: JSON.stringify(item.classAverage)
         });
       });
     } else {
@@ -131,8 +131,8 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
         Object.assign(periodGrade, {
           id: id,
           createdByAccount: item.createdByAccount,
-          studentOverall: item.studentOverall,
-          classAverage: item.classAverage
+          studentOverallRaw: JSON.stringify(item.studentOverall),
+          classAverageRaw: JSON.stringify(item.classAverage)
         });
       });
     }
@@ -140,6 +140,7 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
 }
 
 export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {
+  console.log("Fetching from cache")
   try {
     const database = getDatabaseInstance();
     const id = generateId(period)

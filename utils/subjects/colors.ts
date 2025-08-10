@@ -11,7 +11,7 @@ export function getSubjectColor(subject: string): string {
   }
 
   const color = getRandomColor()
-  useAccountStore.getState().setSubjectColor(cleanedName, getRandomColor())
+  useAccountStore.getState().setSubjectColor(cleanedName, color)
   return color;
 }
 
