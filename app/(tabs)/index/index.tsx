@@ -153,11 +153,10 @@ export default function TabOneScreen() {
           onPress={() => InitManager()}
         />
         <Button
-          title="Test ARD Connection"
+          title="Onboarding"
           inline
-          loading={ardLoading}
           variant="outline"
-          onPress={() => testArdConnection()}
+          onPress={() => router.navigate("/(onboarding)/welcome")}
         />
       </Stack>
     </ScrollView>
