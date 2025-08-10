@@ -134,13 +134,13 @@ const SettingsIndex = () => {
                 <Typography variant="title">
                   {t("Settings_Account_Title")}
                 </Typography>
-                <Stack direction={"horizontal"} gap={6}>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
                     <Typography variant={"body1"} color="secondary">
                       T6
                     </Typography>
                   </Stack>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
                     <Typography variant={"body1"} color="secondary">
                       Université Paris 8
                     </Typography>
