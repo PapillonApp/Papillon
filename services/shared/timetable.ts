@@ -18,6 +18,7 @@ export interface Course extends GenericInterface {
   group?: string;
   backgroundColor?: string;
   status?: CourseStatus;
+  customStatus?: string;
   url?: string;
   resourceId?: string;
 }

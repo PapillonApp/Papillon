@@ -243,7 +243,7 @@ const Course = React.memo(({
                       <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                         <Papicons.User />
                       </Icon>
-                      <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "40%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "50%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
                         {truncatenateString(teacher || t("Form_Organizer"), 20, "...")}
                       </Typography>
                     </View>
