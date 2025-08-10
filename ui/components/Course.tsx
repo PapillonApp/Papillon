@@ -15,6 +15,8 @@ import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import { useTheme } from "@react-navigation/native";
+import adjust from "@/utils/adjustColor";
 
 type Variant = 'primary' | 'separator';
 
@@ -61,6 +63,8 @@ const Course = React.memo(({
 }: CourseProps) => {
   const duration = end - start;
   const { t } = useTranslation();
+  const theme = useTheme();
+  const { colors } = theme;
 
   return (
     <Stack direction="horizontal" gap={12} style={{ width: "100%", marginBottom: 6 }}>
@@ -85,7 +89,7 @@ const Course = React.memo(({
           borderWidth: 1,
           borderColor: "rgba(0, 0, 0, 0.12)",
           borderStyle: "solid",
-          backgroundColor: "#F9E5E5",
+          backgroundColor: adjust("#DC1400", theme.dark ? -0.8 : 0.8)
         } : {},
         magicInfo || variant === "separator" ? {
           borderWidth: 1,
@@ -133,7 +137,9 @@ const Course = React.memo(({
             style={[
               styles.container,
               { backgroundColor: color },
-              status?.canceled || variant === "separator" ? styles.canceled : {},
+              status?.canceled || variant === "separator" ? {
+                backgroundColor: colors.card
+              } : {},
               ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
               {
                 shadowColor: '#000',
@@ -238,7 +244,6 @@ const styles = StyleSheet.create({
     flexShrink: 1
   },
   canceled: {
-    backgroundColor: "#FFFFFF",
     color: "#606060"
   },
   importantContainer: {
