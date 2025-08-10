@@ -26,6 +26,10 @@
 
   "Alert_TechnicalDetails": "Détails techniques",
 
+  "Online_Course": "En ligne",
+  "Evaluated_Course": "Évaluation",
+  "Edited_Course": "Cours modifié",
+  "Canceled_Course": "Cours annulé",
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
@@ -114,5 +118,5 @@
   "Settings_Donate_Title": "Faire un don",
   "Settings_Donate_Description": "Soutenir le projet",
   "Settings_About_Title": "À propos",
-  "Settings_About_Description": "version 8.0.0",
+  "Settings_About_Description": "version 8.0.0"
 }

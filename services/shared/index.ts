@@ -50,10 +50,8 @@ export class AccountManager {
           refreshedAtLeastOne = true;
           log("Successfully refreshed " + service.id);
         } else {
-          error(
-            `Plugin not found or REFRESH capability missing for service: ${service.serviceId}`,
-            "AccountManager.refreshAllAccounts"
-          );
+          this.clients[service.id] = plugin;
+          log("Plugin for " + service.id + " doesn't support refresh but is available for other capabilities");
         }
       } catch (e) {
         error(
@@ -446,6 +444,15 @@ export class AccountManager {
       }
 
       const availableClients = this.getAvailableClients(capability);
+      
+      log(`Available clients for capability ${capability}: ${availableClients.length}`);
+      if (availableClients.length === 0) {
+        log(`No clients available for capability ${capability}, falling back to cache`);
+        if (options?.fallback) {
+          return await options.fallback();
+        }
+        throw new Error(`No clients available for capability: ${capability}`);
+      }
 
       if (options?.multiple) {
         const results = await Promise.all(
@@ -460,7 +467,7 @@ export class AccountManager {
         return combinedResult;
       }
     } catch (e) {
-      console.log(e)
+      console.log("Error fetching data for capability " + capability + ":", e)
       if (options?.fallback) {
         return await options.fallback();
       }
