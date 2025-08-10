@@ -2,6 +2,7 @@ import { LegendList, LegendListProps } from "@legendapp/list";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { FlashList } from "@shopify/flash-list";
 import React from "react";
 import { Dimensions, FlatList, FlatListProps, Image, Platform, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
@@ -11,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
+const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList);
 
 const patterns = {
   dots: require('@/assets/images/patterns/dots.png'),
@@ -27,7 +29,7 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   padding?: number;
   radius?: number;
   gap?: number;
-  engine?: string;
+  engine?: 'FlatList' | 'LegendList' | 'FlashList';
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -129,7 +131,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     }
   );
 
-  const ListEngine = engine === "LegendList" ? AnimatedLegendList : AnimatedFlatList;
+  const ListEngine = engine === "LegendList" ? AnimatedLegendList : engine === "FlashList" ? AnimatedFlashList : AnimatedFlatList;
 
   try {
     return (

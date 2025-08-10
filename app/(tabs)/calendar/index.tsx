@@ -18,6 +18,8 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
+import { FlashList } from "@shopify/flash-list";
+
 import * as Papicons from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
@@ -260,18 +262,18 @@ export default function TabOneScreen() {
 
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
-        <LegendList
+        <FlatList
           data={dayEvents}
           style={styles.container}
-          waitForInitialLayout
-          contentContainerStyle={[
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={
             {
-              paddingTop: globalPaddingTop,
               paddingHorizontal: 12,
               paddingBottom: bottomHeight + 12,
               gap: 4,
             }
-          ]}
+          }
+          ListHeaderComponent={<View style={{ height: globalPaddingTop }} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -333,6 +335,9 @@ export default function TabOneScreen() {
     if (!fetchedWeeks.includes(newWeekNumber)) {
       setWeekNumber(newWeekNumber);
       fetchWeeklyTimetable(false);
+    }
+    if (Platform.OS === 'ios') {
+      setShowDatePicker(false);
     }
   }, [fetchedWeeks, fetchWeeklyTimetable]);
 
@@ -432,16 +437,15 @@ export default function TabOneScreen() {
         onScroll={onScroll}
         decelerationRate={0.9}
         disableIntervalMomentum={true}
-        snapToAlignment="center"
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ width: "100%", height: "100%" }}
         snapToInterval={windowWidth}
         bounces={false}
         windowSize={3}
         maxToRenderPerBatch={2}
         initialNumToRender={1}
+        showsVerticalScrollIndicator={false}
         removeClippedSubviews
         extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
       />

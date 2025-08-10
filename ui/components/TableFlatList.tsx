@@ -1,4 +1,4 @@
-import { LegendList } from '@legendapp/list';
+import { LegendList, LegendListProps } from '@legendapp/list';
 import React from 'react';
 import { FlatList, FlatListProps, View, StyleProp, ViewStyle } from 'react-native';
 import Item, { Leading, Trailing } from './Item';
@@ -9,6 +9,7 @@ import { useTheme } from '@react-navigation/native';
 import Stack from './Stack';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 
 interface SectionItem {
   leading?: React.ReactNode;
@@ -40,7 +41,7 @@ interface Section {
 
 interface TableFlatListProps extends FlatListProps<SectionItem> {
   sections: Array<Section>;
-  engine?: 'FlatList' | 'LegendList';
+  engine?: 'FlatList' | 'LegendList' | 'FlashList';
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -83,7 +84,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
     return acc;
   }, [] as Array<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>);
 
-  const ListComponent = engine === 'LegendList' ? LegendList : FlatList;
+  const ListComponent = engine === 'LegendList' ? LegendList : engine === 'FlashList' ? FlashList : FlatList;
 
   const renderItemComponent = ({ item, index }: any) => (
     item.type === 'item' ? (
