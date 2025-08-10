@@ -401,12 +401,13 @@ export default function TabOneScreen() {
       key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
       style={{
         width: windowDimensions.width + 36 - 8,
-        height: 120,
+        height: 140,
         position: 'absolute',
-        top: -20,
+        top: 0,
         left: -36,
         right: 0,
         zIndex: 1000,
+        paddingBottom: 20,
       }}
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
@@ -586,7 +587,7 @@ export default function TabOneScreen() {
         recycleItems={true}
         estimatedItemSize={80}
         onFullyScrolled={handleFullyScrolled}
-        height={170}
+        height={200}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
