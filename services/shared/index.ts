@@ -484,26 +484,32 @@ export class AccountManager {
   ): SchoolServicePlugin {
     if (service.serviceId === Services.PRONOTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/pronote/index");
-      return new pronoteModule.Pronote(service.id);
+      const module = require("@/services/pronote/index");
+      return new module.Pronote(service.id);
     }
 
 		if (service.serviceId === Services.SKOLENGO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/skolengo/index");
-      return new pronoteModule.Skolengo(service.id);
+      const module = require("@/services/skolengo/index");
+      return new module.Skolengo(service.id);
     }
 
 		if (service.serviceId === Services.ECOLEDIRECTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/ecoledirecte/index");
-      return new pronoteModule.EcoleDirecte(service.id);
+      const module = require("@/services/ecoledirecte/index");
+      return new module.EcoleDirecte(service.id);
     }
 
 		if (service.serviceId === Services.TURBOSELF) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/turboself/index");
-      return new pronoteModule.TurboSelf(service.id);
+      const module = require("@/services/turboself/index");
+      return new module.TurboSelf(service.id);
+    }
+
+		if (service.serviceId === Services.ARD) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/ard/index");
+      return new module.ARD(service.id);
     }
 
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");

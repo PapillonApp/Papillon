@@ -1,5 +1,5 @@
 import { Session } from "pawdirecte";
-import { Skolengo } from "skolengojs"
+import { Skolengo } from "skolengojs";
 
 /**
  * Represents the storage structure for user accounts.
@@ -8,16 +8,16 @@ import { Skolengo } from "skolengojs"
  * @property {Account[]} accounts - An array of `Account` objects associated with the storage.
  */
 export interface AccountsStorage {
-    lastUsedAccount: string;
-    accounts : Account[]
-    removeAccount: (account: Account) => void;
-    addAccount: (account: Account) => void;
-    setLastUsedAccount: (accountId: string) => void;
-    updateServiceAuthData: (serviceId: string, authData: Auth) => void;
-    addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
-    setSubjectColor: (subject: string, color: string) => void;
-    setSubjectEmoji: (subject: string, emoji: string) => void;
-    setSubjectName: (subject: string, name: string) => void;
+  lastUsedAccount: string;
+  accounts : Account[]
+  removeAccount: (account: Account) => void;
+  addAccount: (account: Account) => void;
+  setLastUsedAccount: (accountId: string) => void;
+  updateServiceAuthData: (serviceId: string, authData: Auth) => void;
+  addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
+  setSubjectColor: (subject: string, color: string) => void;
+  setSubjectEmoji: (subject: string, emoji: string) => void;
+  setSubjectName: (subject: string, name: string) => void;
 }
 
 /**
@@ -32,19 +32,19 @@ export interface AccountsStorage {
  * @property {string} updatedAt - ISO string representing the last update date (stored as string due to MMKV limitations).
  */
 export interface Account {
-    readonly id: string;
-    firstName: string;
-    lastName: string;
-    schoolName?: string;
-    customisation?: CustomisationStorage;
-    services: ServiceAccount[];
-    createdAt: string;
-    updatedAt: string;
+  readonly id: string;
+  firstName: string;
+  lastName: string;
+  schoolName?: string;
+  customisation?: CustomisationStorage;
+  services: ServiceAccount[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CustomisationStorage {
-    subjects: Record<string, { color: string, emoji: string, name: string }>
-} 
+  subjects: Record<string, { color: string; emoji: string; name: string }>;
+}
 
 /**
  * Represents a service account.
@@ -58,12 +58,12 @@ export interface CustomisationStorage {
  * @property {string} [lastName] - Optional last name of the account holder.
  */
 export interface ServiceAccount {
-    readonly id: string;
-    auth: Auth;
-    serviceId: Services;
-    createdAt: string;
-    updatedAt: string;
-    additionals?: Record<string, string>;
+  readonly id: string;
+  auth: Auth;
+  serviceId: Services;
+  createdAt: string;
+  updatedAt: string;
+  additionals?: Record<string, string>;
 }
 
 /**
@@ -75,15 +75,16 @@ export interface ServiceAccount {
  * @property {string} [additionals] - Optional record containing additional authentication-related key-value pairs.
  */
 export interface Auth {
-    accessToken?: string;
-    refreshToken?: string;
-		session?: Skolengo | Session;
-    additionals?: Record<string, string | number>;
+  accessToken?: string;
+  refreshToken?: string;
+  session?: Skolengo | Session;
+  additionals?: Record<string, string | number>;
 }
 
 export enum Services {
-    PRONOTE,
-		SKOLENGO,
-		ECOLEDIRECTE,
-		TURBOSELF
+  PRONOTE,
+  SKOLENGO,
+  ECOLEDIRECTE,
+  TURBOSELF,
+  ARD
 }
