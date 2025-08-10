@@ -126,7 +126,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
             </Leading>
           )}
           {item.icon || item.papicon ? (
-            <Icon papicon={!!item.papicon}>
+            <Icon papicon={!!item.papicon} opacity={0.5}>
               {item.papicon ? item.papicon : item.icon}
             </Icon>
           ) : null}
