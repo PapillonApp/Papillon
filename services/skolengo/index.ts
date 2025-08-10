@@ -84,8 +84,8 @@ export class Skolengo implements SchoolServicePlugin {
   }
 
   async getGradesForPeriod(period: Period, kid?: Kid): Promise<PeriodGrades> {
-    if (kid?.ref) {
-      return fetchSkolengoGradesForPeriod(kid.ref, this.accountId, period.id!)
+    if (kid?.ref && this.session) {
+      return fetchSkolengoGradesForPeriod(this.session, this.accountId, period.id!, kid?.ref)
     }
 		
     if (this.session && this.session.kind === Kind.STUDENT ) {
