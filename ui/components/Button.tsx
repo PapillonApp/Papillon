@@ -10,7 +10,7 @@ import Typography from "./Typography";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'outline' | 'light';
-export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry';
+export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black';
 type Size = 'small' | 'medium' | 'large';
 
 interface ButtonProps extends PressableProps {
@@ -58,6 +58,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
     light: '#FFFFFF',
     danger: '#DC1400',
     cherry: '#D60046',
+    black: '#000000',
   }), [colors]);
 
   // Animation scale
@@ -84,22 +85,22 @@ const Button: React.FC<ButtonProps> = React.memo(({
     if (disabled) { return colorsList.text + '30'; } // Light color with 30% opacity for disabled state
 
     switch (variant) {
-    case 'outline':
-      return 'transparent';
-    case 'light':
-      return colorsList[color as Color] + '30';
-    case 'primary':
-    default:
-      return colorsList[color as Color];
+      case 'outline':
+        return 'transparent';
+      case 'light':
+        return colorsList[color as Color] + '30';
+      case 'primary':
+      default:
+        return colorsList[color as Color];
     }
   }, [variant, colorsList, color, disabled]);
 
   const textColor = useMemo(() => {
     switch (variant) {
-    case 'primary':
-      return colorsList.light;
-    default:
-      return colorsList[color as Color];
+      case 'primary':
+        return colorsList.light;
+      default:
+        return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
 
