@@ -23,20 +23,6 @@ const SettingsIndex = () => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const AccountSettingsList = [
-    {
-      title: t('Settings_Profile'),
-      content: [
-        {
-          title: t('Settings_Account_Title'),
-          description: t('Settings_Account_Description'),
-          avatar: require('@/assets/images/default_profile.jpg'),
-          color: "#888888",
-          tags: ["T6", "Université Paris 8"]
-        }
-      ],
-    }
-  ];
   const MoreSettingsList = [
     {
       title: t('Settings_More'),
@@ -98,32 +84,36 @@ const SettingsIndex = () => {
       <Stack direction="vertical" gap={15}>
         {Array.from({ length: Math.ceil(BigButtons.length / 2) }, (_, rowIndex) => (
           <Stack key={rowIndex} direction="horizontal" gap={15}>
-            {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, buttonIndex) => (
-              <Pressable style={{ flex: 1, width: "50%" }} key={button.title}>
-                <Stack
-                  flex
-                  card
-                  direction="vertical"
-                  gap={14}
-                  padding={16}
-                  radius={25}
-                  backgroundColor={adjust(button.color, theme.dark ? -0.85 : 0.85)}
-                >
-                  <Icon papicon size={24} fill={button.color}>
-                    {button.icon}
-                  </Icon>
-                  <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
-                    <Typography inline variant="title" color={button.color}>{button.title}</Typography>
-                    <Typography inline variant="caption" color={button.color}>{button.description}</Typography>
+            {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, buttonIndex) => {
+              const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
+
+              return (
+                <Pressable style={{ flex: 1, width: "50%" }} key={button.title}>
+                  <Stack
+                    flex
+                    card
+                    direction="vertical"
+                    gap={14}
+                    padding={16}
+                    radius={25}
+                    backgroundColor={adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                  >
+                    <Icon papicon size={24} fill={newButtonColor}>
+                      {button.icon}
+                    </Icon>
+                    <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
+                      <Typography inline variant="title" color={newButtonColor}>{button.title}</Typography>
+                      <Typography inline variant="caption" color={newButtonColor}>{button.description}</Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              </Pressable>
-            ))}
+                </Pressable>
+              )
+            })}
           </Stack>
         ))}
       </Stack>
     );
-  }, [])
+  }, [theme.dark]);
 
   return (
     <>
