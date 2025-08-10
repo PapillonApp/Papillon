@@ -9,7 +9,7 @@ interface AnimatedNumberProps extends TypographyProps {
 }
 
 
-function AnimatedNumber({ children, distance = 16, duration = 300, ...rest }: AnimatedNumberProps) {
+function AnimatedNumber({ children, distance = 16, duration = 400, ...rest }: AnimatedNumberProps) {
   try {
     // Convert children to string and split into digits
     const value = useMemo(() => (children?.toString ? children.toString().trim() : ''), [children]);
@@ -34,11 +34,11 @@ function AnimatedNumber({ children, distance = 16, duration = 300, ...rest }: An
     const getNumberEntering = useMemo(() => {
       return (changedIndex: number, unchanged: boolean) => () => {
         'worklet';
-        const delay = unchanged ? 0 : changedIndex * 50;
+        const delay = unchanged ? 0 : changedIndex * 60;
         return {
           initialValues: {
             opacity: 0,
-            transform: [{ translateY: 0 - distance }, { scale: 0.2 }],
+            transform: [{ translateY: 0 - distance }, { scale: 0.4 }],
           },
           animations: {
             opacity: withDelay(delay, withSpring(1, { duration })),
@@ -54,7 +54,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, ...rest }: An
     const getNumberExiting = useMemo(() => {
       return (changedIndex: number, unchanged: boolean) => () => {
         'worklet';
-        const delay = unchanged ? 0 : changedIndex * 50;
+        const delay = unchanged ? 0 : changedIndex * 60;
         return {
           initialValues: {
             opacity: 1,
@@ -64,7 +64,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, ...rest }: An
             opacity: withDelay(delay, withSpring(0, { duration })),
             transform: [
               { translateY: withDelay(delay, withSpring(distance, { duration })) },
-              { scale: withDelay(delay, withSpring(0.2, { duration })) },
+              { scale: withDelay(delay, withSpring(0.4, { duration })) },
             ],
           },
         };
