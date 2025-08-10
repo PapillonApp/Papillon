@@ -18,6 +18,8 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
+import { FlashList } from "@shopify/flash-list";
+
 import * as Papicons from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
@@ -28,7 +30,7 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 const EmptyListComponent = memo(() => (
-  <Dynamic animated key={'empty-list:warn'}>
+  <Dynamic key={'empty-list:warn'}>
     <Stack
       hAlign="center"
       vAlign="center"
@@ -118,7 +120,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
-  }, [fetchWeeklyTimetable, weekNumber]);
+  }, [weekNumber]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function TabOneScreen() {
   const handleRefresh = useCallback(() => {
     setRefresh(prev => prev + 1);
     fetchWeeklyTimetable(weekNumber, true);
-  }, [fetchWeeklyTimetable, weekNumber]);
+  }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -279,19 +281,19 @@ export default function TabOneScreen() {
     }, [rawDayEvents]);
 
     return (
-      <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
-        <LegendList
+      <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
+        <FlatList
           data={dayEvents}
           style={styles.container}
-          waitForInitialLayout
-          contentContainerStyle={[
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={
             {
-              paddingTop: globalPaddingTop,
               paddingHorizontal: 12,
               paddingBottom: bottomHeight + 12,
               gap: 4,
             }
-          ]}
+          }
+          ListHeaderComponent={<View style={{ height: globalPaddingTop }} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -354,7 +356,10 @@ export default function TabOneScreen() {
       setWeekNumber(newWeekNumber);
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
-  }, [weekNumber]);
+    if (Platform.OS === 'ios') {
+      setShowDatePicker(false);
+    }
+  }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
@@ -452,16 +457,15 @@ export default function TabOneScreen() {
         onScroll={onScroll}
         decelerationRate={0.9}
         disableIntervalMomentum={true}
-        snapToAlignment="center"
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ width: "100%", height: "100%" }}
         snapToInterval={windowWidth}
         bounces={false}
         windowSize={3}
         maxToRenderPerBatch={2}
         initialNumToRender={1}
+        showsVerticalScrollIndicator={false}
         removeClippedSubviews
         extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
       />
