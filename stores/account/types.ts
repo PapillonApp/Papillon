@@ -85,5 +85,5 @@ export enum Services {
   SKOLENGO,
   ECOLEDIRECTE,
   TURBOSELF,
-  ARD,
+  ARD
 }
