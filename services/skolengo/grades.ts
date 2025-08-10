@@ -3,9 +3,8 @@ import { Grade as SkolengoGrade, Kind,Skolengo, Subject as SkolengoSubjects } fr
 import { error } from "@/utils/logger/logger";
 
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
-import { Kid } from "../shared/kid";
 
-export async function fetchSkolengoGradesForPeriod(session: Skolengo, accountId: string, period: string, kid?: Kid): Promise<PeriodGrades> {
+export async function fetchSkolengoGradesForPeriod(session: Skolengo, accountId: string, period: string, kid?: Skolengo): Promise<PeriodGrades> {
   const getGrades = async (sessionToUse: Skolengo, kidName?: string): Promise<PeriodGrades> => {
     const subjects = await sessionToUse.GetGradesForPeriod(period)
     const studentOverall: GradeScore = {
@@ -27,8 +26,8 @@ export async function fetchSkolengoGradesForPeriod(session: Skolengo, accountId:
   if (session.kind === Kind.STUDENT) {
     return getGrades(session)
   } 
-  if (kid?.ref) {
-    return getGrades(kid.ref, `${kid.ref.firstName} ${kid.ref.lastName}`)
+  if (kid) {
+    return getGrades(kid, `${kid.firstName} ${kid.lastName}`)
   }
   error("Kid is not valid")
 	

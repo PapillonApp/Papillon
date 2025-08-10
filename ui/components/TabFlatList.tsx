@@ -3,13 +3,14 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Dimensions, FlatListProps, Image, Platform, View } from "react-native";
+import { Dimensions, FlatList, FlatListProps, Image, Platform, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import LinearGradient from "react-native-linear-gradient";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
+const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
 const patterns = {
   dots: require('@/assets/images/patterns/dots.png'),
@@ -26,6 +27,7 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   padding?: number;
   radius?: number;
   gap?: number;
+  engine?: string;
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -38,6 +40,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   padding = 16,
   radius = 28,
   gap = 0,
+  engine = "FlatList",
   onFullyScrolled,
   ...rest
 }) => {
@@ -126,6 +129,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     }
   );
 
+  const ListEngine = engine === "LegendList" ? AnimatedLegendList : AnimatedFlatList;
+
   try {
     return (
       <>
@@ -212,7 +217,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
         </View>
 
         {/* FlatList */}
-        <AnimatedLegendList
+        <ListEngine
           {...rest}
 
           onScroll={scrollHandler}
@@ -258,7 +263,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             borderTopRightRadius: radius,
             borderCurve: 'continuous',
             padding: padding,
-            paddingVertical: padding - 8,
+            paddingVertical: padding,
             gap: gap,
           }}
         />

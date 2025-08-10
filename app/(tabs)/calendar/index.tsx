@@ -2,17 +2,13 @@ import { LegendList } from "@legendapp/list";
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { Router, useRouter } from "expo-router";
 import { t } from "i18next";
 import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
-import React, { memo, useRef } from "react";
-import { useCallback, useEffect, useState } from "react";
+import React, { memo, useRef, useCallback, useEffect, useState } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { LinearTransition } from "react-native-reanimated";
-
-import Event from "@/database/models/Event";
-import { useEventsForDay } from "@/database/useEvents";
 import Calendar from "@/ui/components/Calendar";
 import Course from "@/ui/components/Course";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -25,6 +21,11 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import * as Papicons from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
+import { getManager } from "@/services/shared";
+import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getWeekNumberFromDate } from "@/database/useHomework";
+import { warn } from "@/utils/logger/logger";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -52,55 +53,66 @@ export default function TabOneScreen() {
   const { colors } = useTheme();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [refresh, setRefresh] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [manualRefreshing, setManualRefreshing] = useState(false); // controls spinner for manual refresh
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
 
-  let events: Event[] = [];
+  const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
+  const [week, setWeek] = useState<CourseDay[]>([]);
+  const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
+  const manager = getManager();
 
-  // WatermelonDB events for the selected day
-  try {
-    events = useEventsForDay(date, refresh);
-  } catch (err) {
-    console.error("Error fetching events:", err);
-  }
+  const fetchWeeklyTimetable = useCallback(async (forceRefresh = false) => {
+    if (forceRefresh) {
+      setManualRefreshing(true);
+    }
+    try {
+      const weeksToFetch = [weekNumber - 1, weekNumber, weekNumber + 1].filter(
+        (week) => !fetchedWeeks.includes(week)
+      );
+
+      if (weeksToFetch.length > 0) {
+        const fetchedData = await Promise.all(
+          weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+        );
+
+        const newWeekData = fetchedData.flat();
+        setWeek((prevWeek) => {
+          const allDays = [...prevWeek, ...newWeekData];
+          const uniqueDays = [];
+          const seenDates = new Set();
+          for (const day of allDays) {
+            const dayDate = new Date(day.date).toISOString();
+            if (!seenDates.has(dayDate)) {
+              uniqueDays.push(day);
+              seenDates.add(dayDate);
+            }
+          }
+          return uniqueDays;
+        });
+        setFetchedWeeks((prevFetchedWeeks) => [
+          ...prevFetchedWeeks,
+          ...weeksToFetch,
+        ]);
+
+        console.log('Fetched events for weeks:', weeksToFetch);
+      }
+    } catch (error) {
+      console.error('Error fetching weekly timetable:', error);
+    } finally {
+      setManualRefreshing(false);
+    }
+  }, [weekNumber, manager]);
 
   useEffect(() => {
-    setIsRefreshing(false);
-    console.log(events);
-  }, [events]);
+    fetchWeeklyTimetable();
+  }, [fetchWeeklyTimetable]);
 
-  // Add demo event
-  const addDemoEvent = useCallback(async () => {
-    try {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      const randomTime = new Date(startOfDay.getTime() + Math.random() * (endOfDay.getTime() - startOfDay.getTime()));
-      const start = randomTime.getTime();
-      const end = start + 60 * 60 * 1000; // 1 hour
-      await createEventWithSubject({
-        title: 'Demo Event',
-        start,
-        end,
-        color: '#21A467',
-        room: 'Demo Room',
-        teacher: 'Demo Teacher',
-        status: 'Demo',
-        canceled: false,
-        subject: {
-          name: 'Demo Subject',
-          code: 'DEMO',
-          color: '#21A467',
-        },
-      });
-      setRefresh(r => r + 1); // trigger refetch after adding event
-    } catch (err) {
-      // Optionally, handle error
-    }
-  }, [date]);
+  const handleRefresh = useCallback(() => {
+    setRefresh(prev => prev + 1);
+    fetchWeeklyTimetable(true);
+  }, [fetchWeeklyTimetable]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -135,6 +147,8 @@ export default function TabOneScreen() {
   // When date changes manually, update currentIndex and scroll FlatList to correct index
   useEffect(() => {
     const newIndex = getIndexFromDate(date);
+    const newWeekNumber = getWeekNumberFromDate(date);
+
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
       if (flatListRef.current) {
@@ -144,11 +158,17 @@ export default function TabOneScreen() {
             animated: false, // Teleport instantly to the date
           });
         } catch (e) {
-          // If out of range, ignore
+          warn(String(e))
         }
       }
     }
-  }, [date, getIndexFromDate, currentIndex]);
+
+    if (newWeekNumber !== weekNumber) {
+      console.log('Date picker changed week from', weekNumber, 'to', newWeekNumber);
+      setWeekNumber(newWeekNumber);
+      fetchWeeklyTimetable(false);
+    }
+  }, [date, getIndexFromDate, currentIndex, weekNumber, fetchWeeklyTimetable]);
 
   // Handle swipe (momentum end) to update date
   const onMomentumScrollEnd = useCallback((e: any) => {
@@ -172,11 +192,24 @@ export default function TabOneScreen() {
       setCurrentIndex(newIndex);
       const newDate = getDateFromIndex(newIndex);
       setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
+      const newWeekNumber = getWeekNumberFromDate(newDate);
+      if (newWeekNumber !== weekNumber) {
+        console.log('Week changed from', weekNumber, 'to', newWeekNumber);
+        setWeekNumber(newWeekNumber);
+        fetchWeeklyTimetable(false);
+      }
     }
-  }, [windowWidth, getDateFromIndex]);
+  }, [windowWidth, getDateFromIndex, weekNumber, fetchWeeklyTimetable]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
-    const rawDayEvents = useEventsForDay(dayDate, refresh);
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+    const normalizedDayDate = new Date(dayDate);
+    normalizedDayDate.setHours(0, 0, 0, 0);
+
+    const rawDayEvents: SharedCourse[] = week.find(w => {
+      const weekDate = new Date(w.date);
+      weekDate.setHours(0, 0, 0, 0);
+      return weekDate.getTime() === normalizedDayDate.getTime();
+    })?.courses ?? []
 
     // Cache to preserve event object identity by id
     const eventCache = React.useRef<{ [id: string]: any }>({});
@@ -194,10 +227,25 @@ export default function TabOneScreen() {
       return true;
     }
 
+    function getStatusText(status?: CourseStatus): string {
+      switch (status) {
+        case CourseStatus.ONLINE:
+          return t("Online_Course")
+        case CourseStatus.EDITED:
+          return t("Edited_Course")
+        case CourseStatus.CANCELED:
+          return t("Canceled_Course")
+        case CourseStatus.EVALUATED:
+          return t("Evaluated_Course")
+        default:
+          return ""
+      }
+    }
+
     const dayEvents = React.useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
-      const result = rawDayEvents.map(ev => {
+      const result = (rawDayEvents ?? []).map(ev => {
         if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
           next[ev.id] = cache[ev.id];
           return cache[ev.id];
@@ -227,32 +275,26 @@ export default function TabOneScreen() {
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => {
-                setRefresh((r: number) => r + 1);
-              }}
+              onRefresh={onRefresh}
               colors={[colors.primary]}
               progressBackgroundColor={colors.background}
             />
           }
           keyExtractor={(item) => item.id}
           ListEmptyComponent={<EmptyListComponent />}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: SharedCourse }) => (
             <Course
               id={item.id}
-              name={item.subject ? item.subject.name : item.title}
+              name={item.subject}
               teacher={item.teacher}
               room={item.room}
-              color={(item.subject ? item.subject.color : item.color) || "#888888"}
-              status={{ label: item.status || "", canceled: !!item.canceled }}
+              color={getSubjectColor(item.subject)}
+              status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
               variant="primary"
-              start={Math.floor(item.start / 1000)}
-              end={Math.floor(item.end / 1000)}
-              readonly={!!item.readonly}
+              start={Math.floor(item.from.getTime() / 1000)}
+              end={Math.floor(item.to.getTime() / 1000)}
+              readonly={!!item.createdByAccount}
               onPress={() => {
-                router.push({
-                  pathname: "/(tabs)/calendar/event/[id]",
-                  params: { id: item.id, title: item.title || item.subject.name || item.subject.code || "Event" }
-                });
               }}
             />
           )}
@@ -260,10 +302,10 @@ export default function TabOneScreen() {
       </View>
     );
   }, (prevProps, nextProps) => {
-    // Only rerender if dayDate or isRefreshing changes
     return (
       prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
-      prevProps.isRefreshing === nextProps.isRefreshing
+      prevProps.isRefreshing === nextProps.isRefreshing &&
+      prevProps.onRefresh === nextProps.onRefresh
     );
   });
 
@@ -275,23 +317,31 @@ export default function TabOneScreen() {
         dayDate={dayDate}
         headerHeight={headerHeight}
         bottomHeight={bottomHeight}
-        isRefreshing={isRefreshing}
-        setRefresh={setRefresh}
+        isRefreshing={manualRefreshing}
+        onRefresh={handleRefresh}
         colors={colors}
         router={router}
         t={t}
       />
     );
-  }, [headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t, getDateFromIndex]);
+  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex, week]);
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    const newWeekNumber = getWeekNumberFromDate(newDate);
+    console.log(newWeekNumber)
+    if (!fetchedWeeks.includes(newWeekNumber)) {
+      setWeekNumber(newWeekNumber);
+      fetchWeeklyTimetable(false);
+    }
+  }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
       <Calendar
         key={"calendar-" + date.toISOString()}
         date={date}
-        onDateChange={(newDate) => {
-          setDate(newDate);
-        }}
+        onDateChange={handleDateChange}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -393,7 +443,7 @@ export default function TabOneScreen() {
         maxToRenderPerBatch={2}
         initialNumToRender={1}
         removeClippedSubviews
-        extraData={{ refresh, headerHeight, bottomHeight, isRefreshing, colors, date }}
+        extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
       />
     </>
   );

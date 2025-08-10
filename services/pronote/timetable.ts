@@ -22,13 +22,6 @@ export async function fetchPronoteWeekTimetable(
     error("Session is undefined", "fetchPronoteTimetable");
   }
 
-  const timetableTab = session.user.resources[0].tabs.get(
-    TabLocation.Timetable
-  );
-  if (!timetableTab) {
-    error("Timetable tab not found in session", "fetchPronoteTimetable");
-  }
-	
   const { start } = getDateRangeOfWeek(weekNumberRaw)
   const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
   const timetable = await timetableFromWeek(session, weekNumber);
@@ -85,6 +78,7 @@ const mapCourses = (
         teacher: c.teacherNames.join(", "),
         group: c.groupNames.join(", "),
         status: mapCourseStatus(c),
+        customStatus: c.status,
         resourceId: c.lessonResourceID,
         ...baseCourse
       });

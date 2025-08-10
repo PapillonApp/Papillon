@@ -13,5 +13,9 @@ export function getSubjectName(subject: string): string {
 }
 
 export function cleanSubjectName(subject: string): string {
-  return subject.toLocaleLowerCase()
+  return subject
+    .toLocaleLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .replace(/[^\w\s]/gi, '') // Remove special characters except spaces
 }

@@ -143,7 +143,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
           {item.tags && (
             <Stack direction={"horizontal"} gap={6}>
               {item.tags.map((tag: string, tagIndex: number) => (
-                <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat key={tag}>
+                <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat key={tag}>
                   <Typography variant={"body1"} color="secondary">
                     {tag}
                   </Typography>

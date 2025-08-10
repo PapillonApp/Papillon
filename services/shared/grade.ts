@@ -36,7 +36,7 @@ export interface Grade extends GenericInterface {
 }
 
 export interface GradeScore {
-  value?: number;
+  value: number;
   status?: string;
   disabled?: boolean;
 }

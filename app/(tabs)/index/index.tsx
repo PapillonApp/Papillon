@@ -5,6 +5,7 @@ import React, { Alert, ScrollView, StyleSheet } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { initializeAccountManager } from "@/services/shared";
+import { ARD } from "@/services/ard";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
@@ -13,6 +14,8 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
+  const [ardLoading, setArdLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const router = useRouter();
 
   const generateUUID = () => {
@@ -78,6 +81,44 @@ export default function TabOneScreen() {
     }
   };
 
+  const testArdConnection = async () => {
+    try {
+      setArdLoading(true);
+
+      const ard = new ARD("sus");
+
+      const credentials = {
+        additionals: {
+          username: "xxxx",
+          password: "xxxx",
+          schoolId: "xxxx",
+        }
+      };
+
+      console.log("Tentative de connexion ARD...");
+
+      await ard.refreshAccount(credentials);
+      console.log("Connexion ARD réussie !");
+
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      const balances = await ard.getCanteenBalances();
+      console.log("Soldes ARD:", balances);
+
+      Alert.alert(
+        "ARD Réussi",
+        `\nSoldes trouvés: ${balances.length}`
+      );
+
+      setArdLoading(false);
+    } catch (error) {
+      setArdLoading(false);
+      console.error("Erreur ARD:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert("Erreur ARD", `Échec de la connexion: ${errorMessage}`);
+    }
+  };
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -110,6 +151,13 @@ export default function TabOneScreen() {
           loading={loading}
           variant="outline"
           onPress={() => InitManager()}
+        />
+        <Button
+          title="Test ARD Connection"
+          inline
+          loading={ardLoading}
+          variant="outline"
+          onPress={() => testArdConnection()}
         />
       </Stack>
     </ScrollView>
