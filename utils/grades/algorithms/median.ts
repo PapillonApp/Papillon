@@ -1,13 +1,9 @@
-type Grade = {
-  score: number | null;
-  outOf: number | null;
-  coef?: number;
-};
+import { Grade } from "@/services/shared/grade";
 
 const PapillonMedian = (grades: Grade[]): number => {
   const validGrades = grades
-    .filter((grade) => grade.score !== null && grade.outOf !== null)
-    .map((grade) => ((grade.score! / grade.outOf!) * 20 * (grade.coef || 1)));
+    .filter((grade) => grade.studentScore?.value && grade.studentScore?.value !== null && grade.outOf !== null)
+    .map((grade) => ((grade.studentScore?.value! / grade.outOf.value!) * 20 * (grade.coefficient || 1)));
 
   if (validGrades.length === 0) {return 0;}
 

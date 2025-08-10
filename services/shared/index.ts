@@ -50,10 +50,8 @@ export class AccountManager {
           refreshedAtLeastOne = true;
           log("Successfully refreshed " + service.id);
         } else {
-          error(
-            `Plugin not found or REFRESH capability missing for service: ${service.serviceId}`,
-            "AccountManager.refreshAllAccounts"
-          );
+          this.clients[service.id] = plugin;
+          log("Plugin for " + service.id + " doesn't support refresh but is available for other capabilities");
         }
       } catch (e) {
         error(
@@ -114,22 +112,22 @@ export class AccountManager {
     );
   }
 
-  async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
-    return await this.fetchData(Capabilities.GRADES, async client => {
-      if (!client.getGradesForPeriod) {
-        throw new Error(
-          "getGradesForPeriod not implemented but the capability is set."
-        );
-      }
-      return await client.getGradesForPeriod(period);
-    }, {
-      multiple: false,
-      fallback: async () => getGradePeriodsFromCache(period.name),
-      saveToCache: async (data: PeriodGrades) => {
-        await addPeriodGradesToDatabase(data, period.name);
-      }
-    });
-  }
+
+    async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
+      return await this.fetchData(
+        Capabilities.GRADES,
+        async client =>
+          client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
+        { 
+          multiple: false,
+          clientId,
+          fallback: async () => getGradePeriodsFromCache(period.name),
+          saveToCache: async (data: PeriodGrades) => {
+            await addPeriodGradesToDatabase(data, period.name);
+          }
+        }
+      );
+    }
 
   async getGradesPeriods(): Promise<Period[]> {
     return await this.fetchData(
@@ -446,6 +444,15 @@ export class AccountManager {
       }
 
       const availableClients = this.getAvailableClients(capability);
+      
+      log(`Available clients for capability ${capability}: ${availableClients.length}`);
+      if (availableClients.length === 0) {
+        log(`No clients available for capability ${capability}, falling back to cache`);
+        if (options?.fallback) {
+          return await options.fallback();
+        }
+        throw new Error(`No clients available for capability: ${capability}`);
+      }
 
       if (options?.multiple) {
         const results = await Promise.all(
@@ -460,6 +467,7 @@ export class AccountManager {
         return combinedResult;
       }
     } catch (e) {
+      console.log("Error fetching data for capability " + capability + ":", e)
       if (options?.fallback) {
         return await options.fallback();
       }
@@ -476,26 +484,32 @@ export class AccountManager {
   ): SchoolServicePlugin {
     if (service.serviceId === Services.PRONOTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/pronote/index");
-      return new pronoteModule.Pronote(service.id);
+      const module = require("@/services/pronote/index");
+      return new module.Pronote(service.id);
     }
 
 		if (service.serviceId === Services.SKOLENGO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/skolengo/index");
-      return new pronoteModule.Skolengo(service.id);
+      const module = require("@/services/skolengo/index");
+      return new module.Skolengo(service.id);
     }
 
 		if (service.serviceId === Services.ECOLEDIRECTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/ecoledirecte/index");
-      return new pronoteModule.EcoleDirecte(service.id);
+      const module = require("@/services/ecoledirecte/index");
+      return new module.EcoleDirecte(service.id);
     }
 
 		if (service.serviceId === Services.TURBOSELF) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pronoteModule = require("@/services/turboself/index");
-      return new pronoteModule.TurboSelf(service.id);
+      const module = require("@/services/turboself/index");
+      return new module.TurboSelf(service.id);
+    }
+
+		if (service.serviceId === Services.ARD) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/ard/index");
+      return new module.ARD(service.id);
     }
 
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
