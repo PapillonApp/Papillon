@@ -78,7 +78,19 @@ export default function TabOneScreen() {
         );
 
         const newWeekData = fetchedData.flat();
-        setWeek((prevWeek) => [...prevWeek, ...newWeekData]);
+        setWeek((prevWeek) => {
+          const allDays = [...prevWeek, ...newWeekData];
+          const uniqueDays = [];
+          const seenDates = new Set();
+          for (const day of allDays) {
+            const dayDate = new Date(day.date).toISOString();
+            if (!seenDates.has(dayDate)) {
+              uniqueDays.push(day);
+              seenDates.add(dayDate);
+            }
+          }
+          return uniqueDays;
+        });
         setFetchedWeeks((prevFetchedWeeks) => [
           ...prevFetchedWeeks,
           ...weeksToFetch,
@@ -196,7 +208,6 @@ export default function TabOneScreen() {
     const rawDayEvents: SharedCourse[] = week.find(w => {
       const weekDate = new Date(w.date);
       weekDate.setHours(0, 0, 0, 0);
-      console.log(weekDate, normalizedDayDate)
       return weekDate.getTime() === normalizedDayDate.getTime();
     })?.courses ?? []
 
@@ -313,16 +324,24 @@ export default function TabOneScreen() {
         t={t}
       />
     );
-  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex]);
+  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex, week]);
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    const newWeekNumber = getWeekNumberFromDate(newDate);
+    console.log(newWeekNumber)
+    if (!fetchedWeeks.includes(newWeekNumber)) {
+      setWeekNumber(newWeekNumber);
+      fetchWeeklyTimetable(false);
+    }
+  }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
       <Calendar
         key={"calendar-" + date.toISOString()}
         date={date}
-        onDateChange={(newDate) => {
-          setDate(newDate);
-        }}
+        onDateChange={handleDateChange}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
