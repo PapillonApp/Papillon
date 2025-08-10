@@ -5,7 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
 import React, { act, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import { LineGraph } from 'react-native-graph';
 import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
 
@@ -139,6 +139,9 @@ export default function TabOneScreen() {
   const [periods, setPeriods] = useState<Period[]>([]);
   const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
   const [currentPeriod, setCurrentPeriod] = useState<Period>();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
 
   const manager = getManager();
 
@@ -165,30 +168,44 @@ export default function TabOneScreen() {
     fetchPeriods();
   }, []);
 
+  const fetchGradesForPeriod = async (period: Period) => {
+    if (period) {
+      const grades = await manager.getGradesForPeriod(period, period.createdByAccount);
+      setSubjects(grades.subjects);
+      if (grades.studentOverall.value) {
+        setServiceAverage(grades.studentOverall.value)
+      }
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 200);
+      });
+    }
+  };
+
   // Fetch grades when current period changes
   useEffect(() => {
-    const fetchGradesForPeriod = async () => {
-      if (currentPeriod) {
-        const grades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount);
-        setSubjects(grades.subjects);
-        if (grades.studentOverall.value) {
-          setShownAverage(grades.studentOverall.value)
-        }
-      }
-    };
+    fetchGradesForPeriod(currentPeriod);
+  }, [currentPeriod]);
 
-    fetchGradesForPeriod();
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
   const average = useMemo(() => {
     const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
+    if (serviceAverage !== null && algorithm?.value === "subject") {
+      return serviceAverage;
+    }
     const grades = newSubjects.flatMap(subject => subject.grades).filter(grade => grade.studentScore?.value !== undefined);
     if (algorithm && grades.length > 0) {
       const result = algorithm.algorithm(grades);
       return isNaN(result) ? 0 : result;
     }
     return 0;
-  }, [currentAlgorithm, newSubjects]);
+  }, [currentAlgorithm, newSubjects, serviceAverage]);
 
   const [shownAverage, setShownAverage] = useState(average);
   const [selectionDate, setSelectionDate] = useState<number | null>(null);
@@ -251,21 +268,21 @@ export default function TabOneScreen() {
         .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
 
       return [
-        { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id } },
+        { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id + "(" + currentPeriod?.name + ")" } },
         ...grades.map((grade, index) => ({
           type: "grade",
           grade,
           ui: {
             isFirst: index === 0,
             isLast: index === grades.length - 1,
-            key: `g:${grade.id}`,
+            key: `g:${grade.id}(${currentPeriod?.name})`,
           },
         })),
       ];
     });
 
     return result;
-  }, [newSubjects, sorting]);
+  }, [newSubjects, sorting, currentPeriod]);
 
   const renderItemGrade = useCallback(({ item, index, uiFirst, uiLast }: { item: SharedGrade; index: number, uiFirst: boolean, uiLast: boolean }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
@@ -274,7 +291,7 @@ export default function TabOneScreen() {
       <Grade
         isLast={uiLast}
         isFirst={uiFirst}
-        title={item.description}
+        title={item.description ? item.description : t('Grade_NoDescription')}
         date={item.givenAt.getTime()}
         score={(item.studentScore?.value ?? 0)}
         disabled={item.studentScore?.disabled}
@@ -479,7 +496,7 @@ export default function TabOneScreen() {
           }}
         >
           <Typography variant="title" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
-            {item.description}
+            {item.description ? item.description : t('Grade_NoDescription')}
           </Typography>
           <View style={{
             flexDirection: "row",
@@ -505,7 +522,9 @@ export default function TabOneScreen() {
   }, [colors, newSubjects, getSubjectInfo]);
 
   const LatestGrades = useCallback(() => (
-    <>
+    <Reanimated.View
+      key={"latest-grades:" + currentPeriod}
+    >
       <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
         paddingHorizontal: 6,
         paddingVertical: 0,
@@ -552,7 +571,7 @@ export default function TabOneScreen() {
           Mes notes
         </Typography>
       </Stack>
-    </>
+    </Reanimated.View>
   ), [newSubjects, colors]);
 
   return (
@@ -607,6 +626,13 @@ export default function TabOneScreen() {
           </View>
         )}
         ListHeaderComponent={<LatestGrades />}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={100}
+          />
+        }
       />
 
       {!runsIOS26() && fullyScrolled && (
