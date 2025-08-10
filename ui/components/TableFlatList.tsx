@@ -45,6 +45,8 @@ interface TableFlatListProps extends FlatListProps<SectionItem> {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   listProps?: any;
+  renderItem?: (item: SectionItem) => React.ReactNode;
+  data?: Array<SectionItem>;
   [key: string]: any;
 }
 
