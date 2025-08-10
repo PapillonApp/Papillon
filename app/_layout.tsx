@@ -132,7 +132,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       <DatabaseProvider>
         <ThemeProvider value={theme}>
           <AlertProvider>
-            <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+            <Stack initialRouteName='(onboarding)' screenOptions={stackScreenOptions}>
+              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="(settings)" options={{ headerShown: false }} />
