@@ -64,57 +64,77 @@ export default function TabOneScreen() {
   const [week, setWeek] = useState<CourseDay[]>([]);
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const manager = getManager();
+  const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchWeeklyTimetable = useCallback(async (forceRefresh = false) => {
-    if (forceRefresh) {
-      setManualRefreshing(true);
+  const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
+    // Clear any pending fetch requests
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+      fetchTimeoutRef.current = null;
     }
-    try {
-      const weeksToFetch = [weekNumber - 1, weekNumber, weekNumber + 1].filter(
-        (week) => !fetchedWeeks.includes(week)
-      );
 
-      if (weeksToFetch.length > 0) {
-        const fetchedData = await Promise.all(
-          weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+    // Debounce the fetch to prevent multiple rapid calls
+    fetchTimeoutRef.current = setTimeout(async () => {
+      if (forceRefresh) {
+        setManualRefreshing(true);
+      }
+      try {
+        const weeksToFetch = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].filter(
+          (week) => !fetchedWeeks.includes(week)
         );
 
-        const newWeekData = fetchedData.flat();
-        setWeek((prevWeek) => {
-          const allDays = [...prevWeek, ...newWeekData];
-          const uniqueDays = [];
-          const seenDates = new Set();
-          for (const day of allDays) {
-            const dayDate = new Date(day.date).toISOString();
-            if (!seenDates.has(dayDate)) {
-              uniqueDays.push(day);
-              seenDates.add(dayDate);
-            }
-          }
-          return uniqueDays;
-        });
-        setFetchedWeeks((prevFetchedWeeks) => [
-          ...prevFetchedWeeks,
-          ...weeksToFetch,
-        ]);
+        if (weeksToFetch.length > 0) {
+          const fetchedData = await Promise.all(
+            weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+          );
 
-        console.log('Fetched events for weeks:', weeksToFetch);
+          const newWeekData = fetchedData.flat();
+          setWeek((prevWeek) => {
+            const allDays = [...prevWeek, ...newWeekData];
+            const uniqueDays = [];
+            const seenDates = new Set();
+            for (const day of allDays) {
+              const dayDate = new Date(day.date).toISOString();
+              if (!seenDates.has(dayDate)) {
+                uniqueDays.push(day);
+                seenDates.add(dayDate);
+              }
+            }
+            return uniqueDays;
+          });
+          setFetchedWeeks((prevFetchedWeeks) => [
+            ...prevFetchedWeeks,
+            ...weeksToFetch,
+          ]);
+
+          console.log('Fetched events for weeks:', weeksToFetch);
+        }
+      } catch (error) {
+        console.error('Error fetching weekly timetable:', error);
+      } finally {
+        setManualRefreshing(false);
+        fetchTimeoutRef.current = null;
       }
-    } catch (error) {
-      console.error('Error fetching weekly timetable:', error);
-    } finally {
-      setManualRefreshing(false);
-    }
-  }, [weekNumber, manager]);
+    }, 100); // 100ms debounce
+  }, [fetchedWeeks, manager]);
 
   useEffect(() => {
-    fetchWeeklyTimetable();
-  }, [fetchWeeklyTimetable]);
+    fetchWeeklyTimetable(weekNumber);
+  }, [fetchWeeklyTimetable, weekNumber]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleRefresh = useCallback(() => {
     setRefresh(prev => prev + 1);
-    fetchWeeklyTimetable(true);
-  }, [fetchWeeklyTimetable]);
+    fetchWeeklyTimetable(weekNumber, true);
+  }, [fetchWeeklyTimetable, weekNumber]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -168,9 +188,9 @@ export default function TabOneScreen() {
     if (newWeekNumber !== weekNumber) {
       console.log('Date picker changed week from', weekNumber, 'to', newWeekNumber);
       setWeekNumber(newWeekNumber);
-      fetchWeeklyTimetable(false);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
-  }, [date, getIndexFromDate, currentIndex, weekNumber, fetchWeeklyTimetable]);
+  }, [date, getIndexFromDate, currentIndex, weekNumber]);
 
   // Handle swipe (momentum end) to update date
   const onMomentumScrollEnd = useCallback((e: any) => {
@@ -198,10 +218,10 @@ export default function TabOneScreen() {
       if (newWeekNumber !== weekNumber) {
         console.log('Week changed from', weekNumber, 'to', newWeekNumber);
         setWeekNumber(newWeekNumber);
-        fetchWeeklyTimetable(false);
+        // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
       }
     }
-  }, [windowWidth, getDateFromIndex, weekNumber, fetchWeeklyTimetable]);
+  }, [windowWidth, getDateFromIndex, weekNumber]);
 
   const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
@@ -332,9 +352,9 @@ export default function TabOneScreen() {
     setDate(newDate);
     const newWeekNumber = getWeekNumberFromDate(newDate);
     console.log(newWeekNumber)
-    if (!fetchedWeeks.includes(newWeekNumber)) {
+    if (newWeekNumber !== weekNumber) {
       setWeekNumber(newWeekNumber);
-      fetchWeeklyTimetable(false);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
     if (Platform.OS === 'ios') {
       setShowDatePicker(false);
