@@ -153,7 +153,7 @@ export default function TabOneScreen() {
         if (period.start.getTime() < now && period.end.getTime() > now) {
           setCurrentPeriod(period)
           currentPeriodFound = true;
-          break; // Exit loop once current period is found
+          break;
         }
       }
 
@@ -200,7 +200,6 @@ export default function TabOneScreen() {
     }
   }, [average]);
 
-  // Memoize subject data to ensure consistency
   const subjectData = useMemo(() => {
     const subjectMap = new Map();
     newSubjects.forEach(subject => {
@@ -229,8 +228,6 @@ export default function TabOneScreen() {
 
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
-    console.log("transformedData - newSubjects:", newSubjects.length, newSubjects);
-
     const sortedSubjects = [...newSubjects].sort((a, b) => {
       if (sorting === "alphabetical") {
         return a.name.localeCompare(b.name);
@@ -267,7 +264,6 @@ export default function TabOneScreen() {
       ];
     });
 
-    console.log("transformedData result:", result.length, result);
     return result;
   }, [newSubjects, sorting]);
 
