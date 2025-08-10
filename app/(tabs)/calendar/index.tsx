@@ -30,7 +30,7 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 const EmptyListComponent = memo(() => (
-  <Dynamic animated key={'empty-list:warn'}>
+  <Dynamic key={'empty-list:warn'}>
     <Stack
       hAlign="center"
       vAlign="center"
@@ -120,7 +120,7 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
-  }, [fetchWeeklyTimetable, weekNumber]);
+  }, [weekNumber]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function TabOneScreen() {
   const handleRefresh = useCallback(() => {
     setRefresh(prev => prev + 1);
     fetchWeeklyTimetable(weekNumber, true);
-  }, [fetchWeeklyTimetable, weekNumber]);
+  }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -281,7 +281,7 @@ export default function TabOneScreen() {
     }, [rawDayEvents]);
 
     return (
-      <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
+      <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
         <FlatList
           data={dayEvents}
           style={styles.container}
