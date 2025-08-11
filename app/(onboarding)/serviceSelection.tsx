@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 
 import Button from '@/ui/components/Button';
 import Typography from '@/ui/components/Typography';
@@ -16,7 +16,7 @@ import AnimatedNumber from '@/ui/components/AnimatedNumber';
 import { Services } from '@/stores/account/types';
 
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
     const theme = useTheme();
@@ -24,11 +24,13 @@ export default function WelcomeScreen() {
     const insets = useSafeAreaInsets();
     const animation = React.useRef<LottieView>(null);
     const [step, setStep] = useState<number>(1);
+    const [stepId, setStepId] = useState<string>("select-school-service");
     const [selectedService, setSelectedService] = useState<Services>()
     const [prevTextValue, setPrevText] = useState<string>("Sélectionne ton service scolaire");
     const [nextTextValue, setNextText] = useState<string>("Comment souhaites-tu te connecter ?");
     const [backgroundColor, setBackgroundColor] = useState<string>("#D51A67");
 
+    const heightMultiplier = useSharedValue(0);
     const animatedBackgroundColor = useSharedValue("#D51A67");
     const prevText = useSharedValue(1);
     const nextText = useSharedValue(0);
@@ -37,11 +39,17 @@ export default function WelcomeScreen() {
         animatedBackgroundColor.value = withTiming(backgroundColor, { duration: 200 });
     }, [backgroundColor]);
 
-    function handleStepChange(newStep: number, newText: string, duration = 200) {
+    function handleStepChange(newStep: number, newText: string, duration = 600, heightMultiplierRaw = 0, newStepId?: string) {
         if (newText !== prevTextValue) {
-            setStep(newStep)
             prevText.value = withTiming(0, { duration: duration });
             nextText.value = withTiming(1, { duration: duration });
+            heightMultiplier.value = withTiming(heightMultiplierRaw, { duration: duration * 1.2, easing: Easing.out(Easing.exp) })
+            setStep(newStep)
+
+            if (newStepId) {
+                setStepId(newStepId)
+            }
+
             setNextText(newText)
             setTimeout(() => {
                 setPrevText(newText);
@@ -56,6 +64,7 @@ export default function WelcomeScreen() {
     const animatedBackgroundStyle = useAnimatedStyle(() => {
         return {
             backgroundColor: animatedBackgroundColor.value,
+            minHeight: height * heightMultiplier.value
         };
     });
 
@@ -121,7 +130,7 @@ export default function WelcomeScreen() {
             type: "main",
             image: <Image source={require("@/assets/images/service_pronote.png")} style={{ width: 32, height: 32 }} />,
             onPress: () => {
-                handleStepChange(2, "Comment souhaites-tu te connecter ?");
+                handleStepChange(2, "Comment souhaites-tu te connecter ?", 600, 0.62, "select-method");
                 setBackgroundColor("#E37900");
                 setSelectedService(Services.PRONOTE)
             },
@@ -163,7 +172,7 @@ export default function WelcomeScreen() {
                 </Icon>
             ),
             onPress: () => {
-                handleStepChange(1, "Sélectionne ton service universitaire");
+                handleStepChange(1, "Sélectionne ton service universitaire", undefined, undefined, "select-univ-service");
                 setBackgroundColor("#000000");
                 log("University login");
             },
@@ -192,7 +201,19 @@ export default function WelcomeScreen() {
                     animatedBackgroundStyle
                 ]}
             >
-                {step === 1 && (
+                {step === 1 && stepId === "select-univ-service" && (
+                    <LottieView
+                        autoPlay
+                        loop={false}
+                        ref={animation}
+                        style={{
+                            width: width * 0.5,
+                            height: width * 0.5,
+                        }}
+                        source={require('@/assets/lotties/uni-services.json')}
+                    />
+                )}
+                {step === 1 && stepId === "select-school-service" && (
                     <LottieView
                         autoPlay
                         loop={false}
@@ -204,7 +225,7 @@ export default function WelcomeScreen() {
                         source={require('@/assets/lotties/school-services.json')}
                     />
                 )}
-                {step === 2 && (
+                {step === 2 && stepId === "select-method" && (
                     <LottieView
                         autoPlay
                         loop={false}
