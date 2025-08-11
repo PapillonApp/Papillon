@@ -25,13 +25,10 @@ export default function WelcomeScreen() {
     useFocusEffect(
         React.useCallback(() => {
             if (animation.current) {
-                animation.current.reset();
                 animation.current.play();
             }
         }, [])
     );
-
-
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
