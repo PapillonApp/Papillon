@@ -25,6 +25,7 @@ export default function WelcomeScreen() {
     useFocusEffect(
         React.useCallback(() => {
             if (animation.current) {
+                animation.current.reset();
                 animation.current.play();
             }
         }, [])
