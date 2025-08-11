@@ -11,6 +11,7 @@ import Stack from '@/ui/components/Stack';
 
 import * as Papicons from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
+import { log } from '@/utils/logger/logger';
 
 
 const { width } = Dimensions.get('window');
@@ -109,7 +110,7 @@ export default function WelcomeScreen() {
                 />
                 <Button
                     title="Besoin d'aide ?"
-                    onPress={() => router.push('/(onboarding)/help')}
+                    onPress={() => log("Help button pressed")}
                     variant="ghost"
                     size='large'
                 />
