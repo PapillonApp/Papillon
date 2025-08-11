@@ -9,7 +9,7 @@ import Typography from "./Typography";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-type Variant = 'primary' | 'outline' | 'light';
+type Variant = 'primary' | 'outline' | 'light' | 'ghost';
 export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black';
 type Size = 'small' | 'medium' | 'large';
 
@@ -86,6 +86,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
 
     switch (variant) {
       case 'outline':
+      case 'ghost':
         return 'transparent';
       case 'light':
         return colorsList[color as Color] + '30';
@@ -97,6 +98,8 @@ const Button: React.FC<ButtonProps> = React.memo(({
 
   const textColor = useMemo(() => {
     switch (variant) {
+      case 'ghost':
+        return colors.text + "70"
       case 'primary':
         return colorsList.light;
       default:
@@ -115,7 +118,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       paddingHorizontal: 18,
       flexDirection: 'row',
       justifyContent: 'center',
-      gap: 12,
+      gap: 5,
       alignItems: 'center',
     },
     variant === 'outline' && {
@@ -140,7 +143,6 @@ const Button: React.FC<ButtonProps> = React.memo(({
       return React.cloneElement(icon as React.ReactElement, {
         // @ts-expect-error
         color: textColor,
-        size: 22,
         strokeWidth: 2,
       });
     }

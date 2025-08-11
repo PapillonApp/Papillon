@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image, Dimensions } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
 import Button from '@/ui/components/Button';
@@ -27,26 +27,26 @@ export default function WelcomeScreen() {
             <Stack
                 padding={28}
                 backgroundColor='#0060D6'
-                gap={20}
+                gap={60}
                 style={{
                     alignItems: 'center',
                     justifyContent: 'flex-start',
                     paddingTop: insets.top + 60,
                     borderBottomLeftRadius: 50,
                     borderBottomRightRadius: 50,
-                    flex: 1,
+                    paddingBottom: 40,
                     borderCurve: "continuous"
                 }}
             >
                 <LottieView
                     autoPlay
-                    loop={true}
+                    loop={false}
                     ref={animation}
                     style={{
-                        width: 275,
-                        height: 275,
+                        width: 300,
+                        height: 300,
                     }}
-                    source={require('@/assets/lotties/connexion.json')}
+                    source={require('@/assets/lotties/onboarding.json')}
                 />
                 <Stack
                     flex
@@ -65,9 +65,15 @@ export default function WelcomeScreen() {
                     />
                     <Typography
                         variant="h1"
-                        style={{ color: "white" }}
+                        style={{ color: "white", fontSize: 34 }}
                     >
-                        L’unique application pour gérer toute ta vie scolaire et universitaire au même endroit !
+                        L'application pour gérer ta vie scolaire
+                    </Typography>
+                    <Typography
+                        variant="h5"
+                        style={{ color: "#FFFFFF80", lineHeight: 25 }}
+                    >
+                        Connecte tes applications scolaires pour accéder à tes notes, cours, devoirs et bien plus dans l'interface Papillon !
                     </Typography>
                 </Stack>
             </Stack>
@@ -83,17 +89,17 @@ export default function WelcomeScreen() {
                     onPress={() => router.push('/(onboarding)/service')}
                     color='black'
                     size='large'
-                    icon={<Icon papicon color={"#FF0000"}>
-                        <Papicons.Info />
-                    </Icon>}
-
+                    icon={
+                        <Icon papicon size={24} fill={"#FFFFFF"} style={{ backgroundColor: "transparent" }}>
+                            <Papicons.Butterfly />
+                        </Icon>
+                    }
                 />
                 <Button
                     title="Besoin d'aide ?"
                     onPress={() => router.push('/(onboarding)/help')}
-                    variant='outline'
+                    variant="ghost"
                     size='large'
-                    icon={<Papicons.Butterfly color={colors.text} />}
                 />
             </Stack>
         </View>
@@ -103,5 +109,6 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: "space-between"
     },
 });
