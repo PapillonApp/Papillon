@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
                 style={{
                     alignItems: 'center',
                     justifyContent: 'flex-start',
-                    paddingTop: insets.top + 60,
+                    paddingTop: insets.top + 20,
                     borderBottomLeftRadius: 50,
                     borderBottomRightRadius: 50,
                     paddingBottom: 40,
