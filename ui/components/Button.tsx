@@ -17,7 +17,7 @@ type Alignment = 'start' | 'center' | 'end';
 interface ButtonProps extends PressableProps {
   variant?: Variant;
   icon?: React.ReactNode;
-  color?: Color;
+  color?: Color | string;
   size?: Size;
   title?: string;
   inline?: boolean;
