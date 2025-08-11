@@ -22,7 +22,7 @@ export default function OnboardingLayout() {
     return (
         <Stack>
             <Stack.Screen name="welcome" options={newScreenOptions} />
-            <Stack.Screen name="serviceSelection" options={{ headerTitle: "", headerTransparent: true, headerTintColor: "#FFFFFF", headerBackButtonDisplayMode: "minimal" }} />
+            <Stack.Screen name="serviceSelection" options={{ headerTitle: "", headerTransparent: true, headerTintColor: "#FFFFFF", headerBackButtonDisplayMode: "minimal", headerBackButtonMenuEnabled: false }} />
         </Stack>
     );
 }
