@@ -31,8 +31,8 @@ export default function WelcomeScreen() {
             onPress: () => {
                 log("Pronote login");
             },
-            variant: 'outline' as const,
-            color: "primary",
+            variant: 'service' as const,
+            color: 'light' as const,
         },
         {
             name: "ed",
@@ -42,8 +42,8 @@ export default function WelcomeScreen() {
             onPress: () => {
                 log("EcoleDirecte login");
             },
-            variant: 'outline' as const,
-            color: "primary",
+            variant: 'service' as const,
+            color: 'light' as const,
         },
         {
             name: "skolengo",
@@ -53,8 +53,8 @@ export default function WelcomeScreen() {
             onPress: () => {
                 log("Skolengo login");
             },
-            variant: 'outline' as const,
-            color: "primary",
+            variant: 'service' as const,
+            color: 'light' as const,
         },
         {
             name: "university",
@@ -69,7 +69,7 @@ export default function WelcomeScreen() {
                 log("University login");
             },
             variant: 'primary' as const,
-            color: theme.dark ? colors.border : "black",
+            style: { backgroundColor: theme.dark ? colors.border : "black" },
         },
     ];
 
@@ -137,7 +137,7 @@ export default function WelcomeScreen() {
                                 <Stack
                                     direction="horizontal"
                                     gap={8}
-                                    style={{ alignItems: 'center', marginVertical: 16, marginHorizontal: 40 }}
+                                    style={{ alignItems: 'center', marginVertical: 10, marginHorizontal: 70 }}
                                 >
                                     <View style={{ flex: 1, height: 2, backgroundColor: colors.text + "45" }} />
                                     <Typography variant="body2" style={{ color: colors.text + "70" }}>
@@ -155,6 +155,7 @@ export default function WelcomeScreen() {
                                 icon={service.image}
                                 color={service.color}
                                 style={{
+                                    ...service.style,
                                     paddingLeft: 15,
                                     gap: 10,
                                 }}
