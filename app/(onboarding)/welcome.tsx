@@ -36,7 +36,7 @@ export default function WelcomeScreen() {
             <Stack
                 padding={28}
                 backgroundColor='#0060D6'
-                gap={60}
+                gap={40}
                 style={{
                     flex: 1,
                     alignItems: 'center',
@@ -53,8 +53,8 @@ export default function WelcomeScreen() {
                     loop={false}
                     ref={animation}
                     style={{
-                        width: 280,
-                        height: 280,
+                        width: 250,
+                        height: 250,
                     }}
                     source={require('@/assets/lotties/onboarding.json')}
                 />

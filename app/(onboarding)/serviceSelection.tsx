@@ -13,6 +13,7 @@ import * as Papicons from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import { log } from '@/utils/logger/logger';
 import AnimatedNumber from '@/ui/components/AnimatedNumber';
+import { Services } from '@/stores/account/types';
 
 
 const { width } = Dimensions.get('window');
@@ -23,6 +24,7 @@ export default function WelcomeScreen() {
     const insets = useSafeAreaInsets();
     const animation = React.useRef<LottieView>(null);
     const [step, setStep] = useState<number>(1);
+    const [selectedService, setSelectedService] = useState<Services>()
     const [prevTextValue, setPrevText] = useState<string>("Sélectionne ton service scolaire");
     const [nextTextValue, setNextText] = useState<string>("Comment souhaites-tu te connecter ?");
     const [backgroundColor, setBackgroundColor] = useState<string>("#D51A67");
@@ -32,10 +34,10 @@ export default function WelcomeScreen() {
     const nextText = useSharedValue(0);
 
     React.useEffect(() => {
-        animatedBackgroundColor.value = withTiming(backgroundColor, { duration: 500 });
+        animatedBackgroundColor.value = withTiming(backgroundColor, { duration: 200 });
     }, [backgroundColor]);
 
-    function handleStepChange(newStep: number, newText: string, duration = 300) {
+    function handleStepChange(newStep: number, newText: string, duration = 200) {
         if (newText !== prevTextValue) {
             setStep(newStep)
             prevText.value = withTiming(0, { duration: duration });
@@ -69,6 +71,49 @@ export default function WelcomeScreen() {
         };
     });
 
+    const loginMethods = [
+        {
+            id: "map",
+            availableFor: [Services.PRONOTE],
+            description: "Utiliser ma position",
+            icon: (
+                <Icon papicon size={24} fill={"#5B5B5B"} style={{ backgroundColor: "transparent" }}>
+                    <Papicons.MapPin />
+                </Icon>
+            )
+        },
+        {
+            id: "search",
+            availableFor: [Services.PRONOTE],
+            description: "Rechercher une ville",
+            icon: (
+                <Icon papicon size={24} fill={"#5B5B5B"} style={{ backgroundColor: "transparent" }}>
+                    <Papicons.Search />
+                </Icon>
+            )
+        },
+        {
+            id: "qrcode",
+            availableFor: [Services.PRONOTE],
+            description: "J'ai un QR-Code",
+            icon: (
+                <Icon papicon size={24} fill={"#5B5B5B"} style={{ backgroundColor: "transparent" }}>
+                    <Papicons.QrCode />
+                </Icon>
+            )
+        },
+        {
+            id: "url",
+            availableFor: [Services.PRONOTE],
+            description: "J'ai une URL de connexion",
+            icon: (
+                <Icon papicon size={24} fill={"#5B5B5B"} style={{ backgroundColor: "transparent" }}>
+                    <Papicons.Link />
+                </Icon>
+            )
+        }
+    ]
+
     const services = [
         {
             name: "pronote",
@@ -78,7 +123,7 @@ export default function WelcomeScreen() {
             onPress: () => {
                 handleStepChange(2, "Comment souhaites-tu te connecter ?");
                 setBackgroundColor("#E37900");
-                log("Pronote login");
+                setSelectedService(Services.PRONOTE)
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -89,8 +134,9 @@ export default function WelcomeScreen() {
             type: "main",
             image: <Image source={require("@/assets/images/service_ed.png")} style={{ width: 32, height: 32 }} />,
             onPress: () => {
+                handleStepChange(2, "Comment souhaites-tu te connecter ?");
                 setBackgroundColor("#E37900");
-                log("EcoleDirecte login");
+                setSelectedService(Services.ECOLEDIRECTE)
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -133,7 +179,7 @@ export default function WelcomeScreen() {
                 style={[
                     {
                         padding: 28,
-                        gap: 50,
+                        gap: 30,
                         alignItems: 'center',
                         justifyContent: 'flex-end',
                         paddingTop: insets.top + 40,
@@ -141,7 +187,7 @@ export default function WelcomeScreen() {
                         borderBottomRightRadius: 50,
                         paddingBottom: 30,
                         borderCurve: "continuous",
-                        flex: 1
+                        zIndex: 2
                     },
                     animatedBackgroundStyle
                 ]}
@@ -152,8 +198,8 @@ export default function WelcomeScreen() {
                         loop={false}
                         ref={animation}
                         style={{
-                            width: 200,
-                            height: 200,
+                            width: width * 0.5,
+                            height: width * 0.5,
                         }}
                         source={require('@/assets/lotties/school-services.json')}
                     />
@@ -217,15 +263,30 @@ export default function WelcomeScreen() {
                 </Stack>
             </Animated.View>
             <ScrollView
-                style={{ flex: 1 }}
+                style={{ overflow: "visible", zIndex: 0, marginBottom: 30 }}
                 contentContainerStyle={{
                     padding: 20,
                     gap: 10,
-                    flexGrow: 1
                 }}
                 showsVerticalScrollIndicator={false}
             >
-                {services.map((service) => {
+                {step === 2 && selectedService !== undefined && loginMethods.filter(method => method.availableFor.includes(selectedService)).map((method) => (
+                    <Button
+                        title={method.description}
+                        onPress={() => { console.log("test") }}
+                        variant="service"
+                        size="large"
+                        alignment="start"
+                        key={method.id}
+                        icon={method.icon}
+                        color="primary"
+                        style={{
+                            paddingLeft: 15,
+                            gap: 10,
+                        }}
+                    />
+                ))}
+                {step === 1 && services.map((service) => {
                     const index = services.findIndex(s => s.name === service.name);
                     const isFirstOther = service.type === "other" && services.findIndex(s => s.type === "other") === index;
                     return (
@@ -262,12 +323,12 @@ export default function WelcomeScreen() {
                     );
                 })}
             </ScrollView>
-        </View>
+        </View >
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+
     },
 });
