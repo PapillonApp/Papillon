@@ -13,18 +13,16 @@ export default function OnboardingLayout() {
 
     const newScreenOptions = React.useMemo(() => ({
         ...screenOptions,
-        headerShown: true,
+        headerShown: false,
         headerBackVisible: true,
         headerTitle: '',
         gestureEnabled: false,
     }), []);
 
     return (
-        <Stack
-            screenOptions={newScreenOptions}
-        >
-            <Stack.Screen name="welcome" />
-            <Stack.Screen name="serviceSelection" />
+        <Stack>
+            <Stack.Screen name="welcome" options={newScreenOptions} />
+            <Stack.Screen name="serviceSelection" options={{ headerTitle: "", headerTransparent: true, headerTintColor: "#FFFFFF", headerBackButtonDisplayMode: "minimal" }} />
         </Stack>
     );
 }
