@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image, Dimensions } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -21,6 +21,16 @@ export default function WelcomeScreen() {
     const insets = useSafeAreaInsets();
     const animation = React.useRef<LottieView>(null);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            if (animation.current) {
+                animation.current.reset();
+                animation.current.play();
+            }
+        }, [])
+    );
+
+
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -39,12 +49,12 @@ export default function WelcomeScreen() {
                 }}
             >
                 <LottieView
-                    autoPlay
+                    autoPlay={false}
                     loop={false}
                     ref={animation}
                     style={{
-                        width: 300,
-                        height: 300,
+                        width: 280,
+                        height: 280,
                     }}
                     source={require('@/assets/lotties/onboarding.json')}
                 />
@@ -86,7 +96,7 @@ export default function WelcomeScreen() {
             >
                 <Button
                     title="Commencer"
-                    onPress={() => router.push('/(onboarding)/service')}
+                    onPress={() => router.push('/(onboarding)/serviceSelection')}
                     color='black'
                     size='large'
                     icon={
