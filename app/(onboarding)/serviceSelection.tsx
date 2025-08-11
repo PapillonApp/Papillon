@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import Stack from '@/ui/components/Stack';
 
 import * as Papicons from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
+import { log } from '@/utils/logger/logger';
 
 
 const { width } = Dimensions.get('window');
@@ -20,6 +21,57 @@ export default function WelcomeScreen() {
     const { colors } = theme;
     const insets = useSafeAreaInsets();
     const animation = React.useRef<LottieView>(null);
+
+    const services = [
+        {
+            name: "pronote",
+            title: "PRONOTE",
+            type: "main",
+            image: <Image source={require("@/assets/images/service_pronote.png")} style={{ width: 32, height: 32 }} />,
+            onPress: () => {
+                log("Pronote login");
+            },
+            variant: 'outline' as const,
+            color: "primary",
+        },
+        {
+            name: "ed",
+            title: "ÉcoleDirecte",
+            type: "main",
+            image: <Image source={require("@/assets/images/service_ed.png")} style={{ width: 32, height: 32 }} />,
+            onPress: () => {
+                log("EcoleDirecte login");
+            },
+            variant: 'outline' as const,
+            color: "primary",
+        },
+        {
+            name: "skolengo",
+            title: "Skolengo",
+            type: "main",
+            image: <Image source={require("@/assets/images/service_skolengo.png")} style={{ width: 32, height: 32 }} />,
+            onPress: () => {
+                log("Skolengo login");
+            },
+            variant: 'outline' as const,
+            color: "primary",
+        },
+        {
+            name: "university",
+            title: "Service universitaire",
+            type: "other",
+            image: (
+                <Icon papicon size={24} fill={"white"} style={{ backgroundColor: "transparent" }}>
+                    <Papicons.University />
+                </Icon>
+            ),
+            onPress: () => {
+                log("University login");
+            },
+            variant: 'primary' as const,
+            color: theme.dark ? colors.border : "black",
+        },
+    ];
 
 
     return (
@@ -43,8 +95,8 @@ export default function WelcomeScreen() {
                     loop={false}
                     ref={animation}
                     style={{
-                        width: 250,
-                        height: 250,
+                        width: 200,
+                        height: 200,
                     }}
                     source={require('@/assets/lotties/school-services.json')}
                 />
@@ -69,31 +121,48 @@ export default function WelcomeScreen() {
                     </Typography>
                 </Stack>
             </Stack>
-            <Stack
-                padding={20}
-                style={{
-                    marginBottom: insets.bottom + 20,
+            <ScrollView
+                contentContainerStyle={{
+                    paddingBottom: insets.bottom + 20,
+                    padding: 20,
+                    gap: 10,
                 }}
-                gap={10}
+                showsVerticalScrollIndicator={false}
             >
-                <Button
-                    title="Commencer"
-                    onPress={() => router.push('/(onboarding)/service')}
-                    color='black'
-                    size='large'
-                    icon={
-                        <Icon papicon size={24} fill={"#FFFFFF"} style={{ backgroundColor: "transparent" }}>
-                            <Papicons.Butterfly />
-                        </Icon>
-                    }
-                />
-                <Button
-                    title="Besoin d'aide ?"
-                    onPress={() => router.push('/(onboarding)/help')}
-                    variant="ghost"
-                    size='large'
-                />
-            </Stack>
+                {services.map((service, index) => {
+                    const isFirstOther = service.type === "other" && services.findIndex(s => s.type === "other") === index;
+                    return (
+                        <React.Fragment key={index}>
+                            {isFirstOther && (
+                                <Stack
+                                    direction="horizontal"
+                                    gap={8}
+                                    style={{ alignItems: 'center', marginVertical: 16, marginHorizontal: 40 }}
+                                >
+                                    <View style={{ flex: 1, height: 2, backgroundColor: colors.text + "45" }} />
+                                    <Typography variant="body2" style={{ color: colors.text + "70" }}>
+                                        ou
+                                    </Typography>
+                                    <View style={{ flex: 1, height: 2, backgroundColor: colors.text + "45" }} />
+                                </Stack>
+                            )}
+                            <Button
+                                title={service.title}
+                                onPress={() => { service.onPress?.() }}
+                                variant={service.variant}
+                                size='large'
+                                alignment='start'
+                                icon={service.image}
+                                color={service.color}
+                                style={{
+                                    paddingLeft: 15,
+                                    gap: 10,
+                                }}
+                            />
+                        </React.Fragment>
+                    );
+                })}
+            </ScrollView>
         </View>
     );
 }
