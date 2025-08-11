@@ -16,12 +16,12 @@ export default function OnboardingLayout() {
         headerShown: true,
         headerBackVisible: true,
         headerTitle: '',
+        gestureEnabled: false,
     }), []);
 
     return (
         <Stack
             screenOptions={newScreenOptions}
-
         >
             <Stack.Screen name="welcome" />
             <Stack.Screen name="serviceSelection" />
