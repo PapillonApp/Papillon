@@ -12,6 +12,7 @@ const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 type Variant = 'primary' | 'outline' | 'light' | 'ghost';
 export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black';
 type Size = 'small' | 'medium' | 'large';
+type Alignment = 'start' | 'center' | 'end';
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
@@ -23,6 +24,7 @@ interface ButtonProps extends PressableProps {
   loading?: boolean;
   onPress?: () => void;
   disabled?: boolean;
+  alignment?: Alignment;
 };
 
 const defaultProps = {
@@ -35,6 +37,7 @@ const defaultProps = {
   loading: false,
   onPress: () => { },
   disabled: false,
+  alignment: 'center' as Alignment,
 };
 
 const Button: React.FC<ButtonProps> = React.memo(({
@@ -47,6 +50,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   loading = defaultProps.loading,
   onPress = defaultProps.onPress,
   disabled = defaultProps.disabled,
+  alignment = defaultProps.alignment,
   style,
   ...rest
 }) => {
@@ -107,6 +111,18 @@ const Button: React.FC<ButtonProps> = React.memo(({
     }
   }, [variant, colorsList, color]);
 
+  const justifyContent = useMemo(() => {
+    switch (alignment) {
+      case 'start':
+        return 'flex-start';
+      case 'end':
+        return 'flex-end';
+      case 'center':
+      default:
+        return 'center';
+    }
+  }, [alignment]);
+
   const buttonStyle = useMemo(() => [
     {
       width: inline ? 'auto' : '100%',
@@ -117,7 +133,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       height: 50,
       paddingHorizontal: 18,
       flexDirection: 'row',
-      justifyContent: 'center',
+      justifyContent: justifyContent,
       gap: 5,
       alignItems: 'center',
     },
@@ -136,7 +152,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
     inline && { width: undefined },
     style,
     animatedStyle,
-  ], [inline, colors.primary, style, animatedStyle]);
+  ], [inline, backgroundColor, justifyContent, style, animatedStyle, variant, colorsList, color, size]);
 
   const buttonIcon = useMemo(() => {
     if (icon) {
