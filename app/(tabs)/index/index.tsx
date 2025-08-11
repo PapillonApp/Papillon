@@ -11,6 +11,9 @@ import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import List from "@/ui/components/List";
+import Item from "@/ui/components/Item";
+import Typography from "@/ui/components/Typography";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -125,40 +128,45 @@ export default function TabOneScreen() {
       contentContainerStyle={styles.containerContent}
       style={styles.container}
     >
-      <Stack gap={16} hAlign="center">
-        <UnderConstructionNotice />
+      <UnderConstructionNotice />
 
-        <Button
-          title="Click Me"
+      <List>
+        <Item
           onPress={() => router.navigate("/demo")}
-        />
-
-        <Button
-          title="Papillon DevMode"
+        >
+          <Typography variant="title" color="text">
+            Demo components
+          </Typography>
+        </Item>
+        <Item
           onPress={() => router.navigate("/devmode")}
-        />
-
-        <Button
-          title="Login to Papillon Demo Account"
-          inline
-          loading={loading}
-          variant="outline"
+        >
+          <Typography variant="title" color="text">
+            Papillon DevMode
+          </Typography>
+        </Item>
+        <Item
           onPress={() => loginDemoAccount()}
-        />
-        <Button
-          title="Test"
-          inline
-          loading={loading}
-          variant="outline"
+        >
+          <Typography variant="title" color="text">
+            Login to Papillon Demo Account
+          </Typography>
+        </Item>
+        <Item
           onPress={() => InitManager()}
-        />
-        <Button
-          title="Onboarding"
-          inline
-          variant="outline"
+        >
+          <Typography variant="title" color="text">
+            Init Manager
+          </Typography>
+        </Item>
+        <Item
           onPress={() => router.navigate("/(onboarding)/welcome")}
-        />
-      </Stack>
+        >
+          <Typography variant="title" color="text">
+            Onboarding
+          </Typography>
+        </Item>
+      </List>
     </ScrollView>
   );
 }
