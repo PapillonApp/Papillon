@@ -3,9 +3,9 @@ const PapillonWeightedAvg = (grades) => {
   let Total = 0;
 
   grades.forEach((grade) => {
-    if (grade.score !== null && grade.outOf !== null) {
-      Addition += (grade.score / grade.outOf) * 20 * (grade.coef || 1); // Use coef or default to 1 if not provided
-      Total += grade.coef || 1; // Use coef or default to 1 if not provided
+    if (grade.studentScore?.value !== null && grade.outOf?.value !== null) {
+      Addition += (grade.studentScore.value / grade.outOf.value) * 20 * (grade.coef || 1); // Use coef or default to 1 if not provided
+      Total += grade.coefficient || 1; // Use coef or default to 1 if not provided
     }
   });
 

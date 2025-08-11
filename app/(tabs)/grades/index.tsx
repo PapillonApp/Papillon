@@ -147,6 +147,10 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     const fetchPeriods = async () => {
+      if (currentPeriod) {
+        return;
+      }
+
       const now = new Date().getTime()
       const result = await manager.getGradesPeriods()
       setPeriods(result);
@@ -166,9 +170,9 @@ export default function TabOneScreen() {
     };
 
     fetchPeriods();
-  }, []);
+  }, [manager]);
 
-  const fetchGradesForPeriod = async (period: Period) => {
+  const fetchGradesForPeriod = async (period: Period | undefined) => {
     if (period) {
       const grades = await manager.getGradesForPeriod(period, period.createdByAccount);
       setSubjects(grades.subjects);
