@@ -38,8 +38,9 @@ export default function WelcomeScreen() {
                 backgroundColor='#0060D6'
                 gap={60}
                 style={{
+                    flex: 1,
                     alignItems: 'center',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'flex-end',
                     paddingTop: insets.top + 20,
                     borderBottomLeftRadius: 50,
                     borderBottomRightRadius: 50,
