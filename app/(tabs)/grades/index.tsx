@@ -594,12 +594,14 @@ export default function TabOneScreen() {
         ListEmptyComponent={<EmptyListComponent />}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            <GradesGraph />
+            {graphAxis.length > 0 && (
+              <GradesGraph />
+            )}
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated>
                 <AnimatedNumber variant="h1" color="primary">
-                  {(shownAverage ?? 0).toFixed(2)}
+                  {transformedData.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
                 </AnimatedNumber>
               </Dynamic>
               <Dynamic animated>
@@ -626,7 +628,7 @@ export default function TabOneScreen() {
             </Dynamic>
           </View>
         )}
-        ListHeaderComponent={<LatestGrades />}
+        ListHeaderComponent={transformedData.length > 0 ? <LatestGrades /> : null}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -704,16 +706,20 @@ export default function TabOneScreen() {
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
-                <Typography inline variant="navigation">{getPeriodName(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}</Typography>
+                <Typography inline variant="navigation">{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
-              <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
-                  {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
-                </NativeHeaderHighlight>
-              </Dynamic>
-              <Dynamic animated>
-                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
-              </Dynamic>
+              {currentPeriod?.name &&
+                <Dynamic animated style={{ marginTop: -3 }}>
+                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                    {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
+                  </NativeHeaderHighlight>
+                </Dynamic>
+              }
+              {periods.length > 0 && (
+                <Dynamic animated>
+                  <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+                </Dynamic>
+              )}
             </Dynamic>
             {fullyScrolled && (
               <Dynamic animated>
