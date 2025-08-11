@@ -9,15 +9,15 @@ import Typography from "./Typography";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-type Variant = 'primary' | 'outline' | 'light' | 'ghost';
-export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black';
+type Variant = 'primary' | 'outline' | 'light' | 'ghost' | 'service';
+export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black' | 'card';
 type Size = 'small' | 'medium' | 'large';
 type Alignment = 'start' | 'center' | 'end';
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
   icon?: React.ReactNode;
-  color?: Color | string;
+  color?: Color;
   size?: Size;
   title?: string;
   inline?: boolean;
@@ -59,6 +59,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   const colorsList: Record<Color, string> = React.useMemo(() => ({
     primary: colors.primary,
     text: colors.text,
+    card: colors.card,
     light: '#FFFFFF',
     danger: '#DC1400',
     cherry: '#D60046',
@@ -106,6 +107,8 @@ const Button: React.FC<ButtonProps> = React.memo(({
         return colors.text + "70"
       case 'primary':
         return colorsList.light;
+      case 'service':
+        return colorsList.text;
       default:
         return colorsList[color as Color];
     }
@@ -140,6 +143,12 @@ const Button: React.FC<ButtonProps> = React.memo(({
     variant === 'outline' && {
       borderWidth: 1,
       borderColor: colorsList[color as Color],
+      backgroundColor: 'transparent',
+    },
+    variant === 'service' && {
+      borderWidth: 1,
+      borderColor: colorsList.text + "20",
+      backgroundColor: colorsList.card,
     },
     size === 'small' && {
       height: 40,
