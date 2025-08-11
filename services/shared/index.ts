@@ -31,7 +31,11 @@ import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalan
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
 
-  constructor(private readonly account: Account) {}
+  constructor(readonly account: Account) {}
+
+	getAccount(): Account {
+		return this.account
+	}
 
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
