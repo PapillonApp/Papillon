@@ -97,10 +97,12 @@ export default function WelcomeScreen() {
                 <Button
                     title="Commencer"
                     onPress={() => router.push('/(onboarding)/serviceSelection')}
-                    color='black'
+                    style={{
+                        backgroundColor: theme.dark ? colors.border : "black",
+                    }}
                     size='large'
                     icon={
-                        <Icon papicon size={24} fill={"#FFFFFF"} style={{ backgroundColor: "transparent" }}>
+                        <Icon papicon size={24} fill={"white"} style={{ backgroundColor: "transparent" }}>
                             <Papicons.Butterfly />
                         </Icon>
                     }
