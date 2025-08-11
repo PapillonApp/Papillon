@@ -147,7 +147,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
     },
     variant === 'service' && {
       borderWidth: 1,
-      borderColor: colorsList.text + "20",
+      borderColor: colorsList.text + "30",
       backgroundColor: colorsList.card,
     },
     size === 'small' && {
