@@ -52,7 +52,13 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const screenHeight = Dimensions.get('window').height;
   const headerInset = useHeaderHeight() - 10;
   const finalHeight = height + headerInset;
-  const tabBarHeight = useBottomTabBarHeight();
+  let tabBarHeight = 0;
+  try {
+    tabBarHeight = useBottomTabBarHeight?.() ?? 0;
+    if (typeof tabBarHeight !== 'number' || isNaN(tabBarHeight)) tabBarHeight = 0;
+  } catch {
+    tabBarHeight = 0;
+  }
 
   // Memoize shared values for scroll position and threshold
   const scrollY = React.useRef(useSharedValue(0)).current;
