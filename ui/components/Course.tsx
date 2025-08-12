@@ -85,17 +85,14 @@ const Course = React.memo(({
         </Stack>
       )}
       <View style={[
-        status?.canceled || variant === "separator" ? {
-          borderWidth: 1,
-          borderColor: "rgba(0, 0, 0, 0.12)",
-          borderStyle: "solid",
+        status?.canceled ? {
           backgroundColor: adjust("#DC1400", theme.dark ? -0.8 : 0.8)
         } : {},
         magicInfo || variant === "separator" ? {
           borderWidth: 1,
           borderColor: "rgba(0, 0, 0, 0.12)",
           borderStyle: "solid",
-          backgroundColor: (color ?? "#FFFFF") + 10,
+          backgroundColor: (color ?? "#FFFFF") + (theme.dark ? 60 : 10),
         } : {},
         {
           flex: 1, display: "flex",
@@ -150,32 +147,30 @@ const Course = React.memo(({
               }
             ]}
           >
-            <Stack direction="horizontal" hAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
-              <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
-                {variant === "separator" && Leading && (
-                  <Icon>
-                    <Leading stroke={"#606060"} />
-                  </Icon>
-                )}
-                <Typography
-                  color="light"
-                  variant="h5"
-                  style={[
-                    styles.label,
-                    (status?.canceled || variant === "separator") ? styles.canceled : {},
-                  ]}
-                >
-                  {truncatenateString(name, 30, "...")}
-                </Typography>
-              </View>
+            <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
               {variant === "separator" && Leading && (
-                <Typography color="light" variant="h5" style={[{ color: "#60606080" }, styles.label]}>
+                <Icon>
+                  <Leading stroke={"#606060"} />
+                </Icon>
+              )}
+              <Typography
+                color="light"
+                variant="h5"
+                style={[
+                  styles.label,
+                  (status?.canceled || variant === "separator") ? styles.canceled : {},
+                ]}
+              >
+                {truncatenateString(name, 30, "...")}
+              </Typography>
+              {variant === "separator" && Leading && (
+                <Typography color="light" variant="caption" style={[{ color: colors.text + (theme.dark ? 40 : 80) }, styles.label]}>
                   {formatDuration(duration)}
                 </Typography>
               )}
             </Stack>
             {variant !== "separator" && (
-              <Stack direction="horizontal" hAlign="center" gap={12}>
+              <Stack direction="horizontal" hAlign="center" gap={10}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.MapPin />
@@ -194,7 +189,7 @@ const Course = React.memo(({
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.User />
                   </Icon>
-                  <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "50%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                  <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "45%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
                     {truncatenateString(teacher || t("Form_Organizer"), 20, "...")}
                   </Typography>
                 </View>
@@ -237,9 +232,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch"
   },
   label: {
-    fontSize: 18,
-    lineHeight: 22,
-    color: "#FFFFFF",
     fontFamily: "bold",
     flexShrink: 1
   },
@@ -266,7 +258,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   teacher: {
-    fontSize: 16,
+    fontSize: 15,
     flexShrink: 1,
     maxWidth: "80%",
     fontFamily: "semibold",
