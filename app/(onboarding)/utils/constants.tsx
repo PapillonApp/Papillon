@@ -1,6 +1,8 @@
 import { Services } from '@/stores/account/types';
+import { useAlert } from '@/ui/components/AlertProvider';
 import Icon from '@/ui/components/Icon';
 import { log } from '@/utils/logger/logger';
+import { getCurrentPosition } from '@/utils/native/position';
 import * as Papicons from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { Image } from "react-native"
@@ -68,7 +70,62 @@ export function getSupportedServices(handleStepChange: (newStep: number, newText
     ]
 }
 
+export function getSupportedUniversities(handleStepChange: (newStep: number, newText: string, duration?: number, heightMultiplierRaw?: number, newStepId?: string) => void, setBackgroundColor: (color: string) => void, setSelectedService: (service: Services) => void) {
+    return [
+        {
+            name: "univ-lorraine",
+            title: "Université de Lorraine",
+            hasLimitedSupport: false,
+            image: <Image source={require("@/assets/images/univ_lorraine.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ-nimes",
+            title: "Université de Nîmes",
+            hasLimitedSupport: false,
+            image: <Image source={require("@/assets/images/univ_nimes.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ-uphf",
+            title: "Université Polytechnique Hauts-de-France",
+            hasLimitedSupport: false,
+            image: <Image source={require("@/assets/images/univ_uphf.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "iut-lannion",
+            title: "IUT de Lannion",
+            hasLimitedSupport: false,
+            image: <Image source={require("@/assets/images/univ_lannion.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ-rennes-1",
+            title: "Université de Rennes 1",
+            hasLimitedSupport: true,
+            image: <Image source={require("@/assets/images/univ_rennes1.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ-rennes-2",
+            title: "Université de Rennes 2",
+            hasLimitedSupport: true,
+            image: <Image source={require("@/assets/images/univ_rennes2.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ-limoges",
+            title: "Université de Limoges",
+            hasLimitedSupport: true,
+            image: <Image source={require("@/assets/images/univ_limoges.png")} style={{ width: 32, height: 32 }} />
+        },
+        {
+            name: "univ_paris_sorbonne",
+            title: "Université de Sorbonne Paris Nord",
+            hasLimitedSupport: true,
+            image: <Image source={require("@/assets/images/univ_paris_sorbonne.png")} style={{ width: 32, height: 32 }} />
+        }
+    ]
+}
+
 export function getLoginMethods(handleStepChange: (newStep: number, newText: string, duration?: number, heightMultiplierRaw?: number, newStepId?: string) => void, setBackgroundColor: (color: string) => void) {
+    const alert = useAlert()
+
     return [
         {
             id: "map",
@@ -79,8 +136,20 @@ export function getLoginMethods(handleStepChange: (newStep: number, newText: str
                     <Papicons.MapPin />
                 </Icon>
             ),
-            onPress: () => {
-                console.log("map pressed")
+            onPress: async () => {
+                const position = await getCurrentPosition()
+                if (position === null) {
+                    alert.showAlert({
+                        title: "Une erreur est survenue",
+                        description: "Nous n'avons pas réussi à obtenir votre position, vérifie que tu as bien autorisé Papillon à y accéder !",
+                        color: "#D60046",
+                        icon: "TriangleAlert",
+                        withoutNavbar: true
+                    })
+                } else {
+                    handleStepChange(2, "Choisis ton établissement dans la liste", undefined, 0.45, "location-select")
+                    setBackgroundColor("#E50052")
+                }
             }
         },
         {
