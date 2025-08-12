@@ -1,6 +1,6 @@
 import { LegendList, LegendListProps } from '@legendapp/list';
 import React from 'react';
-import { FlatList, FlatListProps, View, StyleProp, ViewStyle } from 'react-native';
+import { FlatList, FlatListProps, View, StyleProp, ViewStyle, PressableProps } from 'react-native';
 import Item, { Leading, Trailing } from './Item';
 import Typography from './Typography';
 import Icon from './Icon';
@@ -23,7 +23,7 @@ interface SectionItem {
   description?: string;
   onPress?: () => void;
   hideTitle?: boolean;
-  itemProps?: any;
+  itemProps?: PressableProps;
   ui?: {
     first?: boolean;
     last?: boolean;
