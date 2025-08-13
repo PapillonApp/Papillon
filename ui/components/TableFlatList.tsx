@@ -186,6 +186,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
       contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
       style={[{
         flex: 1, height: "100%", width: "100%",
+        backgroundColor: colors.background,
         paddingTop: runsIOS26() && contentInsetAdjustmentBehavior !== 'automatic' ? headerHeight : 0
       }, style]}
       data={data}
