@@ -128,13 +128,13 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   }, [backgroundColor, statusBarStyle]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
       <DatabaseProvider>
         <ThemeProvider value={theme}>
           <AlertProvider>
-            <Stack initialRouteName='(onboarding)' screenOptions={stackScreenOptions}>
-              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+            <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="(settings)" options={{ headerShown: false }} />
               <Stack.Screen name="page" />
