@@ -20,7 +20,7 @@ const patterns = {
   grades: require('@/assets/images/patterns/grades.png'),
 };
 
-interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
+interface TabFlatListProps extends FlatListProps<any> {
   header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
