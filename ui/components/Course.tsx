@@ -170,7 +170,7 @@ const Course = React.memo(({
               )}
             </Stack>
             {variant !== "separator" && (
-              <Stack direction="horizontal" hAlign="center" gap={10}>
+              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.MapPin />
@@ -196,7 +196,7 @@ const Course = React.memo(({
               </Stack>
             )}
             {status && !status.canceled && variant !== "separator" && (
-              <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 2 : 0 }}>
+              <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 6 : 0 }}>
                 {!!(status.label && status.label !== "") &&
                   <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
                     <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
@@ -232,8 +232,10 @@ const styles = StyleSheet.create({
     alignSelf: "stretch"
   },
   label: {
+    flex: 1,
     fontFamily: "bold",
-    flexShrink: 1
+    flexShrink: 1,
+    marginTop: -5
   },
   canceled: {
     color: "#606060"
