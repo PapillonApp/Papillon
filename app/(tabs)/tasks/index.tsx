@@ -1,23 +1,24 @@
-import React, { useCallback, useMemo, useState, useRef, useEffect } from "react";
-import TabFlatList from "@/ui/components/TabFlatList";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { FlatList, View, Text, Pressable, Platform, useWindowDimensions } from "react-native";
-import { CircularProgress } from "@/ui/components/CircularProgress";
-import Stack from "@/ui/components/Stack";
-import { useTheme } from "@react-navigation/native";
-import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
-import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-import { Animation } from "@/ui/utils/Animation";
-import Task from "@/ui/components/Task";
-import { t } from "i18next";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
+import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+
+import { CircularProgress } from "@/ui/components/CircularProgress";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Stack from "@/ui/components/Stack";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Task from "@/ui/components/Task";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import ModelManager from "@/utils/magic/ModelManager";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
 import { log } from "@/utils/logger/logger";
+import ModelManager from "@/utils/magic/ModelManager";
 
 const mockHomework = [
   {
@@ -239,11 +240,11 @@ export default function TabOneScreen() {
       }
 
       const typeLabels: Record<string, string> = {
-        'evaluation': '📝 Évaluation',
-        'homework': '📚 Devoir',
-        'oral': '🗣️ Oral',
-        'finaltask': '🎯 Projet final',
-        'sheets': '📄 Fiche'
+        'evaluation': 'Évaluation',
+        'homework': 'Devoir',
+        'oral': 'Oral',
+        'finaltask': 'Projet final',
+        'sheets': 'Fiche'
       };
 
       return typeLabels[prediction] || `🔍 ${prediction}`;
@@ -252,38 +253,18 @@ export default function TabOneScreen() {
     const taskTypeText = getTaskTypeText(item.aiPrediction);
 
     return (
-      <View>
-        <Task
-          subject={item.subjectName}
-          emoji={item.subjectEmoji}
-          color={item.color}
-          title={item.title}
-          description={item.content}
-          date={new Date(item.dueDate)}
-          progress={item.progress}
-          index={index}
-          onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
-        />
-        {taskTypeText && (
-          <View style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: 'rgba(0,0,0,0.1)',
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 12,
-          }}>
-            <Text style={{
-              fontSize: 12,
-              fontWeight: '600',
-              color: colors.text,
-            }}>
-              {taskTypeText}
-            </Text>
-          </View>
-        )}
-      </View>
+      <Task
+        subject={item.subjectName}
+        emoji={item.subjectEmoji}
+        color={item.color}
+        title={item.title}
+        description={item.content}
+        date={new Date(item.dueDate)}
+        progress={item.progress}
+        index={index}
+        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+        magic={taskTypeText ?? undefined}
+      />
     );
   }, [onProgressChange, colors.text]);
 
