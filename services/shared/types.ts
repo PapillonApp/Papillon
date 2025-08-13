@@ -41,6 +41,7 @@ export interface SchoolServicePlugin {
   getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
+	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
 	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
 }
 
