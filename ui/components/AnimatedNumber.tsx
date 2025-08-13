@@ -6,10 +6,10 @@ import Reanimated, { LinearTransition, withDelay, withSpring } from 'react-nativ
 interface AnimatedNumberProps extends TypographyProps {
   distance?: number; // Distance to translate the number
   duration?: number; // Duration of the animation
+  disableMoveAnimation?: boolean; // Désactivé la transition linéaire
 }
 
-
-function AnimatedNumber({ children, distance = 16, duration = 400, ...rest }: AnimatedNumberProps) {
+function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAnimation = false, ...rest }: AnimatedNumberProps) {
   try {
     // Convert children to string and split into digits
     const value = useMemo(() => (children?.toString ? children.toString().trim() : ''), [children]);
@@ -73,7 +73,7 @@ function AnimatedNumber({ children, distance = 16, duration = 400, ...rest }: An
 
     return (
       <Reanimated.View
-        layout={LinearTransition.springify()}
+        layout={disableMoveAnimation ? undefined : LinearTransition.springify()}
         style={{
           flexDirection: 'row',
           alignItems: 'center',

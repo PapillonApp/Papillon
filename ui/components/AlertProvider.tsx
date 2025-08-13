@@ -38,6 +38,7 @@ type Alert = {
   technical?: string;
   icon?: string;
   color?: string;
+  withoutNavbar?: boolean;
 };
 
 type AlertContextType = {
@@ -84,13 +85,13 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   // Memoized container style to prevent style recalculations
   const containerStyle = useMemo(() => ({
     position: "absolute" as const,
-    bottom: 82,
+    bottom: alerts.some(alert => alert.withoutNavbar) ? 22 : 82,
     left: 0,
     right: 0,
     padding: 14,
     zIndex: 1000,
     gap: 10,
-  }), []);
+  }), [alerts]);
 
   // Memoized alert removal function
   const removeAlert = useCallback((alertId: string) => {
