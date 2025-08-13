@@ -30,6 +30,7 @@
   "Evaluated_Course": "Évaluation",
   "Edited_Course": "Cours modifié",
   "Canceled_Course": "Cours annulé",
+  "No_Course_Room": "Salle inconnue",
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
@@ -69,12 +70,12 @@
 
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
-  "Grades_Avg_Subject_Title": "Moyenne des matières",
-  "Grades_Avg_Subject_Short": "Moy. matières",
+  "Grades_Avg_Subject_Title": "Moyenne des notes",
+  "Grades_Avg_Subject_Short": "Moy. notes",
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
 
-  "Grades_Method_AllGrades": "Toutes les notes",
+  "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
   "Grades_Sorting_Alphabetical": "Alphabétique",
@@ -101,6 +102,7 @@
 
   "Profile_Cards_Title": "Mes cartes",
 
+  "Settings_Account_Title": "Mon compte",
   "Settings_Account_Description": "Mon compte",
   "Settings_Services_Title": "Comptes liés",
   "Settings_Notifications_Title": "Notifications",

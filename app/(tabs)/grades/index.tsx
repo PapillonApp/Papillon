@@ -5,7 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
 import React, { act, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Platform, Text, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Platform, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import { LineGraph } from 'react-native-graph';
 import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
 
@@ -139,11 +139,18 @@ export default function TabOneScreen() {
   const [periods, setPeriods] = useState<Period[]>([]);
   const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
   const [currentPeriod, setCurrentPeriod] = useState<Period>();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
 
   const manager = getManager();
 
   useEffect(() => {
     const fetchPeriods = async () => {
+      if (currentPeriod) {
+        return;
+      }
+
       const now = new Date().getTime()
       const result = await manager.getGradesPeriods()
       setPeriods(result);
@@ -163,32 +170,46 @@ export default function TabOneScreen() {
     };
 
     fetchPeriods();
-  }, []);
+  }, [manager]);
+
+  const fetchGradesForPeriod = async (period: Period | undefined) => {
+    if (period) {
+      const grades = await manager.getGradesForPeriod(period, period.createdByAccount);
+      setSubjects(grades.subjects);
+      if (grades.studentOverall.value) {
+        setServiceAverage(grades.studentOverall.value)
+      }
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 200);
+      });
+    }
+  };
 
   // Fetch grades when current period changes
   useEffect(() => {
-    const fetchGradesForPeriod = async () => {
-      if (currentPeriod) {
-        const grades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount);
-        setSubjects(grades.subjects);
-        if (grades.studentOverall.value) {
-          setShownAverage(grades.studentOverall.value)
-        }
-      }
-    };
+    fetchGradesForPeriod(currentPeriod);
+  }, [currentPeriod]);
 
-    fetchGradesForPeriod();
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
   const average = useMemo(() => {
     const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
+    if (serviceAverage !== null && algorithm?.value === "subject") {
+      return serviceAverage;
+    }
     const grades = newSubjects.flatMap(subject => subject.grades).filter(grade => grade.studentScore?.value !== undefined);
     if (algorithm && grades.length > 0) {
       const result = algorithm.algorithm(grades);
       return isNaN(result) ? 0 : result;
     }
     return 0;
-  }, [currentAlgorithm, newSubjects]);
+  }, [currentAlgorithm, newSubjects, serviceAverage]);
 
   const [shownAverage, setShownAverage] = useState(average);
   const [selectionDate, setSelectionDate] = useState<number | null>(null);
@@ -251,21 +272,21 @@ export default function TabOneScreen() {
         .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
 
       return [
-        { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id } },
+        { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id + "(" + currentPeriod?.name + ")" } },
         ...grades.map((grade, index) => ({
           type: "grade",
           grade,
           ui: {
             isFirst: index === 0,
             isLast: index === grades.length - 1,
-            key: `g:${grade.id}`,
+            key: `g:${grade.id}(${currentPeriod?.name})`,
           },
         })),
       ];
     });
 
     return result;
-  }, [newSubjects, sorting]);
+  }, [newSubjects, sorting, currentPeriod]);
 
   const renderItemGrade = useCallback(({ item, index, uiFirst, uiLast }: { item: SharedGrade; index: number, uiFirst: boolean, uiLast: boolean }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
@@ -274,7 +295,7 @@ export default function TabOneScreen() {
       <Grade
         isLast={uiLast}
         isFirst={uiFirst}
-        title={item.description}
+        title={item.description ? item.description : t('Grade_NoDescription')}
         date={item.givenAt.getTime()}
         score={(item.studentScore?.value ?? 0)}
         disabled={item.studentScore?.disabled}
@@ -384,12 +405,13 @@ export default function TabOneScreen() {
       key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
       style={{
         width: windowDimensions.width + 36 - 8,
-        height: 120,
+        height: 140,
         position: 'absolute',
-        top: -20,
+        top: 0,
         left: -36,
         right: 0,
         zIndex: 1000,
+        paddingBottom: 20,
       }}
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
@@ -479,7 +501,7 @@ export default function TabOneScreen() {
           }}
         >
           <Typography variant="title" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
-            {item.description}
+            {item.description ? item.description : t('Grade_NoDescription')}
           </Typography>
           <View style={{
             flexDirection: "row",
@@ -505,7 +527,9 @@ export default function TabOneScreen() {
   }, [colors, newSubjects, getSubjectInfo]);
 
   const LatestGrades = useCallback(() => (
-    <>
+    <Reanimated.View
+      key={"latest-grades:" + currentPeriod}
+    >
       <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
         paddingHorizontal: 6,
         paddingVertical: 0,
@@ -552,7 +576,7 @@ export default function TabOneScreen() {
           Mes notes
         </Typography>
       </Stack>
-    </>
+    </Reanimated.View>
   ), [newSubjects, colors]);
 
   return (
@@ -567,19 +591,21 @@ export default function TabOneScreen() {
         recycleItems={true}
         estimatedItemSize={80}
         onFullyScrolled={handleFullyScrolled}
-        height={170}
+        height={200}
         data={transformedData}
         renderItem={renderItem}
         keyExtractor={(item) => item.ui.key}
         ListEmptyComponent={<EmptyListComponent />}
         header={(
           <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            <GradesGraph />
+            {graphAxis.length > 0 && (
+              <GradesGraph />
+            )}
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated>
                 <AnimatedNumber variant="h1" color="primary">
-                  {(shownAverage ?? 0).toFixed(2)}
+                  {transformedData.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
                 </AnimatedNumber>
               </Dynamic>
               <Dynamic animated>
@@ -606,7 +632,14 @@ export default function TabOneScreen() {
             </Dynamic>
           </View>
         )}
-        ListHeaderComponent={<LatestGrades />}
+        ListHeaderComponent={transformedData.length > 0 ? <LatestGrades /> : null}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={100}
+          />
+        }
       />
 
       {!runsIOS26() && fullyScrolled && (
@@ -677,16 +710,20 @@ export default function TabOneScreen() {
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
-                <Typography inline variant="navigation">{getPeriodName(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}</Typography>
+                <Typography inline variant="navigation">{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
-              <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
-                  {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
-                </NativeHeaderHighlight>
-              </Dynamic>
-              <Dynamic animated>
-                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
-              </Dynamic>
+              {currentPeriod?.name &&
+                <Dynamic animated style={{ marginTop: -3 }}>
+                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                    {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
+                  </NativeHeaderHighlight>
+                </Dynamic>
+              }
+              {periods.length > 0 && (
+                <Dynamic animated>
+                  <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+                </Dynamic>
+              )}
             </Dynamic>
             {fullyScrolled && (
               <Dynamic animated>

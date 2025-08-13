@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
 import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon, User2Icon, UserCircle2, UserPenIcon } from "lucide-react-native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Dimensions, Image, Platform, Pressable, View } from "react-native";
 import {
   FadeInUp,
@@ -27,6 +27,10 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import adjust from "@/utils/adjustColor";
+import { getManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { Period } from "@/database/models/Grades";
+import { Account } from "@/stores/account/types";
 
 function Tabs() {
   const enabledTabs = [
@@ -209,6 +213,32 @@ export default function TabOneScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
+  const manager = getManager();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    function fetchData() {
+      if (!manager) {
+        return;
+      }
+
+      const result = manager.getAccount();
+      setAccount(result);
+    }
+    fetchData();
+  }, [manager]);
+
+  const [firstName, lastName, level, establishment] = useMemo(() => {
+    if (!account) return [null, null, null, null];
+
+    let firstName = account.firstName;
+    let lastName = account.lastName;
+    let level;
+    let establishment;
+
+    return [firstName, lastName, level, establishment];
+  }, [account]);
+
   const headerHeight = useHeaderHeight();
 
   const router = useRouter();
@@ -255,7 +285,7 @@ export default function TabOneScreen() {
               <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
                 <Dynamic animated>
                   <Typography inline variant="navigation">
-                    {t("Settings_Account_Title")}
+                    {(firstName || lastName) ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
                   </Typography>
                 </Dynamic>
               </Dynamic>
@@ -298,25 +328,29 @@ export default function TabOneScreen() {
                   style={{ width: 75, height: 75, borderRadius: 500 }}
                 />
                 <Typography variant={"h3"} color="text">
-                  {t("Settings_Account_Title")}
+                  {manager ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                    <Icon papicon opacity={0.5}>
-                      <Papicons.Ghost />
-                    </Icon>
-                    <Typography variant={"body1"} color="secondary">
-                      T6
-                    </Typography>
-                  </Stack>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                    <Icon papicon opacity={0.5}>
-                      <Papicons.Student />
-                    </Icon>
-                    <Typography variant={"body1"} color="secondary">
-                      Lycée Frédéric Bazille
-                    </Typography>
-                  </Stack>
+                  {level && (
+                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                      <Icon papicon opacity={0.5}>
+                        <Papicons.Ghost />
+                      </Icon>
+                      <Typography variant={"body1"} color="secondary">
+                        {level}
+                      </Typography>
+                    </Stack>
+                  )}
+                  {establishment && (
+                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                      <Icon papicon opacity={0.5}>
+                        <Papicons.Student />
+                      </Icon>
+                      <Typography variant={"body1"} color="secondary">
+                        {establishment}
+                      </Typography>
+                    </Stack>
+                  )}
                 </Stack>
               </Stack>
             </Stack>

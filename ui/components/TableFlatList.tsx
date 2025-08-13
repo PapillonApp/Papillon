@@ -1,6 +1,6 @@
-import { LegendList } from '@legendapp/list';
+import { LegendList, LegendListProps } from '@legendapp/list';
 import React from 'react';
-import { FlatList, FlatListProps, View } from 'react-native';
+import { FlatList, FlatListProps, View, StyleProp, ViewStyle, PressableProps } from 'react-native';
 import Item, { Leading, Trailing } from './Item';
 import Typography from './Typography';
 import Icon from './Icon';
@@ -9,17 +9,21 @@ import { useTheme } from '@react-navigation/native';
 import Stack from './Stack';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 
 interface SectionItem {
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
   icon?: React.ReactNode;
   papicon?: React.ReactNode;
+  type?: string;
   content?: React.ReactNode;
   title?: string;
+  tags?: Array<string>;
   description?: string;
   onPress?: () => void;
-  itemProps?: any;
+  hideTitle?: boolean;
+  itemProps?: PressableProps;
   ui?: {
     first?: boolean;
     last?: boolean;
@@ -37,10 +41,14 @@ interface Section {
 
 interface TableFlatListProps extends FlatListProps<SectionItem> {
   sections: Array<Section>;
-  engine?: 'FlatList' | 'LegendList';
+  engine?: 'FlatList' | 'LegendList' | 'FlashList';
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
-  style?: React.CSSProperties;
-  contentContainerStyle?: React.CSSProperties;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  listProps?: any;
+  renderItem?: (item: SectionItem) => React.ReactNode;
+  data?: Array<SectionItem>;
+  [key: string]: any;
 }
 
 const TableFlatList: React.FC<TableFlatListProps> = ({
@@ -76,7 +84,102 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
     return acc;
   }, [] as Array<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>);
 
-  const ListComponent = engine === 'LegendList' ? LegendList : FlatList;
+  const ListComponent = engine === 'LegendList' ? LegendList : engine === 'FlashList' ? FlashList : FlatList;
+
+  const renderItemComponent = ({ item, index }: any) => (
+    item.type === 'item' ? (
+      <Reanimated.View
+        key={index}
+        style={[
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            borderLeftWidth: 1,
+            borderRightWidth: 1,
+            borderBottomWidth: 1,
+            borderCurve: "continuous",
+            shadowColor: "#000000",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.16,
+            shadowRadius: 1.5,
+            elevation: 1,
+          },
+          item.ui?.first && {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            borderTopWidth: 1,
+          },
+          item.ui?.last && {
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            marginBottom: 14,
+          }
+        ]}
+      >
+        <Item
+          onPress={item.onPress}
+          isLast={true}
+          {...item.itemProps}
+        >
+          {item.leading && (
+            <Leading>
+              {item.leading}
+            </Leading>
+          )}
+          {item.icon || item.papicon ? (
+            <Icon papicon={!!item.papicon} opacity={0.5}>
+              {item.papicon ? item.papicon : item.icon}
+            </Icon>
+          ) : null}
+          {item.title && (
+            <Typography variant='title'>
+              {item.title}
+            </Typography>
+          )}
+          {item.description && !item.tags && (
+            <Typography variant="caption" color="secondary">
+              {item.description}
+            </Typography>
+          )}
+          {item.tags && (
+            <Stack direction={"horizontal"} gap={6}>
+              {item.tags.map((tag: string, tagIndex: number) => (
+                <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat key={tag}>
+                  <Typography variant={"body1"} color="secondary">
+                    {tag}
+                  </Typography>
+                </Stack>
+              ))}
+            </Stack>
+          )}
+          {item.content && (
+            item.content
+          )}
+          {item.trailing && (
+            <Trailing>
+              {item.trailing}
+            </Trailing>
+          )}
+        </Item>
+      </Reanimated.View>
+    ) : item.type === 'title' && !item.hideTitle ? (
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        {item.icon || item.papicon ? (
+          <Icon papicon={!!item.papicon}>
+            {item.papicon ? item.papicon : item.icon}
+          </Icon>
+        ) : null}
+        <Typography>
+          {item.title}
+        </Typography>
+      </Stack>
+    ) : null
+  );
 
   return (
     <ListComponent
@@ -88,89 +191,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
       data={data}
       contentContainerStyle={[{ padding: 16 }, contentContainerStyle]}
       keyExtractor={(item, index) => `${item.type}-${index}`}
-      renderItem={({ item, index }) => (
-        item.type === 'item' ? (
-          <Reanimated.View
-            key={index}
-            style={[
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.border,
-                borderLeftWidth: 1,
-                borderRightWidth: 1,
-                borderBottomWidth: 1,
-                borderCurve: "continuous",
-                shadowColor: "#000000",
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.16,
-                shadowRadius: 1.5,
-                elevation: 1,
-              },
-              item.ui?.first && {
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                borderTopWidth: 1,
-              },
-              item.ui?.last && {
-                borderBottomLeftRadius: 20,
-                borderBottomRightRadius: 20,
-                marginBottom: 14,
-              }
-            ]}
-          >
-            <Item
-              onPress={item.onPress}
-              isLast={true}
-              {...item.itemProps}
-            >
-              {item.leading && (
-                <Leading>
-                  {item.leading}
-                </Leading>
-              )}
-              {item.icon || item.papicon ? (
-                <Icon papicon={!!item.papicon}>
-                  {item.papicon ? item.papicon : item.icon}
-                </Icon>
-              ) : null}
-              {item.title && (
-                <Typography variant='title'>
-                  {item.title}
-                </Typography>
-              )}
-              {item.description && (
-                <Typography variant="caption" color="secondary">
-                  {item.description}
-                </Typography>
-              )}
-              {item.content && (
-                item.content
-              )}
-              {item.trailing && (
-                <Trailing>
-                  {item.trailing}
-                </Trailing>
-              )}
-            </Item>
-          </Reanimated.View>
-        ) : item.type === 'title' && !item.hideTitle ? (
-          <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-            paddingHorizontal: 6,
-            paddingVertical: 0,
-            marginBottom: 14,
-            opacity: 0.5,
-          }}>
-            {item.icon || item.papicon ? (
-              <Icon papicon={!!item.papicon}>
-                {item.papicon ? item.papicon : item.icon}
-              </Icon>
-            ) : null}
-            <Typography>
-              {item.title}
-            </Typography>
-          </Stack>
-        ) : null
-      )}
+      renderItem={renderItemComponent}
       {...rest}
     />
   )

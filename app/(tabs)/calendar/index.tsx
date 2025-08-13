@@ -18,6 +18,8 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
+import { FlashList } from "@shopify/flash-list";
+
 import * as Papicons from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
@@ -28,7 +30,7 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 const EmptyListComponent = memo(() => (
-  <Dynamic animated key={'empty-list:warn'}>
+  <Dynamic key={'empty-list:warn'}>
     <Stack
       hAlign="center"
       vAlign="center"
@@ -62,45 +64,77 @@ export default function TabOneScreen() {
   const [week, setWeek] = useState<CourseDay[]>([]);
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const manager = getManager();
+  const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchWeeklyTimetable = useCallback(async (forceRefresh = false) => {
-    if (forceRefresh) {
-      setManualRefreshing(true);
+  const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
+    // Clear any pending fetch requests
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+      fetchTimeoutRef.current = null;
     }
-    try {
-      const weeksToFetch = [weekNumber - 1, weekNumber, weekNumber + 1].filter(
-        (week) => !fetchedWeeks.includes(week)
-      );
 
-      if (weeksToFetch.length > 0) {
-        const fetchedData = await Promise.all(
-          weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+    // Debounce the fetch to prevent multiple rapid calls
+    fetchTimeoutRef.current = setTimeout(async () => {
+      if (forceRefresh) {
+        setManualRefreshing(true);
+      }
+      try {
+        const weeksToFetch = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].filter(
+          (week) => !fetchedWeeks.includes(week)
         );
 
-        const newWeekData = fetchedData.flat();
-        setWeek((prevWeek) => [...prevWeek, ...newWeekData]);
-        setFetchedWeeks((prevFetchedWeeks) => [
-          ...prevFetchedWeeks,
-          ...weeksToFetch,
-        ]);
+        if (weeksToFetch.length > 0) {
+          const fetchedData = await Promise.all(
+            weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+          );
 
-        console.log('Fetched events for weeks:', weeksToFetch);
+          const newWeekData = fetchedData.flat();
+          setWeek((prevWeek) => {
+            const allDays = [...prevWeek, ...newWeekData];
+            const uniqueDays = [];
+            const seenDates = new Set();
+            for (const day of allDays) {
+              const dayDate = new Date(day.date).toISOString();
+              if (!seenDates.has(dayDate)) {
+                uniqueDays.push(day);
+                seenDates.add(dayDate);
+              }
+            }
+            return uniqueDays;
+          });
+          setFetchedWeeks((prevFetchedWeeks) => [
+            ...prevFetchedWeeks,
+            ...weeksToFetch,
+          ]);
+
+          console.log('Fetched events for weeks:', weeksToFetch);
+        }
+      } catch (error) {
+        console.error('Error fetching weekly timetable:', error);
+      } finally {
+        setManualRefreshing(false);
+        fetchTimeoutRef.current = null;
       }
-    } catch (error) {
-      console.error('Error fetching weekly timetable:', error);
-    } finally {
-      setManualRefreshing(false);
-    }
-  }, [weekNumber, manager]);
+    }, 100); // 100ms debounce
+  }, [fetchedWeeks, manager]);
 
   useEffect(() => {
-    fetchWeeklyTimetable();
-  }, [fetchWeeklyTimetable]);
+    fetchWeeklyTimetable(weekNumber);
+  }, [weekNumber]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleRefresh = useCallback(() => {
     setRefresh(prev => prev + 1);
-    fetchWeeklyTimetable(true);
-  }, [fetchWeeklyTimetable]);
+    fetchWeeklyTimetable(weekNumber, true);
+  }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -154,9 +188,9 @@ export default function TabOneScreen() {
     if (newWeekNumber !== weekNumber) {
       console.log('Date picker changed week from', weekNumber, 'to', newWeekNumber);
       setWeekNumber(newWeekNumber);
-      fetchWeeklyTimetable(false);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
-  }, [date, getIndexFromDate, currentIndex, weekNumber, fetchWeeklyTimetable]);
+  }, [date, getIndexFromDate, currentIndex, weekNumber]);
 
   // Handle swipe (momentum end) to update date
   const onMomentumScrollEnd = useCallback((e: any) => {
@@ -184,10 +218,10 @@ export default function TabOneScreen() {
       if (newWeekNumber !== weekNumber) {
         console.log('Week changed from', weekNumber, 'to', newWeekNumber);
         setWeekNumber(newWeekNumber);
-        fetchWeeklyTimetable(false);
+        // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
       }
     }
-  }, [windowWidth, getDateFromIndex, weekNumber, fetchWeeklyTimetable]);
+  }, [windowWidth, getDateFromIndex, weekNumber]);
 
   const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
@@ -196,7 +230,6 @@ export default function TabOneScreen() {
     const rawDayEvents: SharedCourse[] = week.find(w => {
       const weekDate = new Date(w.date);
       weekDate.setHours(0, 0, 0, 0);
-      console.log(weekDate, normalizedDayDate)
       return weekDate.getTime() === normalizedDayDate.getTime();
     })?.courses ?? []
 
@@ -248,19 +281,19 @@ export default function TabOneScreen() {
     }, [rawDayEvents]);
 
     return (
-      <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
-        <LegendList
+      <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
+        <FlatList
           data={dayEvents}
           style={styles.container}
-          waitForInitialLayout
-          contentContainerStyle={[
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={
             {
-              paddingTop: globalPaddingTop,
               paddingHorizontal: 12,
               paddingBottom: bottomHeight + 12,
               gap: 4,
             }
-          ]}
+          }
+          ListHeaderComponent={<View style={{ height: globalPaddingTop }} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -313,16 +346,27 @@ export default function TabOneScreen() {
         t={t}
       />
     );
-  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex]);
+  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex, week]);
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    const newWeekNumber = getWeekNumberFromDate(newDate);
+    console.log(newWeekNumber)
+    if (newWeekNumber !== weekNumber) {
+      setWeekNumber(newWeekNumber);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
+    }
+    if (Platform.OS === 'ios') {
+      setShowDatePicker(false);
+    }
+  }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
       <Calendar
         key={"calendar-" + date.toISOString()}
         date={date}
-        onDateChange={(newDate) => {
-          setDate(newDate);
-        }}
+        onDateChange={handleDateChange}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -413,16 +457,15 @@ export default function TabOneScreen() {
         onScroll={onScroll}
         decelerationRate={0.9}
         disableIntervalMomentum={true}
-        snapToAlignment="center"
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ width: "100%", height: "100%" }}
         snapToInterval={windowWidth}
         bounces={false}
         windowSize={3}
         maxToRenderPerBatch={2}
         initialNumToRender={1}
+        showsVerticalScrollIndicator={false}
         removeClippedSubviews
         extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
       />

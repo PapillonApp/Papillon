@@ -1,6 +1,6 @@
 import { LegendList } from "@legendapp/list";
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useRef,useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { StyleProp, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 
@@ -12,6 +12,7 @@ interface ListProps extends ViewProps {
   children?: React.ReactNode;
   disablePadding?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  animated?: boolean;
   entering?: EntryExitTransition;
   exiting?: EntryExitTransition;
   radius?: number; // NEW: radius for rounded corners
@@ -205,6 +206,7 @@ const List: React.FC<ListProps> = React.memo(
     disablePadding = false,
     style,
     contentContainerStyle,
+    animated = true,
     entering,
     exiting,
     radius = 20,
@@ -413,7 +415,7 @@ const List: React.FC<ListProps> = React.memo(
 
     return (
       <Reanimated.View
-        layout={LAYOUT_ANIMATION}
+        layout={animated ? LAYOUT_ANIMATION : undefined}
         style={containerStyle}
         entering={entering}
         exiting={exiting}
