@@ -1,25 +1,25 @@
 import { useTheme } from '@react-navigation/native';
-import React, { useCallback, useMemo } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
-import Typography from './Typography';
-import Stack from './Stack';
-import * as Localization from "expo-localization";
-
-import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { Animation } from '../utils/Animation';
-import { Dynamic } from './Dynamic';
-import { Calendar, CheckCheck, CircleDashed, Sparkle, SparklesIcon } from 'lucide-react-native';
-
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale';
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
+import * as Localization from "expo-localization";
 import { t } from 'i18next';
+import { Calendar, CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
+import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+
+import { Animation } from '../utils/Animation';
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from '../utils/Transition';
+import { Dynamic } from './Dynamic';
+import Stack from './Stack';
+import Typography from './Typography';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 interface TaskProps {
   title: string;
   description: string;
+  fromCache?: boolean;
   color?: string;
   emoji?: string;
   subject?: string;
@@ -34,6 +34,7 @@ interface TaskProps {
 const Task: React.FC<TaskProps> = ({
   title,
   description,
+  fromCache,
   color = "#888888",
   emoji,
   subject,
@@ -200,6 +201,7 @@ const Task: React.FC<TaskProps> = ({
                   onPressOut={() => setIsPressed(false)}
                   onHoverIn={() => setIsHovered(true)}
                   onHoverOut={() => setIsHovered(false)}
+                  disabled={fromCache}
                   onPress={toggleProgress}
                   layout={Animation(LinearTransition, "list")}
                   style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}

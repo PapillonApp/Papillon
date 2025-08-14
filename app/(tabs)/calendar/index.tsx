@@ -1,28 +1,53 @@
-import { useEventsForDay } from "@/database/useEvents";
-import Event from "@/database/models/Event";
-import { useRouter } from "expo-router";
-import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
-import React, { useRef } from "react";
-import { FlatList, Platform, RefreshControl, StyleSheet, View, Dimensions } from "react-native";
-
-import { useHeaderHeight } from '@react-navigation/elements';
-
-import Course from "@/ui/components/Course";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Animation } from "@/ui/utils/Animation";
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-
-import { LinearTransition } from "react-native-reanimated";
-import { MenuView } from '@react-native-menu/menu';
-import { useCallback, useEffect, useState } from "react";
-import Calendar from "@/ui/components/Calendar";
-import { Dynamic } from "@/ui/components/Dynamic";
 import { LegendList } from "@legendapp/list";
+import { MenuView } from '@react-native-menu/menu';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useTheme } from "@react-navigation/native";
+import { Router, useRouter } from "expo-router";
 import { t } from "i18next";
+import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
+import React, { memo, useRef, useCallback, useEffect, useState } from "react";
+import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { LinearTransition } from "react-native-reanimated";
+import Calendar from "@/ui/components/Calendar";
+import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+
+import { FlashList } from "@shopify/flash-list";
+
+import * as Papicons from '@getpapillon/papicons';
+import Stack from "@/ui/components/Stack";
+import Icon from "@/ui/components/Icon";
+import { getManager } from "@/services/shared";
+import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getWeekNumberFromDate } from "@/database/useHomework";
+import { warn } from "@/utils/logger/logger";
+
+const EmptyListComponent = memo(() => (
+  <Dynamic key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      margin={16}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons.Calendar />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Tab_Calendar_Empty')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Tab_Calendar_Empty_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
 
 export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
@@ -30,55 +55,86 @@ export default function TabOneScreen() {
   const { colors } = useTheme();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [refresh, setRefresh] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [manualRefreshing, setManualRefreshing] = useState(false); // controls spinner for manual refresh
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
 
-  let events: Event[] = [];
+  const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
+  const [week, setWeek] = useState<CourseDay[]>([]);
+  const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
+  const manager = getManager();
+  const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // WatermelonDB events for the selected day
-  try {
-    events = useEventsForDay(date, refresh);
-  } catch (err) {
-    console.error("Error fetching events:", err);
-  }
+  const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
+    // Clear any pending fetch requests
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+      fetchTimeoutRef.current = null;
+    }
+
+    // Debounce the fetch to prevent multiple rapid calls
+    fetchTimeoutRef.current = setTimeout(async () => {
+      if (forceRefresh) {
+        setManualRefreshing(true);
+      }
+      try {
+        const weeksToFetch = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].filter(
+          (week) => !fetchedWeeks.includes(week)
+        );
+
+        if (weeksToFetch.length > 0) {
+          const fetchedData = await Promise.all(
+            weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+          );
+
+          const newWeekData = fetchedData.flat();
+          setWeek((prevWeek) => {
+            const allDays = [...prevWeek, ...newWeekData];
+            const uniqueDays = [];
+            const seenDates = new Set();
+            for (const day of allDays) {
+              const dayDate = new Date(day.date).toISOString();
+              if (!seenDates.has(dayDate)) {
+                uniqueDays.push(day);
+                seenDates.add(dayDate);
+              }
+            }
+            return uniqueDays;
+          });
+          setFetchedWeeks((prevFetchedWeeks) => [
+            ...prevFetchedWeeks,
+            ...weeksToFetch,
+          ]);
+
+          console.log('Fetched events for weeks:', weeksToFetch);
+        }
+      } catch (error) {
+        console.error('Error fetching weekly timetable:', error);
+      } finally {
+        setManualRefreshing(false);
+        fetchTimeoutRef.current = null;
+      }
+    }, 100); // 100ms debounce
+  }, [fetchedWeeks, manager]);
 
   useEffect(() => {
-    setIsRefreshing(false);
-    console.log(events);
-  }, [events]);
+    fetchWeeklyTimetable(weekNumber);
+  }, [weekNumber]);
 
-  // Add demo event
-  const addDemoEvent = useCallback(async () => {
-    try {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      const randomTime = new Date(startOfDay.getTime() + Math.random() * (endOfDay.getTime() - startOfDay.getTime()));
-      const start = randomTime.getTime();
-      const end = start + 60 * 60 * 1000; // 1 hour
-      await createEventWithSubject({
-        title: 'Demo Event',
-        start,
-        end,
-        color: '#21A467',
-        room: 'Demo Room',
-        teacher: 'Demo Teacher',
-        status: 'Demo',
-        canceled: false,
-        subject: {
-          name: 'Demo Subject',
-          code: 'DEMO',
-          color: '#21A467',
-        },
-      });
-      setRefresh(r => r + 1); // trigger refetch after adding event
-    } catch (err) {
-      // Optionally, handle error
-    }
-  }, [date]);
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    setRefresh(prev => prev + 1);
+    fetchWeeklyTimetable(weekNumber, true);
+  }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
   const bottomHeight = useBottomTabBarHeight();
@@ -113,6 +169,8 @@ export default function TabOneScreen() {
   // When date changes manually, update currentIndex and scroll FlatList to correct index
   useEffect(() => {
     const newIndex = getIndexFromDate(date);
+    const newWeekNumber = getWeekNumberFromDate(date);
+
     if (newIndex !== currentIndex) {
       setCurrentIndex(newIndex);
       if (flatListRef.current) {
@@ -122,11 +180,17 @@ export default function TabOneScreen() {
             animated: false, // Teleport instantly to the date
           });
         } catch (e) {
-          // If out of range, ignore
+          warn(String(e))
         }
       }
     }
-  }, [date, getIndexFromDate, currentIndex]);
+
+    if (newWeekNumber !== weekNumber) {
+      console.log('Date picker changed week from', weekNumber, 'to', newWeekNumber);
+      setWeekNumber(newWeekNumber);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
+    }
+  }, [date, getIndexFromDate, currentIndex, weekNumber]);
 
   // Handle swipe (momentum end) to update date
   const onMomentumScrollEnd = useCallback((e: any) => {
@@ -150,96 +214,109 @@ export default function TabOneScreen() {
       setCurrentIndex(newIndex);
       const newDate = getDateFromIndex(newIndex);
       setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
+      const newWeekNumber = getWeekNumberFromDate(newDate);
+      if (newWeekNumber !== weekNumber) {
+        console.log('Week changed from', weekNumber, 'to', newWeekNumber);
+        setWeekNumber(newWeekNumber);
+        // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
+      }
     }
-  }, [windowWidth, getDateFromIndex]);
+  }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t }: any) {
-    const rawDayEvents = useEventsForDay(dayDate, refresh);
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+    const normalizedDayDate = new Date(dayDate);
+    normalizedDayDate.setHours(0, 0, 0, 0);
+
+    const rawDayEvents: SharedCourse[] = week.find(w => {
+      const weekDate = new Date(w.date);
+      weekDate.setHours(0, 0, 0, 0);
+      return weekDate.getTime() === normalizedDayDate.getTime();
+    })?.courses ?? []
 
     // Cache to preserve event object identity by id
     const eventCache = React.useRef<{ [id: string]: any }>({});
 
     // Shallow compare function
     function shallowEqual(objA: any, objB: any) {
-      if (objA === objB) {return true;}
-      if (!objA || !objB) {return false;}
+      if (objA === objB) { return true; }
+      if (!objA || !objB) { return false; }
       const keysA = Object.keys(objA);
       const keysB = Object.keys(objB);
-      if (keysA.length !== keysB.length) {return false;}
+      if (keysA.length !== keysB.length) { return false; }
       for (const key of keysA) {
-        if (objA[key] !== objB[key]) {return false;}
+        if (objA[key] !== objB[key]) { return false; }
       }
       return true;
+    }
+
+    function getStatusText(status?: CourseStatus): string {
+      switch (status) {
+        case CourseStatus.ONLINE:
+          return t("Online_Course")
+        case CourseStatus.EDITED:
+          return t("Edited_Course")
+        case CourseStatus.CANCELED:
+          return t("Canceled_Course")
+        case CourseStatus.EVALUATED:
+          return t("Evaluated_Course")
+        default:
+          return ""
+      }
     }
 
     const dayEvents = React.useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
-      const result = rawDayEvents.map(ev => {
+      const result = (rawDayEvents ?? []).map(ev => {
         if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
           next[ev.id] = cache[ev.id];
           return cache[ev.id];
-        } 
+        }
         next[ev.id] = ev;
         return ev;
-        
+
       });
       eventCache.current = next;
       return result;
     }, [rawDayEvents]);
 
     return (
-      <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
-        <LegendList
+      <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
+        <FlatList
           data={dayEvents}
           style={styles.container}
-          waitForInitialLayout
-          contentContainerStyle={[
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={
             {
-              paddingTop: globalPaddingTop,
               paddingHorizontal: 12,
               paddingBottom: bottomHeight + 12,
               gap: 4,
             }
-          ]}
+          }
+          ListHeaderComponent={<View style={{ height: globalPaddingTop }} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
-              onRefresh={() => {
-                setRefresh((r: number) => r + 1);
-              }}
+              onRefresh={onRefresh}
               colors={[colors.primary]}
               progressBackgroundColor={colors.background}
             />
           }
           keyExtractor={(item) => item.id}
-          ListEmptyComponent={() => (
-            <View style={styles.containerContent}>
-              <Typography variant="title" color="secondary" align="center">
-                {t("Tab_Calendar_Empty")}
-              </Typography>
-              <Typography variant="caption" color="secondary" align="center">
-                {t("Tab_Calendar_Empty_Description")}
-              </Typography>
-            </View>
-          )}
-          renderItem={({ item }) => (
+          ListEmptyComponent={<EmptyListComponent />}
+          renderItem={({ item }: { item: SharedCourse }) => (
             <Course
               id={item.id}
-              name={item.subject ? item.subject.name : item.title}
+              name={item.subject}
               teacher={item.teacher}
               room={item.room}
-              color={(item.subject ? item.subject.color : item.color) || "#888888"}
-              status={{ label: item.status || "", canceled: !!item.canceled }}
+              color={getSubjectColor(item.subject)}
+              status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
               variant="primary"
-              start={Math.floor(item.start / 1000)}
-              end={Math.floor(item.end / 1000)}
-              readonly={!!item.readonly}
+              start={Math.floor(item.from.getTime() / 1000)}
+              end={Math.floor(item.to.getTime() / 1000)}
+              readonly={!!item.createdByAccount}
               onPress={() => {
-                router.push({
-                  pathname: "/(tabs)/calendar/event/[id]",
-                  params: { id: item.id, title: item.title || item.subject.name || item.subject.code || "Event" }
-                });
               }}
             />
           )}
@@ -247,10 +324,10 @@ export default function TabOneScreen() {
       </View>
     );
   }, (prevProps, nextProps) => {
-    // Only rerender if dayDate or isRefreshing changes
     return (
       prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
-      prevProps.isRefreshing === nextProps.isRefreshing
+      prevProps.isRefreshing === nextProps.isRefreshing &&
+      prevProps.onRefresh === nextProps.onRefresh
     );
   });
 
@@ -262,23 +339,34 @@ export default function TabOneScreen() {
         dayDate={dayDate}
         headerHeight={headerHeight}
         bottomHeight={bottomHeight}
-        isRefreshing={isRefreshing}
-        setRefresh={setRefresh}
+        isRefreshing={manualRefreshing}
+        onRefresh={handleRefresh}
         colors={colors}
         router={router}
         t={t}
       />
     );
-  }, [headerHeight, bottomHeight, isRefreshing, setRefresh, colors, router, t, getDateFromIndex]);
+  }, [headerHeight, bottomHeight, manualRefreshing, handleRefresh, colors, router, t, getDateFromIndex, week]);
+
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    const newWeekNumber = getWeekNumberFromDate(newDate);
+    console.log(newWeekNumber)
+    if (newWeekNumber !== weekNumber) {
+      setWeekNumber(newWeekNumber);
+      // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
+    }
+    if (Platform.OS === 'ios') {
+      setShowDatePicker(false);
+    }
+  }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
       <Calendar
         key={"calendar-" + date.toISOString()}
         date={date}
-        onDateChange={(newDate) => {
-          setDate(newDate);
-        }}
+        onDateChange={handleDateChange}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -325,8 +413,8 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { weekday: "long" })}
               </Typography>
             </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { day: "numeric" })}>
-              <NativeHeaderHighlight color="#D6502B">
+            <Dynamic animated>
+              <NativeHeaderHighlight color="#D6502B" style={{ marginBottom: 0 }}>
                 {date.toLocaleDateString("fr-FR", { day: "numeric" })}
               </NativeHeaderHighlight>
             </Dynamic>
@@ -369,18 +457,17 @@ export default function TabOneScreen() {
         onScroll={onScroll}
         decelerationRate={0.9}
         disableIntervalMomentum={true}
-        snapToAlignment="center"
         scrollEventThrottle={16}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ width: "100%", height: "100%" }}
         snapToInterval={windowWidth}
         bounces={false}
         windowSize={3}
         maxToRenderPerBatch={2}
         initialNumToRender={1}
+        showsVerticalScrollIndicator={false}
         removeClippedSubviews
-        extraData={{ refresh, headerHeight, bottomHeight, isRefreshing, colors, date }}
+        extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
       />
     </>
   );

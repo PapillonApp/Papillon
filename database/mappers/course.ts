@@ -17,6 +17,8 @@ export function mapCourseToShared(course: Course): SharedCourse {
     group: course.group,
     backgroundColor: course.backgroundColor,
     status: course.status,
-    url: course.url
+    customStatus: course.customStatus,
+    url: course.url,
+    kidName: course.kidName
   }
 }

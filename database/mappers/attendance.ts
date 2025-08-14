@@ -1,23 +1,27 @@
-import { Absence, Delay, Observation, Punishment } from "@/database/models/Attendance";
+import { Absence, Attendance, Delay, Observation, Punishment } from "@/database/models/Attendance";
 import { Absence as SharedAbsence, Delay as SharedDelay, Observation as SharedObservation,Punishment as SharedPunishment } from "@/services/shared/attendance";
 
-export function mapDelaysToShared(delays: Delay[]): SharedDelay[] {
+export function mapDelaysToShared(delays: Delay[], parent: Attendance): SharedDelay[] {
   return delays.map(delay => ({
     id: delay.id,
     givenAt: new Date(delay.givenAt),
     reason: delay.reason,
     justified: delay.justified,
-    duration: delay.duration
+    duration: delay.duration,
+    createdByAccount: parent.createdByAccount,
+    kidName: parent.kidName
   }));
 }
 
-export function mapAbsencesToShared(absences: Absence[]): SharedAbsence[] {
+export function mapAbsencesToShared(absences: Absence[], parent: Attendance): SharedAbsence[] {
   return absences.map(absence => ({
     id: absence.id,
     from: new Date(absence.from),
     to: new Date(absence.to),
     reason: absence.reason,
-    justified: absence.justified
+    justified: absence.justified,
+    createdByAccount: parent.createdByAccount,
+    kidName: parent.kidName
   }));
 }
 

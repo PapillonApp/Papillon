@@ -1,5 +1,4 @@
 import { NewsInformation } from "pawnote";
-
 import { News as SkolengoNews } from "skolengojs";
 
 import { Attachment} from "@/services/shared/attachment";

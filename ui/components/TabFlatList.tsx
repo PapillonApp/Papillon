@@ -1,18 +1,18 @@
+import { LegendList, LegendListProps } from "@legendapp/list";
+import MaskedView from "@react-native-masked-view/masked-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { FlashList } from "@shopify/flash-list";
 import React from "react";
-import { Dimensions, Platform, FlatListProps, Image, View } from "react-native";
+import { Dimensions, FlatList, FlatListProps, Image, Platform, View } from "react-native";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import LinearGradient from "react-native-linear-gradient";
+import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
-import MaskedView from "@react-native-masked-view/masked-view";
-
-import LinearGradient from "react-native-linear-gradient";
-import { Circle, G, Path } from "react-native-svg";
-
-import { LegendList, LegendListProps } from "@legendapp/list";
-
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
+const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
+const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList);
 
 const patterns = {
   dots: require('@/assets/images/patterns/dots.png'),
@@ -20,7 +20,7 @@ const patterns = {
   grades: require('@/assets/images/patterns/grades.png'),
 };
 
-interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
+interface TabFlatListProps extends FlatListProps<any> {
   header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
@@ -29,6 +29,8 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   padding?: number;
   radius?: number;
   gap?: number;
+  engine?: 'FlatList' | 'LegendList' | 'FlashList';
+  translucent?: boolean;
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -41,6 +43,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   padding = 16,
   radius = 28,
   gap = 0,
+  engine = "FlatList",
+  translucent = false,
   onFullyScrolled,
   ...rest
 }) => {
@@ -50,6 +54,13 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const screenHeight = Dimensions.get('window').height;
   const headerInset = useHeaderHeight() - 10;
   const finalHeight = height + headerInset;
+  let tabBarHeight = 0;
+  try {
+    tabBarHeight = useBottomTabBarHeight?.() ?? 0;
+    if (typeof tabBarHeight !== 'number' || isNaN(tabBarHeight)) tabBarHeight = 0;
+  } catch {
+    tabBarHeight = 0;
+  }
 
   // Memoize shared values for scroll position and threshold
   const scrollY = React.useRef(useSharedValue(0)).current;
@@ -62,11 +73,12 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
       const y = event.contentOffset.y;
       scrollY.value = y;
 
-      if (onFullyScrolled) {
-        const wasScrolledPast = isScrolledPastThreshold.value;
-        const isNowScrolledPast = y > height - 24;
-        if (wasScrolledPast !== isNowScrolledPast) {
-          isScrolledPastThreshold.value = isNowScrolledPast;
+
+      const wasScrolledPast = isScrolledPastThreshold.value;
+      const isNowScrolledPast = y > height - 24;
+      if (wasScrolledPast !== isNowScrolledPast) {
+        isScrolledPastThreshold.value = isNowScrolledPast;
+        if (onFullyScrolled) {
           runOnJS(onFullyScrolled)(isNowScrolledPast);
         }
       }
@@ -127,6 +139,8 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
     }
   );
 
+  const ListEngine = engine === "LegendList" ? AnimatedLegendList : engine === "FlashList" ? AnimatedFlashList : AnimatedFlatList;
+
   try {
     return (
       <>
@@ -143,6 +157,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             },
             headerContainerStyle
           ]}
+          pointerEvents={showScrollIndicator ? "none" : "auto"}
         >
           <View style={{ height: finalHeight, paddingTop: headerInset }}>
             <Reanimated.View
@@ -212,7 +227,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
         </View>
 
         {/* FlatList */}
-        <AnimatedLegendList
+        <ListEngine
           {...rest}
 
           onScroll={scrollHandler}
@@ -221,7 +236,24 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           snapToEnd={false} // Disable snap to end for better control
           // scrollEventThrottle is not supported by LegendList, so removed for type safety
 
-          ListFooterComponent={<View style={{ height: Platform.OS === 'android' ? 180 : 92 }} />}
+          ListFooterComponent={
+            <>
+              <View style={{ height: Platform.OS === 'ios' ? tabBarHeight + 12 : 220 }} />
+
+              {Platform.OS === 'ios' && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: -995,
+                    left: -100,
+                    height: 1000,
+                    width: Dimensions.get('window').width + 200,
+                    backgroundColor: colors.background,
+                  }}
+                />
+              )}
+            </>
+          }
 
           showsVerticalScrollIndicator={Platform.OS === 'android' ? false : showScrollIndicator}
           scrollIndicatorInsets={{
@@ -231,21 +263,19 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           style={{
             flex: 1,
             zIndex: 9999,
-            pointerEvents: 'box-none',
           }}
 
           contentContainerStyle={{
-            minHeight: screenHeight,
-            backgroundColor: colors.background,
+            minHeight: screenHeight - finalHeight,
+            backgroundColor: translucent ? "transparent" : colors.background,
             marginTop: finalHeight,
-            borderRadius: radius,
+            borderTopLeftRadius: radius,
+            borderTopRightRadius: radius,
             borderCurve: 'continuous',
             padding: padding,
-            paddingTop: padding - 15,
+            paddingVertical: padding,
             gap: gap,
-            pointerEvents: 'box-none',
           }}
-          pointerEvents="none"
         />
       </>
     )

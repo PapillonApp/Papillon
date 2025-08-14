@@ -1,9 +1,10 @@
+import { useTheme } from "@react-navigation/native";
 import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Typography from "./Typography";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
-import { useTheme } from "@react-navigation/native";
+
 import Stack from "./Stack";
+import Typography from "./Typography";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -12,6 +13,8 @@ export interface SubjectProps {
   emoji: string;
   name: string;
   average: number;
+  disabled?: boolean;
+  status?: string;
   outOf: number;
 }
 
@@ -20,6 +23,8 @@ const Subject: React.FC<SubjectProps> = ({
   emoji,
   name,
   average,
+  disabled = false,
+  status,
   outOf
 }) => {
   const theme = useTheme();
@@ -51,7 +56,7 @@ const Subject: React.FC<SubjectProps> = ({
           style={styles.gradeContainer}
         >
           <Typography variant="body1" weight="bold" color={color}>
-            {average.toFixed(2)}
+            {disabled ? status : (average ?? 0).toFixed(2)}
           </Typography>
           <Typography variant="caption" weight="semibold" color="secondary" style={{ fontSize: 13, opacity: 0.8 }}>
             {`/${outOf}`}

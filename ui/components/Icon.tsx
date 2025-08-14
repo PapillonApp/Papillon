@@ -7,6 +7,10 @@ import { LEADING_TYPE } from "./Item";
 interface IconProps extends ViewProps {
   children?: React.ReactNode;
   color?: string;
+  opacity?: number;
+  size?: number;
+  papicon?: boolean;
+  fill?: string;
 }
 
 // Pre-computed frozen style objects for maximum performance
@@ -25,39 +29,61 @@ const WHITE_COLOR = "#ffffff";
 
 // Optimized child enhancement function using direct array operations
 const enhanceChildrenOptimized = (
-  children: React.ReactNode, 
-  childColor: string
+  children: React.ReactNode,
+  childColor: string,
+  size: number,
+  papicon?: boolean,
+  fill?: string
 ): React.ReactNode => {
-  if (!children) {return children;}
-  
+  if (!children) { return children; }
+
+  // Helper to merge width/height/size
+  const injectProps = (child: React.ReactElement<any>) => {
+    const childProps = child.props;
+    // Don't override explicit color/width/height/size
+    const injected: any = {};
+    const effectiveColor = fill !== undefined ? fill : childColor;
+    if (papicon) {
+      if (childProps.fill === undefined) injected.fill = effectiveColor;
+    } else {
+      if (childProps.color === undefined) injected.color = effectiveColor;
+    }
+    if (childProps.size === undefined) injected.size = size;
+    if (childProps.width === undefined) injected.width = size;
+    if (childProps.height === undefined) injected.height = size;
+    return Object.keys(injected).length > 0 ? React.cloneElement(child, injected) : child;
+  };
+
   // Fast path for single child (most common case)
   if (React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, { 
-      color: childColor 
-    });
+    return injectProps(children as React.ReactElement<any>);
   }
-  
   // Batch processing for multiple children
   return React.Children.map(children, (child) => {
-    return React.isValidElement(child) 
-      ? React.cloneElement(child as React.ReactElement<any>, { color: childColor })
-      : child;
+    if (React.isValidElement(child)) {
+      return injectProps(child as React.ReactElement<any>);
+    }
+    return child;
   });
 };
 
 const Icon = React.memo<IconProps>(({
   children,
   color,
+  opacity,
   style,
+  size = 24,
+  papicon,
+  fill,
   ...rest
 }) => {
   const { colors } = useTheme();
-  
+
   // Ultra-fast memoization with optimized dependencies
   const { containerStyle, childColor, enhancedChildren } = useMemo(() => {
     const hasColor = Boolean(color);
     const currentChildColor = hasColor ? WHITE_COLOR : colors.text;
-    
+
     // Use cache for color computations
     let colorData = colorCache.get(`${color || 'none'}-${colors.text}`);
     if (!colorData) {
@@ -74,15 +100,17 @@ const Icon = React.memo<IconProps>(({
       }
       colorCache.set(`${color || 'none'}-${colors.text}`, colorData);
     }
-    
+
+    // Add opacity to the container style if provided
+    const opacityStyle = opacity !== undefined ? { opacity } : {};
     return {
-      containerStyle: hasColor 
-        ? [COLORED_ICON_STYLE, { backgroundColor: colorData.backgroundColor }, style]
-        : [EMPTY_STYLE, style],
+      containerStyle: hasColor
+        ? [COLORED_ICON_STYLE, { backgroundColor: colorData.backgroundColor }, opacityStyle, style]
+        : [EMPTY_STYLE, opacityStyle, style],
       childColor: colorData.childColor,
-      enhancedChildren: enhanceChildrenOptimized(children, colorData.childColor)
+      enhancedChildren: enhanceChildrenOptimized(children, colorData.childColor, size, papicon, fill)
     };
-  }, [children, color, colors.text, style]);
+  }, [children, color, colors.text, style, size, opacity, papicon, fill]);
 
   return (
     <View
@@ -97,7 +125,11 @@ const Icon = React.memo<IconProps>(({
   return (
     prevProps.children === nextProps.children &&
     prevProps.color === nextProps.color &&
-    prevProps.style === nextProps.style
+    prevProps.style === nextProps.style &&
+    prevProps.size === nextProps.size &&
+    prevProps.opacity === nextProps.opacity &&
+    prevProps.papicon === nextProps.papicon &&
+    prevProps.fill === nextProps.fill
   );
 });
 

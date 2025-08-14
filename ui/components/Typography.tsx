@@ -1,7 +1,8 @@
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
+
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
@@ -100,7 +101,7 @@ type Variant = keyof typeof VARIANTS;
 type Color = "primary" | "text" | "secondary" | "light" | "danger";
 type Alignment = keyof typeof ALIGNMENT_STYLES;
 
-interface TypographyProps extends TextProps {
+export interface TypographyProps extends TextProps {
   variant?: Variant;
   color?: Color | string;
   align?: Alignment;
@@ -150,10 +151,10 @@ const Typography: React.FC<TypographyProps> = React.memo(
 
       // Only cache if no custom styles or custom colors to avoid memory leaks
       if (!hasCustomStyle && !isCustomColor) {
-        return `${variant}-${color}-${align}-${colors.primary}-${colors.text}`;
+        return `${variant}-${color}-${align}-${inline}-${colors.primary}-${colors.text}`;
       }
       return null;
-    }, [variant, color, align, colors.primary, colors.text, style]);
+    }, [variant, color, align, inline, colors.primary, colors.text, style]);
 
     const computedStyle = React.useMemo(() => {
       // Try cache first for common cases

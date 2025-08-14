@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 13,
+  version: 21,
   tables: [
     tableSchema({
       name: 'events',
@@ -50,7 +50,8 @@ export const mySchema = appSchema({
         { name: "attachments", type: 'string', isOptional: true },
         { name: 'evaluation', type: 'boolean' },
         { name: 'custom', type: 'boolean' },
-        { name: 'createdByAccount', type: "string" }
+        { name: 'createdByAccount', type: "string" },
+        { name: 'kidName', type: "string", isOptional: true }
       ],
     }),
     tableSchema({
@@ -74,7 +75,8 @@ export const mySchema = appSchema({
         { name: 'periodId', type: 'string' },
         { name: 'start', type: 'number' },
         { name: 'end', type: 'number' },
-        { name: 'createdByAccount', type: "string" }
+        { name: 'createdByAccount', type: "string" },
+        { name: 'kidName', type: "string", isOptional: true }
       ],
     }),
     tableSchema({
@@ -111,6 +113,7 @@ export const mySchema = appSchema({
       name: "attendance",
       columns: [
         { name: 'createdByAccount', type: 'string' },
+        { name: 'kidName', type: 'string', isOptional: true },
         { name: 'period', type: 'string' }
       ]
     }),
@@ -121,7 +124,8 @@ export const mySchema = appSchema({
         { name: 'reason', type: 'string', isOptional: true },
         { name: 'justified', type: 'boolean' },
         { name: 'duration', type: 'number' },
-        { name: 'attendanceId', type: 'string', isIndexed: true }
+        { name: 'attendanceId', type: 'string', isIndexed: true },
+        { name: 'kidName', type: 'string', isOptional: true }
       ]
     }),
     tableSchema({
@@ -143,7 +147,8 @@ export const mySchema = appSchema({
         { name: 'to', type: 'number' },
         { name: 'reason', type: 'string', isOptional: true },
         { name: 'justified', type: 'boolean' },
-        { name: 'attendanceId', type: 'string', isIndexed: true }
+        { name: 'attendanceId', type: 'string', isIndexed: true },
+        { name: 'kidName', type: 'string', isOptional: true }
       ]
     }),
     tableSchema({
@@ -209,6 +214,7 @@ export const mySchema = appSchema({
       name: "courses",
       columns: [
         { name: 'createdByAccount', type: 'string' },
+        { name: 'kidName', type: 'string', isOptional: true },
         { name: 'courseId', type: 'string' },
         { name: 'subject', type: 'string' },
         { name: 'type', type: 'number' },
@@ -220,7 +226,42 @@ export const mySchema = appSchema({
         { name: 'group', type: 'string', isOptional: true },
         { name: 'backgroundColor', type: 'string', isOptional: true },
         { name: 'status', type: 'number', isOptional: true },
+        { name: 'customStatus', type: 'string', isOptional: true },
         { name: 'url', type: 'string', isOptional: true }
+      ]
+    }),
+    tableSchema({
+      name: "kids",
+      columns:[
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'kidId', type: 'string' },
+        { name: 'firstName', type: 'string' },
+        { name: 'lastName', type: 'string' },
+        { name: 'class', type: 'string' },
+        { name: 'dateOfBirth', type: 'number' },
+      ]
+    }),
+		tableSchema({
+			name: "balances",
+			columns: [
+				{ name: 'createdByAccount', type: 'string' },
+				{ name: 'balanceId', type: 'string' },
+				{ name: 'amount', type: 'number' },
+				{ name: 'currency', type: 'string' },
+				{ name: 'lunchRemaining', type: 'number' },
+				{ name: 'lunchPrice', type: 'number' },
+				{ name: 'label', type: 'string' }
+			]
+		}),
+    tableSchema({
+      name: "canteentransactions",
+      columns: [
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'transactionId', type: 'string' },
+        { name: 'date', type: 'number' },
+        { name: 'label', type: 'string' },
+        { name: 'currency', type: 'string' },
+        { name: 'amount', type: 'number' },
       ]
     })
   ],

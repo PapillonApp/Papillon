@@ -1,9 +1,10 @@
+import { useTheme } from "@react-navigation/native";
 import React, { useMemo } from "react";
 import { StyleSheet } from "react-native";
-import Typography from "./Typography";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
-import { useTheme } from "@react-navigation/native";
+
 import Stack from "./Stack";
+import Typography from "./Typography";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -15,11 +16,13 @@ export interface GradeProps {
   date: number;
   score: number;
   outOf: number;
+  disabled?: boolean;
+  status?: string;
   color?: string; // Optional color prop for custom styling
 }
 
 const Grade: React.FC<GradeProps> = React.memo(
-  ({ isFirst, isLast, title, date, score, outOf, color }) => {
+  ({ isFirst, isLast, title, date, score, outOf, color, disabled, status }) => {
     const theme = useTheme();
     const { colors } = theme;
 
@@ -99,7 +102,7 @@ const Grade: React.FC<GradeProps> = React.memo(
               borderRadius: 20,
             }}
           >
-            <Typography variant="h5" color={color}>{formattedScore}</Typography>
+            <Typography variant="h5" color={color}>{disabled ? status : formattedScore}</Typography>
             <Typography variant="caption" color={color} style={{ marginBottom: 4 }}>
               /{outOf}
             </Typography>

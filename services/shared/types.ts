@@ -1,16 +1,31 @@
+import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
+import { Skolengo as SkolengoSession } from "skolengojs";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
-import { CanteenMenu } from "@/services/shared/canteen";
+import {
+  Booking,
+  BookingDay,
+  CanteenHistoryItem,
+  CanteenMenu,
+  QRCode,
+} from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
 import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
-import { Skolengo as SkolengoSession } from "skolengojs";
+
+import { EcoleDirecte } from "../ecoledirecte";
 import { Skolengo } from "../skolengo";
+import { Kid } from "./kid";
+import { Client as TurboselfClient } from "turboself-api";
+import { Client as ArdClient } from "pawrd";
+import { TurboSelf } from "../turboself";
+import { ARD } from "../ard";
+import { Balance } from "./balance";
 
 /** Represents a plugin for a school service.
  *
@@ -23,12 +38,21 @@ export interface SchoolServicePlugin {
   service: Services;
   capabilities: Capabilities[];
   authData: Auth;
-  session: SessionHandle | SkolengoSession | undefined;
+  session:
+    | SessionHandle
+    | SkolengoSession
+    | Session
+    | TurboselfClient
+    | ArdClient
+    | undefined;
 
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo>;
+  refreshAccount: (
+    credentials: Auth
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD>;
+  getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
-  getGradesForPeriod?: (period: string) => Promise<PeriodGrades>;
+  getGradesForPeriod?: (period: Period, kid?: Kid) => Promise<PeriodGrades>;
   getGradesPeriods?: () => Promise<Period[]>;
   getAttendanceForPeriod?: (period: string) => Promise<Attendance>;
   getAttendancePeriods?: () => Promise<Period[]>;
@@ -38,17 +62,31 @@ export interface SchoolServicePlugin {
   getChatMessages?: (chat: Chat) => Promise<Message[]>;
   getRecipientsAvailableForNewChat?: () => Promise<Recipient[]>;
   getCourseResources?: (course: Course) => Promise<CourseResource[]>;
-  getWeeklyTimetable?: (date: Date) => Promise<CourseDay[]>;
+  getWeeklyTimetable?: (weekNumber: number) => Promise<CourseDay[]>;
   sendMessageInChat?: (chat: Chat, content: string) => Promise<void>;
   setNewsAsAcknowledged?: (news: News) => Promise<News>;
-	setHomeworkCompletion?: (homework: Homework, state?: boolean) => Promise<Homework>;
-	createMail?: (subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]) => Promise<Chat>;
+  setHomeworkCompletion?: (
+    homework: Homework,
+    state?: boolean
+  ) => Promise<Homework>;
+  createMail?: (
+    subject: string,
+    content: string,
+    recipients: Recipient[],
+    cc?: Recipient[],
+    bcc?: Recipient[]
+  ) => Promise<Chat>;
+  getCanteenBalances?: () => Promise<Balance[]>;
+  getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
+  getCanteenQRCodes?: () => Promise<QRCode[]>;
+  getCanteenBookingWeek?: (weekNumber: number) => Promise<BookingDay[]>;
+  setMealAsBooked?: (meal: Booking, booked?: boolean) => Promise<Booking>;
 }
 
 /*
-  *
-  * Represents the capabilities of a school service plugin.
-  * Used to determine what features the plugin supports.
+ *
+ * Represents the capabilities of a school service plugin.
+ * Used to determine what features the plugin supports.
  */
 export enum Capabilities {
   REFRESH,
@@ -56,12 +94,17 @@ export enum Capabilities {
   NEWS,
   GRADES,
   ATTENDANCE,
-	ATTENDANCE_PERIODS,
+  ATTENDANCE_PERIODS,
   CANTEEN_MENU,
   CHAT_READ,
   CHAT_CREATE,
-	CHAT_REPLY,
-  TIMETABLE
+  CHAT_REPLY,
+  TIMETABLE,
+  HAVE_KIDS,
+  CANTEEN_BALANCE,
+  CANTEEN_HISTORY,
+  CANTEEN_BOOKINGS,
+  CANTEEN_QRCODE
 }
 
 /**
@@ -72,6 +115,7 @@ export enum Capabilities {
 export interface GenericInterface {
   createdByAccount: string;
   fromCache?: boolean;
+  kidName?: string;
 }
 
 export type FetchOptions<T> = {

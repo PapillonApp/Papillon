@@ -35,8 +35,8 @@ export async function fetchPronoteAttendance(session: SessionHandle, accountId: 
   }
 
   const attendance = await notebook(session, pawnotePeriod);
-  const delays = mapDelays(attendance.delays).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
-  const absences = mapAbsences(attendance.absences).sort((a, b) => a.from.getTime() - b.from.getTime());
+  const delays = mapDelays(attendance.delays, accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+  const absences = mapAbsences(attendance.absences, accountId).sort((a, b) => a.from.getTime() - b.from.getTime());
   const punishments = mapPunishments(attendance.punishments, accountId).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
   const observations = mapObservations(attendance.observations).sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
 
@@ -90,13 +90,14 @@ function mapObservations(observations: NotebookObservation[]): Observation[] {
  * Maps NotebookDelay[] to shared Delay[].
  * @param delays
  */
-function mapDelays(delays: NotebookDelay[]): Delay[] {
+function mapDelays(delays: NotebookDelay[], accountId: string): Delay[] {
   return delays.map(d => ({
     id: d.id,
     givenAt: d.date,
     reason: d.reason,
     justified: d.justified,
-    duration: d.minutes
+    duration: d.minutes,
+    createdByAccount: accountId
   }));
 }
 
@@ -104,13 +105,14 @@ function mapDelays(delays: NotebookDelay[]): Delay[] {
  * Maps NotebookAbsence[] to shared Absence[].
  * @param absences
  */
-function mapAbsences(absences: NotebookAbsence[]): Absence[] {
+function mapAbsences(absences: NotebookAbsence[], accountId: string): Absence[] {
   return absences.map(a => ({
     id: a.id,
     from: a.startDate,
     to: a.endDate,
     reason: a.reason,
-    justified: a.justified
+    justified: a.justified,
+    createdByAccount: accountId
   }));
 }
 

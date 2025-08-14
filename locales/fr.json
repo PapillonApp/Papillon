@@ -7,6 +7,7 @@
   "Tab_Grades": "Notes",
   "Tab_Profile": "Profil",
   "Tab_Page": "Page",
+  "Tab_Settings": "Paramètres",
 
   "Tab_New_Event": "Nouvel événement",
 
@@ -25,6 +26,11 @@
 
   "Alert_TechnicalDetails": "Détails techniques",
 
+  "Online_Course": "En ligne",
+  "Evaluated_Course": "Évaluation",
+  "Edited_Course": "Cours modifié",
+  "Canceled_Course": "Cours annulé",
+  "No_Course_Room": "Salle inconnue",
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
@@ -41,7 +47,7 @@
 
   "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
-  "Tab_Calendar_Empty": "Aucun événement trouvé.",
+  "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
 
   "Tasks_LeftHomeworks_Title": "tâches restantes",
@@ -53,19 +59,23 @@
   "Tasks_Nav_Completed": "Tout est terminé !",
   "Tasks_Week": "Semaine",
   "Tasks_NoTasks_Title": "Aucune tâche",
+  "Tasks_NoTasks_Description": "Il n'y a pas de tâches prévues pour cette semaine. Profites-en pour te reposer !",
   "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
   "Tasks_NoTasks_Nav": "Aucune tâche",
   "Task_Start": "À faire",
   "Task_Complete": "Terminé",
+  "Settings_General": "Général",
+
+  "Latest_Grades": "Nouvelles notes",
 
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
-  "Grades_Avg_Subject_Title": "Moyenne des matières",
-  "Grades_Avg_Subject_Short": "Moy. matières",
+  "Grades_Avg_Subject_Title": "Moyenne des notes",
+  "Grades_Avg_Subject_Short": "Moy. notes",
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
 
-  "Grades_Method_AllGrades": "Toutes les notes",
+  "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
   "Grades_Sorting_Alphabetical": "Alphabétique",
@@ -73,5 +83,42 @@
   "Grades_Sorting_Date": "Date",
 
   "Grades_Menu_SortBy": "Tri par",
-  "Grades_Menu_AverageBy": "Moyenne par"
+  "Grades_Menu_AverageBy": "Moyenne par",
+
+  "Grades_Empty_Title": "Aucune note",
+  "Grades_Empty_Description": "Vous n'avez pas encore été noté sur cette période.",
+
+  "Profile_Attendance_Title": "Assiduité",
+  "Profile_Attendance_Denominator_Single": "absence",
+  "Profile_Attendance_Denominator_Plural": "absences",
+
+  "Profile_Discussions_Title": "Discussions",
+  "Profile_Discussions_Denominator_Single": "non lu",
+  "Profile_Discussions_Denominator_Plural": "non lus",
+
+  "Profile_News_Title": "Actualités",
+  "Profile_News_Denominator_Single": "nouveau",
+  "Profile_News_Denominator_Plural": "nouvelles",
+
+  "Profile_Cards_Title": "Mes cartes",
+
+  "Settings_Account_Title": "Mon compte",
+  "Settings_Account_Description": "Mon compte",
+  "Settings_Services_Title": "Comptes liés",
+  "Settings_Notifications_Title": "Notifications",
+  "Settings_Notifications_Description": "Alertes, fréquence...",
+  "Settings_Subjects_Title": "Matières",
+  "Settings_Subjects_Description": "Nom, couleur, police...",
+  "Settings_Personalization_Title": "Personnalisation",
+  "Settings_Personalization_Description": "Thèmes, couleurs...",
+  "Settings_Cards_Title": "Cartes",
+  "Settings_Cards_Description": "Cantine, accès...",
+  "Settings_Accessibility_Title": "Accessibilité",
+  "Settings_Accessibility_Description": "Affichage, son...",
+  "Settings_MagicPlus_Title": "Magic+",
+  "Settings_MagicPlus_Description": "Fonctionnalités intelligentes",
+  "Settings_Donate_Title": "Faire un don",
+  "Settings_Donate_Description": "Soutenir le projet",
+  "Settings_About_Title": "À propos",
+  "Settings_About_Description": "version 8.0.0"
 }

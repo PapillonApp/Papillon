@@ -9,9 +9,10 @@ import Typography from "./Typography";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-type Variant = 'primary' | 'outline' | 'light';
-export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry';
+type Variant = 'primary' | 'outline' | 'light' | 'ghost' | 'service';
+export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black' | 'card';
 type Size = 'small' | 'medium' | 'large';
+type Alignment = 'start' | 'center' | 'end';
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
@@ -23,6 +24,7 @@ interface ButtonProps extends PressableProps {
   loading?: boolean;
   onPress?: () => void;
   disabled?: boolean;
+  alignment?: Alignment;
 };
 
 const defaultProps = {
@@ -35,6 +37,7 @@ const defaultProps = {
   loading: false,
   onPress: () => { },
   disabled: false,
+  alignment: 'center' as Alignment,
 };
 
 const Button: React.FC<ButtonProps> = React.memo(({
@@ -47,6 +50,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   loading = defaultProps.loading,
   onPress = defaultProps.onPress,
   disabled = defaultProps.disabled,
+  alignment = defaultProps.alignment,
   style,
   ...rest
 }) => {
@@ -55,9 +59,11 @@ const Button: React.FC<ButtonProps> = React.memo(({
   const colorsList: Record<Color, string> = React.useMemo(() => ({
     primary: colors.primary,
     text: colors.text,
+    card: colors.card,
     light: '#FFFFFF',
     danger: '#DC1400',
     cherry: '#D60046',
+    black: '#000000',
   }), [colors]);
 
   // Animation scale
@@ -85,6 +91,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
 
     switch (variant) {
       case 'outline':
+      case 'ghost':
         return 'transparent';
       case 'light':
         return colorsList[color as Color] + '30';
@@ -96,12 +103,28 @@ const Button: React.FC<ButtonProps> = React.memo(({
 
   const textColor = useMemo(() => {
     switch (variant) {
+      case 'ghost':
+        return colors.text + "70"
       case 'primary':
         return colorsList.light;
+      case 'service':
+        return colorsList.text;
       default:
         return colorsList[color as Color];
     }
   }, [variant, colorsList, color]);
+
+  const justifyContent = useMemo(() => {
+    switch (alignment) {
+      case 'start':
+        return 'flex-start';
+      case 'end':
+        return 'flex-end';
+      case 'center':
+      default:
+        return 'center';
+    }
+  }, [alignment]);
 
   const buttonStyle = useMemo(() => [
     {
@@ -113,13 +136,19 @@ const Button: React.FC<ButtonProps> = React.memo(({
       height: 50,
       paddingHorizontal: 18,
       flexDirection: 'row',
-      justifyContent: 'center',
-      gap: 12,
+      justifyContent: justifyContent,
+      gap: 5,
       alignItems: 'center',
     },
     variant === 'outline' && {
       borderWidth: 1,
       borderColor: colorsList[color as Color],
+      backgroundColor: 'transparent',
+    },
+    variant === 'service' && {
+      borderWidth: 1,
+      borderColor: colorsList.text + "30",
+      backgroundColor: colorsList.card,
     },
     size === 'small' && {
       height: 40,
@@ -132,14 +161,13 @@ const Button: React.FC<ButtonProps> = React.memo(({
     inline && { width: undefined },
     style,
     animatedStyle,
-  ], [inline, colors.primary, style, animatedStyle]);
+  ], [inline, backgroundColor, justifyContent, style, animatedStyle, variant, colorsList, color, size]);
 
   const buttonIcon = useMemo(() => {
     if (icon) {
       return React.cloneElement(icon as React.ReactElement, {
         // @ts-expect-error
         color: textColor,
-        size: 22,
         strokeWidth: 2,
       });
     }

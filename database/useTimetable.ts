@@ -7,7 +7,7 @@ import { warn } from "@/utils/logger/logger";
 import { getDatabaseInstance } from "./DatabaseProvider"
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
-import { getWeekRangeForDate } from "./useCanteen";
+import { getDateRangeOfWeek } from "./useHomework";
 
 export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   const db = getDatabaseInstance();
@@ -15,7 +15,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
     for (const item of day.courses) {
       const id = generateId(JSON.stringify({...item, id: undefined}));
       const existing = await db.get('courses').query(
-        Q.where('id', id)
+        Q.where('courseId', id)
       ).fetch();
 
       if (existing.length > 0) { continue; }
@@ -26,6 +26,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           Object.assign(course, {
             createdByAccount: item.createdByAccount,
             courseId: id,
+            subject: item.subject,
             type: item.type,
             from: item.from.getTime(),
             to: item.to.getTime(),
@@ -35,7 +36,9 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             group: item.group,
             backgroundColor: item.backgroundColor,
             status: item.status,
-            url: item.url
+            customStatus: item.customStatus,
+            url: item.url,
+            kidName: item.kidName
           })
         })
       })
@@ -43,14 +46,14 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   }
 }
 
-export async function getCoursesFromCache(startDate: Date): Promise<SharedCourseDay[]> {
+export async function getCoursesFromCache(weekNumber: number): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    const { start, end } = getWeekRangeForDate(startDate);
+    const { start, end } = getDateRangeOfWeek(weekNumber);
 
     const courses = await database
       .get<Course>('courses')
-      .query(Q.where('date', Q.between(start.getTime(), end.getTime())))
+      .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
       .fetch();
 
     const dayMap: Record<string, SharedCourse[]> = {};

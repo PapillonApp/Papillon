@@ -1,11 +1,22 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
+<<<<<<< HEAD
 import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 
+=======
+import { AlignCenter, CheckCheck, ChevronDown, Search, SquareDashed } from "lucide-react-native";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
+import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
+
+import { getManager } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import { useAlert } from "@/ui/components/AlertProvider";
+>>>>>>> main
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
@@ -17,6 +28,7 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
+<<<<<<< HEAD
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
 
@@ -108,14 +120,45 @@ const mockHomework = [
 
 type HomeworkItem = typeof mockHomework[number];
 
+=======
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
+import * as Papicons from '@getpapillon/papicons';
+import Icon from "@/ui/components/Icon";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
+
+const EmptyListComponent = memo(() => (
+  <Dynamic animated key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      margin={16}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons.Check />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Tasks_NoTasks_Title')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Tasks_NoTasks_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
+>>>>>>> main
 
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
   const headerHeight = useHeaderHeight();
+  const alert = useAlert()
   const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+<<<<<<< HEAD
   const [selectedWeek, setSelectedWeek] = useState(16);
   const [aiInitialized, setAiInitialized] = useState(false);
 
@@ -135,14 +178,33 @@ export default function TabOneScreen() {
 
     initializeAI();
   }, []);
+=======
+  const [selectedWeek, setSelectedWeek] = useState(53);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const manager = getManager();
+
+  useEffect(() => {
+    const fetchHomeworks = async () => {
+      const result = await manager.getHomeworks(selectedWeek);
+      setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+    };
+
+    fetchHomeworks();
+  }, [selectedWeek]);
+>>>>>>> main
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+<<<<<<< HEAD
   const [homework, setHomework] = useState<Record<number, HomeworkItem[]>>({
     16: mockHomework,
   });
+=======
+  const [homework, setHomework] = useState<Record<number, Homework[]>>({});
+>>>>>>> main
 
   // Prédire le type de devoir avec l'IA
   const predictHomeworkType = useCallback(async (content: string): Promise<string | null> => {
@@ -212,8 +274,38 @@ export default function TabOneScreen() {
   }, [homework, selectedWeek]);
 
   const onProgressChange = useCallback((index: number, newProgress: number) => {
+    const updateHomeworkCompletion = async (homeworkItem: Homework, index: number) => {
+      try {
+        const manager = getManager();
+        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
+        setHomework((prev) => {
+          const updated = [...prev[selectedWeek]];
+          updated[index] = updatedHomework;
+          return { ...prev, [selectedWeek]: updated };
+        });
+      } catch (error) {
+        alert.showAlert({
+          title: "Une erreur est survenue",
+          message: "Ce devoir n'a pas été mis à jour",
+          description: "Nous n'avons pas réussi à mettre à jour l'état du devoir, si ce devoir est important, merci de vous rendre sur l'application officiel de votre établissement afin de définir son état.",
+          color: "#D60046",
+          icon: "TriangleAlert",
+          technical: String(error)
+        });
+      }
+    };
+
     setHomework((prev) => {
-      if (prev[selectedWeek][index].progress === newProgress) { return prev; }
+      if (!prev[selectedWeek] || !prev[selectedWeek][index]) {
+        return prev;
+      }
+
+      if (prev[selectedWeek][index].progress === newProgress) {
+        return prev;
+      }
+
+      updateHomeworkCompletion(prev[selectedWeek][index], index);
+
       const updated = [...prev[selectedWeek]];
       updated[index] = { ...updated[index], progress: newProgress };
       return { ...prev, [selectedWeek]: updated };
@@ -225,13 +317,14 @@ export default function TabOneScreen() {
   }, [currentHomework]);
 
   const leftHomeworks = React.useMemo(() => {
-    return (currentHomework.filter((h) => h.progress < 1).length);
+    return (currentHomework.filter((h) => !h.isDone).length);
   }, [currentHomework]);
 
   const percentageComplete = React.useMemo(() => {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
   }, [lengthHomeworks, leftHomeworks]);
 
+<<<<<<< HEAD
   const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => {
     // Obtenir le texte de description du type de devoir
     const getTaskTypeText = (prediction: string | null) => {
@@ -267,8 +360,47 @@ export default function TabOneScreen() {
       />
     );
   }, [onProgressChange, colors.text]);
+=======
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    const fetchHomeworks = async () => {
+      try {
+        const result = await manager.getHomeworks(selectedWeek);
+        setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+      } catch (error) {
+        alert.showAlert({
+          title: "Erreur de chargement",
+          message: "Impossible de charger les devoirs",
+          description: "Veuillez vérifier votre connexion internet et réessayer.",
+          color: "#D60046",
+          icon: "TriangleAlert",
+          technical: String(error)
+        });
+      } finally {
+        setIsRefreshing(false);
+      }
+    };
 
-  const keyExtractor = useCallback((item: HomeworkItem) => item.homeworkId, []);
+    fetchHomeworks();
+  }, [selectedWeek, manager, alert]);
+
+  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
+    <Task
+      subject={getSubjectName(item.subject)}
+      emoji={getSubjectEmoji(item.subject)}
+      title={""}
+      color={getSubjectColor(item.subject)}
+      description={item.content.replace(/<[^>]*>/g, "")}
+      date={new Date(item.dueDate)}
+      progress={item.isDone ? 1 : 0}
+      index={index}
+      fromCache={item.fromCache ?? false}
+      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+    />
+  ), [onProgressChange]);
+>>>>>>> main
+
+  const keyExtractor = useCallback((item: Homework) => item.id, []);
 
   const memoizedData = useMemo(() => currentHomework, [currentHomework]);
 
@@ -299,10 +431,38 @@ export default function TabOneScreen() {
     setShowWeekPicker((prev) => !prev);
   }, []);
 
+  function getStatusText() {
+    switch (leftHomeworks) {
+      case 0:
+        return t('Tasks_NoTasks_Nav');
+      case 1:
+        return t('Tasks_Nav_One');
+      default:
+        return t('Tasks_Nav_Left', { count: leftHomeworks });
+    }
+  }
+
+  const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
+
+  function marginTop(): number {
+    if (runsIOS26()) {
+      if (fullyScrolled) {
+        return 6
+      }
+      return 0
+    }
+
+    if (Platform.OS === 'ios') {
+      return -4
+    }
+
+    return -2
+  }
+
   return (
     <>
       <TabFlatList
-        radius={34}
+        radius={36}
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
@@ -313,37 +473,49 @@ export default function TabOneScreen() {
         estimatedItemSize={212}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
+<<<<<<< HEAD
+=======
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={100}
+          />
+        }
+>>>>>>> main
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
-            <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
-              {lengthHomeworks === 0 ? (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
-                  </Typography>
-                </Stack>
-              ) : (leftHomeworks > 0 ? (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
-                    <Typography inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
-                      {leftHomeworks}
+            <LayoutAnimationConfig skipEntering>
+              <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
+                {lengthHomeworks === 0 ? (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
                     </Typography>
-                  </Dynamic>
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
-                  </Typography>
-                </Stack>
-              ) : (
-                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                  <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
-                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                    {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
-                  </Typography>
-                </Stack>
-              ))}
-            </Dynamic>
+                  </Stack>
+                ) : (leftHomeworks > 0 ? (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
+                      <AnimatedNumber inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
+                        {leftHomeworks}
+                      </AnimatedNumber>
+                    </Dynamic>
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
+                    </Typography>
+                  </Stack>
+                ) : (
+                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                    <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                      {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Dynamic>
+            </LayoutAnimationConfig>
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }} key={`circular-progress-week-ct:${selectedWeek}`}>
               <CircularProgress
                 backgroundColor={colors.text + "22"}
@@ -357,6 +529,7 @@ export default function TabOneScreen() {
         )}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        ListEmptyComponent={<EmptyListComponent />}
       />
 
       {!runsIOS26() && fullyScrolled && (
@@ -506,7 +679,7 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: marginTop(),
             }}
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
@@ -517,6 +690,10 @@ export default function TabOneScreen() {
                 <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
+              </Dynamic>
+
+              <Dynamic animated>
+                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
               </Dynamic>
             </Dynamic>
             {fullyScrolled && (
@@ -529,14 +706,7 @@ export default function TabOneScreen() {
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
                   <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
-                    {lengthHomeworks === 0 ?
-                      t('Tasks_NoTasks_Nav') :
-                      leftHomeworks > 1 ?
-                        t('Tasks_Nav_Left', { count: leftHomeworks }) :
-                        leftHomeworks === 1 ?
-                          t('Tasks_Nav_One') :
-                          t('Tasks_Nav_Completed')
-                    }
+                    {statusText}
                   </Typography>
                 </Dynamic>
               </Reanimated.View>

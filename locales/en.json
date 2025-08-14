@@ -7,6 +7,7 @@
   "Tab_Grades": "Grades",
   "Tab_Profile": "Profile",
   "Tab_Page": "Page",
+  "Tab_Settings": "Settings",
   
   "Tab_New_Event": "New event",
 
@@ -41,7 +42,7 @@
 
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
 
-  "Tab_Calendar_Empty": "No events found.",
+  "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
 
   "Tasks_LeftHomeworks_Title": "remaining tasks",
@@ -53,10 +54,12 @@
   "Tasks_Nav_Completed": "Everything is done!",
   "Tasks_Week": "Week",
   "Tasks_NoTasks_Title": "No tasks",
+  "Tasks_NoTasks_Description": "There are no tasks scheduled for this week. Enjoy your break!",
   "Tasks_NoTasks_ForWeek": "for week {{week}}",
   "Tasks_NoTasks_Nav": "No tasks left",
   "Task_Start": "To do",
   "Task_Complete": "Done",
+  "Settings_General": "General",
 
   "Grades_Avg_All_Title": "Overall average",
   "Grades_Avg_All_Short": "Overall avg.",
@@ -74,4 +77,41 @@
 
   "Grades_Menu_SortBy": "Sort by",
   "Grades_Menu_AverageBy": "Average by",
+
+  "Grades_Empty_Title": "No grades",
+  "Grades_Empty_Description": "You haven't been graded yet for this period.",
+
+  "Profile_Attendance_Title": "Attendance",
+  "Profile_Attendance_Denominator_Single": "delay",
+  "Profile_Attendance_Denominator_Plural": "delays",
+
+  "Profile_Discussions_Title": "Discussions",
+  "Profile_Discussions_Denominator_Single": "message",
+  "Profile_Discussions_Denominator_Plural": "messages",
+
+  "Profile_News_Title": "News",
+  "Profile_News_Denominator_Single": "news",
+  "Profile_News_Denominator_Plural": "news",
+
+  "Profile_Cards_Title": "Cards",
+
+  "Settings_Account_Title": "My account",
+  "Settings_Account_Description": "My account",
+  "Settings_Services_Title": "Linked services",
+  "Settings_Notifications_Title": "Notifications",
+  "Settings_Notifications_Description": "Alerts, frequency...",
+  "Settings_Subjects_Title": "Subjects",
+  "Settings_Subjects_Description": "Name, color, font...",
+  "Settings_Personalization_Title": "Personalization",
+  "Settings_Personalization_Description": "Themes, colors...",
+  "Settings_Cards_Title": "Cards",
+  "Settings_Cards_Description": "Canteen, access...",
+  "Settings_Accessibility_Title": "Accessibility",
+  "Settings_Accessibility_Description": "Display, sound...",
+  "Settings_MagicPlus_Title": "Magic+",
+  "Settings_MagicPlus_Description": "Smart features",
+  "Settings_Donate_Title": "Donate",
+  "Settings_Donate_Description": "Support the project",
+  "Settings_About_Title": "About",
+  "Settings_About_Description": "version 8.0.0"
 }

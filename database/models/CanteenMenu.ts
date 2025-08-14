@@ -6,9 +6,9 @@ import { field } from '@nozbe/watermelondb/decorators';
 import { Meal } from '@/services/shared/canteen';
 
 export default class CanteenMenu extends Model {
-  static table = "canteenmenus";
+  	static table = "canteenmenus";
 
-	@field('menuId') id: string;
+	@field('menuId') menuId: string;
 	@field('date') date: number;
 	@field('lunch') lunchRaw: string;
 	@field('dinner') mealRaw: string;

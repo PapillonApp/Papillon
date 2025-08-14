@@ -16,7 +16,7 @@ module.exports = {
     },
     ios: {
       bundleIdentifier: "xyz.getpapillon.ios.beta",
-      supportsTablet: true,
+      supportsTablet: true
     },
     android: {
       package: "xyz.getpapillon.app.beta",
@@ -48,6 +48,15 @@ module.exports = {
         },
       ],
       "react-native-bottom-tabs",
+      [
+        "expo-location",
+        {
+          locationWhenInUsePermission:
+            "Papillon utilise ton emplacement pour trouver les établissements autour de toi.",
+          cameraPermission:
+            "Papillon utilise ta caméra pour scanner des QR-codes pour te connecter, pour capturer des documents, ou pour des fonctionnalités amusantes telles que les réactions.",
+        },
+      ],
       [
         "react-native-edge-to-edge",
         {

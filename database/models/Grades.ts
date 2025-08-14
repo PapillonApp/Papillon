@@ -15,6 +15,7 @@ export class Period extends Model {
   };
 
   @field('createdByAccount') createdByAccount: string;
+	@field('kidName') kidName?: string;
   @field('name') name: string;
   @field('periodId') id: string;
   @field('start') start: number;

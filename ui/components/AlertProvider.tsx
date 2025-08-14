@@ -1,35 +1,33 @@
+import * as LucideIcons from "lucide-react-native";
+import type { ComponentType } from "react";
 import React, {
   createContext,
   ReactNode,
-  useContext,
-  useState,
   useCallback,
+  useContext,
+  useEffect,
   useMemo,
   useRef,
-  useEffect,
+  useState,
 } from "react";
-
-import { Animation } from '../utils/Animation';
-
-import type { ComponentType } from "react";
-import * as LucideIcons from "lucide-react-native";
-
 import {
   Pressable,
   StyleSheet,
 } from "react-native";
-
 import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 
+import { Animation } from '../utils/Animation';
+
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 
-import Typography from "./Typography";
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import { useTheme } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import Typography from "./Typography";
 
 // Extend Alert type with unique ID for better performance
 type Alert = {
@@ -40,6 +38,7 @@ type Alert = {
   technical?: string;
   icon?: string;
   color?: string;
+  withoutNavbar?: boolean;
 };
 
 type AlertContextType = {
@@ -65,34 +64,34 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const showAlert = useCallback((alert: Alert) => {
     const alertId = alert.id || `alert_${Date.now()}_${Math.random()}`;
     const alertWithId = { ...alert, id: alertId };
-    
+
     setAlerts((prevAlerts) => [...prevAlerts, alertWithId]);
-    
+
     // Clear existing timeout if alert is updated
     const existingTimeout = timeoutRefs.current.get(alertId);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
-    
+
     // Automatically remove the alert after 5 seconds
     const timeout = setTimeout(() => {
       setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
     }, 5000);
-    
+
     timeoutRefs.current.set(alertId, timeout);
   }, []);
 
   // Memoized container style to prevent style recalculations
   const containerStyle = useMemo(() => ({
     position: "absolute" as const,
-    bottom: 82,
+    bottom: alerts.some(alert => alert.withoutNavbar) ? 22 : 82,
     left: 0,
     right: 0,
     padding: 14,
     zIndex: 1000,
     gap: 10,
-  }), []);
+  }), [alerts]);
 
   // Memoized alert removal function
   const removeAlert = useCallback((alertId: string) => {
@@ -156,7 +155,7 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
 
   // Memoized icon component to prevent re-renders
   const IconComponent = useMemo(() => {
-    if (!alert.icon || typeof alert.icon !== "string") {return null;}
+    if (!alert.icon || typeof alert.icon !== "string") { return null; }
     return LucideIcons[alert.icon as keyof typeof LucideIcons] as ComponentType<any>;
   }, [alert.icon]);
 
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 3,
     // Add elevation for Android performance
-    elevation: 2,
+    elevation: 1,
   },
   iconContainer: {
     // Empty for now, can be used for icon-specific optimizations

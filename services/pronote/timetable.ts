@@ -9,26 +9,21 @@ import {
   translateToWeekNumber,
 } from "pawnote";
 
+import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
 
 export async function fetchPronoteWeekTimetable(
   session: SessionHandle,
   accountId: string,
-  date: Date
+  weekNumberRaw: number
 ): Promise<CourseDay[]> {
   if (!session) {
     error("Session is undefined", "fetchPronoteTimetable");
   }
 
-  const timetableTab = session.user.resources[0].tabs.get(
-    TabLocation.Timetable
-  );
-  if (!timetableTab) {
-    error("Timetable tab not found in session", "fetchPronoteTimetable");
-  }
-
-  const weekNumber = translateToWeekNumber(date, session.instance.firstMonday);
+  const { start } = getDateRangeOfWeek(weekNumberRaw)
+  const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
   const timetable = await timetableFromWeek(session, weekNumber);
 
   parseTimetable(session, timetable, {
@@ -83,6 +78,7 @@ const mapCourses = (
         teacher: c.teacherNames.join(", "),
         group: c.groupNames.join(", "),
         status: mapCourseStatus(c),
+        customStatus: c.status,
         resourceId: c.lessonResourceID,
         ...baseCourse
       });

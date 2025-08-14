@@ -1,8 +1,8 @@
-import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useCallback, useState, useRef } from "react";
-import { ViewProps, StyleProp, ViewStyle } from "react-native";
-import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 import { LegendList } from "@legendapp/list";
+import { useTheme } from "@react-navigation/native";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { StyleProp, ViewProps, ViewStyle } from "react-native";
+import Reanimated, { EntryExitTransition, LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import Item from "./Item";
@@ -12,9 +12,12 @@ interface ListProps extends ViewProps {
   children?: React.ReactNode;
   disablePadding?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  animated?: boolean;
   entering?: EntryExitTransition;
   exiting?: EntryExitTransition;
+  radius?: number; // NEW: radius for rounded corners
   disableItemAnimation?: boolean; // NEW: disables Reanimated.View for each item
+  marginBottom?: number; // NEW: margin bottom for the list container
   // Performance monitoring (dev only)
   __PERF_MONITOR__?: boolean;
 }
@@ -37,14 +40,12 @@ const MEMOIZATION_THRESHOLD = 10; // Use heavy memoization for 10+ items
 const BASE_CONTAINER_STYLE: ViewStyle = Object.freeze({
   flex: 1,
   width: "100%",
-  marginBottom: 12,
-  borderRadius: 20,
   borderCurve: "continuous",
   shadowColor: "#000000",
   shadowOffset: { width: 0, height: 0 },
   shadowOpacity: 0.16,
   shadowRadius: 1.5,
-  elevation: 2,
+  elevation: 1,
 });
 
 const BASE_ITEM_STYLE: ViewStyle = Object.freeze({
@@ -205,8 +206,11 @@ const List: React.FC<ListProps> = React.memo(
     disablePadding = false,
     style,
     contentContainerStyle,
+    animated = true,
     entering,
     exiting,
+    radius = 20,
+    marginBottom = 12,
     ...rest
   }) => {
     const { colors } = useTheme();
@@ -216,9 +220,13 @@ const List: React.FC<ListProps> = React.memo(
       const baseStyle = {
         ...BASE_CONTAINER_STYLE,
         backgroundColor: colors.card,
+        borderColor: colors.border,
+        borderWidth: 0.5,
+        borderRadius: radius,
+        marginBottom: marginBottom,
       };
       return style ? [baseStyle, style] : baseStyle;
-    }, [colors.card, style]);
+    }, [colors.card, style, __DEV__ && radius]);
 
     // Memoize border color with hex optimization
     const borderBottomColor = useMemo(() => `${colors.text}${OPACITY_HEX}`, [colors.text]);
@@ -407,7 +415,7 @@ const List: React.FC<ListProps> = React.memo(
 
     return (
       <Reanimated.View
-        layout={LAYOUT_ANIMATION}
+        layout={animated ? LAYOUT_ANIMATION : undefined}
         style={containerStyle}
         entering={entering}
         exiting={exiting}

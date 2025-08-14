@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useEffect, useState } from 'react';
+
 import { useDatabase } from './DatabaseProvider';
 import Event from './models/Event';
 

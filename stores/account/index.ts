@@ -3,20 +3,6 @@ import { persist } from 'zustand/middleware'
 
 import { createMMKVStorage } from '../global'
 import { AccountsStorage, Auth } from "./types";
-import { getEncryptionKeyFromKeychain } from '../global/encryption';
-import { log } from '@/utils/logger/logger';
-
-const createInitialStorage = () => {
-  let storage = createMMKVStorage<AccountsStorage>("account-storage");
-  log("Non-encrypted account storage created");
-  
-  getEncryptionKeyFromKeychain().then(encryptionKey => {
-    log("Upgrading non-encrypted account storage to encrypted storage");
-    storage = createMMKVStorage<AccountsStorage>("account-storage", encryptionKey);
-  });
-  
-  return storage;
-};
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
@@ -39,11 +25,85 @@ export const useAccountStore = create<AccountsStorage>()(
           return account;
         }),
       }),
-      setLastUsedAccount: (accountId) => set({ lastUsedAccount: accountId }),
+      addServiceToAccount: (accountId, service) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === accountId) {
+            return {
+              ...account,
+              services: [...account.services, service],
+            };
+          }
+          return account;
+        }),
+      }),
+      setLastUsedAccount: (accountId: string) => set({ lastUsedAccount: accountId }),
+      setSubjectColor: (subject: string, color: string) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === get().lastUsedAccount) {
+            return {
+              ...account,
+              customisation: {
+                ...account.customisation,
+                subjects: {
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: account.customisation?.subjects?.[subject]?.emoji || '',
+                    name: account.customisation?.subjects?.[subject]?.name || '',
+                    color: color
+                  }
+                }
+              }
+            };
+          }
+          return account
+        }),
+      }),
+      setSubjectEmoji: (subject: string, emoji: string) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === get().lastUsedAccount) {
+            return {
+              ...account,
+              customisation: {
+                ...account.customisation,
+                subjects: {
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: emoji,
+                    color: account.customisation?.subjects?.[subject]?.color || '',
+                    name: account.customisation?.subjects?.[subject]?.name || '',
+                  }
+                }
+              }
+            };
+          }
+          return account
+        }),
+      }),
+      setSubjectName: (subject: string, name: string) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === get().lastUsedAccount) {
+            return {
+              ...account,
+              customisation: {
+                ...account.customisation,
+                subjects: {
+                  ...account.customisation?.subjects,
+                  [subject]: {
+                    emoji: account.customisation?.subjects?.[subject]?.emoji || '',
+                    color: account.customisation?.subjects?.[subject]?.color || '',
+                    name: name,
+                  }
+                }
+              }
+            };
+          }
+          return account
+        }),
+      })
     }),
     {
       name: 'account-storage',
-      storage: createInitialStorage(),
+      storage: createMMKVStorage<AccountsStorage>("account-storage", "3f64fc8d-472d-43d5-ba11-461020e2423b")
     }
   )
 )

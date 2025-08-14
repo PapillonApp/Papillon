@@ -1,6 +1,7 @@
+import { Assignment } from "skolengojs";
+
 import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
-import { Assignment } from "skolengojs";
 
 /**
  *  This interface defines the general structure of a homework object.
@@ -21,10 +22,11 @@ export interface Homework extends GenericInterface{
   content: string;
   dueDate: Date;
   isDone: boolean;
-  returnFormat: ReturnFormat;
+  returnFormat?: ReturnFormat;
   attachments: Attachment[];
   evaluation: boolean;
   custom: boolean;
+  progress?: number;
 	ref?: Assignment;
 }
 

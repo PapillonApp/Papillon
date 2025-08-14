@@ -1,13 +1,14 @@
-import React, { ScrollView, StyleSheet, View } from "react-native";
-import { Hamburger } from "lucide-react-native";
-
-import { ClockIcon } from "@/ui/components/Course";
-import Typography from "@/ui/components/Typography";
-import Course from "@/ui/components/Course";
 import { useTheme } from "@react-navigation/native";
-import { log } from "@/utils/logger/logger";
-import List from "@/ui/components/List";
+import { Hamburger } from "lucide-react-native";
+import React, { ScrollView, StyleSheet, View } from "react-native";
+
+import * as Papicons from "@getpapillon/papicons"
+import Course from "@/ui/components/Course";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Typography from "@/ui/components/Typography";
+import { log } from "@/utils/logger/logger";
+import Icon from "@/ui/components/Icon";
 
 
 
@@ -111,7 +112,9 @@ export default function TabOneScreen() {
           showTimes={false}
           magicInfo={{
             label: "Dans 20 minutes",
-            icon: ({ color }) => <ClockIcon color={color} />,
+            icon: ({ color }) => <Icon papicon size={24} fill={color}>
+              <Papicons.Clock />
+            </Icon>,
           }}
         />
       </View>

@@ -1,12 +1,13 @@
 import { Model, Q } from "@nozbe/watermelondb";
 
-import { CanteenMenu as SharedCanteenMenu } from "@/services/shared/canteen";
+import { CanteenMenu as SharedCanteenMenu, CanteenHistoryItem as SharedCanteenHistoryItem } from "@/services/shared/canteen";
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
-import { mapCanteenMenuToShared } from "./mappers/canteen";
+import { mapCanteenMenuToShared, mapCanteenTransactionToShared } from "./mappers/canteen";
 import CanteenMenu from "./models/CanteenMenu";
+import CanteenHistoryItem from "./models/CanteenHistory";
 
 
 export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
@@ -14,7 +15,7 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
   for (const item of menus) {
     const id = generateId(item.createdByAccount + item.date)
     const existing = await db.get('canteenmenus').query(
-      Q.where('id', id)
+      Q.where('menuId', id)
     ).fetch();
 
     if (existing.length > 0) {continue;}
@@ -23,7 +24,7 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
       await db.get('canteenmenus').create((record: Model) => {
         const menu = record as CanteenMenu;
         Object.assign(menu, {
-          id: id,
+          menuId: id,
           date: item.date.getTime(),
           lunch: JSON.stringify(item.lunch),
           dinner: JSON.stringify(item.dinner),
@@ -46,6 +47,50 @@ export async function getCanteenMenuFromCache(startDate: Date): Promise<SharedCa
 
     return menus
       .map(mapCanteenMenuToShared)
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  } catch (e) {
+    warn(String(e));
+    return [];
+  }
+}
+
+export async function addCanteenTransactionToDatabase(transactions: SharedCanteenHistoryItem[]) {
+  const db = getDatabaseInstance();
+  for (const item of transactions) {
+    const id = generateId(item.createdByAccount + item.date + item.amount + item.label + item.currency)
+    const existing = await db.get('canteentransactions').query(
+      Q.where('menuId', id)
+    ).fetch();
+
+    if (existing.length > 0) {continue;}
+		
+    await db.write(async () => {
+      await db.get('canteentransactions').create((record: Model) => {
+        const menu = record as CanteenHistoryItem;
+        Object.assign(menu, {
+          createdByAccount: item.createdByAccount,
+          transactionId: id,
+          date: item.date,
+          label: item.label,
+          currency: item.currency,
+          amount: item.amount
+        });
+      });
+    });
+  }
+}
+
+export async function getCanteenTransactionsFromCache(): Promise<SharedCanteenHistoryItem[]> {
+  try {
+    const database = getDatabaseInstance();
+
+    const transactions = await database
+      .get<CanteenHistoryItem>('canteentransactions')
+      .query()
+      .fetch();
+
+    return transactions
+      .map(mapCanteenTransactionToShared)
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   } catch (e) {
     warn(String(e));
