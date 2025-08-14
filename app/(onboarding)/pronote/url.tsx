@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { RelativePathString, router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -18,6 +18,8 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { cleanURL, instance } from 'pawnote';
+import { useAlert } from '@/ui/components/AlertProvider';
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;
@@ -91,6 +93,7 @@ export default function URLInputScreen() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
 
+  const alert = useAlert()
   const [instanceURL, setInstanceURL] = useState<string>("")
 
   const scrollY = useSharedValue(0);
@@ -257,6 +260,58 @@ export default function URLInputScreen() {
                 autoCorrect={false}
                 autoComplete="url"
                 keyboardType="url"
+                onSubmitEditing={async () => {
+                  Keyboard.dismiss();
+
+                  if (instanceURL.includes("http") && !instanceURL.includes("https")) {
+                    return alert.showAlert({
+                      title: "Instance non supportée",
+                      description: "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous vous recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
+                      icon: "TriangleAlert",
+                      color: "#D60046",
+                      withoutNavbar: true
+                    })
+                  }
+
+                  const cleanedURL = cleanURL(instanceURL);
+                  let instanceInfo = null;
+
+                  if (instanceURL.includes("demo")) {
+                    return alert.showAlert({
+                      title: "Connexion impossible",
+                      description: "Papillon n'est pas fait pour fonctionner avec des instances de démonstration, merci d'utiliser une autre instance.",
+                      icon: "TriangleAlert",
+                      color: "#D60046",
+                      withoutNavbar: true
+                    });
+                  }
+
+                  try {
+                    instanceInfo = await instance(cleanedURL);
+                  } catch {
+                    try {
+                      instanceInfo = await instance(cleanedURL.replace(".index-education.net", ".pronote.toutatice.fr"));
+                    } catch (error) {
+                      return alert.showAlert({
+                        title: "Connexion impossible",
+                        description: "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
+                        icon: "TriangleAlert",
+                        technical: String(error),
+                        color: "#D60046",
+                        withoutNavbar: true
+                      });
+                    }
+                  }
+
+                  console.log(instanceInfo)
+
+                  if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
+                    return router.push({
+                      pathname: "../pronote/webview" as unknown as RelativePathString,
+                      params: { url: instanceURL }
+                    })
+                  }
+                }}
               />
             </Stack>
           </Stack>

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Pressable, Keyboard, View, ActivityIndicator } from 'react-native';
-import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -15,6 +15,7 @@ import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
   Extrapolate,
   interpolate,
+  LinearTransition,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -27,6 +28,7 @@ import { Services } from '@/stores/account/types';
 import { geolocation } from 'pawnote';
 import TableFlatList from '@/ui/components/TableFlatList';
 import { getInitials } from '@/utils/chats/initials';
+import { log } from '@/utils/logger/logger';
 
 const INITIAL_HEIGHT = 450;
 const COLLAPSED_HEIGHT = 300;
@@ -223,7 +225,14 @@ export default function SelectSchoolOnMap() {
           <Typography variant="h6" color={getProfileColorByName(sanitizedSchoolName)}>
             {getInitials(sanitizedSchoolName)}
           </Typography>
-        </View>
+        </View>,
+        onPress: () => {
+          log("Opening Webview for service " + Services[Number(local.service)] + " and URL " + school.url);
+          router.push({
+            pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
+            params: { url: school.url }
+          })
+        }
       };
     });
   }, [schools]);
@@ -286,8 +295,10 @@ export default function SelectSchoolOnMap() {
           const noSchoolsFound = position !== null && schools.length === 0;
           const schoolsList = (
             <AnimatedFlatList
+              showsVerticalScrollIndicator={false}
               onScroll={scrollHandler}
               scrollEventThrottle={16}
+              layout={LinearTransition.springify()}
               style={{
                 paddingTop: height.value + 16,
                 paddingHorizontal: 10,

@@ -55,6 +55,11 @@ export default function OnboardingLayout() {
                     name="pronote/url"
                     options={{ ...newScreenOptions }}
                 />
+                <Stack.Screen
+                    name="pronote/webview"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ url: "" }}
+                />
             </Stack>
         </View>
     );
