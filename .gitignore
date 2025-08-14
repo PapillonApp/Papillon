@@ -37,7 +37,7 @@ yarn-error.*
 *.tsbuildinfo
 
 ios/
-!ios/Papillon/*
+!ios/Papillon
 android/
 
 bun.lock
