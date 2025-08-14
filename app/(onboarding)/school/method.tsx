@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, useFocusEffect } from 'expo-router';
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -26,6 +26,7 @@ export default function WelcomeScreen() {
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const local = useGlobalSearchParams();
 
   const scrollY = React.useRef(useSharedValue(0)).current;
 
@@ -135,7 +136,7 @@ export default function WelcomeScreen() {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={scrollHandler}
-        data={loginMethods}
+        data={loginMethods.filter(methods => methods.availableFor.includes(Number(local.service)))}
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: height + 16,
