@@ -39,6 +39,15 @@ export default function OnboardingLayout() {
                     initialParams={{ service: Services.PRONOTE }}
                 />
                 <Stack.Screen
+                    name="school/map"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ service: Services.PRONOTE }}
+                />
+                <Stack.Screen
+                    name="restaurants/method"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
                     name="university/method"
                     options={{ ...newScreenOptions }}
                 />
