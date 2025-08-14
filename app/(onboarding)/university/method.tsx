@@ -115,18 +115,25 @@ export default function WelcomeScreen() {
             width="100%"
             gap={12}
           >
-            <Typography
-              variant="h5"
-              style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
-            >
-              Étape 1 sur 3
-            </Typography>
+            <Stack flex direction="horizontal">
+              <Typography
+                variant="h5"
+                style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+              >
+                Étape 1
+              </Typography>
+              <Typography
+                variant="h5"
+                style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+              >
+                sur 3
+              </Typography>
+            </Stack>
             <Typography
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
             >
-              Sélectionne ton
-              service universitaire
+              Sélectionne ton service universitaire
             </Typography>
           </Stack>
         </Stack>
