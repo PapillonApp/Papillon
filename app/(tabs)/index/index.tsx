@@ -29,6 +29,7 @@ import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
+import { checkAndUpdateModel } from "@/utils/magic/updater";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -106,8 +107,6 @@ export default function TabOneScreen() {
     }
   };
 
-<<<<<<< HEAD
-=======
   const testArdConnection = async () => {
     try {
       setArdLoading(true);
@@ -146,7 +145,6 @@ export default function TabOneScreen() {
     }
   };
 
->>>>>>> main
   return (
     <>
       <LinearGradient
@@ -239,6 +237,31 @@ export default function TabOneScreen() {
                     Onboarding
                   </Typography>
                 </Item>
+                <Item
+                  onPress={async () => {
+                    try {
+                      const result = await checkAndUpdateModel(
+                        "8.0.0",
+                        "http://192.168.1.124:8000/"
+                      );
+
+                      console.log("Résultat mise à jour:", result);
+
+                      Alert.alert(
+                        "Model Updater",
+                        `Updated: ${result.updated}\nReason: ${result.reason ?? "ok"}`
+                      );
+                    } catch (error) {
+                      console.error("Erreur checkAndUpdateModel:", error);
+                      Alert.alert("Erreur", String(error));
+                    }
+                  }}
+                >
+                  <Typography variant="title" color="text">
+                    checkAndUpdateModel
+                  </Typography>
+                </Item>
+
               </List>
             )
           }
@@ -280,29 +303,6 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-<<<<<<< HEAD
-        <Button
-          title="Papillon Magic+"
-          onPress={() => router.navigate("/ai")}
-        />
-
-        <Button
-          title="Login to Papillon Demo Account"
-          inline
-          loading={loading}
-          variant="outline"
-          onPress={() => loginDemoAccount()}
-        />
-        <Button
-          title="Init AccountManager"
-          inline
-          loading={loading}
-          variant="outline"
-          onPress={() => InitManager()}
-        />
-      </Stack>
-    </ScrollView>
-=======
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable
           layout={Animation(LinearTransition)}
@@ -340,7 +340,6 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
     </>
->>>>>>> main
   );
 }
 

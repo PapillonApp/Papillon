@@ -1,13 +1,6 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-<<<<<<< HEAD
-import { AlignCenter, CheckCheck, Search, SquareDashed } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FlatList, Platform, Pressable, Text, useWindowDimensions, View } from "react-native";
-import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-
-=======
 import { AlignCenter, CheckCheck, ChevronDown, Search, SquareDashed } from "lucide-react-native";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
@@ -16,7 +9,6 @@ import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransitio
 import { getManager } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
 import { useAlert } from "@/ui/components/AlertProvider";
->>>>>>> main
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
@@ -28,99 +20,6 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
-<<<<<<< HEAD
-import { log } from "@/utils/logger/logger";
-import ModelManager from "@/utils/magic/ModelManager";
-
-const mockHomework = [
-  {
-    homeworkId: 'hw-001',
-    subjectId: 'math',
-    subjectName: 'Mathématiques',
-    subjectEmoji: '📚',
-    title: 'Exercices de mathématiques',
-    content: 'Faire les exercices 1, 2 et 3 de la page 200 et voir les infos sur beaucoup d&apos;infos il faut resumer',
-    dueDate: 1721606400000, // timestamp
-    isDone: false,
-    returnFormat: 1,
-    attachments: 'math_exercices.pdf',
-    evaluation: false,
-    custom: false,
-    color: '#558000',
-    progress: 0, // 0% completed
-    aiPrediction: null as string | null,
-  },
-  {
-    homeworkId: 'hw-002',
-    subjectId: 'eng',
-    subjectEmoji: '🇬🇧',
-    subjectName: 'Anglais',
-    title: 'Essay: "The impact of technology on youth"',
-    content: 'Write a 500-word essay discussing the impact of technology on youth culture and education.',
-    dueDate: 1721692800000,
-    isDone: true,
-    returnFormat: 2,
-    attachments: '',
-    evaluation: true,
-    custom: false,
-    color: '#1869b5',
-    progress: 0.85, // 85% completed
-    aiPrediction: null as string | null,
-  },
-  {
-    homeworkId: 'hw-003',
-    subjectId: 'cs',
-    subjectEmoji: '💻',
-    subjectName: 'Informatique',
-    title: 'Build a to-do app with React',
-    content: 'Evaluation de maths',
-    dueDate: 1721865600000,
-    isDone: false,
-    returnFormat: 0,
-    evaluation: true,
-    custom: true,
-    color: '#804f00',
-    progress: 1, // 100% completed
-    aiPrediction: null as string | null,
-  },
-  {
-    homeworkId: 'hw-004',
-    subjectId: 'history',
-    subjectName: 'Histoire',
-    subjectEmoji: '📜',
-    title: 'Read chapter 4 + summary',
-    content: 'Read chapter 4 of the textbook and write a summary of the key points discussed.',
-    dueDate: 1721952000000,
-    isDone: false,
-    returnFormat: 1,
-    attachments: 'chapter4.pdf',
-    evaluation: true,
-    custom: false,
-    color: '#800060',
-    progress: 0.5, // 50% completed
-    aiPrediction: null as string | null,
-  },
-  {
-    homeworkId: 'hw-005',
-    subjectId: 'science',
-    subjectName: 'Sciences',
-    subjectEmoji: '🔬',
-    title: 'Group project: Ecosystem poster',
-    content: 'Work in groups to create a poster about a specific ecosystem. Include information about flora, fauna, and environmental issues.',
-    dueDate: 1722124800000,
-    isDone: true,
-    returnFormat: 2,
-    evaluation: true,
-    custom: true,
-    color: '#008042',
-    progress: 0.75, // 75% completed
-    aiPrediction: null as string | null,
-  },
-];
-
-type HomeworkItem = typeof mockHomework[number];
-
-=======
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -148,7 +47,6 @@ const EmptyListComponent = memo(() => (
     </Stack>
   </Dynamic>
 ));
->>>>>>> main
 
 export default function TabOneScreen() {
   const theme = useTheme();
@@ -158,27 +56,6 @@ export default function TabOneScreen() {
   const windowDimensions = useWindowDimensions();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
-<<<<<<< HEAD
-  const [selectedWeek, setSelectedWeek] = useState(16);
-  const [aiInitialized, setAiInitialized] = useState(false);
-
-  // Initialiser l'IA au démarrage
-  useEffect(() => {
-    const initializeAI = async () => {
-      try {
-        log('[TASKS] Initializing AI model...');
-        await ModelManager.loadModel();
-        await ModelManager.loadTokenizer();
-        setAiInitialized(true);
-        log('[TASKS] AI model initialized successfully');
-      } catch (error) {
-        log(`[TASKS] Failed to initialize AI model: ${String(error)}`);
-      }
-    };
-
-    initializeAI();
-  }, []);
-=======
   const [selectedWeek, setSelectedWeek] = useState(53);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -192,82 +69,12 @@ export default function TabOneScreen() {
 
     fetchHomeworks();
   }, [selectedWeek]);
->>>>>>> main
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-<<<<<<< HEAD
-  const [homework, setHomework] = useState<Record<number, HomeworkItem[]>>({
-    16: mockHomework,
-  });
-=======
   const [homework, setHomework] = useState<Record<number, Homework[]>>({});
->>>>>>> main
-
-  // Prédire le type de devoir avec l'IA
-  const predictHomeworkType = useCallback(async (content: string): Promise<string | null> => {
-    if (!aiInitialized) {
-      return null;
-    }
-
-    try {
-      const prediction = await ModelManager.predict(content);
-      return prediction.predicted === 'null' ? null : prediction.predicted;
-    } catch (error) {
-      log(`[TASKS] Prediction error: ${String(error)}`);
-      return null;
-    }
-  }, [aiInitialized]);
-
-  // Mettre à jour les prédictions IA pour les devoirs
-  useEffect(() => {
-    const updatePredictions = async () => {
-      if (!aiInitialized) {
-        return;
-      }
-
-      // Seulement traiter la semaine courante pour éviter trop de prédictions
-      const currentWeekHomework = homework[selectedWeek] || [];
-      const itemsNeedingPrediction = currentWeekHomework.filter(item => item.aiPrediction === null);
-
-      if (itemsNeedingPrediction.length === 0) {
-        return;
-      }
-
-      log(`[TASKS] Running AI predictions for ${itemsNeedingPrediction.length} items`);
-
-      const updatedHomework = { ...homework };
-      let hasChanges = false;
-
-      // Traiter les prédictions une par une avec un petit délai pour éviter de surcharger
-      for (const item of itemsNeedingPrediction) {
-        try {
-          const prediction = await predictHomeworkType(item.content);
-          if (prediction !== null) {
-            const itemIndex = currentWeekHomework.findIndex(h => h.homeworkId === item.homeworkId);
-            if (itemIndex !== -1) {
-              updatedHomework[selectedWeek][itemIndex] = { ...item, aiPrediction: prediction };
-              hasChanges = true;
-            }
-          }
-        } catch (error) {
-          log(`[TASKS] Failed to predict for item ${item.homeworkId}: ${String(error)}`);
-        }
-
-        // Petit délai pour éviter de surcharger le modèle
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
-
-      if (hasChanges) {
-        setHomework(updatedHomework);
-        log(`[TASKS] Updated predictions for ${itemsNeedingPrediction.length} items`);
-      }
-    };
-
-    updatePredictions();
-  }, [aiInitialized, selectedWeek]); // Supprimé homework et predictHomeworkType des dépendances pour éviter les boucles
 
   const currentHomework = React.useMemo(() => {
     return homework[selectedWeek] || [];
@@ -324,43 +131,6 @@ export default function TabOneScreen() {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
   }, [lengthHomeworks, leftHomeworks]);
 
-<<<<<<< HEAD
-  const renderItem = useCallback(({ item, index }: { item: HomeworkItem; index: number }) => {
-    // Obtenir le texte de description du type de devoir
-    const getTaskTypeText = (prediction: string | null) => {
-      if (!prediction || prediction === 'null') {
-        return null;
-      }
-
-      const typeLabels: Record<string, string> = {
-        'evaluation': 'Évaluation',
-        'homework': 'Devoir',
-        'oral': 'Oral',
-        'finaltask': 'Projet final',
-        'sheets': 'Fiche'
-      };
-
-      return typeLabels[prediction] || `🔍 ${prediction}`;
-    };
-
-    const taskTypeText = getTaskTypeText(item.aiPrediction);
-
-    return (
-      <Task
-        subject={item.subjectName}
-        emoji={item.subjectEmoji}
-        color={item.color}
-        title={item.title}
-        description={item.content}
-        date={new Date(item.dueDate)}
-        progress={item.progress}
-        index={index}
-        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
-        magic={taskTypeText ?? undefined}
-      />
-    );
-  }, [onProgressChange, colors.text]);
-=======
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
     const fetchHomeworks = async () => {
@@ -398,7 +168,6 @@ export default function TabOneScreen() {
       onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />
   ), [onProgressChange]);
->>>>>>> main
 
   const keyExtractor = useCallback((item: Homework) => item.id, []);
 
@@ -473,8 +242,6 @@ export default function TabOneScreen() {
         estimatedItemSize={212}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
-<<<<<<< HEAD
-=======
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -482,7 +249,6 @@ export default function TabOneScreen() {
             progressViewOffset={100}
           />
         }
->>>>>>> main
         gap={16}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
@@ -660,7 +426,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            log("Add new task pressed");
+            console.log("Add new grade pressed");
           }}
         >
           <AlignCenter color={colors.text} />
@@ -717,7 +483,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
-            log("Search pressed");
+            console.log("Add new grade pressed");
           }}
         >
           <Search color={colors.text} />
