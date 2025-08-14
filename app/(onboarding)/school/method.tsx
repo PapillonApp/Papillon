@@ -70,8 +70,11 @@ export default function WelcomeScreen() {
     ],
   }));
 
-  const loginMethods = getLoginMethods((path: { pathname: string }) => {
-    router.push(path.pathname as unknown as RelativePathString);
+  const loginMethods = getLoginMethods((path: { pathname: RelativePathString }) => {
+    router.push({
+      pathname: path.pathname,
+      params: { service: local.service }
+    });
   });
 
   useFocusEffect(
@@ -116,12 +119,20 @@ export default function WelcomeScreen() {
             width="100%"
             gap={12}
           >
-            <Typography
-              variant="h5"
-              style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
-            >
-              Étape 2 sur 3
-            </Typography>
+            <Stack flex direction="horizontal">
+              <Typography
+                variant="h5"
+                style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+              >
+                Étape 2
+              </Typography>
+              <Typography
+                variant="h5"
+                style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+              >
+                sur 3
+              </Typography>
+            </Stack>
             <Typography
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
