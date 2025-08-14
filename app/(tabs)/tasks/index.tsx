@@ -84,7 +84,7 @@ export default function TabOneScreen() {
     const updateHomeworkCompletion = async (homeworkItem: Homework, index: number) => {
       try {
         const manager = getManager();
-        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, true);
+        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
         setHomework((prev) => {
           const updated = [...prev[selectedWeek]];
           updated[index] = updatedHomework;
