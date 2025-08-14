@@ -196,7 +196,7 @@ export default function TabOneScreen() {
               </Stack>
             )
           },
-          __DEV__ && {
+          {
             icon: <Papicons.Ghost />,
             title: "Outils de développement",
             render: () => (
