@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>papillon</string>
-          <string>xyz.getpapillon.ios.beta</string>
+          <string>xyz.getpapillon.ios</string>
         </array>
       </dict>
       <dict>
