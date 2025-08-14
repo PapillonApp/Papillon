@@ -8,7 +8,9 @@ brew install node
 
 # Install dependencies
 echo "===== Running npm install ====="
+cd ../..
 npm install --legacy-peer-deps
+echo "===== Running expo prebuild ====="
 npx expo prebuild
 echo "===== Running pod install ====="
 cd ios
