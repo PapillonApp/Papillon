@@ -1,6 +1,7 @@
 import { Services } from '@/stores/account/types';
 import * as Papicons from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
+import { UnknownInputParams } from 'expo-router';
 
 export interface SupportedService {
     name: string;
@@ -14,7 +15,7 @@ export interface SupportedService {
     style?: { [key: string]: any }
 }
 
-export function getSupportedServices(redirect: (path: { pathname: string }) => void): SupportedService[] {
+export function getSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
     const theme = useTheme();
     const { colors } = theme;
 
@@ -25,7 +26,7 @@ export function getSupportedServices(redirect: (path: { pathname: string }) => v
             type: "main",
             image: require("@/assets/images/service_pronote.png"),
             onPress: () => {
-                redirect({ pathname: './pronote/method' });
+                redirect({ pathname: './school/method', options: { service: Services.PRONOTE } });
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -36,7 +37,7 @@ export function getSupportedServices(redirect: (path: { pathname: string }) => v
             type: "main",
             image: require("@/assets/images/service_ed.png"),
             onPress: () => {
-
+                redirect({ pathname: './school/method', options: { service: Services.ECOLEDIRECTE } });
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -47,7 +48,7 @@ export function getSupportedServices(redirect: (path: { pathname: string }) => v
             type: "main",
             image: require("@/assets/images/service_skolengo.png"),
             onPress: () => {
-
+                redirect({ pathname: './school/method', options: { service: Services.SKOLENGO } });
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -81,7 +82,7 @@ export function getSupportedServices(redirect: (path: { pathname: string }) => v
             type: "other",
             icon: <Papicons.Cutlery />,
             onPress: () => {
-                redirect({ pathname: './university/method' });
+                redirect({ pathname: './restaurants/method' });
 
             },
             variant: 'primary' as const,
@@ -188,7 +189,7 @@ export function getLoginMethods(redirect: (path: { pathname: string }) => void):
     return [
         {
             id: "map",
-            availableFor: [Services.PRONOTE],
+            availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Utiliser ma position",
             icon: <Papicons.MapPin />,
             onPress: async () => {
@@ -197,7 +198,7 @@ export function getLoginMethods(redirect: (path: { pathname: string }) => void):
         },
         {
             id: "search",
-            availableFor: [Services.PRONOTE],
+            availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Rechercher une ville",
             icon: <Papicons.Search />,
             onPress: () => {
@@ -219,7 +220,7 @@ export function getLoginMethods(redirect: (path: { pathname: string }) => void):
             description: "J'ai une URL de connexion",
             icon: <Papicons.Link />,
             onPress: () => {
-                redirect({ pathname: './url' });
+                redirect({ pathname: '../pronote/url' });
             }
         }
     ]

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Image, Dimensions, FlatList, Pressable } from 'react-native';
+import { View, StyleSheet, Image, FlatList, Pressable } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, useFocusEffect } from 'expo-router';
+import { RelativePathString, router, UnknownInputParams, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -15,8 +15,6 @@ import { getSupportedServices, SupportedService } from './utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 
-const { width } = Dimensions.get('window');
-
 const height = 480;
 
 export default function WelcomeScreen() {
@@ -25,8 +23,11 @@ export default function WelcomeScreen() {
     const insets = useSafeAreaInsets();
     const animation = React.useRef<LottieView>(null);
 
-    const services = getSupportedServices((path: { pathname: string }) => {
-        router.push(path.pathname as unknown as RelativePathString);
+    const services = getSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
+        router.push({
+            pathname: path.pathname as unknown as RelativePathString,
+            params: path.options ?? {} as unknown as UnknownInputParams
+        });
     });
 
     useFocusEffect(
