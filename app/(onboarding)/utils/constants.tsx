@@ -6,11 +6,12 @@ export interface SupportedService {
     name: string;
     title: string;
     type: string;
-    image: any;
+    image?: any;
     onPress: () => void;
     variant: string;
-    color: string;
+    color?: string;
     icon?: React.ReactNode;
+    style?: { [key: string]: any }
 }
 
 export function getSupportedServices(redirect: (path: { pathname: string }) => void): SupportedService[] {
@@ -74,6 +75,18 @@ export function getSupportedServices(redirect: (path: { pathname: string }) => v
             variant: 'primary' as const,
             style: { backgroundColor: theme.dark ? colors.border : "black" },
         },
+        {
+            name: "university",
+            title: "Service restauratif",
+            type: "other",
+            icon: <Papicons.Cutlery />,
+            onPress: () => {
+                redirect({ pathname: './university/method' });
+
+            },
+            variant: 'primary' as const,
+            color: 'light' as const
+        }
     ]
 }
 
