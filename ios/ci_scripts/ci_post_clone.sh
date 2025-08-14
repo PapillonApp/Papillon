@@ -12,6 +12,8 @@ cd ../..
 npm install --legacy-peer-deps
 echo "===== Running expo prebuild ====="
 npx expo prebuild --no-install
+echo "===== Running git restore ====="
+git restore .
 echo "===== Running pod install ====="
 cd ios
 pod install
