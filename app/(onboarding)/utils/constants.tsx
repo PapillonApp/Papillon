@@ -1,7 +1,7 @@
 import { Services } from '@/stores/account/types';
 import * as Papicons from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
-import { UnknownInputParams } from 'expo-router';
+import { RelativePathString, UnknownInputParams } from 'expo-router';
 
 export interface SupportedService {
     name: string;
@@ -185,7 +185,7 @@ export interface LoginMethod {
     onPress: () => void;
 }
 
-export function getLoginMethods(redirect: (path: { pathname: string }) => void): LoginMethod[] {
+export function getLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
     return [
         {
             id: "map",
@@ -193,7 +193,7 @@ export function getLoginMethods(redirect: (path: { pathname: string }) => void):
             description: "Utiliser ma position",
             icon: <Papicons.MapPin />,
             onPress: async () => {
-                redirect({ pathname: './location' });
+                redirect({ pathname: './map' });
             }
         },
         {
@@ -222,6 +222,44 @@ export function getLoginMethods(redirect: (path: { pathname: string }) => void):
             onPress: () => {
                 redirect({ pathname: '../pronote/url' });
             }
+        }
+    ]
+}
+
+export interface SupportedRestaurant {
+    name: string;
+    title: string;
+    hasLimitedSupport: boolean;
+    image: any;
+    type: string;
+    onPress: () => void;
+}
+
+export function getSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
+    return [
+        {
+            name: "turboself",
+            title: "TurboSelf",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/turboself.png"),
+            type: "main",
+            onPress: () => { }
+        },
+        {
+            name: "ard",
+            title: "ARD",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/ard.png"),
+            type: "main",
+            onPress: () => { }
+        },
+        {
+            name: "izly",
+            title: "Izly",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/izly.png"),
+            type: "main",
+            onPress: () => { }
         }
     ]
 }
