@@ -1,8 +1,10 @@
+import PackageJSON from "./package.json";
+
 module.exports = {
   expo: {
     name: "Papillon",
     slug: "papillon",
-    version: "8.0.0",
+    version: PackageJSON.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "papillon",
@@ -15,11 +17,25 @@ module.exports = {
       backgroundColor: "#003A21",
     },
     ios: {
-      bundleIdentifier: "xyz.getpapillon.ios.beta",
-      supportsTablet: true
+      appStoreUrl:
+        "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
+      bundleIdentifier: "xyz.getpapillon.ios",
+      associatedDomains: ["applinks:getpapillon.xyz"],
+      infoPlist: {
+        CFBundleURLTypes: [
+          {
+            CFBundleURLSchemes: ["papillon", "izly"],
+          },
+        ],
+      },
+      supportsTablet: true,
+      config: {
+        usesNonExemptEncryption: false,
+      },
     },
     android: {
-      package: "xyz.getpapillon.app.beta",
+      versionCode: parseInt(PackageJSON.version.replaceAll(".", "") + "0"),
+      package: "xyz.getpapillon.app",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
