@@ -1,7 +1,10 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-
+import * as FileSystem from "expo-file-system";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 import { log } from "../logger/logger";
+
+import { checkAndUpdateModel, getCurrentPtr, getActivePaths } from "./updater";
+import { MAGIC_URL } from "../endpoints";
+import packageJson from "@/package.json";
 
 export type ModelPrediction = {
   scores: number[];
@@ -24,36 +27,122 @@ class ModelManager {
     return ModelManager.instance;
   }
 
-  async loadModel(): Promise<void> {
-    try {
-      log("Loading model...");
-      const modelAsset = require("@/assets/model/model.tflite");
-      this.model = await loadTensorflowModel(modelAsset);
+  async init(): Promise<{ source: string }> {
+    log("[INIT] Démarrage initialisation du modèle");
 
-      const shape = this.model?.inputs?.[0]?.shape;
-      if (shape && shape[1]) {
-        this.maxLen = shape[1];
-      }
-    } catch (error) {
-      log(String(error));
-      throw error;
+    const loadedFromActive = await this.tryLoadFromActivePtr();
+    if (loadedFromActive) {
+      log("[INIT] Modèle dynamique chargé (existant) ✅");
+      return { source: loadedFromActive };
+    }
+
+    try {
+      log("[INIT] Aucun modèle actif. Lancement checkAndUpdateModel…");
+      const res = await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+      log(
+        `[INIT] Update terminé: updated=${res.updated} reason=${res.reason ?? "ok"}`
+      );
+    } catch (e) {
+      log(`[INIT] Erreur pendant checkAndUpdateModel: ${String(e)}`);
+    }
+
+    const loadedAfterUpdate = await this.tryLoadFromActivePtr();
+    if (loadedAfterUpdate) {
+      log("[INIT] Modèle dynamique chargé après mise à jour");
+      return { source: loadedAfterUpdate };
+    }
+
+    const ptr = await getCurrentPtr();
+    throw new Error(
+      `[INIT] Aucun modèle dynamique disponible. reason=no-current-ptr | updater-résultat=${
+        ptr ? "ptr-exists" : "no-ptr"
+      }`
+    );
+  }
+
+  async refresh(): Promise<boolean> {
+    log("[REFRESH] Démarrage mise à jour manuelle…");
+    const before = await getCurrentPtr();
+    await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+    const after = await getCurrentPtr();
+
+    if (
+      after &&
+      (!before ||
+        before.version !== after.version ||
+        before.name !== after.name)
+    ) {
+      log(
+        `[REFRESH] Nouveau modèle détecté: ${after.name} v${after.version} → rechargement`
+      );
+      await this.loadFromDirectory(after.dir);
+      return true;
+    }
+
+    if (!this.model && after) {
+      log(
+        "[REFRESH] Pas de modèle en mémoire, chargement depuis le ptr actuel…"
+      );
+      await this.loadFromDirectory(after.dir);
+      return true;
+    }
+
+    log("[REFRESH] Aucun changement de modèle.");
+    return false;
+  }
+
+  private async tryLoadFromActivePtr(): Promise<string | null> {
+    const ptr = await getCurrentPtr();
+    if (!ptr) {
+      log("[INIT] Aucun currentPtr trouvé sur le disque.");
+      return null;
+    }
+    try {
+      log(`[INIT] Chargement du modèle actif: ${ptr.name} v${ptr.version}`);
+      await this.loadFromDirectory(ptr.dir);
+      return `dynamic:${ptr.version}`;
+    } catch (e) {
+      log(
+        `[INIT] Échec de chargement depuis dir actif (${ptr.dir}): ${String(e)}`
+      );
+      return null;
     }
   }
 
-  async loadTokenizer(): Promise<void> {
-    log("Loading tokenizer & labels");
-    const tokenizerRaw = require("@/assets/model/tokenizer.json");
-    const config = tokenizerRaw.config;
-    const wordCounts = JSON.parse(config.word_counts);
-    const wordIndex: Record<string, number> = {};
-    let index = 1;
-    for (const word of Object.keys(wordCounts)) {
-      wordIndex[word] = index++;
-    }
-    this.wordIndex = wordIndex;
-    this.oovIndex = wordIndex[config.oov_token] ?? 1;
+  async loadFromDirectory(dirUri: string): Promise<void> {
+    try {
+      log(`[LOAD] Chargement depuis le dossier: ${dirUri}`);
+      const modelUri = dirUri + "model/model.tflite";
+      const tokenizerUri = dirUri + "model/tokenizer.json";
+      const labelsUri = dirUri + "model/labels.json";
 
-    this.labels = require("@/assets/model/labels.json");
+      this.model = await loadTensorflowModel({ url: modelUri });
+
+      const shape = this.model?.inputs?.[0]?.shape;
+      if (shape && shape[1]) this.maxLen = shape[1];
+
+      const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const tokenizerJson = JSON.parse(tokenizerRaw);
+      const config = tokenizerJson.config;
+      const wordCounts = JSON.parse(config.word_counts);
+      const wordIndex: Record<string, number> = {};
+      let index = 1;
+      for (const w of Object.keys(wordCounts)) wordIndex[w] = index++;
+      this.wordIndex = wordIndex;
+      this.oovIndex = wordIndex[config.oov_token] ?? 1;
+
+      const labelsRaw = await FileSystem.readAsStringAsync(labelsUri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      this.labels = JSON.parse(labelsRaw);
+
+      log("[LOAD] Modèle dynamique chargé avec succes");
+    } catch (error) {
+      log(`[LOAD ERROR] ${String(error)}`);
+      throw error;
+    }
   }
 
   cleanText(t: string): string {
@@ -95,7 +184,9 @@ class ModelManager {
     verbose: boolean = false
   ): Promise<ModelPrediction> {
     if (!this.model) {
-      throw new Error("Model not loaded");
+      throw new Error(
+        "Model not loaded (dynamic-only): appelle d'abord ModelManager.init(appVersion, manifestUrl)"
+      );
     }
 
     if (verbose) {
