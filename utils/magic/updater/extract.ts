@@ -107,12 +107,12 @@ export async function validateExtractedTree(stagingDir: string) {
     "model/model.tflite",
     "model/tokenizer.json",
     "model/labels.json",
-    "infos.json",
+    "metadata.json",
   ];
   for (const rel of mustExist) {
     const info = await FileSystem.getInfoAsync(stagingDir + rel);
     if (!info.exists) throw new Error(`missing-file:${rel}`);
   }
-  const infos = await readJSON<any>(stagingDir + "infos.json");
+  const infos = await readJSON<any>(stagingDir + "metadata.json");
   return infos;
 }
