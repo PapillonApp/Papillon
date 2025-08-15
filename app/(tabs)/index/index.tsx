@@ -30,6 +30,7 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import { checkAndUpdateModel } from "@/utils/magic/updater";
+import ModelManager from "@/utils/magic/ModelManager";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -235,6 +236,13 @@ export default function TabOneScreen() {
                 >
                   <Typography variant="title" color="text">
                     Onboarding
+                  </Typography>
+                </Item>
+                <Item
+                  onPress={() => ModelManager.init()}
+                >
+                  <Typography variant="title" color="text">
+                    Init ModelManager
                   </Typography>
                 </Item>
                 <Item
