@@ -228,7 +228,7 @@ export default function TabOneScreen() {
             title: "Prochains cours",
             redirect: "(tabs)/calendar",
             render: () => (
-              <Stack padding={12} gap={6} style={{ paddingBottom: 6 }}>
+              <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 <Course
                   id="id1"
                   name="Traitement des données"
@@ -239,6 +239,7 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
                 <Course
                   id="id1"
@@ -250,6 +251,7 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
               </Stack>
             )

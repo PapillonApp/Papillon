@@ -33,6 +33,7 @@ interface CourseProps {
   variant?: Variant;
   start: number;
   end: number;
+  compact?: boolean;
   onPress?: () => void;
   readonly?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
@@ -54,6 +55,7 @@ const Course = React.memo(({
   variant = 'primary',
   start,
   end,
+  compact,
   readonly = false,
   leading: Leading,
   showTimes = true,
@@ -96,7 +98,7 @@ const Course = React.memo(({
         } : {},
         {
           flex: 1, display: "flex",
-          borderRadius: 25,
+          borderRadius: compact ? 18 : 25,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.15,
@@ -130,9 +132,10 @@ const Course = React.memo(({
           <Stack
             gap={2}
             direction="vertical"
-            radius={25}
+            radius={compact ? 18 : 25}
             style={[
               styles.container,
+              compact ? styles.compactContainer : {},
               { backgroundColor: color },
               status?.canceled || variant === "separator" ? {
                 backgroundColor: colors.card
@@ -170,12 +173,12 @@ const Course = React.memo(({
               )}
             </Stack>
             {variant !== "separator" && (
-              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.MapPin />
                   </Icon>
-                  <Typography color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                  <Typography numberOfLines={1} color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
                     {room || t("No_Course_Room")}
                   </Typography>
                 </View>
@@ -185,12 +188,12 @@ const Course = React.memo(({
                     { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
                   ]}
                 />
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, flexWrap: "wrap", width: "100%" }}>
+                <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.User />
                   </Icon>
-                  <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "45%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {truncatenateString(teacher || t("Form_Organizer"), 20, "...")}
+                  <Typography numberOfLines={1} color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                    {teacher}
                   </Typography>
                 </View>
               </Stack>
@@ -230,6 +233,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     alignSelf: "stretch"
+  },
+  compactContainer: {
+    paddingHorizontal: 14,
+    paddingVertical: 12
   },
   label: {
     flex: 1,
