@@ -31,6 +31,7 @@ import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 
 import Reanimated from "react-native-reanimated";
+import { CompactGrade } from "@/ui/components/CompactGrade";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,12 @@ export default function TabOneScreen() {
 
   const theme = useTheme();
   const { colors } = theme;
+
+  const grades = Array.from({ length: 10 }, (_, i) => ({
+    title: `Subject ${i + 1}`,
+    value: Math.random() * 20,
+    date: new Date()
+  }));
 
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
@@ -254,6 +261,42 @@ export default function TabOneScreen() {
                   compact
                 />
               </Stack>
+            )
+          },
+          {
+            icon: <Papicons.Grades />,
+            title: "Nouvelles notes",
+            redirect: "(tabs)/grades",
+            render: () => (
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  borderBottomLeftRadius: 26,
+                  borderBottomRightRadius: 26,
+                  overflow: "hidden",
+                  width: "100%"
+                }}
+                contentContainerStyle={{
+                  paddingTop: 8,
+                  paddingBottom: 14,
+                  paddingHorizontal: 14,
+                  gap: 12
+                }}
+                data={grades}
+                renderItem={({ item }) => (
+                  <CompactGrade
+                    key={item.title}
+                    title={item.title}
+                    score={item.value}
+                    outOf={20}
+                    emoji="💥"
+                    disabled={false}
+                    color="#29947A"
+                    date={item.date}
+                  />
+                )}
+              />
             )
           },
           {
