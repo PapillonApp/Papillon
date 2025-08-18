@@ -303,14 +303,20 @@ export default function URLInputScreen() {
                     }
                   }
 
-                  console.log(instanceInfo)
-
                   if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
                     return router.push({
-                      pathname: "../pronote/webview" as unknown as RelativePathString,
-                      params: { url: instanceURL }
+                      pathname: "./webview" as unknown as RelativePathString,
+                      params: { url: cleanedURL }
                     })
                   }
+
+                  return router.push({
+                    pathname: "./credentials",
+                    params: {
+                      url: cleanedURL,
+                      previousPage: "url"
+                    }
+                  })
                 }}
               />
             </Stack>
