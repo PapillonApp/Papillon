@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
@@ -11,6 +11,7 @@ interface CompactGradeProps {
   outOf: number;
   date: Date;
   disabled?: boolean;
+  onPress?: () => void,
   color?: string;
 }
 
@@ -22,12 +23,14 @@ export const CompactGrade = ({
   outOf,
   date,
   disabled,
+  onPress,
   color = "#888888"
 }: CompactGradeProps) => {
   const { colors } = useTheme();
 
   return (
-    <View
+    <Pressable
+      onPress={onPress}
       style={{
         width: 220,
         height: 150,
@@ -105,6 +108,6 @@ export const CompactGrade = ({
           </Typography>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
