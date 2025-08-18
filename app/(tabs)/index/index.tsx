@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -256,6 +256,13 @@ export default function TabOneScreen() {
         gap={12}
         data={[
           {
+            icon: <Papicons.Butterfly />,
+            title: "Login to demo account",
+            onPress: () => loginDemoAccount(),
+            buttonLabel: "Se connecter",
+            dev: true
+          },
+          {
             icon: <Papicons.Calendar />,
             title: "Prochains cours",
             redirect: "(tabs)/calendar",
@@ -324,76 +331,62 @@ export default function TabOneScreen() {
             )
           },
           {
-            icon: <Papicons.Ghost />,
-            title: "Outils de développement",
-            render: () => (
-              <List marginBottom={0}>
-                <Item
-                  onPress={() => router.navigate("/demo")}
-                >
-                  <Typography variant="title" color="text">
-                    Demo components
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => router.navigate("/devmode")}
-                >
-                  <Typography variant="title" color="text">
-                    Papillon DevMode
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => loginDemoAccount()}
-                >
-                  <Typography variant="title" color="text">
-                    Login to Papillon Demo Account
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => InitManager()}
-                >
-                  <Typography variant="title" color="text">
-                    Init Manager
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => router.navigate("/(onboarding)/welcome")}
-                >
-                  <Typography variant="title" color="text">
-                    Onboarding
-                  </Typography>
-                </Item>
-              </List>
-            )
-          }
+            icon: <Papicons.Butterfly />,
+            title: "Onboarding",
+            redirect: "/(onboarding)/welcome",
+            buttonLabel: "Aller",
+            dev: true
+          },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Devmode",
+            redirect: "/devmode",
+            buttonLabel: "Aller",
+            dev: true
+          },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Demo components",
+            redirect: "/demo",
+            buttonLabel: "Aller",
+            dev: true
+          },
         ]}
-        renderItem={({ item }) => (
-          <Stack card radius={26}>
-            <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: 0, height: 44 }}>
-              <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                {item.icon}
-              </Icon>
-              <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
-                {item.title}
-              </Typography>
-              {item.redirect && (
-                <AnimatedPressable
-                  onPress={() => router.navigate(item.redirect)}
-                >
-                  <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                    <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
-                      Afficher plus
-                    </Typography>
-                    <Icon size={20} papicon opacity={0.5}>
-                      <Papicons.Arrow />
-                    </Icon>
-                  </Stack>
-                </AnimatedPressable>
+        renderItem={({ item }) => {
+          if (item.dev && !__DEV__) {
+            return null;
+          }
+
+          return (
+            <Stack card radius={26}>
+              <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                  {item.icon}
+                </Icon>
+                <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                  {item.title}
+                </Typography>
+                {(item.redirect || item.onPress) && (
+                  <AnimatedPressable
+                    onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                  >
+                    <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                      <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
+                        {item.buttonLabel ?? "Afficher plus"}
+                      </Typography>
+                      <Icon size={20} papicon opacity={0.5}>
+                        <Papicons.Arrow />
+                      </Icon>
+                    </Stack>
+                  </AnimatedPressable>
+                )}
+              </Stack>
+              {item.render && (
+                <item.render />
               )}
             </Stack>
-            <item.render />
-          </Stack>
-        )}
+          )
+        }}
       />
 
       <NativeHeaderSide side="Left">
