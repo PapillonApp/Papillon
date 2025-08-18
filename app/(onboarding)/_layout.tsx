@@ -60,6 +60,11 @@ export default function OnboardingLayout() {
                     options={{ ...newScreenOptions }}
                     initialParams={{ url: "" }}
                 />
+                <Stack.Screen
+                    name="pronote/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ url: "", previousPage: "map" }}
+                />
             </Stack>
         </View>
     );
