@@ -72,13 +72,13 @@ const Course = React.memo(({
     <Stack direction="horizontal" gap={12} style={{ width: "100%", marginBottom: 6 }}>
       {showTimes && (
         <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
-          <Typography variant="h5" style={{ lineHeight: 20 }}>
+          <Typography numberOfLines={1} variant="h5" style={{ lineHeight: 20 }}>
             {new Date(start * 1000).toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </Typography>
-          <Typography variant="body2" color="secondary">
+          <Typography numberOfLines={1} variant="body2" color="secondary">
             {new Date(end * 1000).toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
@@ -110,7 +110,7 @@ const Course = React.memo(({
             <Icon papicon size={20} fill={"#DC1400"}>
               <Papicons.Ghost />
             </Icon>
-            <Typography color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
+            <Typography numberOfLines={1} color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
               {status.label}
             </Typography>
           </Stack>
@@ -118,7 +118,7 @@ const Course = React.memo(({
         {(magicInfo?.label) && variant !== "separator" && (
           <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
             {magicInfo.icon && <magicInfo.icon color={color} />}
-            <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]}>
+            <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]} numberOfLines={1}>
               {magicInfo.label}
             </Typography>
           </Stack>
@@ -159,12 +159,13 @@ const Course = React.memo(({
               <Typography
                 color="light"
                 variant="h5"
+                numberOfLines={1}
                 style={[
                   styles.label,
                   (status?.canceled || variant === "separator") ? styles.canceled : {},
                 ]}
               >
-                {truncatenateString(name, 30, "...")}
+                {name}
               </Typography>
               {variant === "separator" && Leading && (
                 <Typography color="light" variant="caption" style={[{ color: colors.text + (theme.dark ? 40 : 80) }, styles.label]}>
