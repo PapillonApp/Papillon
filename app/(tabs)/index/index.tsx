@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { initializeAccountManager } from "@/services/shared";
@@ -32,6 +32,7 @@ import adjust from "@/utils/adjustColor";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
+import { center } from "@shopify/react-native-skia";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ export default function TabOneScreen() {
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
+  const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
 
   const generateUUID = () => {
     // Generate a random UUID (version 4)
@@ -154,7 +156,27 @@ export default function TabOneScreen() {
     }
   };
 
-  const Tabs = Array.from({ length: 5 }, (_, i) => i);
+  const headerItems = [
+    (
+      <Stack
+        direction="vertical"
+        hAlign="center"
+        vAlign="center"
+        gap={2}
+        padding={20}
+      >
+        <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
+          👋
+        </Typography>
+        <Typography variant="h3" color={foreground}>
+          Bonjour, Lucas !
+        </Typography>
+        <Typography variant="body1" color={foregroundSecondary}>
+          Tu n'as aucun cours de prévu aujourd'hui
+        </Typography>
+      </Stack>
+    ),
+  ];
 
   return (
     <>
@@ -167,7 +189,7 @@ export default function TabOneScreen() {
       <TabFlatList
         translucent
         backgroundColor="transparent"
-        height={200}
+        height={160}
         header={
           <>
             <FlatList
@@ -177,7 +199,7 @@ export default function TabOneScreen() {
                 borderCurve: "continuous",
               }}
               horizontal
-              data={Tabs}
+              data={headerItems}
               snapToInterval={Dimensions.get("window").width}
               decelerationRate="fast"
               showsHorizontalScrollIndicator={false}
@@ -188,7 +210,7 @@ export default function TabOneScreen() {
                 setCurrentPage(page);
               }}
               scrollEventThrottle={16}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <View
                   style={{
                     width: Dimensions.get("window").width,
@@ -198,39 +220,37 @@ export default function TabOneScreen() {
                     justifyContent: "center"
                   }}
                 >
-                  <Stack padding={20}>
-                    <Typography variant="h1" align="center">
-                      Je suis devenu riche grâce à LUMA AI
-                    </Typography>
-                  </Stack>
+                  {item}
                 </View>
               )}
             />
 
             {/* Pagination */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-                position: "absolute",
-                bottom: 0,
-                gap: 6,
-              }}
-            >
-              {Tabs.map(i => (
-                <Reanimated.View
-                  layout={Animation(LinearTransition)}
-                  style={{
-                    width: currentPage === i ? 8 : 6,
-                    height: currentPage === i ? 8 : 6,
-                    backgroundColor: colors.text,
-                    borderRadius: 200,
-                    opacity: currentPage === i ? 0.5 : 0.25
-                  }}
-                />
-              ))}
-            </View>
+            {headerItems.length > 1 &&
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "absolute",
+                  bottom: 0,
+                  gap: 6,
+                }}
+              >
+                {headerItems.map((item, i) => (
+                  <Reanimated.View
+                    layout={Animation(LinearTransition)}
+                    style={{
+                      width: currentPage === i ? 16 : 6,
+                      height: currentPage === i ? 8 : 6,
+                      backgroundColor: colors.text,
+                      borderRadius: 200,
+                      opacity: currentPage === i ? 0.5 : 0.25
+                    }}
+                  />
+                ))}
+              </View>
+            }
           </>
         }
         gap={12}
