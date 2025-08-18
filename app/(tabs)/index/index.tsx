@@ -375,7 +375,7 @@ export default function TabOneScreen() {
                         {item.buttonLabel ?? "Afficher plus"}
                       </Typography>
                       <Icon size={20} papicon opacity={0.5}>
-                        <Papicons.Arrow />
+                        <Papicons.ArrowRightUp />
                       </Icon>
                     </Stack>
                   </AnimatedPressable>

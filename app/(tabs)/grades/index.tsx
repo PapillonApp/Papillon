@@ -32,6 +32,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
+import { useNavigation, useRouter } from "expo-router";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -444,21 +445,35 @@ export default function TabOneScreen() {
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
+  const router = useRouter();
+  const navigation = useNavigation();
+
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
     const subjectInfo = getSubjectInfo(subject?.name ?? "");
 
     return (
-      <CompactGrade
-        emoji={subjectInfo.emoji}
-        title={subjectInfo.name}
-        description={item.description}
-        score={item.studentScore?.value ?? 0}
-        outOf={item.outOf?.value ?? 20}
-        disabled={item.studentScore?.disabled}
-        color={subjectInfo.color}
-        date={item.givenAt}
-      />
+      <Reanimated.View
+        sharedTransitionTag={item.id + "_compactGrade"}
+      >
+        <CompactGrade
+          key={item.id + "_compactGrade"}
+          emoji={subjectInfo.emoji}
+          title={subjectInfo.name}
+          description={item.description}
+          score={item.studentScore?.value ?? 0}
+          outOf={item.outOf?.value ?? 20}
+          disabled={item.studentScore?.disabled}
+          color={subjectInfo.color}
+          date={item.givenAt}
+          onPress={() => {
+            navigation.navigate('grade', {
+              grade: item,
+              subjectInfo: subjectInfo
+            });
+          }}
+        />
+      </Reanimated.View>
     )
   }, [colors, newSubjects, getSubjectInfo]);
 
