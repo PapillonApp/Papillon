@@ -33,6 +33,7 @@ interface CourseProps {
   variant?: Variant;
   start: number;
   end: number;
+  compact?: boolean;
   onPress?: () => void;
   readonly?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
@@ -54,6 +55,7 @@ const Course = React.memo(({
   variant = 'primary',
   start,
   end,
+  compact,
   readonly = false,
   leading: Leading,
   showTimes = true,
@@ -70,13 +72,13 @@ const Course = React.memo(({
     <Stack direction="horizontal" gap={12} style={{ width: "100%", marginBottom: 6 }}>
       {showTimes && (
         <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
-          <Typography variant="h5" style={{ lineHeight: 20 }}>
+          <Typography numberOfLines={1} variant="h5" style={{ lineHeight: 20 }}>
             {new Date(start * 1000).toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </Typography>
-          <Typography variant="body2" color="secondary">
+          <Typography numberOfLines={1} variant="body2" color="secondary">
             {new Date(end * 1000).toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
@@ -96,7 +98,7 @@ const Course = React.memo(({
         } : {},
         {
           flex: 1, display: "flex",
-          borderRadius: 25,
+          borderRadius: compact ? 18 : 25,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.15,
@@ -108,7 +110,7 @@ const Course = React.memo(({
             <Icon papicon size={20} fill={"#DC1400"}>
               <Papicons.Ghost />
             </Icon>
-            <Typography color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
+            <Typography numberOfLines={1} color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
               {status.label}
             </Typography>
           </Stack>
@@ -116,7 +118,7 @@ const Course = React.memo(({
         {(magicInfo?.label) && variant !== "separator" && (
           <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
             {magicInfo.icon && <magicInfo.icon color={color} />}
-            <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]}>
+            <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]} numberOfLines={1}>
               {magicInfo.label}
             </Typography>
           </Stack>
@@ -130,9 +132,10 @@ const Course = React.memo(({
           <Stack
             gap={2}
             direction="vertical"
-            radius={25}
+            radius={compact ? 18 : 25}
             style={[
               styles.container,
+              compact ? styles.compactContainer : {},
               { backgroundColor: color },
               status?.canceled || variant === "separator" ? {
                 backgroundColor: colors.card
@@ -156,12 +159,13 @@ const Course = React.memo(({
               <Typography
                 color="light"
                 variant="h5"
+                numberOfLines={1}
                 style={[
                   styles.label,
                   (status?.canceled || variant === "separator") ? styles.canceled : {},
                 ]}
               >
-                {truncatenateString(name, 30, "...")}
+                {name}
               </Typography>
               {variant === "separator" && Leading && (
                 <Typography color="light" variant="caption" style={[{ color: colors.text + (theme.dark ? 40 : 80) }, styles.label]}>
@@ -170,12 +174,12 @@ const Course = React.memo(({
               )}
             </Stack>
             {variant !== "separator" && (
-              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.MapPin />
                   </Icon>
-                  <Typography color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                  <Typography numberOfLines={1} color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
                     {room || t("No_Course_Room")}
                   </Typography>
                 </View>
@@ -185,12 +189,12 @@ const Course = React.memo(({
                     { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
                   ]}
                 />
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, flexWrap: "wrap", width: "100%" }}>
+                <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                   <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
                     <Papicons.User />
                   </Icon>
-                  <Typography color="light" variant="body1" style={[styles.teacher, showTimes ? { maxWidth: "45%" } : { maxWidth: "50%" }, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {truncatenateString(teacher || t("Form_Organizer"), 20, "...")}
+                  <Typography numberOfLines={1} color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                    {teacher}
                   </Typography>
                 </View>
               </Stack>
@@ -230,6 +234,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     alignSelf: "stretch"
+  },
+  compactContainer: {
+    paddingHorizontal: 14,
+    paddingVertical: 12
   },
   label: {
     flex: 1,

@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useMemo, useState } from "react";
-import React, { Alert, ScrollView, StyleSheet, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { initializeAccountManager } from "@/services/shared";
@@ -30,10 +30,13 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 
+import Reanimated from "react-native-reanimated";
+
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
   const [ardLoading, setArdLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
 
   const theme = useTheme();
@@ -144,6 +147,8 @@ export default function TabOneScreen() {
     }
   };
 
+  const Tabs = Array.from({ length: 5 }, (_, i) => i);
+
   return (
     <>
       <LinearGradient
@@ -157,11 +162,64 @@ export default function TabOneScreen() {
         backgroundColor="transparent"
         height={200}
         header={
-          <Stack padding={20}>
-            <Typography variant="h1" align="center">
-              Je suis devenu riche grâce à LUMA AI
-            </Typography>
-          </Stack>
+          <>
+            <FlatList
+              horizontal
+              data={Tabs}
+              snapToInterval={Dimensions.get("window").width}
+              decelerationRate="fast"
+              showsHorizontalScrollIndicator={false}
+              onScroll={e => {
+                const page = Math.round(
+                  e.nativeEvent.contentOffset.x / Dimensions.get("window").width
+                );
+                setCurrentPage(page);
+              }}
+              scrollEventThrottle={16}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    width: Dimensions.get("window").width,
+                    flex: 1,
+                    overflow: "hidden",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Stack padding={20}>
+                    <Typography variant="h1" align="center">
+                      Je suis devenu riche grâce à LUMA AI
+                    </Typography>
+                  </Stack>
+                </View>
+              )}
+            />
+
+            {/* Pagination */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                bottom: 0,
+                gap: 6,
+              }}
+            >
+              {Tabs.map(i => (
+                <Reanimated.View
+                  layout={Animation(LinearTransition)}
+                  style={{
+                    width: currentPage === i ? 8 : 6,
+                    height: currentPage === i ? 8 : 6,
+                    backgroundColor: colors.text,
+                    borderRadius: 200,
+                    opacity: currentPage === i ? 0.5 : 0.25
+                  }}
+                />
+              ))}
+            </View>
+          </>
         }
         gap={12}
         data={[
@@ -170,7 +228,7 @@ export default function TabOneScreen() {
             title: "Prochains cours",
             redirect: "(tabs)/calendar",
             render: () => (
-              <Stack padding={12} gap={6} style={{ paddingBottom: 6 }}>
+              <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 <Course
                   id="id1"
                   name="Traitement des données"
@@ -181,6 +239,7 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
                 <Course
                   id="id1"
@@ -192,6 +251,7 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
               </Stack>
             )
@@ -277,14 +337,14 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <NativeHeaderTitle key={"header-" + date.toISOString()}>
+      <NativeHeaderTitle>
         <NativeHeaderTopPressable
           layout={Animation(LinearTransition)}
         >
           <Dynamic
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
           >
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { weekday: "long" })}>
+            <Dynamic animated>
               <Typography variant="navigation" color={foreground}>
                 {date.toLocaleDateString("fr-FR", { weekday: "long" })}
               </Typography>
@@ -294,7 +354,7 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { day: "numeric" })}
               </NativeHeaderHighlight>
             </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { month: "long" })}>
+            <Dynamic animated>
               <Typography variant="navigation" color={foreground}>
                 {date.toLocaleDateString("fr-FR", { month: "long" })}
               </Typography>
