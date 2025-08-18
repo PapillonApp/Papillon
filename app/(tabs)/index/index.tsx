@@ -171,6 +171,11 @@ export default function TabOneScreen() {
         header={
           <>
             <FlatList
+              style={{
+                backgroundColor: "transparent",
+                borderRadius: 26,
+                borderCurve: "continuous",
+              }}
               horizontal
               data={Tabs}
               snapToInterval={Dimensions.get("window").width}
@@ -286,7 +291,6 @@ export default function TabOneScreen() {
                 data={grades}
                 renderItem={({ item }) => (
                   <CompactGrade
-                    key={item.title}
                     title={item.title}
                     score={item.value}
                     outOf={20}
