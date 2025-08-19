@@ -29,6 +29,8 @@ import { geolocation } from 'pawnote';
 import TableFlatList from '@/ui/components/TableFlatList';
 import { getInitials } from '@/utils/chats/initials';
 import { log } from '@/utils/logger/logger';
+import { GeographicReverse } from '@/utils/native/georeverse';
+import { SearchSchools } from 'skolengojs';
 
 const INITIAL_HEIGHT = 450;
 const COLLAPSED_HEIGHT = 300;
@@ -102,10 +104,13 @@ const MapIcon = React.memo(() => (
 ));
 MapIcon.displayName = 'MapIcon';
 
+import { School as SkolengoSkool } from 'skolengojs';
+
 export interface School {
   name: string,
   distance: number,
-  url: string
+  url: string,
+  ref?: SkolengoSkool
 }
 
 export default function SelectSchoolOnMap() {
@@ -140,6 +145,17 @@ export default function SelectSchoolOnMap() {
         name: item.name,
         distance: item.distance,
         url: item.url
+      })))
+      setLoading(false)
+    } else if (local.service === String(Services.SKOLENGO)) {
+      const geo = await GeographicReverse(pos.latitude, pos.longitude)
+      const schools = await SearchSchools(geo.city)
+
+      setSchools(schools.map(item => ({
+        name: item.name,
+        distance: 0,
+        url: "",
+        ref: item
       })))
       setLoading(false)
     }
@@ -213,7 +229,7 @@ export default function SelectSchoolOnMap() {
 
   const schoolsItem = useMemo(() => {
     const sanitizeSchoolName = (name: string) => {
-      return name.replace(/\b(lycée|collège|techn\.)\b/gi, '').trim();
+      return name.replace(/\b(lycée|collège|techn|technologique|générale|professionnel|privé)\.?/gi, '').trim();
     };
 
     return schools.map(school => {
