@@ -14,12 +14,20 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
+import { Colors } from "@/app/(onboarding)/end/color";
 
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
   const [ardLoading, setArdLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const router = useRouter();
+
+  const accounts = useAccountStore.getState().accounts;
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
 
   const generateUUID = () => {
     // Generate a random UUID (version 4)
@@ -72,6 +80,7 @@ export default function TabOneScreen() {
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString(),
         }],
+        selectedColor: Colors.PINK,
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),
       });
@@ -153,6 +162,19 @@ export default function TabOneScreen() {
           </Typography>
         </Item>
         <Item
+          onPress={() => {
+            const accounts = useAccountStore.getState().accounts
+            for (const account of accounts) {
+              useAccountStore.getState().removeAccount(account)
+            }
+            Alert.alert("Succès!", "Store des comptes remis à zéro...")
+          }}
+        >
+          <Typography variant="title" color="text">
+            Reset Account Store
+          </Typography>
+        </Item>
+        <Item
           onPress={() => InitManager()}
         >
           <Typography variant="title" color="text">
@@ -164,6 +186,13 @@ export default function TabOneScreen() {
         >
           <Typography variant="title" color="text">
             Onboarding
+          </Typography>
+        </Item>
+        <Item
+          onPress={() => router.navigate("/(onboarding)/end/color")}
+        >
+          <Typography variant="title" color="text">
+            Color Picker
           </Typography>
         </Item>
       </List>
