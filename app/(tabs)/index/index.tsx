@@ -1,7 +1,7 @@
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useMemo, useState } from "react";
-import React, { Alert, ScrollView, StyleSheet, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { initializeAccountManager } from "@/services/shared";
@@ -32,18 +32,30 @@ import adjust from "@/utils/adjustColor";
 import { checkAndUpdateModel } from "@/utils/magic/updater";
 import ModelManager from "@/utils/magic/ModelManager";
 
+import Reanimated from "react-native-reanimated";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import { center } from "@shopify/react-native-skia";
+
 export default function TabOneScreen() {
   const [loading, setLoading] = useState(false);
   const [ardLoading, setArdLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
 
   const theme = useTheme();
   const { colors } = theme;
 
+  const grades = Array.from({ length: 10 }, (_, i) => ({
+    title: `Subject ${i + 1}`,
+    value: Math.random() * 20,
+    date: new Date()
+  }));
+
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
+  const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
 
   const generateUUID = () => {
     // Generate a random UUID (version 4)
@@ -146,6 +158,28 @@ export default function TabOneScreen() {
     }
   };
 
+  const headerItems = [
+    (
+      <Stack
+        direction="vertical"
+        hAlign="center"
+        vAlign="center"
+        gap={2}
+        padding={20}
+      >
+        <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
+          👋
+        </Typography>
+        <Typography variant="h3" color={foreground}>
+          Bonjour, Lucas !
+        </Typography>
+        <Typography variant="body1" color={foregroundSecondary}>
+          Tu n'as aucun cours de prévu aujourd'hui
+        </Typography>
+      </Stack>
+    ),
+  ];
+
   return (
     <>
       <LinearGradient
@@ -157,22 +191,85 @@ export default function TabOneScreen() {
       <TabFlatList
         translucent
         backgroundColor="transparent"
-        height={200}
+        height={160}
         header={
-          <Stack padding={20}>
-            <Typography variant="h1" align="center">
-              Je suis devenu riche grâce à LUMA AI
-            </Typography>
-          </Stack>
+          <>
+            <FlatList
+              style={{
+                backgroundColor: "transparent",
+                borderRadius: 26,
+                borderCurve: "continuous",
+              }}
+              horizontal
+              data={headerItems}
+              snapToInterval={Dimensions.get("window").width}
+              decelerationRate="fast"
+              showsHorizontalScrollIndicator={false}
+              onScroll={e => {
+                const page = Math.round(
+                  e.nativeEvent.contentOffset.x / Dimensions.get("window").width
+                );
+                setCurrentPage(page);
+              }}
+              scrollEventThrottle={16}
+              renderItem={({ item, index }) => (
+                <View
+                  style={{
+                    width: Dimensions.get("window").width,
+                    flex: 1,
+                    overflow: "hidden",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  {item}
+                </View>
+              )}
+            />
+
+            {/* Pagination */}
+            {headerItems.length > 1 &&
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "absolute",
+                  bottom: 0,
+                  gap: 6,
+                }}
+              >
+                {headerItems.map((item, i) => (
+                  <Reanimated.View
+                    layout={Animation(LinearTransition)}
+                    style={{
+                      width: currentPage === i ? 16 : 6,
+                      height: currentPage === i ? 8 : 6,
+                      backgroundColor: colors.text,
+                      borderRadius: 200,
+                      opacity: currentPage === i ? 0.5 : 0.25
+                    }}
+                  />
+                ))}
+              </View>
+            }
+          </>
         }
         gap={12}
         data={[
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Login to demo account",
+            onPress: () => loginDemoAccount(),
+            buttonLabel: "Se connecter",
+            dev: true
+          },
           {
             icon: <Papicons.Calendar />,
             title: "Prochains cours",
             redirect: "(tabs)/calendar",
             render: () => (
-              <Stack padding={12} gap={6} style={{ paddingBottom: 6 }}>
+              <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 <Course
                   id="id1"
                   name="Traitement des données"
@@ -183,6 +280,7 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
                 <Course
                   id="id1"
@@ -194,113 +292,103 @@ export default function TabOneScreen() {
                   variant="primary"
                   start={1750126049}
                   end={1750129649}
+                  compact
                 />
               </Stack>
             )
           },
           {
-            icon: <Papicons.Ghost />,
-            title: "Outils de développement",
+            icon: <Papicons.Grades />,
+            title: "Nouvelles notes",
+            redirect: "(tabs)/grades",
             render: () => (
-              <List marginBottom={0}>
-                <Item
-                  onPress={() => router.navigate("/demo")}
-                >
-                  <Typography variant="title" color="text">
-                    Demo components
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => router.navigate("/devmode")}
-                >
-                  <Typography variant="title" color="text">
-                    Papillon DevMode
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => loginDemoAccount()}
-                >
-                  <Typography variant="title" color="text">
-                    Login to Papillon Demo Account
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => InitManager()}
-                >
-                  <Typography variant="title" color="text">
-                    Init Manager
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => router.navigate("/(onboarding)/welcome")}
-                >
-                  <Typography variant="title" color="text">
-                    Onboarding
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={() => ModelManager.init()}
-                >
-                  <Typography variant="title" color="text">
-                    Init ModelManager
-                  </Typography>
-                </Item>
-                <Item
-                  onPress={async () => {
-                    try {
-                      const result = await checkAndUpdateModel(
-                        "8.0.0",
-                        "http://192.168.1.124:8000/"
-                      );
-
-                      console.log("Résultat mise à jour:", result);
-
-                      Alert.alert(
-                        "Model Updater",
-                        `Updated: ${result.updated}\nReason: ${result.reason ?? "ok"}`
-                      );
-                    } catch (error) {
-                      console.error("Erreur checkAndUpdateModel:", error);
-                      Alert.alert("Erreur", String(error));
-                    }
-                  }}
-                >
-                  <Typography variant="title" color="text">
-                    checkAndUpdateModel
-                  </Typography>
-                </Item>
-
-              </List>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  borderBottomLeftRadius: 26,
+                  borderBottomRightRadius: 26,
+                  overflow: "hidden",
+                  width: "100%"
+                }}
+                contentContainerStyle={{
+                  paddingTop: 8,
+                  paddingBottom: 14,
+                  paddingHorizontal: 14,
+                  gap: 12
+                }}
+                data={grades}
+                renderItem={({ item }) => (
+                  <CompactGrade
+                    title={item.title}
+                    score={item.value}
+                    outOf={20}
+                    emoji="💥"
+                    disabled={false}
+                    color="#29947A"
+                    date={item.date}
+                  />
+                )}
+              />
             )
-          }
+          },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Onboarding",
+            redirect: "/(onboarding)/welcome",
+            buttonLabel: "Aller",
+            dev: true
+          },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Devmode",
+            redirect: "/devmode",
+            buttonLabel: "Aller",
+            dev: true
+          },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Demo components",
+            redirect: "/demo",
+            buttonLabel: "Aller",
+            dev: true
+          },
         ]}
-        renderItem={({ item }) => (
-          <Stack card radius={26}>
-            <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: 0, height: 44 }}>
-              <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                {item.icon}
-              </Icon>
-              <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
-                {item.title}
-              </Typography>
-              {item.redirect && (
-                <AnimatedPressable
-                  onPress={() => router.navigate(item.redirect)}
-                >
-                  <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                    <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
-                      Afficher plus
-                    </Typography>
-                    <Icon size={20} papicon opacity={0.5}>
-                      <Papicons.Arrow />
-                    </Icon>
-                  </Stack>
-                </AnimatedPressable>
+        renderItem={({ item }) => {
+          if (item.dev && !__DEV__) {
+            return null;
+          }
+
+          return (
+            <Stack card radius={26}>
+              <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                  {item.icon}
+                </Icon>
+                <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                  {item.title}
+                </Typography>
+                {(item.redirect || item.onPress) && (
+                  <AnimatedPressable
+                    onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                  >
+                    <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                      <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
+                        {item.buttonLabel ?? "Afficher plus"}
+                      </Typography>
+                      <Icon size={20} papicon opacity={0.5}>
+                        <Papicons.ArrowRightUp />
+                      </Icon>
+                    </Stack>
+                  </AnimatedPressable>
+                )}
+              </Stack>
+              {item.render && (
+                <item.render />
               )}
             </Stack>
-            <item.render />
-          </Stack>
-        )}
+          )
+        }}
       />
 
       <NativeHeaderSide side="Left">
@@ -311,14 +399,14 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <NativeHeaderTitle key={"header-" + date.toISOString()}>
+      <NativeHeaderTitle>
         <NativeHeaderTopPressable
           layout={Animation(LinearTransition)}
         >
           <Dynamic
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
           >
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { weekday: "long" })}>
+            <Dynamic animated>
               <Typography variant="navigation" color={foreground}>
                 {date.toLocaleDateString("fr-FR", { weekday: "long" })}
               </Typography>
@@ -328,7 +416,7 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { day: "numeric" })}
               </NativeHeaderHighlight>
             </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { month: "long" })}>
+            <Dynamic animated>
               <Typography variant="navigation" color={foreground}>
                 {date.toLocaleDateString("fr-FR", { month: "long" })}
               </Typography>
