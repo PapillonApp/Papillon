@@ -11,13 +11,13 @@ import Stack from '@/ui/components/Stack';
 import * as Papicons from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
-import { getSupportedUniversities, SupportedUniversity } from '../utils/constants';
+import { getSupportedRestaurants, SupportedRestaurant } from '../utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { Extrapolate, FadeInDown, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
-const height = 480;
+const height = 570;
 
 export default function WelcomeScreen() {
   const theme = useTheme();
@@ -49,6 +49,7 @@ export default function WelcomeScreen() {
   }));
 
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => ({
+    paddingBottom: 20,
     opacity: interpolate(
       scrollY.value,
       [0, height - 270],
@@ -67,7 +68,7 @@ export default function WelcomeScreen() {
     ],
   }));
 
-  const services = getSupportedUniversities((path: { pathname: string }) => {
+  const services = getSupportedRestaurants((path: { pathname: string }) => {
     router.push(path.pathname as unknown as RelativePathString);
   });
 
@@ -89,7 +90,7 @@ export default function WelcomeScreen() {
       >
         <Stack
           padding={32}
-          backgroundColor='#1E3035'
+          backgroundColor='#60B400'
           gap={20}
           style={{
             alignItems: 'center',
@@ -106,7 +107,7 @@ export default function WelcomeScreen() {
               autoPlay
               loop={false}
               style={{ width: 230, height: 230 }}
-              source={require('@/assets/lotties/uni-services.json')}
+              source={require('@/assets/lotties/self.json')}
             />
           </Reanimated.View>
           <Stack
@@ -133,7 +134,7 @@ export default function WelcomeScreen() {
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
             >
-              Sélectionne ton service universitaire
+              Sélectionne ton service restauratif
             </Typography>
           </Stack>
         </Stack>
@@ -152,7 +153,7 @@ export default function WelcomeScreen() {
           gap: 9,
         }}
         renderItem={({ item, index }) =>
-          (item as SupportedUniversity).type === 'separator' ? (
+          (item as SupportedRestaurant).type === 'separator' ? (
             <View
               style={{
                 flexDirection: 'row',
@@ -173,7 +174,7 @@ export default function WelcomeScreen() {
                   opacity: 0.5
                 }}
               />
-              <Typography variant='title' inline>{(item as SupportedUniversity).title}</Typography>
+              <Typography variant='title' inline>{(item as SupportedRestaurant).title}</Typography>
               <View
                 style={{
                   flex: 1,
@@ -192,7 +193,7 @@ export default function WelcomeScreen() {
                 <AnimatedPressable
                   onPress={() => {
                     requestAnimationFrame(() => {
-                      (item as SupportedUniversity).onPress();
+                      (item as SupportedRestaurant).onPress();
                     });
                   }}
                   style={[
@@ -209,7 +210,7 @@ export default function WelcomeScreen() {
                       display: 'flex',
                       gap: 16,
                     },
-                    (item as SupportedUniversity).type == "other" && {
+                    (item as SupportedRestaurant).type == "other" && {
                       backgroundColor: colors.text,
                       borderColor: colors.text,
                     }
@@ -217,12 +218,12 @@ export default function WelcomeScreen() {
                 >
                   <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
                     <Image
-                      source={(item as SupportedUniversity).image}
+                      source={(item as SupportedRestaurant).image}
                       style={{ width: 32, height: 32 }}
                       resizeMode="cover"
                     />
                   </View>
-                  <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={(item as SupportedUniversity).type == "other" ? "white" : undefined}>{(item as SupportedUniversity).title}</Typography>
+                  <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={(item as SupportedRestaurant).type == "other" ? "white" : undefined}>{(item as SupportedRestaurant).title}</Typography>
                 </AnimatedPressable>
               </Reanimated.View>
             )}

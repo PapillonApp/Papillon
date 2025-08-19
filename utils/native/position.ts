@@ -7,6 +7,10 @@ export interface CurrentPosition {
 
 export const getCurrentPosition = async (): Promise<CurrentPosition | null> => {
   try {
+    const permission = await Location.requestForegroundPermissionsAsync()
+    if (!permission.granted) {
+      return null
+    }
     const { coords } = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
     return {

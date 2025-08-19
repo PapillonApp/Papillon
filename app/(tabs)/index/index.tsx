@@ -14,6 +14,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
+import { Colors } from "@/app/(onboarding)/end/color";
 import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -41,6 +42,12 @@ export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
   const router = useRouter();
 
+  const accounts = useAccountStore.getState().accounts;
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
   const theme = useTheme();
   const { colors } = theme;
 
@@ -106,6 +113,7 @@ export default function TabOneScreen() {
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString(),
         }],
+        selectedColor: Colors.PINK,
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),
       });

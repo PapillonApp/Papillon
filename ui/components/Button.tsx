@@ -24,6 +24,7 @@ interface ButtonProps extends PressableProps {
   loading?: boolean;
   onPress?: () => void;
   disabled?: boolean;
+  disableAnimation?: boolean;
   alignment?: Alignment;
 };
 
@@ -37,6 +38,7 @@ const defaultProps = {
   loading: false,
   onPress: () => { },
   disabled: false,
+  disableAnimation: false,
   alignment: 'center' as Alignment,
 };
 
@@ -51,6 +53,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   onPress = defaultProps.onPress,
   disabled = defaultProps.disabled,
   alignment = defaultProps.alignment,
+  disableAnimation = defaultProps.disableAnimation,
   style,
   ...rest
 }) => {
@@ -177,7 +180,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   return (
     <AnimatedPressable
       {...rest}
-      layout={Animation(LinearTransition)}
+      layout={disableAnimation ? undefined : Animation(LinearTransition)}
       entering={FadeIn}
       exiting={FadeOut}
       style={buttonStyle}
