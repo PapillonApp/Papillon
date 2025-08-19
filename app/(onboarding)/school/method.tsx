@@ -17,9 +17,7 @@ import Reanimated, { Extrapolate, FadeInDown, interpolate, useAnimatedScrollHand
 
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
-const { width } = Dimensions.get('window');
-
-const height = 480;
+let height = 500;
 
 export default function WelcomeScreen() {
   const theme = useTheme();
@@ -75,7 +73,9 @@ export default function WelcomeScreen() {
       pathname: path.pathname,
       params: { service: local.service }
     });
-  });
+  }).filter(service => service.availableFor.includes(Number(local.service)));
+
+  height = 650 - 30 * loginMethods.length
 
   useFocusEffect(
     React.useCallback(() => {
@@ -147,7 +147,7 @@ export default function WelcomeScreen() {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={scrollHandler}
-        data={loginMethods.filter(methods => methods.availableFor.includes(Number(local.service)))}
+        data={loginMethods}
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: height + 16,
