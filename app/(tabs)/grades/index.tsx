@@ -31,6 +31,8 @@ import { getManager } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import { useNavigation, useRouter } from "expo-router";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -302,6 +304,13 @@ export default function TabOneScreen() {
         status={item.studentScore?.status}
         outOf={item.outOf?.value ?? 20}
         color={subjectInfo.color}
+        onPress={() => {
+          navigation.navigate('grade', {
+            grade: item,
+            subjectInfo: subjectInfo,
+            allGrades: newSubjects.flatMap(subject => subject.grades)
+          });
+        }}
       />
     );
   }, [newSubjects, getSubjectInfo]);
@@ -443,87 +452,37 @@ export default function TabOneScreen() {
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
+  const router = useRouter();
+  const navigation = useNavigation();
+
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
     const subjectInfo = getSubjectInfo(subject?.name ?? "");
 
     return (
-      <View key={item.id}
-        style={{
-          width: 220,
-          height: 150,
-          borderRadius: 24,
-          borderCurve: "continuous",
-          borderColor: colors.border,
-          borderWidth: 1,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.1,
-          shadowRadius: 3,
-          backgroundColor: subjectInfo.color + "33",
-        }}
+      <Reanimated.View
+        sharedTransitionTag={item.id + "_compactGrade"}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
+        <CompactGrade
+          key={item.id + "_compactGrade"}
+          emoji={subjectInfo.emoji}
+          title={subjectInfo.name}
+          description={item.description}
+          score={item.studentScore?.value ?? 0}
+          outOf={item.outOf?.value ?? 20}
+          disabled={item.studentScore?.disabled}
+          color={subjectInfo.color}
+          date={item.givenAt}
+          onPress={() => {
+            navigation.navigate('grade', {
+              grade: item,
+              subjectInfo: subjectInfo,
+              allGrades: newSubjects.flatMap(subject => subject.grades)
+            });
           }}
-        >
-          <Text>
-            {subjectInfo.emoji}
-          </Text>
-          <Typography variant="body1" color={subjectInfo.color} style={{ flex: 1 }} numberOfLines={1} weight="semibold">
-            {subjectInfo.name}
-          </Typography>
-          <Typography variant="body1" color={subjectInfo.color} numberOfLines={1}>
-            {item.givenAt.toLocaleDateString("fr-FR", {
-              day: "2-digit",
-              month: "short",
-            })}
-          </Typography>
-        </View>
-        <View
-          style={{
-            paddingHorizontal: 12,
-            paddingVertical: 12,
-            flexDirection: "column",
-            gap: 4,
-            backgroundColor: colors.card,
-            borderRadius: 24,
-            borderCurve: "continuous",
-            flex: 1,
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <Typography variant="title" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
-            {item.description ? item.description : t('Grade_NoDescription')}
-          </Typography>
-          <View style={{
-            flexDirection: "row",
-            alignSelf: "flex-start",
-            justifyContent: "flex-start",
-            alignItems: "flex-end",
-            gap: 4,
-            borderRadius: 120,
-            paddingHorizontal: 7,
-            paddingVertical: 3,
-            backgroundColor: subjectInfo.color + "33",
-          }}>
-            <Typography variant="h4" color={subjectInfo.color}>
-              {item.studentScore?.disabled ? item.studentScore.status : (item.studentScore?.value ?? 0).toFixed(2)}
-            </Typography>
-            <Typography variant="body1" inline color={subjectInfo.color} style={{ marginBottom: 2 }}>
-              / {item.outOf?.value ?? 20}
-            </Typography>
-          </View>
-        </View>
-      </View>
-    );
+        />
+      </Reanimated.View>
+    )
   }, [colors, newSubjects, getSubjectInfo]);
 
   const LatestGrades = useCallback(() => (

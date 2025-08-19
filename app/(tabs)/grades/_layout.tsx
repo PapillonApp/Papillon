@@ -17,6 +17,16 @@ export default function Layout() {
           headerTransparent: true,
         }}
       />
+      <Stack.Screen
+        name="grade"
+        options={{
+          headerShown: true,
+          headerTitle: t("Modal_Grades_Title"),
+          headerTransparent: true,
+          headerLargeTitle: false,
+          presentation: "modal"
+        }}
+      />
     </Stack>
   );
 }

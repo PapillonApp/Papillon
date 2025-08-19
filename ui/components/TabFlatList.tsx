@@ -20,7 +20,7 @@ const patterns = {
   grades: require('@/assets/images/patterns/grades.png'),
 };
 
-interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
+interface TabFlatListProps extends FlatListProps<any> {
   header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
@@ -30,6 +30,7 @@ interface TabFlatListProps extends LegendListProps<any>, FlatListProps<any> {
   radius?: number;
   gap?: number;
   engine?: 'FlatList' | 'LegendList' | 'FlashList';
+  translucent?: boolean;
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
@@ -43,6 +44,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   radius = 28,
   gap = 0,
   engine = "FlatList",
+  translucent = false,
   onFullyScrolled,
   ...rest
 }) => {
@@ -265,7 +267,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
           contentContainerStyle={{
             minHeight: screenHeight - finalHeight,
-            backgroundColor: colors.background,
+            backgroundColor: translucent ? "transparent" : colors.background,
             marginTop: finalHeight,
             borderTopLeftRadius: radius,
             borderTopRightRadius: radius,

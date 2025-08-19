@@ -1,10 +1,11 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Stack from "./Stack";
 import Typography from "./Typography";
+import AnimatedPressable from "./AnimatedPressable";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -19,10 +20,11 @@ export interface GradeProps {
   disabled?: boolean;
   status?: string;
   color?: string; // Optional color prop for custom styling
+  onPress?: () => void;
 }
 
 const Grade: React.FC<GradeProps> = React.memo(
-  ({ isFirst, isLast, title, date, score, outOf, color, disabled, status }) => {
+  ({ isFirst, isLast, title, date, score, outOf, color, disabled, status, onPress }) => {
     const theme = useTheme();
     const { colors } = theme;
 
@@ -74,40 +76,47 @@ const Grade: React.FC<GradeProps> = React.memo(
     return (
       <Reanimated.View
         layout={ListGradesLayoutTransition}
-        style={[styles.container, isLast && styles.lastItem, isFirst && styles.firstItem]}
       >
-        <Stack
-          direction="horizontal"
-          hAlign="center"
-          vAlign="center"
-          style={styles.stackPadding}
+        <Pressable
+          onPress={onPress}
         >
-          <Stack inline style={styles.flexContainer} gap={0}>
-            <Typography variant="title">{title}</Typography>
-            <Typography variant="body2" color="secondary" inline style={{ marginTop: 2, marginBottom: 2 }}>
-              {formattedDate}
-            </Typography>
-          </Stack>
-          <Stack
-            direction="horizontal"
-            hAlign="end"
-            vAlign="end"
-            inline
-            gap={1}
-            backgroundColor={color + "33"}
-            style={{
-              marginTop: 2,
-              paddingHorizontal: 10,
-              paddingVertical: 0,
-              borderRadius: 20,
-            }}
+          <Reanimated.View
+            style={[styles.container, isLast && styles.lastItem, isFirst && styles.firstItem]}
           >
-            <Typography variant="h5" color={color}>{disabled ? status : formattedScore}</Typography>
-            <Typography variant="caption" color={color} style={{ marginBottom: 4 }}>
-              /{outOf}
-            </Typography>
-          </Stack>
-        </Stack>
+            <Stack
+              direction="horizontal"
+              hAlign="center"
+              vAlign="center"
+              style={styles.stackPadding}
+            >
+              <Stack inline style={styles.flexContainer} gap={0}>
+                <Typography variant="title">{title}</Typography>
+                <Typography variant="body2" color="secondary" inline style={{ marginTop: 2, marginBottom: 2 }}>
+                  {formattedDate}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="horizontal"
+                hAlign="end"
+                vAlign="end"
+                inline
+                gap={1}
+                backgroundColor={color + "33"}
+                style={{
+                  marginTop: 2,
+                  paddingHorizontal: 10,
+                  paddingVertical: 0,
+                  borderRadius: 20,
+                }}
+              >
+                <Typography variant="h5" color={color}>{disabled ? status : formattedScore}</Typography>
+                <Typography variant="caption" color={color} style={{ marginBottom: 4 }}>
+                  /{outOf}
+                </Typography>
+              </Stack>
+            </Stack>
+          </Reanimated.View>
+        </Pressable>
       </Reanimated.View>
     );
   }

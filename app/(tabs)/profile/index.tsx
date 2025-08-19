@@ -141,7 +141,7 @@ function News() {
               {newsItems.length} {newsItems.length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
             </Typography>
             <Icon papicon opacity={0.5} size={20}>
-              <Papicons.Arrow />
+              <Papicons.ArrowRightUp />
             </Icon>
           </Stack>
         </Pressable>

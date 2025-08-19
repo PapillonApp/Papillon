@@ -147,7 +147,7 @@ const Stack: React.FC<StackProps> = ({
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
       dynamicStyle.borderWidth = flat ? 1 : 0.5;
-      dynamicStyle.backgroundColor = backgroundColor || colors.background; // Default to theme background
+      dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
     }
 
     const finalStyle = [baseStyle, dynamicStyle];

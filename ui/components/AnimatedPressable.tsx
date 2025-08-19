@@ -42,6 +42,7 @@ const AnimatedPressable = React.forwardRef<View, AnimatedPressableProps>(
       scale.value = withSpring(1, { duration: 350 });
       opacity.value = withTiming(1, { duration: 100 }, (finished) => {
         if (finished && isInside.current && onPress) {
+          // @ts-expect-error : onPress et onPressOut renvoient un callback différent -> crash
           runOnJS(onPress)();
         }
       });

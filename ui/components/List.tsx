@@ -226,7 +226,7 @@ const List: React.FC<ListProps> = React.memo(
         marginBottom: marginBottom,
       };
       return style ? [baseStyle, style] : baseStyle;
-    }, [colors.card, style, __DEV__ && radius]);
+    }, [colors.card, style]);
 
     // Memoize border color with hex optimization
     const borderBottomColor = useMemo(() => `${colors.text}${OPACITY_HEX}`, [colors.text]);
