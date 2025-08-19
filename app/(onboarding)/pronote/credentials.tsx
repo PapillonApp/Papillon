@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Pressable, TextInput, Keyboard, Alert } from 'react-native';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +14,8 @@ import Reanimated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
-  useSharedValue
+  useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
@@ -26,6 +27,9 @@ import { Services } from '@/stores/account/types';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
+const KEYBOARD_HEIGHT = 270;
+const ANIMATION_DURATION = 170;
+const OPACITY_THRESHOLD = 600;
 
 const staticStyles = StyleSheet.create({
   container: {
@@ -80,6 +84,27 @@ export default function PronoteLoginWithCredentials() {
 
   const height = useSharedValue(INITIAL_HEIGHT);
   const local = useGlobalSearchParams();
+
+  const keyboardListeners = useMemo(() => ({
+    show: () => {
+      'worklet';
+      height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
+    },
+    hide: () => {
+      'worklet';
+      height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
+    }
+  }), [height]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardWillShow', keyboardListeners.show);
+    const hideSub = Keyboard.addListener('keyboardWillHide', keyboardListeners.hide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardListeners]);
 
   const AnimatedHeaderStyle = useAnimatedStyle(() => {
     'worklet';
@@ -223,6 +248,7 @@ export default function PronoteLoginWithCredentials() {
             title='Se connecter'
             color='black'
             size='large'
+            disableAnimation
             onPress={async () => {
               if (!username.trim() || !password.trim()) return;
               const device = uuid()
@@ -252,7 +278,7 @@ export default function PronoteLoginWithCredentials() {
               const firstName = splittedUsername[splittedUsername.length - 1]
               const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
               console.log(firstName, lastName)
-              useAccountStore.getState().addAccount({
+              const account = {
                 id: device,
                 firstName,
                 lastName,
@@ -274,10 +300,14 @@ export default function PronoteLoginWithCredentials() {
                 }],
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
-              })
+              }
 
-              useAccountStore.getState().setLastUsedAccount(device)
-              Alert.alert("Succès !", "La connexion fonctionne, Tom est juste trop lent à designer une page pour la connexion réussi...")
+              router.push({
+                pathname: "../end/color",
+                params: {
+                  account: JSON.stringify(account)
+                }
+              });
             }}
           />
         </Reanimated.View>
