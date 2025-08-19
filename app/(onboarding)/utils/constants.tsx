@@ -202,7 +202,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             description: "Rechercher une ville",
             icon: <Papicons.Search />,
             onPress: () => {
-                console.log("search pressed")
+                redirect({ pathname: './search' })
             }
         },
         {
