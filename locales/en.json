@@ -96,6 +96,15 @@
   "Profile_Cards_Title": "Cards",
 
   "Modal_Grades_Title": "Grade Details",
+  "Grades_Details_Title": "Details",
+  "Grades_HighestGrade_Title": "Highest grade",
+  "Grades_HighestGrade_Description": "Highest score obtained in the group",
+  "Grades_LowestGrade_Title": "Lowest grade",
+  "Grades_LowestGrade_Description": "Lowest score obtained in the group",
+  "Grades_Influence_Title": "Influence",
+  "Grades_Avg_Group_Title": "Group average",
+  "Grades_Coefficient": "Coefficient",
+  "Grades_Avg_Group_Short": "Group avg.",
 
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",

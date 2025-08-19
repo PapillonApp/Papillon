@@ -1,6 +1,6 @@
 import { Grade } from "@/services/shared/grade";
 
-const PapillonSubjectAvg = (grades: Grade[]) => {
+const PapillonSubjectAvg = (grades: Grade[], prop: keyof Grade = "studentScore") => {
   const subjectAverages: Record<string, { addition: number; total: number }> = {};
 
   grades.forEach((grade) => {
@@ -8,8 +8,8 @@ const PapillonSubjectAvg = (grades: Grade[]) => {
       subjectAverages[grade.subjectId] = { addition: 0, total: 0 };
     }
 
-    if (grade.studentScore?.value && grade.outOf.value && grade.studentScore?.value !== null && grade.outOf !== null) {
-      subjectAverages[grade.subjectId].addition += (grade.studentScore?.value / grade.outOf.value) * 20 * (grade.coefficient || 1);
+    if (grade[prop]?.value && grade.outOf.value && grade[prop]?.value !== null && grade.outOf !== null) {
+      subjectAverages[grade.subjectId].addition += (grade[prop]?.value / grade.outOf.value) * 20 * (grade.coefficient || 1);
       subjectAverages[grade.subjectId].total += grade.coefficient || 1;
     }
   });

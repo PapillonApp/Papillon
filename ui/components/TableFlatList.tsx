@@ -163,14 +163,15 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
         </Item>
       </Reanimated.View>
     ) : item.type === 'title' && !item.hideTitle ? (
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
+      <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 4,
         paddingVertical: 0,
         marginBottom: 14,
+        marginTop: 1,
         opacity: 0.5,
       }}>
         {item.icon || item.papicon ? (
-          <Icon papicon={!!item.papicon}>
+          <Icon size={20} papicon={!!item.papicon}>
             {item.papicon ? item.papicon : item.icon}
           </Icon>
         ) : null}
