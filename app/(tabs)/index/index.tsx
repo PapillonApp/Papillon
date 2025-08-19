@@ -260,7 +260,7 @@ export default function TabOneScreen() {
             title: "Login to demo account",
             onPress: () => loginDemoAccount(),
             buttonLabel: "Se connecter",
-            dev: true
+            dev: false
           },
           {
             icon: <Papicons.Calendar />,
@@ -335,21 +335,21 @@ export default function TabOneScreen() {
             title: "Onboarding",
             redirect: "/(onboarding)/welcome",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
           },
           {
             icon: <Papicons.Butterfly />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
           },
           {
             icon: <Papicons.Butterfly />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
           },
         ]}
         renderItem={({ item }) => {

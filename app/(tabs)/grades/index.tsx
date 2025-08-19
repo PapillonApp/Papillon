@@ -304,6 +304,13 @@ export default function TabOneScreen() {
         status={item.studentScore?.status}
         outOf={item.outOf?.value ?? 20}
         color={subjectInfo.color}
+        onPress={() => {
+          navigation.navigate('grade', {
+            grade: item,
+            subjectInfo: subjectInfo,
+            allGrades: newSubjects.flatMap(subject => subject.grades)
+          });
+        }}
       />
     );
   }, [newSubjects, getSubjectInfo]);
@@ -469,7 +476,8 @@ export default function TabOneScreen() {
           onPress={() => {
             navigation.navigate('grade', {
               grade: item,
-              subjectInfo: subjectInfo
+              subjectInfo: subjectInfo,
+              allGrades: newSubjects.flatMap(subject => subject.grades)
             });
           }}
         />
