@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
+import AnimatedPressable from "./AnimatedPressable";
 
 interface CompactGradeProps {
   emoji: string;
@@ -29,7 +30,7 @@ export const CompactGrade = ({
   const { colors } = useTheme();
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
       style={{
         width: 220,
@@ -108,6 +109,6 @@ export const CompactGrade = ({
           </Typography>
         </View>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 };
