@@ -19,6 +19,7 @@ export interface AccountsStorage {
   setSubjectColor: (subject: string, color: string) => void;
   setSubjectEmoji: (subject: string, emoji: string) => void;
   setSubjectName: (subject: string, name: string) => void;
+  setAccountSelectedColor: (accountId: string, selectedColor: Colors) => void;
 }
 
 /**

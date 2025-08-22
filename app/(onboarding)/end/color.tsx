@@ -79,12 +79,8 @@ export default function ChooseColorScreen() {
         <Button
           title="Terminer"
           onPress={async () => {
-            if (local.account) {
-              let account = JSON.parse(String(local.account)) as Account
-              account = { ...account, selectedColor: color }
-              console.log(account)
-              useAccountStore.getState().addAccount(account)
-              useAccountStore.getState().setLastUsedAccount(account.id)
+            if (local.accountId) {
+              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), Number(local.color))
               await initializeAccountManager()
               router.push("../../(tabs)" as any)
             }

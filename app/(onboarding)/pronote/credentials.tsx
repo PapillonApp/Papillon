@@ -277,7 +277,7 @@ export default function PronoteLoginWithCredentials() {
               const splittedUsername = session.user.name.split(" ")
               const firstName = splittedUsername[splittedUsername.length - 1]
               const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
-              console.log(firstName, lastName)
+
               const account = {
                 id: device,
                 firstName,
@@ -302,10 +302,14 @@ export default function PronoteLoginWithCredentials() {
                 updatedAt: (new Date()).toISOString()
               }
 
+              const store = useAccountStore.getState()
+              store.addAccount(account)
+              store.setLastUsedAccount(device)
+
               router.push({
                 pathname: "../end/color",
                 params: {
-                  account: JSON.stringify(account)
+                  accountId: device
                 }
               });
             }}

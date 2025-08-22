@@ -12,7 +12,8 @@ import { error } from "@/utils/logger/logger";
 export async function fetchPronoteNews(session: SessionHandle, accountId: string): Promise<News[]> {
   const result: News[] = [];
 
-  const news = await PawnoteNews(session) as unknown as NewsInformation[];
+  const response = await PawnoteNews(session) as unknown as { items: NewsInformation[] };
+  const news = response.items;
   for (const item of news) {
     result.push({
       id: item.id,

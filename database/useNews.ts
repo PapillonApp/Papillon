@@ -16,7 +16,7 @@ export function useNews(refresh = 0) {
 
   useEffect(() => {
 
-    const query = database.get<News>('homework').query();
+    const query = database.get<News>('news').query();
 
     const sub = query.observe().subscribe(news =>
       setNews(
