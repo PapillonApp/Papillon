@@ -521,7 +521,23 @@ export class AccountManager {
   }
 }
 
+
 let globalManager: AccountManager | null = null;
+const managerListeners: Array<(manager: AccountManager) => void> = [];
+
+export const subscribeManagerUpdate = (listener: (manager: AccountManager) => void) => {
+  managerListeners.push(listener);
+  // Optionally, call immediately with current manager
+  if (globalManager) listener(globalManager);
+  return () => {
+    const idx = managerListeners.indexOf(listener);
+    if (idx !== -1) managerListeners.splice(idx, 1);
+  };
+};
+
+const notifyManagerListeners = (manager: AccountManager) => {
+  managerListeners.forEach(listener => listener(manager));
+};
 
 export const initializeAccountManager = async (accountId?: string): Promise<AccountManager> => {
   if (!accountId) {
@@ -540,13 +556,13 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
   const manager = new AccountManager(account);
   await manager.refreshAllAccounts();
   globalManager = manager;
+  notifyManagerListeners(manager);
   return manager;
 };
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    warn("Account manager not initialized. Call initializeAccountManager first.");
+    throw new Error("Account manager not initialized. Call initializeAccountManager first.");
   }
-
   return globalManager;
 };
