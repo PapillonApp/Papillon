@@ -68,7 +68,7 @@ export function getSupportedServices(redirect: (path: { pathname: string, option
             name: "university",
             title: "Service universitaire",
             type: "other",
-            icon: <Papicons.Pillar />,
+            icon: <Papicons.Star />,
             onPress: () => {
                 redirect({ pathname: './university/method' });
 

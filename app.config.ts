@@ -21,6 +21,7 @@ module.exports = {
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
+      minimumOSVersion: "17.6",
       infoPlist: {
         CFBundleURLTypes: [
           {
@@ -57,6 +58,7 @@ module.exports = {
       "expo-font",
       "expo-localization",
       "react-native-bottom-tabs",
+      "expo-secure-store",
       [
         "expo-location",
         {
