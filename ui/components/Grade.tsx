@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useMemo } from "react";
-import { Pressable, StyleSheet } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Stack from "./Stack";
@@ -73,16 +73,38 @@ const Grade: React.FC<GradeProps> = React.memo(
       [colors]
     );
 
+    const [isPressed, setIsPressed] = useState(false);
+
     return (
       <Reanimated.View
         layout={ListGradesLayoutTransition}
       >
         <Pressable
           onPress={onPress}
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
         >
           <Reanimated.View
             style={[styles.container, isLast && styles.lastItem, isFirst && styles.firstItem]}
           >
+            {isPressed && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "#00000020",
+                  zIndex: 1,
+                  borderTopLeftRadius: isFirst ? 22 : 0,
+                  borderTopRightRadius: isFirst ? 22 : 0,
+                  borderBottomLeftRadius: isLast ? 22 : 0,
+                  borderBottomRightRadius: isLast ? 22 : 0,
+                }}
+              />
+            )}
+
             <Stack
               direction="horizontal"
               hAlign="center"
