@@ -249,21 +249,6 @@ export default function TabOneScreen() {
       return true;
     }
 
-    function getStatusText(status?: CourseStatus): string {
-      switch (status) {
-        case CourseStatus.ONLINE:
-          return t("Online_Course")
-        case CourseStatus.EDITED:
-          return t("Edited_Course")
-        case CourseStatus.CANCELED:
-          return t("Canceled_Course")
-        case CourseStatus.EVALUATED:
-          return t("Evaluated_Course")
-        default:
-          return ""
-      }
-    }
-
     const dayEvents = React.useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
@@ -484,3 +469,18 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
   }
 });
+
+export function getStatusText(status?: CourseStatus): string {
+  switch (status) {
+    case CourseStatus.ONLINE:
+      return t("Online_Course")
+    case CourseStatus.EDITED:
+      return t("Edited_Course")
+    case CourseStatus.CANCELED:
+      return t("Canceled_Course")
+    case CourseStatus.EVALUATED:
+      return t("Evaluated_Course")
+    default:
+      return ""
+  }
+}

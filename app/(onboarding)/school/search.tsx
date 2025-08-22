@@ -327,7 +327,7 @@ export default function SelectSchoolOnMap() {
           ]}
         >
           <Icon size={26} fill="white" papicon>
-            <Papicons.Back />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >

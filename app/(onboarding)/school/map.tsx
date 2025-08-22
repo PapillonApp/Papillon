@@ -22,14 +22,14 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 import Svg, { Circle, Mask, Path } from 'react-native-svg';
-import { CurrentPosition, getCurrentPosition } from '@/utils/native/position';
+import { calculateDistanceBetweenPositions, CurrentPosition, getCurrentPosition } from '@/utils/native/position';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { Services } from '@/stores/account/types';
 import { geolocation } from 'pawnote';
 import TableFlatList from '@/ui/components/TableFlatList';
 import { getInitials } from '@/utils/chats/initials';
 import { log } from '@/utils/logger/logger';
-import { GeographicReverse } from '@/utils/native/georeverse';
+import { GeographicQuerying, GeographicReverse } from '@/utils/native/georeverse';
 import { SearchSchools } from 'skolengojs';
 
 const INITIAL_HEIGHT = 450;
@@ -150,13 +150,20 @@ export default function SelectSchoolOnMap() {
     } else if (local.service === String(Services.SKOLENGO)) {
       const geo = await GeographicReverse(pos.latitude, pos.longitude)
       const schools = await SearchSchools(geo.city)
+      const result: School[] = []
 
-      setSchools(schools.map(item => ({
-        name: item.name,
-        distance: 0,
-        url: "",
-        ref: item
-      })))
+      for (const school of schools) {
+        const position = await GeographicQuerying(`${school.location.addressLine} ${school.location.city} ${school.location.zipCode}`)
+        const distance = calculateDistanceBetweenPositions(pos.latitude, pos.longitude, position.longitude, position.latitude)
+        result.push({
+          name: school.name,
+          distance: distance / 1000,
+          url: "",
+          ref: school
+        })
+      }
+
+      setSchools(result)
       setLoading(false)
     }
   }, []);
@@ -244,7 +251,13 @@ export default function SelectSchoolOnMap() {
         </View>,
         onPress: () => {
           log("Opening Webview for service " + Services[Number(local.service)] + " and URL " + school.url);
-          router.push({
+          if (Number(local.service) === Services.SKOLENGO) {
+            return router.push({
+              pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
+              params: { ref: JSON.stringify(school.ref) }
+            })
+          }
+          return router.push({
             pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
             params: { url: school.url }
           })
@@ -364,7 +377,7 @@ export default function SelectSchoolOnMap() {
           ]}
         >
           <Icon size={26} fill="white" papicon>
-            <Papicons.Back />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >

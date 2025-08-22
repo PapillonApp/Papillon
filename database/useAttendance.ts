@@ -8,8 +8,9 @@ import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapAbsencesToShared, mapDelaysToShared, mapObservationsToShared,mapPunishmentsToShared } from "./mappers/attendance";
 import { Absence, Attendance, Delay, Observation, Punishment } from "./models/Attendance";
 
-export async function addAttendanceToDatabase(attendance: SharedAttendance, period: string) {
+export async function addAttendanceToDatabase(attendances: SharedAttendance[], period: string) {
   const db = getDatabaseInstance();
+  for (const attendance of attendances) {
   const id = generateId(attendance.createdByAccount + period + attendance.kidName);
 
   await db.write(async () => {
@@ -156,6 +157,7 @@ export async function addAttendanceToDatabase(attendance: SharedAttendance, peri
       }
     }
   });
+}
 }
 
 

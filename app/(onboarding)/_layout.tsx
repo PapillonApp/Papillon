@@ -51,7 +51,7 @@ export default function OnboardingLayout() {
                 <Stack.Screen
                     name="end/color"
                     options={{ ...newScreenOptions }}
-                    initialParams={{ account: {} }}
+                    initialParams={{ accountId: "" }}
                 />
                 <Stack.Screen
                     name="restaurants/method"
@@ -74,6 +74,11 @@ export default function OnboardingLayout() {
                     name="pronote/credentials"
                     options={{ ...newScreenOptions }}
                     initialParams={{ url: "", previousPage: "map" }}
+                />
+                <Stack.Screen
+                    name="skolengo/webview"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ ref: {} }}
                 />
             </Stack>
         </View>

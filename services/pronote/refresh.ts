@@ -20,7 +20,7 @@ export async function refreshPronoteAccount(
     token: String(credentials.refreshToken ?? ""),
     deviceUUID: String(credentials.additionals?.["deviceUUID"] || ""),
   });
-
+console.log(JSON.stringify(credentials))
   const auth: Auth = {
     accessToken: refresh.token,
     refreshToken: refresh.token,

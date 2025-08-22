@@ -19,11 +19,6 @@ export async function fetchPronoteChats(
     error("Session is undefined", "fetchPronoteChats");
   }
 
-  const chatTab = session.user.resources[0].tabs.get(TabLocation.Discussions);
-  if (!chatTab) {
-    error("Chat tab not found in session", "fetchPronoteChats");
-  }
-
   const chats = await discussions(session);
   return chats.items.map(chat => ({
     id: chat.participantsMessageID,

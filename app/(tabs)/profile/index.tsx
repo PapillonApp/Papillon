@@ -31,13 +31,19 @@ import { getManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Period } from "@/database/models/Grades";
 import { Account } from "@/stores/account/types";
+import { News } from "@/services/shared/news";
+import { Absence } from "@/services/shared/attendance";
+import { Chat } from "@/services/shared/chat";
 
 function Tabs() {
-  const enabledTabs = [
+  const [absences, setAbsences] = useState<Absence[]>([]);
+  const [discussion, setDiscussion] = useState<Chat[]>([]);
+
+  const enabledTabs = useMemo(() => [
     {
       icon: Papicons.Chair,
       title: t("Profile_Attendance_Title"),
-      unread: 1,
+      unread: absences.length,
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
@@ -45,15 +51,39 @@ function Tabs() {
     {
       icon: Papicons.TextBubble,
       title: t("Profile_Discussions_Title"),
-      unread: 2,
+      unread: discussion.length,
       denominator: t("Profile_Discussions_Denominator_Single"),
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
     }
-  ];
+  ], [absences]);
 
   const theme = useTheme();
   const { colors } = theme;
+
+  const fetchAttendance = useCallback(async () => {
+    const manager = getManager();
+    const attendancePeriods = await manager.getAttendancePeriods();
+    const allAbsences: Absence[] = [];
+    for (const period of attendancePeriods) {
+      const attendances = await manager.getAttendanceForPeriod(period.name);
+      for (const attendance of attendances) {
+        allAbsences.push(...attendance.absences);
+      }
+    }
+    setAbsences(allAbsences);
+  }, []);
+
+  const fetchDiscussions = useCallback(async () => {
+    const manager = getManager();
+    const chats = await manager.getChats();
+    setDiscussion(chats);
+  }, []);
+
+  useEffect(() => {
+    fetchAttendance();
+    fetchDiscussions();
+  }, [fetchAttendance]);
 
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
@@ -84,80 +114,86 @@ function Tabs() {
   );
 }
 
-function News() {
+function NewsSection() {
   const theme = useTheme();
   const { colors } = theme;
 
-  // Example news item
-  const newsItems = [
-    {
-      title: "Chasse aux œufs dans la cour organisé par la MDL",
-      date: "16/01",
-      author: "M. SAMSOM",
-    },
-    {
-      title: "Réunion parents-professeurs",
-      date: "20/01",
-      author: "M. DUPONT",
-    }
-  ];
+  const [news, setNews] = useState<News[]>([]);
+
+  const fetchNews = useCallback(() => {
+    const manager = getManager();
+    manager.getNews().then((fetchedNews) => {
+      setNews(fetchedNews);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
   return (
     <>
-      <Stack
-        direction="horizontal"
-        gap={12}
-        card
-        vAlign="start"
-        hAlign="center"
-        style={{
-          paddingHorizontal: 10,
-          paddingTop: 8,
-          paddingBottom: 8 + 38,
-          marginBottom: -38,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-        }}
-        backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
-      >
-        <Icon
-          fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-          size={24}
-          style={{ marginLeft: 8, marginRight: 0 }}
-          papicon
-        >
-          <Papicons.Newspaper />
-        </Icon>
-        <Typography
-          color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-          style={{ flex: 1 }}
-          variant="h5"
-        >
-          {t("Profile_News_Title")}
-        </Typography>
-        <Pressable>
-          <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
-            <Typography style={{ marginBottom: -3 }} inline color="secondary">
-              {newsItems.length} {newsItems.length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
-            </Typography>
-            <Icon papicon opacity={0.5} size={20}>
-              <Papicons.ArrowRightUp />
+      {news.length > 0 ? (
+        <>
+          <Stack
+            direction="horizontal"
+            gap={12}
+            card
+            vAlign="start"
+            hAlign="center"
+            style={{
+              paddingHorizontal: 10,
+              paddingTop: 8,
+              paddingBottom: 8 + 38,
+              marginBottom: -38,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+            }}
+            backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
+          >
+            <Icon
+              fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+              size={24}
+              style={{ marginLeft: 8, marginRight: 0 }}
+              papicon
+            >
+              <Papicons.Newspaper />
             </Icon>
+            <Typography
+              color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+              style={{ flex: 1 }}
+              variant="h5"
+            >
+              {t("Profile_News_Title")}
+            </Typography>
+            <Pressable>
+              <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
+                <Typography style={{ marginBottom: -3 }} inline color="secondary">
+                  {news.filter(news => !news.acknowledged).length} {news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
+                </Typography>
+                <Icon papicon opacity={0.5} size={20}>
+                  <Papicons.ArrowRightUp />
+                </Icon>
+              </Stack>
+            </Pressable>
           </Stack>
-        </Pressable>
-      </Stack>
-      <List marginBottom={0} radius={24}>
-        {newsItems.map((item, index) => (
-          <Item key={index}>
-            <Typography variant="title" color="text">
-              {item.title}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              {item.date}  ·  {item.author}
-            </Typography>
-          </Item>
-        ))}
-      </List>
+          <List marginBottom={0} radius={24}>
+            {news.map((item, index) => (
+              <Item key={index}>
+                <Typography variant="title" color="text">
+                  {item.title}
+                </Typography>
+                <Typography variant="caption" color="secondary">
+                  {item.createdAt.getDate()}  ·  {item.author}
+                </Typography>
+              </Item>
+            ))}
+          </List>
+        </>
+      ) : (
+        <>
+        </>
+      )}
     </>
   )
 }
@@ -315,7 +351,7 @@ export default function TabOneScreen() {
         renderItem={({ item, index }) => (
           item === "tabs" ?
             <Tabs /> : item === "news" ?
-              <News /> : item === "cards" ?
+              <NewsSection /> : item === "cards" ?
                 <Cards /> : null
         )}
         keyExtractor={(item) => item + "a"}
@@ -344,7 +380,7 @@ export default function TabOneScreen() {
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                       <Icon papicon opacity={0.5}>
-                        <Papicons.Student />
+                        <Papicons.Sparkles />
                       </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {establishment}
