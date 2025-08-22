@@ -303,12 +303,10 @@ export default function URLInputScreen() {
                     }
                   }
 
-                  if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
-                    return router.push({
-                      pathname: "./webview" as unknown as RelativePathString,
-                      params: { url: cleanedURL }
-                    })
-                  }
+                  return router.push({
+                    pathname: "./webview" as unknown as RelativePathString,
+                    params: { url: cleanedURL }
+                  })
 
                   return router.push({
                     pathname: "./credentials",
@@ -331,7 +329,7 @@ export default function URLInputScreen() {
           ]}
         >
           <Icon size={26} fill="#00000080" papicon>
-            <Papicons.Back />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >

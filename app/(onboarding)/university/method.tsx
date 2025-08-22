@@ -241,7 +241,7 @@ export default function WelcomeScreen() {
         }}
       >
         <Icon size={26} fill={"#fff"} papicon>
-          <Papicons.Back />
+          <Papicons.ArrowLeft />
         </Icon>
       </Pressable>
     </ViewContainer>

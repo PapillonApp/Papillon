@@ -543,6 +543,7 @@ export default function TabOneScreen() {
       <TabFlatList
         radius={36}
         waitForInitialLayout
+        engine="LegendList"
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"
         pattern="checks"

@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Switch } from "react-native";
+import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
 
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
@@ -80,6 +80,15 @@ export default function Devmode() {
             />
           </Trailing>
           <Typography variant="title">Logs Store</Typography>
+        </Item>
+        <Item onPress={() => {
+          const accounts = useAccountStore.getState().accounts
+          for (const account of accounts) {
+            useAccountStore.getState().removeAccount(account)
+          }
+          Alert.alert("Success")
+        }}>
+          <Typography variant="title">Reset Account Store</Typography>
         </Item>
 
         {showLogsStore &&

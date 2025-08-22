@@ -148,20 +148,21 @@ export class AccountManager {
     );
   }
 
-  async getAttendanceForPeriod(period: string): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance[]> {
     return await this.fetchData(
       Capabilities.ATTENDANCE, async client => {
         if (!client.getAttendanceForPeriod) {
           throw new Error(
-            "getAllAttendanceForPeriod not implemented but the capability is set."
+            "getAttendanceForPeriod not implemented but the capability is set."
           );
         }
-        return await client.getAttendanceForPeriod(period);
+        const attendance = await client.getAttendanceForPeriod(period);
+        return Array.isArray(attendance) ? attendance : [attendance];
       },
       {
-        multiple: false,
-        fallback: async () => getAttendanceFromCache(period),
-        saveToCache: async (data: Attendance) => {
+        multiple: true,
+        fallback: async () => [await getAttendanceFromCache(period)],
+        saveToCache: async (data: Attendance[]) => {
           await addAttendanceToDatabase(data, period);
         }
       });

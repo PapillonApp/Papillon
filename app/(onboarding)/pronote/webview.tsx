@@ -18,7 +18,10 @@ export default function WebViewScreen() {
 
   const [deviceUUID] = useState(uuid());
 
+  console.log("WebViewScreen initialized with URL:", url);
+
   if (!url) {
+    console.warn("No URL provided");
     return (
       <View style={styles.container}>
         <Typography>Aucune URL fournie</Typography>
@@ -35,38 +38,36 @@ export default function WebViewScreen() {
     new Date().getTime() + 365 * 24 * 60 * 60 * 1000
   ).toUTCString();
 
+  console.log("Device UUID:", deviceUUID);
+
   const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
-    (function () {
-      window.hookAccesDepuisAppli = function() {
-        this.passerEnModeValidationAppliMobile('', '${deviceUUID}');
-      };
-      
-      return '';
-    })();
-  `.trim();
+      window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    `.trim();
 
   const INJECT_PRONOTE_JSON = `
-    (function () {
-      try {
-        const json = JSON.parse(document.body.innerText);
-        const lJetonCas = !!json && !!json.CAS && json.CAS.jetonCAS;
-        
-        document.cookie = "appliMobile=; expires=${PRONOTE_COOKIE_EXPIRED}"
+      (function () {
+        try {
+          const json = JSON.parse(document.body.innerText);
+          const lJetonCas = !!json && !!json.CAS && json.CAS.jetonCAS;
+          
+          document.cookie = "appliMobile=; expires=${PRONOTE_COOKIE_EXPIRED}"
 
-        if (!!lJetonCas) {
-          document.cookie = "validationAppliMobile=" + lJetonCas + "; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
-          document.cookie = "uuidAppliMobile=${deviceUUID}; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
-          // 1036 = French
-          document.cookie = "ielang=1036; expires=${PRONOTE_COOKIE_LANGUAGE_EXPIRES}";
+          if (!!lJetonCas) {
+            document.cookie = "validationAppliMobile=" + lJetonCas + "; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
+            document.cookie = "uuidAppliMobile=${deviceUUID}; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
+            // 1036 = French
+            document.cookie = "ielang=1036; expires=${PRONOTE_COOKIE_LANGUAGE_EXPIRES}";
+          }
+
+          console.log(lJetonCas)
+
+          window.location.assign("${url}/mobile.eleve.html?fd=1");
         }
-
-        window.location.assign("${url}/mobile.eleve.html?fd=1");
-      }
-      catch {
-        // TODO: Handle error
-      }
-    })();
-  `.trim();
+        catch (error) {
+          console.error("Error parsing JSON or injecting cookies:", error);
+        }
+      })();
+    `.trim();
 
   const INJECT_PRONOTE_CURRENT_LOGIN_STATE = `
     (function () {
@@ -79,19 +80,22 @@ export default function WebViewScreen() {
         }));
       }, 1000);
     })();
-  `.trim();
+    `.trim();
 
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => router.back()}
+        onPress={() => {
+          console.log("Back button pressed");
+          router.back();
+        }}
         style={[
           styles.backButton,
           { top: insets.top + 4 }
         ]}
       >
         <Icon size={26} fill="#00000080" papicon>
-          <Papicons.Back />
+          <Papicons.ArrowLeft />
         </Icon>
       </Pressable>
 
@@ -104,74 +108,89 @@ export default function WebViewScreen() {
         userAgent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
         onMessage={async ({ nativeEvent }) => {
           const message = JSON.parse(nativeEvent.data);
+          console.log("Message received from WebView:", message);
+
           if (message.type === "pronote.loginState") {
-            if (!message.data) return;
-            if (message.data.status !== 0) return;
+            console.log("Login state message received:", message.data);
 
+            if (!message.data) {
+              console.warn("No login data in message");
+              return;
+            }
+            if (message.data.status !== 0) {
+              console.warn("Login status is not valid:", message.data.status);
+              return;
+            }
+            console.log(message.data.login, message.data.mdp)
+            console.log("Creating session handle...");
             const session = createSessionHandle();
-            const refresh = await loginToken(
-              session,
-              {
-                url: url,
-                kind: AccountKind.STUDENT,
-                username: message.data.login,
-                token: message.data.mdp,
-                deviceUUID
-              }
-            ).catch((error: { handle: { shouldCustomPassword: any; shouldCustomDoubleAuth: any; }; }) => {
-              if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-                console.log("Authentification 2FA")
-              } else {
-                throw error;
-              }
-            });
+            try {
+              const refresh = await loginToken(
+                session,
+                {
+                  url: url,
+                  kind: AccountKind.STUDENT,
+                  username: message.data.login,
+                  token: message.data.mdp,
+                  deviceUUID
+                }
+              );
 
-            if (!refresh) throw new Error("Erreur lors de la connexion")
-            useAccountStore.getState().addAccount({
-              id: deviceUUID,
-              firstName: session.user.name.split(" ")[0],
-              lastName: session.user.name.split(" ")[1],
-              services: [{
+              if (!refresh) throw new Error("Erreur lors de la connexion");
+
+              console.log("Login successful, adding account to store...");
+              useAccountStore.getState().addAccount({
                 id: deviceUUID,
-                auth: {
-                  accessToken: refresh.token,
-                  refreshToken: refresh.token,
-                  additionals: {
-                    instanceURL: refresh.url,
-                    kind: refresh.kind,
-                    username: refresh.username,
-                    deviceUUID
-                  }
-                },
-                serviceId: Services.PRONOTE,
+                firstName: session.user.name.split(" ")[0],
+                lastName: session.user.name.split(" ")[1],
+                services: [{
+                  id: deviceUUID,
+                  auth: {
+                    accessToken: refresh.token,
+                    refreshToken: refresh.token,
+                    additionals: {
+                      instanceURL: refresh.url,
+                      kind: refresh.kind,
+                      username: refresh.username,
+                      deviceUUID
+                    }
+                  },
+                  serviceId: Services.PRONOTE,
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
+                }],
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
-              }],
-              createdAt: (new Date()).toISOString(),
-              updatedAt: (new Date()).toISOString()
-            })
+              });
+            } catch (error) {
+              if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+                console.log("2FA authentication required");
+              } else {
+                console.error("Error during login:", error);
+                throw error;
+              }
+            }
           }
         }}
         onLoadEnd={(e) => {
           const { url } = e.nativeEvent;
+          console.log("WebView finished loading URL:", url);
 
           webViewRef.current?.injectJavaScript(
             INJECT_PRONOTE_INITIAL_LOGIN_HOOK
           );
 
           if (url === infoMobileURL) {
+            console.log("Injecting JSON script for InfoMobileURL");
             webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
-          } else if (url.includes("pronote/mobile.eleve.html")) {
-            if (!url.includes("identifiant")) {
-              console.log("Erreur, compte parent")
-            } else {
-              webViewRef.current?.injectJavaScript(
-                INJECT_PRONOTE_INITIAL_LOGIN_HOOK
-              );
-              webViewRef.current?.injectJavaScript(
-                INJECT_PRONOTE_CURRENT_LOGIN_STATE
-              );
-            }
+          } else if (url.includes("mobile.eleve.html")) {
+            console.log("Injecting login state scripts for student account");
+            webViewRef.current?.injectJavaScript(
+              INJECT_PRONOTE_INITIAL_LOGIN_HOOK
+            );
+            webViewRef.current?.injectJavaScript(
+              INJECT_PRONOTE_CURRENT_LOGIN_STATE
+            );
           }
         }}
       />
