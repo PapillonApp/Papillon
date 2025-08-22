@@ -1,3 +1,4 @@
+import { Colors } from "@/app/(onboarding)/end/color";
 import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs";
 
@@ -38,6 +39,7 @@ export interface Account {
   schoolName?: string;
   customisation?: CustomisationStorage;
   services: ServiceAccount[];
+  selectedColor?: Colors,
   createdAt: string;
   updatedAt: string;
 }

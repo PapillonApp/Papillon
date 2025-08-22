@@ -1,40 +1,30 @@
 import React from 'react';
-import { View, StyleSheet, Image, Dimensions, FlatList, Pressable, Platform, StatusBar } from 'react-native';
+import { StyleSheet, Dimensions, FlatList, Pressable } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { router, useFocusEffect } from 'expo-router';
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
-import Button from '@/ui/components/Button';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
-import { Services } from '@/stores/account/types';
 
 import * as Papicons from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
-import { log } from '@/utils/logger/logger';
 import ViewContainer from '@/ui/components/ViewContainer';
-import { getLoginMethods, getSupportedServices, getSupportedUniversities } from '../utils/constants';
-import TableFlatList from '@/ui/components/TableFlatList';
-import { HeaderBackButton } from '@react-navigation/elements';
-import { NativeHeaderSide } from '@/ui/components/NativeHeader';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
+import { getLoginMethods, LoginMethod } from '../utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { Extrapolate, FadeInDown, FadeInUp, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Reanimated, { Extrapolate, FadeInDown, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
-import Reanimated from "react-native-reanimated";
-import { he } from 'date-fns/locale';
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
-const { width } = Dimensions.get('window');
-
-const height = 480;
+let height = 500;
 
 export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const local = useGlobalSearchParams();
 
   const scrollY = React.useRef(useSharedValue(0)).current;
 
@@ -78,9 +68,14 @@ export default function WelcomeScreen() {
     ],
   }));
 
-  const loginMethods = getLoginMethods((redirect) => {
-    router.push(redirect);
-  });
+  const loginMethods = getLoginMethods((path: { pathname: RelativePathString }) => {
+    router.push({
+      pathname: path.pathname,
+      params: { service: local.service }
+    });
+  }).filter(service => service.availableFor.includes(Number(local.service)));
+
+  height = 650 - 30 * loginMethods.length
 
   useFocusEffect(
     React.useCallback(() => {
@@ -124,12 +119,20 @@ export default function WelcomeScreen() {
             width="100%"
             gap={12}
           >
-            <Typography
-              variant="h5"
-              style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
-            >
-              Étape 2 sur 3
-            </Typography>
+            <Stack flex direction="horizontal">
+              <Typography
+                variant="h5"
+                style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+              >
+                Étape 2
+              </Typography>
+              <Typography
+                variant="h5"
+                style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+              >
+                sur 3
+              </Typography>
+            </Stack>
             <Typography
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
@@ -154,31 +157,34 @@ export default function WelcomeScreen() {
         }}
         renderItem={({ item, index }) =>
         (
-          <AnimatedPressable
-            key={item.id}
-            onPress={item.onPress}
+          <Reanimated.View
             entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
-            style={[
-              {
-                paddingHorizontal: 18,
-                paddingVertical: 14,
-                borderColor: colors.border,
-                borderWidth: 1.5,
-                borderRadius: 80,
-                borderCurve: "continuous",
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 16,
-              }
-            ]}
           >
-            <Icon papicon>
-              {item.icon}
-            </Icon>
-            <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={item.type == "other" ? "white" : undefined}>
-              {item.description}
-            </Typography>
-          </AnimatedPressable>
+            <AnimatedPressable
+              key={(item as LoginMethod).id}
+              onPress={(item as LoginMethod).onPress}
+              style={[
+                {
+                  paddingHorizontal: 18,
+                  paddingVertical: 14,
+                  borderColor: colors.border,
+                  borderWidth: 1.5,
+                  borderRadius: 80,
+                  borderCurve: "continuous",
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 16,
+                }
+              ]}
+            >
+              <Icon papicon>
+                {(item as LoginMethod).icon}
+              </Icon>
+              <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={undefined}>
+                {(item as LoginMethod).description}
+              </Typography>
+            </AnimatedPressable>
+          </Reanimated.View>
         )}
       />
 
