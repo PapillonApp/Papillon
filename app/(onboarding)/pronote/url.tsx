@@ -303,10 +303,12 @@ export default function URLInputScreen() {
                     }
                   }
 
-                  return router.push({
-                    pathname: "./webview" as unknown as RelativePathString,
-                    params: { url: cleanedURL }
-                  })
+                  if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
+                    return router.push({
+                      pathname: "./webview" as unknown as RelativePathString,
+                      params: { url: cleanedURL }
+                    })
+                  }
 
                   return router.push({
                     pathname: "./credentials",
