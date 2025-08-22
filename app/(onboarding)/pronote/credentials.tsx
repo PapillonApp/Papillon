@@ -265,7 +265,7 @@ export default function PronoteLoginWithCredentials() {
 
               } catch (error) {
                 return alert.showAlert({
-                  title: "Identifiants incorrect",
+                  title: "Identifiants incorrects",
                   description: "Nous n’avons pas réussi à te connecter à ton compte Pronote. Vérifie ton identifiant et ton mot de passe puis essaie de nouveau.",
                   icon: "TriangleAlert",
                   color: "#D60046",

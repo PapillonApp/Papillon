@@ -16,10 +16,7 @@ export default function OnboardingLayout() {
         headerTransparent: true,
         headerTintColor: "#FFFFFF",
         headerBackButtonDisplayMode: "minimal",
-        headerBackButtonMenuEnabled: false,
-        ...Transition.presets.ElasticCard(),
-        gesturesEnabled: false,
-        gestureDirection: []
+        headerBackButtonMenuEnabled: false
     }), []);
 
     return (

@@ -1,7 +1,7 @@
 import { Redirect, useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { getManager, initializeAccountManager } from "@/services/shared";
@@ -25,7 +25,7 @@ import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import { BellDotIcon, ChevronDown, Filter, ListFilter } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { LinearTransition } from "react-native-reanimated";
+import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
@@ -41,6 +41,8 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getStatusText } from "../calendar";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -88,6 +90,14 @@ export default function TabOneScreen() {
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
   const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
 
+  const headerHeight = useHeaderHeight();
+
+  const [fullyScrolled, setFullyScrolled] = useState(false);
+
+  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
+    setFullyScrolled(isFullyScrolled);
+  }, []);
+
   const headerItems = [
     (
       <Stack
@@ -118,9 +128,35 @@ export default function TabOneScreen() {
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
       />
 
+      {!runsIOS26() && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
+        />
+      )}
+
       <TabFlatList
         translucent
         backgroundColor="transparent"
+        onFullyScrolled={handleFullyScrolled}
         height={160}
         header={
           <>
@@ -293,7 +329,7 @@ export default function TabOneScreen() {
                         {item.buttonLabel ?? "Afficher plus"}
                       </Typography>
                       <Icon size={20} papicon opacity={0.5}>
-                        <Papicons.ArrowUp />
+                        <Papicons.ArrowRightUp />
                       </Icon>
                     </Stack>
                   </AnimatedPressable>
