@@ -527,7 +527,6 @@ const managerListeners: Array<(manager: AccountManager) => void> = [];
 
 export const subscribeManagerUpdate = (listener: (manager: AccountManager) => void) => {
   managerListeners.push(listener);
-  // Optionally, call immediately with current manager
   if (globalManager) listener(globalManager);
   return () => {
     const idx = managerListeners.indexOf(listener);
@@ -562,7 +561,7 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    throw new Error("Account manager not initialized. Call initializeAccountManager first.");
+    warn("Account manager not initialized. Call initializeAccountManager first.");
   }
   return globalManager;
 };
