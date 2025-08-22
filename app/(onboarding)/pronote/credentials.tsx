@@ -320,7 +320,7 @@ export default function PronoteLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={local.previousPage === "map" ? "#FFFFFF" : "#00000080"} papicon>
-            <Papicons.Back />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >

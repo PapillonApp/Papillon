@@ -331,7 +331,7 @@ export default function URLInputScreen() {
           ]}
         >
           <Icon size={26} fill="#00000080" papicon>
-            <Papicons.Back />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >
