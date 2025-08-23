@@ -38,7 +38,7 @@ export default function OnboardingLayout() {
                 <Stack.Screen
                     name="school/map"
                     options={{ ...newScreenOptions }}
-                    initialParams={{ service: Services.PRONOTE }}
+                    initialParams={{ service: Services.PRONOTE, method: "automatic", city: "Paris" }}
                 />
                 <Stack.Screen
                     name="school/search"
