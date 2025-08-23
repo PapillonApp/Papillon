@@ -52,6 +52,9 @@
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
   "Home_Planned_Number": "Tu as {{number}} cours prévus aujourd'hui",
 
+  "Home_Widget_NextCourses": "Prochains cours",
+  "Home_Widget_NewGrades": "Nouvelles notes",
+
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
 

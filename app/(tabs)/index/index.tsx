@@ -254,7 +254,7 @@ export default function TabOneScreen() {
         data={[
           courses.length > 0 && {
             icon: <Papicons.Calendar />,
-            title: "Prochains cours",
+            title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
@@ -279,7 +279,7 @@ export default function TabOneScreen() {
           },
           grades.length > 0 && {
             icon: <Papicons.Grades />,
-            title: "Nouvelles notes",
+            title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
               <FlatList
