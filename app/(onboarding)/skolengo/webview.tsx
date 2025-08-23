@@ -44,6 +44,7 @@ export default function WebViewScreen() {
         firstName: auth?.firstName ?? "",
         lastName: auth?.lastName ?? "",
         schoolName: auth?.school.name,
+        className: auth?.className,
         services: [
           {
             id: id,

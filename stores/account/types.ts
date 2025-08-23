@@ -38,6 +38,7 @@ export interface Account {
   firstName: string;
   lastName: string;
   schoolName?: string;
+  className?: string;
   customisation?: CustomisationStorage;
   services: ServiceAccount[];
   selectedColor?: Colors,

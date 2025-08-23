@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { getManager, initializeAccountManager } from "@/services/shared";
+import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { ARD } from "@/services/ard";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
@@ -44,10 +44,14 @@ import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { t } from "i18next";
+import { Grade, Period } from "@/services/shared/grade";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [courses, setCourses] = useState<SharedCourse[]>([])
+
+  const [courses, setCourses] = useState<SharedCourse[]>([]);
+  const [grades, setGrades] = useState<Grade[]>([]);
+
   const router = useRouter();
 
   const Initialize = async () => {
@@ -68,9 +72,42 @@ export default function TabOneScreen() {
     return setCourses(weeklyTimetable.find(day => day.date === date)?.courses ?? [])
   }, []);
 
+  const fetchGrades = useCallback(async () => {
+    const manager = getManager();
+    const gradePeriods = await manager.getGradesPeriods()
+    const validPeriods: Period[] = []
+    const date = new Date().getTime()
+    for (const period of gradePeriods) {
+      console.log(period.start.getTime() > date && period.end.getTime() > date)
+      if (period.start.getTime() > date && period.end.getTime() > date) {
+        console.log("Pushing valid period", period.name)
+        validPeriods.push(period);
+      }
+    }
+
+    const grades: Grade[] = []
+
+    for (const period of validPeriods) {
+      const periodGrades = await manager.getGradesForPeriod(period, period.createdByAccount)
+      periodGrades.subjects.forEach(subject => {
+        subject.grades.forEach(grade => {
+          grades.push(grade);
+        });
+      });
+    }
+
+    setGrades(grades)
+  }, [])
+
   useEffect(() => {
-    fetchEDT();
-  }, [fetchEDT]);
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchEDT()
+      fetchGrades()
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const accounts = useAccountStore.getState().accounts;
 
   if (accounts.length === 0) {
@@ -79,7 +116,7 @@ export default function TabOneScreen() {
   }
   const theme = useTheme();
   const { colors } = theme;
-
+  
   const manager = getManager();
   const [account, setAccount] = useState<Account | null>(null);
 
@@ -300,14 +337,15 @@ export default function TabOneScreen() {
                 data={grades}
                 renderItem={({ item }) => (
                   <CompactGrade
-                    title={item.title}
-                    score={item.value}
-                    description="test"
-                    outOf={20}
-                    emoji="💥"
-                    disabled={false}
-                    color="#29947A"
-                    date={item.date}
+                    title={item.subjectName}
+                    score={item.studentScore?.value ?? 0}
+                    description={item.description}
+                    outOf={item.outOf.value}
+                    emoji={getSubjectEmoji(item.subjectName)}
+                    disabled={item.studentScore?.disabled}
+                    status={item.studentScore?.status}
+                    color={getSubjectColor(item.subjectName)}
+                    date={item.givenAt}
                   />
                 )}
               />

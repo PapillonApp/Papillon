@@ -21,6 +21,7 @@ export interface Subject {
 export interface Grade extends GenericInterface {
   id: string;
   subjectId: string;
+  subjectName: string;
   description: string;
   givenAt: Date;
   subjectFile?: Attachment;

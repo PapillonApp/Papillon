@@ -150,6 +150,7 @@ const GradesModal: React.FC<GradesModalProps> = () => {
                 score={grade.studentScore?.value ?? 0}
                 outOf={grade.outOf?.value ?? 20}
                 disabled={grade.studentScore?.disabled}
+                status={grade.studentScore?.status}
                 color={subjectInfo.color}
                 date={grade.givenAt}
               />

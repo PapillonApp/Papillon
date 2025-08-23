@@ -277,11 +277,15 @@ export default function PronoteLoginWithCredentials() {
               const splittedUsername = session.user.name.split(" ")
               const firstName = splittedUsername[splittedUsername.length - 1]
               const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
+              const schoolName = session.user.resources[0].establishmentName
+              const className = session.user.resources[0].className
 
               const account = {
                 id: device,
                 firstName,
                 lastName,
+                schoolName,
+                className,
                 services: [{
                   id: device,
                   auth: {
