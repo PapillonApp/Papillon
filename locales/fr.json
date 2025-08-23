@@ -47,6 +47,11 @@
 
   "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
 
+  "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_Planned_None": "Tu n'as aucun cours de prévu aujourd'hui",
+  "Home_Planned_One": "Tu as un cours restant aujourd'hui",
+  "Home_Planned_Number": "Tu as {{number}} cours prévus aujourd'hui",
+
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
 
