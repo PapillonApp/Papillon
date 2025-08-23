@@ -223,7 +223,7 @@ export default function TabOneScreen() {
         }
         gap={12}
         data={[
-          {
+          courses.length > 0 && {
             icon: <Papicons.Calendar />,
             title: "Prochains cours",
             redirect: "(tabs)/calendar",
@@ -307,7 +307,7 @@ export default function TabOneScreen() {
           },
         ]}
         renderItem={({ item }) => {
-          if (item.dev && !__DEV__) {
+          if (!item || (item.dev && !__DEV__)) {
             return null;
           }
 
