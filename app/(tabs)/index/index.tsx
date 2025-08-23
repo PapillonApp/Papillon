@@ -248,7 +248,7 @@ export default function TabOneScreen() {
               </Stack>
             )
           },
-          {
+          grades.length > 0 && {
             icon: <Papicons.Grades />,
             title: "Nouvelles notes",
             redirect: "(tabs)/grades",
