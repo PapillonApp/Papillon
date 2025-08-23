@@ -226,6 +226,7 @@ export default function TabOneScreen() {
                 backgroundColor: "transparent",
                 borderRadius: 26,
                 borderCurve: "continuous",
+                marginTop: 16
               }}
               horizontal
               data={headerItems}
