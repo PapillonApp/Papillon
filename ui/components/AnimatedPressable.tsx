@@ -6,11 +6,12 @@ import Reanimated, {
   withSpring,
   withTiming,
   runOnJS,
+  AnimatedProps,
 } from 'react-native-reanimated';
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-type AnimatedPressableProps = PressableProps & { style?: any };
+type AnimatedPressableProps = PressableProps & { style?: any } & AnimatedProps<View>;
 
 const AnimatedPressable = React.forwardRef<View, AnimatedPressableProps>(
   ({ style, onPressIn, onPressOut, onPress, ...rest }, ref) => {

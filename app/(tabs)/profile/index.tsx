@@ -34,6 +34,8 @@ import { Account } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
 import { Absence } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 function Tabs() {
   const [absences, setAbsences] = useState<Absence[]>([]);
@@ -88,7 +90,12 @@ function Tabs() {
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
       {enabledTabs.map((tab, index) => (
-        <Pressable style={{ flex: 1 }} key={index}>
+        <AnimatedPressable
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+          key={"tab_profile:" + index + ":" + tab.unread}
+          style={{ flex: 1 }}
+        >
           <Stack
             flex
             card
@@ -108,9 +115,9 @@ function Tabs() {
               <Typography inline variant="caption" color={tab.unread > 0 ? tab.color : "secondary"}>{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
             </Stack>
           </Stack>
-        </Pressable>
+        </AnimatedPressable>
       ))}
-    </Stack >
+    </Stack>
   );
 }
 
@@ -121,10 +128,14 @@ function NewsSection() {
   const [news, setNews] = useState<News[]>([]);
 
   const fetchNews = useCallback(() => {
-    const manager = getManager();
-    manager.getNews().then((fetchedNews) => {
-      setNews(fetchedNews);
-    });
+    try {
+      const manager = getManager();
+      manager.getNews().then((fetchedNews) => {
+        setNews(fetchedNews);
+      });
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -134,7 +145,11 @@ function NewsSection() {
   return (
     <>
       {news.length > 0 ? (
-        <>
+        <Reanimated.View
+          layout={Animation(LinearTransition, "list")}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+        >
           <Stack
             direction="horizontal"
             gap={12}
@@ -189,7 +204,7 @@ function NewsSection() {
               </Item>
             ))}
           </List>
-        </>
+        </Reanimated.View>
       ) : (
         <>
         </>
@@ -203,44 +218,50 @@ function Cards() {
   const { colors } = theme;
 
   return (
-    <Pressable>
-      <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
-        <Icon
-          fill={colors.text}
-          opacity={0.6}
-          size={24}
-          papicon
-        >
-          <Papicons.Card />
-        </Icon>
-        <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
-          {t("Profile_Cards_Title")}
-        </Typography>
+    <Reanimated.View
+      layout={Animation(LinearTransition, "list")}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+    >
+      <Pressable>
+        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+          <Icon
+            fill={colors.text}
+            opacity={0.6}
+            size={24}
+            papicon
+          >
+            <Papicons.Card />
+          </Icon>
+          <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
+            {t("Profile_Cards_Title")}
+          </Typography>
 
-        <View
-          style={{
-            width: 200,
-            height: 84,
-            position: "absolute",
-            right: 0,
-            overflow: "hidden",
-            borderTopRightRadius: 24,
-            borderBottomRightRadius: 24,
-          }}
-        >
-          <Image
-            source={require('@/assets/images/cartes.png')}
+          <View
             style={{
-              width: 140,
-              height: 120,
+              width: 200,
+              height: 84,
               position: "absolute",
-              right: -32,
-              bottom: -32,
+              right: 0,
+              overflow: "hidden",
+              borderTopRightRadius: 24,
+              borderBottomRightRadius: 24,
             }}
-          />
-        </View>
-      </Stack>
-    </Pressable>
+          >
+            <Image
+              source={require('@/assets/images/cartes.png')}
+              style={{
+                width: 140,
+                height: 120,
+                position: "absolute",
+                right: -32,
+                bottom: -32,
+              }}
+            />
+          </View>
+        </Stack>
+      </Pressable>
+    </Reanimated.View>
   );
 }
 
