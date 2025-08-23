@@ -169,9 +169,11 @@ export default function TabOneScreen() {
         <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
           👋
         </Typography>
-        <Typography variant="h3" color={foreground}>
-          {firstName ? t("Home_Welcome_Name", { name: firstName }) : t("Home_Welcome")}
-        </Typography>
+        <Dynamic animated key={"welcome:" + firstName}>
+          <Typography variant="h3" color={foreground}>
+            {firstName ? t("Home_Welcome_Name", { name: firstName }) : t("Home_Welcome")}
+          </Typography>
+        </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
           {courses.length == 0 ? t("Home_Planned_None")
             : courses.length == 1 ? t("Home_Planned_One")
@@ -449,9 +451,6 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { month: "long" })}
               </Typography>
             </Dynamic>
-          </Dynamic>
-          <Dynamic animated>
-            <ChevronDown color={colors.text} opacity={0.7} />
           </Dynamic>
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>
