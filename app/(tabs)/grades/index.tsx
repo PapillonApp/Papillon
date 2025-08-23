@@ -472,6 +472,7 @@ export default function TabOneScreen() {
           outOf={item.outOf?.value ?? 20}
           disabled={item.studentScore?.disabled}
           color={subjectInfo.color}
+          status={item.studentScore?.status}
           date={item.givenAt}
           onPress={() => {
             navigation.navigate('grade', {
