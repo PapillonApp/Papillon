@@ -23,7 +23,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import Svg, { Circle, Mask, Path } from 'react-native-svg';
 import { calculateDistanceBetweenPositions, CurrentPosition, getCurrentPosition } from '@/utils/native/position';
-import { useAlert } from '@/ui/components/AlertProvider';
+import { Alert, useAlert } from '@/ui/components/AlertProvider';
 import { Services } from '@/stores/account/types';
 import { geolocation } from 'pawnote';
 import TableFlatList from '@/ui/components/TableFlatList';
@@ -113,6 +113,57 @@ export interface School {
   ref?: SkolengoSkool
 }
 
+async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert>, city?: string): Promise<School[]> {
+  let pos = null
+  if (!city) {
+    pos = await getCurrentPosition();
+
+    if (pos === null) {
+      alert.showAlert({
+        title: "Impossible de récuperer la position",
+        description: "Nous n'avons pas pu récupérer votre position. Veuillez vérifier que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        withoutNavbar: true
+      });
+    }
+  }
+
+  if (city) {
+    pos = await GeographicQuerying(city)
+  }
+
+  if (service === Services.PRONOTE) {
+    const schools = await geolocation({ latitude: pos?.latitude ?? 0, longitude: pos?.longitude ?? 0 })
+    return schools.map(item => ({
+      name: item.name,
+      distance: item.distance,
+      url: item.url
+    }))
+  }
+
+  if (service === Services.SKOLENGO) {
+    let cityName: string = city || (await GeographicReverse(pos?.latitude ?? 0, pos?.longitude ?? 0)).city
+    const schools = await SearchSchools(cityName, 50);
+    const list: School[] = []
+
+    for (const school of schools) {
+      const position = await GeographicQuerying(`${school.location.addressLine} ${school.location.city} ${school.location.zipCode}`)
+      const distance = calculateDistanceBetweenPositions(pos?.latitude ?? 0, pos?.longitude ?? 0, position.longitude, position.latitude)
+      list.push({
+        name: school.name,
+        distance: distance / 1000,
+        url: "",
+        ref: school
+      })
+    }
+
+    return list
+  }
+
+  return []
+}
+
 export default function SelectSchoolOnMap() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
@@ -128,44 +179,9 @@ export default function SelectSchoolOnMap() {
   const local = useGlobalSearchParams();
 
   const getPosition = useCallback(async () => {
-    const pos = await getCurrentPosition()
-    setPosition(pos)
-    if (pos === null) {
-      setLoading(false)
-      alert.showAlert({
-        title: "Impossible de récuperer la position",
-        description: "Nous n'avons pas pu récupérer votre position. Veuillez vérifier que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        withoutNavbar: true
-      })
-    } else if (local.service === String(Services.PRONOTE)) {
-      const schools = await geolocation({ latitude: pos.latitude, longitude: pos.longitude })
-      setSchools(schools.map(item => ({
-        name: item.name,
-        distance: item.distance,
-        url: item.url
-      })))
-      setLoading(false)
-    } else if (local.service === String(Services.SKOLENGO)) {
-      const geo = await GeographicReverse(pos.latitude, pos.longitude)
-      const schools = await SearchSchools(geo.city)
-      const result: School[] = []
-
-      for (const school of schools) {
-        const position = await GeographicQuerying(`${school.location.addressLine} ${school.location.city} ${school.location.zipCode}`)
-        const distance = calculateDistanceBetweenPositions(pos.latitude, pos.longitude, position.longitude, position.latitude)
-        result.push({
-          name: school.name,
-          distance: distance / 1000,
-          url: "",
-          ref: school
-        })
-      }
-
-      setSchools(result)
-      setLoading(false)
-    }
+    const fetchedSchools = await fetchSchools(Number(local.service), alert, local.method === "manual" ? String(local.city) : undefined);
+    setSchools(fetchedSchools);
+    setLoading(false);
   }, []);
 
   React.useEffect(() => {
@@ -243,7 +259,7 @@ export default function SelectSchoolOnMap() {
       const sanitizedSchoolName = sanitizeSchoolName(school.name);
       return {
         title: school.name,
-        description: "à " + (school.distance / 100).toFixed(2) + "km de toi",
+        description: "à " + (school.distance / 100).toFixed(2) + "km de " + (local.method === "manual" ? local.city : "toi"),
         leading: <View style={{ width: 32, height: 32, backgroundColor: getProfileColorByName(sanitizedSchoolName) + 50, borderRadius: 8, alignItems: "center" }}>
           <Typography variant="h6" color={getProfileColorByName(sanitizedSchoolName)}>
             {getInitials(sanitizedSchoolName)}
