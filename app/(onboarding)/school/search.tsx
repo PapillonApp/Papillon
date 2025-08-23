@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, Keyboard, View, ActivityIndicator } from 'react-native';
-import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Pressable, Keyboard, View, ActivityIndicator, TextInput } from 'react-native';
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
@@ -32,8 +32,11 @@ import { log } from '@/utils/logger/logger';
 import { GeographicReverse } from '@/utils/native/georeverse';
 import { SearchSchools } from 'skolengojs';
 
-const INITIAL_HEIGHT = 450;
-const COLLAPSED_HEIGHT = 300;
+const INITIAL_HEIGHT = 680;
+const COLLAPSED_HEIGHT = 270;
+const KEYBOARD_HEIGHT = 400;
+const ANIMATION_DURATION = 250;
+const OPACITY_THRESHOLD = 600;
 
 const AnimatedFlatList = Reanimated.createAnimatedComponent(TableFlatList);
 
@@ -63,6 +66,20 @@ const staticStyles = StyleSheet.create({
   },
   iconBackground: {
     backgroundColor: "transparent",
+  },
+  inputContainer: {
+    flex: 1,
+    padding: 23,
+    backgroundColor: "#F2F2F2",
+    borderRadius: 300,
+    borderWidth: 1,
+    borderColor: "#0000001F",
+  },
+  textInput: {
+    color: "#5B5B5B",
+    fontSize: 18,
+    fontWeight: "700",
+    flex: 1,
   },
 });
 
@@ -104,6 +121,8 @@ const MapIcon = React.memo(() => (
 ));
 MapIcon.displayName = 'MapIcon';
 
+
+
 import { School as SkolengoSkool } from 'skolengojs';
 
 export interface School {
@@ -115,24 +134,32 @@ export interface School {
 
 export default function SelectSchoolOnMap() {
   const insets = useSafeAreaInsets();
-  const animation = React.useRef<LottieView>(null);
-
-  const alert = useAlert()
+  const [city, setCity] = useState<string>();
 
   const scrollY = useSharedValue(0);
   const height = useSharedValue(INITIAL_HEIGHT);
-  const [position, setPosition] = useState<CurrentPosition | null>();
-  const [schools, setSchools] = useState<Array<School>>([]);
-  const [searched, setSearched] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const search = useLocalSearchParams();
 
-  const local = useGlobalSearchParams();
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
+  const keyboardListeners = useMemo(() => ({
+    show: () => {
+      'worklet';
+      height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
     },
-  });
+    hide: () => {
+      'worklet';
+      height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
+    }
+  }), [height]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardWillShow', keyboardListeners.show);
+    const hideSub = Keyboard.addListener('keyboardWillHide', keyboardListeners.hide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardListeners]);
 
   const AnimatedHeaderStyle = useAnimatedStyle(() => {
     'worklet';
@@ -154,16 +181,27 @@ export default function SelectSchoolOnMap() {
     };
   }, []);
 
+  const AnimatedInputContainerStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      paddingTop: height.value + 16,
+      paddingHorizontal: 21,
+    };
+  }, []);
+
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
     'worklet';
     const heightDiff = height.value - COLLAPSED_HEIGHT;
+    const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
 
-    const opacity = interpolate(
-      scrollY.value,
-      [0, heightDiff],
-      [1, 0],
-      Extrapolate.CLAMP
-    );
+    const opacity = isKeyboardVisible
+      ? 0
+      : interpolate(
+        scrollY.value,
+        [0, heightDiff],
+        [1, 0],
+        Extrapolate.CLAMP
+      );
 
     const scale = interpolate(
       scrollY.value,
@@ -178,45 +216,11 @@ export default function SelectSchoolOnMap() {
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 4,
-      opacity: withTiming(opacity, { duration: 100 }),
-      transform: [{ scale }]
+      opacity: withTiming(opacity, { duration: 150 }),
+      transform: [{ scale }],
+      paddingBottom: 113
     };
   }, []);
-
-  const animationCallback = useCallback(() => {
-    if (animation.current) {
-      animation.current.reset();
-      animation.current.play();
-    }
-  }, []);
-
-  const schoolsItem = useMemo(() => {
-    const sanitizeSchoolName = (name: string) => {
-      return name.replace(/\b(lycée|collège|techn|technologique|générale|professionnel|privé)\.?/gi, '').trim();
-    };
-
-    return schools.map(school => {
-      const sanitizedSchoolName = sanitizeSchoolName(school.name);
-      return {
-        title: school.name,
-        description: "à " + (school.distance / 100).toFixed(2) + "km de toi",
-        leading: <View style={{ width: 32, height: 32, backgroundColor: getProfileColorByName(sanitizedSchoolName) + 50, borderRadius: 8, alignItems: "center" }}>
-          <Typography variant="h6" color={getProfileColorByName(sanitizedSchoolName)}>
-            {getInitials(sanitizedSchoolName)}
-          </Typography>
-        </View>,
-        onPress: () => {
-          log("Opening Webview for service " + Services[Number(local.service)] + " and URL " + school.url);
-          router.push({
-            pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
-            params: { url: school.url }
-          })
-        }
-      };
-    });
-  }, [schools]);
-
-  useFocusEffect(animationCallback);
 
   return (
     <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
@@ -255,70 +259,52 @@ export default function SelectSchoolOnMap() {
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Cherche et choisis ton établissement dans la liste
+                Entre le nom de ta ville et choisis ton établissement
               </Typography>
             </Stack>
           </Stack>
         </Reanimated.View>
-        {loading ? (
-          <Stack direction={"vertical"} gap={10} style={{ flex: 1, paddingTop: INITIAL_HEIGHT + 80, padding: 23 }} hAlign="center">
-            <ActivityIndicator size="large" color="#7F7F7F" />
-            <Typography color="#7F7F7F" variant="h4">
-              Chargement...
-            </Typography>
-            <Typography color="#7F7F7F" variant="body1" align="center">
-              Nous sommes en train de récupérer les établissements aux alentours, patience, la magie opère...
-            </Typography>
-          </Stack>
-        ) : (() => {
-          const noSchoolsFound = position !== null && schools.length === 0;
-          const schoolsList = (
-            <AnimatedFlatList
-              showsVerticalScrollIndicator={false}
-              onScroll={scrollHandler}
-              scrollEventThrottle={16}
-              layout={LinearTransition.springify()}
-              style={{
-                paddingTop: height.value + 16,
-                paddingHorizontal: 10,
-                gap: 9,
-                paddingBottom: insets.bottom + 16,
-              }}
-              sections={[
-                {
-                  title: "Établissement(s)",
-                  hideTitle: true,
-                  items: schoolsItem,
-                },
-              ]}
-            />
-          );
-
-          return noSchoolsFound ? (
+        <Reanimated.View style={AnimatedInputContainerStyle}>
+          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
             <Stack
-              direction={"vertical"}
-              gap={10}
-              style={{
-                flex: 1,
-                paddingTop: INITIAL_HEIGHT + 80,
-                padding: 23,
-              }}
+              flex
+              direction="horizontal"
+              vAlign="center"
               hAlign="center"
+              style={staticStyles.inputContainer}
             >
-              <Icon papicon size={65} fill="#C9C9C9">
+              <Icon
+                papicon
+                size={24}
+                fill="#5B5B5B"
+                style={staticStyles.iconBackground}
+              >
                 <Papicons.Search />
               </Icon>
-              <Typography color="#7F7F7F" variant="h4">
-                Aucun établissement
-              </Typography>
-              <Typography color="#7F7F7F" variant="body1" align="center">
-                Nous n'avons trouvé aucun lycée autour de votre position
-              </Typography>
+              <TextInput
+                placeholder="Nom de ta ville"
+                placeholderTextColor="#5B5B5B"
+                onChangeText={setCity}
+                value={city}
+                style={staticStyles.textInput}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="address-line1"
+                keyboardType="default"
+                onSubmitEditing={() => {
+                  router.push({
+                    pathname: "./map",
+                    params: {
+                      service: Number(search.service),
+                      city,
+                      method: "manual"
+                    }
+                  })
+                }}
+              />
             </Stack>
-          ) : (
-            schoolsList
-          );
-        })()}
+          </Stack>
+        </Reanimated.View>
         <Pressable
           onPress={() => router.back()}
           style={[
