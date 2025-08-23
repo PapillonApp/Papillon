@@ -45,6 +45,7 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -137,8 +138,8 @@ export default function TabOneScreen() {
 
     let firstName = account.firstName;
     let lastName = account.lastName;
-    let level;
-    let establishment;
+    let level = account.className;
+    let establishment = account.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account]);
@@ -168,9 +169,11 @@ export default function TabOneScreen() {
         <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
           👋
         </Typography>
-        <Typography variant="h3" color={foreground}>
-          {t("Home_Welcome_Name", { name: firstName })}
-        </Typography>
+        <Dynamic animated key={"welcome:" + firstName}>
+          <Typography variant="h3" color={foreground}>
+            {firstName ? t("Home_Welcome_Name", { name: firstName }) : t("Home_Welcome")}
+          </Typography>
+        </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
           {courses.length == 0 ? t("Home_Planned_None")
             : courses.length == 1 ? t("Home_Planned_One")
@@ -225,6 +228,7 @@ export default function TabOneScreen() {
                 backgroundColor: "transparent",
                 borderRadius: 26,
                 borderCurve: "continuous",
+                marginTop: 16
               }}
               horizontal
               data={headerItems}
@@ -353,6 +357,13 @@ export default function TabOneScreen() {
             dev: false
           },
           {
+            icon: <Papicons.Palette />,
+            title: "Onboarding Color",
+            redirect: "/(onboarding)/end/color",
+            buttonLabel: "Aller",
+            dev: false
+          },
+          {
             icon: <Papicons.Butterfly />,
             title: "Devmode",
             redirect: "/devmode",
@@ -373,33 +384,39 @@ export default function TabOneScreen() {
           }
 
           return (
-            <Stack card radius={26}>
-              <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
-                <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                  {item.icon}
-                </Icon>
-                <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
-                  {item.title}
-                </Typography>
-                {(item.redirect || item.onPress) && (
-                  <AnimatedPressable
-                    onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
-                  >
-                    <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                      <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
-                        {item.buttonLabel ?? "Afficher plus"}
-                      </Typography>
-                      <Icon size={20} papicon opacity={0.5}>
-                        <Papicons.ArrowRightUp />
-                      </Icon>
-                    </Stack>
-                  </AnimatedPressable>
+            <Reanimated.View
+              entering={PapillonAppearIn}
+              exiting={PapillonAppearOut}
+              layout={Animation(LinearTransition, "list")}
+            >
+              <Stack card radius={26}>
+                <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                  <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                    {item.icon}
+                  </Icon>
+                  <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                    {item.title}
+                  </Typography>
+                  {(item.redirect || item.onPress) && (
+                    <AnimatedPressable
+                      onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                    >
+                      <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                        <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
+                          {item.buttonLabel ?? "Afficher plus"}
+                        </Typography>
+                        <Icon size={20} papicon opacity={0.5}>
+                          <Papicons.ArrowRightUp />
+                        </Icon>
+                      </Stack>
+                    </AnimatedPressable>
+                  )}
+                </Stack>
+                {item.render && (
+                  <item.render />
                 )}
               </Stack>
-              {item.render && (
-                <item.render />
-              )}
-            </Stack>
+            </Reanimated.View>
           )
         }}
       />
@@ -434,9 +451,6 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { month: "long" })}
               </Typography>
             </Dynamic>
-          </Dynamic>
-          <Dynamic animated>
-            <ChevronDown color={colors.text} opacity={0.7} />
           </Dynamic>
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>
