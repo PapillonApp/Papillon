@@ -285,15 +285,16 @@ export default function TabOneScreen() {
     fetchData();
   }, [manager]);
 
-  const [firstName, lastName, level, establishment] = useMemo(() => {
+  const [firstName, lastName, level, establishment, studentClass] = useMemo(() => {
     if (!account) return [null, null, null, null];
 
     let firstName = account.firstName;
     let lastName = account.lastName;
     let level = account.className;
     let establishment = account.schoolName;
+    let studentClass = account.className;
 
-    return [firstName, lastName, level, establishment];
+    return [firstName, lastName, level, establishment, studentClass];
   }, [account]);
 
   const headerHeight = useHeaderHeight();
@@ -407,6 +408,14 @@ export default function TabOneScreen() {
                         {establishment}
                       </Typography>
                     </Stack>
+                  )}
+                  {studentClass && (
+                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                      <Typography variant={"body1"} color="secondary">
+                        {studentClass}
+                      </Typography>
+                    </Stack>
+
                   )}
                 </Stack>
               </Stack>

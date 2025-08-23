@@ -73,6 +73,15 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="turboself/credentials"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
+                    name="turboself/hostSelector"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ siblings: [], username: "", password: "" }}
+                />
+                <Stack.Screen
                     name="skolengo/webview"
                     options={{ ...newScreenOptions }}
                     initialParams={{ ref: {} }}
