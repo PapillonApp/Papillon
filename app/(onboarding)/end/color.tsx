@@ -49,7 +49,7 @@ export default function ChooseColorScreen() {
           <Typography color={adjust(selectedColor, -0.3)} variant="h4">Avant de terminer</Typography>
           <Typography color={adjust(selectedColor, -0.3)} variant="h1">Choisis une couleur de thème</Typography>
         </View>
-        <Stack direction="horizontal" flex style={{ width: "100%", flexWrap: "wrap" }} gap={15}>
+        <Stack direction="horizontal" flex style={{ width: "100%", justifyContent: "space-between" }} gap={0}>
           <ColorSelector mainColor="#DD007D" backgroundColor="#FAD9EC" name="Rose" onPress={() => {
             setSelectedColor("#DD007D")
             setColor(Colors.PINK)
