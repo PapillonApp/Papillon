@@ -116,7 +116,7 @@ export default function TabOneScreen() {
   }
   const theme = useTheme();
   const { colors } = theme;
-  
+
   const manager = getManager();
   const [account, setAccount] = useState<Account | null>(null);
 
@@ -142,12 +142,6 @@ export default function TabOneScreen() {
 
     return [firstName, lastName, level, establishment];
   }, [account]);
-
-  const grades = Array.from({ length: 10 }, (_, i) => ({
-    title: `Subject ${i + 1}`,
-    value: Math.random() * 20,
-    date: new Date()
-  }));
 
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
