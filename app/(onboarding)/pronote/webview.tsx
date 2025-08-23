@@ -138,11 +138,15 @@ export default function WebViewScreen() {
 
               if (!refresh) throw new Error("Erreur lors de la connexion");
 
-              console.log("Login successful, adding account to store...");
+              console.log("Login successful, adding account to store...")
+              const schoolName = session.user.resources[0].establishmentName
+              const className = session.user.resources[0].className;
               useAccountStore.getState().addAccount({
                 id: deviceUUID,
                 firstName: session.user.name.split(" ")[0],
                 lastName: session.user.name.split(" ")[1],
+                schoolName,
+                className,
                 services: [{
                   id: deviceUUID,
                   auth: {
@@ -162,6 +166,7 @@ export default function WebViewScreen() {
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
               });
+
             } catch (error) {
               if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
                 console.log("2FA authentication required");

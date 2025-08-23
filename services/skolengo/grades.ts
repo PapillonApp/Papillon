@@ -69,6 +69,7 @@ function mapSkolengoGrades(grades: SkolengoGrade[], accountId: string, kidName?:
   return grades.map(grade => ({
     id: grade.id,
     subjectId: grade.subject?.id ?? "",
+    subjectName: grade.subject?.label ?? "",
     description: grade.title ?? "",
     givenAt: grade.date,
     outOf: { value: grade.outOf },
