@@ -243,7 +243,9 @@ export function getSupportedRestaurants(redirect: (path: { pathname: string }) =
             hasLimitedSupport: false,
             image: require("@/assets/images/turboself.png"),
             type: "main",
-            onPress: () => { }
+            onPress: () => {
+                redirect({ pathname: '../turboself/credentials' });
+            }
         },
         {
             name: "ard",
