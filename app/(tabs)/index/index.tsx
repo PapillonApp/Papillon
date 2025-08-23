@@ -354,6 +354,13 @@ export default function TabOneScreen() {
             dev: false
           },
           {
+            icon: <Papicons.Palette />,
+            title: "Onboarding Color",
+            redirect: "/(onboarding)/end/color",
+            buttonLabel: "Aller",
+            dev: false
+          },
+          {
             icon: <Papicons.Butterfly />,
             title: "Devmode",
             redirect: "/devmode",

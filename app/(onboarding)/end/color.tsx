@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, FlatList } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Papicons from "@getpapillon/papicons"
-import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Reanimated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -34,47 +34,52 @@ export default function ChooseColorScreen() {
         end={{ x: 0.5, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <View style={{
+      <Reanimated.View style={{
         marginTop: 90,
         alignItems: "center",
         shadowColor: "rgba(0, 0, 0, 0.25)",
         shadowOffset: { width: 0, height: 1.752 },
         shadowOpacity: 1,
         shadowRadius: 8.061
-      }}>
+      }}
+        entering={ZoomIn.springify()}
+        exiting={FadeOut.duration(150)}
+        key={"logo:" + selectedColor}
+      >
         <PapillonLogo color={selectedColor} />
-      </View>
+      </Reanimated.View>
       <View style={{ marginTop: 40, padding: 20, flex: 1, gap: 22 }}>
         <View>
           <Typography color={adjust(selectedColor, -0.3)} variant="h4">Avant de terminer</Typography>
           <Typography color={adjust(selectedColor, -0.3)} variant="h1">Choisis une couleur de thème</Typography>
         </View>
-        <Stack direction="horizontal" flex style={{ width: "100%", justifyContent: "space-between" }} gap={0}>
-          <ColorSelector mainColor="#DD007D" backgroundColor="#FAD9EC" name="Rose" onPress={() => {
-            setSelectedColor("#DD007D")
-            setColor(Colors.PINK)
-          }} />
-          <ColorSelector mainColor="#E8B048" backgroundColor="#FCF3E4" name="Jaune" onPress={() => {
-            setSelectedColor("#E8B048")
-            setColor(Colors.YELLOW)
-          }} />
-          <ColorSelector mainColor="#26B290" backgroundColor="#DEF3EE" name="Vert" onPress={() => {
-            setSelectedColor("#26B290")
-            setColor(Colors.GREEN)
-          }} />
-          <ColorSelector mainColor="#C400DD" backgroundColor="#F6D9FA" name="Violet" onPress={() => {
-            setSelectedColor("#C400DD")
-            setColor(Colors.PURPLE)
-          }} />
-          <ColorSelector mainColor="#48B7E8" backgroundColor="#E4F4FC" name="Bleu" onPress={() => {
-            setSelectedColor("#48B7E8")
-            setColor(Colors.BLUE)
-          }} />
-          <ColorSelector mainColor="#6D6D6D" backgroundColor="#E9E9E9" name="Noir" onPress={() => {
-            setSelectedColor("#6D6D6D")
-            setColor(Colors.BLACK)
-          }} />
-        </Stack>
+        <FlatList
+          scrollEnabled={false}
+          data={[
+            { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
+            { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
+            { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
+            { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
+            { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
+            { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
+          ]}
+          numColumns={3}
+          renderItem={({ item }) => (
+            <ColorSelector
+              mainColor={item.mainColor}
+              backgroundColor={item.backgroundColor}
+              name={item.name}
+              onPress={() => {
+                setSelectedColor(item.mainColor)
+                setColor(item.colorEnum)
+              }}
+            />
+          )}
+          keyExtractor={item => item.name}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ justifyContent: "space-between" }}
+          style={{ maxHeight: 240 }}
+        />
         <Typography color="#7F7F7F" variant="caption">La couleur que tu choisis ici s’appliquera sur la page d’accueil de Papillon.</Typography>
         <Button
           title="Terminer"
@@ -120,7 +125,7 @@ function ColorSelector({ mainColor, backgroundColor, name, onPress }: { mainColo
           onPress()
         }
       }}
-      style={{ alignItems: "center", backgroundColor: backgroundColor, borderColor: "#00000026", borderWidth: 2, borderRadius: 25, paddingVertical: 10, paddingHorizontal: 29, alignSelf: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.07, shadowRadius: 5 }}
+      style={{ flex: 1, margin: 4, alignItems: "center", backgroundColor: backgroundColor, borderColor: "#00000026", borderWidth: 2, borderRadius: 25, paddingVertical: 10, paddingHorizontal: 29, alignSelf: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.07, shadowRadius: 5 }}
     >
       <View style={{
         width: 44,
@@ -160,6 +165,7 @@ import { account } from "pawnote";
 import { Account } from "@/stores/account/types";
 import { useAccountStore } from "@/stores/account";
 import { initializeAccountManager } from "@/services/shared";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 const PapillonLogo = ({ color }: { color: string }) => (
   <Svg
     width={149}
