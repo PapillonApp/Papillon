@@ -290,8 +290,8 @@ export default function TabOneScreen() {
 
     let firstName = account.firstName;
     let lastName = account.lastName;
-    let level;
-    let establishment;
+    let level = account.className;
+    let establishment = account.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account]);
