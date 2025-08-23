@@ -43,6 +43,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 
 export default function TabOneScreen() {
@@ -115,6 +116,38 @@ export default function TabOneScreen() {
   }
   const theme = useTheme();
   const { colors } = theme;
+  
+  const manager = getManager();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    function fetchData() {
+      if (!manager) {
+        return;
+      }
+
+      const result = manager.getAccount();
+      setAccount(result);
+    }
+    fetchData();
+  }, [manager]);
+
+  const [firstName, lastName, level, establishment] = useMemo(() => {
+    if (!account) return [null, null, null, null];
+
+    let firstName = account.firstName;
+    let lastName = account.lastName;
+    let level;
+    let establishment;
+
+    return [firstName, lastName, level, establishment];
+  }, [account]);
+
+  const grades = Array.from({ length: 10 }, (_, i) => ({
+    title: `Subject ${i + 1}`,
+    value: Math.random() * 20,
+    date: new Date()
+  }));
 
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
@@ -142,10 +175,12 @@ export default function TabOneScreen() {
           👋
         </Typography>
         <Typography variant="h3" color={foreground}>
-          Bonjour, Lucas !
+          {t("Home_Welcome_Name", { name: firstName })}
         </Typography>
         <Typography variant="body1" color={foregroundSecondary}>
-          Tu n'as aucun cours de prévu aujourd'hui
+          {courses.length == 0 ? t("Home_Planned_None")
+            : courses.length == 1 ? t("Home_Planned_One")
+              : t("Home_Planned_Number", { number: courses.length })}
         </Typography>
       </Stack>
     ),
@@ -254,9 +289,9 @@ export default function TabOneScreen() {
         }
         gap={12}
         data={[
-          {
+          courses.length > 0 && {
             icon: <Papicons.Calendar />,
-            title: "Prochains cours",
+            title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
@@ -279,9 +314,9 @@ export default function TabOneScreen() {
               </Stack>
             )
           },
-          {
+          grades.length > 0 && {
             icon: <Papicons.Grades />,
-            title: "Nouvelles notes",
+            title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
               <FlatList
@@ -339,7 +374,7 @@ export default function TabOneScreen() {
           },
         ]}
         renderItem={({ item }) => {
-          if (item.dev && !__DEV__) {
+          if (!item || (item.dev && !__DEV__)) {
             return null;
           }
 

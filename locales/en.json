@@ -42,6 +42,14 @@
 
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
 
+  "Home_Welcome_Name": "Welcome back, {{name}}!",
+  "Home_Planned_None": "You have no classes scheduled today",
+  "Home_Planned_One": "You have one class left today",
+  "Home_Planned_Number": "You have {{number}} classes scheduled today",
+
+  "Home_Widget_NextCourses": "Upcoming classes",
+  "Home_Widget_NewGrades": "New grades",
+
   "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
 
