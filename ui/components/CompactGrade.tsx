@@ -12,6 +12,7 @@ interface CompactGradeProps {
   outOf: number;
   date: Date;
   disabled?: boolean;
+  status?: string;
   onPress?: () => void,
   color?: string;
 }
@@ -24,6 +25,7 @@ export const CompactGrade = ({
   outOf,
   date,
   disabled,
+  status,
   onPress,
   color = "#888888"
 }: CompactGradeProps) => {
@@ -102,7 +104,7 @@ export const CompactGrade = ({
           backgroundColor: color + "33",
         }}>
           <Typography variant="h4" color={color}>
-            {disabled ? "N/A" : (score ?? 0).toFixed(2)}
+            {disabled ? status : (score ?? 0).toFixed(2)}
           </Typography>
           <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
             / {outOf ?? 20}
