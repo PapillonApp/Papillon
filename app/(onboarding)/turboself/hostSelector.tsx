@@ -263,7 +263,7 @@ export default function TurboSelfSelectHost() {
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
                     <Papicons.User />
                   </Icon>
-                  <Typography variant="body2" numberOfLines={1} ellipsizeMode="tail">
+                  <Typography variant="body2" nowrap ellipsizeMode="tail">
                     {`${(item as Host).lastName.toUpperCase()} ${(item as Host).firstName}`}
                   </Typography>
                 </Stack>

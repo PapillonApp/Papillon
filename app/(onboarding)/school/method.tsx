@@ -180,7 +180,7 @@ export default function WelcomeScreen() {
               <Icon papicon>
                 {(item as LoginMethod).icon}
               </Icon>
-              <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={undefined}>
+              <Typography style={{ flex: 1 }} nowrap variant='title' color={undefined}>
                 {(item as LoginMethod).description}
               </Typography>
             </AnimatedPressable>

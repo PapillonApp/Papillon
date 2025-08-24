@@ -62,12 +62,12 @@ export const CompactGrade = ({
           {emoji}
         </Text>
         {title &&
-          <Typography variant="body1" color={color} style={{ flex: 1 }} numberOfLines={1} weight="semibold">
+          <Typography variant="body1" color={color} style={{ flex: 1 }} nowrap weight="semibold">
             {title}
           </Typography>
         }
         {date &&
-          <Typography variant="body1" color={color} numberOfLines={1}>
+          <Typography variant="body1" color={color} nowrap>
             {date.toLocaleDateString("fr-FR", {
               day: "2-digit",
               month: "short",
