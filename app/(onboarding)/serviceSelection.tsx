@@ -183,7 +183,7 @@ export default function WelcomeScreen() {
                                             />
                                         }
                                     </View>
-                                    <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>
+                                    <Typography style={{ flex: 1 }} nowrap variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>
                                         {item.title}
                                     </Typography>
                                 </AnimatedPressable>

@@ -222,7 +222,7 @@ export default function WelcomeScreen() {
                       resizeMode="cover"
                     />
                   </View>
-                  <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={(item as SupportedUniversity).type == "other" ? "white" : undefined}>{(item as SupportedUniversity).title}</Typography>
+                  <Typography style={{ flex: 1 }} nowrap variant='title' color={(item as SupportedUniversity).type == "other" ? "white" : undefined}>{(item as SupportedUniversity).title}</Typography>
                 </AnimatedPressable>
               </Reanimated.View>
             )}

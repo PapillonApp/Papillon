@@ -223,7 +223,7 @@ export default function WelcomeScreen() {
                       resizeMode="cover"
                     />
                   </View>
-                  <Typography style={{ flex: 1 }} numberOfLines={1} variant='title' color={(item as SupportedRestaurant).type == "other" ? "white" : undefined}>{(item as SupportedRestaurant).title}</Typography>
+                  <Typography style={{ flex: 1 }} nowrap variant='title' color={(item as SupportedRestaurant).type == "other" ? "white" : undefined}>{(item as SupportedRestaurant).title}</Typography>
                 </AnimatedPressable>
               </Reanimated.View>
             )}

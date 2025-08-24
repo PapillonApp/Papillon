@@ -107,6 +107,7 @@ export interface TypographyProps extends TextProps {
   align?: Alignment;
   style?: TextStyle | TextStyle[];
   inline?: boolean;
+  nowrap?: boolean;
   weight?: keyof typeof WEIGHT_STYLES;
 }
 
@@ -137,6 +138,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
     color = "text",
     align = "left",
     inline = false,
+    nowrap = false,
     weight,
     style,
     ...rest
@@ -219,7 +221,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return finalStyle;
     }, [colors, variant, color, align, style, cacheKey]);
 
-    return <Text {...rest} style={computedStyle} />;
+    return <Text {...rest} style={computedStyle} numberOfLines={nowrap ? 1 : undefined} />;
   },
   // Custom comparison for even better performance
   (prevProps, nextProps) => {

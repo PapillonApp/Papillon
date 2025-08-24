@@ -333,6 +333,7 @@ export default function TabOneScreen() {
                   gap: 12
                 }}
                 data={grades}
+                keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <CompactGrade
                     title={item.subjectName}
@@ -394,7 +395,7 @@ export default function TabOneScreen() {
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
                     {item.icon}
                   </Icon>
-                  <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                  <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
                     {item.title}
                   </Typography>
                   {(item.redirect || item.onPress) && (

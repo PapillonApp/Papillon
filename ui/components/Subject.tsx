@@ -42,7 +42,7 @@ const Subject: React.FC<SubjectProps> = ({
           </Text>
         </View>
 
-        <Typography variant="title" color={color} style={styles.flex1}>
+        <Typography nowrap variant="title" color={color} style={styles.flex1}>
           {name}
         </Typography>
 
