@@ -1,6 +1,6 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon, User2Icon, UserCircle2, UserPenIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,26 +29,38 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import adjust from "@/utils/adjustColor";
 import { getManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
-import { Period } from "@/database/models/Grades";
+import { Period } from "@/services/shared/grade";
 import { Account } from "@/stores/account/types";
 import { News } from "@/services/shared/news";
-import { Absence } from "@/services/shared/attendance";
+import { Absence, Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
 
 function Tabs() {
-  const [absences, setAbsences] = useState<Absence[]>([]);
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [discussion, setDiscussion] = useState<Chat[]>([]);
+  const [attendancePeriods, setAttendancePeriods] = useState<Period[]>([]);
 
   const enabledTabs = useMemo(() => [
     {
       icon: Papicons.Chair,
       title: t("Profile_Attendance_Title"),
-      unread: absences.length,
+      unread: attendances.reduce((count, attendance) => count + attendance.absences.filter(absence => !absence.justified).length, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
+      onPress: () => {
+        router.push({
+          pathname: "/(tabs)/profile/attendance",
+          params: {
+            periods: JSON.stringify(attendancePeriods),
+            currentPeriod: JSON.stringify(getCurrentPeriod(attendancePeriods)),
+            attendances: JSON.stringify(attendances)
+          }
+        })
+      }
     },
     {
       icon: Papicons.TextBubble,
@@ -58,22 +70,19 @@ function Tabs() {
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
     }
-  ], [absences]);
+  ], [attendances]);
 
   const theme = useTheme();
   const { colors } = theme;
 
   const fetchAttendance = useCallback(async () => {
     const manager = getManager();
-    const attendancePeriods = await manager.getAttendancePeriods();
-    const allAbsences: Absence[] = [];
-    for (const period of attendancePeriods) {
-      const attendances = await manager.getAttendanceForPeriod(period.name);
-      for (const attendance of attendances) {
-        allAbsences.push(...attendance.absences);
-      }
-    }
-    setAbsences(allAbsences);
+    const periods = await manager.getAttendancePeriods();
+    const currentPeriod = getCurrentPeriod(periods)
+    const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
+
+    setAttendancePeriods(periods)
+    setAttendances(attendances);
   }, []);
 
   const fetchDiscussions = useCallback(async () => {
@@ -95,6 +104,7 @@ function Tabs() {
           exiting={PapillonAppearOut}
           key={"tab_profile:" + index + ":" + tab.unread}
           style={{ flex: 1 }}
+          onPress={tab.onPress}
         >
           <Stack
             flex
@@ -285,16 +295,15 @@ export default function TabOneScreen() {
     fetchData();
   }, [manager]);
 
-  const [firstName, lastName, level, establishment, studentClass] = useMemo(() => {
+  const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!account) return [null, null, null, null];
 
     let firstName = account.firstName;
     let lastName = account.lastName;
     let level = account.className;
     let establishment = account.schoolName;
-    let studentClass = account.className;
 
-    return [firstName, lastName, level, establishment, studentClass];
+    return [firstName, lastName, level, establishment];
   }, [account]);
 
   const headerHeight = useHeaderHeight();
@@ -408,14 +417,6 @@ export default function TabOneScreen() {
                         {establishment}
                       </Typography>
                     </Stack>
-                  )}
-                  {studentClass && (
-                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Typography variant={"body1"} color="secondary">
-                        {studentClass}
-                      </Typography>
-                    </Stack>
-
                   )}
                 </Stack>
               </Stack>
