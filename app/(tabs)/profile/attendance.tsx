@@ -9,7 +9,7 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
 import { getPeriodName, getPeriodNumber } from "../grades";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
 // ...existing code...
@@ -18,6 +18,8 @@ import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
+import { error } from "@/utils/logger/logger";
+import { getManager } from "@/services/shared";
 
 export default function AttendanceView() {
 
@@ -28,9 +30,10 @@ export default function AttendanceView() {
   const search = useLocalSearchParams();
   const currentPeriod = JSON.parse(String(search.currentPeriod)) as Period;
   const periods = JSON.parse(String(search.periods)) as Period[];
-  const attendances = JSON.parse(String(search.attendances)) as Attendance[];
+  const attendancesFromSearch = JSON.parse(String(search.attendances)) as Attendance[];
 
-  const period = currentPeriod;
+  const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
+  const [period, setPeriod] = useState<Period>(currentPeriod);
 
   const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount } = useMemo(() => {
     let missed = 0;
@@ -46,11 +49,15 @@ export default function AttendanceView() {
         }
       }
       for (const delay of attendance.delays) {
-        if (!delay.justified) unjustifiedDelays += 1;
+        if (!delay.justified) {
+          unjustifiedDelays += 1;
+          unjustified += delay.duration
+        }
+        missed += delay.duration
       }
     }
     return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays };
-  }, [attendances]);
+  }, [period, attendances]);
 
   const dangerColor = useMemo(() => adjust("#C50000", -0.15), []);
   const dangerBg = "#C5000030";
@@ -94,7 +101,7 @@ export default function AttendanceView() {
                       h
                     </Typography>
                     <AnimatedNumber variant="h5">
-                      {String(Math.floor(missedTime / 3600)).padStart(2, '0')}
+                      {String(missedTime % 60).padStart(2, '0')}
                     </AnimatedNumber>
                   </Stack>
                 </Stack>
@@ -119,7 +126,7 @@ export default function AttendanceView() {
                       h
                     </Typography>
                     <AnimatedNumber variant="h5" color={adjust("#C50000", -0.15)}>
-                      {String(Math.floor(missedTimeUnjustified / 3600)).padStart(2, '0')}
+                      {String(missedTimeUnjustified % 60).padStart(2, '0')}
                     </AnimatedNumber>
                   </Stack>
                 </Stack>
@@ -157,7 +164,7 @@ export default function AttendanceView() {
                                 </Icon>
                               )}
                               <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: absence.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
-                                <Typography variant="title" color={absence.justified ? "white" : dangerColor}>{String(Math.floor(absence.timeMissed / 60)).padStart(2, '0')}h{String(absence.timeMissed % 60).padStart(2, '0')}</Typography>
+                                <Typography variant="title" color={absence.justified ? colors.text : dangerColor}>{String(Math.floor(absence.timeMissed / 60)).padStart(2, '0')}h{String(absence.timeMissed % 60).padStart(2, '0')}</Typography>
                               </View>
                             </Stack>
                           </Trailing>
@@ -205,7 +212,7 @@ export default function AttendanceView() {
                                 </Icon>
                               )}
                               <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: delay.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
-                                <Typography variant="title" color={delay.justified ? "white" : dangerColor}>{delay.duration}m</Typography>
+                                <Typography variant="title" color={delay.justified ? colors.text : dangerColor}>{delay.duration}m</Typography>
                               </View>
                             </Stack>
                           </Trailing>
@@ -237,23 +244,43 @@ export default function AttendanceView() {
             </NativeHeaderPressable>
           </NativeHeaderSide>
           <NativeHeaderTitle style={{ marginTop: 4 }}>
-            <MenuView actions={
-              periods.map((item) => ({
-                id: "period:" + item.id,
-                title: item.name,
-                subtitle: `${new Date(item.start).toLocaleDateString("fr-FR", {
-                  month: "short",
-                  year: "numeric",
-                })} - ${new Date(item.end).toLocaleDateString("fr-FR", {
-                  month: "short",
-                  year: "numeric",
-                })}`,
-                state: item?.id === item.id ? "on" : "off",
-                image: Platform.select({
-                  ios: (getPeriodNumber(item.name || "0")) + ".calendar"
-                }),
-                imageColor: colors.text,
-              }))}>
+            <MenuView
+              key={String(period?.id ?? "")}
+              onPressAction={async ({ nativeEvent }) => {
+                const actionId = nativeEvent.event;
+
+                if (actionId.startsWith("period:")) {
+                  const selectedPeriodId = actionId.replace("period:", "");
+                  const selectedPeriod: Period | undefined = periods.find(item => item.id === selectedPeriodId)
+
+                  if (!selectedPeriod) {
+                    error("Invalid Period")
+                  }
+
+                  const manager = getManager()
+                  const attendancesFetched = await manager.getAttendanceForPeriod(selectedPeriod.name)
+
+                  setAttendances(attendancesFetched)
+                  setPeriod(selectedPeriod)
+                }
+              }}
+              actions={
+                periods.map((item) => ({
+                  id: "period:" + item.id,
+                  title: item.name,
+                  subtitle: `${new Date(item.start).toLocaleDateString("fr-FR", {
+                    month: "short",
+                    year: "numeric",
+                  })} - ${new Date(item.end).toLocaleDateString("fr-FR", {
+                    month: "short",
+                    year: "numeric",
+                  })}`,
+                  state: String(period?.id ?? "") === String(item.id ?? "") ? "on" : "off",
+                  image: Platform.select({
+                    ios: (getPeriodNumber(item.name || "0")) + ".calendar"
+                  }),
+                  imageColor: colors.text,
+                }))}>
               <Dynamic
                 animated={true}
                 style={{
