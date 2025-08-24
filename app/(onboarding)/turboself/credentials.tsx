@@ -1,44 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, Keyboard, View, ActivityIndicator, TextInput } from 'react-native';
-import { RelativePathString, router, useFocusEffect, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import { getProfileColorByName } from "@/utils/chats/colors"
-
 import * as Papicons from '@getpapillon/papicons';
+import { authenticateWithCredentials } from 'turboself-api'
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
   Extrapolate,
   interpolate,
-  LinearTransition,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import Svg, { Circle, Mask, Path } from 'react-native-svg';
-import { CurrentPosition, getCurrentPosition } from '@/utils/native/position';
-import { useAlert } from '@/ui/components/AlertProvider';
+import Button from '@/ui/components/Button';
+import uuid from '@/utils/uuid/uuid';
+import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import { geolocation } from 'pawnote';
-import TableFlatList from '@/ui/components/TableFlatList';
-import { getInitials } from '@/utils/chats/initials';
-import { log } from '@/utils/logger/logger';
-import { GeographicReverse } from '@/utils/native/georeverse';
-import { SearchSchools } from 'skolengojs';
 
-const INITIAL_HEIGHT = 680;
+const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
-const KEYBOARD_HEIGHT = 400;
-const ANIMATION_DURATION = 250;
-const OPACITY_THRESHOLD = 600;
-
-const AnimatedFlatList = Reanimated.createAnimatedComponent(TableFlatList);
+const KEYBOARD_HEIGHT = 270;
+const ANIMATION_DURATION = 100;
+const OPACITY_THRESHOLD = 400;
 
 const staticStyles = StyleSheet.create({
   container: {
@@ -64,12 +53,9 @@ const staticStyles = StyleSheet.create({
     padding: 10,
     borderRadius: 100,
   },
-  iconBackground: {
-    backgroundColor: "transparent",
-  },
   inputContainer: {
     flex: 1,
-    padding: 23,
+    padding: 20,
     backgroundColor: "#F2F2F2",
     borderRadius: 300,
     borderWidth: 1,
@@ -81,64 +67,19 @@ const staticStyles = StyleSheet.create({
     fontWeight: "700",
     flex: 1,
   },
+  iconBackground: {
+    backgroundColor: "transparent",
+  },
 });
 
-const MapIcon = React.memo(() => (
-  <Svg
-    width={117}
-    height={131}
-    fill="none"
-  >
-    <Mask
-      id="a"
-      width={127.369}
-      height={139.247}
-      x={-4.187}
-      y={-3.99}
-      fill="#000"
-      maskUnits="userSpaceOnUse"
-    >
-      <Path fill="#fff" d="M-4.187-3.99h127.369v139.247H-4.187z" />
-      <Path d="M54.88 12.834c35.383-2.825 62.674 32.76 43.413 62.617-8.019 12.43-19.837 28.807-27.269 38.938a10.147 10.147 0 0 1-15.294 1.271c-9.003-8.764-23.364-22.965-33.325-33.9-23.927-26.265-2.888-65.87 32.476-68.926Z" />
-    </Mask>
-    <Path
-      fill="#DB006E"
-      d="M54.88 12.834c35.383-2.825 62.674 32.76 43.413 62.617-8.019 12.43-19.837 28.807-27.269 38.938a10.147 10.147 0 0 1-15.294 1.271c-9.003-8.764-23.364-22.965-33.325-33.9-23.927-26.265-2.888-65.87 32.476-68.926Z"
-    />
-    <Path
-      fill="#fff"
-      d="m54.88 12.834-.932-11.676-.038.003-.038.004 1.009 11.67Zm43.413 62.617-9.842-6.35 9.842 6.35Zm-27.269 38.938 9.445 6.928-9.444-6.928ZM55.73 115.66l-8.17 8.393 8.17-8.393Zm-33.325-33.9-8.66 7.888 8.66-7.888ZM54.88 12.834l.932 11.676c13.491-1.077 25.248 5.177 31.76 14.22 6.34 8.807 7.613 19.93.878 30.37l9.842 6.35 9.843 6.35c12.525-19.415 9.783-41.013-1.552-56.757C95.419 9.536 75.839-.59 53.948 1.158l.933 11.676Zm43.412 62.617-9.842-6.35C80.64 81.206 69.01 97.333 61.58 107.46l9.444 6.929 9.444 6.928c7.434-10.134 19.439-26.762 27.667-39.517l-9.843-6.35Zm-27.269 38.938-9.444-6.929c.541-.737 1.665-.831 2.32-.193l-8.17 8.393-8.17 8.393c9.54 9.288 25.033 7.999 32.909-2.736l-9.444-6.928ZM55.73 115.66l8.17-8.393c-9-8.76-23.135-22.745-32.836-33.395l-8.66 7.888-8.658 7.888c10.222 11.221 24.807 25.638 33.813 34.405l8.17-8.393Zm-33.325-33.9 8.659-7.888c-8.367-9.185-8.949-20.365-4.15-30.098 4.929-9.995 15.491-18.105 28.975-19.27l-1.008-11.67-1.009-11.67c-21.88 1.891-39.518 15.112-47.968 32.25-8.58 17.4-7.718 39.154 7.842 56.234l8.659-7.888Z"
-      mask="url(#a)"
-    />
-    <Circle
-      cx={57.462}
-      cy={54.521}
-      r={15.529}
-      fill="#fff"
-      transform="rotate(-4.753 57.462 54.52)"
-    />
-  </Svg>
-));
-MapIcon.displayName = 'MapIcon';
-
-
-
-import { School as SkolengoSkool } from 'skolengojs';
-
-export interface School {
-  name: string,
-  distance: number,
-  url: string,
-  ref?: SkolengoSkool
-}
-
-export default function SelectSchoolOnMap() {
+export default function TurboSelfLoginWithCredentials() {
   const insets = useSafeAreaInsets();
-  const [city, setCity] = useState<string>();
+  const animation = React.useRef<LottieView>(null);
 
-  const scrollY = useSharedValue(0);
+  const [username, setUsername] = useState<string>("")
+  const [password, setPassword] = useState<string>("");
+
   const height = useSharedValue(INITIAL_HEIGHT);
-  const search = useLocalSearchParams();
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
@@ -167,7 +108,7 @@ export default function SelectSchoolOnMap() {
 
     return {
       maxHeight: interpolate(
-        scrollY.value,
+        0,
         [0, heightDiff],
         [height.value, COLLAPSED_HEIGHT],
         Extrapolate.CLAMP
@@ -186,29 +127,24 @@ export default function SelectSchoolOnMap() {
     return {
       paddingTop: height.value + 16,
       paddingHorizontal: 21,
+      gap: 9
     };
   }, []);
 
+  const animationCallback = useCallback(() => {
+    if (animation.current) {
+      animation.current.reset();
+      animation.current.play();
+    }
+  }, []);
+
+  useFocusEffect(animationCallback);
+
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
     'worklet';
-    const heightDiff = height.value - COLLAPSED_HEIGHT;
     const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
 
-    const opacity = isKeyboardVisible
-      ? 0
-      : interpolate(
-        scrollY.value,
-        [0, heightDiff],
-        [1, 0],
-        Extrapolate.CLAMP
-      );
-
-    const scale = interpolate(
-      scrollY.value,
-      [0, heightDiff],
-      [1, 0.8],
-      Extrapolate.CLAMP
-    );
+    const opacity = isKeyboardVisible ? 0 : 1
 
     return {
       shadowColor: "#000",
@@ -216,9 +152,8 @@ export default function SelectSchoolOnMap() {
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 4,
-      opacity: withTiming(opacity, { duration: 150 }),
-      transform: [{ scale }],
-      paddingBottom: 113
+      opacity: withTiming(opacity, { duration: isKeyboardVisible ? 150 : 100 }),
+      paddingBottom: 20
     };
   }, []);
 
@@ -228,12 +163,17 @@ export default function SelectSchoolOnMap() {
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
             padding={32}
-            backgroundColor='#E50052'
+            backgroundColor={'#E70026'}
             gap={20}
             style={staticStyles.stackContainer}
           >
             <Reanimated.View style={AnimatedLottieContainerStyle}>
-              <MapIcon />
+              <LottieView
+                autoPlay
+                loop={false}
+                style={{ width: 230, height: 230 }}
+                source={require('@/assets/lotties/turboself.json')}
+              />
             </Reanimated.View>
             <Stack
               vAlign='start'
@@ -246,11 +186,11 @@ export default function SelectSchoolOnMap() {
                   variant="h5"
                   style={{ color: "white", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 2
+                  Étape 3
                 </Typography>
                 <Typography
                   variant="h5"
-                  style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+                  style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
                 >
                   sur 3
                 </Typography>
@@ -259,11 +199,12 @@ export default function SelectSchoolOnMap() {
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Entre le nom de ta ville et choisis ton établissement
+                Connecte-toi à ton compte TurboSelf
               </Typography>
             </Stack>
           </Stack>
         </Reanimated.View>
+
         <Reanimated.View style={AnimatedInputContainerStyle}>
           <Stack flex direction="horizontal" hAlign="center" vAlign="center">
             <Stack
@@ -279,32 +220,107 @@ export default function SelectSchoolOnMap() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Search />
+                <Papicons.Link />
               </Icon>
               <TextInput
-                placeholder="Nom de ta ville"
+                placeholder="Nom d'utilisateur"
                 placeholderTextColor="#5B5B5B"
-                onChangeText={setCity}
-                value={city}
+                onChangeText={setUsername}
+                value={username}
                 style={staticStyles.textInput}
                 autoCapitalize="none"
                 autoCorrect={false}
-                autoComplete="address-line1"
-                keyboardType="default"
-                onSubmitEditing={() => {
-                  router.push({
-                    pathname: "./map",
-                    params: {
-                      service: Number(search.service),
-                      city,
-                      method: "manual"
-                    }
-                  })
-                }}
+                autoComplete="url"
+                keyboardType="email-address"
               />
             </Stack>
           </Stack>
+          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
+            <Stack
+              flex
+              direction="horizontal"
+              vAlign="center"
+              hAlign="center"
+              style={staticStyles.inputContainer}
+            >
+              <Icon
+                papicon
+                size={24}
+                fill="#5B5B5B"
+                style={staticStyles.iconBackground}
+              >
+                <Papicons.Link />
+              </Icon>
+              <TextInput
+                placeholder="Mot de passe"
+                placeholderTextColor="#5B5B5B"
+                onChangeText={setPassword}
+                value={password}
+                style={staticStyles.textInput}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="url"
+                secureTextEntry
+                keyboardType="default"
+              />
+            </Stack>
+          </Stack>
+          <Button
+            title='Se connecter'
+            color='black'
+            size='large'
+            disableAnimation
+            onPress={async () => {
+              const authentification = await authenticateWithCredentials(username, password, true, false)
+              const siblings = await authentification.getSiblings();
+              if (siblings.length === 0) {
+                const accountId = uuid()
+                const store = useAccountStore.getState()
+
+                store.addAccount({
+                  id: accountId,
+                  firstName: authentification.host?.firstName ?? "N/A",
+                  lastName: authentification.host?.lastName ?? "N/A",
+                  schoolName: authentification.establishment?.name,
+                  className: authentification.host?.division,
+                  services: [{
+                    id: accountId,
+                    auth: {
+                      additionals: {
+                        username,
+                        password,
+                        "hoteId": authentification.host?.id ?? "N/A"
+                      }
+                    },
+                    serviceId: Services.TURBOSELF,
+                    createdAt: (new Date()).toISOString(),
+                    updatedAt: (new Date()).toISOString()
+                  }],
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
+                })
+
+                store.setLastUsedAccount(accountId)
+                return router.push({
+                  pathname: "../end/color",
+                  params: {
+                    accountId
+                  }
+                });
+              }
+
+              return router.push({
+                pathname: "./hostSelector",
+                params: {
+                  siblings: JSON.stringify(siblings),
+                  username,
+                  password
+                }
+              });
+            }}
+          />
         </Reanimated.View>
+
         <Pressable
           onPress={() => router.back()}
           style={[
@@ -312,11 +328,11 @@ export default function SelectSchoolOnMap() {
             { top: insets.top + 4 }
           ]}
         >
-          <Icon size={26} fill="white" papicon>
+          <Icon size={26} fill={"#FFFFFF"} papicon>
             <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >
-    </Pressable >
+    </Pressable>
   );
 }

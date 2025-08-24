@@ -2,9 +2,27 @@ import { error } from "../logger/logger";
 
 export async function GeographicReverse(lat: number, lon: number): Promise<GeoInfo> {
   try {
-    const res = await fetch(
-      `https://data.geopf.fr/geocodage/reverse?lat=${lat}&lon=${lon}&limit=1&index=parcel,poi,address`
-    );
+    let retries = 3;
+    let res: Response = new Response();
+
+    while (retries > 0) {
+      res = await fetch(
+        `https://data.geopf.fr/geocodage/reverse?lat=${lat}&lon=${lon}&limit=1&index=parcel,poi,address`
+      );
+
+      if (res.ok) {
+        break;
+      }
+
+      retries--;
+      
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        throw new Error(`Failed after 3 retries. Status: ${res.status}`);
+      }
+    }
+
 
     if (!res.ok) {
       throw new Error(`Status: ${res.status}`);
@@ -31,12 +49,24 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
 
 export async function GeographicQuerying(q: string): Promise<GeoInfo> {
   try {
-    const res = await fetch(
-      `https://data.geopf.fr/geocodage/search?q=${q}`
-    );
+    let retries = 3;
+    let res: Response = new Response();
 
-    if (!res.ok) {
-      throw new Error(`Status: ${res.status}`);
+    while (retries > 0) {
+      res = await fetch(
+        `https://data.geopf.fr/geocodage/search?q=${q}`
+      );
+
+      if (res.ok) {
+        break;
+      }
+
+      retries--;
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        throw new Error(`Failed after 3 retries. Status: ${res.status}`);
+      }
     }
 
     const response = await res.json();

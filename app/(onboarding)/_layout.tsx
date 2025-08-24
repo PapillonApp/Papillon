@@ -38,7 +38,7 @@ export default function OnboardingLayout() {
                 <Stack.Screen
                     name="school/map"
                     options={{ ...newScreenOptions }}
-                    initialParams={{ service: Services.PRONOTE }}
+                    initialParams={{ service: Services.PRONOTE, method: "automatic", city: "Paris" }}
                 />
                 <Stack.Screen
                     name="school/search"
@@ -71,6 +71,15 @@ export default function OnboardingLayout() {
                     name="pronote/credentials"
                     options={{ ...newScreenOptions }}
                     initialParams={{ url: "", previousPage: "map" }}
+                />
+                <Stack.Screen
+                    name="turboself/credentials"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
+                    name="turboself/hostSelector"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ siblings: [], username: "", password: "" }}
                 />
                 <Stack.Screen
                     name="skolengo/webview"

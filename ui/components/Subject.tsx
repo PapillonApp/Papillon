@@ -33,16 +33,16 @@ const Subject: React.FC<SubjectProps> = ({
   return (
     <Reanimated.View
       layout={ListGradesLayoutTransition}
-      style={[styles.container, { backgroundColor: color }]}
+      style={[styles.container, { backgroundColor: color + 33 }]}
     >
       <Stack direction="horizontal" hAlign="center" gap={12}>
-        <View style={styles.emojiContainer}>
+        <View style={[styles.emojiContainer, { backgroundColor: color + 50 }]}>
           <Text style={styles.emoji}>
             {emoji}
           </Text>
         </View>
 
-        <Typography variant="title" color="#fff" style={styles.flex1}>
+        <Typography variant="title" color={color} style={styles.flex1}>
           {name}
         </Typography>
 
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     width: 34,
     aspectRatio: 1,
     borderRadius: 20,
-    backgroundColor: "#ffffff63",
     justifyContent: "center",
     alignItems: "center",
   },
