@@ -333,6 +333,7 @@ export default function TabOneScreen() {
                   gap: 12
                 }}
                 data={grades}
+                keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <CompactGrade
                     title={item.subjectName}
