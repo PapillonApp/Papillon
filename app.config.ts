@@ -81,7 +81,11 @@ module.exports = {
         "expo-build-properties",
         {
           ios: {
-            useFrameworks: "static",
+            extraPods: [
+              { name: "SDWebImage", modular_headers: true },
+              { name: "SDWebImageSVGCoder", modular_headers: true },
+
+            ],
           },
         },
       ],
