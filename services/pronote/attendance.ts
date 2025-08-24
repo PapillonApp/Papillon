@@ -112,6 +112,7 @@ function mapAbsences(absences: NotebookAbsence[], accountId: string): Absence[] 
     to: a.endDate,
     reason: a.reason,
     justified: a.justified,
+    timeMissed: a.hoursMissed * 60 + a.minutesMissed,
     createdByAccount: accountId
   }));
 }

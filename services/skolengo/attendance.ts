@@ -46,7 +46,12 @@ function mapSkolengoAbsences(data: AttendanceItem[], accountId: string, kidName?
     to: item.endDate,
     reason: item.reason,
     justified: (item.state === AttendanceItemState.LOCKED),
+    timeMissed: durationToMinutes(item.startDate.getTime(), item.endDate.getTime()),
     createdByAccount: accountId,
     kidName: kidName
   }))
+}
+
+export function durationToMinutes(timestamp1: number, timestamp2: number): number {
+  return Math.abs(timestamp2 - timestamp1) / (1000 * 60);
 }
