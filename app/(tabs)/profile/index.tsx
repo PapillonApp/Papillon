@@ -191,7 +191,15 @@ function NewsSection() {
             >
               {t("Profile_News_Title")}
             </Typography>
-            <Pressable>
+            <Pressable onPress={() => {
+              console.log("test")
+              router.push({
+                pathname: "/(news)/news",
+                params: {
+                  news: JSON.stringify(news)
+                }
+              })
+            }}>
               <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
                 <Typography style={{ marginBottom: -3 }} inline color="secondary">
                   {news.filter(news => !news.acknowledged).length} {news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
