@@ -33,6 +33,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation, useRouter } from "expo-router";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -54,7 +55,7 @@ const EmptyListComponent = memo(() => (
   </Dynamic>
 ));
 
-const getPeriodName = (name: string) => {
+export const getPeriodName = (name: string) => {
   // return only digits
   let digits = name.replace(/[^0-9]/g, '').trim();
   let newName = name.replace(digits, '').trim();
@@ -62,7 +63,7 @@ const getPeriodName = (name: string) => {
   return newName;
 }
 
-const getPeriodNumber = (name: string) => {
+export const getPeriodNumber = (name: string) => {
   // return only digits
   let newName = name.replace(/[^0-9]/g, '').trim();
 
@@ -157,18 +158,8 @@ export default function TabOneScreen() {
       const result = await manager.getGradesPeriods()
       setPeriods(result);
 
-      let currentPeriodFound = false;
-      for (const period of result) {
-        if (period.start.getTime() < now && period.end.getTime() > now) {
-          setCurrentPeriod(period)
-          currentPeriodFound = true;
-          break;
-        }
-      }
-
-      if (!currentPeriodFound && result.length > 0) {
-        setCurrentPeriod(result[0])
-      }
+      const currentPeriodFound = getCurrentPeriod(result)
+      setCurrentPeriod(currentPeriodFound)
     };
 
     fetchPeriods();
