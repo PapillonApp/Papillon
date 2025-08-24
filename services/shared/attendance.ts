@@ -38,6 +38,7 @@ export interface Absence extends GenericInterface {
   from: Date;
   to: Date;
   reason?: string;
+  timeMissed: number;
   justified: boolean;
 }
 

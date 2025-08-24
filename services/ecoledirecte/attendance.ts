@@ -3,6 +3,7 @@ import { Account, AttendanceItem, Session, studentAttendance } from "pawdirecte"
 import { error } from "@/utils/logger/logger";
 
 import { Absence, Attendance, Punishment } from "../shared/attendance";
+import { durationToMinutes } from "../skolengo/attendance";
 
 export async function fetchEDAttendance(session: Session, account: Account, accountId: string): Promise<Attendance> {
   const attendance = await studentAttendance(session, account);
@@ -27,6 +28,7 @@ function mapEcoleDirecteAbsences(data: AttendanceItem[], accountId: string): Abs
       to: end,
       reason: item.reason,
       justified: item.justified,
+      timeMissed: durationToMinutes(start.getTime(), end.getTime()),
       createdByAccount: accountId
     };
   });
