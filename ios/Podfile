@@ -31,9 +31,6 @@ target 'Papillon' do
 
   config = use_native_modules!(config_command)
 
-  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
-  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
-
   # WatermelonDB dependency
   pod 'simdjson', path: '../node_modules/@nozbe/simdjson', modular_headers: true
 
@@ -46,6 +43,10 @@ target 'Papillon' do
   )
 
   post_install do |installer|
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES"] = true
+    end
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
