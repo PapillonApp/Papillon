@@ -192,7 +192,6 @@ function NewsSection() {
               {t("Profile_News_Title")}
             </Typography>
             <Pressable onPress={() => {
-              console.log("test")
               router.push({
                 pathname: "/(news)/news",
                 params: {
