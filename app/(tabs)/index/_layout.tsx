@@ -15,6 +15,7 @@ export default function Layout() {
           headerShown: true,
           headerTitle: t("Tab_Home"),
           headerLargeTitle: false,
+          headerTransparent: true,
         }}
       />
     </Stack>

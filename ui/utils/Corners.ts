@@ -16,7 +16,7 @@ const radiuses = [
     radius: 45.0,
   },
   {
-    devices: "12, 12 pro, 13, 13 pro, 14",
+    devices: "12, 12 pro, 13, 13 pro, 14, 16e",
     radius: 47.33,
   },
   {

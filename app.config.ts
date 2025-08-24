@@ -21,6 +21,7 @@ module.exports = {
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
+      minimumOSVersion: "17.6",
       infoPlist: {
         CFBundleURLTypes: [
           {
@@ -64,6 +65,7 @@ module.exports = {
         },
       ],
       "react-native-bottom-tabs",
+      "expo-secure-store",
       [
         "expo-location",
         {
@@ -86,7 +88,11 @@ module.exports = {
         "expo-build-properties",
         {
           ios: {
-            useFrameworks: "static",
+            extraPods: [
+              { name: "SDWebImage", modular_headers: true },
+              { name: "SDWebImageSVGCoder", modular_headers: true },
+
+            ],
           },
         },
       ],

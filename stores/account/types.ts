@@ -1,3 +1,4 @@
+import { Colors } from "@/app/(onboarding)/end/color";
 import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs";
 
@@ -18,6 +19,7 @@ export interface AccountsStorage {
   setSubjectColor: (subject: string, color: string) => void;
   setSubjectEmoji: (subject: string, emoji: string) => void;
   setSubjectName: (subject: string, name: string) => void;
+  setAccountSelectedColor: (accountId: string, selectedColor: Colors) => void;
 }
 
 /**
@@ -36,8 +38,10 @@ export interface Account {
   firstName: string;
   lastName: string;
   schoolName?: string;
+  className?: string;
   customisation?: CustomisationStorage;
   services: ServiceAccount[];
+  selectedColor?: Colors,
   createdAt: string;
   updatedAt: string;
 }

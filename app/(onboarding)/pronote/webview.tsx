@@ -1,0 +1,233 @@
+import Typography from "@/ui/components/Typography";
+import { View, StyleSheet, Pressable } from "react-native";
+import { WebView } from 'react-native-webview';
+import { useGlobalSearchParams, router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Papicons from '@getpapillon/papicons';
+import Icon from '@/ui/components/Icon';
+import { createRef, useState } from "react";
+import uuid from "@/utils/uuid/uuid";
+import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+
+export default function WebViewScreen() {
+  const { url } = useGlobalSearchParams<{ url: string }>();
+  const infoMobileURL = url + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
+  const insets = useSafeAreaInsets();
+
+  const [deviceUUID] = useState(uuid());
+
+  console.log("WebViewScreen initialized with URL:", url);
+
+  if (!url) {
+    console.warn("No URL provided");
+    return (
+      <View style={styles.container}>
+        <Typography>Aucune URL fournie</Typography>
+      </View>
+    );
+  }
+
+  let webViewRef = createRef<WebView>();
+  const PRONOTE_COOKIE_EXPIRED = new Date(0).toUTCString();
+  const PRONOTE_COOKIE_VALIDATION_EXPIRES = new Date(
+    new Date().getTime() + 5 * 60 * 1000
+  ).toUTCString();
+  const PRONOTE_COOKIE_LANGUAGE_EXPIRES = new Date(
+    new Date().getTime() + 365 * 24 * 60 * 60 * 1000
+  ).toUTCString();
+
+  console.log("Device UUID:", deviceUUID);
+
+  const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
+      window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    `.trim();
+
+  const INJECT_PRONOTE_JSON = `
+      (function () {
+        try {
+          const json = JSON.parse(document.body.innerText);
+          const lJetonCas = !!json && !!json.CAS && json.CAS.jetonCAS;
+          
+          document.cookie = "appliMobile=; expires=${PRONOTE_COOKIE_EXPIRED}"
+
+          if (!!lJetonCas) {
+            document.cookie = "validationAppliMobile=" + lJetonCas + "; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
+            document.cookie = "uuidAppliMobile=${deviceUUID}; expires=${PRONOTE_COOKIE_VALIDATION_EXPIRES}";
+            // 1036 = French
+            document.cookie = "ielang=1036; expires=${PRONOTE_COOKIE_LANGUAGE_EXPIRES}";
+          }
+
+          console.log(lJetonCas)
+
+          window.location.assign("${url}/mobile.eleve.html?fd=1");
+        }
+        catch (error) {
+          console.error("Error parsing JSON or injecting cookies:", error);
+        }
+      })();
+    `.trim();
+
+  const INJECT_PRONOTE_CURRENT_LOGIN_STATE = `
+    (function () {
+      setInterval(function() {
+        const state = window && window.loginState ? window.loginState : void 0;
+
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'pronote.loginState',
+          data: state
+        }));
+      }, 1000);
+    })();
+    `.trim();
+
+  return (
+    <View style={styles.container}>
+      <Pressable
+        onPress={() => {
+          console.log("Back button pressed");
+          router.back();
+        }}
+        style={[
+          styles.backButton,
+          { top: insets.top + 4 }
+        ]}
+      >
+        <Icon size={26} fill="#00000080" papicon>
+          <Papicons.ArrowLeft />
+        </Icon>
+      </Pressable>
+
+      <WebView
+        source={{ uri: infoMobileURL }}
+        style={styles.webview}
+        ref={webViewRef}
+        startInLoadingState={true}
+        incognito={true}
+        userAgent="Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
+        onMessage={async ({ nativeEvent }) => {
+          const message = JSON.parse(nativeEvent.data);
+          console.log("Message received from WebView:", message);
+
+          if (message.type === "pronote.loginState") {
+            console.log("Login state message received:", message.data);
+
+            if (!message.data) {
+              console.warn("No login data in message");
+              return;
+            }
+            if (message.data.status !== 0) {
+              console.warn("Login status is not valid:", message.data.status);
+              return;
+            }
+            console.log(message.data.login, message.data.mdp)
+            console.log("Creating session handle...");
+            const session = createSessionHandle();
+            try {
+              const refresh = await loginToken(
+                session,
+                {
+                  url: url,
+                  kind: AccountKind.STUDENT,
+                  username: message.data.login,
+                  token: message.data.mdp,
+                  deviceUUID
+                }
+              );
+
+              if (!refresh) throw new Error("Erreur lors de la connexion");
+
+              console.log("Login successful, adding account to store...")
+              const schoolName = session.user.resources[0].establishmentName
+              const className = session.user.resources[0].className;
+              useAccountStore.getState().addAccount({
+                id: deviceUUID,
+                firstName: session.user.name.split(" ")[0],
+                lastName: session.user.name.split(" ")[1],
+                schoolName,
+                className,
+                services: [{
+                  id: deviceUUID,
+                  auth: {
+                    accessToken: refresh.token,
+                    refreshToken: refresh.token,
+                    additionals: {
+                      instanceURL: refresh.url,
+                      kind: refresh.kind,
+                      username: refresh.username,
+                      deviceUUID
+                    }
+                  },
+                  serviceId: Services.PRONOTE,
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
+                }],
+                createdAt: (new Date()).toISOString(),
+                updatedAt: (new Date()).toISOString()
+              });
+
+            } catch (error) {
+              if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+                console.log("2FA authentication required");
+              } else {
+                console.error("Error during login:", error);
+                throw error;
+              }
+            }
+          }
+        }}
+        onLoadEnd={(e) => {
+          const { url } = e.nativeEvent;
+          console.log("WebView finished loading URL:", url);
+
+          webViewRef.current?.injectJavaScript(
+            INJECT_PRONOTE_INITIAL_LOGIN_HOOK
+          );
+
+          if (url === infoMobileURL) {
+            console.log("Injecting JSON script for InfoMobileURL");
+            webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
+          } else if (url.includes("mobile.eleve.html")) {
+            console.log("Injecting login state scripts for student account");
+            webViewRef.current?.injectJavaScript(
+              INJECT_PRONOTE_INITIAL_LOGIN_HOOK
+            );
+            webViewRef.current?.injectJavaScript(
+              INJECT_PRONOTE_CURRENT_LOGIN_STATE
+            );
+          }
+        }}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  webview: {
+    flex: 1,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  error: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 200,
+    backgroundColor: '#ffffff42',
+    padding: 10,
+    borderRadius: 100,
+  },
+});

@@ -38,6 +38,7 @@ export async function fetchEDGrades(session: Session, account: Account, accountI
     subjects[grade.subject.name].grades.push({
       id: generateId(JSON.stringify(grade)),
       subjectId: grade.subject.id,
+      subjectName: grade.subject.name,
       description: grade.comment,
       givenAt: grade.date,
       subjectFile: {

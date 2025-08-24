@@ -1,13 +1,21 @@
 import { Services } from '@/stores/account/types';
-import { useAlert } from '@/ui/components/AlertProvider';
-import Icon from '@/ui/components/Icon';
-import { log } from '@/utils/logger/logger';
-import { getCurrentPosition } from '@/utils/native/position';
 import * as Papicons from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
-import { Image } from "react-native"
+import { RelativePathString, UnknownInputParams } from 'expo-router';
 
-export function getSupportedServices(redirect: (path: string) => void) {
+export interface SupportedService {
+    name: string;
+    title: string;
+    type: string;
+    image?: any;
+    onPress: () => void;
+    variant: string;
+    color?: string;
+    icon?: React.ReactNode;
+    style?: { [key: string]: any }
+}
+
+export function getSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
     const theme = useTheme();
     const { colors } = theme;
 
@@ -18,7 +26,7 @@ export function getSupportedServices(redirect: (path: string) => void) {
             type: "main",
             image: require("@/assets/images/service_pronote.png"),
             onPress: () => {
-                redirect('./pronote/method');
+                redirect({ pathname: './school/method', options: { service: Services.PRONOTE } });
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -29,7 +37,7 @@ export function getSupportedServices(redirect: (path: string) => void) {
             type: "main",
             image: require("@/assets/images/service_ed.png"),
             onPress: () => {
-
+                redirect({ pathname: './school/method', options: { service: Services.ECOLEDIRECTE } });
             },
             variant: 'service' as const,
             color: 'light' as const,
@@ -40,36 +48,66 @@ export function getSupportedServices(redirect: (path: string) => void) {
             type: "main",
             image: require("@/assets/images/service_skolengo.png"),
             onPress: () => {
+                redirect({ pathname: './school/method', options: { service: Services.SKOLENGO } });
+            },
+            variant: 'service' as const,
+            color: 'light' as const,
+        },
+        {
+            name: "separator",
+            title: "separator",
+            type: "separator",
+            image: require("@/assets/images/service_skolengo.png"),
+            onPress: () => {
 
             },
             variant: 'service' as const,
             color: 'light' as const,
         },
         {
-            type: "separator"
-        },
-        {
             name: "university",
             title: "Service universitaire",
             type: "other",
-            icon: <Papicons.University />,
+            icon: <Papicons.Star />,
             onPress: () => {
-                redirect('./university/method');
+                redirect({ pathname: './university/method' });
 
             },
             variant: 'primary' as const,
             style: { backgroundColor: theme.dark ? colors.border : "black" },
         },
+        {
+            name: "university",
+            title: "Service restauratif",
+            type: "other",
+            icon: <Papicons.Cutlery />,
+            onPress: () => {
+                redirect({ pathname: './restaurants/method' });
+
+            },
+            variant: 'primary' as const,
+            color: 'light' as const
+        }
     ]
 }
 
-export function getSupportedUniversities(handleStepChange: (newStep: number, newText: string, duration?: number, heightMultiplierRaw?: number, newStepId?: string) => void, setBackgroundColor: (color: string) => void, setSelectedService: (service: Services) => void) {
+export interface SupportedUniversity {
+    name: string;
+    title: string;
+    hasLimitedSupport: boolean;
+    image: any;
+    type: string;
+    onPress: () => void;
+}
+
+export function getSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
     return [
         {
             name: "univ-lorraine",
             title: "Université de Lorraine",
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_lorraine.png"),
+            type: "main",
             onPress: () => { }
         },
         {
@@ -77,6 +115,7 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "Université de Nîmes",
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_nimes.png"),
+            type: "main",
             onPress: () => { }
         },
         {
@@ -84,6 +123,7 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "Université Polytechnique Hauts-de-France",
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_uphf.png"),
+            type: "main",
             onPress: () => { }
         },
         {
@@ -91,6 +131,15 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "IUT de Lannion",
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_lannion.png"),
+            type: "main",
+            onPress: () => { }
+        },
+        {
+            name: "limited-functions",
+            title: "Fonctionnalités limitées",
+            hasLimitedSupport: true,
+            image: require("@/assets/images/univ_lannion.png"),
+            type: "separator",
             onPress: () => { }
         },
         {
@@ -98,6 +147,7 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "Université de Rennes 1",
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_rennes1.png"),
+            type: "main",
             onPress: () => { }
         },
         {
@@ -105,11 +155,13 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "Université de Rennes 2",
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_rennes2.png"),
+            type: "main",
             onPress: () => { }
         },
         {
             name: "univ-limoges",
             title: "Université de Limoges",
+            type: "main",
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_limoges.png"),
             onPress: () => { }
@@ -119,31 +171,38 @@ export function getSupportedUniversities(handleStepChange: (newStep: number, new
             title: "Université de Sorbonne Paris Nord",
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_paris_sorbonne.png"),
+            type: "main",
             onPress: () => { }
         }
     ]
 }
 
-export function getLoginMethods(redirect: (path: string) => void) {
-    const alert = useAlert()
+export interface LoginMethod {
+    id: string,
+    availableFor: Array<Services>,
+    description: string,
+    icon: React.ReactNode,
+    onPress: () => void;
+}
 
+export function getLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
     return [
         {
             id: "map",
-            availableFor: [Services.PRONOTE],
+            availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Utiliser ma position",
             icon: <Papicons.MapPin />,
             onPress: async () => {
-                redirect('./location');
+                redirect({ pathname: './map' });
             }
         },
         {
             id: "search",
-            availableFor: [Services.PRONOTE],
+            availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Rechercher une ville",
             icon: <Papicons.Search />,
             onPress: () => {
-                console.log("search pressed")
+                redirect({ pathname: './search' })
             }
         },
         {
@@ -161,8 +220,48 @@ export function getLoginMethods(redirect: (path: string) => void) {
             description: "J'ai une URL de connexion",
             icon: <Papicons.Link />,
             onPress: () => {
-                redirect('./url');
+                redirect({ pathname: '../pronote/url' });
             }
+        }
+    ]
+}
+
+export interface SupportedRestaurant {
+    name: string;
+    title: string;
+    hasLimitedSupport: boolean;
+    image: any;
+    type: string;
+    onPress: () => void;
+}
+
+export function getSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
+    return [
+        {
+            name: "turboself",
+            title: "TurboSelf",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/turboself.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../turboself/credentials' });
+            }
+        },
+        {
+            name: "ard",
+            title: "ARD",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/ard.png"),
+            type: "main",
+            onPress: () => { }
+        },
+        {
+            name: "izly",
+            title: "Izly",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/izly.png"),
+            type: "main",
+            onPress: () => { }
         }
     ]
 }

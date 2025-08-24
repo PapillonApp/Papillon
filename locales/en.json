@@ -42,6 +42,15 @@
 
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
 
+  "Home_Welcome_Name": "Welcome back, {{name}}!",
+  "Home_Welcome": "Welcome back !",
+  "Home_Planned_None": "You have no classes scheduled today",
+  "Home_Planned_One": "You have one class left today",
+  "Home_Planned_Number": "You have {{number}} classes scheduled today",
+
+  "Home_Widget_NextCourses": "Upcoming classes",
+  "Home_Widget_NewGrades": "New grades",
+
   "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
 
@@ -96,6 +105,15 @@
   "Profile_Cards_Title": "Cards",
 
   "Modal_Grades_Title": "Grade Details",
+  "Grades_Details_Title": "Details",
+  "Grades_HighestGrade_Title": "Highest grade",
+  "Grades_HighestGrade_Description": "Highest score obtained in the group",
+  "Grades_LowestGrade_Title": "Lowest grade",
+  "Grades_LowestGrade_Description": "Lowest score obtained in the group",
+  "Grades_Influence_Title": "Influence",
+  "Grades_Avg_Group_Title": "Group average",
+  "Grades_Coefficient": "Coefficient",
+  "Grades_Avg_Group_Short": "Group avg.",
 
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",

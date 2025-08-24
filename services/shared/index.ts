@@ -148,20 +148,21 @@ export class AccountManager {
     );
   }
 
-  async getAttendanceForPeriod(period: string): Promise<Attendance> {
+  async getAttendanceForPeriod(period: string): Promise<Attendance[]> {
     return await this.fetchData(
       Capabilities.ATTENDANCE, async client => {
         if (!client.getAttendanceForPeriod) {
           throw new Error(
-            "getAllAttendanceForPeriod not implemented but the capability is set."
+            "getAttendanceForPeriod not implemented but the capability is set."
           );
         }
-        return await client.getAttendanceForPeriod(period);
+        const attendance = await client.getAttendanceForPeriod(period);
+        return Array.isArray(attendance) ? attendance : [attendance];
       },
       {
-        multiple: false,
-        fallback: async () => getAttendanceFromCache(period),
-        saveToCache: async (data: Attendance) => {
+        multiple: true,
+        fallback: async () => [await getAttendanceFromCache(period)],
+        saveToCache: async (data: Attendance[]) => {
           await addAttendanceToDatabase(data, period);
         }
       });
@@ -520,7 +521,22 @@ export class AccountManager {
   }
 }
 
+
 let globalManager: AccountManager | null = null;
+const managerListeners: Array<(manager: AccountManager) => void> = [];
+
+export const subscribeManagerUpdate = (listener: (manager: AccountManager) => void) => {
+  managerListeners.push(listener);
+  if (globalManager) listener(globalManager);
+  return () => {
+    const idx = managerListeners.indexOf(listener);
+    if (idx !== -1) managerListeners.splice(idx, 1);
+  };
+};
+
+const notifyManagerListeners = (manager: AccountManager) => {
+  managerListeners.forEach(listener => listener(manager));
+};
 
 export const initializeAccountManager = async (accountId?: string): Promise<AccountManager> => {
   if (!accountId) {
@@ -539,6 +555,7 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
   const manager = new AccountManager(account);
   await manager.refreshAllAccounts();
   globalManager = manager;
+  notifyManagerListeners(manager);
   return manager;
 };
 
@@ -546,6 +563,5 @@ export const getManager = (): AccountManager => {
   if (!globalManager) {
     warn("Account manager not initialized. Call initializeAccountManager first.");
   }
-
   return globalManager;
 };

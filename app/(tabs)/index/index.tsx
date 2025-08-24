@@ -1,10 +1,10 @@
 import { Redirect, useRouter } from "expo-router";
 import * as pronote from "pawnote";
-import { useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import UnderConstructionNotice from "@/components/UnderConstructionNotice";
-import { initializeAccountManager } from "@/services/shared";
+import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { ARD } from "@/services/ard";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
@@ -14,6 +14,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
+import { Colors } from "@/app/(onboarding)/end/color";
 import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -24,7 +25,7 @@ import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import { BellDotIcon, ChevronDown, Filter, ListFilter } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
-import { LinearTransition } from "react-native-reanimated";
+import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
@@ -35,128 +36,128 @@ import ModelManager from "@/utils/magic/ModelManager";
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { center } from "@shopify/react-native-skia";
+import { log } from "@/utils/logger/logger";
+
+import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
+import { getWeekNumberFromDate } from "@/database/useHomework";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectName } from "@/utils/subjects/name";
+import { getStatusText } from "../calendar";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { t } from "i18next";
+import { Grade, Period } from "@/services/shared/grade";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 export default function TabOneScreen() {
-  const [loading, setLoading] = useState(false);
-  const [ardLoading, setArdLoading] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const [courses, setCourses] = useState<SharedCourse[]>([]);
+  const [grades, setGrades] = useState<Grade[]>([]);
+
   const router = useRouter();
 
+  const Initialize = async () => {
+    await initializeAccountManager()
+    log("Refreshed Manager received")
+  };
+
+  useMemo(() => {
+    Initialize();
+  }, []);
+
+  const fetchEDT = useCallback(async () => {
+    const manager = getManager();
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    const currentWeekNumber = getWeekNumberFromDate(date)
+    const weeklyTimetable = await manager.getWeeklyTimetable(currentWeekNumber)
+    return setCourses(weeklyTimetable.find(day => day.date === date)?.courses ?? [])
+  }, []);
+
+  const fetchGrades = useCallback(async () => {
+    const manager = getManager();
+    const gradePeriods = await manager.getGradesPeriods()
+    const validPeriods: Period[] = []
+    const date = new Date().getTime()
+    for (const period of gradePeriods) {
+      console.log(period.start.getTime() > date && period.end.getTime() > date)
+      if (period.start.getTime() > date && period.end.getTime() > date) {
+        console.log("Pushing valid period", period.name)
+        validPeriods.push(period);
+      }
+    }
+
+    const grades: Grade[] = []
+
+    for (const period of validPeriods) {
+      const periodGrades = await manager.getGradesForPeriod(period, period.createdByAccount)
+      periodGrades.subjects.forEach(subject => {
+        subject.grades.forEach(grade => {
+          grades.push(grade);
+        });
+      });
+    }
+
+    setGrades(grades)
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchEDT()
+      fetchGrades()
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const accounts = useAccountStore.getState().accounts;
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
   const theme = useTheme();
   const { colors } = theme;
 
-  const grades = Array.from({ length: 10 }, (_, i) => ({
-    title: `Subject ${i + 1}`,
-    value: Math.random() * 20,
-    date: new Date()
-  }));
+  const manager = getManager();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    function fetchData() {
+      if (!manager) {
+        return;
+      }
+
+      const result = manager.getAccount();
+      setAccount(result);
+    }
+    fetchData();
+  }, [manager]);
+
+  const [firstName, lastName, level, establishment] = useMemo(() => {
+    if (!account) return [null, null, null, null];
+
+    let firstName = account.firstName;
+    let lastName = account.lastName;
+    let level = account.className;
+    let establishment = account.schoolName;
+
+    return [firstName, lastName, level, establishment];
+  }, [account]);
 
   const date = useMemo(() => new Date(), []);
   const accent = "#009EC5";
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
   const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
 
-  const generateUUID = () => {
-    // Generate a random UUID (version 4)
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  }
+  const headerHeight = useHeaderHeight();
 
-  const InitManager = async () => {
-    getSubjectEmoji("français")
-  }
+  const [fullyScrolled, setFullyScrolled] = useState(false);
 
-  const loginDemoAccount = async () => {
-    try {
-      setLoading(true);
-      const accounts = useAccountStore.getState().accounts;
-      for (const account of accounts) {
-        useAccountStore.getState().removeAccount(account)
-      }
-      const uuid = generateUUID();
-
-      const session = pronote.createSessionHandle();
-      const auth = await pronote.loginCredentials(session, {
-        url: "https://pronote.papillon.bzh/",
-        deviceUUID: uuid,
-        kind: pronote.AccountKind.STUDENT,
-        username: "demonstration",
-        password: "E2hgDv918W33",
-      });
-      console.log("First logged in successfully:", auth);
-      useAccountStore.getState().setLastUsedAccount(uuid);
-      useAccountStore.getState().addAccount({
-        id: uuid,
-        firstName: "Demo",
-        lastName: "Unknown",
-        services: [{
-          id: uuid,
-          auth: {
-            accessToken: auth.token,
-            refreshToken: auth.token,
-            additionals: {
-              instanceURL: auth.url,
-              kind: auth.kind,
-              username: auth.username,
-              deviceUUID: uuid,
-            },
-          },
-          serviceId: Services.PRONOTE,
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
-        }],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
-      });
-      await initializeAccountManager();
-      Alert.alert("Success", "You are now logged in to the Papillon demo account!");
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.error("Failed to log in:", error);
-    }
-  };
-
-  const testArdConnection = async () => {
-    try {
-      setArdLoading(true);
-
-      const ard = new ARD("sus");
-
-      const credentials = {
-        additionals: {
-          username: "xxxx",
-          password: "xxxx",
-          schoolId: "xxxx",
-        }
-      };
-
-      console.log("Tentative de connexion ARD...");
-
-      await ard.refreshAccount(credentials);
-      console.log("Connexion ARD réussie !");
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
-      const balances = await ard.getCanteenBalances();
-      console.log("Soldes ARD:", balances);
-
-      Alert.alert(
-        "ARD Réussi",
-        `\nSoldes trouvés: ${balances.length}`
-      );
-
-      setArdLoading(false);
-    } catch (error) {
-      setArdLoading(false);
-      console.error("Erreur ARD:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      Alert.alert("Erreur ARD", `Échec de la connexion: ${errorMessage}`);
-    }
-  };
+  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
+    setFullyScrolled(isFullyScrolled);
+  }, []);
 
   const headerItems = [
     (
@@ -170,11 +171,15 @@ export default function TabOneScreen() {
         <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
           👋
         </Typography>
-        <Typography variant="h3" color={foreground}>
-          Bonjour, Lucas !
-        </Typography>
+        <Dynamic animated key={"welcome:" + firstName}>
+          <Typography variant="h3" color={foreground}>
+            {firstName ? t("Home_Welcome_Name", { name: firstName }) : t("Home_Welcome")}
+          </Typography>
+        </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
-          Tu n'as aucun cours de prévu aujourd'hui
+          {courses.length == 0 ? t("Home_Planned_None")
+            : courses.length == 1 ? t("Home_Planned_One")
+              : t("Home_Planned_Number", { number: courses.length })}
         </Typography>
       </Stack>
     ),
@@ -188,9 +193,35 @@ export default function TabOneScreen() {
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
       />
 
+      {!runsIOS26() && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
+        />
+      )}
+
       <TabFlatList
         translucent
         backgroundColor="transparent"
+        onFullyScrolled={handleFullyScrolled}
         height={160}
         header={
           <>
@@ -199,6 +230,7 @@ export default function TabOneScreen() {
                 backgroundColor: "transparent",
                 borderRadius: 26,
                 borderCurve: "continuous",
+                marginTop: 16
               }}
               horizontal
               data={headerItems}
@@ -257,49 +289,34 @@ export default function TabOneScreen() {
         }
         gap={12}
         data={[
-          {
-            icon: <Papicons.Butterfly />,
-            title: "Login to demo account",
-            onPress: () => loginDemoAccount(),
-            buttonLabel: "Se connecter",
-            dev: true
-          },
-          {
+          courses.length > 0 && {
             icon: <Papicons.Calendar />,
-            title: "Prochains cours",
+            title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                <Course
-                  id="id1"
-                  name="Traitement des données"
-                  teacher="Baptive V."
-                  room="Bât. 12 amphi 4"
-                  color="#0095D6"
-                  status={{ label: "Travail dirigé", canceled: false }}
-                  variant="primary"
-                  start={1750126049}
-                  end={1750129649}
-                  compact
-                />
-                <Course
-                  id="id1"
-                  name="Traitement des données"
-                  teacher="Baptive V."
-                  room="Bât. 12 amphi 4"
-                  color="#0095D6"
-                  status={{ label: "Travail dirigé", canceled: false }}
-                  variant="primary"
-                  start={1750126049}
-                  end={1750129649}
-                  compact
-                />
+                {courses.map(item => (
+                  <Course
+                    id={item.id}
+                    name={item.subject}
+                    teacher={item.teacher}
+                    room={item.room}
+                    color={getSubjectColor(item.subject)}
+                    status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+                    variant="primary"
+                    start={Math.floor(item.from.getTime() / 1000)}
+                    end={Math.floor(item.to.getTime() / 1000)}
+                    readonly={!!item.createdByAccount}
+                    onPress={() => {
+                    }}
+                  />
+                ))}
               </Stack>
             )
           },
-          {
+          grades.length > 0 && {
             icon: <Papicons.Grades />,
-            title: "Nouvelles notes",
+            title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
               <FlatList
@@ -318,15 +335,18 @@ export default function TabOneScreen() {
                   gap: 12
                 }}
                 data={grades}
+                keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <CompactGrade
-                    title={item.title}
-                    score={item.value}
-                    outOf={20}
-                    emoji="💥"
-                    disabled={false}
-                    color="#29947A"
-                    date={item.date}
+                    title={item.subjectName}
+                    score={item.studentScore?.value ?? 0}
+                    description={item.description}
+                    outOf={item.outOf.value}
+                    emoji={getSubjectEmoji(item.subjectName)}
+                    disabled={item.studentScore?.disabled}
+                    status={item.studentScore?.status}
+                    color={getSubjectColor(item.subjectName)}
+                    date={item.givenAt}
                   />
                 )}
               />
@@ -337,56 +357,69 @@ export default function TabOneScreen() {
             title: "Onboarding",
             redirect: "/(onboarding)/welcome",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
+          },
+          {
+            icon: <Papicons.Palette />,
+            title: "Onboarding Color",
+            redirect: "/(onboarding)/end/color",
+            buttonLabel: "Aller",
+            dev: false
           },
           {
             icon: <Papicons.Butterfly />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
           },
           {
             icon: <Papicons.Butterfly />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
-            dev: true
+            dev: false
           },
         ]}
         renderItem={({ item }) => {
-          if (item.dev && !__DEV__) {
+          if (!item || (item.dev && !__DEV__)) {
             return null;
           }
 
           return (
-            <Stack card radius={26}>
-              <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
-                <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                  {item.icon}
-                </Icon>
-                <Typography numberOfLines={1} style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
-                  {item.title}
-                </Typography>
-                {(item.redirect || item.onPress) && (
-                  <AnimatedPressable
-                    onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
-                  >
-                    <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                      <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
-                        {item.buttonLabel ?? "Afficher plus"}
-                      </Typography>
-                      <Icon size={20} papicon opacity={0.5}>
-                        <Papicons.ArrowRightUp />
-                      </Icon>
-                    </Stack>
-                  </AnimatedPressable>
+            <Reanimated.View
+              entering={PapillonAppearIn}
+              exiting={PapillonAppearOut}
+              layout={Animation(LinearTransition, "list")}
+            >
+              <Stack card radius={26}>
+                <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                  <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                    {item.icon}
+                  </Icon>
+                  <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                    {item.title}
+                  </Typography>
+                  {(item.redirect || item.onPress) && (
+                    <AnimatedPressable
+                      onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                    >
+                      <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                        <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
+                          {item.buttonLabel ?? "Afficher plus"}
+                        </Typography>
+                        <Icon size={20} papicon opacity={0.5}>
+                          <Papicons.ArrowRightUp />
+                        </Icon>
+                      </Stack>
+                    </AnimatedPressable>
+                  )}
+                </Stack>
+                {item.render && (
+                  <item.render />
                 )}
               </Stack>
-              {item.render && (
-                <item.render />
-              )}
-            </Stack>
+            </Reanimated.View>
           )
         }}
       />
@@ -421,9 +454,6 @@ export default function TabOneScreen() {
                 {date.toLocaleDateString("fr-FR", { month: "long" })}
               </Typography>
             </Dynamic>
-          </Dynamic>
-          <Dynamic animated>
-            <ChevronDown color={colors.text} opacity={0.7} />
           </Dynamic>
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>

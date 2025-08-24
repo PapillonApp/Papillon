@@ -68,6 +68,7 @@ function mapSubjectGrades(grades: GradesOverview, accountId: string): Subject[] 
   const allMappedGrades: Grade[] = grades.grades.map(g => ({
     id: g.id,
     subjectId: g.subject.id,
+    subjectName: g.subject.name,
     description: g.comment,
     givenAt: g.date,
     subjectFile: g.subjectFile ? {

@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
+import AnimatedPressable from "./AnimatedPressable";
 
 interface CompactGradeProps {
   emoji: string;
@@ -11,6 +12,7 @@ interface CompactGradeProps {
   outOf: number;
   date: Date;
   disabled?: boolean;
+  status?: string;
   onPress?: () => void,
   color?: string;
 }
@@ -23,13 +25,14 @@ export const CompactGrade = ({
   outOf,
   date,
   disabled,
+  status,
   onPress,
   color = "#888888"
 }: CompactGradeProps) => {
   const { colors } = useTheme();
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
       style={{
         width: 220,
@@ -59,12 +62,12 @@ export const CompactGrade = ({
           {emoji}
         </Text>
         {title &&
-          <Typography variant="body1" color={color} style={{ flex: 1 }} numberOfLines={1} weight="semibold">
+          <Typography variant="body1" color={color} style={{ flex: 1 }} nowrap weight="semibold">
             {title}
           </Typography>
         }
         {date &&
-          <Typography variant="body1" color={color} numberOfLines={1}>
+          <Typography variant="body1" color={color} nowrap>
             {date.toLocaleDateString("fr-FR", {
               day: "2-digit",
               month: "short",
@@ -101,13 +104,13 @@ export const CompactGrade = ({
           backgroundColor: color + "33",
         }}>
           <Typography variant="h4" color={color}>
-            {disabled ? "N/A" : (score ?? 0).toFixed(2)}
+            {disabled ? status : (score ?? 0).toFixed(2)}
           </Typography>
           <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
             / {outOf ?? 20}
           </Typography>
         </View>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 };
