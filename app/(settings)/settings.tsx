@@ -3,10 +3,10 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Platform, Pressable, View } from "react-native";
 
 import * as Papicons from '@getpapillon/papicons';
 
@@ -17,11 +17,47 @@ import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
+import { useAccountStore } from "@/stores/account";
+import { getManager } from "@/services/shared";
+import { ro } from "date-fns/locale";
 
 const SettingsIndex = () => {
   const router = useRouter();
   const theme = useTheme();
   const { colors } = theme;
+
+  const manager = getManager();
+  const accountStore = useAccountStore();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    function fetchData() {
+      if (!manager) {
+        return;
+      }
+
+      const result = manager.getAccount();
+      setAccount(result);
+    }
+    fetchData();
+  }, [manager]);
+
+  const [firstName, lastName, level, establishment] = useMemo(() => {
+    if (!account) return [null, null, null, null];
+
+    let firstName = account.firstName;
+    let lastName = account.lastName;
+    let level = account.className;
+    let establishment = account.schoolName;
+
+    return [firstName, lastName, level, establishment];
+  }, [account]);
+
+  const logout = useCallback(() => {
+    console.log(account)
+    // accountStore.removeAccount(account);
+    // router.replace('./(onboarding)');
+  }, [account, accountStore, router]);
 
   const MoreSettingsList = [
     {
@@ -48,6 +84,37 @@ const SettingsIndex = () => {
           papicon: <Papicons.Info />,
           color: "#797979",
         }
+      ]
+    },
+    {
+      title: t('Settings_About'),
+      content: [
+        {
+          title: t('Settings_Logout_Title'),
+          description: t('Settings_Logout_Description'),
+          papicon: <Papicons.ArrowDown />,
+          color: "#a80000",
+          onPress: () => {
+            Alert.alert(
+              t('Settings_Logout_Title'),
+              t('Settings_Logout_Description'),
+              [
+                {
+                  text: t('Cancel'),
+                  style: 'cancel',
+                },
+                {
+                  text: t('Settings_Logout_Title'),
+                  style: 'destructive',
+                  onPress: () => {
+                    logout();
+                  },
+                },
+              ],
+              { cancelable: true }
+            );
+          }
+        },
       ]
     }
   ]
@@ -132,20 +199,26 @@ const SettingsIndex = () => {
                   />
                 </Leading>
                 <Typography variant="title">
-                  {t("Settings_Account_Title")}
+                  {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
                 </Typography>
-                <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                    <Typography variant={"body1"} color="secondary">
-                      T6
-                    </Typography>
+                {(level || establishment) &&
+                  <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
+                    {level &&
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                        <Typography variant={"body1"} color="secondary">
+                          {level}
+                        </Typography>
+                      </Stack>
+                    }
+                    {establishment &&
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                        <Typography variant={"body1"} color="secondary">
+                          {establishment}
+                        </Typography>
+                      </Stack>
+                    }
                   </Stack>
-                  <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                    <Typography variant={"body1"} color="secondary">
-                      Université Paris 8
-                    </Typography>
-                  </Stack>
-                </Stack>
+                }
               </Item>
             </List>
             <RenderBigButtons
