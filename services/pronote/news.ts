@@ -29,6 +29,7 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
       content: item.content,
       author: item.author,
       category: item.category.name,
+      ref: item,
       createdByAccount: accountId,
     });
   }
