@@ -221,7 +221,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return finalStyle;
     }, [colors, variant, color, align, style, cacheKey]);
 
-    return <Text {...rest} style={computedStyle} numberOfLines={nowrap ? 1 : undefined} />;
+    return <Text {...rest} style={computedStyle} numberOfLines={nowrap ? 1 : rest.numberOfLines} />;
   },
   // Custom comparison for even better performance
   (prevProps, nextProps) => {
