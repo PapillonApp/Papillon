@@ -103,6 +103,16 @@ export interface SupportedUniversity {
 export function getSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
     return [
         {
+            name: "univ-rennes-1",
+            title: "Université de Rennes 1",
+            hasLimitedSupport: true,
+            image: require("@/assets/images/univ_rennes1.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: './rennes1' });
+            }
+        },
+        {
             name: "univ-lorraine",
             title: "Université de Lorraine",
             hasLimitedSupport: false,
@@ -127,27 +137,11 @@ export function getSupportedUniversities(redirect: (path: { pathname: string }) 
             onPress: () => { }
         },
         {
-            name: "iut-lannion",
-            title: "IUT de Lannion",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_lannion.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
             name: "limited-functions",
             title: "Fonctionnalités limitées",
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_lannion.png"),
             type: "separator",
-            onPress: () => { }
-        },
-        {
-            name: "univ-rennes-1",
-            title: "Université de Rennes 1",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_rennes1.png"),
-            type: "main",
             onPress: () => { }
         },
         {

@@ -517,6 +517,12 @@ export class AccountManager {
       return new module.ARD(service.id);
     }
 
+    if (service.serviceId === Services.RENNES1) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/rennes1/index");
+      return new module.Rennes1(service.id);
+    }
+
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }

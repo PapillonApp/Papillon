@@ -26,6 +26,7 @@ import { Client as ArdClient } from "pawrd";
 import { TurboSelf } from "../turboself";
 import { ARD } from "../ard";
 import { Balance } from "./balance";
+import { Rennes1 } from "../rennes1";
 
 /** Represents a plugin for a school service.
  *
@@ -48,7 +49,7 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Rennes1>;
   getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
