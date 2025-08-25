@@ -21,7 +21,6 @@ export default function NewsPage() {
         <NewsItem
           key={item.id}
           news={item}
-          important={index === 0}
         />
       ))}
     </ScrollView>
