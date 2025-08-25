@@ -1,4 +1,4 @@
-import { fetch } from "react-native-real-fetch";
+import { fetch } from "@/utils/fetch/fetch";
 
 class UnivRennes1 {
     private apiUrl: string;
@@ -50,6 +50,8 @@ class UnivRennes1 {
                 body: formDataString,
                 redirect: 'manual'
             });
+
+            console.log(loginResponse)
 
             // Check if login was successful (should get a 302 redirect)
             if (loginResponse.status !== 302) {
