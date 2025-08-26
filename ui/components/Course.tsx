@@ -142,7 +142,7 @@ const Course = React.memo(({
             shadowRadius: 2.5,
             elevation: 4
           }]}>
-          {(status?.canceled) && variant !== "separator" && (
+          {(status?.canceled) && (
             <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
               <Icon papicon size={20} fill={"#DC1400"}>
                 <Papicons.Ghost />
@@ -152,7 +152,7 @@ const Course = React.memo(({
               </Typography>
             </Stack>
           )}
-          {(magicInfo?.label) && variant !== "separator" && (
+          {(magicInfo?.label) && (
             <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
               {magicInfo.icon && <magicInfo.icon color={color} />}
               <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]} nowrap>
@@ -200,6 +200,32 @@ const Course = React.memo(({
                   {name}
                 </Typography>
               </Stack>
+              {variant !== "separator" && (
+                <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
+                    <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
+                      <Papicons.MapPin />
+                    </Icon>
+                    <Typography nowrap color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {room || t("No_Course_Room")}
+                    </Typography>
+                  </View>
+                  <View
+                    style={[
+                      styles.separator,
+                      { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
+                    ]}
+                  />
+                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
+                    <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
+                      <Papicons.User />
+                    </Icon>
+                    <Typography nowrap color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {teacher}
+                    </Typography>
+                  </View>
+                </Stack>
+              )}
               {status && !status.canceled && variant !== "separator" && (
                 <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 6 : 0 }}>
                   {!!(status.label && status.label !== "") &&
