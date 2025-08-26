@@ -133,5 +133,7 @@
   "Settings_Donate_Title": "Donate",
   "Settings_Donate_Description": "Support the project",
   "Settings_About_Title": "About",
-  "Settings_About_Description": "version 8.0.0"
+  "Settings_About_Description": "version 8.0.0",
+  "Settings_Logout_Title": "Logout",
+  "Settings_Logout_Description": "Remove this account from Papillon"
 }
