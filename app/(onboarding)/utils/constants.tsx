@@ -212,7 +212,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             description: "J'ai un QR-Code",
             icon: <Papicons name={"QrCode"} />,
             onPress: () => {
-                console.log("qrcode pressed")
+                redirect({ pathname: "/(onboarding)/pronote/qrcode" });
             }
         },
         {

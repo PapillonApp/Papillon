@@ -167,7 +167,12 @@ export default function WebViewScreen() {
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
               });
-
+              return router.push({
+                pathname: "../end/color",
+                params: {
+                  accountId: deviceUUID
+                }
+              });
             } catch (error) {
               if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
                 router.push({
