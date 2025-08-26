@@ -5,7 +5,7 @@ import packageJson from "@/package.json";
 
 import { MAGIC_URL } from "../endpoints";
 import { log } from "../logger/logger";
-import { checkAndUpdateModel,getCurrentPtr } from "./updater";
+import { checkAndUpdateModel, getCurrentPtr } from "./updater";
 
 export type ModelPrediction = {
   scores: number[];
@@ -92,6 +92,62 @@ class ModelManager {
     return false;
   }
 
+  async reset(): Promise<void> {
+    log("[RESET] Démarrage du reset du modèle...");
+
+    try {
+      // 1. Nettoyer le modèle en mémoire
+      this.model = null;
+      this.labels = [];
+      this.wordIndex = {};
+      this.oovIndex = 1;
+      this.maxLen = 128;
+      log("[RESET] Modèle en mémoire nettoyé");
+
+      // 2. Supprimer le pointeur actuel
+      const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
+      const CURRENT_PTR = MODELS_ROOT + "current.json";
+
+      const ptrInfo = await FileSystem.getInfoAsync(CURRENT_PTR);
+      if (ptrInfo.exists) {
+        await FileSystem.deleteAsync(CURRENT_PTR, { idempotent: true });
+        log("[RESET] Pointeur actuel supprimé");
+      } else {
+        log("[RESET] Aucun pointeur actuel à supprimer");
+      }
+
+      // 3. Supprimer tout le dossier des modèles téléchargés
+      const modelsInfo = await FileSystem.getInfoAsync(MODELS_ROOT);
+      if (modelsInfo.exists) {
+        await FileSystem.deleteAsync(MODELS_ROOT, { idempotent: true });
+        log("[RESET] Dossier des modèles supprimé");
+      } else {
+        log("[RESET] Aucun dossier de modèles à supprimer");
+      }
+
+      log("[RESET] Reset terminé avec succès ✅");
+    } catch (error) {
+      log(`[RESET ERROR] ${String(error)}`);
+      throw error;
+    }
+  }
+
+  getStatus(): {
+    hasModel: boolean;
+    maxLen: number;
+    labelsCount: number;
+    wordIndexSize: number;
+    oovIndex: number;
+  } {
+    return {
+      hasModel: this.model !== null,
+      maxLen: this.maxLen,
+      labelsCount: this.labels.length,
+      wordIndexSize: Object.keys(this.wordIndex).length,
+      oovIndex: this.oovIndex,
+    };
+  }
+
   private async tryLoadFromActivePtr(): Promise<string | null> {
     const ptr = await getCurrentPtr();
     if (!ptr) {
@@ -120,7 +176,9 @@ class ModelManager {
       this.model = await loadTensorflowModel({ url: modelUri });
 
       const shape = this.model?.inputs?.[0]?.shape;
-      if (shape && shape[1]) {this.maxLen = shape[1];}
+      if (shape && shape[1]) {
+        this.maxLen = shape[1];
+      }
 
       const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -130,7 +188,9 @@ class ModelManager {
       const wordCounts = JSON.parse(config.word_counts);
       const wordIndex: Record<string, number> = {};
       let index = 1;
-      for (const w of Object.keys(wordCounts)) {wordIndex[w] = index++;}
+      for (const w of Object.keys(wordCounts)) {
+        wordIndex[w] = index++;
+      }
       this.wordIndex = wordIndex;
       this.oovIndex = wordIndex[config.oov_token] ?? 1;
 

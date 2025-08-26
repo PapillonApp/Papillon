@@ -388,6 +388,30 @@ export default function TabOneScreen() {
             buttonLabel: "Aller",
             dev: false
           },
+          {
+            icon: <Papicons.Cross />,
+            title: "Reset le Model",
+            onPress: async () => {
+              try {
+                await ModelManager.reset();
+                log("[UI] Model reset terminé avec succès");
+              } catch (error) {
+                log(`[UI] Erreur lors du reset du model: ${String(error)}`);
+              }
+            },
+            buttonLabel: "Reset",
+            dev: false
+          },
+          {
+            icon: <Papicons.Info />,
+            title: "Status du Model",
+            onPress: () => {
+              const status = ModelManager.getStatus();
+              log(`[UI] Status du modèle: ${JSON.stringify(status, null, 2)}`);
+            },
+            buttonLabel: "Status",
+            dev: false
+          },
         ]}
         renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {

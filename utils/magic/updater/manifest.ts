@@ -1,5 +1,5 @@
 import { fetchJsonWithRetry } from "./network";
-import { cmp,satisfiesAll } from "./semver";
+import { cmp, satisfiesAll } from "./semver";
 import { ApiModel } from "./types";
 
 export async function fetchManifest(
