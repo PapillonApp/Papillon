@@ -27,6 +27,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 import * as Papicons from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
+import { getDateWeek } from "@/utils/week";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -55,8 +56,11 @@ export default function TabOneScreen() {
   const alert = useAlert()
   const windowDimensions = useWindowDimensions();
 
+  const currentDate = new Date();
+  const weekNumber = getDateWeek(currentDate);
+
   const [fullyScrolled, setFullyScrolled] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState(53);
+  const [selectedWeek, setSelectedWeek] = useState(weekNumber);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const manager = getManager();

@@ -458,6 +458,7 @@ export default function TabOneScreen() {
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>
 
+      {/*
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
@@ -470,6 +471,7 @@ export default function TabOneScreen() {
           <Plus color={colors.text} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
+      */}
 
       {/* Optimized FlatList for horizontal day swiping */}
       <FlatList
