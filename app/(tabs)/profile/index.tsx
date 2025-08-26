@@ -1,4 +1,4 @@
-import { Papicons } from '@getpapillon/papicons';
+import { Chair, Papicons, TextBubble } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
@@ -43,7 +43,7 @@ function Tabs() {
 
   const enabledTabs = useMemo(() => [
     {
-      icon: <Papicons name={"Chair"}/> ,
+      icon: Chair,
       title: t("Profile_Attendance_Title"),
       unread: attendances.reduce((count, attendance) => count + attendance.absences.filter(absence => !absence.justified).length, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),
@@ -61,7 +61,7 @@ function Tabs() {
       }
     },
     {
-      icon: <Papicons name={"TextBubble"}/>,
+      icon: TextBubble,
       title: t("Profile_Discussions_Title"),
       unread: discussion.length,
       denominator: t("Profile_Discussions_Denominator_Single"),
@@ -197,7 +197,16 @@ function NewsSection() {
                 }
               })
             }}>
-              <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
+              <Stack
+                direction="horizontal"
+                vAlign="center"
+                hAlign="center"
+                inline
+                padding={[12, 6]}
+                radius={100}
+                height={32}
+                backgroundColor={adjust("#7DBB00", -0.05)}
+              >
                 <Typography style={{ marginBottom: -3 }} inline color="secondary">
                   {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
