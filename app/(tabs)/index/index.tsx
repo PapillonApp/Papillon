@@ -30,6 +30,8 @@ import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
+import { checkAndUpdateModel } from "@/utils/magic/updater";
+import ModelManager from "@/utils/magic/ModelManager";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
@@ -215,6 +217,7 @@ export default function TabOneScreen() {
           ]}
         />
       )}
+
 
       <TabFlatList
         translucent={true}
@@ -444,6 +447,7 @@ export default function TabOneScreen() {
         }}
         paddingTop={0}
       />
+
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
