@@ -51,8 +51,6 @@ const GradesModal: React.FC<GradesModalProps> = () => {
   const startTime = Math.floor(course.from.getTime() / 1000);
   const endTime = Math.floor(course.to.getTime() / 1000);
 
-  console.log(item);
-
   return (
     <>
       <LinearGradient

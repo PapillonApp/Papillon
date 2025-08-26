@@ -306,6 +306,15 @@ export default function TabOneScreen() {
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
                     onPress={() => {
+                      navigation.navigate('(modals)/course', {
+                        course: item,
+                        subjectInfo: {
+                          id: item.subjectId,
+                          name: item.subject,
+                          color: getSubjectColor(item.subject),
+                          emoji: getSubjectEmoji(item.subject),
+                        }
+                      });
                     }}
                   />
                 ))}
