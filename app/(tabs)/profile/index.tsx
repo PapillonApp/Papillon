@@ -51,7 +51,7 @@ function Tabs() {
       color: "#C50066",
       onPress: () => {
         router.push({
-          pathname: "/(tabs)/profile/attendance",
+          pathname: "/(features)/attendance",
           params: {
             periods: JSON.stringify(attendancePeriods),
             currentPeriod: JSON.stringify(getCurrentPeriod(attendancePeriods)),

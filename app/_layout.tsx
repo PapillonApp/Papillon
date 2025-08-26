@@ -192,6 +192,17 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerLargeTitle: true,
                 }}
               />
+
+              <Stack.Screen
+                name="(features)/attendance"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_Attendance"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: true,
+                  presentation: "modal"
+                }}
+              />
             </Stack>
           </AlertProvider>
         </ThemeProvider>
