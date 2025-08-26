@@ -137,7 +137,7 @@ export default function TabOneScreen() {
   }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
-  const bottomHeight = useBottomTabBarHeight();
+  const bottomHeight = 0;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
@@ -483,31 +483,37 @@ export default function TabOneScreen() {
       */}
 
       {/* Optimized FlatList for horizontal day swiping */}
-      <FlatList
-        ref={flatListRef as any}
-        data={Array.from({ length: 20001 })} // Large number for virtualized days
-        horizontal
-        pagingEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={INITIAL_INDEX}
-        getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
-        renderItem={renderDay}
-        keyExtractor={(_, index) => String(index)}
-        onScroll={onScroll}
-        decelerationRate={0.9}
-        disableIntervalMomentum={true}
-        scrollEventThrottle={16}
-        onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ width: "100%", height: "100%" }}
-        snapToInterval={windowWidth}
-        bounces={false}
-        windowSize={3}
-        maxToRenderPerBatch={2}
-        initialNumToRender={1}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews
-        extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
-      />
+      <View
+        style={{
+          backgroundColor: colors.background,
+          height: Dimensions.get("window").height,
+        }}
+      >
+        <FlatList
+          ref={flatListRef as any}
+          data={Array.from({ length: 20001 })} // Large number for virtualized days
+          horizontal
+          pagingEnabled={false}
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={INITIAL_INDEX}
+          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+          renderItem={renderDay}
+          keyExtractor={(_, index) => String(index)}
+          onScroll={onScroll}
+          decelerationRate={0.9}
+          disableIntervalMomentum={true}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          snapToInterval={windowWidth}
+          bounces={false}
+          windowSize={3}
+          maxToRenderPerBatch={2}
+          initialNumToRender={1}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews
+          extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
+        />
+      </View>
     </>
   );
 }
