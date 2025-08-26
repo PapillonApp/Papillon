@@ -18,6 +18,7 @@ const patterns = {
   dots: require('@/assets/images/patterns/dots.png'),
   checks: require('@/assets/images/patterns/checks.png'),
   grades: require('@/assets/images/patterns/grades.png'),
+  cross: require('@/assets/images/patterns/cross.png'),
 };
 
 interface TabFlatListProps extends FlatListProps<any> {
