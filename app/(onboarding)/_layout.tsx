@@ -73,6 +73,10 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="pronote/qrcode"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
                     name="pronote/2FA"
                     options={{ ...newScreenOptions }}
                     initialParams={{ error: {}, session: {}, device: "" }}
