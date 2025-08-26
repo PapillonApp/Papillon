@@ -109,11 +109,17 @@ export default function RootLayout() {
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
-  const store = useAccountStore.getState()
-  const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
+  const store = useAccountStore.getState();
+  const selectedColor = store.getAccountSelectedColor(store.lastUsedAccount);
 
-  const selectedColor = lastUsedAccount?.selectedColor;
-  const color = selectedColor ? AppColors[selectedColor] : null;
+  useEffect(() => {
+    console.log("Selected color:", selectedColor);
+  }, [store, selectedColor]);
+
+  const color = useMemo(() => {
+    const color = selectedColor != null ? AppColors[selectedColor] : null;
+    return color;
+  }, [selectedColor]);
 
   useEffect(() => {
     ModelManager.safeInit();
