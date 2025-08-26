@@ -145,7 +145,7 @@ export default function TabOneScreen() {
   }, [account]);
 
   const date = useMemo(() => new Date(), []);
-  const accent = "#009EC5";
+  const accent = colors.primary;
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
   const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
 
