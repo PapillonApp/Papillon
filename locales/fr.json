@@ -59,6 +59,16 @@
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
 
+  "Modal_Course_Title": "Mon cours",
+  "Modal_Course_StartsIn": "Commence dans",
+  "Modal_Course_Group": "Groupe",
+  "Modal_Course_Group_Full": "Classe",
+
+  "Modal_Course_Details": "Détails du cours",
+  "Modal_Course_Teacher": "Enseignant",
+  "Modal_Course_Room": "Salle",
+  "Modal_Course_Duration": "Durée",
+
   "Tasks_LeftHomeworks_Title": "tâches restantes",
   "Tasks_LeftHomeworks_Time": "cette semaine",
   "Tasks_Done_AllTasks": "Toutes les tâches",
@@ -114,6 +124,7 @@
   "Profile_Cards_Title": "Mes cartes",
 
   "Modal_Grades_Title": "Détail de la note",
+
   "Grades_Details_Title": "Détails",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",

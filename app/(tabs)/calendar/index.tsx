@@ -2,7 +2,7 @@ import { LegendList } from "@legendapp/list";
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
-import { Router, useRouter } from "expo-router";
+import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
 import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
@@ -28,6 +28,7 @@ import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shar
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -59,6 +60,8 @@ export default function TabOneScreen() {
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
+
+  const navigation = useNavigation();
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [week, setWeek] = useState<CourseDay[]>([]);
@@ -344,6 +347,15 @@ export default function TabOneScreen() {
                 end={Math.floor(item.to.getTime() / 1000)}
                 readonly={!!item.createdByAccount}
                 onPress={() => {
+                  navigation.navigate('(modals)/course', {
+                    course: item,
+                    subjectInfo: {
+                      id: item.subjectId,
+                      name: item.subject,
+                      color: getSubjectColor(item.subject),
+                      emoji: getSubjectEmoji(item.subject),
+                    }
+                  });
                 }}
               />
             )

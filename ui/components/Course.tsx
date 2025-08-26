@@ -17,6 +17,7 @@ import Stack from "./Stack";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
+import AnimatedPressable from "./AnimatedPressable";
 
 type Variant = 'primary' | 'separator';
 
@@ -39,6 +40,7 @@ interface CourseProps {
   containerStyle?: StyleProp<ViewStyle>;
   leading?: LucideIcon;
   showTimes?: boolean;
+  timesRendered?: boolean;
   magicInfo?: {
     label: string;
     icon: React.FC<{ color?: string }>;
@@ -59,6 +61,7 @@ const Course = React.memo(({
   readonly = false,
   leading: Leading,
   showTimes = true,
+  timesRendered = true,
   magicInfo,
   onPress,
   containerStyle,
@@ -76,20 +79,22 @@ const Course = React.memo(({
 
   return (
     <Stack direction="horizontal" gap={12} style={{ width: "100%", marginBottom: 6 }}>
-      <Stack style={{ width: 60, alignSelf: "center", paddingRight: 2, opacity: showTimes ? 1 : 0 }} hAlign="center" vAlign="center" gap={3}>
-        <Typography nowrap variant="h5" align="center" style={{ lineHeight: 20, width: 60 }}>
-          {fStart.toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Typography>
-        <Typography nowrap variant="body2" color="secondary" align="center" style={{ width: 60 }}>
-          {fEnd.toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Typography>
-      </Stack>
+      {timesRendered &&
+        <Stack style={{ width: 60, alignSelf: "center", paddingRight: 2, opacity: showTimes ? 1 : 0 }} hAlign="center" vAlign="center" gap={3}>
+          <Typography nowrap variant="h5" align="center" style={{ lineHeight: 20, width: 60 }}>
+            {fStart.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Typography>
+          <Typography nowrap variant="body2" color="secondary" align="center" style={{ width: 60 }}>
+            {fEnd.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Typography>
+        </Stack>
+      }
       {variant === "separator" ? (
         <Stack
           card
@@ -125,7 +130,7 @@ const Course = React.memo(({
       ) : (
         <View style={[
           status?.canceled ? {
-            backgroundColor: adjust("#DC1400", theme.dark ? -0.8 : 0.8)
+            backgroundColor: adjust("#DC1400", theme.dark ? -0.7 : 0.8)
           } : {},
           magicInfo || variant === "separator" ? {
             borderWidth: 1,
@@ -144,10 +149,10 @@ const Course = React.memo(({
           }]}>
           {(status?.canceled) && (
             <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
-              <Icon papicon size={20} fill={"#DC1400"}>
+              <Icon papicon size={20} fill={adjust("#DC1400", theme.dark ? 0.4 : -0.2)}>
                 <Papicons.Ghost />
               </Icon>
-              <Typography nowrap color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
+              <Typography nowrap color={adjust("#DC1400", theme.dark ? 0.4 : -0.2)} variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
                 {status.label}
               </Typography>
             </Stack>
@@ -161,7 +166,7 @@ const Course = React.memo(({
             </Stack>
           )}
 
-          <Pressable style={{ flex: 1 }} onPress={() => {
+          <AnimatedPressable style={{ flex: 1 }} onPress={() => {
             if (onPress) {
               onPress();
             }
@@ -241,7 +246,7 @@ const Course = React.memo(({
                 </View>
               )}
             </Stack>
-          </Pressable>
+          </AnimatedPressable>
         </View>
       )}
     </Stack>
