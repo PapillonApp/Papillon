@@ -1,4 +1,4 @@
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useNavigation, useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -54,6 +54,7 @@ export default function TabOneScreen() {
   const [grades, setGrades] = useState<Grade[]>([]);
 
   const router = useRouter();
+  const navigation = useNavigation();
 
   const Initialize = async () => {
     await initializeAccountManager()
@@ -345,6 +346,18 @@ export default function TabOneScreen() {
                     status={item.studentScore?.status}
                     color={getSubjectColor(item.subjectName)}
                     date={item.givenAt}
+                    onPress={() => {
+                      navigation.navigate('(modals)/grade', {
+                        grade: item,
+                        subjectInfo: {
+                          id: item.subjectId,
+                          name: item.subjectName,
+                          emoji: getSubjectEmoji(item.subjectName),
+                          color: getSubjectColor(item.subjectName)
+                        },
+                        allGrades: grades
+                      });
+                    }}
                   />
                 )}
               />

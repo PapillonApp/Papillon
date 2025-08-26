@@ -16,6 +16,7 @@ import { AlertProvider } from '@/ui/components/AlertProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
+import { t } from 'i18next';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -137,10 +138,21 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="(settings)" options={{ headerShown: false }} />
+              <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+
+              <Stack.Screen
+                name="(modals)/grade"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Modal_Grades_Title"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: false,
+                }}
+              />
             </Stack>
           </AlertProvider>
         </ThemeProvider>

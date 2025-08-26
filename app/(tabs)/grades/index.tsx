@@ -466,7 +466,7 @@ export default function TabOneScreen() {
           status={item.studentScore?.status}
           date={item.givenAt}
           onPress={() => {
-            navigation.navigate('grade', {
+            navigation.navigate('(modals)/grade', {
               grade: item,
               subjectInfo: subjectInfo,
               allGrades: newSubjects.flatMap(subject => subject.grades)
