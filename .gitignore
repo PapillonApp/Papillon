@@ -40,5 +40,6 @@ ios/
 !ios/Papillon
 !ios/Papillon.xcodeproj/xcshareddata/xcschemes
 android/
+ios/Podfile
 
 bun.lock
