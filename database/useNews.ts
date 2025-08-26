@@ -1,4 +1,4 @@
-import { Model, Q } from "@nozbe/watermelondb";
+import { Model } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
@@ -34,28 +34,27 @@ export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
   for (const nw of news) {
     const id = generateId(nw.createdAt + nw.content + nw.author + nw.createdByAccount)
-    const existing = await db.get('news').query(
-      Q.where("newsId", id)
-    )
 
-    if (existing.length > 0) {continue;}
+    const data = await db.get('news').query().fetch();
 
-    await db.write(async () => {
-      await db.get('news').create((record: Model) => {
-        const news = record as News;
-        Object.assign(news, {
-          newsId: id,
-          title: nw.title ?? "",
-          createdAt: nw.createdAt.getTime(),
-          acknowledged: nw.acknowledged,
-          attachments: JSON.stringify(nw.attachments),
-          content: nw.content,
-          author: nw.author,
-          category: nw.category,
-					createdByAccount: nw.createdByAccount
+    if (data.filter(news => news.newsId === id).length === 0) {
+      await db.write(async () => {
+        await db.get('news').create((record: Model) => {
+          const news = record as News;
+          Object.assign(news, {
+            newsId: id,
+            title: nw.title ?? "",
+            createdAt: nw.createdAt.getTime(),
+            acknowledged: nw.acknowledged,
+            attachments: JSON.stringify(nw.attachments),
+            content: nw.content,
+            author: nw.author,
+            category: nw.category,
+            createdByAccount: nw.createdByAccount
+          })
         })
       })
-    })
+    }
   }
 }
 
