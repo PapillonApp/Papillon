@@ -17,7 +17,7 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
-import { useAccountStore } from '@/stores/account';
+import { useAccountStore, type Account } from '@/stores/account';
 import { AppColors } from './(onboarding)/end/color';
 import ModelManager from '@/utils/magic/ModelManager';
 
@@ -113,7 +113,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
 
   const selectedColor = lastUsedAccount?.selectedColor;
-  const color = AppColors[selectedColor];
+  const color = selectedColor ? AppColors[selectedColor] : null;
 
   useEffect(() => {
     ModelManager.safeInit();
@@ -126,10 +126,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       ...newScheme,
       colors: {
         ...newScheme.colors,
-        primary: color.mainColor ?? newScheme.colors.primary,
+        primary: color?.mainColor ?? newScheme.colors.primary,
       },
     };
-  }, [colorScheme]);
+  }, [colorScheme, color]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
