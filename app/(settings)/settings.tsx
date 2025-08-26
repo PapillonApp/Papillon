@@ -54,7 +54,7 @@ const SettingsIndex = () => {
   }, [account]);
 
   const logout = useCallback(() => {
-    console.log(account)
+    // console.log(account)
     // accountStore.removeAccount(account);
     // router.replace('./(onboarding)');
   }, [account, accountStore, router]);

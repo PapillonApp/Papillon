@@ -82,7 +82,6 @@ export default function TabOneScreen() {
     for (const period of gradePeriods) {
       console.log(period.start.getTime() > date && period.end.getTime() > date)
       if (period.start.getTime() > date && period.end.getTime() > date) {
-        console.log("Pushing valid period", period.name)
         validPeriods.push(period);
       }
     }

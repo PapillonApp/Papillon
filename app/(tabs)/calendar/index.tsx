@@ -336,7 +336,6 @@ export default function TabOneScreen() {
   const handleDateChange = useCallback((newDate: Date) => {
     setDate(newDate);
     const newWeekNumber = getWeekNumberFromDate(newDate);
-    console.log(newWeekNumber)
     if (newWeekNumber !== weekNumber) {
       setWeekNumber(newWeekNumber);
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
