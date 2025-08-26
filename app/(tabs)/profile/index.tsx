@@ -205,13 +205,13 @@ function NewsSection() {
                 padding={[12, 6]}
                 radius={100}
                 height={32}
-                backgroundColor={adjust("#7DBB00", -0.05)}
+                backgroundColor={"#7DBB0040"}
               >
-                <Typography style={{ marginBottom: -3 }} inline color="secondary">
+                <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00",  -0.3)}>
                   {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
-                <Icon papicon opacity={0.5} size={20}>
-                  <Papicons name={"ArrowRightUp"} />
+                <Icon papicon size={20} fill={adjust("#7DBB00",  -0.3)} >
+                  <Papicons name={"ArrowRightUp"}/>
                 </Icon>
               </Stack>
             </Pressable>
@@ -257,7 +257,7 @@ function Cards() {
       <Pressable onPress={() => {
         router.push("/(tabs)/profile/cards")
       }}>
-        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
           <Icon
             fill={colors.text}
             opacity={0.6}

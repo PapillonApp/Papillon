@@ -10,10 +10,13 @@ import { useLogStore } from '@/stores/logs';
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Typography from "@/ui/components/Typography";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
   const logsStore = useLogStore();
+  const settingStore = useSettingsStore(state => state.personalization)
+  const mutateProperty = useSettingsStore(state => state.mutateProperty)
 
   const { colors } = useTheme();
 
@@ -116,6 +119,22 @@ export default function Devmode() {
             <Typography variant="title">Charger plus</Typography>
           </Item>
         )}
+      </List>
+
+      <List>
+        <Item>
+          <Typography>
+            {settingStore.magicEnabled ? "true" : "false"}
+          </Typography>
+        </Item>
+        <Item
+          onPress={() => mutateProperty("personalization", { magicEnabled: !settingStore.magicEnabled })}
+        >
+          <Typography>
+            {settingStore.magicEnabled ? "Activer" : "Desactiver"} Papillon Magic+
+          </Typography>
+        </Item>
+
       </List>
     </ScrollView>
   );
