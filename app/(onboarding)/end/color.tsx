@@ -29,6 +29,11 @@ export default function ChooseColorScreen() {
 
   const local = useGlobalSearchParams()
 
+  const accountStore = useAccountStore.getState();
+  const lastUsedAccount = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount);
+
+  const accountId = local.accountId ? String(local.accountId) : lastUsedAccount?.id;
+
   const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
   const [color, setColor] = useState<Colors>(Colors.PINK)
 
@@ -95,8 +100,8 @@ export default function ChooseColorScreen() {
         <Button
           title="Terminer"
           onPress={async () => {
-            if (local.accountId) {
-              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), color)
+            if (accountId) {
+              useAccountStore.getState().setAccountSelectedColor(accountId, color)
               await initializeAccountManager()
               router.push("../../(tabs)" as any)
             }
