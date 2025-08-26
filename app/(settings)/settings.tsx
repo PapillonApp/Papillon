@@ -20,6 +20,7 @@ import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
 import { log } from "@/utils/logger/logger";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -69,6 +70,7 @@ const SettingsIndex = () => {
           papicon: <Papicons.Accessibility />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
+          onPress: () => console.log("sus")
         },
         {
           title: t('Settings_Donate_Title'),
@@ -76,6 +78,7 @@ const SettingsIndex = () => {
           papicon: <Papicons.Heart />,
           icon: <HeartIcon />,
           color: "#EFA400",
+          onPress: () => console.log("sus")
         },
         {
           title: t('Settings_About_Title'),
@@ -83,6 +86,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons.Info />,
           color: "#797979",
+          onPress: () => console.log("sus")
         }
       ]
     },
@@ -157,7 +161,7 @@ const SettingsIndex = () => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <Pressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
+                <AnimatedPressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
                   <Stack
                     flex
                     card
@@ -175,7 +179,7 @@ const SettingsIndex = () => {
                       <Typography inline variant="caption" color={newButtonColor}>{button.description}</Typography>
                     </Stack>
                   </Stack>
-                </Pressable>
+                </AnimatedPressable>
               )
             })}
           </Stack>
@@ -193,7 +197,9 @@ const SettingsIndex = () => {
             style={{ marginBottom: 16, gap: 4 }}
           >
             <List>
-              <Item>
+              <Item
+                onPress={() => router.replace("./services")}
+              >
                 <Leading>
                   <Image
                     source={require('@/assets/images/default_profile.jpg')}

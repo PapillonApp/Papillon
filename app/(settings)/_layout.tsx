@@ -38,6 +38,10 @@ export default function Layout() {
         name="services"
         options={{
           headerTitle: t("Settings_Services_Title"),
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTransparent: false,
+          headerBackVisible: true,
         }}
       />
     </Stack>
