@@ -1,6 +1,7 @@
-import { Colors } from "@/app/(onboarding)/end/color";
 import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs";
+
+import { Colors } from "@/app/(onboarding)/end/color";
 
 /**
  * Represents the storage structure for user accounts.
@@ -11,6 +12,7 @@ import { Skolengo } from "skolengojs";
 export interface AccountsStorage {
   lastUsedAccount: string;
   accounts : Account[]
+  getAccountSelectedColor: (accountId: string) => void;
   removeAccount: (account: Account) => void;
   addAccount: (account: Account) => void;
   setLastUsedAccount: (accountId: string) => void;

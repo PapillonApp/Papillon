@@ -17,8 +17,9 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
-import { useAccountStore } from '@/stores/account';
+import { useAccountStore, type Account } from '@/stores/account';
 import { AppColors } from './(onboarding)/end/color';
+import ModelManager from '@/utils/magic/ModelManager';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -74,6 +75,11 @@ const DEMO_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
 }
 
+const AI_SCREEN_OPTIONS = {
+  headerTitle: "AI",
+  headerShown: false,
+}
+
 export default function RootLayout() {
   const [loaded, error] = useFonts(FONT_CONFIG);
 
@@ -107,7 +113,11 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
 
   const selectedColor = lastUsedAccount?.selectedColor;
-  const color = AppColors[selectedColor];
+  const color = selectedColor ? AppColors[selectedColor] : null;
+
+  useEffect(() => {
+    ModelManager.safeInit();
+  }, []);
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
@@ -116,10 +126,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       ...newScheme,
       colors: {
         ...newScheme.colors,
-        primary: color.mainColor ?? newScheme.colors.primary,
+        primary: color?.mainColor ?? newScheme.colors.primary,
       },
     };
-  }, [colorScheme]);
+  }, [colorScheme, color]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
@@ -161,6 +171,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+              <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 

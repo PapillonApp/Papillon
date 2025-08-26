@@ -57,6 +57,13 @@ module.exports = {
       "expo-router",
       "expo-font",
       "expo-localization",
+      [
+        "react-native-fast-tflite",
+        {
+          enableCoreMLDelegate: true,
+          enableAndroidGpuLibraries: true,
+        },
+      ],
       "react-native-bottom-tabs",
       "expo-secure-store",
       [
