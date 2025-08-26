@@ -1,6 +1,7 @@
-import { Papicons } from '@getpapillon/papicons';
+import * as Papicons from '@getpapillon/papicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import { Authenticator } from 'pawrd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
 import Reanimated, {
@@ -11,7 +12,6 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { authenticateWithCredentials } from 'turboself-api'
 
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
@@ -22,9 +22,9 @@ import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 
-const INITIAL_HEIGHT = 570;
+const INITIAL_HEIGHT = 500;
 const COLLAPSED_HEIGHT = 270;
-const KEYBOARD_HEIGHT = 270;
+const KEYBOARD_HEIGHT = 250;
 const ANIMATION_DURATION = 100;
 const OPACITY_THRESHOLD = 400;
 
@@ -75,8 +75,9 @@ export default function TurboSelfLoginWithCredentials() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
 
-  const [username, setUsername] = useState<string>("")
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [siteId, setSiteId] = useState<string>("");
   const params = useLocalSearchParams();
   const action = String(params.action);
 
@@ -164,7 +165,7 @@ export default function TurboSelfLoginWithCredentials() {
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
             padding={32}
-            backgroundColor={'#E70026'}
+            backgroundColor={'#275F8A'}
             gap={20}
             style={staticStyles.stackContainer}
           >
@@ -173,7 +174,7 @@ export default function TurboSelfLoginWithCredentials() {
                 autoPlay
                 loop={false}
                 style={{ width: 230, height: 230 }}
-                source={require('@/assets/lotties/turboself.json')}
+                source={require('@/assets/lotties/ard.json')}
               />
             </Reanimated.View>
             <Stack
@@ -200,7 +201,7 @@ export default function TurboSelfLoginWithCredentials() {
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte TurboSelf
+                Connecte-toi à ton compte ARD
               </Typography>
             </Stack>
           </Stack>
@@ -221,7 +222,36 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons name={"User"} />
+                <Papicons.Link />
+              </Icon>
+              <TextInput
+                placeholder="Identifiant de ton établissement"
+                placeholderTextColor="#5B5B5B"
+                onChangeText={setSiteId}
+                value={siteId}
+                style={staticStyles.textInput}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="url"
+                keyboardType="email-address"
+              />
+            </Stack>
+          </Stack>
+          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
+            <Stack
+              flex
+              direction="horizontal"
+              vAlign="center"
+              hAlign="center"
+              style={staticStyles.inputContainer}
+            >
+              <Icon
+                papicon
+                size={24}
+                fill="#5B5B5B"
+                style={staticStyles.iconBackground}
+              >
+                <Papicons.User />
               </Icon>
               <TextInput
                 placeholder="Nom d'utilisateur"
@@ -250,7 +280,7 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons name={"Lock"} />
+                <Papicons.Lock />
               </Icon>
               <TextInput
                 placeholder="Mot de passe"
@@ -272,58 +302,47 @@ export default function TurboSelfLoginWithCredentials() {
             size='large'
             disableAnimation
             onPress={async () => {
-              const authentification = await authenticateWithCredentials(username, password, true, false)
-              const siblings = await authentification.getSiblings();
-              if (siblings.length === 0) {
-                const accountId = uuid()
-                const store = useAccountStore.getState()
-                const service = {
-                  id: accountId,
-                  auth: {
-                    additionals: {
-                      username,
-                      password,
-                      "hoteId": authentification.host?.id ?? "N/A"
-                    }
-                  },
-                  serviceId: Services.TURBOSELF,
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                }
-
-                if (action === "addService") {
-                  store.addServiceToAccount(store.lastUsedAccount, service)
-                  return router.dismissTo("/profile/cards")
-                }
-
-                store.addAccount({
-                  id: accountId,
-                  firstName: authentification.host?.firstName ?? "N/A",
-                  lastName: authentification.host?.lastName ?? "N/A",
-                  schoolName: authentification.establishment?.name,
-                  className: authentification.host?.division,
-                  services: [service],
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                })
-
-                store.setLastUsedAccount(accountId)
-                return router.push({
-                  pathname: "../end/color",
-                  params: {
-                    accountId
+              const authenticator = new Authenticator();
+              const authentification = await authenticator.fromCredentials(siteId, username, password)
+              const accountId = uuid()
+              const store = useAccountStore.getState()
+              const service = {
+                id: accountId,
+                auth: {
+                  additionals: {
+                    schoolId: siteId,
+                    password,
+                    username
                   }
-                });
+                },
+                serviceId: Services.ARD,
+                createdAt: (new Date()).toISOString(),
+                updatedAt: (new Date()).toISOString()
               }
 
+              if (action === "addService") {
+                store.addServiceToAccount(store.lastUsedAccount, service)
+                return router.dismissTo("/profile/cards")
+              }
+
+              store.addAccount({
+                id: accountId,
+                firstName: "",
+                lastName: "",
+                schoolName: authentification.schoolName,
+                services: [service],
+                createdAt: (new Date()).toISOString(),
+                updatedAt: (new Date()).toISOString()
+              })
+
+              store.setLastUsedAccount(accountId)
               return router.push({
-                pathname: "./hostSelector",
+                pathname: "../end/color",
                 params: {
-                  siblings: JSON.stringify(siblings),
-                  username,
-                  password
+                  accountId
                 }
               });
+
             }}
           />
         </Reanimated.View>
@@ -336,7 +355,7 @@ export default function TurboSelfLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons name={"ArrowLeft"} />
+            <Papicons.ArrowLeft />
           </Icon>
         </Pressable>
       </ViewContainer >

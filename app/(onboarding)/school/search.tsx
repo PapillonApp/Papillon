@@ -9,7 +9,7 @@ import Stack from '@/ui/components/Stack';
 
 import { getProfileColorByName } from "@/utils/chats/colors"
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
@@ -78,7 +78,7 @@ const staticStyles = StyleSheet.create({
   textInput: {
     color: "#5B5B5B",
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
     flex: 1,
   },
 });
@@ -279,7 +279,7 @@ export default function SelectSchoolOnMap() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Search />
+                <Papicons name={"Search"} />
               </Icon>
               <TextInput
                 placeholder="Nom de ta ville"
@@ -313,7 +313,7 @@ export default function SelectSchoolOnMap() {
           ]}
         >
           <Icon size={26} fill="white" papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

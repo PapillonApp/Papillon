@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
@@ -62,7 +62,7 @@ const staticStyles = StyleSheet.create({
   textInput: {
     color: "#5B5B5B",
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
     flex: 1,
   },
   iconBackground: {
@@ -248,7 +248,7 @@ export default function URLInputScreen() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"Link"} />
               </Icon>
               <TextInput
                 placeholder="URL de ton instance PRONOTE"
@@ -331,7 +331,7 @@ export default function URLInputScreen() {
           ]}
         >
           <Icon size={26} fill="#00000080" papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

@@ -9,7 +9,7 @@ import Button from '@/ui/components/Button';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import { log } from '@/utils/logger/logger';
 import ViewContainer from '@/ui/components/ViewContainer';
@@ -110,9 +110,7 @@ export default function WelcomeScreen() {
             }}
             size='large'
             icon={
-              <Icon papicon size={24} fill={"white"} style={{ backgroundColor: "transparent" }}>
-                <Papicons.Butterfly />
-              </Icon>
+              <Papicons name={"Butterfly"} />
             }
           />
           <Button
