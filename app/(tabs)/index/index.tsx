@@ -384,7 +384,18 @@ export default function TabOneScreen() {
           {
             icon: <Papicons.Butterfly />,
             title: "Refresh le Model",
-            onPress: () => ModelManager.init(),
+            onPress: async () => {
+              try {
+                const result = await ModelManager.init();
+                if (result.success) {
+                  log(`[UI] Model initialisé avec succès. Source: ${result.source}`);
+                } else {
+                  log(`[UI] Échec d'initialisation du modèle: ${result.error}`);
+                }
+              } catch (error) {
+                log(`[UI] Erreur lors de l'initialisation du modèle: ${String(error)}`);
+              }
+            },
             buttonLabel: "Aller",
             dev: false
           },
@@ -393,8 +404,12 @@ export default function TabOneScreen() {
             title: "Reset le Model",
             onPress: async () => {
               try {
-                await ModelManager.reset();
-                log("[UI] Model reset terminé avec succès");
+                const result = await ModelManager.reset();
+                if (result.success) {
+                  log("[UI] Model reset terminé avec succès");
+                } else {
+                  log(`[UI] Erreur lors du reset du model: ${result.error}`);
+                }
               } catch (error) {
                 log(`[UI] Erreur lors du reset du model: ${String(error)}`);
               }

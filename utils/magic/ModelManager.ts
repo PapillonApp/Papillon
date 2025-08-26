@@ -28,75 +28,143 @@ class ModelManager {
     return ModelManager.instance;
   }
 
-  async init(): Promise<{ source: string }> {
-    log("[INIT] Démarrage initialisation du modèle");
-
-    const loadedFromActive = await this.tryLoadFromActivePtr();
-    if (loadedFromActive) {
-      log("[INIT] Modèle dynamique chargé (existant) ✅");
-      return { source: loadedFromActive };
-    }
-
+  async safeInit(): Promise<void> {
     try {
-      log("[INIT] Aucun modèle actif. Lancement checkAndUpdateModel…");
-      const res = await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+      const result = await this.init();
+      if (result.success) {
+        log(
+          `[SAFE_INIT] ✅ Modèle initialisé avec succès. Source: ${result.source}`
+        );
+      } else {
+        log(
+          `[SAFE_INIT] ⚠️ Impossible d'initialiser le modèle: ${result.error}`
+        );
+      }
+    } catch (error) {
       log(
-        `[INIT] Update terminé: updated=${res.updated} reason=${res.reason ?? "ok"}`
+        `[SAFE_INIT] ❌ Erreur lors de l'initialisation sûre: ${String(error)}`
       );
-    } catch (e) {
-      log(`[INIT] Erreur pendant checkAndUpdateModel: ${String(e)}`);
     }
+  }
 
-    const loadedAfterUpdate = await this.tryLoadFromActivePtr();
-    if (loadedAfterUpdate) {
-      log("[INIT] Modèle dynamique chargé après mise à jour");
-      return { source: loadedAfterUpdate };
-    }
+  async init(): Promise<{ source: string; success: boolean; error?: string }> {
+    try {
+      log("[INIT] Démarrage initialisation du modèle");
 
-    const ptr = await getCurrentPtr();
-    throw new Error(
-      `[INIT] Aucun modèle dynamique disponible. reason=no-current-ptr | updater-résultat=${
+      const loadedFromActive = await this.tryLoadFromActivePtr();
+      if (loadedFromActive) {
+        log("[INIT] Modèle dynamique chargé (existant) ✅");
+        return { source: loadedFromActive, success: true };
+      }
+
+      try {
+        log("[INIT] Aucun modèle actif. Lancement checkAndUpdateModel…");
+        const res = await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+        log(
+          `[INIT] Update terminé: updated=${res.updated} reason=${res.reason ?? "ok"}`
+        );
+      } catch (e) {
+        log(`[INIT] Erreur pendant checkAndUpdateModel: ${String(e)}`);
+        // continuer le processus
+      }
+
+      const loadedAfterUpdate = await this.tryLoadFromActivePtr();
+      if (loadedAfterUpdate) {
+        log("[INIT] Modèle dynamique chargé après mise à jour");
+        return { source: loadedAfterUpdate, success: true };
+      }
+
+      const ptr = await getCurrentPtr();
+      const errorMsg = `Aucun modèle dynamique disponible. reason=no-current-ptr | updater-résultat=${
         ptr ? "ptr-exists" : "no-ptr"
-      }`
-    );
+      }`;
+      log(`[INIT] ${errorMsg}`);
+      return { source: "none", success: false, error: errorMsg };
+    } catch (error) {
+      const errorMsg = `Erreur lors de l'initialisation du modèle: ${String(error)}`;
+      log(`[INIT ERROR] ${errorMsg}`);
+      return { source: "none", success: false, error: errorMsg };
+    }
   }
 
-  async refresh(): Promise<boolean> {
-    log("[REFRESH] Démarrage mise à jour manuelle…");
-    const before = await getCurrentPtr();
-    await checkAndUpdateModel(packageJson.version, MAGIC_URL);
-    const after = await getCurrentPtr();
+  async refresh(): Promise<{
+    success: boolean;
+    updated: boolean;
+    error?: string;
+  }> {
+    try {
+      log("[REFRESH] Démarrage mise à jour manuelle…");
+      const before = await getCurrentPtr();
 
-    if (
-      after &&
-      (!before ||
-        before.version !== after.version ||
-        before.name !== after.name)
-    ) {
-      log(
-        `[REFRESH] Nouveau modèle détecté: ${after.name} v${after.version} → rechargement`
-      );
-      await this.loadFromDirectory(after.dir);
-      return true;
+      try {
+        await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+      } catch (e) {
+        log(`[REFRESH] Erreur pendant checkAndUpdateModel: ${String(e)}`);
+        return {
+          success: false,
+          updated: false,
+          error: `Erreur de mise à jour: ${String(e)}`,
+        };
+      }
+
+      const after = await getCurrentPtr();
+
+      if (
+        after &&
+        (!before ||
+          before.version !== after.version ||
+          before.name !== after.name)
+      ) {
+        try {
+          log(
+            `[REFRESH] Nouveau modèle détecté: ${after.name} v${after.version} → rechargement`
+          );
+          await this.loadFromDirectory(after.dir);
+          return { success: true, updated: true };
+        } catch (e) {
+          log(
+            `[REFRESH] Erreur lors du chargement du nouveau modèle: ${String(e)}`
+          );
+          return {
+            success: false,
+            updated: false,
+            error: `Erreur de chargement: ${String(e)}`,
+          };
+        }
+      }
+
+      if (!this.model && after) {
+        try {
+          log(
+            "[REFRESH] Pas de modèle en mémoire, chargement depuis le ptr actuel…"
+          );
+          await this.loadFromDirectory(after.dir);
+          return { success: true, updated: true };
+        } catch (e) {
+          log(
+            `[REFRESH] Erreur lors du chargement du modèle existant: ${String(e)}`
+          );
+          return {
+            success: false,
+            updated: false,
+            error: `Erreur de chargement: ${String(e)}`,
+          };
+        }
+      }
+
+      log("[REFRESH] Aucun changement de modèle.");
+      return { success: true, updated: false };
+    } catch (error) {
+      const errorMsg = `Erreur générale lors du refresh: ${String(error)}`;
+      log(`[REFRESH ERROR] ${errorMsg}`);
+      return { success: false, updated: false, error: errorMsg };
     }
-
-    if (!this.model && after) {
-      log(
-        "[REFRESH] Pas de modèle en mémoire, chargement depuis le ptr actuel…"
-      );
-      await this.loadFromDirectory(after.dir);
-      return true;
-    }
-
-    log("[REFRESH] Aucun changement de modèle.");
-    return false;
   }
 
-  async reset(): Promise<void> {
+  async reset(): Promise<{ success: boolean; error?: string }> {
     log("[RESET] Démarrage du reset du modèle...");
 
     try {
-      // 1. Nettoyer le modèle en mémoire
       this.model = null;
       this.labels = [];
       this.wordIndex = {};
@@ -104,7 +172,6 @@ class ModelManager {
       this.maxLen = 128;
       log("[RESET] Modèle en mémoire nettoyé");
 
-      // 2. Supprimer le pointeur actuel
       const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
       const CURRENT_PTR = MODELS_ROOT + "current.json";
 
@@ -116,7 +183,6 @@ class ModelManager {
         log("[RESET] Aucun pointeur actuel à supprimer");
       }
 
-      // 3. Supprimer tout le dossier des modèles téléchargés
       const modelsInfo = await FileSystem.getInfoAsync(MODELS_ROOT);
       if (modelsInfo.exists) {
         await FileSystem.deleteAsync(MODELS_ROOT, { idempotent: true });
@@ -126,9 +192,11 @@ class ModelManager {
       }
 
       log("[RESET] Reset terminé avec succès ✅");
+      return { success: true };
     } catch (error) {
-      log(`[RESET ERROR] ${String(error)}`);
-      throw error;
+      const errorMsg = `Erreur lors du reset: ${String(error)}`;
+      log(`[RESET ERROR] ${errorMsg}`);
+      return { success: false, error: errorMsg };
     }
   }
 
@@ -243,53 +311,66 @@ class ModelManager {
   async predict(
     text: string,
     verbose: boolean = false
-  ): Promise<ModelPrediction> {
-    if (!this.model) {
-      throw new Error(
-        "Model not loaded (dynamic-only): appelle d'abord ModelManager.init(appVersion, manifestUrl)"
-      );
-    }
-
-    if (verbose) {
-      log(`Running prediction for: ${text}`);
-      log(`Tokenizing text: ${text}`);
-    }
-
-    const seq = this.tokenize(text, verbose);
-    if (verbose) {
-      log(`[CLEAN TEXT] ${this.cleanText(text)}`);
-      log(`[TOKENIZED] ${seq.join(", ")}`);
-    }
-
-    const inputArr = new Float32Array(this.maxLen);
-    for (let i = 0; i < seq.length && i < this.maxLen; i++) {
-      inputArr[i] = seq[i];
-    }
-
+  ): Promise<ModelPrediction | { error: string; success: false }> {
     try {
-      const [out] = await this.model.run([inputArr]);
-      const scores = Array.from(out as Float32Array);
-      const best = scores.indexOf(Math.max(...scores));
-
-      const predictedLabel = this.labels?.[best];
-      const predicted =
-        predictedLabel === null ? "null" : (predictedLabel ?? `#${best}`);
-
-      const labelScores: Record<string, number> = {};
-      for (let i = 0; i < this.labels.length && i < scores.length; i++) {
-        const label = this.labels[i];
-        if (label !== null) {
-          labelScores[label] = scores[i];
-        } else {
-          labelScores["null"] = scores[i];
-        }
+      if (!this.model) {
+        const errorMsg =
+          "Model not loaded (dynamic-only): appelle d'abord ModelManager.init()";
+        log(`[PREDICT ERROR] ${errorMsg}`);
+        return { error: errorMsg, success: false };
       }
 
-      return { scores, predicted, labelScores };
+      if (verbose) {
+        log(`Running prediction for: ${text}`);
+        log(`Tokenizing text: ${text}`);
+      }
+
+      const seq = this.tokenize(text, verbose);
+      if (verbose) {
+        log(`[CLEAN TEXT] ${this.cleanText(text)}`);
+        log(`[TOKENIZED] ${seq.join(", ")}`);
+      }
+
+      const inputArr = new Float32Array(this.maxLen);
+      for (let i = 0; i < seq.length && i < this.maxLen; i++) {
+        inputArr[i] = seq[i];
+      }
+
+      try {
+        const [out] = await this.model.run([inputArr]);
+        const scores = Array.from(out as Float32Array);
+        const best = scores.indexOf(Math.max(...scores));
+
+        const predictedLabel = this.labels?.[best];
+        const predicted =
+          predictedLabel === null ? "null" : (predictedLabel ?? `#${best}`);
+
+        const labelScores: Record<string, number> = {};
+        for (let i = 0; i < this.labels.length && i < scores.length; i++) {
+          const label = this.labels[i];
+          if (label !== null) {
+            labelScores[label] = scores[i];
+          } else {
+            labelScores["null"] = scores[i];
+          }
+        }
+
+        return { scores, predicted, labelScores };
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        log(`[PREDICT MODEL RUN ERROR] ${errorMessage}`);
+        return {
+          error: `Erreur lors de l'exécution du modèle: ${errorMessage}`,
+          success: false,
+        };
+      }
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : String(e);
       log(`[PREDICT ERROR] ${errorMessage}`);
-      throw e;
+      return {
+        error: `Erreur générale lors de la prédiction: ${errorMessage}`,
+        success: false,
+      };
     }
   }
 }

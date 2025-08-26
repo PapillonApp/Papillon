@@ -16,6 +16,7 @@ import { AlertProvider } from '@/ui/components/AlertProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
+import ModelManager from '@/utils/magic/ModelManager';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -99,6 +100,11 @@ export default function RootLayout() {
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
+
+  // Initialisation sûre du modèle au démarrage
+  useEffect(() => {
+    ModelManager.safeInit();
+  }, []);
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
