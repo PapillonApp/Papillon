@@ -24,7 +24,7 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
 import { getManager } from "@/services/shared";
@@ -43,7 +43,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Grades />
+        <Papicons name={"Grades"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Grades_Empty_Title')}

@@ -3,7 +3,7 @@ import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeH
 import Typography from "@/ui/components/Typography";
 import { router, useLocalSearchParams } from "expo-router";
 import { Platform, ScrollView, View } from "react-native";
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
@@ -12,7 +12,6 @@ import { getPeriodName, getPeriodNumber } from "../grades";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
-// ...existing code...
 import { useHeaderHeight } from "@react-navigation/elements";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
@@ -141,7 +140,7 @@ export default function AttendanceView() {
               >
                 <Stack direction="horizontal" hAlign="center">
                   <Icon papicon opacity={0.5}>
-                    <Papicons.Ghost />
+                    <Papicons name={"Ghost"} />
                   </Icon>
                   <Typography variant="h5" style={{ opacity: 0.5 }}>Absences</Typography>
                 </Stack>
@@ -160,7 +159,7 @@ export default function AttendanceView() {
                             <Stack direction="horizontal" hAlign="center">
                               {!absence.justified && (
                                 <Icon papicon fill={dangerColor}>
-                                  <Papicons.Minus />
+                                  <Papicons name={"Minus"} />
                                 </Icon>
                               )}
                               <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: absence.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
@@ -189,7 +188,7 @@ export default function AttendanceView() {
               >
                 <Stack direction="horizontal" hAlign="center">
                   <Icon papicon opacity={0.5}>
-                    <Papicons.Clock />
+                    <Papicons name={"Clock"} />
                   </Icon>
                   <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
                 </Stack>
@@ -208,7 +207,7 @@ export default function AttendanceView() {
                             <Stack direction="horizontal" hAlign="center">
                               {!delay.justified && (
                                 <Icon papicon fill={dangerColor}>
-                                  <Papicons.Minus />
+                                  <Papicons name={"Minus"} />
                                 </Icon>
                               )}
                               <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: delay.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
@@ -238,7 +237,7 @@ export default function AttendanceView() {
                 borderRadius: 100,
               }}>
                 <Icon size={26} fill={colors.text + 50} papicon>
-                  <Papicons.Cross />
+                  <Papicons name={"Cross"} />
                 </Icon>
               </View>
             </NativeHeaderPressable>
@@ -299,7 +298,7 @@ export default function AttendanceView() {
                   <NativeHeaderHighlight>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
                 </Dynamic>
                 <Dynamic animated>
-                  <Papicons.ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+                  <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
                 </Dynamic>
               </Dynamic>
             </MenuView>

@@ -13,7 +13,7 @@ import {
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
@@ -45,7 +45,7 @@ function Tabs() {
 
   const enabledTabs = useMemo(() => [
     {
-      icon: Papicons.Chair,
+      icon: <Papicons name={"Chair"}/> ,
       title: t("Profile_Attendance_Title"),
       unread: attendances.reduce((count, attendance) => count + attendance.absences.filter(absence => !absence.justified).length, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),
@@ -63,7 +63,7 @@ function Tabs() {
       }
     },
     {
-      icon: Papicons.TextBubble,
+      icon: <Papicons name={"TextBubble"}/>,
       title: t("Profile_Discussions_Title"),
       unread: discussion.length,
       denominator: t("Profile_Discussions_Denominator_Single"),
@@ -182,7 +182,7 @@ function NewsSection() {
               style={{ marginLeft: 8, marginRight: 0 }}
               papicon
             >
-              <Papicons.Newspaper />
+              <Papicons name={"Newspaper"} />
             </Icon>
             <Typography
               color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
@@ -204,7 +204,7 @@ function NewsSection() {
                   {news.filter(news => !news.acknowledged).length} {news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
                 </Typography>
                 <Icon papicon opacity={0.5} size={20}>
-                  <Papicons.ArrowRightUp />
+                  <Papicons name={"ArrowRightUp"} />
                 </Icon>
               </Stack>
             </Pressable>
@@ -248,7 +248,7 @@ function Cards() {
             size={24}
             papicon
           >
-            <Papicons.Card />
+            <Papicons name={"Card"} />
           </Icon>
           <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
             {t("Profile_Cards_Title")}
@@ -408,7 +408,7 @@ export default function TabOneScreen() {
                   {level && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                       <Icon papicon opacity={0.5}>
-                        <Papicons.Ghost />
+                        <Papicons name={"Ghost"} />
                       </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {level}
@@ -418,7 +418,7 @@ export default function TabOneScreen() {
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
                       <Icon papicon opacity={0.5}>
-                        <Papicons.Sparkles />
+                        <Papicons name={"Sparkles"} />
                       </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {establishment}

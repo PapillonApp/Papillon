@@ -1,5 +1,4 @@
 import { Redirect, useRouter } from "expo-router";
-import * as pronote from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -18,7 +17,7 @@ import { Colors } from "@/app/(onboarding)/end/color";
 import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
 
-import * as Papicons from "@getpapillon/papicons";
+import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Course from "@/ui/components/Course";
@@ -33,13 +32,11 @@ import adjust from "@/utils/adjustColor";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { center } from "@shopify/react-native-skia";
 import { log } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectName } from "@/utils/subjects/name";
 import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -288,7 +285,7 @@ export default function TabOneScreen() {
         gap={12}
         data={[
           courses.length > 0 && {
-            icon: <Papicons.Calendar />,
+            icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
@@ -313,7 +310,7 @@ export default function TabOneScreen() {
             )
           },
           grades.length > 0 && {
-            icon: <Papicons.Grades />,
+            icon: <Papicons name={"Grades"} />,
             title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
@@ -351,28 +348,28 @@ export default function TabOneScreen() {
             )
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Onboarding",
             redirect: "/(onboarding)/welcome",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Palette />,
+            icon: <Papicons name={"Palette"} />,
             title: "Onboarding Color",
             redirect: "/(onboarding)/end/color",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
@@ -407,7 +404,7 @@ export default function TabOneScreen() {
                           {item.buttonLabel ?? "Afficher plus"}
                         </Typography>
                         <Icon size={20} papicon opacity={0.5}>
-                          <Papicons.ArrowRightUp />
+                          <Papicons name={"ArrowRightUp"} />
                         </Icon>
                       </Stack>
                     </AnimatedPressable>

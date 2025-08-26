@@ -1,4 +1,3 @@
-import { LegendList } from "@legendapp/list";
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
@@ -18,9 +17,7 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
-import { FlashList } from "@shopify/flash-list";
-
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
 import { getManager } from "@/services/shared";
@@ -37,7 +34,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Calendar />
+        <Papicons name={"Calendar"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Tab_Calendar_Empty')}
