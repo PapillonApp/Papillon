@@ -16,8 +16,8 @@ export function cmp(a: string, b: string): number {
   const aa = parse(a);
   const bb = parse(b);
   for (let i = 0; i < 3; i++) {
-    if (aa[i] > bb[i]) return 1;
-    if (aa[i] < bb[i]) return -1;
+    if (aa[i] > bb[i]) {return 1;}
+    if (aa[i] < bb[i]) {return -1;}
   }
   return 0;
 }
@@ -30,22 +30,22 @@ export function satisfies(version: string, constraint: string): boolean {
     return cmp(version, lo) >= 0 && cmp(version, hi) <= 0;
   }
   const m = range.match(/^(>=|<=|>|<|=)?\s*(\S+)$/);
-  if (!m) return false;
+  if (!m) {return false;}
   const op = m[1] || "=";
   const v = m[2];
   switch (op) {
-    case ">":
-      return cmp(version, v) > 0;
-    case ">=":
-      return cmp(version, v) >= 0;
-    case "<":
-      return cmp(version, v) < 0;
-    case "<=":
-      return cmp(version, v) <= 0;
-    case "=":
-      return cmp(version, v) === 0;
-    default:
-      return false;
+  case ">":
+    return cmp(version, v) > 0;
+  case ">=":
+    return cmp(version, v) >= 0;
+  case "<":
+    return cmp(version, v) < 0;
+  case "<=":
+    return cmp(version, v) <= 0;
+  case "=":
+    return cmp(version, v) === 0;
+  default:
+    return false;
   }
 }
 

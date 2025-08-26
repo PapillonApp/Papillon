@@ -1,10 +1,11 @@
 import * as FileSystem from "expo-file-system";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
-import { log } from "../logger/logger";
 
-import { checkAndUpdateModel, getCurrentPtr, getActivePaths } from "./updater";
-import { MAGIC_URL } from "../endpoints";
 import packageJson from "@/package.json";
+
+import { MAGIC_URL } from "../endpoints";
+import { log } from "../logger/logger";
+import { checkAndUpdateModel,getCurrentPtr } from "./updater";
 
 export type ModelPrediction = {
   scores: number[];
@@ -119,7 +120,7 @@ class ModelManager {
       this.model = await loadTensorflowModel({ url: modelUri });
 
       const shape = this.model?.inputs?.[0]?.shape;
-      if (shape && shape[1]) this.maxLen = shape[1];
+      if (shape && shape[1]) {this.maxLen = shape[1];}
 
       const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -129,7 +130,7 @@ class ModelManager {
       const wordCounts = JSON.parse(config.word_counts);
       const wordIndex: Record<string, number> = {};
       let index = 1;
-      for (const w of Object.keys(wordCounts)) wordIndex[w] = index++;
+      for (const w of Object.keys(wordCounts)) {wordIndex[w] = index++;}
       this.wordIndex = wordIndex;
       this.oovIndex = wordIndex[config.oov_token] ?? 1;
 

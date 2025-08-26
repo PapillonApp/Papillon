@@ -1,17 +1,19 @@
 import * as FileSystem from "expo-file-system";
 import { unzipSync } from "fflate";
-import { ensureDir, readJSON } from "./fileUtils";
+
 import { log } from "@/utils/logger/logger";
+
+import { ensureDir, readJSON } from "./fileUtils";
 
 function base64ToBytes(b64: string): Uint8Array {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  for (let i = 0; i < bin.length; i++) {out[i] = bin.charCodeAt(i);}
   return out;
 }
 function bytesToBase64(u8: Uint8Array): string {
   let s = "";
-  for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+  for (let i = 0; i < u8.length; i++) {s += String.fromCharCode(u8[i]);}
   return btoa(s);
 }
 
@@ -36,7 +38,7 @@ async function normalizeStagingLayout(stagingDir: string) {
   const expected = await FileSystem.getInfoAsync(
     stagingDir + "model/model.tflite"
   );
-  if (expected.exists) return;
+  if (expected.exists) {return;}
 
   const all = await listAllFiles(stagingDir);
   log(`[EXTRACT] files: ${all.join(", ")}`);
@@ -72,7 +74,7 @@ export async function extractMagicToStaging(
   stagingDir: string
 ) {
   const st = await FileSystem.getInfoAsync(stagingDir);
-  if (st.exists) await FileSystem.deleteAsync(stagingDir, { idempotent: true });
+  if (st.exists) {await FileSystem.deleteAsync(stagingDir, { idempotent: true });}
   await ensureDir(stagingDir);
 
   const b64 = await FileSystem.readAsStringAsync(magicUri, {
@@ -90,7 +92,7 @@ export async function extractMagicToStaging(
       await ensureDir(stagingDir + relOriginal);
     } else {
       const parts = relOriginal.split("/").slice(0, -1);
-      if (parts.length) await ensureDir(stagingDir + parts.join("/") + "/");
+      if (parts.length) {await ensureDir(stagingDir + parts.join("/") + "/");}
       await FileSystem.writeAsStringAsync(
         stagingDir + relOriginal,
         bytesToBase64(content),
@@ -111,8 +113,8 @@ export async function validateExtractedTree(stagingDir: string) {
   ];
   for (const rel of mustExist) {
     const info = await FileSystem.getInfoAsync(stagingDir + rel);
-    if (!info.exists) throw new Error(`missing-file:${rel}`);
+    if (!info.exists) {throw new Error(`missing-file:${rel}`);}
   }
-  const infos = await readJSON<any>(stagingDir + "metadata.json");
+  const infos = await readJSON<unknown>(stagingDir + "metadata.json");
   return infos;
 }

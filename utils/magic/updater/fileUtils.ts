@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system";
 export async function ensureDir(uri: string) {
   const info = await FileSystem.getInfoAsync(uri);
   if (!info.exists)
-    await FileSystem.makeDirectoryAsync(uri, { intermediates: true });
+  {await FileSystem.makeDirectoryAsync(uri, { intermediates: true });}
 }
 
 async function ensureParentDir(path: string) {
@@ -30,7 +30,7 @@ export async function withLock<T>(
   await ensureParentDir(lockPath);
 
   const info = await FileSystem.getInfoAsync(lockPath);
-  if (info.exists) throw new Error("update-in-progress");
+  if (info.exists) {throw new Error("update-in-progress");}
 
   await FileSystem.writeAsStringAsync(lockPath, Date.now().toString());
   try {
@@ -38,6 +38,6 @@ export async function withLock<T>(
   } finally {
     try {
       await FileSystem.deleteAsync(lockPath, { idempotent: true });
-    } catch {}
+    } catch { /* empty */ }
   }
 }

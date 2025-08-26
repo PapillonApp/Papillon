@@ -1,4 +1,5 @@
 import * as Network from "expo-network";
+
 import { ApiResponse } from "./types";
 
 export async function isInternetReachable(): Promise<boolean> {
@@ -15,12 +16,12 @@ export async function fetchJsonWithRetry<T>(
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {throw new Error(`HTTP ${res.status}`);}
       return (await res.json()) as T;
     } catch (e) {
       last = e;
       if (attempt < retries)
-        await new Promise(r => setTimeout(r, backoffMs * attempt));
+      {await new Promise(r => setTimeout(r, backoffMs * attempt));}
     }
   }
   throw new Error(`fetch-failed: ${String(last)}`);

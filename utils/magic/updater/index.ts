@@ -1,13 +1,15 @@
 import * as FileSystem from "expo-file-system";
-import { isInternetReachable } from "./network";
-import { fetchManifest, validateManifest } from "./manifest";
-import { satisfiesAll } from "./semver";
-import { fileSha256Hex, verifySize } from "./integrity";
-import { extractMagicToStaging, validateExtractedTree } from "./extract";
-import { ensureDir, readJSON, writeJSON, withLock } from "./fileUtils";
-import { CurrentPtr } from "./types";
 import { loadTensorflowModel } from "react-native-fast-tflite";
+
 import { log } from "@/utils/logger/logger";
+
+import { extractMagicToStaging, validateExtractedTree } from "./extract";
+import { ensureDir, readJSON, withLock,writeJSON } from "./fileUtils";
+import { fileSha256Hex, verifySize } from "./integrity";
+import { fetchManifest, validateManifest } from "./manifest";
+import { isInternetReachable } from "./network";
+import { satisfiesAll } from "./semver";
+import { CurrentPtr } from "./types";
 
 const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
 const CURRENT_PTR = MODELS_ROOT + "current.json";
@@ -113,7 +115,7 @@ export async function checkAndUpdateModel(
     await extractMagicToStaging(magicPath, staging);
     log("[MODELUPDATER] Extraction terminée");
 
-    const infos = await validateExtractedTree(staging);
+    const infos = await validateExtractedTree(staging) as { name: string; version: string };
     if (infos.name !== latest.name || infos.version !== latest.version) {
       throw new Error("infos-mismatch");
     }
