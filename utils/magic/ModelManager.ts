@@ -13,6 +13,8 @@ export type ModelPrediction = {
   labelScores: Record<string, number>;
 };
 
+let globalInitializationPromise: Promise<void> | null = null;
+
 class ModelManager {
   private static instance: ModelManager;
   private model: TensorflowModel | null = null;
@@ -20,6 +22,8 @@ class ModelManager {
   private labels: string[] = [];
   private wordIndex: Record<string, number> = {};
   private oovIndex = 1;
+  private isInitializing = false;
+  private hasInitialized = false;
 
   static getInstance(): ModelManager {
     if (!ModelManager.instance) {
@@ -28,23 +32,127 @@ class ModelManager {
     return ModelManager.instance;
   }
 
-  async safeInit(): Promise<void> {
+  async performPreventiveCleanup(): Promise<void> {
     try {
+      const ptr = await getCurrentPtr();
+      if (ptr) {
+        const modelUri = ptr.dir + "model/model.tflite";
+        const tokenizerUri = ptr.dir + "model/tokenizer.json";
+        const labelsUri = ptr.dir + "model/labels.json";
+
+        const modelExists = await FileSystem.getInfoAsync(modelUri);
+        const tokenizerExists = await FileSystem.getInfoAsync(tokenizerUri);
+        const labelsExists = await FileSystem.getInfoAsync(labelsUri);
+
+        if (
+          !modelExists.exists ||
+          !tokenizerExists.exists ||
+          !labelsExists.exists
+        ) {
+          log(
+            "[CLEANUP] 🧹 Fichiers du modèle manquants détectés, nettoyage préventif..."
+          );
+          const resetResult = await this.reset();
+          if (resetResult.success) {
+            log("[CLEANUP] ✅ Nettoyage préventif terminé");
+          } else {
+            log(
+              `[CLEANUP] ❌ Échec du nettoyage préventif: ${resetResult.error}`
+            );
+          }
+        }
+      }
+    } catch (error) {
+      log(`[CLEANUP] ⚠️ Erreur lors du nettoyage préventif: ${String(error)}`);
+    }
+  }
+
+  async safeInit(): Promise<void> {
+    if (globalInitializationPromise) {
+      log("[SAFE_INIT] ⏳ Initialisation globale déjà en cours, attendre...");
+      return globalInitializationPromise;
+    }
+
+    if (this.hasInitialized) {
+      log("[SAFE_INIT] ⏭️ Initialisation déjà effectuée, ignorer");
+      return;
+    }
+
+    if (this.isInitializing) {
+      log(
+        "[SAFE_INIT] ⏳ Initialisation déjà en cours sur cette instance, ignorer"
+      );
+      return;
+    }
+
+    globalInitializationPromise = this._performSafeInit();
+
+    try {
+      await globalInitializationPromise;
+    } finally {
+      globalInitializationPromise = null;
+    }
+  }
+
+  private async _performSafeInit(): Promise<void> {
+    this.isInitializing = true;
+    log("[SAFE_INIT] 🚀 Démarrage de l'initialisation sûre (première fois)");
+
+    try {
+      await this.performPreventiveCleanup();
+
       const result = await this.init();
       if (result.success) {
         log(
-          `[SAFE_INIT] ✅ Modèle initialisé avec succès. Source: ${result.source}`
+          `[SAFE_INIT] Modèle initialisé avec succès. Source: ${result.source}`
         );
+        this.hasInitialized = true;
       } else {
+        log(`[SAFE_INIT] Échec d'initialisation: ${result.error}`);
         log(
-          `[SAFE_INIT] ⚠️ Impossible d'initialiser le modèle: ${result.error}`
+          "[SAFE_INIT] Reset automatique pour préparer le prochain démarrage..."
         );
+
+        try {
+          const resetResult = await this.reset();
+          if (resetResult.success) {
+            log(
+              "[SAFE_INIT] Reset automatique terminé. Le modèle sera téléchargé au prochain démarrage."
+            );
+          } else {
+            log(`[SAFE_INIT] Échec du reset automatique: ${resetResult.error}`);
+          }
+        } catch (resetError) {
+          log(
+            `[SAFE_INIT] Erreur critique lors du reset: ${String(resetError)}`
+          );
+        }
+        this.hasInitialized = true;
       }
     } catch (error) {
       log(
-        `[SAFE_INIT] ❌ Erreur lors de l'initialisation sûre: ${String(error)}`
+        `[SAFE_INIT] Erreur critique lors de l'initialisation: ${String(error)}`
       );
+      log("[SAFE_INIT] Tentative de reset d'urgence...");
+
+      try {
+        await this.reset();
+        log("[SAFE_INIT] Reset d'urgence terminé.");
+      } catch (resetError) {
+        log(`[SAFE_INIT] Échec du reset d'urgence: ${String(resetError)}`);
+      }
+      this.hasInitialized = true;
+    } finally {
+      this.isInitializing = false;
+      log("[SAFE_INIT] Fin du processus d'initialisation sûre");
     }
+  }
+
+  resetInitializationState(): void {
+    this.isInitializing = false;
+    this.hasInitialized = false;
+    globalInitializationPromise = null;
+    log("[RESET_STATE] État d'initialisation global réinitialisé");
   }
 
   async init(): Promise<{ source: string; success: boolean; error?: string }> {
@@ -165,12 +273,19 @@ class ModelManager {
     log("[RESET] Démarrage du reset du modèle...");
 
     try {
+      // Nettoyer le modèle en mémoire
       this.model = null;
       this.labels = [];
       this.wordIndex = {};
       this.oovIndex = 1;
       this.maxLen = 128;
-      log("[RESET] Modèle en mémoire nettoyé");
+
+      // Réinitialiser l'état d'initialisation
+      this.isInitializing = false;
+      this.hasInitialized = false;
+      globalInitializationPromise = null;
+
+      log("[RESET] Modèle en mémoire et état d'initialisation nettoyés");
 
       const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
       const CURRENT_PTR = MODELS_ROOT + "current.json";
@@ -230,6 +345,21 @@ class ModelManager {
       log(
         `[INIT] Échec de chargement depuis dir actif (${ptr.dir}): ${String(e)}`
       );
+      log("[INIT] Nettoyage automatique du modèle corrompu...");
+
+      try {
+        const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
+        const CURRENT_PTR = MODELS_ROOT + "current.json";
+
+        await FileSystem.deleteAsync(CURRENT_PTR, { idempotent: true });
+        log("[INIT] Pointeur corrompu supprimé");
+
+        await FileSystem.deleteAsync(ptr.dir, { idempotent: true });
+        log(`[INIT] Dossier du modèle corrompu supprimé: ${ptr.dir}`);
+      } catch (cleanupError) {
+        log(`[INIT] Erreur lors du nettoyage: ${String(cleanupError)}`);
+      }
+
       return null;
     }
   }
