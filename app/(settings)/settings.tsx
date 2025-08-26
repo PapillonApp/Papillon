@@ -91,7 +91,7 @@ const SettingsIndex = () => {
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
-          papicon: <Papicons.ArrowDown />,
+          papicon: <Papicons.Logout />,
           color: "#a80000",
           onPress: () => {
             Alert.alert(
