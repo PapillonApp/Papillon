@@ -12,7 +12,6 @@ import { getPeriodName, getPeriodNumber } from "../(tabs)/grades";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
-// ...existing code...
 import { useHeaderHeight } from "@react-navigation/elements";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import adjust from "@/utils/adjustColor";
