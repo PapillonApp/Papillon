@@ -5,9 +5,8 @@ import { createMMKVStorage } from "../global";
 import { SettingsStorage, SettingsState, Personalization } from "./types";
 
 const defaultPersonalization: Personalization = {
-  array: [],
   profilePictureB64: undefined,
-  colorSelected: "#29947A",
+  colorSelected: 0,
   magicEnabled: false,
   hideNameOnHomeScreen: false,
 };
