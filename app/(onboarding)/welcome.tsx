@@ -10,12 +10,8 @@ import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
 import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
-import { log } from '@/utils/logger/logger';
 import ViewContainer from '@/ui/components/ViewContainer';
-
-
-const { width } = Dimensions.get('window');
+import * as Linking from 'expo-linking';
 
 export default function WelcomeScreen() {
   const theme = useTheme();
@@ -115,7 +111,9 @@ export default function WelcomeScreen() {
           />
           <Button
             title="Besoin d'aide ?"
-            onPress={() => log("Help button pressed")}
+            onPress={() => {
+              Linking.openURL('https://support.papillon.bzh');
+            }}
             variant="ghost"
             color='text'
             size='large'
