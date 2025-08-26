@@ -14,7 +14,7 @@ import {
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { Period } from "@/services/shared/grade";
@@ -89,10 +89,15 @@ function Tabs() {
     setDiscussion(chats);
   }, []);
 
+
   useEffect(() => {
-    fetchAttendance();
-    fetchDiscussions();
-  }, [fetchAttendance]);
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchAttendance();
+      fetchDiscussions();
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
@@ -147,8 +152,12 @@ function NewsSection() {
   }, []);
 
   useEffect(() => {
-    fetchNews();
-  }, [fetchNews]);
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchNews();
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -207,11 +216,11 @@ function NewsSection() {
                 height={32}
                 backgroundColor={"#7DBB0040"}
               >
-                <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00",  -0.3)}>
+                <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00", -0.3)}>
                   {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
-                <Icon papicon size={20} fill={adjust("#7DBB00",  -0.3)} >
-                  <Papicons name={"ArrowRightUp"}/>
+                <Icon papicon size={20} fill={adjust("#7DBB00", -0.3)} >
+                  <Papicons name={"ArrowRightUp"} />
                 </Icon>
               </Stack>
             </Pressable>
