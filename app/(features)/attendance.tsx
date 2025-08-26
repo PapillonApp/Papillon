@@ -87,7 +87,7 @@ export default function AttendanceView() {
                   style={{ width: '50%' }}
                 >
                   <Icon papicon opacity={0.5}>
-                    <Papicons.Ghost />
+                    <Papicons name={"Ghost"} />
                   </Icon>
                   <Typography color="secondary">
                     Heures manquées
@@ -112,7 +112,7 @@ export default function AttendanceView() {
                   backgroundColor="#F9E5E5"
                 >
                   <Icon papicon fill={adjust("#C50000", -0.15)}>
-                    <Papicons.Minus />
+                    <Papicons name={"Minus"} />
                   </Icon>
                   <Typography style={{ color: adjust("#C50000", -0.15) }}>
                     Heures injustifiées
@@ -175,7 +175,7 @@ export default function AttendanceView() {
                                 <Stack direction="horizontal" hAlign="center">
                                   {!absence.justified && (
                                     <Icon papicon fill={dangerColor}>
-                                      <Papicons.Minus />
+                                      <Papicons name={"Minus"} />
                                     </Icon>
                                   )}
                                   <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: absence.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
@@ -209,7 +209,7 @@ export default function AttendanceView() {
                   >
                     <Stack direction="horizontal" hAlign="center">
                       <Icon papicon opacity={0.5}>
-                        <Papicons.Clock />
+                        <Papicons name={"Clock"} />
                       </Icon>
                       <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
                     </Stack>
@@ -228,7 +228,7 @@ export default function AttendanceView() {
                                 <Stack direction="horizontal" hAlign="center">
                                   {!delay.justified && (
                                     <Icon papicon fill={dangerColor}>
-                                      <Papicons.Minus />
+                                      <Papicons name={"Minus"} />
                                     </Icon>
                                   )}
                                   <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: delay.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
