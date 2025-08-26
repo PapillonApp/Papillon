@@ -39,7 +39,12 @@ const FONT_CONFIG = {
   medium: require('../assets/fonts/SNPro-Medium.ttf'),
   semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
   bold: require('../assets/fonts/SNPro-Bold.ttf'),
-  black: require('../assets/fonts/SNPro-Black.ttf')
+  black: require('../assets/fonts/SNPro-Black.ttf'),
+  serif_light: require('../assets/fonts/NotoSerif-Light.ttf'),
+  serif_regular: require('../assets/fonts/NotoSerif-Regular.ttf'),
+  serif_medium: require('../assets/fonts/NotoSerif-Medium.ttf'),
+  serif_bold: require('../assets/fonts/NotoSerif-Bold.ttf'),
+  serif_black: require('../assets/fonts/NotoSerif-Black.ttf'),
 } as const;
 
 // Pre-define screen options to avoid recreating object
@@ -160,6 +165,16 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerTitle: t("Modal_Course_Title"),
                   headerTransparent: runsIOS26() ? true : false,
                   headerLargeTitle: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(news)/news"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_News"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: true,
                 }}
               />
             </Stack>

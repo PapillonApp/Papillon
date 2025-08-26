@@ -8,6 +8,7 @@
   "Tab_Profile": "Profil",
   "Tab_Page": "Page",
   "Tab_Settings": "Paramètres",
+  "Tab_News": "Actualités",
 
   "Tab_New_Event": "Nouvel événement",
 
@@ -120,6 +121,7 @@
   "Profile_News_Title": "Actualités",
   "Profile_News_Denominator_Single": "nouveau",
   "Profile_News_Denominator_Plural": "nouvelles",
+  "Profile_News_Open": "Ouvrir",
 
   "Profile_Cards_Title": "Mes cartes",
 
@@ -134,6 +136,12 @@
   "Grades_Avg_Group_Title": "Moyenne du groupe",
   "Grades_Coefficient": "Coefficient",
   "Grades_Avg_Group_Short": "Moy. groupe",
+
+  "News_Theme_Papillon_Title": "Papillon",
+  "News_Theme_Papillon_Description": "Un thème doux et élégant",
+
+  "News_Theme_Reading_Title": "Lecture",
+  "News_Theme_Reading_Description": "Un thème conçu pour la lecture",
 
   "Settings_Account_Title": "Mon compte",
   "Settings_Account_Description": "Mon compte",
