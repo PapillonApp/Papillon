@@ -17,7 +17,7 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
-import { useAccountStore, type Account } from '@/stores/account';
+import { useAccountStore } from '@/stores/account';
 import { AppColors } from './(onboarding)/end/color';
 import ModelManager from '@/utils/magic/ModelManager';
 
