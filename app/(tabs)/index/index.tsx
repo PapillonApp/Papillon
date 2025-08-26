@@ -48,6 +48,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import { useAlert } from "@/ui/components/AlertProvider";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -57,9 +58,20 @@ export default function TabOneScreen() {
 
   const router = useRouter();
   const navigation = useNavigation();
+  const alert = useAlert();
 
   const Initialize = async () => {
-    await initializeAccountManager()
+    try {
+      await initializeAccountManager()
+    } catch (error) {
+      alert.showAlert({
+        title: "Connexion impossible",
+        description: "Il semblerait que votre session ait expiré. Vous devez renouveler votre session dans les paramètres en liant à nouveau votre compte.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(error)
+      })
+    }
     log("Refreshed Manager received")
   };
 
