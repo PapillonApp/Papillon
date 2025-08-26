@@ -97,7 +97,7 @@ export default function TabOneScreen() {
       });
     }
 
-    setGrades(grades)
+    setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
 
   useEffect(() => {

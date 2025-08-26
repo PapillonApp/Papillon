@@ -90,7 +90,7 @@ export const CompactGrade = ({
         }}
       >
         <Typography variant="title" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
-          {description ? description : t('Grade_NoDescription')}
+          {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
         <View style={{
           flexDirection: "row",

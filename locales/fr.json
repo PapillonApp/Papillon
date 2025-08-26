@@ -97,6 +97,8 @@
   "Grades_Empty_Title": "Aucune note",
   "Grades_Empty_Description": "Vous n'avez pas encore été noté sur cette période.",
 
+  "Grade_NoDescription": "Devoir de {{subject}}",
+
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",
   "Profile_Attendance_Denominator_Plural": "absences",
