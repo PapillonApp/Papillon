@@ -27,6 +27,7 @@ interface TabFlatListProps extends FlatListProps<any> {
   pattern?: keyof typeof patterns;
   height?: number;
   padding?: number;
+  paddingTop?: number;
   radius?: number;
   gap?: number;
   engine?: 'FlatList' | 'LegendList' | 'FlashList';
@@ -41,6 +42,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   pattern,
   height = 120,
   padding = 16,
+  paddingTop,
   radius = 28,
   gap = 0,
   engine = "FlatList",
@@ -274,6 +276,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             borderCurve: 'continuous',
             padding: padding,
             paddingVertical: padding,
+            paddingTop: paddingTop ?? padding,
             gap: gap,
           }}
         />

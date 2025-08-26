@@ -217,10 +217,10 @@ export default function TabOneScreen() {
       )}
 
       <TabFlatList
-        translucent
+        translucent={true}
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
-        height={160}
+        height={180}
         header={
           <>
             <FlatList
@@ -228,7 +228,7 @@ export default function TabOneScreen() {
                 backgroundColor: "transparent",
                 borderRadius: 26,
                 borderCurve: "continuous",
-                marginTop: 16
+                paddingBottom: 12
               }}
               horizontal
               data={headerItems}
@@ -390,8 +390,9 @@ export default function TabOneScreen() {
             buttonLabel: "Aller",
             dev: false
           },
-        ]}
-        renderItem={({ item }) => {
+        ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
+        keyExtractor={(item, index) => item.title + index}
+        renderItem={({ item, index }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }
@@ -432,6 +433,7 @@ export default function TabOneScreen() {
             </Reanimated.View>
           )
         }}
+        paddingTop={0}
       />
 
       <NativeHeaderSide side="Left">
