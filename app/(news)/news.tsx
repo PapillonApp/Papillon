@@ -9,7 +9,7 @@ import { formatRelativeTime } from "@/utils/date";
 import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
 import { View, ScrollView, Pressable } from "react-native";
-import * as Papicons from "@getpapillon/papicons";
+import { Papicons } from "@getpapillon/papicons";
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();
@@ -59,7 +59,7 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
             style={{ paddingHorizontal: 15, paddingTop: 5 }}
           >
             <Icon papicon fill="#DD00D2">
-              <Papicons.Sparkles />
+              <Papicons name={Sparkles} />
             </Icon>
             <Typography color="#DD00D2">Peut-être important</Typography>
           </Stack>

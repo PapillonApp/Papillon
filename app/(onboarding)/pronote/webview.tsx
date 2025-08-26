@@ -3,7 +3,7 @@ import { View, StyleSheet, Pressable } from "react-native";
 import { WebView } from 'react-native-webview';
 import { useGlobalSearchParams, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import { createRef, useState } from "react";
 import uuid from "@/utils/uuid/uuid";
@@ -95,7 +95,7 @@ export default function WebViewScreen() {
         ]}
       >
         <Icon size={26} fill="#00000080" papicon>
-          <Papicons.ArrowLeft />
+          <Papicons name={"ArrowLeft"} />
         </Icon>
       </Pressable>
 

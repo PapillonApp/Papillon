@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
@@ -199,7 +199,7 @@ export default function PronoteLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"User"} />
               </Icon>
               <TextInput
                 placeholder="Nom d'utilisateur"
@@ -228,7 +228,7 @@ export default function PronoteLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"Lock"} />
               </Icon>
               <TextInput
                 placeholder="Mot de passe"
@@ -328,7 +328,7 @@ export default function PronoteLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={local.previousPage === "map" ? "#FFFFFF" : "#00000080"} papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { authenticateWithCredentials } from 'turboself-api'
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
@@ -220,7 +220,7 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"User"} />
               </Icon>
               <TextInput
                 placeholder="Nom d'utilisateur"
@@ -249,7 +249,7 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"Lock"} />
               </Icon>
               <TextInput
                 placeholder="Mot de passe"
@@ -329,7 +329,7 @@ export default function TurboSelfLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

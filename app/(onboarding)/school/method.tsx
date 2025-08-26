@@ -8,7 +8,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import { getLoginMethods, LoginMethod } from '../utils/constants';
@@ -201,7 +201,7 @@ export default function WelcomeScreen() {
         }}
       >
         <Icon size={26} fill={"#fff"} papicon>
-          <Papicons.ArrowLeft />
+          <Papicons name={"ArrowLeft"} />
         </Icon>
       </Pressable>
     </ViewContainer>

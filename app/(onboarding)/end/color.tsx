@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import Reanimated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
 
 export default function ChooseColorScreen() {
@@ -99,7 +99,7 @@ export default function ChooseColorScreen() {
           size='large'
           icon={
             <Icon papicon size={24} fill={"white"} style={{ backgroundColor: "transparent" }}>
-              <Papicons.Butterfly />
+              <Papicons name={"Butterfly"} />
             </Icon>
           }
         />
