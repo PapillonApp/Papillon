@@ -90,6 +90,8 @@
   "Grades_Empty_Title": "No grades",
   "Grades_Empty_Description": "You haven't been graded yet for this period.",
 
+  "Grade_NoDescription": "Assignment for {{subject}}",
+
   "Profile_Attendance_Title": "Attendance",
   "Profile_Attendance_Denominator_Single": "delay",
   "Profile_Attendance_Denominator_Plural": "delays",

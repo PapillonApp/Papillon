@@ -4,12 +4,35 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
 
+export enum Colors {
+  PINK,
+  YELLOW,
+  GREEN,
+  PURPLE,
+  BLUE,
+  BLACK
+}
+
+export const AppColors = [
+  { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
+  { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
+  { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
+  { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
+  { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
+  { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
+]
+
 export default function ChooseColorScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets()
 
   const local = useGlobalSearchParams()
+
+  const accountStore = useAccountStore.getState();
+  const lastUsedAccount = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount);
+
+  const accountId = local.accountId ? String(local.accountId) : lastUsedAccount?.id;
 
   const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
   const [color, setColor] = useState<Colors>(Colors.PINK)
@@ -55,14 +78,7 @@ export default function ChooseColorScreen() {
         </View>
         <FlatList
           scrollEnabled={false}
-          data={[
-            { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
-            { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
-            { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
-            { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
-            { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
-            { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
-          ]}
+          data={AppColors}
           numColumns={3}
           renderItem={({ item }) => (
             <ColorSelector
@@ -84,8 +100,8 @@ export default function ChooseColorScreen() {
         <Button
           title="Terminer"
           onPress={async () => {
-            if (local.accountId) {
-              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), color)
+            if (accountId) {
+              useAccountStore.getState().setAccountSelectedColor(accountId, color)
               await initializeAccountManager()
               router.push("../../(tabs)" as any)
             }
@@ -106,15 +122,6 @@ export default function ChooseColorScreen() {
       </View>
     </View>
   );
-}
-
-export enum Colors {
-  PINK,
-  YELLOW,
-  GREEN,
-  PURPLE,
-  BLUE,
-  BLACK
 }
 
 function ColorSelector({ mainColor, backgroundColor, name, onPress }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void }) {

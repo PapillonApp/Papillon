@@ -17,6 +17,7 @@ import Stack from "./Stack";
 import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
+import AnimatedPressable from "./AnimatedPressable";
 
 type Variant = 'primary' | 'separator';
 
@@ -39,6 +40,7 @@ interface CourseProps {
   containerStyle?: StyleProp<ViewStyle>;
   leading?: LucideIcon;
   showTimes?: boolean;
+  timesRendered?: boolean;
   magicInfo?: {
     label: string;
     icon: React.FC<{ color?: string }>;
@@ -59,6 +61,7 @@ const Course = React.memo(({
   readonly = false,
   leading: Leading,
   showTimes = true,
+  timesRendered = true,
   magicInfo,
   onPress,
   containerStyle,
@@ -68,154 +71,184 @@ const Course = React.memo(({
   const theme = useTheme();
   const { colors } = theme;
 
+  const fStart = new Date(start * 1000);
+  const fEnd = new Date(end * 1000);
+
+  const hStart = fStart.getHours();
+  const hEnd = fEnd.getHours();
+
   return (
     <Stack direction="horizontal" gap={12} style={{ width: "100%", marginBottom: 6 }}>
-      {showTimes && (
-        <Stack style={{ width: 60, alignSelf: "center" }} hAlign="center" vAlign="center" gap={3}>
-          <Typography nowrap variant="h5" style={{ lineHeight: 20 }}>
-            {new Date(start * 1000).toLocaleTimeString("fr-FR", {
+      {timesRendered &&
+        <Stack style={{ width: 60, alignSelf: "center", paddingRight: 2, opacity: showTimes ? 1 : 0 }} hAlign="center" vAlign="center" gap={3}>
+          <Typography nowrap variant="h5" align="center" style={{ lineHeight: 20, width: 60 }}>
+            {fStart.toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </Typography>
-          <Typography nowrap variant="body2" color="secondary">
-            {new Date(end * 1000).toLocaleTimeString("fr-FR", {
+          <Typography nowrap variant="body2" color="secondary" align="center" style={{ width: 60 }}>
+            {fEnd.toLocaleTimeString("fr-FR", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </Typography>
         </Stack>
-      )}
-      <View style={[
-        status?.canceled ? {
-          backgroundColor: adjust("#DC1400", theme.dark ? -0.8 : 0.8)
-        } : {},
-        magicInfo || variant === "separator" ? {
-          borderWidth: 1,
-          borderColor: "rgba(0, 0, 0, 0.12)",
-          borderStyle: "solid",
-          backgroundColor: (color ?? "#FFFFF") + (theme.dark ? 60 : 10),
-        } : {},
-        {
-          flex: 1, display: "flex",
-          borderRadius: compact ? 18 : 25,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.15,
-          shadowRadius: 2.5,
-          elevation: 4
-        }]}>
-        {(status?.canceled) && variant !== "separator" && (
-          <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
-            <Icon papicon size={20} fill={"#DC1400"}>
-              <Papicons.Ghost />
-            </Icon>
-            <Typography nowrap color="danger" variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
-              {status.label}
-            </Typography>
-          </Stack>
-        )}
-        {(magicInfo?.label) && variant !== "separator" && (
-          <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
-            {magicInfo.icon && <magicInfo.icon color={color} />}
-            <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]} nowrap>
-              {magicInfo.label}
-            </Typography>
-          </Stack>
-        )}
-
-        <Pressable style={{ flex: 1 }} onPress={() => {
-          if (onPress) {
-            onPress();
-          }
-        }}>
-          <Stack
-            gap={2}
-            direction="vertical"
-            radius={compact ? 18 : 25}
-            style={[
-              styles.container,
-              compact ? styles.compactContainer : {},
-              { backgroundColor: color },
-              status?.canceled || variant === "separator" ? {
-                backgroundColor: colors.card
-              } : {},
-              ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
-              {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.15,
-                shadowRadius: 3.3,
-                elevation: 3
-              }
-            ]}
-          >
-            <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
-              {variant === "separator" && Leading && (
-                <Icon>
-                  <Leading stroke={"#606060"} />
-                </Icon>
-              )}
-              <Typography
-                color="light"
-                variant="h5"
-                nowrap
-                style={[
-                  styles.label,
-                  (status?.canceled || variant === "separator") ? styles.canceled : {},
-                ]}
-              >
-                {name}
+      }
+      {variant === "separator" ? (
+        <Stack
+          card
+          direction="horizontal"
+          padding={[14, 8]}
+          radius={300}
+          vAlign="start"
+          gap={8}
+          hAlign="center"
+          style={{
+            flex: 1,
+            marginVertical: 0
+          }}
+        >
+          <Icon papicon size={24} opacity={0.6}>
+            {
+              hStart < 11 ? <Papicons.Sunrise /> :
+                hStart < 14 ? <Papicons.Cutlery /> :
+                  <Papicons.Sun />
+            }
+          </Icon>
+          <Typography variant="h6" style={{ flex: 1, opacity: 0.6 }} nowrap color="text">
+            {
+              hStart < 11 ? "Pause matinale" :
+                hStart < 14 ? "Pause méridienne" :
+                  hStart < 18 ? "Pause d'après-midi" : "Pause du soir"
+            }
+          </Typography>
+          <Typography variant="body1" color="secondary">
+            {formatDuration(duration)}
+          </Typography>
+        </Stack>
+      ) : (
+        <View style={[
+          status?.canceled ? {
+            backgroundColor: adjust("#DC1400", theme.dark ? -0.7 : 0.8)
+          } : {},
+          magicInfo || variant === "separator" ? {
+            borderWidth: 1,
+            borderColor: "rgba(0, 0, 0, 0.12)",
+            borderStyle: "solid",
+            backgroundColor: (color ?? "#FFFFF") + (theme.dark ? 60 : 10),
+          } : {},
+          {
+            flex: 1, display: "flex",
+            borderRadius: compact ? 18 : 25,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.15,
+            shadowRadius: 2.5,
+            elevation: 4
+          }]}>
+          {(status?.canceled) && (
+            <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
+              <Icon papicon size={20} fill={adjust("#DC1400", theme.dark ? 0.4 : -0.2)}>
+                <Papicons.Ghost />
+              </Icon>
+              <Typography nowrap color={adjust("#DC1400", theme.dark ? 0.4 : -0.2)} variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
+                {status.label}
               </Typography>
-              {variant === "separator" && Leading && (
-                <Typography color="light" variant="caption" style={[{ color: colors.text + (theme.dark ? 40 : 80) }, styles.label]}>
-                  {formatDuration(duration)}
+            </Stack>
+          )}
+          {(magicInfo?.label) && (
+            <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
+              {magicInfo.icon && <magicInfo.icon color={color} />}
+              <Typography color="primary" variant="h4" style={[styles.room, { paddingVertical: 6, color: color }]} nowrap>
+                {magicInfo.label}
+              </Typography>
+            </Stack>
+          )}
+
+          <AnimatedPressable style={{ flex: 1 }} onPress={() => {
+            if (onPress) {
+              onPress();
+            }
+          }}>
+            <Stack
+              gap={2}
+              direction="vertical"
+              radius={compact ? 18 : 25}
+              style={[
+                styles.container,
+                compact ? styles.compactContainer : {},
+                { backgroundColor: color },
+                status?.canceled ? {
+                  backgroundColor: colors.card
+                } : {},
+                ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
+                {
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 3.3,
+                  elevation: 3
+                }
+              ]}
+            >
+              <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10} style={{ justifyContent: "space-between" }}>
+                <Typography
+                  color="light"
+                  variant="h5"
+                  nowrap
+                  style={[
+                    styles.label,
+                    (status?.canceled) ? styles.canceled : {},
+                  ]}
+                >
+                  {name}
                 </Typography>
+              </Stack>
+              {variant !== "separator" && (
+                <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
+                    <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
+                      <Papicons.MapPin />
+                    </Icon>
+                    <Typography nowrap color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {room || t("No_Course_Room")}
+                    </Typography>
+                  </View>
+                  <View
+                    style={[
+                      styles.separator,
+                      { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
+                    ]}
+                  />
+                  <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
+                    <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
+                      <Papicons.User />
+                    </Icon>
+                    <Typography nowrap color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
+                      {teacher}
+                    </Typography>
+                  </View>
+                </Stack>
+              )}
+              {status && !status.canceled && variant !== "separator" && (
+                <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 6 : 0 }}>
+                  {!!(status.label && status.label !== "") &&
+                    <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
+                      <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
+                        {status.label}
+                      </Typography>
+                    </Stack>
+                  }
+                  <Typography color="light" variant="h4" style={[styles.statusDuration]}>
+                    {formatDuration(duration)}
+                  </Typography>
+                </View>
               )}
             </Stack>
-            {variant !== "separator" && (
-              <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
-                  <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
-                    <Papicons.MapPin />
-                  </Icon>
-                  <Typography nowrap color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {room || t("No_Course_Room")}
-                  </Typography>
-                </View>
-                <View
-                  style={[
-                    styles.separator,
-                    { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" }
-                  ]}
-                />
-                <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
-                  <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
-                    <Papicons.User />
-                  </Icon>
-                  <Typography nowrap color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
-                    {teacher}
-                  </Typography>
-                </View>
-              </Stack>
-            )}
-            {status && !status.canceled && variant !== "separator" && (
-              <View style={{ alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label && status.label !== "" ? 6 : 0 }}>
-                {!!(status.label && status.label !== "") &&
-                  <Stack radius={300} backgroundColor="#FFFFFF" style={styles.statusLabelContainer}>
-                    <Typography color="light" variant="h4" style={[styles.statusLabel, { color: color }]}>
-                      {status.label}
-                    </Typography>
-                  </Stack>
-                }
-                <Typography color="light" variant="h4" style={[styles.statusDuration]}>
-                  {formatDuration(duration)}
-                </Typography>
-              </View>
-            )}
-          </Stack>
-        </Pressable>
-      </View>
+          </AnimatedPressable>
+        </View>
+      )}
     </Stack>
   );
 });
