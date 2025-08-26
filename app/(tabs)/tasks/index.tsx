@@ -239,7 +239,7 @@ export default function TabOneScreen() {
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        pattern="checks"
+        pattern="cross"
         data={memoizedData}
         initialNumToRender={2}
         recycleItems={true}

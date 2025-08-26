@@ -1,6 +1,6 @@
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -19,6 +19,7 @@ import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
+import { log } from "@/utils/logger/logger";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -118,7 +119,7 @@ const SettingsIndex = () => {
     }
   ]
 
-  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string }> = [
+  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void }> = [
     {
       icon: <Papicons.Palette />,
       title: "Personnalisation",
@@ -135,13 +136,15 @@ const SettingsIndex = () => {
       icon: <Papicons.Card />,
       title: "Cartes",
       description: "Cantine, accès",
-      color: "#0059DD"
+      color: "#0059DD",
+      onPress: () => router.push("./cards")
     },
     {
       icon: <Papicons.Sparkles />,
       title: "Magic+",
       description: "Fonctions I.A",
       color: "#DD007D"
+
     }
   ]
 
@@ -154,7 +157,7 @@ const SettingsIndex = () => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <Pressable style={{ flex: 1, width: "50%" }} key={button.title}>
+                <Pressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
                   <Stack
                     flex
                     card
