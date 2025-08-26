@@ -1,7 +1,7 @@
 import { Papicons } from '@getpapillon/papicons';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { AccountKind, createSessionHandle, loginCredentials } from 'pawnote';
+import { AccountKind, createSessionHandle, loginCredentials, SecurityError } from 'pawnote';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
 import Reanimated, {
@@ -259,8 +259,20 @@ export default function PronoteLoginWithCredentials() {
                   kind: AccountKind.STUDENT,
                   username: username.trim(),
                   password: password.trim()
-                })
-
+                }).catch((error) => {
+                  if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+                    router.push({
+                      pathname: "/(onboarding)/pronote/2fa",
+                      params: {
+                        error: JSON.stringify(error),
+                        session: JSON.stringify(session),
+                        deviceId: device
+                      }
+                    })
+                  } else {
+                    throw error;
+                  }
+                });
               } catch (error) {
                 return alert.showAlert({
                   title: "Identifiants incorrects",
