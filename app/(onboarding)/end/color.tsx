@@ -74,7 +74,10 @@ export default function ChooseColorScreen() {
       <View style={{ marginTop: 40, padding: 20, flex: 1, gap: 22 }}>
         <View>
           <Typography color={adjust(selectedColor, -0.3)} variant="h4">Avant de terminer</Typography>
-          <Typography color={adjust(selectedColor, -0.3)} variant="h1">Choisis une couleur de thème</Typography>
+          <Stack gap={0}>
+            <Typography color={adjust(selectedColor, -0.3)} variant="h2">Choisis une</Typography>
+            <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, -0.3)} variant="h2">couleur de thème</Typography>
+          </Stack>
         </View>
         <FlatList
           scrollEnabled={false}
@@ -82,6 +85,7 @@ export default function ChooseColorScreen() {
           numColumns={3}
           renderItem={({ item }) => (
             <ColorSelector
+              selected={selectedColor === item.mainColor}
               mainColor={item.mainColor}
               backgroundColor={item.backgroundColor}
               name={item.name}
@@ -91,12 +95,13 @@ export default function ChooseColorScreen() {
               }}
             />
           )}
+          ListFooterComponent={<Typography style={{ paddingTop: 10, flex: 1 }} color="#7F7F7F" variant="caption">La couleur que tu choisis ici s’appliquera sur la page d’accueil de Papillon.</Typography>}
+          ListFooterComponentStyle={{ flex: 1 }}
           keyExtractor={item => item.name}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ justifyContent: "space-between" }}
-          style={{ maxHeight: 240 }}
+          style={{ maxHeight: 270 }}
         />
-        <Typography color="#7F7F7F" variant="caption">La couleur que tu choisis ici s’appliquera sur la page d’accueil de Papillon.</Typography>
         <Button
           title="Terminer"
           onPress={async () => {
@@ -124,7 +129,7 @@ export default function ChooseColorScreen() {
   );
 }
 
-function ColorSelector({ mainColor, backgroundColor, name, onPress }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void }) {
+function ColorSelector({ mainColor, backgroundColor, name, onPress, selected }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void, selected: boolean }) {
   return (
     <AnimatedPressable
       onPress={() => {
@@ -132,7 +137,7 @@ function ColorSelector({ mainColor, backgroundColor, name, onPress }: { mainColo
           onPress()
         }
       }}
-      style={{ flex: 1, margin: 4, alignItems: "center", backgroundColor: backgroundColor, borderColor: "#00000026", borderWidth: 2, borderRadius: 25, paddingVertical: 10, paddingHorizontal: 29, alignSelf: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.07, shadowRadius: 5 }}
+      style={{ flex: 1, margin: 4, alignItems: "center", backgroundColor: backgroundColor, borderColor: selected ? mainColor : "#00000026", borderWidth: selected ? 4 : 2, borderRadius: 25, paddingVertical: 10, paddingHorizontal: selected ? 20 : 26, alignSelf: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.07, shadowRadius: 5 }}
     >
       <View style={{
         width: 44,
@@ -167,6 +172,7 @@ import { useAccountStore } from "@/stores/account";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 const PapillonLogo = ({ color }: { color: string }) => (

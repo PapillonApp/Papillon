@@ -254,7 +254,9 @@ export function getSupportedRestaurants(redirect: (path: { pathname: string }) =
             hasLimitedSupport: false,
             image: require("@/assets/images/ard.png"),
             type: "main",
-            onPress: () => { }
+            onPress: () => {
+                redirect({ pathname: '../ard/credentials' });
+            }
         },
         {
             name: "izly",
