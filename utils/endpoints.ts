@@ -1,2 +1,3 @@
 // URL pour Magic+
-export const MAGIC_URL = "http://192.168.1.124:8000";
+export const MAGIC_URL =
+  "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json";

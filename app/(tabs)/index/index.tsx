@@ -218,6 +218,7 @@ export default function TabOneScreen() {
         />
       )}
 
+
       <TabFlatList
         translucent
         backgroundColor="transparent"
@@ -380,6 +381,13 @@ export default function TabOneScreen() {
             buttonLabel: "Aller",
             dev: false
           },
+          {
+            icon: <Papicons.Butterfly />,
+            title: "Refresh le Model",
+            onPress: () => ModelManager.init(),
+            buttonLabel: "Aller",
+            dev: false
+          },
         ]}
         renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {
@@ -423,6 +431,7 @@ export default function TabOneScreen() {
           )
         }}
       />
+
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
