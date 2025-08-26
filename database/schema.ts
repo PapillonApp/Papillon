@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 21,
+  version: 23,
   tables: [
     tableSchema({
       name: 'events',
@@ -57,7 +57,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'news',
       columns: [
-        { name: 'newsId', type: 'string' },
+        { name: 'newsId', type: 'string', isIndexed: true },
         { name: 'title', type: 'string' },
         { name: 'createdAt', type: 'number' },
         { name: 'acknowledged', type: 'boolean' },
@@ -241,18 +241,18 @@ export const mySchema = appSchema({
         { name: 'dateOfBirth', type: 'number' },
       ]
     }),
-		tableSchema({
-			name: "balances",
-			columns: [
-				{ name: 'createdByAccount', type: 'string' },
-				{ name: 'balanceId', type: 'string' },
-				{ name: 'amount', type: 'number' },
-				{ name: 'currency', type: 'string' },
-				{ name: 'lunchRemaining', type: 'number' },
-				{ name: 'lunchPrice', type: 'number' },
-				{ name: 'label', type: 'string' }
-			]
-		}),
+    tableSchema({
+      name: "balances",
+      columns: [
+        { name: 'createdByAccount', type: 'string' },
+        { name: 'balanceId', type: 'string' },
+        { name: 'amount', type: 'number' },
+        { name: 'currency', type: 'string' },
+        { name: 'lunchRemaining', type: 'number' },
+        { name: 'lunchPrice', type: 'number' },
+        { name: 'label', type: 'string' }
+      ]
+    }),
     tableSchema({
       name: "canteentransactions",
       columns: [

@@ -1,7 +1,8 @@
-import { Services } from '@/stores/account/types';
 import * as Papicons from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
+
+import { Services } from '@/stores/account/types';
 
 export interface SupportedService {
     name: string;
