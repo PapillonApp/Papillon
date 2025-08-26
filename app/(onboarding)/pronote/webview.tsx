@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
 import { createRef, useState } from "react";
@@ -96,7 +96,7 @@ export default function WebViewScreen() {
         ]}
       >
         <Icon size={26} fill="#00000080" papicon>
-          <Papicons.ArrowLeft />
+          <Papicons name={"ArrowLeft"} />
         </Icon>
       </Pressable>
 

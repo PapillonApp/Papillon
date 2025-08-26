@@ -1,4 +1,4 @@
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
@@ -115,7 +115,7 @@ export default function ChooseColorScreen() {
           size='large'
           icon={
             <Icon papicon size={24} fill={"white"} style={{ backgroundColor: "transparent" }}>
-              <Papicons.Butterfly />
+              <Papicons name={"Butterfly"} />
             </Icon>
           }
         />

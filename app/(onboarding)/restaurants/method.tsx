@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
@@ -245,7 +245,7 @@ export default function WelcomeScreen() {
         }}
       >
         <Icon size={26} fill={"#fff"} papicon>
-          <Papicons.ArrowLeft />
+          <Papicons name={"ArrowLeft"} />
         </Icon>
       </Pressable>
     </ViewContainer>

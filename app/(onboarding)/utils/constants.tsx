@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 
@@ -69,7 +69,7 @@ export function getSupportedServices(redirect: (path: { pathname: string, option
             name: "university",
             title: "Service universitaire",
             type: "other",
-            icon: <Papicons.Star />,
+            icon: <Papicons name={"Star"} />,
             onPress: () => {
                 redirect({ pathname: './university/method' });
 
@@ -81,7 +81,7 @@ export function getSupportedServices(redirect: (path: { pathname: string, option
             name: "university",
             title: "Service restauratif",
             type: "other",
-            icon: <Papicons.Cutlery />,
+            icon: <Papicons name={"Cutlery"} />,
             onPress: () => {
                 redirect({ pathname: './restaurants/method' });
 
@@ -192,7 +192,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             id: "map",
             availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Utiliser ma position",
-            icon: <Papicons.MapPin />,
+            icon: <Papicons name={"MapPin"} />,
             onPress: async () => {
                 redirect({ pathname: './map' });
             }
@@ -201,7 +201,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             id: "search",
             availableFor: [Services.PRONOTE, Services.SKOLENGO],
             description: "Rechercher une ville",
-            icon: <Papicons.Search />,
+            icon: <Papicons name={"Search"} />,
             onPress: () => {
                 redirect({ pathname: './search' })
             }
@@ -210,7 +210,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             id: "qrcode",
             availableFor: [Services.PRONOTE],
             description: "J'ai un QR-Code",
-            icon: <Papicons.QrCode />,
+            icon: <Papicons name={"QrCode"} />,
             onPress: () => {
                 console.log("qrcode pressed")
             }
@@ -219,7 +219,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
             id: "url",
             availableFor: [Services.PRONOTE],
             description: "J'ai une URL de connexion",
-            icon: <Papicons.Link />,
+            icon: <Papicons name={"Link"} />,
             onPress: () => {
                 redirect({ pathname: '../pronote/url' });
             }

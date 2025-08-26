@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { authenticateWithCredentials, Host } from 'turboself-api'
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
@@ -261,7 +261,7 @@ export default function TurboSelfSelectHost() {
                   }}
                 >
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
-                    <Papicons.User />
+                    <Papicons name={"User"} />
                   </Icon>
                   <Typography variant="body2" nowrap ellipsizeMode="tail">
                     {`${(item as Host).lastName.toUpperCase()} ${(item as Host).firstName}`}
@@ -283,7 +283,7 @@ export default function TurboSelfSelectHost() {
           ]}
         >
           <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

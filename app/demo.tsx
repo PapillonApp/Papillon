@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import { Hamburger } from "lucide-react-native";
 import React, { ScrollView, StyleSheet, View } from "react-native";
 
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import Course from "@/ui/components/Course";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
@@ -113,7 +113,7 @@ export default function TabOneScreen() {
           magicInfo={{
             label: "Dans 20 minutes",
             icon: ({ color }) => <Icon papicon size={24} fill={color}>
-              <Papicons.Clock />
+              <Papicons name={"Clock"} />
             </Icon>,
           }}
         />

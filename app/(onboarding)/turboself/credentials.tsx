@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -221,7 +221,7 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"User"} />
               </Icon>
               <TextInput
                 placeholder="Nom d'utilisateur"
@@ -250,7 +250,7 @@ export default function TurboSelfLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"Lock"} />
               </Icon>
               <TextInput
                 placeholder="Mot de passe"
@@ -336,7 +336,7 @@ export default function TurboSelfLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

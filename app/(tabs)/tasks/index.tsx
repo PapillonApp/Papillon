@@ -24,7 +24,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
@@ -37,7 +37,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Check />
+        <Papicons name={"Check"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Tasks_NoTasks_Title')}

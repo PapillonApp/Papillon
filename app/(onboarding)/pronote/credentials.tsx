@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { AccountKind, createSessionHandle, loginCredentials } from 'pawnote';
@@ -197,7 +197,7 @@ export default function PronoteLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"User"} />
               </Icon>
               <TextInput
                 placeholder="Nom d'utilisateur"
@@ -226,7 +226,7 @@ export default function PronoteLoginWithCredentials() {
                 fill="#5B5B5B"
                 style={staticStyles.iconBackground}
               >
-                <Papicons.Link />
+                <Papicons name={"Lock"} />
               </Icon>
               <TextInput
                 placeholder="Mot de passe"
@@ -326,7 +326,7 @@ export default function PronoteLoginWithCredentials() {
           ]}
         >
           <Icon size={26} fill={local.previousPage === "map" ? "#FFFFFF" : "#00000080"} papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >
