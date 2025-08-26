@@ -9,7 +9,7 @@ import Stack from '@/ui/components/Stack';
 
 import { getProfileColorByName } from "@/utils/chats/colors"
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import Reanimated, {
@@ -372,7 +372,7 @@ export default function SelectSchoolOnMap() {
               hAlign="center"
             >
               <Icon papicon size={65} fill="#C9C9C9">
-                <Papicons.Search />
+                <Papicons name={"Search"} />
               </Icon>
               <Typography color="#7F7F7F" variant="h4">
                 Aucun établissement
@@ -393,7 +393,7 @@ export default function SelectSchoolOnMap() {
           ]}
         >
           <Icon size={26} fill="white" papicon>
-            <Papicons.ArrowLeft />
+            <Papicons name={"ArrowLeft"} />
           </Icon>
         </Pressable>
       </ViewContainer >

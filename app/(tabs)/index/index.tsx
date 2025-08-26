@@ -18,7 +18,7 @@ import { Colors } from "@/app/(onboarding)/end/color";
 import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
 
-import * as Papicons from "@getpapillon/papicons";
+import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Course from "@/ui/components/Course";
@@ -218,7 +218,6 @@ export default function TabOneScreen() {
         />
       )}
 
-
       <TabFlatList
         translucent={true}
         backgroundColor="transparent"
@@ -291,7 +290,7 @@ export default function TabOneScreen() {
         gap={12}
         data={[
           courses.length > 0 && {
-            icon: <Papicons.Calendar />,
+            icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
@@ -325,7 +324,7 @@ export default function TabOneScreen() {
             )
           },
           grades.length > 0 && {
-            icon: <Papicons.Grades />,
+            icon: <Papicons name={"Grades"} />,
             title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
@@ -375,28 +374,28 @@ export default function TabOneScreen() {
             )
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Onboarding",
             redirect: "/(onboarding)/welcome",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Palette />,
+            icon: <Papicons name={"Palette"} />,
             title: "Onboarding Color",
             redirect: "/(onboarding)/end/color",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
@@ -432,7 +431,7 @@ export default function TabOneScreen() {
                           {item.buttonLabel ?? "Afficher plus"}
                         </Typography>
                         <Icon size={20} papicon opacity={0.5}>
-                          <Papicons.ArrowRightUp />
+                          <Papicons name={"ArrowRightUp"} />
                         </Icon>
                       </Stack>
                     </AnimatedPressable>
@@ -447,7 +446,6 @@ export default function TabOneScreen() {
         }}
         paddingTop={0}
       />
-
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
