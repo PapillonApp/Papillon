@@ -23,7 +23,7 @@ export default function CardView() {
   return (
     <View style={{ padding: 20, gap: 15 }}>
       <SettingsHeader color="#D9E6FA" />
-      {selfCompatible?.length > 0 ? (
+      {(selfCompatible ?? []).length > 0 ? (
         <>
           <Typography style={{ opacity: 0.5 }}>Mes cartes</Typography>
           <View style={{
