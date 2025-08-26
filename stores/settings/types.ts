@@ -1,3 +1,5 @@
+import { Colors } from "@/app/(onboarding)/end/color";
+
 export interface SettingsStorage {
   personalization: Personalization;
   mutateProperty: <T extends keyof SettingsState>(
@@ -11,9 +13,8 @@ export interface SettingsState {
 }
 
 export interface Personalization {
-  array: any;
   profilePictureB64?: string;
-  colorSelected?: string;
+  colorSelected?: Colors;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
 }
