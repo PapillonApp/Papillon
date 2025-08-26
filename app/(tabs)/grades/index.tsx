@@ -6,7 +6,6 @@ import { t } from "i18next";
 import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
 import React, { act, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Platform, RefreshControl, Text, useWindowDimensions, View } from "react-native";
-import { LineGraph } from 'react-native-graph';
 import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -421,24 +420,6 @@ export default function TabOneScreen() {
           <ActivityIndicator size="large" color="#29947A" />
         </View>
       }>
-        <LineGraph
-          points={graphAxis}
-          animated={true}
-          color="#29947A"
-          enablePanGesture={true}
-          onPointSelected={handleGestureUpdate}
-          onGestureEnd={handleGestureEnd}
-          verticalPadding={30}
-          horizontalPadding={30}
-          lineThickness={5}
-          panGestureDelay={0}
-          enableIndicator={true}
-          indicatorPulsating={true}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        />
       </React.Suspense>
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
