@@ -191,7 +191,7 @@ function NewsSection() {
             </Typography>
             <Pressable onPress={() => {
               router.push({
-                pathname: "/(news)/news",
+                pathname: "/(features)/(news)/news",
                 params: {
                   news: JSON.stringify(news)
                 }
@@ -199,7 +199,7 @@ function NewsSection() {
             }}>
               <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
                 <Typography style={{ marginBottom: -3 }} inline color="secondary">
-                  {news.filter(news => !news.acknowledged).length} {news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
+                  {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
                 <Icon papicon opacity={0.5} size={20}>
                   <Papicons.ArrowRightUp />
@@ -209,7 +209,14 @@ function NewsSection() {
           </Stack>
           <List marginBottom={0} radius={24}>
             {news.map((item, index) => (
-              <Item key={index}>
+              <Item key={index} onPress={() => {
+                router.push({
+                  pathname: "/(features)/(news)/specific",
+                  params: {
+                    news: JSON.stringify(item)
+                  }
+                })
+              }}>
                 <Typography variant="title" color="text">
                   {item.title}
                 </Typography>

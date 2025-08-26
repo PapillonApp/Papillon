@@ -288,7 +288,7 @@ export default function TabOneScreen() {
       <Grade
         isLast={uiLast}
         isFirst={uiFirst}
-        title={item.description ? item.description : t('Grade_NoDescription')}
+        title={item.description ? item.description : t('Grade_NoDescription', { subject: subjectInfo.name })}
         date={item.givenAt.getTime()}
         score={(item.studentScore?.value ?? 0)}
         disabled={item.studentScore?.disabled}
@@ -296,7 +296,7 @@ export default function TabOneScreen() {
         outOf={item.outOf?.value ?? 20}
         color={subjectInfo.color}
         onPress={() => {
-          navigation.navigate('grade', {
+          navigation.navigate('(modals)/grade', {
             grade: item,
             subjectInfo: subjectInfo,
             allGrades: newSubjects.flatMap(subject => subject.grades)
@@ -466,7 +466,7 @@ export default function TabOneScreen() {
           status={item.studentScore?.status}
           date={item.givenAt}
           onPress={() => {
-            navigation.navigate('grade', {
+            navigation.navigate('(modals)/grade', {
               grade: item,
               subjectInfo: subjectInfo,
               allGrades: newSubjects.flatMap(subject => subject.grades)

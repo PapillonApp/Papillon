@@ -8,50 +8,49 @@ import { getInitials } from "@/utils/chats/initials";
 import { formatRelativeTime } from "@/utils/date";
 import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView, Pressable, FlatList } from "react-native";
 import * as Papicons from "@getpapillon/papicons";
+import TableFlatList from "@/ui/components/TableFlatList";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();
   const news = JSON.parse(String(newsParam)) as News[];
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20, flex: 1, gap: 20 }}>
-      {news.map((item, index) => (
-        <NewsItem
-          key={item.id}
-          news={item}
-        />
-      ))}
-    </ScrollView>
+    <FlatList
+      data={news}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => <NewsItem news={item} />}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{
+        gap: 8,
+        padding: 16,
+        overflow: "visible"
+      }}
+      style={{
+        overflow: "visible"
+      }}
+    />
   );
 }
 
 function NewsItem({ news, important }: { news: News; important?: boolean }) {
-  const { author, title, content, createdAt } = news;
+  const { author, title, content, createdAt, attachments } = news;
   const { colors } = useTheme();
 
   const handlePress = () => {
     router.push({
-      pathname: "/(news)/specific",
+      pathname: "/(features)/(news)/specific",
       params: { news: JSON.stringify(news) },
     });
   };
 
   return (
-    <Pressable onPress={handlePress}>
+    <AnimatedPressable onPress={handlePress} style={{ overflow: "visible" }}>
       <Stack
         backgroundColor={important ? "#F5B2F1" : "transparent"}
-        style={{
-          borderRadius: 25,
-          shadowColor: "rgba(0, 0, 0, 0.2)",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.5,
-          shadowRadius: 4,
-          elevation: 5,
-          borderWidth: 1,
-          borderColor: colors.border,
-        }}
+        card
       >
         {important && (
           <Stack
@@ -66,7 +65,8 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
         )}
         <View
           style={{
-            padding: 15,
+            paddingHorizontal: 16,
+            paddingVertical: 10,
             flexDirection: "row",
             alignItems: "center",
             gap: 10,
@@ -86,12 +86,12 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
               {cleanContent(content)}
             </Typography>
             <Typography color={`${colors.text}80`}>
-              {formatRelativeTime(createdAt)}
+              {formatRelativeTime(createdAt)} {attachments.length > 0 && ` • (${attachments.length} pièce(s) jointe(s))`}
             </Typography>
           </Stack>
         </View>
       </Stack>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useNavigation, useRouter } from "expo-router";
 import * as pronote from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -54,6 +54,7 @@ export default function TabOneScreen() {
   const [grades, setGrades] = useState<Grade[]>([]);
 
   const router = useRouter();
+  const navigation = useNavigation();
 
   const Initialize = async () => {
     await initializeAccountManager()
@@ -81,7 +82,6 @@ export default function TabOneScreen() {
     for (const period of gradePeriods) {
       console.log(period.start.getTime() > date && period.end.getTime() > date)
       if (period.start.getTime() > date && period.end.getTime() > date) {
-        console.log("Pushing valid period", period.name)
         validPeriods.push(period);
       }
     }
@@ -97,7 +97,7 @@ export default function TabOneScreen() {
       });
     }
 
-    setGrades(grades)
+    setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
 
   useEffect(() => {
@@ -217,10 +217,10 @@ export default function TabOneScreen() {
       )}
 
       <TabFlatList
-        translucent
+        translucent={true}
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
-        height={160}
+        height={180}
         header={
           <>
             <FlatList
@@ -228,7 +228,7 @@ export default function TabOneScreen() {
                 backgroundColor: "transparent",
                 borderRadius: 26,
                 borderCurve: "continuous",
-                marginTop: 16
+                paddingBottom: 12
               }}
               horizontal
               data={headerItems}
@@ -306,6 +306,15 @@ export default function TabOneScreen() {
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
                     onPress={() => {
+                      navigation.navigate('(modals)/course', {
+                        course: item,
+                        subjectInfo: {
+                          id: item.subjectId,
+                          name: item.subject,
+                          color: getSubjectColor(item.subject),
+                          emoji: getSubjectEmoji(item.subject),
+                        }
+                      });
                     }}
                   />
                 ))}
@@ -345,6 +354,18 @@ export default function TabOneScreen() {
                     status={item.studentScore?.status}
                     color={getSubjectColor(item.subjectName)}
                     date={item.givenAt}
+                    onPress={() => {
+                      navigation.navigate('(modals)/grade', {
+                        grade: item,
+                        subjectInfo: {
+                          id: item.subjectId,
+                          name: item.subjectName,
+                          emoji: getSubjectEmoji(item.subjectName),
+                          color: getSubjectColor(item.subjectName)
+                        },
+                        allGrades: grades
+                      });
+                    }}
                   />
                 )}
               />
@@ -378,8 +399,9 @@ export default function TabOneScreen() {
             buttonLabel: "Aller",
             dev: false
           },
-        ]}
-        renderItem={({ item }) => {
+        ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
+        keyExtractor={(item, index) => item.title + index}
+        renderItem={({ item, index }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }
@@ -420,6 +442,7 @@ export default function TabOneScreen() {
             </Reanimated.View>
           )
         }}
+        paddingTop={0}
       />
 
       <NativeHeaderSide side="Left">

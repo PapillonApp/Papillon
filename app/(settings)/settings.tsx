@@ -19,7 +19,6 @@ import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
-import { ro } from "date-fns/locale";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -54,7 +53,7 @@ const SettingsIndex = () => {
   }, [account]);
 
   const logout = useCallback(() => {
-    console.log(account)
+    // console.log(account)
     // accountStore.removeAccount(account);
     // router.replace('./(onboarding)');
   }, [account, accountStore, router]);
