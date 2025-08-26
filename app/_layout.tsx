@@ -17,6 +17,8 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
+import { useAccountStore } from '@/stores/account';
+import { AppColors } from './(onboarding)/end/color';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -101,9 +103,22 @@ export default function RootLayout() {
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const store = useAccountStore.getState()
+  const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
+
+  const selectedColor = lastUsedAccount?.selectedColor;
+  const color = AppColors[selectedColor];
+
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    return colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    const newScheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    return {
+      ...newScheme,
+      colors: {
+        ...newScheme.colors,
+        primary: color.mainColor ?? newScheme.colors.primary,
+      },
+    };
   }, [colorScheme]);
 
   // Memoize background color to prevent string recreation

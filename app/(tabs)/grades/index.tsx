@@ -556,7 +556,7 @@ export default function TabOneScreen() {
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated>
-                <AnimatedNumber variant="h1" color="primary">
+                <AnimatedNumber variant="h1" color="#29947A">
                   {transformedData.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
                 </AnimatedNumber>
               </Dynamic>
@@ -567,7 +567,7 @@ export default function TabOneScreen() {
               </Dynamic>
             </Stack>
             <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"currentAlgorithm:" + currentAlgorithm}>
-              <Typography variant="title" color="primary" align="left">
+              <Typography variant="title" color="#29947A" align="left">
                 {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
               </Typography>
             </Dynamic>
