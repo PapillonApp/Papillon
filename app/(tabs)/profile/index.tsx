@@ -257,7 +257,7 @@ function Cards() {
       <Pressable onPress={() => {
         router.push("/(tabs)/profile/cards")
       }}>
-        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
           <Icon
             fill={colors.text}
             opacity={0.6}
