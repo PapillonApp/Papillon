@@ -7,7 +7,7 @@ export default class News extends Model {
   static table = 'news';
 
   @field('createdByAccount') createdByAccount: string;
-  @field('newsId') newsId: string;
+  @field('newsId') newsId!: string;
   @field('title') title: string;
   @field('createdAt') createdAt: number;
   @field('acknowledged') acknowledged: boolean;

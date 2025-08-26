@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Papicons from "@getpapillon/papicons"
-import Reanimated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -85,7 +85,7 @@ export default function ChooseColorScreen() {
           title="Terminer"
           onPress={async () => {
             if (local.accountId) {
-              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), Number(local.color))
+              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), color)
               await initializeAccountManager()
               router.push("../../(tabs)" as any)
             }
@@ -150,22 +150,18 @@ const styles = StyleSheet.create({
   }
 });
 
+import { useTheme } from "@react-navigation/native";
+import { router, useGlobalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg"
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
-import { Butterfly } from "@getpapillon/papicons";
+
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
-import { useTheme } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
-import { router, useGlobalSearchParams } from "expo-router";
-import { account } from "pawnote";
-import { Account } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
-import { initializeAccountManager } from "@/services/shared";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 const PapillonLogo = ({ color }: { color: string }) => (
   <Svg
     width={149}
