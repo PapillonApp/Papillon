@@ -137,7 +137,7 @@ export default function TabOneScreen() {
   }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
-  const bottomHeight = 0;
+  const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
