@@ -64,7 +64,7 @@ const staticStyles = StyleSheet.create({
   textInput: {
     color: "#5B5B5B",
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "600",
     flex: 1,
   },
   iconBackground: {
