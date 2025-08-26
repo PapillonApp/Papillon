@@ -1,8 +1,9 @@
+import { Papicons } from '@getpapillon/papicons';
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
-import { AlignCenter, ArrowUpRight, BackpackIcon, BookOpenTextIcon, CreditCardIcon, MessageCircleIcon, SchoolIcon, SettingsIcon, SofaIcon, User2Icon, UserCircle2, UserPenIcon } from "lucide-react-native";
+import { SettingsIcon, UserPenIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Dimensions, Image, Platform, Pressable, View } from "react-native";
 import {
@@ -13,8 +14,13 @@ import {
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Papicons } from '@getpapillon/papicons';
-
+import { getManager } from "@/services/shared";
+import { Attendance } from "@/services/shared/attendance";
+import { Chat } from "@/services/shared/chat";
+import { Period } from "@/services/shared/grade";
+import { News } from "@/services/shared/news";
+import { Account } from "@/stores/account/types";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";
@@ -26,16 +32,8 @@ import TabFlatList from "@/ui/components/TabFlatList";
 import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import adjust from "@/utils/adjustColor";
-import { getManager } from "@/services/shared";
-import { useAccountStore } from "@/stores/account";
-import { Period } from "@/services/shared/grade";
-import { Account } from "@/stores/account/types";
-import { News } from "@/services/shared/news";
-import { Absence, Attendance } from "@/services/shared/attendance";
-import { Chat } from "@/services/shared/chat";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import adjust from "@/utils/adjustColor";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 
 function Tabs() {
@@ -53,7 +51,7 @@ function Tabs() {
       color: "#C50066",
       onPress: () => {
         router.push({
-          pathname: "/(tabs)/profile/attendance",
+          pathname: "/(features)/attendance",
           params: {
             periods: JSON.stringify(attendancePeriods),
             currentPeriod: JSON.stringify(getCurrentPeriod(attendancePeriods)),
@@ -193,7 +191,7 @@ function NewsSection() {
             </Typography>
             <Pressable onPress={() => {
               router.push({
-                pathname: "/(news)/news",
+                pathname: "/(features)/(news)/news",
                 params: {
                   news: JSON.stringify(news)
                 }
@@ -201,7 +199,7 @@ function NewsSection() {
             }}>
               <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
                 <Typography style={{ marginBottom: -3 }} inline color="secondary">
-                  {news.filter(news => !news.acknowledged).length} {news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single")}
+                  {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
                 <Icon papicon opacity={0.5} size={20}>
                   <Papicons name={"ArrowRightUp"} />
@@ -211,7 +209,14 @@ function NewsSection() {
           </Stack>
           <List marginBottom={0} radius={24}>
             {news.map((item, index) => (
-              <Item key={index}>
+              <Item key={index} onPress={() => {
+                router.push({
+                  pathname: "/(features)/(news)/specific",
+                  params: {
+                    news: JSON.stringify(item)
+                  }
+                })
+              }}>
                 <Typography variant="title" color="text">
                   {item.title}
                 </Typography>
@@ -240,7 +245,9 @@ function Cards() {
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
     >
-      <Pressable>
+      <Pressable onPress={() => {
+        router.push("/(tabs)/profile/cards")
+      }}>
         <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
           <Icon
             fill={colors.text}
@@ -303,12 +310,12 @@ export default function TabOneScreen() {
   }, [manager]);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) return [null, null, null, null];
+    if (!account) { return [null, null, null, null]; }
 
-    let firstName = account.firstName;
-    let lastName = account.lastName;
-    let level = account.className;
-    let establishment = account.schoolName;
+    const firstName = account.firstName;
+    const lastName = account.lastName;
+    const level = account.className;
+    const establishment = account.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account]);

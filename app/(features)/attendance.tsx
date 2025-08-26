@@ -8,7 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber } from "../grades";
+import { getPeriodName, getPeriodNumber } from "../(tabs)/grades";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
@@ -131,118 +131,137 @@ export default function AttendanceView() {
                 </Stack>
               </Stack>
 
-              <Stack
-                direction="horizontal"
-                hAlign="center"
-                style={{
-                  justifyContent: "space-between"
-                }}
-              >
-                <Stack direction="horizontal" hAlign="center">
-                  <Icon papicon opacity={0.5}>
+              {attendances.some(attendance => attendance.absences.length == 0) && attendances.some(attendance => attendance.delays.length == 0) && (
+                <Stack vAlign="center" hAlign="center" margin={16}>
+                  <Icon papicon size={32}>
                     <Papicons name={"Ghost"} />
                   </Icon>
-                  <Typography variant="h5" style={{ opacity: 0.5 }}>Absences</Typography>
+                  <Typography variant="h4" color="text" align="center">
+                    Aucun événement
+                  </Typography>
+                  <Typography variant="body1" align="center" color="secondary">
+                    Pas d'absences ou de retards enregistrés pour cette période.
+                  </Typography>
                 </Stack>
-                <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedAbsenceCount}</Typography>
-              </Stack>
-              <View style={{ flex: 1 }}>
-                <List>
-                  {attendances.map((attendance, index) =>
-                    attendance.absences.map((absence, absenceIndex) => {
-                      const fromDate = new Date(absence.from);
-                      const day = fromDate.getDate().toString().padStart(2, '0');
-                      const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
-                      return (
-                        <Item key={`${index}-${absenceIndex}`}>
-                          <Trailing>
-                            <Stack direction="horizontal" hAlign="center">
-                              {!absence.justified && (
-                                <Icon papicon fill={dangerColor}>
-                                  <Papicons name={"Minus"} />
-                                </Icon>
-                              )}
-                              <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: absence.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
-                                <Typography variant="title" color={absence.justified ? colors.text : dangerColor}>{String(Math.floor(absence.timeMissed / 60)).padStart(2, '0')}h{String(absence.timeMissed % 60).padStart(2, '0')}</Typography>
-                              </View>
-                            </Stack>
-                          </Trailing>
-                          <Typography>
-                            {absence.reason || "Aucune raison"}
-                          </Typography>
-                          <Typography color="#7F7F7F">
-                            {day}/{month}
-                          </Typography>
-                        </Item>
-                      );
-                    })
-                  )}
-                </List>
-              </View>
-              <Stack
-                direction="horizontal"
-                hAlign="center"
-                style={{
-                  justifyContent: "space-between"
-                }}
-              >
-                <Stack direction="horizontal" hAlign="center">
-                  <Icon papicon opacity={0.5}>
-                    <Papicons name={"Clock"} />
-                  </Icon>
-                  <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
-                </Stack>
-                <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedDelayCount}</Typography>
-              </Stack>
-              <View style={{ flex: 1 }}>
-                <List>
-                  {attendances.map((attendance, index) =>
-                    attendance.delays.map((delay, absenceIndex) => {
-                      const fromDate = new Date(delay.givenAt);
-                      const day = fromDate.getDate().toString().padStart(2, '0');
-                      const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
-                      return (
-                        <Item key={`${index}-${absenceIndex}`}>
-                          <Trailing>
-                            <Stack direction="horizontal" hAlign="center">
-                              {!delay.justified && (
-                                <Icon papicon fill={dangerColor}>
-                                  <Papicons name={"Minus"} />
-                                </Icon>
-                              )}
-                              <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: delay.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
-                                <Typography variant="title" color={delay.justified ? colors.text : dangerColor}>{delay.duration}m</Typography>
-                              </View>
-                            </Stack>
-                          </Trailing>
-                          <Typography>
-                            {delay.reason || "Aucune raison"}
-                          </Typography>
-                          <Typography color="#7F7F7F">
-                            {day}/{month}
-                          </Typography>
-                        </Item>
-                      );
-                    })
-                  )}
-                </List>
-              </View>
+              )}
+
+              {attendances.some(attendance => attendance.absences.length > 0) && (
+                <>
+                  <Stack
+                    direction="horizontal"
+                    hAlign="center"
+                    style={{
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <Stack direction="horizontal" hAlign="center">
+                      <Icon papicon opacity={0.5}>
+                        <Papicons name={"Ghost"} />
+                      </Icon>
+                      <Typography variant="h5" style={{ opacity: 0.5 }}>Absences</Typography>
+                    </Stack>
+                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedAbsenceCount}</Typography>
+                  </Stack>
+                  <View style={{ flex: 1 }}>
+                    <List>
+                      {attendances.map((attendance, index) =>
+                        attendance.absences.map((absence, absenceIndex) => {
+                          const fromDate = new Date(absence.from);
+                          const day = fromDate.getDate().toString().padStart(2, '0');
+                          const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
+                          return (
+                            <Item key={`${index}-${absenceIndex}`}>
+                              <Trailing>
+                                <Stack direction="horizontal" hAlign="center">
+                                  {!absence.justified && (
+                                    <Icon papicon fill={dangerColor}>
+                                      <Papicons.Minus />
+                                    </Icon>
+                                  )}
+                                  <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: absence.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
+                                    <Typography variant="title" color={absence.justified ? colors.text : dangerColor}>{String(Math.floor(absence.timeMissed / 60)).padStart(2, '0')}h{String(absence.timeMissed % 60).padStart(2, '0')}</Typography>
+                                  </View>
+                                </Stack>
+                              </Trailing>
+                              <Typography>
+                                {absence.reason || "Aucune raison"}
+                              </Typography>
+                              <Typography color="#7F7F7F">
+                                {day}/{month}
+                              </Typography>
+                            </Item>
+                          );
+                        })
+                      )}
+                    </List>
+                  </View>
+                </>
+              )}
+
+              {attendances.some(attendance => attendance.delays.length > 0) && (
+                <>
+                  <Stack
+                    direction="horizontal"
+                    hAlign="center"
+                    style={{
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <Stack direction="horizontal" hAlign="center">
+                      <Icon papicon opacity={0.5}>
+                        <Papicons.Clock />
+                      </Icon>
+                      <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
+                    </Stack>
+                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedDelayCount}</Typography>
+                  </Stack>
+                  <View style={{ flex: 1 }}>
+                    <List>
+                      {attendances.map((attendance, index) =>
+                        attendance.delays.map((delay, absenceIndex) => {
+                          const fromDate = new Date(delay.givenAt);
+                          const day = fromDate.getDate().toString().padStart(2, '0');
+                          const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
+                          return (
+                            <Item key={`${index}-${absenceIndex}`}>
+                              <Trailing>
+                                <Stack direction="horizontal" hAlign="center">
+                                  {!delay.justified && (
+                                    <Icon papicon fill={dangerColor}>
+                                      <Papicons.Minus />
+                                    </Icon>
+                                  )}
+                                  <View style={{ padding: 6, paddingHorizontal: 12, backgroundColor: delay.justified ? "transparent" : dangerBg, borderRadius: 25, borderWidth: 2, borderColor: dangerBorder }}>
+                                    <Typography variant="title" color={delay.justified ? colors.text : dangerColor}>{delay.duration}m</Typography>
+                                  </View>
+                                </Stack>
+                              </Trailing>
+                              <Typography>
+                                {delay.reason || "Aucune raison"}
+                              </Typography>
+                              <Typography color="#7F7F7F">
+                                {day}/{month}
+                              </Typography>
+                            </Item>
+                          );
+                        })
+                      )}
+                    </List>
+                  </View>
+                </>
+              )}
             </View>
           </ScrollView>
-          <NativeHeaderSide side="Left" style={{ marginTop: 15 }}>
+
+          <NativeHeaderSide side="Left">
             <NativeHeaderPressable onPress={() => { router.back() }}>
-              <View style={{
-                backgroundColor: colors.text + 15,
-                padding: 10,
-                borderRadius: 100,
-              }}>
-                <Icon size={26} fill={colors.text + 50} papicon>
-                  <Papicons name={"Cross"} />
-                </Icon>
-              </View>
+              <Icon papicon opacity={0.5}>
+                <Papicons name={"Cross"} />
+              </Icon>
             </NativeHeaderPressable>
           </NativeHeaderSide>
-          <NativeHeaderTitle style={{ marginTop: 4 }}>
+
+          <NativeHeaderTitle style={{ marginTop: 4 }} key={"att:" + period?.name}>
             <MenuView
               key={String(period?.id ?? "")}
               onPressAction={async ({ nativeEvent }) => {
@@ -295,7 +314,7 @@ export default function AttendanceView() {
                   <Typography inline variant="navigation">{getPeriodName(period?.name ?? "")}</Typography>
                 </Dynamic>
                 <Dynamic animated>
-                  <NativeHeaderHighlight>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
+                  <NativeHeaderHighlight v>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
                 </Dynamic>
                 <Dynamic animated>
                   <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />

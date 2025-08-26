@@ -53,7 +53,7 @@ const SettingsIndex = () => {
   }, [account]);
 
   const logout = useCallback(() => {
-    console.log(account)
+    // console.log(account)
     // accountStore.removeAccount(account);
     // router.replace('./(onboarding)');
   }, [account, accountStore, router]);
@@ -91,7 +91,7 @@ const SettingsIndex = () => {
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
-          papicon: <Papicons name={"InfoBox"} />,
+          papicon: <Papicons name={"Logout"} />,
           color: "#a80000",
           onPress: () => {
             Alert.alert(

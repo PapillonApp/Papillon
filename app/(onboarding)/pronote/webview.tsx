@@ -1,15 +1,16 @@
-import Typography from "@/ui/components/Typography";
-import { View, StyleSheet, Pressable } from "react-native";
-import { WebView } from 'react-native-webview';
-import { useGlobalSearchParams, router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
-import { createRef, useState } from "react";
-import uuid from "@/utils/uuid/uuid";
+import { router, useGlobalSearchParams } from 'expo-router';
 import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
+import { createRef, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WebView } from 'react-native-webview';
+
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import Icon from '@/ui/components/Icon';
+import Typography from "@/ui/components/Typography";
+import uuid from "@/utils/uuid/uuid";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -29,7 +30,7 @@ export default function WebViewScreen() {
     );
   }
 
-  let webViewRef = createRef<WebView>();
+  const webViewRef = createRef<WebView>();
   const PRONOTE_COOKIE_EXPIRED = new Date(0).toUTCString();
   const PRONOTE_COOKIE_VALIDATION_EXPIRES = new Date(
     new Date().getTime() + 5 * 60 * 1000
@@ -136,7 +137,7 @@ export default function WebViewScreen() {
                 }
               );
 
-              if (!refresh) throw new Error("Erreur lors de la connexion");
+              if (!refresh) { throw new Error("Erreur lors de la connexion"); }
 
               console.log("Login successful, adding account to store...")
               const schoolName = session.user.resources[0].establishmentName
@@ -169,7 +170,14 @@ export default function WebViewScreen() {
 
             } catch (error) {
               if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-                console.log("2FA authentication required");
+                router.push({
+                  pathname: "/(onboarding)/pronote/2fa",
+                  params: {
+                    error: JSON.stringify(error),
+                    session: JSON.stringify(session),
+                    deviceId: deviceUUID
+                  }
+                })
               } else {
                 console.error("Error during login:", error);
                 throw error;

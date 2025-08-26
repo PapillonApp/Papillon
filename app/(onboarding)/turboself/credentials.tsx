@@ -1,16 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-
-import Typography from '@/ui/components/Typography';
-import Stack from '@/ui/components/Stack';
-
 import { Papicons } from '@getpapillon/papicons';
-import { authenticateWithCredentials } from 'turboself-api'
-import Icon from '@/ui/components/Icon';
-import ViewContainer from '@/ui/components/ViewContainer';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -18,10 +10,17 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import Button from '@/ui/components/Button';
-import uuid from '@/utils/uuid/uuid';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { authenticateWithCredentials } from 'turboself-api'
+
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
+import Button from '@/ui/components/Button';
+import Icon from '@/ui/components/Icon';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
+import ViewContainer from '@/ui/components/ViewContainer';
+import uuid from '@/utils/uuid/uuid';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -78,6 +77,8 @@ export default function TurboSelfLoginWithCredentials() {
 
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("");
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   const height = useSharedValue(INITIAL_HEIGHT);
 
@@ -276,6 +277,24 @@ export default function TurboSelfLoginWithCredentials() {
               if (siblings.length === 0) {
                 const accountId = uuid()
                 const store = useAccountStore.getState()
+                const service = {
+                  id: accountId,
+                  auth: {
+                    additionals: {
+                      username,
+                      password,
+                      "hoteId": authentification.host?.id ?? "N/A"
+                    }
+                  },
+                  serviceId: Services.TURBOSELF,
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
+                }
+
+                if (action === "addService") {
+                  store.addServiceToAccount(store.lastUsedAccount, service)
+                  return router.dismissTo("/profile/cards")
+                }
 
                 store.addAccount({
                   id: accountId,
@@ -283,19 +302,7 @@ export default function TurboSelfLoginWithCredentials() {
                   lastName: authentification.host?.lastName ?? "N/A",
                   schoolName: authentification.establishment?.name,
                   className: authentification.host?.division,
-                  services: [{
-                    id: accountId,
-                    auth: {
-                      additionals: {
-                        username,
-                        password,
-                        "hoteId": authentification.host?.id ?? "N/A"
-                      }
-                    },
-                    serviceId: Services.TURBOSELF,
-                    createdAt: (new Date()).toISOString(),
-                    updatedAt: (new Date()).toISOString()
-                  }],
+                  services: [service],
                   createdAt: (new Date()).toISOString(),
                   updatedAt: (new Date()).toISOString()
                 })

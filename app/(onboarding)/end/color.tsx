@@ -1,8 +1,26 @@
-import React, { useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Papicons } from "@getpapillon/papicons"
-import Reanimated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
+
+export enum Colors {
+  PINK,
+  YELLOW,
+  GREEN,
+  PURPLE,
+  BLUE,
+  BLACK
+}
+
+export const AppColors = [
+  { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
+  { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
+  { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
+  { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
+  { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
+  { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
+]
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -10,6 +28,11 @@ export default function ChooseColorScreen() {
   const insets = useSafeAreaInsets()
 
   const local = useGlobalSearchParams()
+
+  const accountStore = useAccountStore.getState();
+  const lastUsedAccount = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount);
+
+  const accountId = local.accountId ? String(local.accountId) : lastUsedAccount?.id;
 
   const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
   const [color, setColor] = useState<Colors>(Colors.PINK)
@@ -55,14 +78,7 @@ export default function ChooseColorScreen() {
         </View>
         <FlatList
           scrollEnabled={false}
-          data={[
-            { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
-            { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
-            { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
-            { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
-            { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
-            { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
-          ]}
+          data={AppColors}
           numColumns={3}
           renderItem={({ item }) => (
             <ColorSelector
@@ -84,8 +100,8 @@ export default function ChooseColorScreen() {
         <Button
           title="Terminer"
           onPress={async () => {
-            if (local.accountId) {
-              useAccountStore.getState().setAccountSelectedColor(String(local.accountId), Number(local.color))
+            if (accountId) {
+              useAccountStore.getState().setAccountSelectedColor(accountId, color)
               await initializeAccountManager()
               router.push("../../(tabs)" as any)
             }
@@ -106,15 +122,6 @@ export default function ChooseColorScreen() {
       </View>
     </View>
   );
-}
-
-export enum Colors {
-  PINK,
-  YELLOW,
-  GREEN,
-  PURPLE,
-  BLUE,
-  BLACK
 }
 
 function ColorSelector({ mainColor, backgroundColor, name, onPress }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void }) {
@@ -150,22 +157,18 @@ const styles = StyleSheet.create({
   }
 });
 
+import { useTheme } from "@react-navigation/native";
+import { router, useGlobalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg"
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
-import { Butterfly } from "@getpapillon/papicons";
+
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
-import { useTheme } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
-import { router, useGlobalSearchParams } from "expo-router";
-import { account } from "pawnote";
-import { Account } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
-import { initializeAccountManager } from "@/services/shared";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 const PapillonLogo = ({ color }: { color: string }) => (
   <Svg
     width={149}

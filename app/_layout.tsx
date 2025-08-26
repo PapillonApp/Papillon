@@ -16,6 +16,10 @@ import { AlertProvider } from '@/ui/components/AlertProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
+import { t } from 'i18next';
+import { useAccountStore, type Account } from '@/stores/account';
+import { AppColors } from './(onboarding)/end/color';
+import ModelManager from '@/utils/magic/ModelManager';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -38,7 +42,12 @@ const FONT_CONFIG = {
   medium: require('../assets/fonts/SNPro-Medium.ttf'),
   semibold: require('../assets/fonts/SNPro-Semibold.ttf'),
   bold: require('../assets/fonts/SNPro-Bold.ttf'),
-  black: require('../assets/fonts/SNPro-Black.ttf')
+  black: require('../assets/fonts/SNPro-Black.ttf'),
+  serif_light: require('../assets/fonts/NotoSerif-Light.ttf'),
+  serif_regular: require('../assets/fonts/NotoSerif-Regular.ttf'),
+  serif_medium: require('../assets/fonts/NotoSerif-Medium.ttf'),
+  serif_bold: require('../assets/fonts/NotoSerif-Bold.ttf'),
+  serif_black: require('../assets/fonts/NotoSerif-Black.ttf'),
 } as const;
 
 // Pre-define screen options to avoid recreating object
@@ -64,6 +73,11 @@ const DEVMODE_SCREEN_OPTIONS = {
 const DEMO_SCREEN_OPTIONS = {
   headerTitle: "Components Demo",
   headerBackButtonDisplayMode: "minimal" as const,
+}
+
+const AI_SCREEN_OPTIONS = {
+  headerTitle: "AI",
+  headerShown: false,
 }
 
 export default function RootLayout() {
@@ -95,10 +109,27 @@ export default function RootLayout() {
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const store = useAccountStore.getState()
+  const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
+
+  const selectedColor = lastUsedAccount?.selectedColor;
+  const color = selectedColor ? AppColors[selectedColor] : null;
+
+  useEffect(() => {
+    ModelManager.safeInit();
+  }, []);
+
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    return colorScheme === 'dark' ? DarkTheme : DefaultTheme;
-  }, [colorScheme]);
+    const newScheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    return {
+      ...newScheme,
+      colors: {
+        ...newScheme.colors,
+        primary: color?.mainColor ?? newScheme.colors.primary,
+      },
+    };
+  }, [colorScheme, color]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
@@ -137,10 +168,52 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="(settings)" options={{ headerShown: false }} />
+              <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+              <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+
+              <Stack.Screen
+                name="(modals)/grade"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Modal_Grades_Title"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: false,
+                }}
+              />
+              <Stack.Screen
+                name="(modals)/course"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Modal_Course_Title"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(news)/news"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_News"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: true,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/attendance"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_Attendance"),
+                  headerTransparent: runsIOS26() ? true : false,
+                  headerLargeTitle: true,
+                  presentation: "modal"
+                }}
+              />
             </Stack>
           </AlertProvider>
         </ThemeProvider>

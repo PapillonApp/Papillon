@@ -1,10 +1,9 @@
 import React from 'react';
-
-import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Stack } from '@/utils/native/AnimatedNavigator';
-import Transition from 'react-native-screen-transitions';
 import { View } from 'react-native';
+
 import { Services } from '@/stores/account/types';
+import { Stack } from '@/utils/native/AnimatedNavigator';
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
     const newScreenOptions = React.useMemo(() => ({
@@ -53,6 +52,7 @@ export default function OnboardingLayout() {
                 <Stack.Screen
                     name="restaurants/method"
                     options={{ ...newScreenOptions }}
+                    initialParams={{ action: "addAccount" }}
                 />
                 <Stack.Screen
                     name="university/method"
@@ -73,13 +73,19 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="pronote/2FA"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ error: {}, session: {}, device: "" }}
+                />
+                <Stack.Screen
                     name="turboself/credentials"
                     options={{ ...newScreenOptions }}
+                    initialParams={{ action: "addAccount" }}
                 />
                 <Stack.Screen
                     name="turboself/hostSelector"
                     options={{ ...newScreenOptions }}
-                    initialParams={{ siblings: [], username: "", password: "" }}
+                    initialParams={{ siblings: [], username: "", password: "", action: "addAccount" }}
                 />
                 <Stack.Screen
                     name="skolengo/webview"

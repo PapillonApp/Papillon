@@ -1,19 +1,19 @@
-import React from 'react';
-import { View, StyleSheet, Image, FlatList, Pressable, StatusBar } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, useFocusEffect } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-
-import Typography from '@/ui/components/Typography';
-import Stack from '@/ui/components/Stack';
-
 import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
-import ViewContainer from '@/ui/components/ViewContainer';
-import { getSupportedRestaurants, SupportedRestaurant } from '../utils/constants';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import { useTheme } from '@react-navigation/native';
+import { RelativePathString, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React from 'react';
+import { FlatList, Image, Pressable, StatusBar, StyleSheet, View } from 'react-native';
 import Reanimated, { Extrapolate, FadeInDown, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Icon from '@/ui/components/Icon';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
+import ViewContainer from '@/ui/components/ViewContainer';
+
+import { getSupportedRestaurants, SupportedRestaurant } from '../utils/constants';
 
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
@@ -24,6 +24,9 @@ export default function WelcomeScreen() {
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   const scrollY = React.useRef(useSharedValue(0)).current;
 
@@ -69,7 +72,7 @@ export default function WelcomeScreen() {
   }));
 
   const services = getSupportedRestaurants((path: { pathname: string }) => {
-    router.push(path.pathname as unknown as RelativePathString);
+    router.push({ pathname: path.pathname as unknown as RelativePathString, params: { action } });
   });
 
   useFocusEffect(

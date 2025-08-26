@@ -288,7 +288,7 @@ export default function TabOneScreen() {
       <Grade
         isLast={uiLast}
         isFirst={uiFirst}
-        title={item.description ? item.description : t('Grade_NoDescription')}
+        title={item.description ? item.description : t('Grade_NoDescription', { subject: subjectInfo.name })}
         date={item.givenAt.getTime()}
         score={(item.studentScore?.value ?? 0)}
         disabled={item.studentScore?.disabled}
@@ -296,7 +296,7 @@ export default function TabOneScreen() {
         outOf={item.outOf?.value ?? 20}
         color={subjectInfo.color}
         onPress={() => {
-          navigation.navigate('grade', {
+          navigation.navigate('(modals)/grade', {
             grade: item,
             subjectInfo: subjectInfo,
             allGrades: newSubjects.flatMap(subject => subject.grades)
@@ -466,7 +466,7 @@ export default function TabOneScreen() {
           status={item.studentScore?.status}
           date={item.givenAt}
           onPress={() => {
-            navigation.navigate('grade', {
+            navigation.navigate('(modals)/grade', {
               grade: item,
               subjectInfo: subjectInfo,
               allGrades: newSubjects.flatMap(subject => subject.grades)
@@ -556,7 +556,7 @@ export default function TabOneScreen() {
 
             <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
               <Dynamic animated>
-                <AnimatedNumber variant="h1" color="primary">
+                <AnimatedNumber variant="h1" color="#29947A">
                   {transformedData.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
                 </AnimatedNumber>
               </Dynamic>
@@ -567,7 +567,7 @@ export default function TabOneScreen() {
               </Dynamic>
             </Stack>
             <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"currentAlgorithm:" + currentAlgorithm}>
-              <Typography variant="title" color="primary" align="left">
+              <Typography variant="title" color="#29947A" align="left">
                 {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
               </Typography>
             </Dynamic>

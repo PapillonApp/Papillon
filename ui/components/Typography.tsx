@@ -12,7 +12,7 @@ const FONT_FAMILIES = {
   bold: "bold",
 } as const;
 
-const VARIANTS = StyleSheet.create({
+export const VARIANTS = StyleSheet.create({
   body1: {
     fontSize: 16,
     fontFamily: FONT_FAMILIES.medium,
