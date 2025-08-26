@@ -5,7 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import { Router, useRouter } from "expo-router";
 import { t } from "i18next";
 import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
-import React, { memo, useRef, useCallback, useEffect, useState } from "react";
+import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { LinearTransition } from "react-native-reanimated";
@@ -249,7 +249,7 @@ export default function TabOneScreen() {
       return true;
     }
 
-    const dayEvents = React.useMemo(() => {
+    const dayEvents = useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
       const result = (rawDayEvents ?? []).map(ev => {
@@ -265,10 +265,36 @@ export default function TabOneScreen() {
       return result;
     }, [rawDayEvents]);
 
+    const threshold = 30;
+
+    const separatedDayEvents = useMemo(() => {
+      if (!dayEvents || dayEvents.length === 0) return dayEvents;
+      const separated: any[] = [];
+      for (let i = 0; i < dayEvents.length; i++) {
+        separated.push(dayEvents[i]);
+        if (i < dayEvents.length - 1) {
+          const current = dayEvents[i];
+          const next = dayEvents[i + 1];
+          if (current.to && next.from) {
+            const diffMinutes = (next.from.getTime() - current.to.getTime()) / (1000 * 60);
+            if (diffMinutes > threshold) {
+              separated.push({
+                id: `separator-${current.id}-${next.id}`,
+                type: "separator" as any,
+                from: new Date(current.to),
+                to: new Date(next.from),
+              });
+            }
+          }
+        }
+      }
+      return separated;
+    }, [dayEvents]);
+
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
         <FlatList
-          data={dayEvents}
+          data={separatedDayEvents}
           style={styles.container}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={
@@ -289,22 +315,40 @@ export default function TabOneScreen() {
           }
           keyExtractor={(item) => item.id}
           ListEmptyComponent={<EmptyListComponent />}
-          renderItem={({ item }: { item: SharedCourse }) => (
-            <Course
-              id={item.id}
-              name={item.subject}
-              teacher={item.teacher}
-              room={item.room}
-              color={getSubjectColor(item.subject)}
-              status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-              variant="primary"
-              start={Math.floor(item.from.getTime() / 1000)}
-              end={Math.floor(item.to.getTime() / 1000)}
-              readonly={!!item.createdByAccount}
-              onPress={() => {
-              }}
-            />
-          )}
+          renderItem={({ item }: { item: SharedCourse }) => {
+            console.log(item)
+
+            if ((item as any).type === 'separator') {
+              return (
+                <Course
+                  id={item.id}
+                  name="Pause"
+                  variant="separator"
+                  start={Math.floor(item.from.getTime() / 1000)}
+                  end={Math.floor(item.to.getTime() / 1000)}
+                  showTimes={false}
+                />
+              );
+            }
+
+            return (
+              <Course
+                id={item.id}
+                name={item.subject}
+                teacher={item.teacher}
+                room={item.room}
+                color={getSubjectColor(item.subject)}
+                status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+                variant="primary"
+                start={Math.floor(item.from.getTime() / 1000)}
+                end={Math.floor(item.to.getTime() / 1000)}
+                readonly={!!item.createdByAccount}
+                onPress={() => {
+                }}
+              />
+            )
+          }
+          }
         />
       </View>
     );
