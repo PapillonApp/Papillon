@@ -90,6 +90,7 @@ export default function PronoteLoginWithQR() {
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
               });
+              useAccountStore.getState().setLastUsedAccount(device);
 
               return router.push({
                 pathname: "../end/color",
