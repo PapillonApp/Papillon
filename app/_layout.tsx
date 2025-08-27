@@ -189,7 +189,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: false,
+                  headerShown: true,
                   headerTitle: t("Modal_Course_Title"),
                   headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
