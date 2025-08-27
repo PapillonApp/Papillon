@@ -18,7 +18,7 @@ import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
 import { useAccountStore } from '@/stores/account';
-import { AppColors } from './(onboarding)/end/color';
+import { AppColors } from "@/components/AppColorsSelector";
 import ModelManager from '@/utils/magic/ModelManager';
 
 export {
