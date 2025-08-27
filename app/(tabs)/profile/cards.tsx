@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native"
 import { router } from "expo-router"
 import { Image, ScrollView, View } from "react-native"
@@ -45,7 +45,7 @@ export default function CardView() {
                       }} />
                     </Leading>
                     <Trailing>
-                      <Papicons.ChevronRight />
+                      <Papicons name={"ChevronRight"} />
                     </Trailing>
                     <Typography>{Services[service.serviceId].charAt(0).toUpperCase() + Services[service.serviceId].slice(1).toLowerCase()}</Typography>
                     <Typography style={{ opacity: 0.5 }}>Ajoutée le {new Date(service.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}</Typography>
@@ -69,7 +69,7 @@ export default function CardView() {
             }}
           >
             <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-              <Papicons.Card />
+              <Papicons name={"Card"} />
             </Icon>
             <Typography variant="h4" color="text" align="center">
               Aucune carte
@@ -78,7 +78,7 @@ export default function CardView() {
               Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore
             </Typography>
           </View>
-          <Button color="blue" title="Ajouter" icon={<Papicons.Plus />} onPress={() => {
+          <Button color="blue" title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
             router.push({
               pathname: "/(onboarding)/restaurants/method",
               params: {
@@ -103,7 +103,7 @@ function SettingsHeader({ color }: { color: string }) {
       </View>
       <Stack flex direction="horizontal" hAlign="center" style={{ backgroundColor: colors.card, gap: 10, padding: 18, borderRadius: 15 }}>
         <View style={{ width: 24, height: 24 }}>
-          <Papicons.Card opacity={0.6} />
+          <Papicons name={"Card"} opacity={0.6} />
         </View>
         <Stack flex direction="vertical" style={{ flex: 1 }}>
           <Typography>Cartes</Typography>
