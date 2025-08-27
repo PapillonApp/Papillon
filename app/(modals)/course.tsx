@@ -37,7 +37,7 @@ interface GradesModalProps {
   subjectInfo: SubjectInfo;
 }
 
-const GradesModal: React.FC<GradesModalProps> = () => {
+const CourseModal: React.FC<GradesModalProps> = () => {
   const { params } = useRoute();
   const { colors } = useTheme();
 
@@ -170,4 +170,4 @@ const GradesModal: React.FC<GradesModalProps> = () => {
   )
 }
 
-export default GradesModal;
+export default CourseModal;
