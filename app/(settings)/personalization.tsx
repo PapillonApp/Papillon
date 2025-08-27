@@ -71,12 +71,14 @@ const PersonalizationSettings = () => {
         <AppColorsSelector
           onChangeColor={(color: string) => {
             setSelectedColor(color);
-            const colorData = AppColors.find(appColor => appColor.mainColor === color);
-            if (colorData) {
-              mutateProperty('personalization', {
-                colorSelected: colorData.colorEnum
-              });
-            }
+            setTimeout(() => {
+              const colorData = AppColors.find(appColor => appColor.mainColor === color);
+              if (colorData) {
+                mutateProperty('personalization', {
+                  colorSelected: colorData.colorEnum
+                });
+              }
+            }, 50);
           }}
           accountId={store.lastUsedAccount}
         />
