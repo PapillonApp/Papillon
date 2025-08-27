@@ -366,7 +366,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <UserPenIcon />
+            <Papicons name={"PenAlt"} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -399,7 +399,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <SettingsIcon />
+            <Papicons name={"Gears"}/>
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -432,9 +432,6 @@ export default function TabOneScreen() {
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
                   {level && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Icon papicon opacity={0.5}>
-                        <Papicons name={"Ghost"} />
-                      </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {level}
                       </Typography>
@@ -442,9 +439,6 @@ export default function TabOneScreen() {
                   )}
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Icon papicon opacity={0.5}>
-                        <Papicons name={"Sparkles"} />
-                      </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {establishment}
                       </Typography>
