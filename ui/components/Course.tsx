@@ -5,7 +5,7 @@ import { Alert, Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
 import { Path, Svg } from "react-native-svg";
-import * as Papicons from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons"
 import { database } from "@/database";
 import { truncatenateString } from "@/ui/utils/Truncatenate";
 
@@ -111,9 +111,9 @@ const Course = React.memo(({
         >
           <Icon papicon size={24} opacity={0.6}>
             {
-              hStart < 11 ? <Papicons.Sunrise /> :
-                hStart < 14 ? <Papicons.Cutlery /> :
-                  <Papicons.Sun />
+              hStart < 11 ? <Papicons name={"Sunrise"} /> :
+                hStart < 14 ? <Papicons name={"Cutlery"} /> :
+                  <Papicons name={"Sun"} />
             }
           </Icon>
           <Typography variant="h6" style={{ flex: 1, opacity: 0.6 }} nowrap color="text">
@@ -150,7 +150,7 @@ const Course = React.memo(({
           {(status?.canceled) && (
             <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
               <Icon papicon size={20} fill={adjust("#DC1400", theme.dark ? 0.4 : -0.2)}>
-                <Papicons.Ghost />
+                <Papicons name={"Ghost"} />
               </Icon>
               <Typography nowrap color={adjust("#DC1400", theme.dark ? 0.4 : -0.2)} variant="h4" style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}>
                 {status.label}
@@ -209,7 +209,7 @@ const Course = React.memo(({
                 <Stack direction="horizontal" hAlign="center" gap={10} style={{ marginTop: -2, overflow: "hidden" }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                     <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
-                      <Papicons.MapPin />
+                      <Papicons name={"MapPin"} />
                     </Icon>
                     <Typography nowrap color="light" variant="body1" style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}>
                       {room || t("No_Course_Room")}
@@ -223,7 +223,7 @@ const Course = React.memo(({
                   />
                   <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                     <Icon papicon size={20} fill={status?.canceled ? "#555555" : "white"}>
-                      <Papicons.User />
+                      <Papicons name={"User"} />
                     </Icon>
                     <Typography nowrap color="light" variant="body1" style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}>
                       {teacher}

@@ -1,53 +1,41 @@
-import { Redirect, useNavigation, useRouter } from "expo-router";
-import * as pronote from "pawnote";
+import { useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { Dimensions, FlatList, Platform, View } from "react-native";
 
-import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
-import { ARD } from "@/services/ard";
 import { useAccountStore } from "@/stores/account";
-import { Services } from "@/stores/account/types";
-import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import List from "@/ui/components/List";
-import Item from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
-import { Colors } from "@/app/(onboarding)/end/color";
 import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
 
-import * as Papicons from "@getpapillon/papicons";
+import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import { BellDotIcon, ChevronDown, Filter, ListFilter } from "lucide-react-native";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
-import { checkAndUpdateModel } from "@/utils/magic/updater";
-import ModelManager from "@/utils/magic/ModelManager";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { center } from "@shopify/react-native-skia";
 import { log } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectName } from "@/utils/subjects/name";
 import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import { useAlert } from "@/ui/components/AlertProvider";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -57,9 +45,20 @@ export default function TabOneScreen() {
 
   const router = useRouter();
   const navigation = useNavigation();
+  const alert = useAlert();
 
   const Initialize = async () => {
-    await initializeAccountManager()
+    try {
+      await initializeAccountManager()
+    } catch (error) {
+      alert.showAlert({
+        title: "Connexion impossible",
+        description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(error)
+      })
+    }
     log("Refreshed Manager received")
   };
 
@@ -103,7 +102,7 @@ export default function TabOneScreen() {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((manager) => {
+    const unsubscribe = subscribeManagerUpdate((_) => {
       fetchEDT()
       fetchGrades()
     });
@@ -218,7 +217,6 @@ export default function TabOneScreen() {
         />
       )}
 
-
       <TabFlatList
         translucent={true}
         backgroundColor="transparent"
@@ -245,7 +243,7 @@ export default function TabOneScreen() {
                 setCurrentPage(page);
               }}
               scrollEventThrottle={16}
-              renderItem={({ item, index }) => (
+              renderItem={({ item }) => (
                 <View
                   style={{
                     width: Dimensions.get("window").width,
@@ -291,7 +289,7 @@ export default function TabOneScreen() {
         gap={12}
         data={[
           courses.length > 0 && {
-            icon: <Papicons.Calendar />,
+            icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
@@ -325,7 +323,7 @@ export default function TabOneScreen() {
             )
           },
           grades.length > 0 && {
-            icon: <Papicons.Grades />,
+            icon: <Papicons name={"Grades"} />,
             title: t("Home_Widget_NewGrades"),
             redirect: "(tabs)/grades",
             render: () => (
@@ -375,28 +373,28 @@ export default function TabOneScreen() {
             )
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Onboarding",
             redirect: "/(onboarding)/welcome",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Palette />,
+            icon: <Papicons name={"Palette"} />,
             title: "Onboarding Color",
             redirect: "/(onboarding)/end/color",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
             dev: false
           },
           {
-            icon: <Papicons.Butterfly />,
+            icon: <Papicons name={"Butterfly"} />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
@@ -404,7 +402,7 @@ export default function TabOneScreen() {
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
         keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }
@@ -427,12 +425,12 @@ export default function TabOneScreen() {
                     <AnimatedPressable
                       onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
                     >
-                      <Stack card direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                      <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
                         <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
                           {item.buttonLabel ?? "Afficher plus"}
                         </Typography>
                         <Icon size={20} papicon opacity={0.5}>
-                          <Papicons.ArrowRightUp />
+                          <Papicons name={"ArrowRightUp"} />
                         </Icon>
                       </Stack>
                     </AnimatedPressable>
@@ -448,11 +446,10 @@ export default function TabOneScreen() {
         paddingTop={0}
       />
 
-
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
           <Icon>
-            <ListFilter />
+            <Papicons name={"Menu"} color={foreground}/>
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -486,21 +483,10 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable>
           <Icon>
-            <BellDotIcon />
+            <Papicons name={"Bell"} color={foreground}/>
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16
-  },
-  containerContent: {
-    justifyContent: "center",
-    alignItems: "center",
-  }
-});

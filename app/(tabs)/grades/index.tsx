@@ -3,10 +3,8 @@ import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import { ChartAreaIcon, ChartPie, ChevronDown, Filter, NotebookTabs, StarIcon } from "lucide-react-native";
-import React, { act, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Platform, RefreshControl, Text, useWindowDimensions, View } from "react-native";
-import { LineGraph } from 'react-native-graph';
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -24,15 +22,15 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 
 const EmptyListComponent = memo(() => (
@@ -43,7 +41,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Grades />
+        <Papicons name={"Grades"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Grades_Empty_Title')}
@@ -148,22 +146,25 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
+  const fetchPeriods = async () => {
+    if (currentPeriod) {
+      return;
+    }
+
+    const result = await manager.getGradesPeriods()
+    setPeriods(result);
+
+    const currentPeriodFound = getCurrentPeriod(result)
+    setCurrentPeriod(currentPeriodFound)
+  };
+
   useEffect(() => {
-    const fetchPeriods = async () => {
-      if (currentPeriod) {
-        return;
-      }
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchPeriods();
+    });
 
-      const now = new Date().getTime()
-      const result = await manager.getGradesPeriods()
-      setPeriods(result);
-
-      const currentPeriodFound = getCurrentPeriod(result)
-      setCurrentPeriod(currentPeriodFound)
-    };
-
-    fetchPeriods();
-  }, [manager]);
+    return () => unsubscribe();
+  }, []);
 
   const fetchGradesForPeriod = async (period: Period | undefined) => {
     if (period) {
@@ -281,7 +282,7 @@ export default function TabOneScreen() {
     return result;
   }, [newSubjects, sorting, currentPeriod]);
 
-  const renderItemGrade = useCallback(({ item, index, uiFirst, uiLast }: { item: SharedGrade; index: number, uiFirst: boolean, uiLast: boolean }) => {
+  const renderItemGrade = useCallback(({ item, uiFirst, uiLast }: { item: SharedGrade; index: number, uiFirst: boolean, uiLast: boolean }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
     const subjectInfo = getSubjectInfo(subject?.name ?? "");
     return (
@@ -306,7 +307,7 @@ export default function TabOneScreen() {
     );
   }, [newSubjects, getSubjectInfo]);
 
-  const renderItemSubject = useCallback(({ item, index }: { item: SharedSubject; index: number }) => {
+  const renderItemSubject = useCallback(({ item }: { item: SharedSubject; index: number }) => {
     const subjectInfo = getSubjectInfo(item.name);
     return (
       <Subject
@@ -388,8 +389,6 @@ export default function TabOneScreen() {
     return newGraph;
   }, [currentAverageHistory]);
 
-  const graphRef = useRef<any>(null);
-
   const handleGestureUpdate = useCallback((p: { value: number, date: Date }) => {
     setShownAverage(p.value);
     setSelectionDate(p.date.getTime());
@@ -421,29 +420,10 @@ export default function TabOneScreen() {
           <ActivityIndicator size="large" color="#29947A" />
         </View>
       }>
-        <LineGraph
-          points={graphAxis}
-          animated={true}
-          color="#29947A"
-          enablePanGesture={true}
-          onPointSelected={handleGestureUpdate}
-          onGestureEnd={handleGestureEnd}
-          verticalPadding={30}
-          horizontalPadding={30}
-          lineThickness={5}
-          panGestureDelay={0}
-          enableIndicator={true}
-          indicatorPulsating={true}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        />
       </React.Suspense>
     </Reanimated.View>
   ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
 
-  const router = useRouter();
   const navigation = useNavigation();
 
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
@@ -488,7 +468,7 @@ export default function TabOneScreen() {
         opacity: 0.5,
       }}>
         <Icon>
-          <StarIcon size={18} />
+          <Papicons name={"Star"} size={18} />
         </Icon>
         <Typography>
           {t("Latest_Grades")}
@@ -521,7 +501,7 @@ export default function TabOneScreen() {
         opacity: 0.5,
       }}>
         <Icon>
-          <ChartAreaIcon size={18} />
+          <Papicons name={"Grades"} size={18} />
         </Icon>
         <Typography>
           Mes notes
@@ -673,7 +653,7 @@ export default function TabOneScreen() {
               }
               {periods.length > 0 && (
                 <Dynamic animated>
-                  <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+                  <Papicons name={"ChevronDown"} color={colors.text} opacity={0.6} />
                 </Dynamic>
               )}
             </Dynamic>
@@ -715,7 +695,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <Filter />
+              <Papicons name={"Filter"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
@@ -742,7 +722,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <ChartPie />
+              <Papicons name={"Pie"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>

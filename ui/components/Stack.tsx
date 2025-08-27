@@ -20,6 +20,7 @@ interface StackProps extends ViewProps {
   backgroundColor?: string;
   card?: boolean; // Utilisé pour les cartes
   flat?: boolean; // Utilisé pour les listes plates
+  bordered?: boolean; // Utilisé pour les listes avec bordures
   radius?: number;
   style?: ViewStyle | ViewStyle[];
 }
@@ -84,6 +85,7 @@ const Stack: React.FC<StackProps> = ({
   radius = 0,
   card = false,
   flat = false,
+  bordered = false,
   style,
   children,
   ...rest
@@ -148,6 +150,14 @@ const Stack: React.FC<StackProps> = ({
       dynamicStyle.borderColor = colors.text + "25";
       dynamicStyle.borderWidth = flat ? 1 : 0.5;
       dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
+    }
+
+    if (bordered) {
+      dynamicStyle.borderRadius = radius || 20;
+      dynamicStyle.borderCurve = "continuous";
+      dynamicStyle.borderColor = colors.border + "33";
+      dynamicStyle.borderWidth = 1;
+      dynamicStyle.backgroundColor = backgroundColor || colors.card;
     }
 
     const finalStyle = [baseStyle, dynamicStyle];

@@ -1,15 +1,14 @@
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import TableFlatList from "@/ui/components/TableFlatList";
 import { useRoute, useTheme } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
 import React, { useMemo } from "react";
 import { View } from "react-native";
 
-import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
+import { Grade as SharedGrade } from "@/services/shared/grade";
 
 import { t } from "i18next";
 import Reanimated from 'react-native-reanimated';
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import Stack from "@/ui/components/Stack";
@@ -71,10 +70,10 @@ const GradesModal: React.FC<GradesModalProps> = () => {
         sections={[
           {
             title: t("Grades_Details_Title"),
-            icon: <Papicons.Menu />,
+            icon: <Papicons name={"Menu"} />,
             items: [
               {
-                icon: <Papicons.Plus />,
+                icon: <Papicons name={"Plus"} />,
                 title: t("Grades_HighestGrade_Title"),
                 description: t("Grades_HighestGrade_Description"),
                 trailing: (
@@ -87,7 +86,7 @@ const GradesModal: React.FC<GradesModalProps> = () => {
                 )
               },
               {
-                icon: <Papicons.Minus />,
+                icon: <Papicons name={"Minus"} />,
                 title: t("Grades_LowestGrade_Title"),
                 description: t("Grades_LowestGrade_Description"),
                 trailing: (
@@ -103,10 +102,10 @@ const GradesModal: React.FC<GradesModalProps> = () => {
           },
           {
             title: t("Grades_Influence_Title"),
-            icon: <Papicons.Pie />,
+            icon: <Papicons name={"Pie"} />,
             items: [
               {
-                icon: <Papicons.Grades />,
+                icon: <Papicons name={"Grades"} />,
                 title: t("Grades_Avg_All_Title"),
                 trailing: (
                   <ContainedNumber
@@ -118,7 +117,7 @@ const GradesModal: React.FC<GradesModalProps> = () => {
                 )
               },
               {
-                icon: <Papicons.Apple />,
+                icon: <Papicons name={"Apple"} />,
                 title: t("Grades_Avg_Group_Title"),
                 trailing: (
                   <ContainedNumber
@@ -170,7 +169,7 @@ const GradesModal: React.FC<GradesModalProps> = () => {
                 padding={12}
               >
                 <Icon papicon opacity={0.5}>
-                  <Papicons.Coefficient />
+                  <Papicons name={"Coefficient"} />
                 </Icon>
                 <Typography color="secondary">
                   {t("Grades_Coefficient")}
@@ -186,7 +185,7 @@ const GradesModal: React.FC<GradesModalProps> = () => {
                 padding={12}
               >
                 <Icon papicon opacity={0.5}>
-                  <Papicons.Apple />
+                  <Papicons name={"Apple"} />
                 </Icon>
                 <Typography color="secondary">
                   {t("Grades_Avg_Group_Short")}

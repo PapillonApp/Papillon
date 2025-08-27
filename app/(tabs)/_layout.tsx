@@ -9,6 +9,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
 
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -50,7 +52,7 @@ const getProfileIcon = () => ICONS.profile;
 // Custom hook for optimized tab translations
 const useTabTranslations = () => {
   const { t } = useTranslation();
-  
+
   return useMemo(() => ({
     home: t("Tab_Home"),
     calendar: t("Tab_Calendar"),
@@ -88,6 +90,40 @@ function TabLayout() {
       tabBarIcon: getProfileIcon,
     },
   }), [translations]);
+
+  if (runsIOS26()) {
+    return (
+      <NativeTabs
+        tintColor={colors.primary}
+        labelStyle={{
+          fontFamily: "medium",
+          fontSize: 12
+        }}
+        labelVisibilityMode="selected"
+      >
+        <NativeTabs.Trigger name="index">
+          <Label>Home</Label>
+          <Icon sf="house.fill" drawable="custom_android_drawable" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="calendar">
+          <Label>Calendar</Label>
+          <Icon sf="calendar" drawable="custom_android_drawable" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="tasks">
+          <Label>Tasks</Label>
+          <Icon sf="checklist" drawable="custom_android_drawable" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="grades">
+          <Label>Grades</Label>
+          <Icon sf="chart.pie.fill" drawable="custom_android_drawable" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="profile">
+          <Label>Profile</Label>
+          <Icon sf="person.fill" drawable="custom_android_drawable" />
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    );
+  };
 
   return (
     <Tabs

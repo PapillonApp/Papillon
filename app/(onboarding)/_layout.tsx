@@ -73,6 +73,10 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="pronote/qrcode"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
                     name="pronote/2FA"
                     options={{ ...newScreenOptions }}
                     initialParams={{ error: {}, session: {}, device: "" }}
@@ -86,6 +90,11 @@ export default function OnboardingLayout() {
                     name="turboself/hostSelector"
                     options={{ ...newScreenOptions }}
                     initialParams={{ siblings: [], username: "", password: "", action: "addAccount" }}
+                />
+                <Stack.Screen
+                    name="ard/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ action: "addAccount" }}
                 />
                 <Stack.Screen
                     name="skolengo/webview"

@@ -1,14 +1,14 @@
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { Redirect, useRouter } from "expo-router";
+import { RelativePathString, useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { Alert, Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Platform, View } from "react-native";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
@@ -20,6 +20,8 @@ import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
 import { log } from "@/utils/logger/logger";
+import { error } from "@/utils/logger/logger";
+import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 const SettingsIndex = () => {
@@ -55,9 +57,16 @@ const SettingsIndex = () => {
   }, [account]);
 
   const logout = useCallback(() => {
-    // console.log(account)
-    // accountStore.removeAccount(account);
-    // router.replace('./(onboarding)');
+    const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
+    if (!account) {
+      error("Unable to find the current account")
+    }
+    useAccountStore.getState().removeAccount(account)
+    useAccountStore.getState().setLastUsedAccount("")
+    for (const service of account.services) {
+      ClearDatabaseForAccount(service.id)
+    }
+    return router.push("/(onboarding)/welcome")
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
@@ -67,7 +76,7 @@ const SettingsIndex = () => {
         {
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
-          papicon: <Papicons.Accessibility />,
+          papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
           onPress: () => console.log("sus")
@@ -75,7 +84,7 @@ const SettingsIndex = () => {
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
-          papicon: <Papicons.Heart />,
+          papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
           onPress: () => console.log("sus")
@@ -84,7 +93,7 @@ const SettingsIndex = () => {
           title: t('Settings_About_Title'),
           description: t('Settings_About_Description'),
           icon: <InfoIcon />,
-          papicon: <Papicons.Info />,
+          papicon: <Papicons name={"Info"} />,
           color: "#797979",
           onPress: () => console.log("sus")
         }
@@ -96,7 +105,7 @@ const SettingsIndex = () => {
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
-          papicon: <Papicons.Logout />,
+          papicon: <Papicons name={"Logout"} />,
           color: "#a80000",
           onPress: () => {
             Alert.alert(
@@ -123,32 +132,34 @@ const SettingsIndex = () => {
     }
   ]
 
-  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void }> = [
+  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, href: string }> = [
     {
-      icon: <Papicons.Palette />,
+      icon: <Papicons name={"Palette"} />,
       title: "Personnalisation",
       description: "Thèmes, matières...",
-      color: "#17C300"
+      color: "#17C300",
+      href: "personalization"
     },
     {
-      icon: <Papicons.Bell />,
+      icon: <Papicons name={"Bell"} />,
       title: "Notifications",
       description: "Alertes, fréquence...",
-      color: "#DD9B00"
+      color: "#DD9B00",
+      href: "notifications"
     },
     {
-      icon: <Papicons.Card />,
+      icon: <Papicons name={"Card"} />,
       title: "Cartes",
       description: "Cantine, accès",
       color: "#0059DD",
-      onPress: () => router.push("./cards")
+      href: "cards"
     },
     {
-      icon: <Papicons.Sparkles />,
+      icon: <Papicons name={"Sparkles"} />,
       title: "Magic+",
       description: "Fonctions I.A",
-      color: "#DD007D"
-
+      color: "#DD007D",
+      href: "magic"
     }
   ]
 
@@ -157,11 +168,15 @@ const SettingsIndex = () => {
       <Stack direction="vertical" gap={15}>
         {Array.from({ length: Math.ceil(BigButtons.length / 2) }, (_, rowIndex) => (
           <Stack key={rowIndex} direction="horizontal" gap={15}>
-            {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, buttonIndex) => {
+            {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, _) => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <AnimatedPressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
+                <AnimatedPressable
+                  onPress={() => router.push(button.href as RelativePathString)}
+                  style={{ flex: 1, width: "50%" }}
+                  key={button.title}
+                >
                   <Stack
                     flex
                     card

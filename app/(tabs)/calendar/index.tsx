@@ -1,13 +1,11 @@
-import { LegendList } from "@legendapp/list";
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
 import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
-import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
+import { CalendarDaysIcon, ChevronDown } from "lucide-react-native";
 import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { LinearTransition } from "react-native-reanimated";
 import Calendar from "@/ui/components/Calendar";
 import Course from "@/ui/components/Course";
@@ -18,9 +16,7 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
-import { FlashList } from "@shopify/flash-list";
-
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
 import { getManager } from "@/services/shared";
@@ -38,7 +34,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Calendar />
+        <Papicons name={"Calendar"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Tab_Calendar_Empty')}
@@ -140,7 +136,7 @@ export default function TabOneScreen() {
   }, [weekNumber]);
 
   const headerHeight = useHeaderHeight();
-  const bottomHeight = useBottomTabBarHeight();
+  const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
@@ -226,7 +222,7 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, _, bottomHeight, isRefreshing, onRefresh, colors }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
     normalizedDayDate.setHours(0, 0, 0, 0);
 
@@ -411,7 +407,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-      <NativeHeaderSide side="Left">
+      <NativeHeaderSide side="Right">
         <MenuView
           actions={[
             {
@@ -486,31 +482,37 @@ export default function TabOneScreen() {
       */}
 
       {/* Optimized FlatList for horizontal day swiping */}
-      <FlatList
-        ref={flatListRef as any}
-        data={Array.from({ length: 20001 })} // Large number for virtualized days
-        horizontal
-        pagingEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={INITIAL_INDEX}
-        getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
-        renderItem={renderDay}
-        keyExtractor={(_, index) => String(index)}
-        onScroll={onScroll}
-        decelerationRate={0.9}
-        disableIntervalMomentum={true}
-        scrollEventThrottle={16}
-        onMomentumScrollEnd={onMomentumScrollEnd}
-        style={{ width: "100%", height: "100%" }}
-        snapToInterval={windowWidth}
-        bounces={false}
-        windowSize={3}
-        maxToRenderPerBatch={2}
-        initialNumToRender={1}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews
-        extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
-      />
+      <View
+        style={{
+          backgroundColor: colors.background,
+          flex: 1,
+        }}
+      >
+        <FlatList
+          ref={flatListRef as any}
+          data={Array.from({ length: 20001 })} // Large number for virtualized days
+          horizontal
+          pagingEnabled={false}
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={INITIAL_INDEX}
+          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+          renderItem={renderDay}
+          keyExtractor={(_, index) => String(index)}
+          onScroll={onScroll}
+          decelerationRate={0.9}
+          disableIntervalMomentum={true}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          snapToInterval={windowWidth}
+          bounces={false}
+          windowSize={3}
+          maxToRenderPerBatch={2}
+          initialNumToRender={1}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews
+          extraData={{ refresh, headerHeight, bottomHeight, manualRefreshing, colors, date, weekNumber, week, handleRefresh }}
+        />
+      </View>
     </>
   );
 }

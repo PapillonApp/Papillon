@@ -59,7 +59,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const finalHeight = height + headerInset;
   let tabBarHeight = 0;
   try {
-    tabBarHeight = useBottomTabBarHeight?.() ?? 0;
+    tabBarHeight = 80;
     if (typeof tabBarHeight !== 'number' || isNaN(tabBarHeight)) tabBarHeight = 0;
   } catch {
     tabBarHeight = 0;

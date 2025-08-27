@@ -44,6 +44,14 @@ export default function Layout() {
           headerBackVisible: true,
         }}
       />
+      <Stack.Screen
+        name="personalization"
+        options={{
+          headerTitle: t("Settings_Personalization_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+        }}
+      />
     </Stack>
   );
 }

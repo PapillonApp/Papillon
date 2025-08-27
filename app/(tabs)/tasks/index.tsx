@@ -1,12 +1,11 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import { AlignCenter, CheckCheck, ChevronDown, Search, SquareDashed } from "lucide-react-native";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { CircularProgress } from "@/ui/components/CircularProgress";
@@ -24,7 +23,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
@@ -37,7 +36,7 @@ const EmptyListComponent = memo(() => (
       margin={16}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons.Check />
+        <Papicons name={"Check"} />
       </Icon>
       <Typography variant="h4" color="text" align="center">
         {t('Tasks_NoTasks_Title')}
@@ -65,14 +64,18 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  useEffect(() => {
-    const fetchHomeworks = async () => {
-      const result = await manager.getHomeworks(selectedWeek);
-      setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
-    };
+  const fetchHomeworks = async () => {
+    const result = await manager.getHomeworks(selectedWeek);
+    setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+  };
 
-    fetchHomeworks();
-  }, [selectedWeek]);
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchHomeworks();
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -260,7 +263,7 @@ export default function TabOneScreen() {
               <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
                 {lengthHomeworks === 0 ? (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <SquareDashed color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
                     </Typography>
@@ -278,7 +281,7 @@ export default function TabOneScreen() {
                   </Stack>
                 ) : (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <CheckCheck color={"#C54CB3"} size={36} strokeWidth={2.5} style={{ marginBottom: 4 }} />
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
                     </Typography>
@@ -289,7 +292,7 @@ export default function TabOneScreen() {
             <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }} key={`circular-progress-week-ct:${selectedWeek}`}>
               <CircularProgress
                 backgroundColor={colors.text + "22"}
-                percentageComplete={lengthHomeworks === 0 ? 0 : percentageComplete}
+                percentageComplete={lengthHomeworks === 0 ? 100 : percentageComplete}
                 radius={35}
                 strokeWidth={7}
                 fill={"#C54CB3"}
@@ -433,7 +436,7 @@ export default function TabOneScreen() {
             console.log("Add new grade pressed");
           }}
         >
-          <AlignCenter color={colors.text} />
+          <Papicons name={"Menu"} color={"#C54CB3"} size={26} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
@@ -463,7 +466,7 @@ export default function TabOneScreen() {
               </Dynamic>
 
               <Dynamic animated>
-                <ChevronDown strokeWidth={2.5} color={colors.text} opacity={0.6} />
+                <Papicons name={"ChevronDown"} color={colors.text} opacity={0.6} />
               </Dynamic>
             </Dynamic>
             {fullyScrolled && (
@@ -490,7 +493,7 @@ export default function TabOneScreen() {
             console.log("Add new grade pressed");
           }}
         >
-          <Search color={colors.text} />
+          <Papicons name={"Search"} color={"#C54CB3"} size={26} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
     </>

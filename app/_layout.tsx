@@ -18,7 +18,7 @@ import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
 import { useAccountStore } from '@/stores/account';
-import { AppColors } from './(onboarding)/end/color';
+import { AppColors } from "@/components/AppColorsSelector";
 import ModelManager from '@/utils/magic/ModelManager';
 
 export {
@@ -109,11 +109,17 @@ export default function RootLayout() {
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
-  const store = useAccountStore.getState()
-  const lastUsedAccount = store.accounts.find(account => account.id === store.lastUsedAccount)
+  const store = useAccountStore.getState();
+  const selectedColor = store.getAccountSelectedColor(store.lastUsedAccount);
 
-  const selectedColor = lastUsedAccount?.selectedColor;
-  const color = selectedColor ? AppColors[selectedColor] : null;
+  useEffect(() => {
+    console.log("Selected color:", selectedColor);
+  }, [store, selectedColor]);
+
+  const color = useMemo(() => {
+    const color = selectedColor != null ? AppColors[selectedColor] : null;
+    return color;
+  }, [selectedColor]);
 
   useEffect(() => {
     ModelManager.safeInit();
@@ -180,17 +186,22 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Modal_Grades_Title"),
-                  headerTransparent: runsIOS26() ? true : false,
+                  headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
                 }}
               />
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: true,
+                  headerShown: false,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: runsIOS26() ? true : false,
+                  headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
+                  presentation: "modal",
+                  contentStyle: {
+                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
+                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                  }
                 }}
               />
 
@@ -199,7 +210,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26() ? true : false,
+                  headerTransparent: runsIOS26(),
                   headerLargeTitle: true,
                 }}
               />
@@ -209,7 +220,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_Attendance"),
-                  headerTransparent: runsIOS26() ? true : false,
+                  headerTransparent: runsIOS26(),
                   headerLargeTitle: true,
                   presentation: "modal"
                 }}

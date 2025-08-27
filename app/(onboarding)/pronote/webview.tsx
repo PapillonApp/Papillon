@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Papicons } from '@getpapillon/papicons';
 import { router, useGlobalSearchParams } from 'expo-router';
 import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
 import { createRef, useState } from "react";
@@ -42,7 +42,12 @@ export default function WebViewScreen() {
   console.log("Device UUID:", deviceUUID);
 
   const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
-      window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    window.hookAccesDepuisAppli = function() {
+      this.passerEnModeValidationAppliMobile('', '${deviceUUID}');
+    };
+    try {
+          window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    } catch {}
     `.trim();
 
   const INJECT_PRONOTE_JSON = `
@@ -96,7 +101,7 @@ export default function WebViewScreen() {
         ]}
       >
         <Icon size={26} fill="#00000080" papicon>
-          <Papicons.ArrowLeft />
+          <Papicons name={"ArrowLeft"} />
         </Icon>
       </Pressable>
 
@@ -167,7 +172,13 @@ export default function WebViewScreen() {
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
               });
-
+              useAccountStore.getState().setLastUsedAccount(deviceUUID)
+              return router.push({
+                pathname: "../end/color",
+                params: {
+                  accountId: deviceUUID
+                }
+              });
             } catch (error) {
               if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
                 router.push({

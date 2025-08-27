@@ -1,4 +1,4 @@
-import * as Papicons from '@getpapillon/papicons';
+import { Chair, Papicons, TextBubble } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
@@ -14,7 +14,7 @@ import {
 import Reanimated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { Period } from "@/services/shared/grade";
@@ -43,7 +43,7 @@ function Tabs() {
 
   const enabledTabs = useMemo(() => [
     {
-      icon: Papicons.Chair,
+      icon: Chair,
       title: t("Profile_Attendance_Title"),
       unread: attendances.reduce((count, attendance) => count + attendance.absences.filter(absence => !absence.justified).length, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),
@@ -61,7 +61,7 @@ function Tabs() {
       }
     },
     {
-      icon: Papicons.TextBubble,
+      icon: TextBubble,
       title: t("Profile_Discussions_Title"),
       unread: discussion.length,
       denominator: t("Profile_Discussions_Denominator_Single"),
@@ -89,10 +89,15 @@ function Tabs() {
     setDiscussion(chats);
   }, []);
 
+
   useEffect(() => {
-    fetchAttendance();
-    fetchDiscussions();
-  }, [fetchAttendance]);
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchAttendance();
+      fetchDiscussions();
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
@@ -147,8 +152,12 @@ function NewsSection() {
   }, []);
 
   useEffect(() => {
-    fetchNews();
-  }, [fetchNews]);
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchNews();
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -180,7 +189,7 @@ function NewsSection() {
               style={{ marginLeft: 8, marginRight: 0 }}
               papicon
             >
-              <Papicons.Newspaper />
+              <Papicons name={"Newspaper"} />
             </Icon>
             <Typography
               color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
@@ -197,12 +206,21 @@ function NewsSection() {
                 }
               })
             }}>
-              <Stack direction="horizontal" vAlign="center" hAlign="center" card inline padding={[12, 6]} radius={100} height={32}>
-                <Typography style={{ marginBottom: -3 }} inline color="secondary">
+              <Stack
+                direction="horizontal"
+                vAlign="center"
+                hAlign="center"
+                inline
+                padding={[12, 6]}
+                radius={100}
+                height={32}
+                backgroundColor={"#7DBB0040"}
+              >
+                <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00", -0.3)}>
                   {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
                 </Typography>
-                <Icon papicon opacity={0.5} size={20}>
-                  <Papicons.ArrowRightUp />
+                <Icon papicon size={20} fill={adjust("#7DBB00", -0.3)} >
+                  <Papicons name={"ArrowRightUp"} />
                 </Icon>
               </Stack>
             </Pressable>
@@ -248,14 +266,14 @@ function Cards() {
       <Pressable onPress={() => {
         console.log("djd")
       }}>
-        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24} backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}>
+        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
           <Icon
             fill={colors.text}
             opacity={0.6}
             size={24}
             papicon
           >
-            <Papicons.Card />
+            <Papicons name={"Card"} />
           </Icon>
           <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
             {t("Profile_Cards_Title")}
@@ -348,7 +366,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <UserPenIcon />
+            <Papicons name={"PenAlt"} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -381,7 +399,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <SettingsIcon />
+            <Papicons name={"Gears"}/>
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -414,9 +432,6 @@ export default function TabOneScreen() {
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
                   {level && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Icon papicon opacity={0.5}>
-                        <Papicons.Ghost />
-                      </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {level}
                       </Typography>
@@ -424,9 +439,6 @@ export default function TabOneScreen() {
                   )}
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Icon papicon opacity={0.5}>
-                        <Papicons.Sparkles />
-                      </Icon>
                       <Typography variant={"body1"} color="secondary">
                         {establishment}
                       </Typography>
