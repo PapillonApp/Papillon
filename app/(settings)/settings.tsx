@@ -19,6 +19,8 @@ import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
+import { error } from "@/utils/logger/logger";
+import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -53,9 +55,16 @@ const SettingsIndex = () => {
   }, [account]);
 
   const logout = useCallback(() => {
-    // console.log(account)
-    // accountStore.removeAccount(account);
-    // router.replace('./(onboarding)');
+    const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
+    if (!account) {
+      error("Unable to find the current account")
+    }
+    useAccountStore.getState().removeAccount(account)
+    useAccountStore.getState().setLastUsedAccount("")
+    for (const service of account.services) {
+      ClearDatabaseForAccount(service.id)
+    }
+    return router.push("/(onboarding)/welcome")
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
