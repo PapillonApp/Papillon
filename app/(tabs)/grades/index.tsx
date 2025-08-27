@@ -25,7 +25,7 @@ import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { Papicons } from '@getpapillon/papicons';
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -146,21 +146,25 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
+  const fetchPeriods = async () => {
+    if (currentPeriod) {
+      return;
+    }
+
+    const result = await manager.getGradesPeriods()
+    setPeriods(result);
+
+    const currentPeriodFound = getCurrentPeriod(result)
+    setCurrentPeriod(currentPeriodFound)
+  };
+
   useEffect(() => {
-    const fetchPeriods = async () => {
-      if (currentPeriod) {
-        return;
-      }
+    const unsubscribe = subscribeManagerUpdate((manager) => {
+      fetchPeriods();
+    });
 
-      const result = await manager.getGradesPeriods()
-      setPeriods(result);
-
-      const currentPeriodFound = getCurrentPeriod(result)
-      setCurrentPeriod(currentPeriodFound)
-    };
-
-    fetchPeriods();
-  }, [manager]);
+    return () => unsubscribe();
+  }, []);
 
   const fetchGradesForPeriod = async (period: Period | undefined) => {
     if (period) {
@@ -691,7 +695,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <Papicons name={"Filter"} color={"#29947A"}/>
+              <Papicons name={"Filter"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
@@ -718,7 +722,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <Papicons name={"Pie"} color={"#29947A"}/>
+              <Papicons name={"Pie"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
