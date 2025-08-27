@@ -24,7 +24,7 @@
     "@legendapp/list": "^1.0.19",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-community/datetimepicker": "8.4.4",
-    "@react-native-masked-view/masked-view": "0.3.2",
+    "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native-menu/menu": "^1.2.4",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/elements": "^2.6.2",
