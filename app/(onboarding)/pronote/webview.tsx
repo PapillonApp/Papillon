@@ -42,7 +42,12 @@ export default function WebViewScreen() {
   console.log("Device UUID:", deviceUUID);
 
   const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
-      window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    window.hookAccesDepuisAppli = function() {
+      this.passerEnModeValidationAppliMobile('', '${deviceUUID}');
+    };
+    try {
+          window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
+    } catch {}
     `.trim();
 
   const INJECT_PRONOTE_JSON = `
@@ -167,6 +172,7 @@ export default function WebViewScreen() {
                 createdAt: (new Date()).toISOString(),
                 updatedAt: (new Date()).toISOString()
               });
+              useAccountStore.getState().setLastUsedAccount(deviceUUID)
               return router.push({
                 pathname: "../end/color",
                 params: {
