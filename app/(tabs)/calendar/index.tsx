@@ -3,10 +3,9 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
 import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
-import { CalendarDaysIcon, ChevronDown, Plus } from "lucide-react-native";
+import { CalendarDaysIcon, ChevronDown } from "lucide-react-native";
 import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { LinearTransition } from "react-native-reanimated";
 import Calendar from "@/ui/components/Calendar";
 import Course from "@/ui/components/Course";
@@ -223,7 +222,7 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, headerHeight, bottomHeight, isRefreshing, onRefresh, colors, router, t }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, _, bottomHeight, isRefreshing, onRefresh, colors }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
     normalizedDayDate.setHours(0, 0, 0, 0);
 
@@ -408,7 +407,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-      <NativeHeaderSide side="Left">
+      <NativeHeaderSide side="Right">
         <MenuView
           actions={[
             {
@@ -486,7 +485,7 @@ export default function TabOneScreen() {
       <View
         style={{
           backgroundColor: colors.background,
-          height: Dimensions.get("window").height,
+          flex: 1,
         }}
       >
         <FlatList
