@@ -19,7 +19,7 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { Papicons } from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
@@ -78,6 +78,11 @@ export default function TabOneScreen() {
         setManualRefreshing(true);
       }
       try {
+        if (!manager) {
+          warn('Manager is null, skipping timetable fetch');
+          return;
+        }
+
         const weeksToFetch = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].filter(
           (week) => !fetchedWeeks.includes(week)
         );
@@ -119,6 +124,17 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
+  }, [weekNumber]);
+
+  // Subscribe to manager updates
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      if (updatedManager) {
+        fetchWeeklyTimetable(weekNumber);
+      }
+    });
+
+    return () => unsubscribe();
   }, [weekNumber]);
 
   // Cleanup timeout on unmount

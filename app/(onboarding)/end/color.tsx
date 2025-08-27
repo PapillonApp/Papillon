@@ -1,8 +1,23 @@
 import { Papicons } from "@getpapillon/papicons"
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
+import { useTheme } from "@react-navigation/native";
+import { router, useGlobalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Path } from "react-native-svg"
+
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import Button from "@/ui/components/Button";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import { AppColors } from "@/utils/colors";
+import AppColorsSelector from "@/components/AppColorsSelector";
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -14,19 +29,45 @@ export default function ChooseColorScreen() {
   const accountStore = useAccountStore.getState();
   const lastUsedAccount = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount);
 
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+  const defaultColorData = useMemo(() =>
+    AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0],
+    [settingsStore.colorSelected]
+  );
+
+  const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
+
   const accountId = local.accountId ? String(local.accountId) : lastUsedAccount?.id;
-  const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
+
+  const handleColorChange = useCallback((color: string) => {
+    setSelectedColor(color);
+
+    setTimeout(() => {
+      const colorData = AppColors.find(appColor => appColor.mainColor === color);
+      if (colorData) {
+        mutateProperty('personalization', {
+          colorSelected: colorData.colorEnum
+        });
+      }
+    }, 50);
+  }, [mutateProperty]);
+
+  const gradientColors = useMemo(() => [selectedColor, selectedColor] as const, [selectedColor]);
+  const logoKey = useMemo(() => `logo:${selectedColor}`, [selectedColor]);
+  const gradientKey = useMemo(() => `gradient:${selectedColor}`, [selectedColor]);
 
   return (
     <View style={styles.container}>
       <Reanimated.View
-        entering={FadeIn.duration(400)}
-        exiting={FadeOut.duration(400)}
-        key={"gradient:" + selectedColor}
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(100)}
+        key={gradientKey}
         style={StyleSheet.absoluteFill}
       >
         <LinearGradient
-          colors={[selectedColor, selectedColor]}
+          colors={gradientColors}
           style={StyleSheet.absoluteFill}
         />
       </Reanimated.View>
@@ -45,9 +86,9 @@ export default function ChooseColorScreen() {
         shadowOpacity: 1,
         shadowRadius: 8.061
       }}
-        entering={ZoomIn.springify()}
-        exiting={FadeOut.duration(150)}
-        key={"logo:" + selectedColor}
+        entering={ZoomIn.springify().duration(300)}
+        exiting={FadeOut.duration(100)}
+        key={logoKey}
       >
         <PapillonLogo color={selectedColor} />
       </Reanimated.View>
@@ -59,7 +100,10 @@ export default function ChooseColorScreen() {
             <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, -0.3)} variant="h2">couleur de thème</Typography>
           </Stack>
         </View>
-        <AppColorsSelector onChangeColor={(color: string) => setSelectedColor(color) } accountId={accountId}/>
+        <AppColorsSelector
+          onChangeColor={handleColorChange}
+          accountId={accountId}
+        />
         <Button
           title="Terminer"
           onPress={async () => {
@@ -92,20 +136,8 @@ const styles = StyleSheet.create({
   }
 });
 
-import { useTheme } from "@react-navigation/native";
-import { router, useGlobalSearchParams } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Path } from "react-native-svg"
 
-import { initializeAccountManager } from "@/services/shared";
-import { useAccountStore } from "@/stores/account";
-import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import adjust from "@/utils/adjustColor";
-import AppColorsSelector from "@/components/AppColorsSelector";
-const PapillonLogo = ({ color }: { color: string }) => (
+const PapillonLogo = React.memo(({ color }: { color: string }) => (
   <Svg
     width={149}
     height={134}
@@ -147,4 +179,4 @@ const PapillonLogo = ({ color }: { color: string }) => (
       d="M137.159 44.801a5.613 5.613 0 1 1-11.227 0 5.613 5.613 0 0 1 11.227 0Z"
     />
   </Svg>
-)
+));

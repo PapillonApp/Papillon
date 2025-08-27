@@ -64,14 +64,17 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  const fetchHomeworks = async () => {
-    const result = await manager.getHomeworks(selectedWeek);
+  const fetchHomeworks = async (managerToUse = manager) => {
+    if (!managerToUse) {
+      return;
+    }
+    const result = await managerToUse.getHomeworks(selectedWeek);
     setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
   };
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((manager) => {
-      fetchHomeworks();
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      fetchHomeworks(updatedManager);
     });
 
     return () => unsubscribe();
@@ -242,7 +245,7 @@ export default function TabOneScreen() {
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        pattern="checks"
+        pattern="cross"
         data={memoizedData}
         initialNumToRender={2}
         recycleItems={true}

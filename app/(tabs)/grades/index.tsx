@@ -146,12 +146,16 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  const fetchPeriods = async () => {
+  const fetchPeriods = async (managerToUse = manager) => {
     if (currentPeriod) {
       return;
     }
 
-    const result = await manager.getGradesPeriods()
+    if (!managerToUse) {
+      return;
+    }
+
+    const result = await managerToUse.getGradesPeriods()
     setPeriods(result);
 
     const currentPeriodFound = getCurrentPeriod(result)
@@ -159,16 +163,16 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((manager) => {
-      fetchPeriods();
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      fetchPeriods(updatedManager);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const fetchGradesForPeriod = async (period: Period | undefined) => {
-    if (period) {
-      const grades = await manager.getGradesForPeriod(period, period.createdByAccount);
+  const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+    if (period && managerToUse) {
+      const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
       setSubjects(grades.subjects);
       if (grades.studentOverall.value) {
         setServiceAverage(grades.studentOverall.value)

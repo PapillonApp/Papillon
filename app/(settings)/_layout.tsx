@@ -25,9 +25,23 @@ export default function Layout() {
       />
 
       <Stack.Screen
+        name="cards"
+        options={{
+          headerShown: true,
+          headerTitle: "Cartes",
+          headerLargeTitle: false,
+          headerTransparent: false,
+        }}
+      />
+
+      <Stack.Screen
         name="services"
         options={{
           headerTitle: t("Settings_Services_Title"),
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTransparent: false,
+          headerBackVisible: true,
         }}
       />
       <Stack.Screen

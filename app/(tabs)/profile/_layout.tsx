@@ -18,15 +18,6 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="cards"
-        options={{
-          headerShown: true,
-          headerTitle: "Cartes",
-          headerLargeTitle: false,
-          headerTransparent: false,
-        }}
-      />
-      <Stack.Screen
         name="attendance"
         options={{
           headerShown: true,
