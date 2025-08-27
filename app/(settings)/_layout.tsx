@@ -30,6 +30,14 @@ export default function Layout() {
           headerTitle: t("Settings_Services_Title"),
         }}
       />
+      <Stack.Screen
+        name="personalization"
+        options={{
+          headerTitle: t("Settings_Personalization_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+        }}
+      />
     </Stack>
   );
 }
