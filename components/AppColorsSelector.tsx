@@ -1,26 +1,11 @@
 import Typography from "@/ui/components/Typography";
 import { FlatList, View } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import { Colors, AppColors } from "@/utils/colors";
 
-export enum Colors {
-  PINK,
-  YELLOW,
-  GREEN,
-  PURPLE,
-  BLUE,
-  BLACK
-}
-
-export const AppColors = [
-  { mainColor: "#DD007D", backgroundColor: "#FAD9EC", name: "Rose", colorEnum: Colors.PINK },
-  { mainColor: "#E8B048", backgroundColor: "#FCF3E4", name: "Jaune", colorEnum: Colors.YELLOW },
-  { mainColor: "#26B290", backgroundColor: "#DEF3EE", name: "Vert", colorEnum: Colors.GREEN },
-  { mainColor: "#C400DD", backgroundColor: "#F6D9FA", name: "Violet", colorEnum: Colors.PURPLE },
-  { mainColor: "#48B7E8", backgroundColor: "#E4F4FC", name: "Bleu", colorEnum: Colors.BLUE },
-  { mainColor: "#6D6D6D", backgroundColor: "#E9E9E9", name: "Noir", colorEnum: Colors.BLACK },
-]
+export { Colors, AppColors };
 
 function ColorSelector({ mainColor, backgroundColor, name, onPress, selected }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void, selected: boolean }) {
   return (
@@ -46,7 +31,7 @@ function ColorSelector({ mainColor, backgroundColor, name, onPress, selected }: 
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.07,
         shadowRadius: 5
-    }}
+      }}
     >
       <View style={{
         width: 44,
@@ -66,10 +51,18 @@ function ColorSelector({ mainColor, backgroundColor, name, onPress, selected }: 
 }
 
 const AppColorsSelector = (
-  { onChangeColor, accountId } :{onChangeColor?: (color: string) => void, accountId?: string}
+  { onChangeColor, accountId }: { onChangeColor?: (color: string) => void, accountId?: string }
 ) => {
-  const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
-  const [color, setColor] = useState<Colors>(Colors.PINK)
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
+  const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
+  const [color, setColor] = useState<Colors>(settingsStore.colorSelected || Colors.PINK);
+
+  useEffect(() => {
+    const colorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
+    setSelectedColor(colorData.mainColor);
+    setColor(colorData.colorEnum);
+  }, [settingsStore.colorSelected]);
 
   return (
     <FlatList
@@ -86,7 +79,6 @@ const AppColorsSelector = (
             setSelectedColor(item.mainColor)
             setColor(item.colorEnum)
             if (onChangeColor) {
-              useAccountStore.getState().setAccountSelectedColor(accountId, color)
               onChangeColor(item.mainColor)
             }
           }}

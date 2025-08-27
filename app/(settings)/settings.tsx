@@ -23,6 +23,7 @@ import { log } from "@/utils/logger/logger";
 import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Account } from "@/stores/account/types";
 
 const SettingsIndex = () => {
   const router = useRouter();

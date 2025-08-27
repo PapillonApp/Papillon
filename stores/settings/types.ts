@@ -1,4 +1,4 @@
-import { Colors } from "@/app/(onboarding)/end/color";
+import { Colors } from "@/utils/colors";
 
 export interface SettingsStorage {
   personalization: Personalization;

@@ -8,19 +8,24 @@ import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
-import AppColorsSelector, { AppColors } from "@/components/AppColorsSelector";
+import AppColorsSelector from "@/components/AppColorsSelector";
+import { AppColors, Colors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
 
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
 
   const store = useAccountStore.getState();
-  //const accountSelectedColor = store.getAccountSelectedColor(store.lastUsedAccount);
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  const [selectedColor, setSelectedColor] = React.useState<string>(AppColors[0].mainColor);
+  // Trouve la couleur par défaut à partir de l'enum stocké
+  const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
+  const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
   const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
 
   return (
@@ -42,15 +47,15 @@ const PersonalizationSettings = () => {
         style={{ flex: 1 }}
       >
         <Stack direction="horizontal"
-               gap={10}
-               vAlign="start"
-               hAlign="center"
-               style={{
-                 paddingHorizontal: 6,
-                 paddingVertical: 0,
-                 marginBottom: 10,
-                 opacity: 0.5,
-               }}
+          gap={10}
+          vAlign="start"
+          hAlign="center"
+          style={{
+            paddingHorizontal: 6,
+            paddingVertical: 0,
+            marginBottom: 10,
+            opacity: 0.5,
+          }}
         >
           <Icon>
             <Papicons
@@ -65,7 +70,13 @@ const PersonalizationSettings = () => {
         </Stack>
         <AppColorsSelector
           onChangeColor={(color: string) => {
-            setSelectedColor(color)
+            setSelectedColor(color);
+            const colorData = AppColors.find(appColor => appColor.mainColor === color);
+            if (colorData) {
+              mutateProperty('personalization', {
+                colorSelected: colorData.colorEnum
+              });
+            }
           }}
           accountId={store.lastUsedAccount}
         />
@@ -73,55 +84,55 @@ const PersonalizationSettings = () => {
           <Item>
             <Icon size={30}>
               <Papicons name={"ColorTheme"}
-                        opacity={0.7}
+                opacity={0.7}
               />
             </Icon>
             <Typography variant={"title"}>Thème</Typography>
             <Trailing>
               <Stack bordered={true}
-                     direction={"horizontal"}
-                     height={40}
-                     hAlign={"center"}
-                     vAlign={"center"}
+                direction={"horizontal"}
+                height={40}
+                hAlign={"center"}
+                vAlign={"center"}
               >
                 <AnimatedPressable onPress={() => setSelectedTheme("light")}
-                                   style={{ height: "100%" }}
+                  style={{ height: "100%" }}
                 >
                   <Stack style={{ paddingHorizontal: 15, height: "100%" }}
-                         hAlign={"center"}
-                         vAlign={"center"}
-                         backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
-                         radius={20}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
+                    radius={20}
                   >
                     <Papicons name={"Sun"}
-                              opacity={selectedTheme === "light" ? 1 : 0.7}
-                              color={selectedTheme === "light" ? "#FFF" : theme.colors.text}
+                      opacity={selectedTheme === "light" ? 1 : 0.7}
+                      color={selectedTheme === "light" ? "#FFF" : theme.colors.text}
                     />
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("dark")}
-                                   style={{ height: "100%" }}
+                  style={{ height: "100%" }}
                 >
                   <Stack style={{ paddingHorizontal: 15, height: "100%" }}
-                         hAlign={"center"}
-                         vAlign={"center"}
-                         backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
-                         radius={20}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
+                    radius={20}
                   >
                     <Papicons name={"Moon"}
-                              opacity={selectedTheme === "dark" ? 1 : 0.7}
-                              color={selectedTheme === "dark" ? "#FFF" : theme.colors.text}
+                      opacity={selectedTheme === "dark" ? 1 : 0.7}
+                      color={selectedTheme === "dark" ? "#FFF" : theme.colors.text}
                     />
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("auto")}
-                                   style={{ height: "100%" }}
+                  style={{ height: "100%" }}
                 >
                   <Stack style={{ paddingHorizontal: 15, height: "100%" }}
-                         hAlign={"center"}
-                         vAlign={"center"}
-                         backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}
-                         radius={20}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}
+                    radius={20}
                   >
                     <Typography color={selectedTheme === "auto" ? "#FFF" : theme.colors.text + "7F"}>Auto</Typography>
                   </Stack>
@@ -134,12 +145,12 @@ const PersonalizationSettings = () => {
           >
             <Icon size={30}>
               <Papicons name={"PapillonApp"}
-                        opacity={0.7}
+                opacity={0.7}
               />
             </Icon>
             <Typography variant={"title"}>Changer l’icône</Typography>
             <Typography variant={"caption"}
-                        color={"secondary"}
+              color={"secondary"}
             >Personnalisez l’icône de l’application</Typography>
           </Item>
           <Item onPress={() => {
@@ -147,12 +158,12 @@ const PersonalizationSettings = () => {
           >
             <Icon size={30}>
               <Papicons name={"PenAlt"}
-                        opacity={0.7}
+                opacity={0.7}
               />
             </Icon>
             <Typography variant={"title"}>Personnaliser les matières</Typography>
             <Typography variant={"caption"}
-                        color={"secondary"}
+              color={"secondary"}
             >Icônes, couleurs</Typography>
           </Item>
         </List>

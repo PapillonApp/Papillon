@@ -18,7 +18,8 @@ import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
 import { useAccountStore } from '@/stores/account';
-import { AppColors } from "@/components/AppColorsSelector";
+import { useSettingsStore } from '@/stores/settings';
+import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
 
 export {
@@ -109,17 +110,12 @@ export default function RootLayout() {
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
-  const store = useAccountStore.getState();
-  const selectedColor = store.getAccountSelectedColor(store.lastUsedAccount);
-
-  useEffect(() => {
-    console.log("Selected color:", selectedColor);
-  }, [store, selectedColor]);
+  const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
 
   const color = useMemo(() => {
-    const color = selectedColor != null ? AppColors[selectedColor] : null;
-    return color;
-  }, [selectedColor]);
+    const color = selectedColorEnum != null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
+    return color || AppColors[0]; // Fallback vers la première couleur si aucune n'est trouvée
+  }, [selectedColorEnum]);
 
   useEffect(() => {
     ModelManager.safeInit();

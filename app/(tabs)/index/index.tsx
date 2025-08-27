@@ -36,6 +36,7 @@ import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
+import { Account } from "@/stores/account/types";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -146,6 +147,7 @@ export default function TabOneScreen() {
   }, [account]);
 
   const date = useMemo(() => new Date(), []);
+
   const accent = colors.primary;
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
   const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
@@ -449,7 +451,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
           <Icon>
-            <Papicons name={"Menu"} color={foreground}/>
+            <Papicons name={"Menu"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -483,7 +485,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable>
           <Icon>
-            <Papicons name={"Bell"} color={foreground}/>
+            <Papicons name={"Bell"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
