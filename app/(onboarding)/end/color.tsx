@@ -14,8 +14,13 @@ export default function ChooseColorScreen() {
   const accountStore = useAccountStore.getState();
   const lastUsedAccount = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount);
 
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+  const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
+  const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
+
   const accountId = local.accountId ? String(local.accountId) : lastUsedAccount?.id;
-  const [selectedColor, setSelectedColor] = useState<string>("#DD007D")
 
   return (
     <View style={styles.container}>
@@ -59,7 +64,18 @@ export default function ChooseColorScreen() {
             <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, -0.3)} variant="h2">couleur de thème</Typography>
           </Stack>
         </View>
-        <AppColorsSelector onChangeColor={(color: string) => setSelectedColor(color) } accountId={accountId}/>
+        <AppColorsSelector
+          onChangeColor={(color: string) => {
+            setSelectedColor(color);
+            const colorData = AppColors.find(appColor => appColor.mainColor === color);
+            if (colorData) {
+              mutateProperty('personalization', {
+                colorSelected: colorData.colorEnum
+              });
+            }
+          }}
+          accountId={accountId}
+        />
         <Button
           title="Terminer"
           onPress={async () => {
@@ -99,11 +115,13 @@ import Svg, { Path } from "react-native-svg"
 
 import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
+import { AppColors } from "@/utils/colors";
 import AppColorsSelector from "@/components/AppColorsSelector";
 const PapillonLogo = ({ color }: { color: string }) => (
   <Svg
