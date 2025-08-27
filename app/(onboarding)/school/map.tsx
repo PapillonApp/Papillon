@@ -137,7 +137,7 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
     const schools = await geolocation({ latitude: pos?.latitude ?? 0, longitude: pos?.longitude ?? 0 })
     return schools.map(item => ({
       name: item.name,
-      distance: item.distance,
+      distance: item.distance / 10,
       url: item.url
     }))
   }
