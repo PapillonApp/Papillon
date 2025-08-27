@@ -24,7 +24,7 @@ import adjust from "@/utils/adjustColor";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { log } from "@/utils/logger/logger";
+import { log, warn } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
 import { getWeekNumberFromDate } from "@/database/useHomework";
@@ -69,6 +69,10 @@ export default function TabOneScreen() {
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping EDT fetch');
+      return;
+    }
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     const currentWeekNumber = getWeekNumberFromDate(date)
@@ -78,6 +82,10 @@ export default function TabOneScreen() {
 
   const fetchGrades = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping grades fetch');
+      return;
+    }
     const gradePeriods = await manager.getGradesPeriods()
     const validPeriods: Period[] = []
     const date = new Date().getTime()

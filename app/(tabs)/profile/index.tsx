@@ -35,6 +35,7 @@ import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { warn } from "@/utils/logger/logger";
 
 function Tabs() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -75,6 +76,10 @@ function Tabs() {
 
   const fetchAttendance = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping attendance fetch');
+      return;
+    }
     const periods = await manager.getAttendancePeriods();
     const currentPeriod = getCurrentPeriod(periods)
     const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
@@ -85,6 +90,10 @@ function Tabs() {
 
   const fetchDiscussions = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping discussions fetch');
+      return;
+    }
     const chats = await manager.getChats();
     setDiscussion(chats);
   }, []);
@@ -143,6 +152,10 @@ function NewsSection() {
   const fetchNews = useCallback(() => {
     try {
       const manager = getManager();
+      if (!manager) {
+        warn('Manager is null, skipping news fetch');
+        return;
+      }
       manager.getNews().then((fetchedNews) => {
         setNews(fetchedNews);
       });
@@ -399,7 +412,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <Papicons name={"Gears"}/>
+            <Papicons name={"Gears"} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
