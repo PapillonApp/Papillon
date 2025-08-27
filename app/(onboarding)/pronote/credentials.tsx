@@ -284,6 +284,16 @@ export default function PronoteLoginWithCredentials() {
                 })
               }
 
+              if (!authentication) {
+                return alert.showAlert({
+                  title: "Erreur d'authentification",
+                  description: "Une erreur inattendue s'est produite. Veuillez réessayer.",
+                  icon: "TriangleAlert",
+                  color: "#D60046",
+                  withoutNavbar: true
+                });
+              }
+
               const splittedUsername = session.user.name.split(" ")
               const firstName = splittedUsername[splittedUsername.length - 1]
               const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
