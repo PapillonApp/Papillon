@@ -17,6 +17,20 @@ export default function Layout() {
           headerTransparent: true,
         }}
       />
+      <Stack.Screen
+        name="attendance"
+        options={{
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTransparent: true,
+          presentation: "modal",
+        }}
+        initialParams={{
+          periods: [],
+          currentPeriod: {},
+          attendances: []
+        }}
+      />
     </Stack>
   );
 }

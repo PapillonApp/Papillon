@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native"
-import { router } from "expo-router"
+import { useRouter } from "expo-router";
 import { Image, ScrollView, View } from "react-native"
 
 import { useAccountStore } from "@/stores/account"
@@ -14,6 +14,7 @@ import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 
 export default function CardView() {
+  const router = useRouter();
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => account.id === store.lastUsedAccount);
   const selfCompatible = account?.services.filter(
@@ -21,9 +22,13 @@ export default function CardView() {
   );
 
   return (
-    <View style={{ padding: 20, gap: 15 }}>
+    <ScrollView
+      contentContainerStyle={{
+        padding: 20, gap: 15
+      }}
+    >
       <SettingsHeader color="#D9E6FA" />
-      {selfCompatible?.length > 0 ? (
+      {(selfCompatible ?? []).length > 0 ? (
         <>
           <Typography style={{ opacity: 0.5 }}>Mes cartes</Typography>
           <View style={{
@@ -52,6 +57,14 @@ export default function CardView() {
                   </Item>
                 ))}
               </List>
+              <Button color="blue" title="Ajouter" icon={<Papicons.Plus />} onPress={() => {
+                router.push({
+                  pathname: "/(onboarding)/restaurants/method",
+                  params: {
+                    action: "addService"
+                  }
+                })
+              }} />
             </ScrollView>
           </View>
           <Typography variant="caption" style={{ opacity: 0.5 }}>Ajoute une nouvelle carte depuis l’onglet Profil accessible dans la barre de navigation</Typography>
@@ -89,7 +102,7 @@ export default function CardView() {
         </Stack>
       )
       }
-    </View >
+    </ScrollView >
   );
 }
 

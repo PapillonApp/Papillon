@@ -3,10 +3,11 @@ import { persist } from "zustand/middleware";
 
 import { createMMKVStorage } from "../global";
 import { SettingsStorage, SettingsState, Personalization } from "./types";
+import { Colors } from "@/utils/colors";
 
 const defaultPersonalization: Personalization = {
   profilePictureB64: undefined,
-  colorSelected: 0,
+  colorSelected: Colors.PINK,
   magicEnabled: false,
   hideNameOnHomeScreen: false,
 };

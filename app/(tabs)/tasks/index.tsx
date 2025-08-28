@@ -5,7 +5,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "
 import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { CircularProgress } from "@/ui/components/CircularProgress";
@@ -64,14 +64,21 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  useEffect(() => {
-    const fetchHomeworks = async () => {
-      const result = await manager.getHomeworks(selectedWeek);
-      setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
-    };
+  const fetchHomeworks = async (managerToUse = manager) => {
+    if (!managerToUse) {
+      return;
+    }
+    const result = await managerToUse.getHomeworks(selectedWeek);
+    setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+  };
 
-    fetchHomeworks();
-  }, [selectedWeek]);
+  useEffect(() => {
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      fetchHomeworks(updatedManager);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -238,7 +245,7 @@ export default function TabOneScreen() {
         waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        pattern="checks"
+        pattern="cross"
         data={memoizedData}
         initialNumToRender={2}
         recycleItems={true}
@@ -259,7 +266,7 @@ export default function TabOneScreen() {
               <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
                 {lengthHomeworks === 0 ? (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }}/>
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
                     </Typography>
@@ -277,7 +284,7 @@ export default function TabOneScreen() {
                   </Stack>
                 ) : (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }}/>
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
                     </Typography>

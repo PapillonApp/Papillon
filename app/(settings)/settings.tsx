@@ -1,12 +1,12 @@
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { RelativePathString, useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { Alert, Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Platform, View } from "react-native";
 
 import { Papicons } from '@getpapillon/papicons';
 
@@ -19,8 +19,11 @@ import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
 import { getManager } from "@/services/shared";
+import { log } from "@/utils/logger/logger";
 import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Account } from "@/stores/account/types";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -77,6 +80,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
+          onPress: () => console.log("sus")
         },
         {
           title: t('Settings_Donate_Title'),
@@ -84,6 +88,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
+          onPress: () => console.log("sus")
         },
         {
           title: t('Settings_About_Title'),
@@ -91,6 +96,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
+          onPress: () => console.log("sus")
         }
       ]
     },
@@ -132,13 +138,15 @@ const SettingsIndex = () => {
       icon: <Papicons name={"Palette"} />,
       title: "Personnalisation",
       description: "Thèmes, matières...",
-      color: "#17C300"
+      color: "#17C300",
+      href: "personalization"
     },
     {
       icon: <Papicons name={"Bell"} />,
       title: "Notifications",
       description: "Alertes, fréquence...",
-      color: "#DD9B00"
+      color: "#DD9B00",
+      href: "notifications"
     },
     {
       icon: <Papicons name={"Card"} />,
@@ -153,7 +161,8 @@ const SettingsIndex = () => {
       icon: <Papicons name={"Sparkles"} />,
       title: "Magic+",
       description: "Fonctions I.A",
-      color: "#DD007D"
+      color: "#DD007D",
+      href: "magic"
     }
   ]
 
@@ -166,7 +175,11 @@ const SettingsIndex = () => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <Pressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
+                <AnimatedPressable
+                  onPress={button.onPress}
+                  style={{ flex: 1, width: "50%" }}
+                  key={button.title}
+                >
                   <Stack
                     flex
                     card
@@ -184,7 +197,7 @@ const SettingsIndex = () => {
                       <Typography inline variant="caption" color={newButtonColor}>{button.description}</Typography>
                     </Stack>
                   </Stack>
-                </Pressable>
+                </AnimatedPressable>
               )
             })}
           </Stack>
@@ -202,7 +215,9 @@ const SettingsIndex = () => {
             style={{ marginBottom: 16, gap: 4 }}
           >
             <List>
-              <Item>
+              <Item
+                onPress={() => router.replace("./services")}
+              >
                 <Leading>
                   <Image
                     source={require('@/assets/images/default_profile.jpg')}

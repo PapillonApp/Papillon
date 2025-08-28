@@ -24,7 +24,7 @@ import adjust from "@/utils/adjustColor";
 
 import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { log } from "@/utils/logger/logger";
+import { log, warn } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
 import { getWeekNumberFromDate } from "@/database/useHomework";
@@ -36,6 +36,7 @@ import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
+import { Account } from "@/stores/account/types";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -68,6 +69,10 @@ export default function TabOneScreen() {
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping EDT fetch');
+      return;
+    }
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     const currentWeekNumber = getWeekNumberFromDate(date)
@@ -77,6 +82,10 @@ export default function TabOneScreen() {
 
   const fetchGrades = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping grades fetch');
+      return;
+    }
     const gradePeriods = await manager.getGradesPeriods()
     const validPeriods: Period[] = []
     const date = new Date().getTime()
@@ -146,6 +155,7 @@ export default function TabOneScreen() {
   }, [account]);
 
   const date = useMemo(() => new Date(), []);
+
   const accent = colors.primary;
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
   const foregroundSecondary = adjust(accent, theme.dark ? 0.6 : -0.7) + "88";
@@ -449,7 +459,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
           <Icon>
-            <Papicons name={"Menu"} color={foreground}/>
+            <Papicons name={"Menu"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
@@ -483,7 +493,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable>
           <Icon>
-            <Papicons name={"Bell"} color={foreground}/>
+            <Papicons name={"Bell"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>

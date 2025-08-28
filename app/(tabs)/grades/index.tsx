@@ -25,7 +25,7 @@ import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { Papicons } from '@getpapillon/papicons';
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
-import { getManager } from "@/services/shared";
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -146,25 +146,33 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
+  const fetchPeriods = async (managerToUse = manager) => {
+    if (currentPeriod) {
+      return;
+    }
+
+    if (!managerToUse) {
+      return;
+    }
+
+    const result = await managerToUse.getGradesPeriods()
+    setPeriods(result);
+
+    const currentPeriodFound = getCurrentPeriod(result)
+    setCurrentPeriod(currentPeriodFound)
+  };
+
   useEffect(() => {
-    const fetchPeriods = async () => {
-      if (currentPeriod) {
-        return;
-      }
+    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+      fetchPeriods(updatedManager);
+    });
 
-      const result = await manager.getGradesPeriods()
-      setPeriods(result);
+    return () => unsubscribe();
+  }, []);
 
-      const currentPeriodFound = getCurrentPeriod(result)
-      setCurrentPeriod(currentPeriodFound)
-    };
-
-    fetchPeriods();
-  }, [manager]);
-
-  const fetchGradesForPeriod = async (period: Period | undefined) => {
-    if (period) {
-      const grades = await manager.getGradesForPeriod(period, period.createdByAccount);
+  const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+    if (period && managerToUse) {
+      const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
       setSubjects(grades.subjects);
       if (grades.studentOverall.value) {
         setServiceAverage(grades.studentOverall.value)
@@ -691,7 +699,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <Papicons name={"Filter"} color={"#29947A"}/>
+              <Papicons name={"Filter"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
@@ -718,7 +726,7 @@ export default function TabOneScreen() {
         >
           <NativeHeaderPressable onPress={() => { }}>
             <Icon>
-              <Papicons name={"Pie"} color={"#29947A"}/>
+              <Papicons name={"Pie"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
         </MenuView>
