@@ -28,17 +28,15 @@ export async function predictHomework(label: string): Promise<string> {
   const existingHomework = store.getHomework(homeworkId);
   if (existingHomework) return existingHomework.label;
 
-  const cleanedHomework = ModelManager.cleanText(label);
-
   for (const [category, regexList] of Object.entries(compiledPatterns)) {
-    if (regexList.some(rgx => rgx.test(cleanedHomework))) {
+    if (regexList.some(rgx => rgx.test(label))) {
       store.addHomework({ id: homeworkId, label: category });
       return category;
     }
   }
 
   await ModelManager.init();
-  const prediction = await ModelManager.predict(cleanedHomework);
+  const prediction = await ModelManager.predict(label);
 
   const finalLabel =
     isModelPrediction(prediction) && prediction.predicted !== "null"
