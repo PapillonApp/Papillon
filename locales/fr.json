@@ -143,6 +143,14 @@
   "News_Theme_Reading_Title": "Lecture",
   "News_Theme_Reading_Description": "Un thème conçu pour la lecture",
 
+  "Attendance_Hours_Missed": "Heures manquées",
+  "Attendance_Hours_Unjustified": "Heures injustifiées",
+  "Attendance_Missing": "Absences",
+  "Attendance_Delays": "Retards",
+  "Attendance_NoReason": "Aucune raison",
+  "Attendance_NoEvent_Title": "Aucun événement",
+  "Attendance_NoEvent_Description": "Pas d'absences ou de retards enregistrés pour cette période.",
+
   "Settings_Account_Title": "Mon compte",
   "Settings_Account_Description": "Mon compte",
   "Settings_Services_Title": "Comptes liés",
@@ -163,5 +171,13 @@
   "Settings_About_Title": "À propos",
   "Settings_About_Description": "version 8.0.0",
   "Settings_Logout_Title": "Se déconnecter",
-  "Settings_Logout_Description": "Supprimer ce compte de Papillon"
+  "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+
+  "Settings_Personalization_Accent": "Couleur d'accentuation",
+  "Settings_Personalization_Accent_Description": "La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.",
+  "Settings_Personalization_Theme": "Thème",
+  "Settings_Personalization_Icon_Title": "Changer l’icône",
+  "Settings_Personalization_Icon_Description": "Personnalisez l’icône de l’application",
+  "Settings_Personalization_Subject_Title": "Personnaliser les matières",
+  "Settings_Personalization_Subject_Description": "Icônes, couleurs",
 }

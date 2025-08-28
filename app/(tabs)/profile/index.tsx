@@ -129,7 +129,7 @@ function Tabs() {
             radius={200}
             backgroundColor={tab.unread > 0 ? adjust(tab.color, theme.dark ? -0.85 : 0.85) : colors.card}
           >
-            <Icon papicon size={24} fill={tab.unread > 0 ? tab.color : colors.text}>
+            <Icon papicon fill={tab.unread > 0 ? tab.color : colors.text}>
               <tab.icon />
             </Icon>
             <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
@@ -378,7 +378,7 @@ export default function TabOneScreen() {
             console.log("Pressed");
           }}
         >
-          <Icon>
+          <Icon size={28}>
             <Papicons name={"PenAlt"} />
           </Icon>
         </NativeHeaderPressable>
@@ -411,7 +411,7 @@ export default function TabOneScreen() {
             router.push("/(settings)/settings");
           }}
         >
-          <Icon>
+          <Icon size={28}>
             <Papicons name={"Gears"} />
           </Icon>
         </NativeHeaderPressable>

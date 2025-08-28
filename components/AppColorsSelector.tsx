@@ -4,6 +4,9 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useSettingsStore } from "@/stores/settings";
 import { Colors, AppColors } from "@/utils/colors";
+import adjust from "@/utils/adjustColor";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
 
 export { Colors, AppColors };
 
@@ -14,13 +17,16 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
     }
   }, [onPress]);
 
+  const theme = useTheme();
+  const { colors } = theme;
+
   const containerStyle = React.useMemo(() => ({
     flex: 1,
     margin: 4,
     marginVertical: selected ? 0 : 4,
     alignItems: "center" as const,
     backgroundColor: backgroundColor,
-    borderColor: selected ? mainColor : "#00000026",
+    borderColor: selected ? mainColor : colors.text + "26",
     borderWidth: selected ? 4 : 2,
     borderRadius: 25,
     paddingVertical: 10,
@@ -64,6 +70,8 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
   const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
   const [color, setColor] = useState<Colors>(settingsStore.colorSelected || Colors.PINK);
 
+  const theme = useTheme();
+
   useEffect(() => {
     const colorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
     setSelectedColor(colorData.mainColor);
@@ -83,7 +91,7 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
       <ColorSelector
         selected={selectedColor === item.mainColor}
         mainColor={item.mainColor}
-        backgroundColor={item.backgroundColor}
+        backgroundColor={adjust(item.mainColor, theme.dark ? -0.8 : 0.8)}
         name={item.name}
         onPress={handlePress}
       />
@@ -94,7 +102,7 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
 
   const ListFooter = useMemo(() => (
     <Typography style={{ paddingTop: 10, flex: 1 }} color="#7F7F7F" variant="caption">
-      La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.
+      {t("Settings_Personalization_Accent_Description")}
     </Typography>
   ), []);
 
