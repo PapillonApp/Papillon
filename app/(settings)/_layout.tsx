@@ -30,6 +30,18 @@ export default function Layout() {
           headerTitle: t("Settings_Services_Title"),
         }}
       />
+
+      <Stack.Screen
+        name="cards"
+        options={{
+          headerShown: true,
+          headerTitle: "Cartes",
+          headerLargeTitle: false,
+          headerTransparent: false,
+          headerBackButtonDisplayMode: "minimal",
+          gestureEnabled: true
+        }}
+      />
     </Stack>
   );
 }
