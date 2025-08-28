@@ -1,5 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from "@octokit/rest";
+import { OctokitResponse } from "@octokit/types"
 import * as github from '@actions/github';
 import autoLabel, { editInvalidLabel } from './utils/auto-label';
 import fileChecks from './utils/file-related';
@@ -72,3 +73,31 @@ import checkDescription from './utils/check-description';
     });
   }
 })();
+
+export interface labelResponse {
+    errors: string[]
+    labels: string[]
+}
+
+export interface sizeResponse {
+    errors: string[]
+    warnings: string[]
+    files: OctokitResponse<{
+        sha: string;
+        filename: string;
+        status: "added" | "removed" | "modified" | "renamed" | "copied" | "changed" | "unchanged";
+        additions: number;
+        deletions: number;
+        changes: number;
+        blob_url: string;
+        raw_url: string;
+        contents_url: string;
+        patch?: string;
+        previous_filename?: string;
+    }[], 200>,
+    dependencies?: Record<string, string>
+}
+
+export interface descriptionSize {
+    errors: string[]
+}
