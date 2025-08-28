@@ -14,6 +14,7 @@ on:
 
 jobs:
   run-analysis:
+    if: github.event.pull_request.user.association != 'MEMBER' && github.event.pull_request.user.association != 'OWNER'
     runs-on: ubuntu-latest
 
     permissions:
