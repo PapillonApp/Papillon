@@ -105,6 +105,7 @@ const MapIcon = React.memo(() => (
 MapIcon.displayName = 'MapIcon';
 
 import { School as SkolengoSkool } from 'skolengojs';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 export interface School {
   name: string,
@@ -385,17 +386,7 @@ export default function SelectSchoolOnMap() {
             schoolsList
           );
         })()}
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            staticStyles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill="white" papicon>
-            <Papicons name={"ArrowLeft"} />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable >
   );

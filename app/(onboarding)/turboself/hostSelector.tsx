@@ -24,6 +24,7 @@ import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -275,17 +276,7 @@ export default function TurboSelfSelectHost() {
           />
         </Reanimated.View>
 
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            staticStyles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons name={"ArrowLeft"} />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>
   );

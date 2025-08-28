@@ -447,7 +447,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <CalendarDaysIcon color={colors.text} />
+            <Papicons name={"Calendar"} color={colors.text} opacity={0.7}/>
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>

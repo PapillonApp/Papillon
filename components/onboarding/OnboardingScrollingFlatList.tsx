@@ -1,0 +1,171 @@
+import Reanimated, {
+  Extrapolate,
+  FadeInDown, interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import Stack from "@/ui/components/Stack";
+import LottieView from "lottie-react-native";
+import Typography from "@/ui/components/Typography";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { getLoginMethods, LoginMethod } from "@/app/(onboarding)/utils/constants";
+import Icon from "@/ui/components/Icon";
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import ViewContainer from "@/ui/components/ViewContainer";
+import React from "react";
+import { useTheme } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from "expo-router";
+import { Dimensions, FlatList } from "react-native";
+const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
+
+const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, elements, renderItem }:{
+  lottie: string
+  title: string
+  color: string
+  step: number
+  totalSteps: number
+  elements: any[]
+  renderItem: ({ item, index }: { item: any, index: number }) => React.JSX.Element
+}) => {
+  const insets = useSafeAreaInsets();
+  const animation = React.useRef<LottieView>(null);
+
+  const scrollY = React.useRef(useSharedValue(0)).current;
+
+  let height: number = 500;
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const AnimatedHeaderStyle = useAnimatedStyle(() => ({
+    maxHeight: interpolate(
+      scrollY.value,
+      [0, height - 270],
+      [height, 270],
+      Extrapolate.CLAMP
+    ),
+    height: height,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+  }));
+
+  const AnimatedLottieContainerStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrollY.value,
+      [0, height - 270],
+      [1, 0],
+      Extrapolate.CLAMP
+    ),
+    transform: [
+      {
+        scale: interpolate(
+          scrollY.value,
+          [0, height - 270],
+          [1, 0.8],
+          Extrapolate.CLAMP
+        ),
+      },
+    ],
+  }));
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (animation.current) {
+        animation.current.reset();
+        animation.current.play();
+      }
+    }, [])
+  );
+
+  return (
+    <ViewContainer>
+      <Reanimated.View
+        style={AnimatedHeaderStyle}
+      >
+        <Stack
+          padding={32}
+          backgroundColor={color}
+          gap={20}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            borderBottomLeftRadius: 42,
+            borderBottomRightRadius: 42,
+            paddingBottom: 34,
+            borderCurve: "continuous",
+            height: "100%",
+          }}
+        >
+          <Reanimated.View style={AnimatedLottieContainerStyle}>
+            <LottieView
+              autoPlay
+              loop={false}
+              style={{ width: 230, height: 230 }}
+              source={lottie}
+            />
+          </Reanimated.View>
+          <Stack
+            vAlign='start'
+            hAlign='start'
+            width="100%"
+            gap={12}
+          >
+            <Stack flex direction="horizontal">
+              <Typography
+                variant="h5"
+                style={{ color: "white", lineHeight: 22, fontSize: 18 }}
+              >
+                {"Étape " + step}
+              </Typography>
+              <Typography
+                variant="h5"
+                style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+              >
+                {"sur " + totalSteps}
+              </Typography>
+            </Stack>
+            <Typography
+              variant="h1"
+              style={{ color: "white", fontSize: 32, lineHeight: 34 }}
+            >
+              {title}
+            </Typography>
+          </Stack>
+        </Stack>
+      </Reanimated.View>
+
+      <AnimatedFlatList
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={scrollHandler}
+        data={elements}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+        contentContainerStyle={{
+          paddingTop: height + 16,
+          paddingHorizontal: 16,
+          gap: 10,
+          paddingBottom: insets.bottom + 16,
+        }}
+        renderItem={renderItem}
+      />
+
+      <OnboardingBackButton/>
+    </ViewContainer>
+  )
+}
+
+export default OnboardingScrollingFlatList;

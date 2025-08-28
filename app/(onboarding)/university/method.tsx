@@ -14,6 +14,7 @@ import ViewContainer from '@/ui/components/ViewContainer';
 import { getSupportedUniversities, SupportedUniversity } from '../utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { Extrapolate, FadeInDown, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
@@ -228,22 +229,7 @@ export default function WelcomeScreen() {
             )}
       />
 
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          position: 'absolute',
-          left: 16,
-          top: insets.top + 4,
-          zIndex: 200,
-          backgroundColor: '#ffffff42',
-          padding: 10,
-          borderRadius: 100,
-        }}
-      >
-        <Icon size={26} fill={"#fff"} papicon>
-          <Papicons name={"ArrowLeft"} />
-        </Icon>
-      </Pressable>
+      <OnboardingBackButton/>
     </ViewContainer>
   );
 }

@@ -20,6 +20,7 @@ import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -216,17 +217,7 @@ export default function Pronote2FA() {
             });
           }}
         />
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            staticStyles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill={local.previousPage === "map" ? "#FFFFFF" : "#00000080"} papicon>
-            <Papicons.ArrowLeft />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>
   );

@@ -19,6 +19,7 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
 import Typography from "@/ui/components/Typography";
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -390,17 +391,7 @@ export default function PronoteLoginWithQR() {
           <View style={styles.transparentSquareBorder} />
         )}
       </MaskedView>
-      <Pressable
-        onPress={() => router.back()}
-        style={[
-          styles.backButton,
-          { top: insets.top + 4 }
-        ]}
-      >
-        <Icon size={26} fill={"#FFFFFF"} papicon>
-          <Papicons name={"ArrowLeft"} />
-        </Icon>
-      </Pressable>
+      <OnboardingBackButton/>
     </SafeAreaView>
   );
 }

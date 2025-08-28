@@ -8,12 +8,13 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 import Stack from '@/ui/components/Stack';
 
-import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 import ViewContainer from '@/ui/components/ViewContainer';
 import { getSupportedServices, SupportedService } from './utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 
 const height = 480;
 
@@ -40,180 +41,98 @@ export default function WelcomeScreen() {
     );
 
     return (
-        <ViewContainer>
-            <Stack
-                padding={32}
-                backgroundColor='#D51A67'
-                gap={20}
+      <OnboardingScrollingFlatList
+        color={'#D51A67'}
+        lottie={require('@/assets/lotties/school-services.json')}
+        title={"Sélectionne ton service scolaire"}
+        step={1}
+        totalSteps={3}
+        elements={services}
+        renderItem={({ item, index }: { item: SupportedService, index: number }) => item.type === 'separator' ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 18,
+                marginVertical: 6,
+                opacity: 0.4,
+                marginHorizontal: 32,
+              }}
+              onLayout={event => {
+                console.log(event.nativeEvent.layout.height);
+              }}
+            >
+              <View
                 style={{
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    borderBottomLeftRadius: 42,
-                    borderBottomRightRadius: 42,
-                    paddingBottom: 34,
+                  flex: 1,
+                  height: 2,
+                  borderRadius: 4,
+                  backgroundColor: colors.text,
+                  opacity: 0.5
+                }}
+              />
+              <Typography variant='title' inline>ou</Typography>
+              <View
+                style={{
+                  flex: 1,
+                  height: 2,
+                  borderRadius: 4,
+                  backgroundColor: colors.text,
+                  opacity: 0.5
+                }}
+              />
+            </View>
+          ) :
+          (
+            <Reanimated.View
+              entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
+            >
+              <AnimatedPressable
+                onPress={() => {
+                  requestAnimationFrame(() => {
+                    item.onPress();
+                  });
+                }}
+                style={[
+                  {
+                    paddingHorizontal: 18,
+                    paddingVertical: 14,
+                    borderColor: colors.border,
+                    borderWidth: 1.5,
+                    borderRadius: 80,
                     borderCurve: "continuous",
-                    height: height,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 2,
-                }}
-            >
-                <LottieView
-                    autoPlay
-                    loop={false}
-                    style={{ width: 230, height: 230 }}
-                    source={require('@/assets/lotties/school-services.json')}
-                />
-                <Stack
-                    vAlign='start'
-                    hAlign='start'
-                    width="100%"
-                    gap={12}
-                >
-                    <Stack flex direction="horizontal">
-                        <Typography
-                            variant="h5"
-                            style={{ color: "white", lineHeight: 22, fontSize: 18 }}
-                        >
-                            Étape 1
-                        </Typography>
-                        <Typography
-                            variant="h5"
-                            style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
-                        >
-                            sur 3
-                        </Typography>
-                    </Stack>
-                    <Typography
-                        variant="h1"
-                        style={{ color: "white", fontSize: 32, lineHeight: 34 }}
-                    >
-                        Sélectionne ton service scolaire
-                    </Typography>
-                </Stack>
-            </Stack>
-
-            <FlatList
-                showsVerticalScrollIndicator={false}
-                data={services}
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                    paddingTop: height + 16,
-                    paddingHorizontal: 16,
-                    paddingBottom: insets.bottom + 16,
-                    gap: 9,
-                }}
-                renderItem={({ item, index }) =>
-                    item.type === 'separator' ? (
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 18,
-                                marginVertical: 6,
-                                opacity: 0.4,
-                                marginHorizontal: 32,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    height: 2,
-                                    borderRadius: 4,
-                                    backgroundColor: colors.text,
-                                    opacity: 0.5
-                                }}
-                            />
-                            <Typography variant='title' inline>ou</Typography>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    height: 2,
-                                    borderRadius: 4,
-                                    backgroundColor: colors.text,
-                                    opacity: 0.5
-                                }}
-                            />
-                        </View>
-                    ) :
-                        (
-                            <Reanimated.View
-                                entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
-
-                            >
-                                <AnimatedPressable
-                                    onPress={() => {
-                                        requestAnimationFrame(() => {
-                                            (item as SupportedService).onPress();
-                                        });
-                                    }}
-                                    style={[
-                                        {
-                                            paddingHorizontal: 18,
-                                            paddingVertical: 14,
-                                            borderColor: colors.border,
-                                            borderWidth: 1.5,
-                                            borderRadius: 80,
-                                            borderCurve: "continuous",
-                                            flexDirection: 'row',
-                                            alignItems: 'center',
-                                            display: 'flex',
-                                            gap: 16,
-                                        },
-                                        item.type == "other" && !item.color && {
-                                            backgroundColor: colors.text,
-                                            borderColor: colors.text,
-                                        }
-                                    ]}
-                                >
-                                    <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                                        {(item as SupportedService).icon ?
-                                            <Icon size={28} papicon fill={item.type == "other" && !item.color ? colors.background : undefined}>
-                                                {item.icon}
-                                            </Icon>
-                                            :
-                                            <Image
-                                                source={item.image}
-                                                style={{ width: 32, height: 32 }}
-                                                resizeMode="cover"
-                                            />
-                                        }
-                                    </View>
-                                    <Typography style={{ flex: 1 }} nowrap variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>
-                                        {item.title}
-                                    </Typography>
-                                </AnimatedPressable>
-                            </Reanimated.View>
-                        )}
-            />
-
-            <Pressable
-                onPress={() => router.back()}
-                style={{
-                    position: 'absolute',
-                    left: 16,
-                    top: insets.top + 4,
-                    zIndex: 200,
-                    backgroundColor: '#ffffff42',
-                    padding: 10,
-                    borderRadius: 100,
-                }}
-            >
-                <Icon size={26} fill={"#fff"} papicon>
-                    <Papicons name={"ArrowLeft"} />
-                </Icon>
-            </Pressable>
-        </ViewContainer>
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    display: 'flex',
+                    gap: 16,
+                  },
+                  item.type == "other" && !item.color && {
+                    backgroundColor: colors.text,
+                    borderColor: colors.text,
+                  }
+                ]}
+              >
+                <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                  {item.icon ?
+                    <Icon size={28} papicon fill={item.type == "other" && !item.color ? colors.background : undefined}>
+                      {item.icon}
+                    </Icon>
+                    :
+                    <Image
+                      source={item.image}
+                      style={{ width: 32, height: 32 }}
+                      resizeMode="cover"
+                    />
+                  }
+                </View>
+                <Typography style={{ flex: 1 }} nowrap variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>
+                  {item.title}
+                </Typography>
+              </AnimatedPressable>
+            </Reanimated.View>
+          )}
+      />
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "space-between",
-    },
-});
