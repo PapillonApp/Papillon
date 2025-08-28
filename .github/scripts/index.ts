@@ -9,7 +9,7 @@ import checkDescription from './utils/check-description';
 (async () => {
   const appId = Number(process.env.APP_ID);
   const installationId = Number(process.env.INSTALL_ID);
-  const privateKey = Buffer.from(process.env.PRIVATE_KEY || "", "base64").toString("utf8");
+  const privateKey = process.env.PRIVATE_KEY;
 
   if (!appId || !installationId || !privateKey) throw new Error("You misconfigured your action.");
 
