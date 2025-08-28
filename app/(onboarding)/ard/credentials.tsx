@@ -322,7 +322,8 @@ export default function TurboSelfLoginWithCredentials() {
 
               if (action === "addService") {
                 store.addServiceToAccount(store.lastUsedAccount, service)
-                return router.dismissTo("/profile/cards")
+                router.back()
+                return router.back()
               }
 
               store.addAccount({

@@ -27,6 +27,7 @@ import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
+import { predictHomework } from "@/utils/magic/prediction";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -164,7 +165,7 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
-  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
+  const renderItem = useCallback(async ({ item, index }: { item: Homework; index: number }) => (
     <Task
       subject={getSubjectName(item.subject)}
       emoji={getSubjectEmoji(item.subject)}
@@ -174,6 +175,7 @@ export default function TabOneScreen() {
       date={new Date(item.dueDate)}
       progress={item.isDone ? 1 : 0}
       index={index}
+      magic={await predictHomework(item.content.replace(/<[^>]*>/g, ""))}
       fromCache={item.fromCache ?? false}
       onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />

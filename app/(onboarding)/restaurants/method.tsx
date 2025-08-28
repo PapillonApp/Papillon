@@ -221,6 +221,7 @@ export default function WelcomeScreen() {
                 >
                   <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
                     <Image
+                      borderRadius={500}
                       source={(item as SupportedRestaurant).image}
                       style={{ width: 32, height: 32 }}
                       resizeMode="cover"

@@ -50,7 +50,7 @@ export class TurboSelf implements SchoolServicePlugin {
 		error("Session is not valid", "TurboSelf.getCanteenTransactionsHistory")
 	}
 
-	async getCanteenQRCodes(): Promise<QRCode[]> {
+	async getCanteenQRCodes(): Promise<QRCode> {
 		if (this.session) {
 			return fetchTurboSelfQRCode(this.session, this.accountId)
 		}

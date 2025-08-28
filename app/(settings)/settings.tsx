@@ -133,7 +133,7 @@ const SettingsIndex = () => {
     }
   ]
 
-  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, href: string }> = [
+  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void; }> = [
     {
       icon: <Papicons name={"Palette"} />,
       title: "Personnalisation",
@@ -153,7 +153,9 @@ const SettingsIndex = () => {
       title: "Cartes",
       description: "Cantine, accès",
       color: "#0059DD",
-      href: "cards"
+      onPress: () => {
+        router.navigate("/(settings)/cards")
+      }
     },
     {
       icon: <Papicons name={"Sparkles"} />,
@@ -174,7 +176,7 @@ const SettingsIndex = () => {
 
               return (
                 <AnimatedPressable
-                  onPress={() => router.push(button.href as RelativePathString)}
+                  onPress={button.onPress}
                   style={{ flex: 1, width: "50%" }}
                   key={button.title}
                 >

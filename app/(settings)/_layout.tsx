@@ -52,6 +52,18 @@ export default function Layout() {
           headerTransparent: true,
         }}
       />
+
+      <Stack.Screen
+        name="cards"
+        options={{
+          headerShown: true,
+          headerTitle: "Cartes",
+          headerLargeTitle: false,
+          headerTransparent: false,
+          headerBackButtonDisplayMode: "minimal",
+          gestureEnabled: true
+        }}
+      />
     </Stack>
   );
 }

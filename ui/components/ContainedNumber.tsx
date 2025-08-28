@@ -22,10 +22,12 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         alignItems: 'flex-end',
         borderColor: color + '46',
         borderWidth: 1,
+        minWidth: 50,
+        justifyContent: "center"
       }}
     >
       {children && (
-        <Typography variant='h4' color={color}>
+        <Typography variant='h5' color={color}>
           {children}
         </Typography>
       )}

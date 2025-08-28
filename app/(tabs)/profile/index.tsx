@@ -277,7 +277,7 @@ function Cards() {
       exiting={PapillonAppearOut}
     >
       <Pressable onPress={() => {
-        console.log("djd")
+        router.push("/(features)/(cards)/cards")
       }}>
         <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
           <Icon

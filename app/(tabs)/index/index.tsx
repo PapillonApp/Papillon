@@ -37,6 +37,7 @@ import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { Account } from "@/stores/account/types";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -97,15 +98,14 @@ export default function TabOneScreen() {
     }
 
     const grades: Grade[] = []
+    const currentPeriod = getCurrentPeriod(validPeriods)
 
-    for (const period of validPeriods) {
-      const periodGrades = await manager.getGradesForPeriod(period, period.createdByAccount)
-      periodGrades.subjects.forEach(subject => {
-        subject.grades.forEach(grade => {
-          grades.push(grade);
-        });
+    const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount)
+    periodGrades.subjects.forEach(subject => {
+      subject.grades.forEach(grade => {
+        grades.push(grade);
       });
-    }
+    });
 
     setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
@@ -363,8 +363,9 @@ export default function TabOneScreen() {
                     emoji={getSubjectEmoji(item.subjectName)}
                     disabled={item.studentScore?.disabled}
                     status={item.studentScore?.status}
-                    color={getSubjectColor(item.subjectName)}
+                    color={adjust(getSubjectColor(item.subjectName), -0.1)}
                     date={item.givenAt}
+                    variant="home"
                     onPress={() => {
                       navigation.navigate('(modals)/grade', {
                         grade: item,
