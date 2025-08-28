@@ -441,7 +441,7 @@ export default function TabOneScreen() {
             console.log("Add new grade pressed");
           }}
         >
-          <Papicons name={"Menu"} color={"#C54CB3"} size={26} />
+          <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
         </NativeHeaderPressable>
       </NativeHeaderSide>
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
@@ -471,7 +471,7 @@ export default function TabOneScreen() {
               </Dynamic>
 
               <Dynamic animated>
-                <Papicons name={"ChevronDown"} color={colors.text} opacity={0.6} />
+                <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
               </Dynamic>
             </Dynamic>
             {fullyScrolled && (

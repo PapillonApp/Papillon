@@ -657,7 +657,7 @@ export default function TabOneScreen() {
               }
               {periods.length > 0 && (
                 <Dynamic animated>
-                  <Papicons name={"ChevronDown"} color={colors.text} opacity={0.6} />
+                  <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
                 </Dynamic>
               )}
             </Dynamic>
@@ -698,7 +698,7 @@ export default function TabOneScreen() {
           }
         >
           <NativeHeaderPressable onPress={() => { }}>
-            <Icon>
+            <Icon size={28}>
               <Papicons name={"Filter"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
@@ -725,7 +725,7 @@ export default function TabOneScreen() {
           }))}
         >
           <NativeHeaderPressable onPress={() => { }}>
-            <Icon>
+            <Icon size={28}>
               <Papicons name={"Pie"} color={"#29947A"} />
             </Icon>
           </NativeHeaderPressable>
