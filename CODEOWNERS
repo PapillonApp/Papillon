@@ -1,0 +1,10 @@
+services/* @raphckrman
+database/* @raphckrman
+stores/* @raphckrman
+.github/* @raphckrman
+
+utils/magic/* @tryon-dev
+locales/* @tryon-dev
+
+app/* @ecnivtwelve
+components/* @ecnivtwelve
