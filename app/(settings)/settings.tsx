@@ -127,7 +127,7 @@ const SettingsIndex = () => {
     }
   ]
 
-  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string }> = [
+  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void; }> = [
     {
       icon: <Papicons name={"Palette"} />,
       title: "Personnalisation",
@@ -144,7 +144,10 @@ const SettingsIndex = () => {
       icon: <Papicons name={"Card"} />,
       title: "Cartes",
       description: "Cantine, accès",
-      color: "#0059DD"
+      color: "#0059DD",
+      onPress: () => {
+        router.navigate("/(settings)/cards")
+      }
     },
     {
       icon: <Papicons name={"Sparkles"} />,
@@ -163,7 +166,7 @@ const SettingsIndex = () => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <Pressable style={{ flex: 1, width: "50%" }} key={button.title}>
+                <Pressable style={{ flex: 1, width: "50%" }} key={button.title} onPress={button.onPress}>
                   <Stack
                     flex
                     card
