@@ -14,6 +14,7 @@ import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
+import { t } from "i18next";
 
 
 const PersonalizationSettings = () => {
@@ -61,11 +62,11 @@ const PersonalizationSettings = () => {
             <Papicons
               name={"Palette"}
               size={18}
-              color={adjust(selectedColor, -0.6)}
+              color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)}
             />
           </Icon>
-          <Typography color={adjust(selectedColor, -0.6)} weight={"semibold"}>
-            Couleur d’accentuation
+          <Typography color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)} weight={"semibold"}>
+            {t("Settings_Personalization_Accent")}
           </Typography>
         </Stack>
         <AppColorsSelector
@@ -89,7 +90,7 @@ const PersonalizationSettings = () => {
                 opacity={0.7}
               />
             </Icon>
-            <Typography variant={"title"}>Thème</Typography>
+            <Typography variant={"title"}>{t("Settings_Personalization_Theme")}</Typography>
             <Trailing>
               <Stack bordered={true}
                 direction={"horizontal"}
@@ -150,10 +151,10 @@ const PersonalizationSettings = () => {
                 opacity={0.7}
               />
             </Icon>
-            <Typography variant={"title"}>Changer l’icône</Typography>
+            <Typography variant={"title"}>{t("Settings_Personalization_Icon_Title")}</Typography>
             <Typography variant={"caption"}
               color={"secondary"}
-            >Personnalisez l’icône de l’application</Typography>
+            >{t("Settings_Personalization_Icon_Description")}</Typography>
           </Item>
           <Item onPress={() => {
           }}
@@ -163,10 +164,10 @@ const PersonalizationSettings = () => {
                 opacity={0.7}
               />
             </Icon>
-            <Typography variant={"title"}>Personnaliser les matières</Typography>
+            <Typography variant={"title"}>{t("Settings_Personalization_Subject_Title")}</Typography>
             <Typography variant={"caption"}
               color={"secondary"}
-            >Icônes, couleurs</Typography>
+            >{t("Settings_Personalization_Subject_Description")}</Typography>
           </Item>
         </List>
       </ScrollView>

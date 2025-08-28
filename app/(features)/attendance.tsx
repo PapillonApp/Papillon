@@ -19,6 +19,7 @@ import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import { error } from "@/utils/logger/logger";
 import { getManager } from "@/services/shared";
+import { t } from "i18next";
 
 export default function AttendanceView() {
 
@@ -94,7 +95,7 @@ export default function AttendanceView() {
                     <Papicons name={"Ghost"} />
                   </Icon>
                   <Typography color="secondary">
-                    Heures manquées
+                    {t("Attendance_Hours_Missed")}
                   </Typography>
                   <Stack direction="horizontal" gap={0}>
                     <AnimatedNumber variant="h5">
@@ -113,13 +114,13 @@ export default function AttendanceView() {
                   hAlign="center"
                   padding={12}
                   style={{ flex: 1, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderLeftWidth: 1, borderLeftColor: colors.border }}
-                  backgroundColor="#F9E5E5"
+                  backgroundColor={adjust("#C50000", theme.dark ? -0.8 : 0.8)}
                 >
                   <Icon papicon fill={adjust("#C50000", -0.15)}>
                     <Papicons name={"Minus"} />
                   </Icon>
                   <Typography style={{ color: adjust("#C50000", -0.15) }}>
-                    Heures injustifiées
+                    {t("Attendance_Hours_Unjustified")}
                   </Typography>
                   <Stack direction="horizontal" gap={0}>
                     <AnimatedNumber variant="h5" color={adjust("#C50000", -0.15)}>
@@ -141,10 +142,10 @@ export default function AttendanceView() {
                     <Papicons name={"Ghost"} />
                   </Icon>
                   <Typography variant="h4" color="text" align="center">
-                    Aucun événement
+                    {t("Attendance_NoEvent_Title")}
                   </Typography>
                   <Typography variant="body1" align="center" color="secondary">
-                    Pas d'absences ou de retards enregistrés pour cette période.
+                    {t("Attendance_NoEvent_Description")}
                   </Typography>
                 </Stack>
               )}
@@ -162,7 +163,7 @@ export default function AttendanceView() {
                       <Icon papicon opacity={0.5}>
                         <Papicons name={"Ghost"} />
                       </Icon>
-                      <Typography variant="h5" style={{ opacity: 0.5 }}>Absences</Typography>
+                      <Typography variant="h5" style={{ opacity: 0.5 }}>{t("Attendance_Missing")}</Typography>
                     </Stack>
                     <Typography variant="h5" style={{ opacity: 0.5 }}>x{absenceCount}</Typography>
                   </Stack>
@@ -188,7 +189,7 @@ export default function AttendanceView() {
                                 </Stack>
                               </Trailing>
                               <Typography>
-                                {absence.reason || "Aucune raison"}
+                                {absence.reason || t("Attendance_NoReason")}
                               </Typography>
                               <Typography color="#7F7F7F">
                                 {day}/{month}
@@ -215,7 +216,7 @@ export default function AttendanceView() {
                       <Icon papicon opacity={0.5}>
                         <Papicons name={"Clock"} />
                       </Icon>
-                      <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
+                      <Typography variant="h5" style={{ opacity: 0.5 }}>{t("Attendance_Delays")}</Typography>
                     </Stack>
                     <Typography variant="h5" style={{ opacity: 0.5 }}>x{delayCount}</Typography>
                   </Stack>
@@ -241,7 +242,7 @@ export default function AttendanceView() {
                                 </Stack>
                               </Trailing>
                               <Typography>
-                                {delay.reason || "Aucune raison"}
+                                {delay.reason || t("Attendance_NoReason")}
                               </Typography>
                               <Typography color="#7F7F7F">
                                 {day}/{month}

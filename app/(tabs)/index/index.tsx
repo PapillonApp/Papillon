@@ -459,7 +459,7 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable>
-          <Icon>
+          <Icon size={28}>
             <Papicons name={"Menu"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
@@ -493,7 +493,7 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable>
-          <Icon>
+          <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />
           </Icon>
         </NativeHeaderPressable>
