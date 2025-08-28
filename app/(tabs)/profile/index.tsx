@@ -264,7 +264,7 @@ function Cards() {
       exiting={PapillonAppearOut}
     >
       <Pressable onPress={() => {
-        router.push("/(tabs)/profile/cards")
+        router.push("/(features)/(cards)/cards")
       }}>
         <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
           <Icon
@@ -399,7 +399,7 @@ export default function TabOneScreen() {
           }}
         >
           <Icon>
-            <Papicons name={"Gears"}/>
+            <Papicons name={"Gears"} />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
