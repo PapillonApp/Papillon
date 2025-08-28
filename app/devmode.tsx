@@ -11,6 +11,7 @@ import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Typography from "@/ui/components/Typography";
 import { useSettingsStore } from "@/stores/settings";
+import ModelManager from "@/utils/magic/ModelManager";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -133,6 +134,61 @@ export default function Devmode() {
           <Typography>
             {settingStore.magicEnabled ? "Activer" : "Desactiver"} Papillon Magic+
           </Typography>
+        </Item>
+        <Item
+          onPress={() => ModelManager.refresh()}
+        >
+          <Typography variant="title">Rafraîchir le modèle</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            try {
+              const result = await ModelManager.reset();
+              if (result.success) {
+                Alert.alert("Succès", "Le modèle a été réinitialisé avec succès. Il sera retéléchargé au prochain démarrage.");
+              } else {
+                Alert.alert("Erreur", `Échec du reset: ${result.error}`);
+              }
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du reset: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Reset complet du modèle</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            const status = ModelManager.getStatus();
+            Alert.alert(
+              "Statut du modèle",
+              `Modèle chargé: ${status.hasModel ? "Oui" : "Non"}\n` +
+              `Max Length: ${status.maxLen}\n` +
+              `Nombre de labels: ${status.labelsCount}\n` +
+              `Taille du vocabulaire: ${status.wordIndexSize}\n` +
+              `Index OOV: ${status.oovIndex}`
+            );
+          }}
+        >
+          <Typography variant="title">Afficher le statut du modèle</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            try {
+              const result = await ModelManager.predict("test homework", true);
+              if ('error' in result) {
+                Alert.alert("Erreur de prédiction", result.error);
+              } else {
+                Alert.alert(
+                  "Test de prédiction réussi",
+                  `Prédiction: ${result.predicted}\nScores: ${result.scores.slice(0, 3).map(s => s.toFixed(3)).join(', ')}...`
+                );
+              }
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du test: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Tester une prédiction</Typography>
         </Item>
 
       </List>
