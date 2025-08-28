@@ -11,7 +11,7 @@ interface StackProps extends ViewProps {
   gap?: number;
   padding?: number | [number, number];
   height?: number;
-  width?: number | "100%" | "auto";
+  width?: number | "100%" | "auto" | string;
   margin?: number;
   vAlign?: Alignment;
   hAlign?: Alignment;

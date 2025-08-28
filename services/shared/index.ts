@@ -342,13 +342,14 @@ export class AccountManager {
     );
   }
 
-  async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
+  async getCanteenTransactionsHistory(clientId: string): Promise<CanteenHistoryItem[]> {
     return await this.fetchData(
       Capabilities.CANTEEN_HISTORY,
       async client =>
         client.getCanteenTransactionsHistory ? await client.getCanteenTransactionsHistory() : [],
       {
         multiple: true,
+        clientId,
         fallback: async () => getCanteenTransactionsFromCache(),
         saveToCache: async (data: CanteenHistoryItem[]) => {
           await addCanteenTransactionToDatabase(data)
@@ -357,13 +358,14 @@ export class AccountManager {
     )
   }
 
-	async getCanteenQRCodes(): Promise<QRCode[]> {
+	async getCanteenQRCodes(clientId: string): Promise<QRCode> {
 		return await this.fetchData(
 			Capabilities.CANTEEN_QRCODE,
 			async client =>
-				client.getCanteenQRCodes ? await client.getCanteenQRCodes() : [],
+				client.getCanteenQRCodes ? await client.getCanteenQRCodes() : error("getCanteenQRCodes not found"),
 			{
-				multiple: true
+				multiple: false,
+        clientId
 			}
 		)
 	}
