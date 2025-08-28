@@ -22,6 +22,7 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
+import { useTheme } from '@react-navigation/native';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -29,52 +30,12 @@ const KEYBOARD_HEIGHT = 270;
 const ANIMATION_DURATION = 170;
 const OPACITY_THRESHOLD = 600;
 
-const staticStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  pressableContainer: {
-    flex: 1,
-  },
-  stackContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    borderBottomLeftRadius: 42,
-    borderBottomRightRadius: 42,
-    paddingBottom: 34,
-    borderCurve: "continuous",
-    height: "100%",
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 200,
-    backgroundColor: '#ffffff42',
-    padding: 10,
-    borderRadius: 100,
-  },
-  inputContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 300,
-    borderWidth: 1,
-    borderColor: "#0000001F",
-  },
-  textInput: {
-    color: "#5B5B5B",
-    fontSize: 18,
-    fontWeight: "600",
-    flex: 1,
-  },
-  iconBackground: {
-    backgroundColor: "transparent",
-  },
-});
 
 export default function PronoteLoginWithCredentials() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const theme = useTheme();
+  const { colors } = theme;
 
   const alert = useAlert()
   const [username, setUsername] = useState<string>("")
@@ -143,14 +104,14 @@ export default function PronoteLoginWithCredentials() {
   useFocusEffect(animationCallback);
 
   return (
-    <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
+    <Pressable style={styles.pressableContainer} onPress={Keyboard.dismiss}>
       <ViewContainer>
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
             padding={32}
-            backgroundColor={local.previousPage === "map" ? '#E50052' : "#C6C6C6"}
+            backgroundColor={theme.dark ? '#2f2f2fff' : '#C6C6C6'}
             gap={20}
-            style={staticStyles.stackContainer}
+            style={styles.stackContainer}
           >
             <Stack
               vAlign='start'
@@ -161,20 +122,20 @@ export default function PronoteLoginWithCredentials() {
               <Stack flex direction="horizontal">
                 <Typography
                   variant="h5"
-                  style={{ color: local.previousPage === "map" ? "white" : "#2F2F2F", lineHeight: 22, fontSize: 18 }}
+                  style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
                 >
                   Étape 3
                 </Typography>
                 <Typography
                   variant="h5"
-                  style={{ color: local.previousPage === "map" ? "#FFFFFFA6" : "#2F2F2FA6", lineHeight: 22, fontSize: 18 }}
+                  style={{ color: colors.text + "A6", lineHeight: 22, fontSize: 18 }}
                 >
                   sur 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
-                style={{ color: local.previousPage === "map" ? "white" : "#2F2F2F", fontSize: 32, lineHeight: 34 }}
+                style={{ color: colors.text, fontSize: 32, lineHeight: 34 }}
               >
                 Connecte-toi à ton compte PRONOTE
               </Typography>
@@ -189,13 +150,13 @@ export default function PronoteLoginWithCredentials() {
               direction="horizontal"
               vAlign="center"
               hAlign="center"
-              style={staticStyles.inputContainer}
+              style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
             >
               <Icon
                 papicon
                 size={24}
                 fill="#5B5B5B"
-                style={staticStyles.iconBackground}
+                style={styles.iconBackground}
               >
                 <Papicons name={"User"} />
               </Icon>
@@ -204,7 +165,7 @@ export default function PronoteLoginWithCredentials() {
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setUsername}
                 value={username}
-                style={staticStyles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="url"
@@ -218,13 +179,13 @@ export default function PronoteLoginWithCredentials() {
               direction="horizontal"
               vAlign="center"
               hAlign="center"
-              style={staticStyles.inputContainer}
+              style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
             >
               <Icon
                 papicon
                 size={24}
                 fill="#5B5B5B"
-                style={staticStyles.iconBackground}
+                style={styles.iconBackground}
               >
                 <Papicons name={"Lock"} />
               </Icon>
@@ -233,7 +194,7 @@ export default function PronoteLoginWithCredentials() {
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setPassword}
                 value={password}
-                style={staticStyles.textInput}
+                style={styles.textInput}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="url"
@@ -246,6 +207,7 @@ export default function PronoteLoginWithCredentials() {
             title='Se connecter'
             color='black'
             size='large'
+            style={{ borderColor: colors.border, borderWidth: 1 }}
             disableAnimation
             onPress={async () => {
               if (!username.trim() || !password.trim()) { return; }
@@ -343,7 +305,7 @@ export default function PronoteLoginWithCredentials() {
         <Pressable
           onPress={() => router.back()}
           style={[
-            staticStyles.backButton,
+            styles.backButton,
             { top: insets.top + 4 }
           ]}
         >
@@ -355,3 +317,45 @@ export default function PronoteLoginWithCredentials() {
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  pressableContainer: {
+    flex: 1,
+  },
+  stackContainer: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    borderBottomLeftRadius: 42,
+    borderBottomRightRadius: 42,
+    paddingBottom: 34,
+    borderCurve: "continuous",
+    height: "100%",
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 200,
+    backgroundColor: '#ffffff42',
+    padding: 10,
+    borderRadius: 100,
+  },
+  inputContainer: {
+    flex: 1,
+    padding: 20,
+    borderRadius: 300,
+    borderWidth: 1,
+    borderColor: "#0000001F",
+  },
+  textInput: {
+    color: "#5B5B5B",
+    fontSize: 18,
+    fontWeight: "600",
+    flex: 1,
+  },
+  iconBackground: {
+    backgroundColor: "transparent",
+  },
+});

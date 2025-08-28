@@ -20,6 +20,7 @@ import Reanimated, {
 import Svg, { Path } from 'react-native-svg';
 import { cleanURL, instance } from 'pawnote';
 import { useAlert } from '@/ui/components/AlertProvider';
+import { useTheme } from '@react-navigation/native';
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;
@@ -54,13 +55,11 @@ const staticStyles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     padding: 23,
-    backgroundColor: "#F2F2F2",
     borderRadius: 300,
     borderWidth: 1,
     borderColor: "#0000001F",
   },
   textInput: {
-    color: "#5B5B5B",
     fontSize: 18,
     fontWeight: "600",
     flex: 1,
@@ -92,6 +91,8 @@ LinkIcon.displayName = 'LinkIcon';
 export default function URLInputScreen() {
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const theme = useTheme();
+  const { colors } = theme;
 
   const alert = useAlert()
   const [instanceURL, setInstanceURL] = useState<string>("")
@@ -196,7 +197,7 @@ export default function URLInputScreen() {
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
             padding={32}
-            backgroundColor='#C6C6C6'
+            backgroundColor={theme.dark ? '#2f2f2fff' : '#C6C6C6'}
             gap={20}
             style={staticStyles.stackContainer}
           >
@@ -212,20 +213,20 @@ export default function URLInputScreen() {
               <Stack flex direction="horizontal">
                 <Typography
                   variant="h5"
-                  style={{ color: "#2F2F2F", lineHeight: 22, fontSize: 18 }}
+                  style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
                 >
                   Étape 2
                 </Typography>
                 <Typography
                   variant="h5"
-                  style={{ color: "#2F2F2FA6", lineHeight: 22, fontSize: 18 }}
+                  style={{ color: colors.text + "A6", lineHeight: 22, fontSize: 18 }}
                 >
                   sur 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
-                style={{ color: "#2F2F2F", fontSize: 32, lineHeight: 34 }}
+                style={{ color: colors.text, fontSize: 32, lineHeight: 34 }}
               >
                 Indique l’adresse URL de ton établissement
               </Typography>
@@ -240,7 +241,7 @@ export default function URLInputScreen() {
               direction="horizontal"
               vAlign="center"
               hAlign="center"
-              style={staticStyles.inputContainer}
+              style={[staticStyles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
             >
               <Icon
                 papicon
@@ -255,7 +256,7 @@ export default function URLInputScreen() {
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setInstanceURL}
                 value={instanceURL}
-                style={staticStyles.textInput}
+                style={[staticStyles.textInput, { color: colors.text }]}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="url"

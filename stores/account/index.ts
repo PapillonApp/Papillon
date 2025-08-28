@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { Colors } from '@/app/(onboarding)/end/color';
-
 import { createMMKVStorage } from '../global'
 import { AccountsStorage, Auth } from "./types";
 
@@ -11,7 +9,6 @@ export const useAccountStore = create<AccountsStorage>()(
     (set, get) => ({
       lastUsedAccount: '',
       accounts: [],
-      getAccountSelectedColor: (accountId) => get().accounts.find(account => account.id === accountId)?.selectedColor,
       removeAccount: (account) => set({ accounts: [...get().accounts.filter((a) => a.id !== account.id)] }),
       addAccount: (account) => set({ accounts: [...get().accounts, account] }),
       updateServiceAuthData: (serviceId: string, authData: Auth) => set({
@@ -40,17 +37,6 @@ export const useAccountStore = create<AccountsStorage>()(
         }),
       }),
       setLastUsedAccount: (accountId: string) => set({ lastUsedAccount: accountId }),
-      setAccountSelectedColor: (accountId: string, selectedColor: Colors) => set({
-        accounts: get().accounts.map((account) => {
-          if (account.id === accountId) {
-            return {
-              ...account,
-              selectedColor: selectedColor
-            };
-          }
-          return account;
-        })
-      }),
       setSubjectColor: (subject: string, color: string) => set({
         accounts: get().accounts.map((account) => {
           if (account.id === get().lastUsedAccount) {

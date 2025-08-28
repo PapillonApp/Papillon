@@ -78,7 +78,7 @@ export interface SchoolServicePlugin {
   ) => Promise<Chat>;
   getCanteenBalances?: () => Promise<Balance[]>;
   getCanteenTransactionsHistory?: () => Promise<CanteenHistoryItem[]>;
-  getCanteenQRCodes?: () => Promise<QRCode[]>;
+  getCanteenQRCodes?: () => Promise<QRCode>;
   getCanteenBookingWeek?: (weekNumber: number) => Promise<BookingDay[]>;
   setMealAsBooked?: (meal: Booking, booked?: boolean) => Promise<Booking>;
 }
