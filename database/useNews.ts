@@ -1,4 +1,4 @@
-import { Model } from "@nozbe/watermelondb";
+import { Model, Q } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
@@ -32,12 +32,14 @@ export function useNews(refresh = 0) {
 
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
+  
   for (const nw of news) {
     const id = generateId(nw.createdAt + nw.content + nw.author + nw.createdByAccount)
 
-    const data = await db.get('news').query().fetch();
+    const existingForAccount = await db.get('news').query(Q.where('createdByAccount', nw.createdByAccount)).fetch();
+    const existing = existingForAccount.filter(news => (news as News).newsId === id);
 
-    if (data.filter(news => news.newsId === id).length === 0) {
+    if (existing.length === 0) {
       await db.write(async () => {
         await db.get('news').create((record: Model) => {
           const news = record as News;
