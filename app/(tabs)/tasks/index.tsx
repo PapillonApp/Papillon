@@ -27,6 +27,7 @@ import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
+import { predictHomework } from "@/utils/magic/prediction";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -157,7 +158,7 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
-  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
+  const renderItem = useCallback(async ({ item, index }: { item: Homework; index: number }) => (
     <Task
       subject={getSubjectName(item.subject)}
       emoji={getSubjectEmoji(item.subject)}
@@ -167,6 +168,7 @@ export default function TabOneScreen() {
       date={new Date(item.dueDate)}
       progress={item.isDone ? 1 : 0}
       index={index}
+      magic={await predictHomework(item.content.replace(/<[^>]*>/g, ""))}
       fromCache={item.fromCache ?? false}
       onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />
@@ -259,7 +261,7 @@ export default function TabOneScreen() {
               <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
                 {lengthHomeworks === 0 ? (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }}/>
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
                     </Typography>
@@ -277,7 +279,7 @@ export default function TabOneScreen() {
                   </Stack>
                 ) : (
                   <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }}/>
+                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
                     <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
                       {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
                     </Typography>

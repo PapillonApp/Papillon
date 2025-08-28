@@ -216,6 +216,36 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               />
 
               <Stack.Screen
+                name="(features)/(cards)/cards"
+                options={{
+                  headerShown: true,
+                  presentation: "modal",
+                  headerTitle: "QR-Code et cartes",
+                  headerTransparent: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(cards)/specific"
+                options={{
+                  headerShown: true,
+                  presentation: "modal",
+                  headerTitle: "QR-Code et cartes",
+                  headerTransparent: true,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(cards)/qrcode"
+                options={{
+                  headerShown: false,
+                  presentation: "fullScreenModal",
+                  headerTitle: "QR-Code",
+                  headerTransparent: true,
+                }}
+              />
+
+              <Stack.Screen
                 name="(features)/attendance"
                 options={{
                   headerShown: true,

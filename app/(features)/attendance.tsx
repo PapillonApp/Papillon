@@ -34,13 +34,16 @@ export default function AttendanceView() {
   const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
   const [period, setPeriod] = useState<Period>(currentPeriod);
 
-  const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount } = useMemo(() => {
+  const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
     let missed = 0;
     let unjustified = 0;
     let unjustifiedAbs = 0;
     let unjustifiedDelays = 0;
+    let Abs = 0
+    let Delays = 0
     for (const attendance of attendances) {
       for (const absence of attendance.absences) {
+        Abs += 1;
         missed += absence.timeMissed;
         if (!absence.justified) {
           unjustified += absence.timeMissed;
@@ -48,6 +51,7 @@ export default function AttendanceView() {
         }
       }
       for (const delay of attendance.delays) {
+        Delays += 1;
         if (!delay.justified) {
           unjustifiedDelays += 1;
           unjustified += delay.duration
@@ -55,7 +59,7 @@ export default function AttendanceView() {
         missed += delay.duration
       }
     }
-    return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays };
+    return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays, absenceCount: Abs, delayCount: Delays };
   }, [period, attendances]);
 
   const dangerColor = useMemo(() => adjust("#C50000", -0.15), []);
@@ -78,7 +82,7 @@ export default function AttendanceView() {
                 card
                 direction="horizontal"
                 width={"100%"}
-                style={{ marginTop: header + 20 }}
+                style={{ marginTop: 20 }}
               >
                 <Stack
                   vAlign="center"
@@ -160,7 +164,7 @@ export default function AttendanceView() {
                       </Icon>
                       <Typography variant="h5" style={{ opacity: 0.5 }}>Absences</Typography>
                     </Stack>
-                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedAbsenceCount}</Typography>
+                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{absenceCount}</Typography>
                   </Stack>
                   <View style={{ flex: 1 }}>
                     <List>
@@ -213,7 +217,7 @@ export default function AttendanceView() {
                       </Icon>
                       <Typography variant="h5" style={{ opacity: 0.5 }}>Retards</Typography>
                     </Stack>
-                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{unjustifiedDelayCount}</Typography>
+                    <Typography variant="h5" style={{ opacity: 0.5 }}>x{delayCount}</Typography>
                   </Stack>
                   <View style={{ flex: 1 }}>
                     <List>
@@ -261,7 +265,7 @@ export default function AttendanceView() {
             </NativeHeaderPressable>
           </NativeHeaderSide>
 
-          <NativeHeaderTitle style={{ marginTop: 4 }} key={"att:" + period?.name}>
+          <NativeHeaderTitle key={"att:" + period?.name}>
             <MenuView
               key={String(period?.id ?? "")}
               onPressAction={async ({ nativeEvent }) => {
