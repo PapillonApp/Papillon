@@ -12,6 +12,7 @@ import Item, { Leading, Trailing } from "@/ui/components/Item"
 import List from "@/ui/components/List"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
+import SettingsHeader from "@/components/SettingsHeader"
 
 export default function CardView() {
   const router = useRouter();
@@ -21,13 +22,21 @@ export default function CardView() {
     service => [Services.TURBOSELF, Services.ARD].includes(service.serviceId)
   );
 
+  const theme = useTheme()
+
   return (
     <ScrollView
       contentContainerStyle={{
         padding: 20, gap: 15
       }}
     >
-      <SettingsHeader color="#D9E6FA" />
+      <SettingsHeader
+        color={theme.dark ? "#001533" + "80" : "#D9E6FA"}
+        title="Cartes"
+        description="Ajoute tes cartes de cantine et de transport pour y accéder n'importe-où depuis ton téléphone sur Papillon"
+        iconName="Card"
+        imageSource={require("@/assets/images/cards.png")}
+      />
       {(selfCompatible ?? []).length > 0 ? (
         <>
           <Typography style={{ opacity: 0.5 }}>Mes cartes</Typography>
@@ -57,7 +66,7 @@ export default function CardView() {
                   </Item>
                 ))}
               </List>
-              <Button color="blue" title="Ajouter" icon={<Papicons.Plus />} onPress={() => {
+              <Button color="blue" title="Ajouter" icon={<Papicons name="Plus" />} onPress={() => {
                 router.push({
                   pathname: "/(onboarding)/restaurants/method",
                   params: {
@@ -104,25 +113,4 @@ export default function CardView() {
       }
     </ScrollView >
   );
-}
-
-function SettingsHeader({ color }: { color: string }) {
-  const theme = useTheme()
-  const { colors } = theme
-  return (
-    <Stack direction="vertical" style={{ padding: 13, backgroundColor: color, borderRadius: 25, height: 280, justifyContent: "flex-end", borderWidth: 1, borderColor: colors.border }} hAlign="center">
-      <View>
-        <Image source={require("@/assets/images/cards.png")}></Image>
-      </View>
-      <Stack flex direction="horizontal" hAlign="center" style={{ backgroundColor: colors.card, gap: 10, padding: 18, borderRadius: 15 }}>
-        <View style={{ width: 24, height: 24 }}>
-          <Papicons name={"Card"} opacity={0.6} />
-        </View>
-        <Stack flex direction="vertical" style={{ flex: 1 }}>
-          <Typography>Cartes</Typography>
-          <Typography style={{ opacity: 0.6 }} variant="caption" >Ajoute tes cartes de cantine et de transport pour y accéder n’importe-où depuis ton téléphone sur Papillon</Typography>
-        </Stack>
-      </Stack>
-    </Stack>
-  )
 }

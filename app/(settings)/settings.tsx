@@ -96,7 +96,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
-          onPress: () => console.log("sus")
+          onPress: () => router.navigate("/(settings)/about")
         }
       ]
     },
@@ -164,7 +164,9 @@ const SettingsIndex = () => {
       title: "Magic+",
       description: "Fonctions I.A",
       color: "#DD007D",
-      href: "magic"
+      onPress: () => {
+        router.navigate("/(settings)/magic")
+      }
     }
   ]
 
