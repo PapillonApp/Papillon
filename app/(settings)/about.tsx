@@ -16,7 +16,7 @@ const SettingsAbout = () => {
   const theme = useTheme()
   const { colors } = theme
 
-  const settingsItems = [
+  const Items = [
     {
       title: "Donateurs",
       description: "Voir la liste des donateurs",
@@ -32,24 +32,39 @@ const SettingsAbout = () => {
     {
       title: "Projet GitHub",
       description: "Contribuer au projet sur GitHub",
-      leading: "Message",
+      leading: "TextBubble",
       onPress: () => console.log("sus"),
     },
   ];
 
+  const Infos = [
+    {
+      title: "Version",
+      description: "Voir la liste des donateurs",
+      leading: "PiggyBank",
+      onPress: () => console.log("sus"),
+    },
+    {
+      title: "Serveur Discord",
+      description: "Rejoindre le serveur Discord",
+      leading: "TextBubble",
+      onPress: () => console.log("sus"),
+    }
+  ];
+
   return (
     <ScrollView
-      contentContainerStyle={{ padding: 16, gap: 20 }}
+      contentContainerStyle={{ padding: 20, gap: 20 }}
       contentInsetAdjustmentBehavior="always"
     >
       <SettingsHeader
-        color={theme.colors.background}
+        color={theme.dark ? "#003A21" : "#003A21"}
         title="Derrière Papillon"
         description="Papillon est maintenu par des étudiants 100% bénévoles"
-        imageSource={require("@/assets/images/cards.png")}
+        imageSource={require("@/assets/images/logoabout.png")}
       />
       <List>
-        {settingsItems.map((item, index) => (
+        {Items.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
@@ -70,6 +85,26 @@ const SettingsAbout = () => {
                 <Papicons name="ChevronRight" />
               </Icon>
             </Trailing>
+          </Item>
+        ))}
+      </List>
+      <List>
+        {Infos.map((item, index) => (
+          <Item
+            key={index}
+            onPress={item.onPress}
+          >
+            <Leading>
+              <Icon>
+                <Papicons name={item.leading} />
+              </Icon>
+            </Leading>
+            <Typography variant="title">
+              {item.title}
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              {item.description}
+            </Typography>
           </Item>
         ))}
       </List>

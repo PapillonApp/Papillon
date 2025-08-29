@@ -148,7 +148,9 @@ const SettingsIndex = () => {
       title: "Notifications",
       description: "Alertes, fréquence...",
       color: "#DD9B00",
-      href: "notifications"
+      onPress: () => {
+        console.log("sus")
+      }
     },
     {
       icon: <Papicons name={"Card"} />,
