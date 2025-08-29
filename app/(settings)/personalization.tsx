@@ -83,6 +83,13 @@ const PersonalizationSettings = () => {
           }}
           accountId={store.lastUsedAccount}
         />
+        <Typography
+          style={{ paddingTop: 10, flex: 1 }}
+          color="#7F7F7F"
+          variant="caption"
+        >
+          {t("Settings_Personalization_Accent_Description")}
+        </Typography>
         <List style={{ marginTop: 15 }}>
           <Item>
             <Icon size={30}>

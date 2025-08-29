@@ -3,9 +3,9 @@ import { Account, Services } from "@/stores/account/types";
 import uuid from "@/utils/uuid/uuid";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { WebView } from "react-native-webview";
 import { AuthFlow, School } from "skolengojs";
+import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
 
 export default function WebViewScreen() {
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
@@ -72,34 +72,24 @@ export default function WebViewScreen() {
 
       return false;
     }
-
     return true;
   };
 
   return (
-    <View style={styles.container}>
-      {loginURL !== undefined && (
-        <WebView
-          source={{ uri: loginURL }}
-          style={styles.webview}
-          onShouldStartLoadWithRequest={(request) => {
-            handleRequest(request).then((result) => {
-              return result;
-            });
-            return false;
-          }}
-        />
-      )}
-    </View>
+    <OnboardingWebview
+      title={"Connecte-toi comme tu en as l'habitude"}
+      color={"#E50052"}
+      step={3}
+      totalSteps={3}
+      webviewProps={{
+        source: loginURL ? { uri: loginURL } : { html: "<h1>Chargement...</h1>" },
+        onShouldStartLoadWithRequest: (request: ShouldStartLoadRequest) => {
+          handleRequest(request).then((result) => {
+            return result;
+          });
+          return false;
+        }
+      }}
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  webview: {
-    flex: 1,
-  },
-});
