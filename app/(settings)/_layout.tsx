@@ -40,6 +40,7 @@ export default function Layout() {
           headerTitle: t("Settings_Personalization_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: true,
+          headerLargeTitle: false,
         }}
       />
 
@@ -47,11 +48,29 @@ export default function Layout() {
         name="cards"
         options={{
           headerShown: true,
-          headerTitle: "Cartes",
+          headerTitle: t("Settings_Cards_Title"),
           headerLargeTitle: false,
           headerTransparent: false,
           headerBackButtonDisplayMode: "minimal",
           gestureEnabled: true
+        }}
+      />
+      <Stack.Screen
+        name="about"
+        options={{
+          headerTitle: t("Settings_About_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="magic"
+        options={{
+          headerTitle: t("Settings_MagicPlus_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+          headerLargeTitle: false,
         }}
       />
     </Stack>

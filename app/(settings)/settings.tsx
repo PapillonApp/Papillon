@@ -96,7 +96,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
-          onPress: () => console.log("sus")
+          onPress: () => router.navigate("/(settings)/about")
         }
       ]
     },
@@ -139,7 +139,9 @@ const SettingsIndex = () => {
       title: "Personnalisation",
       description: "Thèmes, matières...",
       color: "#17C300",
-      href: "personalization"
+      onPress: () => {
+        router.navigate("/(settings)/personalization")
+      }
     },
     {
       icon: <Papicons name={"Bell"} />,
@@ -162,7 +164,9 @@ const SettingsIndex = () => {
       title: "Magic+",
       description: "Fonctions I.A",
       color: "#DD007D",
-      href: "magic"
+      onPress: () => {
+        router.navigate("/(settings)/magic")
+      }
     }
   ]
 
@@ -216,7 +220,7 @@ const SettingsIndex = () => {
           >
             <List>
               <Item
-                onPress={() => router.replace("./services")}
+                onPress={() => router.navigate("/(settings)/services")}
               >
                 <Leading>
                   <Image
