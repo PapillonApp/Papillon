@@ -36,6 +36,20 @@ export const useAccountStore = create<AccountsStorage>()(
           return account;
         }),
       }),
+      setAccountProfilePicture: (accountId, profilePicture) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === accountId) {
+            return {
+              ...account,
+              customisation: {
+                profilePicture,
+                subjects: account.customisation?.subjects ?? {}
+              }
+            };
+          }
+          return account;
+        }),
+      }),
       setLastUsedAccount: (accountId: string) => set({ lastUsedAccount: accountId }),
       setSubjectColor: (subject: string, color: string) => set({
         accounts: get().accounts.map((account) => {
@@ -44,6 +58,7 @@ export const useAccountStore = create<AccountsStorage>()(
               ...account,
               customisation: {
                 ...account.customisation,
+                profilePicture: account.customisation?.profilePicture ?? "",
                 subjects: {
                   ...account.customisation?.subjects,
                   [subject]: {
@@ -65,6 +80,7 @@ export const useAccountStore = create<AccountsStorage>()(
               ...account,
               customisation: {
                 ...account.customisation,
+                profilePicture: account.customisation?.profilePicture ?? "",
                 subjects: {
                   ...account.customisation?.subjects,
                   [subject]: {
@@ -86,6 +102,7 @@ export const useAccountStore = create<AccountsStorage>()(
               ...account,
               customisation: {
                 ...account.customisation,
+                profilePicture: account.customisation?.profilePicture ?? "",
                 subjects: {
                   ...account.customisation?.subjects,
                   [subject]: {
