@@ -10,25 +10,23 @@ import Kid from "./models/Kid";
 export async function addKidToDatabase(kids: SharedKid[]) {
   const db = getDatabaseInstance()
   for (const kid of kids) {
-    const existing = await db.get('kids').query(
-      Q.where("kidId", kid.id)
-    )
+    const existing = await db.get('kids').query(Q.where('kidId', kid.id)).fetch();
 
-    if (existing.length > 0) {continue;}
-
-    await db.write(async () => {
-      await db.get('kids').create((record: Model) => {
-        const kidsModel = record as Kid
-        Object.assign(kidsModel, {
-          createByAccount: kid.createdByAccount,
-          kidId: kid.id,
-          firstName: kid.firstName,
-          lastName: kid.lastName,
-          class: kid.class,
-          dateOfBirth: kid.dateOfBirth.getTime()
+    if (existing.length === 0) {
+      await db.write(async () => {
+        await db.get('kids').create((record: Model) => {
+          const kidsModel = record as Kid
+          Object.assign(kidsModel, {
+            createByAccount: kid.createdByAccount,
+            kidId: kid.id,
+            firstName: kid.firstName,
+            lastName: kid.lastName,
+            class: kid.class,
+            dateOfBirth: kid.dateOfBirth.getTime()
+          })
         })
       })
-    })
+    }
   }
 }
 
