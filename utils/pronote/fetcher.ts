@@ -2,7 +2,6 @@ import type { Fetcher } from "@literate.ink/utilities";
 
 // PRONOTE weird user-agent check
 export const customFetcher: Fetcher = async (options) => {
-  console.time(options.url.href);
 
   const response = await fetch(options.url, {
     method: options.method,
@@ -15,14 +14,12 @@ export const customFetcher: Fetcher = async (options) => {
   });
 
   const content = await response.text();
-  console.timeEnd(options.url.href);
 
   return {
     content,
     status: response.status,
 
     get headers() {
-      console.info("-> Reading headers from fetcher !");
       return response.headers;
     }
   };
