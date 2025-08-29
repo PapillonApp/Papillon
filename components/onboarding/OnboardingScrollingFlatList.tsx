@@ -16,8 +16,9 @@ import { useFocusEffect } from "expo-router";
 import { FlatList } from "react-native";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
-const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, elements, renderItem }:{
-  lottie: string
+const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, color, step, totalSteps, elements, renderItem }: {
+  lottie?: string
+  hasReturnButton?: boolean,
   title: string
   color: string
   step: number
@@ -30,7 +31,7 @@ const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, e
 
   const scrollY = React.useRef(useSharedValue(0)).current;
 
-  let height: number = 500;
+  let height: number = lottie ? 500 : 250;
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -112,12 +113,14 @@ const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, e
           }}
         >
           <Reanimated.View style={AnimatedLottieContainerStyle}>
-            <LottieView
-              autoPlay
-              loop={false}
-              style={{ width: 230, height: 230 }}
-              source={lottie}
-            />
+            {lottie && (
+              <LottieView
+                autoPlay
+                loop={false}
+                style={{ width: 230, height: 230 }}
+                source={lottie}
+              />
+            )}
           </Reanimated.View>
           <Stack
             vAlign='start'
@@ -170,7 +173,9 @@ const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, e
         renderItem={renderItem}
       />
 
-      <OnboardingBackButton/>
+      {hasReturnButton && (
+        <OnboardingBackButton />
+      )}
     </ViewContainer>
   )
 }

@@ -73,6 +73,11 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="ecoledirecte/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ url: "", previousPage: "map" }}
+                />
+                <Stack.Screen
                     name="pronote/qrcode"
                     options={{ ...newScreenOptions }}
                 />
