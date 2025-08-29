@@ -67,7 +67,7 @@ export default function Layout() {
       <Stack.Screen
         name="magic"
         options={{
-          headerTitle: t("Settings_About_Title"),
+          headerTitle: t("Settings_MagicPlus_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: true,
           headerLargeTitle: false,

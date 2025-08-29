@@ -16,6 +16,7 @@ interface SettingsHeaderProps {
   switchValue?: boolean
   onSwitchChange?: (value: boolean) => void
   switchLabel?: string
+  switchColor?: string
 }
 
 export default function SettingsHeader({
@@ -28,7 +29,8 @@ export default function SettingsHeader({
   showSwitch = false,
   switchValue = false,
   onSwitchChange,
-  switchLabel
+  switchLabel,
+  switchColor
 }: SettingsHeaderProps) {
   const theme = useTheme()
   const { colors } = theme
@@ -64,6 +66,7 @@ export default function SettingsHeader({
         flex
         direction="horizontal"
         hAlign="center"
+        vAlign="center"
         style={{
           backgroundColor: colors.card,
           gap: 10,
@@ -78,27 +81,28 @@ export default function SettingsHeader({
         )}
 
         <Stack flex direction="vertical" style={{ flex: 1 }}>
-          <Typography>{title}</Typography>
+          <Typography variant="title">{title}</Typography>
           <Typography style={{ opacity: 0.6 }} variant="caption">
             {description}
           </Typography>
 
-          {showSwitch && (
-            <Stack direction="horizontal" style={{ marginTop: 8, alignItems: "center", gap: 8 }}>
-              {switchLabel && (
-                <Typography variant="body2" style={{ flex: 1 }}>
-                  {switchLabel}
-                </Typography>
-              )}
-              <Switch
-                value={switchValue}
-                onValueChange={onSwitchChange}
-                trackColor={{ false: colors.border, true: "#007AFF" }}
-                thumbColor={switchValue ? "#FFFFFF" : "#f4f3f4"}
-              />
-            </Stack>
-          )}
+
         </Stack>
+        {showSwitch && (
+          <Stack direction="horizontal" style={{ alignItems: "center", gap: 8 }}>
+            {switchLabel && (
+              <Typography variant="body2" style={{ flex: 1 }}>
+                {switchLabel}
+              </Typography>
+            )}
+            <Switch
+              value={switchValue}
+              onValueChange={onSwitchChange}
+              trackColor={{ false: colors.border, true: switchColor }}
+              thumbColor={switchValue ? "#FFFFFF" : "#f4f3f4"}
+            />
+          </Stack>
+        )}
       </Stack>
     </Stack>
   )
