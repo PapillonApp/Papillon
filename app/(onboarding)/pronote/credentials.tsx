@@ -25,6 +25,7 @@ import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import { useTheme } from '@react-navigation/native';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { customFetcher } from '@/utils/pronote/fetcher';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -214,32 +215,6 @@ export default function PronoteLoginWithCredentials() {
             onPress={async () => {
               if (!username.trim() || !password.trim()) { return; }
               const device = uuid()
-              const customFetcher: Fetcher = async (options) => {
-                console.time(options.url.href);
-
-                const response = await fetch(options.url, {
-                  method: options.method,
-                  headers: {
-                    ...options.headers,
-                    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 PRONOTE Mobile APP Version/2.0.11"
-                  },
-                  body: options.method !== "GET" ? options.content : void 0,
-                  redirect: options.redirect
-                });
-
-                const content = await response.text();
-                console.timeEnd(options.url.href);
-
-                return {
-                  content,
-                  status: response.status,
-
-                  get headers() {
-                    console.info("-> Reading headers from fetcher !");
-                    return response.headers;
-                  }
-                };
-              };
               const session = createSessionHandle(customFetcher)
               let authentication = null;
               try {

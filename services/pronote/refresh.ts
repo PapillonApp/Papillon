@@ -2,6 +2,7 @@ import { AccountKind, createSessionHandle, loginToken, SessionHandle } from "paw
 
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
+import { customFetcher } from "@/utils/pronote/fetcher";
 
 /**
  * Refreshes the Pronote account credentials using the provided authentication data.
@@ -12,7 +13,7 @@ export async function refreshPronoteAccount(
   accountId: string,
   credentials: Auth
 ): Promise<{auth: Auth, session: SessionHandle}> {
-  const handle = createSessionHandle();
+  const handle = createSessionHandle(customFetcher);
   const refresh = await loginToken(handle, {
     url: String(credentials.additionals?.["instanceURL"] || ""),
     kind: (credentials.additionals?.["kind"] as AccountKind) || AccountKind.STUDENT,

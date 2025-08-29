@@ -20,6 +20,7 @@ import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
 import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { customFetcher } from "@/utils/pronote/fetcher";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -59,7 +60,7 @@ export default function PronoteLoginWithQR() {
         url: decodedJSON.url,
       };
 
-      const session = createSessionHandle();
+      const session = createSessionHandle(customFetcher);
       const refresh = await loginQrCode(session, {
         qr: data,
         pin: QRValidationCode,
@@ -391,7 +392,7 @@ export default function PronoteLoginWithQR() {
           <View style={styles.transparentSquareBorder} />
         )}
       </MaskedView>
-      <OnboardingBackButton/>
+      <OnboardingBackButton />
     </SafeAreaView>
   );
 }
