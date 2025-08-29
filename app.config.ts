@@ -57,6 +57,7 @@ module.exports = {
       "expo-router",
       "expo-font",
       "expo-localization",
+      "expo-web-browser",
       [
         "react-native-fast-tflite",
         {
