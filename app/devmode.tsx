@@ -174,7 +174,7 @@ export default function Devmode() {
         <Item
           onPress={async () => {
             try {
-              const result = await ModelManager.predict("Devoir Surveillé.", true);
+              const result = await ModelManager.predict("IL Y A UNE EVALUATION DEMAIN ATTENTION UNE EVALUATION JE DIT BIEN UNE EVALUATIOOOOOOOON", true);
               if ('error' in result) {
                 Alert.alert("Erreur de prédiction", result.error);
               } else {
