@@ -36,6 +36,8 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
+import { useAccountStore } from "@/stores/account";
+import { Avatar } from "@/app/(features)/(news)/news";
 
 function Tabs() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -107,6 +109,11 @@ function Tabs() {
 
     return () => unsubscribe();
   }, []);
+
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
@@ -435,10 +442,17 @@ export default function TabOneScreen() {
           <>
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
-                <Image
-                  source={require('@/assets/images/default_profile.jpg')}
-                  style={{ width: 75, height: 75, borderRadius: 500 }}
-                />
+                {account && account.customisation && account.customisation.profilePicture ? (
+                  <Image
+                    source={
+                      { uri: account.customisation.profilePicture }
+                    }
+                    style={{ width: 75, height: 75, borderRadius: 500 }}
+                  />
+                ) : (
+                  <Avatar size={75} author={`${account?.firstName} ${account?.lastName}`} />
+                )
+                }
                 <Typography variant={"h3"} color="text">
                   {manager ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
                 </Typography>

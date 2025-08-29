@@ -325,7 +325,7 @@ export default function URLInputScreen() {
           </Stack>
         </Reanimated.View>
 
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );

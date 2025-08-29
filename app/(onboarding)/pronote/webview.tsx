@@ -11,6 +11,7 @@ import uuid from "@/utils/uuid/uuid";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { URLToBase64 } from "@/utils/attachments/helper";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -130,6 +131,10 @@ export default function WebViewScreen() {
           lastName: session.user.name.split(" ")[1],
           schoolName,
           className,
+          customisation: {
+            profilePicture: await URLToBase64(session.user.resources[0].profilePicture?.url ?? ""),
+            subjects: {}
+          },
           services: [{
             id: deviceUUID,
             auth: {

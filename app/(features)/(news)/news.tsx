@@ -95,7 +95,7 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
   );
 }
 
-export function Avatar({ author, dark = false, squared = false }: { author: string, dark?: boolean, squared?: boolean }) {
+export function Avatar({ author, dark = false, squared = false, size = 35 }: { author: string, dark?: boolean, squared?: boolean, size?: number }) {
   const backgroundColor = `${getProfileColorByName(author)}90`;
   const textColor = adjust(getProfileColorByName(author), -0.6);
   const initials = getInitials(author)
@@ -106,15 +106,15 @@ export function Avatar({ author, dark = false, squared = false }: { author: stri
   return (
     <View
       style={{
-        width: 35,
-        height: 35,
+        width: size,
+        height: size,
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: dark ? colors.border : backgroundColor,
         borderRadius: squared ? 10 : 50,
       }}
     >
-      <Typography variant="button" color={dark ? colors.text : textColor}>
+      <Typography variant="button" style={{ fontSize: size / 3.5 }} color={dark ? colors.text : textColor}>
         {initials || author}
       </Typography>
     </View>
