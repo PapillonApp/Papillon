@@ -137,6 +137,8 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
                   if (e.nativeEvent.url !== webviewProps.source?.uri) {
                     setTotallyLoaded(true);
                   }
+                } else {
+                  setTotallyLoaded(true);
                 }
               }}
             />
