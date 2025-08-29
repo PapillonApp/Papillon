@@ -32,6 +32,8 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import GradesModal from "@/app/(modals)/grade";
+import GradesWidget from "../index/widgets/Grades";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -533,40 +535,7 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.ui.key}
         ListEmptyComponent={<EmptyListComponent />}
         header={(
-          <View style={{ paddingHorizontal: 20, paddingVertical: 18, flex: 1, width: "100%", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            {graphAxis.length > 0 && (
-              <GradesGraph />
-            )}
-
-            <Stack direction="horizontal" gap={0} inline vAlign="start" hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
-              <Dynamic animated>
-                <AnimatedNumber variant="h1" color="#29947A">
-                  {transformedData.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
-                </AnimatedNumber>
-              </Dynamic>
-              <Dynamic animated>
-                <Typography variant="body1" color="secondary" style={{ marginBottom: 2 }}>
-                  /20
-                </Typography>
-              </Dynamic>
-            </Stack>
-            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"currentAlgorithm:" + currentAlgorithm}>
-              <Typography variant="title" color="#29947A" align="left">
-                {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
-              </Typography>
-            </Dynamic>
-            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"selectionDate:" + selectionDate + ":" + currentAlgorithm}>
-              <Typography variant="body1" color="secondary" align="left" inline style={{ marginTop: 3 }}>
-                {selectionDate ?
-                  "au " + new Date(selectionDate).toLocaleDateString("fr-FR", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })
-                  : avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
-              </Typography>
-            </Dynamic>
-          </View>
+          <GradesWidget accent="#29947A" />
         )}
         ListHeaderComponent={transformedData.length > 0 ? <LatestGrades /> : null}
         refreshControl={

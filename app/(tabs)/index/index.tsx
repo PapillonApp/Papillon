@@ -38,6 +38,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { Account } from "@/stores/account/types";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import GradesWidget from "./widgets/Grades";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -181,6 +182,7 @@ export default function TabOneScreen() {
         </Typography>
       </Stack>
     ),
+    <GradesWidget header accent={foreground} />,
   ];
 
   return (
@@ -221,20 +223,19 @@ export default function TabOneScreen() {
         removeClippedSubviews={true}
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
-        height={180}
+        height={200}
         header={
           <>
             <FlatList
               style={{
                 backgroundColor: "transparent",
-                borderRadius: 26,
                 borderCurve: "continuous",
                 paddingBottom: 12
               }}
               horizontal
               data={headerItems}
               snapToInterval={Dimensions.get("window").width}
-              decelerationRate="fast"
+              decelerationRate={"fast"}
               showsHorizontalScrollIndicator={false}
               onScroll={e => {
                 const page = Math.round(
@@ -243,6 +244,10 @@ export default function TabOneScreen() {
                 setCurrentPage(page);
               }}
               scrollEventThrottle={16}
+              keyExtractor={(_, index) => "headerItem:" + index}
+              initialNumToRender={1}
+              maxToRenderPerBatch={1}
+              removeClippedSubviews={true}
               renderItem={({ item }) => (
                 <View
                   style={{
@@ -266,7 +271,7 @@ export default function TabOneScreen() {
                   justifyContent: "center",
                   alignItems: "center",
                   position: "absolute",
-                  bottom: 0,
+                  bottom: 10,
                   gap: 6,
                 }}
               >
@@ -276,9 +281,9 @@ export default function TabOneScreen() {
                     style={{
                       width: currentPage === i ? 16 : 6,
                       height: currentPage === i ? 8 : 6,
-                      backgroundColor: colors.text,
+                      backgroundColor: currentPage === i ? foreground : foregroundSecondary,
                       borderRadius: 200,
-                      opacity: currentPage === i ? 0.5 : 0.25
+                      opacity: currentPage === i ? 1 : 0.5
                     }}
                   />
                 ))}
