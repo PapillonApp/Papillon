@@ -1,5 +1,6 @@
 import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs";
+import * as Ezly from "ezly";
 
 /**
  * Represents the storage structure for user accounts.
@@ -78,7 +79,7 @@ export interface ServiceAccount {
 export interface Auth {
   accessToken?: string;
   refreshToken?: string;
-  session?: Skolengo | Session;
+  session?: Skolengo | Session | Ezly.Identification;
   additionals?: Record<string, string | number>;
 }
 
@@ -87,5 +88,6 @@ export enum Services {
   SKOLENGO,
   ECOLEDIRECTE,
   TURBOSELF,
-  ARD
+  ARD,
+  IZLY
 }
