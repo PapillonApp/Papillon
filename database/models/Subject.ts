@@ -16,6 +16,7 @@ export default class Subject extends Model {
   };
 
   @field('name') name: string;
+  @field('subjectId') subjectId: string;
   @field('studentAverage') studentAverageRaw: string;
   @field('classAverage') classAverageRaw: string;
   @field('maximum') maximumRaw: string;

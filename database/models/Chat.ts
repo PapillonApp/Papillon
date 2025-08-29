@@ -12,7 +12,7 @@ export class Chat extends Model {
   };
 
 	@field('createdByAccount') createdByAccount: string;
-	@field('chatId') id: string;
+	@field('chatId') chatId: string;
 	@field('subject') subject: string;
 	@field('recipient') recipient?: string;
 	@field('creator') creator?: string;
@@ -28,7 +28,7 @@ export class Recipient extends Model {
     chats: { type: 'belongs_to', key: 'chatId' },
   };
 
-	@field('recipientId') id: string;
+	@field('recipientId') recipientId: string;
 	@field('name') name: string;
 	@field('class') class?: string;
 	@field('chatId') chatId: string;
@@ -42,7 +42,7 @@ export class Message extends Model {
     chats: { type: 'belongs_to', key: 'chatId' },
   };
 
-	@field('messageId') id: string;
+	@field('messageId') messageId: string;
 	@field('content') content: string;
 	@field('author') author: string;
 	@field('subject') subject: string;

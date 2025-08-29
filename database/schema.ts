@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 23,
+  version: 24,
   tables: [
     tableSchema({
       name: 'events',
@@ -30,6 +30,7 @@ export const mySchema = appSchema({
       name: 'subjects',
       columns: [
         { name: 'name', type: 'string' },
+        { name: 'subjects', type: 'string' },
         { name: 'studentAverage', type: 'string' },
         { name: 'classAverage', type: 'string' },
         { name: 'maximum', type: 'string' },
@@ -84,6 +85,7 @@ export const mySchema = appSchema({
       columns: [
         { name: 'createdByAccount', type: 'string' },
         { name: 'gradeId', type: 'string' },
+        { name: 'subjectName', type: 'string' },
         { name: 'subjectId', type: 'string', isOptional: true },
         { name: 'description', type: 'string' },
         { name: 'givenAt', type: 'number' },
@@ -112,6 +114,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: "attendance",
       columns: [
+        { name: "attendanceId", type: 'string' },
         { name: 'createdByAccount', type: 'string' },
         { name: 'kidName', type: 'string', isOptional: true },
         { name: 'period', type: 'string' }

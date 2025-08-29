@@ -14,7 +14,7 @@ export async function addAttendanceToDatabase(attendances: SharedAttendance[], p
   const id = generateId(attendance.createdByAccount + period + attendance.kidName);
 
   await db.write(async () => {
-    const existing = await db.get('attendance').query(Q.where('id', id)).fetch();
+    const existing = await db.get('attendance').query(Q.where('attendanceId', id)).fetch();
 
     if (existing.length > 0) {
       const existingAttendance = existing[0] as Attendance;
@@ -94,7 +94,7 @@ export async function addAttendanceToDatabase(attendances: SharedAttendance[], p
     } else {
       await db.get('attendance').create(record => {
         const att = record as Attendance;
-        record._raw.id = id;
+        att.attendanceId = id;
         att.createdByAccount = attendance.createdByAccount;
         att.period = period;
       });

@@ -17,7 +17,8 @@ export function mapPeriodToShared(period: Period): SharedPeriod {
 
 export function mapGradeToShared(grade: Grade): SharedGrade {
   return {
-    id: grade.id,
+    id: grade.gradeId,
+    subjectName: grade.subjectName,
     subjectId: grade.subjectId ?? "",
     description: grade.description,
     givenAt: new Date(grade.givenAt),
