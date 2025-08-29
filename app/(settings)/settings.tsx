@@ -139,7 +139,9 @@ const SettingsIndex = () => {
       title: "Personnalisation",
       description: "Thèmes, matières...",
       color: "#17C300",
-      href: "personalization"
+      onPress: () => {
+        router.navigate("/(settings)/personalization")
+      }
     },
     {
       icon: <Papicons name={"Bell"} />,
@@ -216,7 +218,7 @@ const SettingsIndex = () => {
           >
             <List>
               <Item
-                onPress={() => router.replace("./services")}
+                onPress={() => router.navigate("/(settings)/services")}
               >
                 <Leading>
                   <Image

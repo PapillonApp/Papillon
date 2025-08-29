@@ -1,76 +1,105 @@
-import Typography from "@/ui/components/Typography";
-import { FlatList, View } from "react-native";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { FlatList, View, Dimensions } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+
+import Typography from "@/ui/components/Typography";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useSettingsStore } from "@/stores/settings";
 import { Colors, AppColors } from "@/utils/colors";
 import adjust from "@/utils/adjustColor";
-import { useTheme } from "@react-navigation/native";
-import { t } from "i18next";
 
 export { Colors, AppColors };
 
-const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundColor, name, onPress, selected }: { mainColor: string, backgroundColor: string, name: string, onPress?: () => void, selected: boolean }) {
-  const handlePress = React.useCallback(() => {
-    if (onPress) {
-      onPress()
-    }
-  }, [onPress]);
+interface ColorSelectorProps {
+  mainColor: string;
+  backgroundColor: string;
+  name: string;
+  onPress?: () => void;
+  selected: boolean;
+  itemWidth: number;
+}
 
+interface AppColorsSelectorProps {
+  onChangeColor?: (color: string) => void;
+  accountId?: string;
+}
+
+const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
+  mainColor,
+  backgroundColor,
+  name,
+  onPress,
+  selected,
+  itemWidth
+}) {
   const theme = useTheme();
-  const { colors } = theme;
 
-  const containerStyle = React.useMemo(() => ({
-    flex: 1,
-    margin: 4,
-    marginVertical: selected ? 0 : 4,
+  const handlePress = useCallback(() => {
+    onPress?.();
+  }, [onPress]); const containerStyle = useMemo(() => ({
+    width: itemWidth,
+    height: itemWidth * 0.95,
+    margin: 6,
     alignItems: "center" as const,
-    backgroundColor: backgroundColor,
-    borderColor: selected ? mainColor : colors.text + "26",
+    justifyContent: "center" as const,
+    backgroundColor,
+    borderColor: selected ? mainColor : mainColor + "50",
     borderWidth: selected ? 4 : 2,
     borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: selected ? 20 : 26,
-    alignSelf: "center" as const,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.07,
-    shadowRadius: 5
-  }), [selected, backgroundColor, mainColor]);
+    shadowRadius: 5,
+  }), [selected, backgroundColor, mainColor, theme.colors.text, itemWidth]);
 
-  const circleStyle = React.useMemo(() => ({
-    width: 44,
-    height: 44,
-    backgroundColor: mainColor,
-    borderRadius: 100,
-    borderWidth: 4,
-    borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.615
-  }), [mainColor]);
+  const circleStyle = useMemo(() => {
+    const circleSize = Math.min(itemWidth * 0.4, 50);
+    return {
+      width: circleSize,
+      height: circleSize,
+      backgroundColor: mainColor,
+      borderRadius: circleSize / 2,
+      borderWidth: 3,
+      borderColor: "#FFFFFF",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.615,
+      marginBottom: 6,
+    };
+  }, [mainColor, itemWidth]);
 
   return (
     <AnimatedPressable onPress={handlePress} style={containerStyle}>
       <View style={circleStyle} />
-      <Typography variant="h6" color={mainColor}>{name}</Typography>
+      <Typography variant="h6" color={mainColor}>
+        {name}
+      </Typography>
     </AnimatedPressable>
-  )
-}); const AppColorsSelector = React.memo(function AppColorsSelector(
-  { onChangeColor, accountId }: { onChangeColor?: (color: string) => void, accountId?: string }
-) {
-  const settingsStore = useSettingsStore(state => state.personalization);
+  );
+});
 
-  const defaultColorData = useMemo(() =>
-    AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0],
+const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsSelector({
+  onChangeColor,
+  accountId
+}) {
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const theme = useTheme();
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  const defaultColorData = useMemo(
+    () => AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0],
     [settingsStore.colorSelected]
   );
 
   const [selectedColor, setSelectedColor] = useState<string>(defaultColorData.mainColor);
   const [color, setColor] = useState<Colors>(settingsStore.colorSelected || Colors.PINK);
 
-  const theme = useTheme();
+  const itemWidth = useMemo(() => {
+    if (containerWidth === 0) return 100;
+    return (containerWidth - 36) / 3;
+  }, [containerWidth]);
 
   useEffect(() => {
     const colorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
@@ -78,33 +107,24 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
     setColor(colorData.colorEnum);
   }, [settingsStore.colorSelected]);
 
-  const renderItem = useCallback(({ item }: { item: typeof AppColors[0] }) => {
-    const handlePress = () => {
-      setSelectedColor(item.mainColor);
-      setColor(item.colorEnum);
-      if (onChangeColor) {
-        onChangeColor(item.mainColor);
-      }
-    };
+  const handleColorPress = useCallback((item: typeof AppColors[0]) => {
+    setSelectedColor(item.mainColor);
+    setColor(item.colorEnum);
+    onChangeColor?.(item.mainColor);
+  }, [onChangeColor]);
 
-    return (
-      <ColorSelector
-        selected={selectedColor === item.mainColor}
-        mainColor={item.mainColor}
-        backgroundColor={adjust(item.mainColor, theme.dark ? -0.8 : 0.8)}
-        name={item.name}
-        onPress={handlePress}
-      />
-    );
-  }, [selectedColor, onChangeColor]);
+  const renderItem = useCallback(({ item }: { item: typeof AppColors[0] }) => (
+    <ColorSelector
+      selected={selectedColor === item.mainColor}
+      mainColor={item.mainColor}
+      backgroundColor={adjust(item.mainColor, theme.dark ? -0.8 : 0.8)}
+      name={item.name}
+      onPress={() => handleColorPress(item)}
+      itemWidth={itemWidth}
+    />
+  ), [selectedColor, theme.dark, handleColorPress, itemWidth]);
 
   const keyExtractor = useCallback((item: typeof AppColors[0]) => item.name, []);
-
-  const ListFooter = useMemo(() => (
-    <Typography style={{ paddingTop: 10, flex: 1 }} color="#7F7F7F" variant="caption">
-      {t("Settings_Personalization_Accent_Description")}
-    </Typography>
-  ), []);
 
   return (
     <FlatList
@@ -112,17 +132,29 @@ const ColorSelector = React.memo(function ColorSelector({ mainColor, backgroundC
       data={AppColors}
       numColumns={3}
       renderItem={renderItem}
-      ListFooterComponent={ListFooter}
-      ListFooterComponentStyle={{ flex: 1 }}
       keyExtractor={keyExtractor}
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ justifyContent: "space-between" }}
-      style={{ maxHeight: 270 }}
-      removeClippedSubviews={true}
+      onLayout={(event) => {
+        const { width } = event.nativeEvent.layout;
+        setContainerWidth(width);
+      }}
+      contentContainerStyle={{
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      columnWrapperStyle={{
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+      style={{
+        width: "100%",
+        overflow: "hidden"
+      }}
+      removeClippedSubviews
       maxToRenderPerBatch={6}
       windowSize={1}
     />
-  )
+  );
 });
 
 export default AppColorsSelector;

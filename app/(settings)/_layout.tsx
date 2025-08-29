@@ -40,6 +40,7 @@ export default function Layout() {
           headerTitle: t("Settings_Personalization_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: true,
+          headerLargeTitle: false,
         }}
       />
 
