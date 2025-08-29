@@ -326,6 +326,8 @@ export default function TabOneScreen() {
     );
   }, [getSubjectInfo]);
 
+  const memoizedRenderItem = useMemo(() => renderItem, []);
+
   const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
     if (item.type === "header") {
       return renderItemSubject({ item: item.subject, index });
@@ -518,14 +520,12 @@ export default function TabOneScreen() {
     <>
       <TabFlatList
         radius={36}
-        waitForInitialLayout
         engine="FlatList"
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"
         pattern="checks"
         initialNumToRender={2}
-        recycleItems={true}
-        estimatedItemSize={80}
+        removeClippedSubviews={true}
         onFullyScrolled={handleFullyScrolled}
         height={200}
         data={transformedData}
@@ -573,7 +573,7 @@ export default function TabOneScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            progressViewOffset={100}
+            progressViewOffset={200}
           />
         }
       />

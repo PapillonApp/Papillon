@@ -186,7 +186,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             left: 0,
             right: 0,
             height: 350,
-            zIndex: 999,
+            zIndex: -999,
             backgroundColor: backgroundColor,
           }}
           maskElement={
@@ -224,6 +224,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             left: 0,
             right: 0,
             bottom: 0,
+            zIndex: -10000,
             backgroundColor: backgroundColor,
           }}
         >

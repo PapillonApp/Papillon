@@ -229,6 +229,7 @@ export default function TabOneScreen() {
 
       <TabFlatList
         translucent={true}
+        removeClippedSubviews={true}
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={180}
@@ -412,7 +413,7 @@ export default function TabOneScreen() {
             dev: false
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
-        keyExtractor={(item, index) => item.title + index}
+        keyExtractor={(item, index) => item.title}
         renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;

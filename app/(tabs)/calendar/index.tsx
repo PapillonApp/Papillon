@@ -25,6 +25,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -151,7 +152,8 @@ export default function TabOneScreen() {
     fetchWeeklyTimetable(weekNumber, true);
   }, [weekNumber]);
 
-  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 42;
   const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
@@ -447,7 +449,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <Papicons name={"Calendar"} color={"#D6502B"} size={28}/>
+            <Papicons name={"Calendar"} color={"#D6502B"} size={28} />
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
