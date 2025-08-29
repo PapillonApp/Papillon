@@ -11,6 +11,7 @@ import { Services } from "@/stores/account/types";
 import Icon from '@/ui/components/Icon';
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
+import { customFetcher } from '@/utils/pronote/fetcher';
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -129,7 +130,7 @@ export default function WebViewScreen() {
             }
             console.log(message.data.login, message.data.mdp)
             console.log("Creating session handle...");
-            const session = createSessionHandle();
+            const session = createSessionHandle(customFetcher);
             try {
               const refresh = await loginToken(
                 session,
