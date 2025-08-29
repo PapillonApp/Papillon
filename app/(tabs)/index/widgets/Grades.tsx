@@ -1,7 +1,7 @@
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import Typography from "@/ui/components/Typography"
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { Dimensions, View } from "react-native"
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
 
@@ -219,4 +219,4 @@ const GradesWidget = ({ accent = "#29947A", header = false }: { accent?: string,
   )
 }
 
-export default GradesWidget
+export default memo(GradesWidget);
