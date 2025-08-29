@@ -85,12 +85,15 @@ const GradesWidget = ({ accent = "#29947A", header = false }: { accent?: string,
     return averageHistory;
   }, [currentAlgorithm]);
 
-  const currentAverageHistory = useMemo(() => {
-    const grades = newSubjects.flatMap(subject => subject.grades).filter(grade =>
+  const grades = useMemo(() => {
+    return newSubjects.flatMap(subject => subject.grades).filter(grade =>
       grade.studentScore?.value !== undefined &&
       grade.givenAt &&
       !isNaN(grade.studentScore.value)
     );
+  }, [newSubjects]);
+
+  const currentAverageHistory = useMemo(() => {
     return getAverageHistory(grades);
   }, [newSubjects, currentAlgorithm, getAverageHistory]);
 
@@ -188,7 +191,7 @@ const GradesWidget = ({ accent = "#29947A", header = false }: { accent?: string,
           <Stack direction="horizontal" gap={0} inline vAlign={header ? "center" : "start"} hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
             <Dynamic animated>
               <AnimatedNumber variant="h1" color={accent}>
-                {shownAverage >= 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
+                {grades.length > 0 ? (shownAverage ?? 0).toFixed(2) : "--.--"}
               </AnimatedNumber>
             </Dynamic>
             <Dynamic animated>
