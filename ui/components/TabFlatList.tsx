@@ -55,7 +55,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const insets = useSafeAreaInsets();
 
   const screenHeight = Dimensions.get('window').height;
-  const headerInset = useHeaderHeight() - 10;
+  const headerInset = insets.top + 40;
   const finalHeight = height + headerInset;
   let tabBarHeight = 0;
   try {

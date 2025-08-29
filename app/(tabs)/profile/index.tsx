@@ -36,6 +36,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
+import { useAccountStore } from "@/stores/account";
 
 function Tabs() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -326,30 +327,20 @@ export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
 
   const manager = getManager();
-  const [account, setAccount] = useState<Account | null>(null);
 
-  useEffect(() => {
-    function fetchData() {
-      if (!manager) {
-        return;
-      }
-
-      const result = manager.getAccount();
-      setAccount(result);
-    }
-    fetchData();
-  }, [manager]);
+  const store = useAccountStore.getState();
+  const lastUsedAccount = useMemo(() => store.accounts.find(account => account.id === store.lastUsedAccount) || null, [store]);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) { return [null, null, null, null]; }
+    if (!lastUsedAccount) return [null, null, null, null];
 
-    const firstName = account.firstName;
-    const lastName = account.lastName;
-    const level = account.className;
-    const establishment = account.schoolName;
+    let firstName = lastUsedAccount.firstName;
+    let lastName = lastUsedAccount.lastName;
+    let level = lastUsedAccount.className;
+    let establishment = lastUsedAccount.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [account]);
+  }, [lastUsedAccount]);
 
   const headerHeight = useHeaderHeight();
 

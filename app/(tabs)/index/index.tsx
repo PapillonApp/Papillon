@@ -129,30 +129,20 @@ export default function TabOneScreen() {
   const { colors } = theme;
 
   const manager = getManager();
-  const [account, setAccount] = useState<Account | null>(null);
 
-  useEffect(() => {
-    function fetchData() {
-      if (!manager) {
-        return;
-      }
-
-      const result = manager.getAccount();
-      setAccount(result);
-    }
-    fetchData();
-  }, [manager]);
+  const store = useAccountStore.getState();
+  const lastUsedAccount = useMemo(() => store.accounts.find(account => account.id === store.lastUsedAccount) || null, [store]);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) return [null, null, null, null];
+    if (!lastUsedAccount) return [null, null, null, null];
 
-    let firstName = account.firstName;
-    let lastName = account.lastName;
-    let level = account.className;
-    let establishment = account.schoolName;
+    let firstName = lastUsedAccount.firstName;
+    let lastName = lastUsedAccount.lastName;
+    let level = lastUsedAccount.className;
+    let establishment = lastUsedAccount.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [account]);
+  }, [lastUsedAccount]);
 
   const date = useMemo(() => new Date(), []);
 
@@ -414,7 +404,7 @@ export default function TabOneScreen() {
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
         keyExtractor={(item, index) => item.title}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }
