@@ -13,7 +13,6 @@ export function useEventsForDay(date: Date, refresh = 0) {
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    console.log('Querying events between', startOfDay.getTime(), 'and', endOfDay.getTime());
 
     const query = database.get<Event>('events').query(
       Q.where('start', Q.between(startOfDay.getTime(), endOfDay.getTime()))

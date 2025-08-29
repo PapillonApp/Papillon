@@ -30,23 +30,25 @@ import { getDateWeek } from "@/utils/week";
 import { predictHomework } from "@/utils/magic/prediction";
 
 const EmptyListComponent = memo(() => (
-  <Dynamic animated key={'empty-list:warn'}>
-    <Stack
-      hAlign="center"
-      vAlign="center"
-      margin={16}
-    >
-      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons name={"Check"} />
-      </Icon>
-      <Typography variant="h4" color="text" align="center">
-        {t('Tasks_NoTasks_Title')}
-      </Typography>
-      <Typography variant="body2" color="secondary" align="center">
-        {t('Tasks_NoTasks_Description')}
-      </Typography>
-    </Stack>
-  </Dynamic>
+  <LayoutAnimationConfig skipEntering>
+    <Dynamic animated key={'empty-list:warn'}>
+      <Stack
+        hAlign="center"
+        vAlign="center"
+        margin={16}
+      >
+        <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+          <Papicons name={"Check"} />
+        </Icon>
+        <Typography variant="h4" color="text" align="center">
+          {t('Tasks_NoTasks_Title')}
+        </Typography>
+        <Typography variant="body2" color="secondary" align="center">
+          {t('Tasks_NoTasks_Description')}
+        </Typography>
+      </Stack>
+    </Dynamic>
+  </LayoutAnimationConfig>
 ));
 
 export default function TabOneScreen() {
@@ -438,7 +440,6 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Add new grade pressed");
           }}
         >
           <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
@@ -495,7 +496,6 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Add new grade pressed");
           }}
         >
           <Papicons name={"Search"} color={"#C54CB3"} size={26} />

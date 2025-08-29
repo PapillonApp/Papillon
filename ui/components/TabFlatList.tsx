@@ -55,7 +55,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   const insets = useSafeAreaInsets();
 
   const screenHeight = Dimensions.get('window').height;
-  const headerInset = useHeaderHeight() - 10;
+  const headerInset = insets.top + 40;
   const finalHeight = height + headerInset;
   let tabBarHeight = 0;
   try {
@@ -186,7 +186,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             left: 0,
             right: 0,
             height: 350,
-            zIndex: 999,
+            zIndex: -999,
             backgroundColor: backgroundColor,
           }}
           maskElement={
@@ -224,6 +224,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
             left: 0,
             right: 0,
             bottom: 0,
+            zIndex: -10000,
             backgroundColor: backgroundColor,
           }}
         >

@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
-import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Reanimated, { LayoutAnimationConfig, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 import Typography from "./Typography";
@@ -153,15 +153,17 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
     };
 
     const renderTitle = () => (
-      <View style={[
-        styles.title,
-        { maxWidth: maxWidth ?? 200 },
-        Platform.OS === 'android' ? styles.titleAndroid : {},
-      ]} {...propsRef.current}
-        pointerEvents={ignoreTouch ? "none" : "auto"}
-      >
-        {childrenRef.current}
-      </View>
+      <LayoutAnimationConfig skipEntering>
+        <View style={[
+          styles.title,
+          { maxWidth: maxWidth ?? 200 },
+          Platform.OS === 'android' ? styles.titleAndroid : {},
+        ]} {...propsRef.current}
+          pointerEvents={ignoreTouch ? "none" : "auto"}
+        >
+          {childrenRef.current}
+        </View>
+      </LayoutAnimationConfig>
     );
 
     const searchOptions = search ? {
@@ -266,15 +268,17 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, light ? { padding: 0 } : {}];
 
   return (
-    <View style={viewStyle} {...props}>
-      {typeof children === 'string' ? (
-        <AnimatedNumber variant="navigation" style={{ color }}>
-          {children}
-        </AnimatedNumber>
-      ) : (
-        children
-      )}
-    </View>
+    <LayoutAnimationConfig skipEntering>
+      <View style={viewStyle} {...props}>
+        {typeof children === 'string' ? (
+          <AnimatedNumber variant="navigation" style={{ color }}>
+            {children}
+          </AnimatedNumber>
+        ) : (
+          children
+        )}
+      </View>
+    </LayoutAnimationConfig>
   );
 });
 
