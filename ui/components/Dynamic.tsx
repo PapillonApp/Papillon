@@ -12,6 +12,7 @@ type DynamicProps = {
   layout?: LayoutAnimation;
   entering?: EntryExitAnimationFunction;
   exiting?: EntryExitAnimationFunction;
+  key?: string;
 };
 
 // Pre-compute animations to avoid function calls on every render
@@ -53,7 +54,7 @@ export const Dynamic = React.memo<DynamicProps>(({
   // Memoize layout prop to avoid conditional evaluation on every render
   const layoutProp = useMemo(() =>
     animated ? layout && ANIMATED_LAYOUT : undefined,
-  [animated]
+    [animated]
   );
 
   return (

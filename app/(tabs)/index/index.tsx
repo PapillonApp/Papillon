@@ -312,10 +312,10 @@ export default function TabOneScreen() {
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
                     onPress={() => {
-                      navigation.navigate('(modals)/course', {
+                      (navigation as any).navigate('(modals)/course', {
                         course: item,
                         subjectInfo: {
-                          id: item.subjectId,
+                          id: item.id,
                           name: item.subject,
                           color: getSubjectColor(item.subject),
                           emoji: getSubjectEmoji(item.subject),
@@ -362,7 +362,7 @@ export default function TabOneScreen() {
                     date={item.givenAt}
                     variant="home"
                     onPress={() => {
-                      navigation.navigate('(modals)/grade', {
+                      (navigation as any).navigate('(modals)/grade', {
                         grade: item,
                         subjectInfo: {
                           id: item.subjectId,
