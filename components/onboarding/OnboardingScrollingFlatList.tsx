@@ -1,6 +1,6 @@
 import Reanimated, {
   Extrapolate,
-  FadeInDown, interpolate,
+  interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -8,16 +8,12 @@ import Reanimated, {
 import Stack from "@/ui/components/Stack";
 import LottieView from "lottie-react-native";
 import Typography from "@/ui/components/Typography";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { getLoginMethods, LoginMethod } from "@/app/(onboarding)/utils/constants";
-import Icon from "@/ui/components/Icon";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import ViewContainer from "@/ui/components/ViewContainer";
 import React from "react";
-import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from "expo-router";
-import { Dimensions, FlatList } from "react-native";
+import { useFocusEffect } from "expo-router";
+import { FlatList } from "react-native";
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 
 const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, elements, renderItem }:{
@@ -55,6 +51,17 @@ const OnboardingScrollingFlatList = ({ lottie, title, color, step, totalSteps, e
     left: 0,
     right: 0,
     zIndex: 2,
+    transformOrigin: "top",
+    transform: [
+      {
+        scaleY: interpolate(
+          scrollY.value,
+          [-500, 0],
+          [1.2, 1],
+          Extrapolate.CLAMP
+        )
+      },
+    ]
   }));
 
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => ({
