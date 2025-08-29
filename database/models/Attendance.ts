@@ -14,7 +14,8 @@ export class Attendance extends Model {
     observations: { type: 'has_many', foreignKey: 'attendanceId' },
     punishments: { type: 'has_many', foreignKey: 'attendanceId' },
   };
-
+  
+  @field('attendanceId') attendanceId: string;
   @field('createdByAccount') createdByAccount: string;
 	@field('kidName') kidName?: string;
   @field('period') period: string;

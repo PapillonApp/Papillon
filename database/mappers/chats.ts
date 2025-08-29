@@ -8,7 +8,7 @@ export function mapChatsToShared(data: Chat[]): SharedChat[] {
   return data.map(chat => ({
     fromCache: true,
     createdByAccount: chat.createdByAccount,
-    id: chat.id,
+    id: chat.chatId,
     subject: chat.subject,
     recipient: chat.recipient,
     creator: chat.creator,

@@ -19,7 +19,9 @@ class ModelManager {
   private static instance: ModelManager;
   private model: TensorflowModel | null = null;
   private maxLen = 128;
+  private batchSize = 1;
   private labels: string[] = [];
+  private labelToId: Record<string, number> = {};
   private wordIndex: Record<string, number> = {};
   private oovIndex = 1;
   private isInitializing = false;
@@ -276,9 +278,11 @@ class ModelManager {
       // Nettoyer le modèle en mémoire
       this.model = null;
       this.labels = [];
+      this.labelToId = {};
       this.wordIndex = {};
       this.oovIndex = 1;
       this.maxLen = 128;
+      this.batchSize = 1;
 
       // Réinitialiser l'état d'initialisation
       this.isInitializing = false;
@@ -318,14 +322,18 @@ class ModelManager {
   getStatus(): {
     hasModel: boolean;
     maxLen: number;
+    batchSize: number;
     labelsCount: number;
+    labelToIdCount: number;
     wordIndexSize: number;
     oovIndex: number;
   } {
     return {
       hasModel: this.model !== null,
       maxLen: this.maxLen,
+      batchSize: this.batchSize,
       labelsCount: this.labels.length,
+      labelToIdCount: Object.keys(this.labelToId).length,
       wordIndexSize: Object.keys(this.wordIndex).length,
       oovIndex: this.oovIndex,
     };
@@ -371,31 +379,119 @@ class ModelManager {
       const tokenizerUri = dirUri + "model/tokenizer.json";
       const labelsUri = dirUri + "model/labels.json";
 
+      log(`[LOAD] Chargement du modèle TFLite: ${modelUri}`);
       this.model = await loadTensorflowModel({ url: modelUri });
 
       const shape = this.model?.inputs?.[0]?.shape;
-      if (shape && shape[1]) {
-        this.maxLen = shape[1];
+      log(`[LOAD] Shape du modèle détectée: [${shape?.join(", ")}]`);
+      
+      if (shape) {
+        if (shape[0]) {
+          this.batchSize = shape[0];
+          log(`[LOAD] Batch size défini: ${this.batchSize}`);
+        }
+        if (shape[1]) {
+          this.maxLen = shape[1];
+          log(`[LOAD] Max length défini: ${this.maxLen}`);
+        }
       }
+      
+      log(`[LOAD] Configuration finale: batchSize=${this.batchSize}, maxLen=${this.maxLen}`);
 
+      log(`[LOAD] Chargement du tokenizer: ${tokenizerUri}`);
       const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
         encoding: FileSystem.EncodingType.UTF8,
       });
       const tokenizerJson = JSON.parse(tokenizerRaw);
       const config = tokenizerJson.config;
       const wordCounts = JSON.parse(config.word_counts);
-      const wordIndex: Record<string, number> = {};
-      let index = 1;
-      for (const w of Object.keys(wordCounts)) {
-        wordIndex[w] = index++;
+      
+      // Vérifier si on a un word_index existant dans le tokenizer
+      let wordIndex: Record<string, number> = {};
+      if (tokenizerJson.word_index) {
+        log(`[LOAD] Utilisation du word_index existant du tokenizer`);
+        wordIndex = tokenizerJson.word_index;
+      } else {
+        log(`[LOAD] Reconstruction du word_index depuis word_counts`);
+        let index = 1;
+        for (const w of Object.keys(wordCounts)) {
+          wordIndex[w] = index++;
+        }
       }
+      
       this.wordIndex = wordIndex;
       this.oovIndex = wordIndex[config.oov_token] ?? 1;
+      log(`[LOAD] Tokenizer chargé: ${Object.keys(wordIndex).length} mots, oovIndex=${this.oovIndex}`);
+      log(`[LOAD] Premier mots du tokenizer: ${Object.keys(wordIndex).slice(0, 10).join(", ")}`);
+      log(`[LOAD] Premiers indices: ${Object.keys(wordIndex).slice(0, 10).map(w => `${w}:${wordIndex[w]}`).join(", ")}`);
+      
+      // Log des tokens spéciaux
+      const specialTokens = Object.keys(wordIndex).filter(w => w.startsWith('[') || w.startsWith('<'));
+      if (specialTokens.length > 0) {
+        log(`[LOAD] Tokens spéciaux détectés: ${specialTokens.map(w => `${w}:${wordIndex[w]}`).join(", ")}`);
+      }
 
+      log(`[LOAD] Chargement des labels: ${labelsUri}`);
       const labelsRaw = await FileSystem.readAsStringAsync(labelsUri, {
         encoding: FileSystem.EncodingType.UTF8,
       });
       this.labels = JSON.parse(labelsRaw);
+      log(`[LOAD] Labels chargées: ${this.labels.length} classes - [${this.labels.slice(0, 5).join(", ")}${this.labels.length > 5 ? "..." : ""}]`);
+
+      // Charger le mapping label_to_id si disponible
+      const labelToIdUri = dirUri + "model/label_to_id.json";
+      const labelToIdInfo = await FileSystem.getInfoAsync(labelToIdUri);
+      if (labelToIdInfo.exists) {
+        log(`[LOAD] Chargement du mapping label_to_id: ${labelToIdUri}`);
+        const labelToIdRaw = await FileSystem.readAsStringAsync(labelToIdUri, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+        this.labelToId = JSON.parse(labelToIdRaw);
+        log(`[LOAD] Label to ID mapping chargé: ${Object.keys(this.labelToId).length} mappings`);
+        
+        // Vérifier la cohérence avec les labels
+        const missingLabels = this.labels.filter(label => !(label in this.labelToId));
+        const extraMappings = Object.keys(this.labelToId).filter(label => !this.labels.includes(label));
+        
+        if (missingLabels.length > 0) {
+          log(`[LOAD WARNING] Labels manquants dans label_to_id: [${missingLabels.join(", ")}]`);
+        }
+        if (extraMappings.length > 0) {
+          log(`[LOAD WARNING] Mappings supplémentaires dans label_to_id: [${extraMappings.join(", ")}]`);
+        }
+        
+        // Afficher quelques exemples de mapping pour vérification
+        const sampleMappings = Object.entries(this.labelToId).slice(0, 5);
+        log(`[LOAD] Exemples de mappings: ${sampleMappings.map(([label, id]) => `"${label}":${id}`).join(", ")}`);
+        
+        // Vérifier si les IDs correspondent aux indices des labels
+        let indexMismatches = 0;
+        for (let i = 0; i < this.labels.length; i++) {
+          const label = this.labels[i];
+          const expectedId = this.labelToId[label];
+          if (expectedId !== undefined && expectedId !== i) {
+            indexMismatches++;
+            if (indexMismatches <= 3) { // Log seulement les 3 premiers
+              log(`[LOAD MISMATCH] Label "${label}" à l'index ${i} mais mapping ID ${expectedId}`);
+            }
+          }
+        }
+        
+        if (indexMismatches > 0) {
+          log(`[LOAD WARNING] ${indexMismatches} décalages détectés entre indices labels et IDs mappés`);
+        } else {
+          log(`[LOAD OK] Indices des labels correspondent aux IDs mappés`);
+        }
+        
+        log(`[LOAD] Cohérence label/mapping: ${this.labels.length - missingLabels.length}/${this.labels.length} OK`);
+      } else {
+        log(`[LOAD] Aucun fichier label_to_id.json trouvé, utilisation de l'ordre des labels`);
+        // Créer un mapping basé sur l'index des labels
+        this.labelToId = {};
+        for (let i = 0; i < this.labels.length; i++) {
+          this.labelToId[this.labels[i]] = i;
+        }
+      }
 
       log("[LOAD] Modèle dynamique chargé avec succes");
     } catch (error) {
@@ -404,17 +500,8 @@ class ModelManager {
     }
   }
 
-  cleanText(t: string): string {
-    const cleaned = t
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9\s]/g, "")
-      .toLowerCase();
-    return cleaned;
-  }
-
   tokenize(text: string, verbose: boolean = false): number[] {
-    const words = this.cleanText(text).split(/\s+/);
+    const words = text.split(/\s+/);
     const sequence: number[] = [];
     const unknownWords: string[] = [];
 
@@ -450,45 +537,108 @@ class ModelManager {
         return { error: errorMsg, success: false };
       }
 
+      log(`[PREDICT START] Text: "${text}", verbose: ${verbose}`);
+      log(`[PREDICT MODEL INFO] batchSize: ${this.batchSize}, maxLen: ${this.maxLen}, labels: ${this.labels.length}, labelToId: ${Object.keys(this.labelToId).length}`);
+
       if (verbose) {
         log(`Running prediction for: ${text}`);
         log(`Tokenizing text: ${text}`);
       }
 
       const seq = this.tokenize(text, verbose);
+      log(`[PREDICT TOKENIZED] Sequence length: ${seq.length}, first 10 tokens: [${seq.slice(0, 10).join(", ")}]`);
+      
       if (verbose) {
-        log(`[CLEAN TEXT] ${this.cleanText(text)}`);
         log(`[TOKENIZED] ${seq.join(", ")}`);
       }
 
-      const inputArr = new Float32Array(this.maxLen);
+      const totalInputSize = this.batchSize * this.maxLen;
+      log(`[PREDICT INPUT] Creating input array of size ${totalInputSize} (${this.batchSize} x ${this.maxLen})`);
+      
+      // Le modèle attend des int32, pas des float32
+      const inputArr = new Int32Array(totalInputSize);
+      
+      // Remplir seulement les premiers éléments avec la séquence tokenisée
       for (let i = 0; i < seq.length && i < this.maxLen; i++) {
         inputArr[i] = seq[i];
       }
+      
+      log(`[PREDICT INPUT FILLED] First 10 values: [${Array.from(inputArr.slice(0, 10)).join(", ")}]`);
+      log(`[PREDICT INPUT FILLED] Last 10 values: [${Array.from(inputArr.slice(-10)).join(", ")}]`);
+      log(`[PREDICT INPUT SIZE] Input array length: ${inputArr.length}, expected: ${totalInputSize}, type: ${inputArr.constructor.name}`);
+
+      // Vérifier les dimensions du modèle avant l'exécution
+      const modelInputShape = this.model?.inputs?.[0]?.shape;
+      log(`[PREDICT MODEL SHAPE] Expected input shape: [${modelInputShape?.join(", ")}]`);
 
       try {
+        log(`[PREDICT RUN] About to run model with input size ${inputArr.length}, type: ${inputArr.constructor.name}`);
         const [out] = await this.model.run([inputArr]);
+        log(`[PREDICT RUN SUCCESS] Model executed successfully`);
+        
         const scores = Array.from(out as Float32Array);
+        log(`[PREDICT OUTPUT] Output scores length: ${scores.length}`);
+        log(`[PREDICT OUTPUT] First 5 scores: [${scores.slice(0, 5).join(", ")}]`);
+        
         const best = scores.indexOf(Math.max(...scores));
+        log(`[PREDICT RESULT] Best index: ${best}, max score: ${scores[best]}`);
 
-        const predictedLabel = this.labels?.[best];
-        const predicted =
-          predictedLabel === null ? "null" : (predictedLabel ?? `#${best}`);
-
-        const labelScores: Record<string, number> = {};
-        for (let i = 0; i < this.labels.length && i < scores.length; i++) {
-          const label = this.labels[i];
-          if (label !== null) {
-            labelScores[label] = scores[i];
+        // Trouver le label correspondant à l'index de sortie
+        let predictedLabel: string | undefined;
+        
+        // Si on a labelToId, chercher le label qui correspond à l'index de sortie
+        if (Object.keys(this.labelToId).length > 0) {
+          predictedLabel = Object.keys(this.labelToId).find(label => this.labelToId[label] === best);
+          log(`[PREDICT MAPPING] Recherche du label pour l'index ${best} dans labelToId`);
+          if (predictedLabel) {
+            log(`[PREDICT MAPPING] Label trouvé: "${predictedLabel}" pour l'index ${best}`);
           } else {
-            labelScores["null"] = scores[i];
+            log(`[PREDICT MAPPING WARNING] Aucun label trouvé pour l'index ${best} dans labelToId`);
+            // Fallback sur l'ancien système
+            predictedLabel = this.labels?.[best];
+            log(`[PREDICT MAPPING FALLBACK] Utilisation de l'index direct: "${predictedLabel}"`);
           }
+        } else {
+          // Pas de labelToId, utiliser l'index direct
+          predictedLabel = this.labels?.[best];
+          log(`[PREDICT MAPPING] Pas de labelToId, utilisation directe de l'index ${best}: "${predictedLabel}"`);
         }
 
+        const predicted = predictedLabel === null ? "null" : (predictedLabel ?? `#${best}`);
+        log(`[PREDICT FINAL] Predicted: "${predicted}", label: "${predictedLabel}", index: ${best}`);
+
+        // Construire labelScores en utilisant le bon mapping
+        const labelScores: Record<string, number> = {};
+        
+        if (Object.keys(this.labelToId).length > 0) {
+          // Utiliser labelToId pour mapper correctement
+          for (const [label, id] of Object.entries(this.labelToId)) {
+            if (id < scores.length) {
+              labelScores[label] = scores[id];
+            }
+          }
+          log(`[PREDICT SCORES] Utilisé labelToId pour mapper ${Object.keys(labelScores).length} scores`);
+        } else {
+          // Fallback sur l'index direct
+          for (let i = 0; i < this.labels.length && i < scores.length; i++) {
+            const label = this.labels[i];
+            if (label !== null) {
+              labelScores[label] = scores[i];
+            } else {
+              labelScores["null"] = scores[i];
+            }
+          }
+          log(`[PREDICT SCORES] Utilisé indices directs pour mapper ${Object.keys(labelScores).length} scores`);
+        }
+
+        log(`[PREDICT SUCCESS] Prediction completed successfully`);
         return { scores, predicted, labelScores };
       } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         log(`[PREDICT MODEL RUN ERROR] ${errorMessage}`);
+        log(`[PREDICT DEBUG] Input array details: length=${inputArr.length}, type=${inputArr.constructor.name}, first 5=[${Array.from(inputArr.slice(0, 5)).join(", ")}]`);
+        log(`[PREDICT DEBUG] Model input shape: [${modelInputShape?.join(", ")}]`);
+        log(`[PREDICT DEBUG] Expected size: ${modelInputShape ? modelInputShape.reduce((a, b) => a * b, 1) : "unknown"}`);
         return {
           error: `Erreur lors de l'exécution du modèle: ${errorMessage}`,
           success: false,

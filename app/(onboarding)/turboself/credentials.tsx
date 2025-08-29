@@ -21,6 +21,7 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -330,17 +331,7 @@ export default function TurboSelfLoginWithCredentials() {
           />
         </Reanimated.View>
 
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            staticStyles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill={"#FFFFFF"} papicon>
-            <Papicons name={"ArrowLeft"} />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>
   );

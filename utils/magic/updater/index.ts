@@ -35,9 +35,16 @@ export async function setCurrentPtr(ptr: CurrentPtr) {
 async function smokeTestModel(dirUri: string) {
   log(`[MODELUPDATER] Test du modèle: ${dirUri}model/model.tflite`);
   const m = await loadTensorflowModel({ url: dirUri + "model/model.tflite" });
-  const maxLen = m?.inputs?.[0]?.shape?.[1] ?? 128;
-  log(`[MODELUPDATER] maxLen=${maxLen}, lancement d'une prédiction vide`);
-  await m.run([new Float32Array(maxLen)]);
+  const inputShape = m?.inputs?.[0]?.shape;
+  const batchSize = inputShape?.[0] ?? 1;
+  const maxLen = inputShape?.[1] ?? 128;
+  const totalElements = batchSize * maxLen;
+  log(`[MODELUPDATER] Input shape: ${inputShape}, batchSize=${batchSize}, maxLen=${maxLen}, totalElements=${totalElements}`);
+  
+  const inputArr = new Int32Array(totalElements);
+  inputArr.fill(0);
+  
+  await m.run([inputArr]);
   log("[MODELUPDATER] Test réussi");
 }
 

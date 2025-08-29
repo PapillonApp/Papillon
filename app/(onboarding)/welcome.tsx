@@ -35,15 +35,15 @@ export default function WelcomeScreen() {
           padding={32}
           backgroundColor='#0060D6'
           gap={40}
+          hAlign={'center'}
+          vAlign={'end'}
           style={{
             height: Dimensions.get('window').height - 200,
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingTop: insets.top + 20,
             borderBottomLeftRadius: 42,
             borderBottomRightRadius: 42,
+            borderCurve: "continuous",
+            paddingTop: insets.top + 20,
             paddingBottom: 34,
-            borderCurve: "continuous"
           }}
         >
           <LottieView

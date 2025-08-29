@@ -10,26 +10,24 @@ export async function addBalancesToDatabase(balances: SharedBalance[]) {
 	const db = getDatabaseInstance();
 	for (const balance of balances) {
 		const id = generateId(balance.label + balance.createdByAccount)
-		const existing = await db.get('balances').query(
-			Q.where("balanceId", id)
-		)
+		const existing = await db.get('balances').query(Q.where('balanceId', id)).fetch();
 
-		if (existing.length > 0) {continue;}
-
-		await db.write(async () => {
-			await db.get('balances').create((record: Model) => {
-				const balanceModel = record as Balance;
-				Object.assign(balanceModel, {
-					createdByAccount: balance.createdByAccount,
-					balanceId: id,
-					currency: balance.currency,
-					amount: balance.amount,
-					lunchRemaining: balance.lunchRemaining,
-					lunchPrice: balance.lunchPrice,
-					label: balance.label
+		if (existing.length === 0) {
+			await db.write(async () => {
+				await db.get('balances').create((record: Model) => {
+					const balanceModel = record as Balance;
+					Object.assign(balanceModel, {
+						createdByAccount: balance.createdByAccount,
+						balanceId: id,
+						currency: balance.currency,
+						amount: balance.amount,
+						lunchRemaining: balance.lunchRemaining,
+						lunchPrice: balance.lunchPrice,
+						label: balance.label
+					})
 				})
 			})
-		})
+		}
 	}
 }
 

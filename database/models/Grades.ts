@@ -31,7 +31,8 @@ export class Grade extends Model {
   };
 
   @field('createdByAccount') createdByAccount: string;
-  @field('gradeId') id: string;
+  @field('gradeId') gradeId: string;
+  @field('subjectName') subjectName: string;
   @field('subjectId') subjectId?: string;
   @relation('subjects', 'subjectId') subject?: Subject;
   @field('description') description: string;

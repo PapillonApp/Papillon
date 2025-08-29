@@ -13,27 +13,26 @@ export async function addSubjectsToDatabase(
   const db = getDatabaseInstance();
 
   for (const item of subjects) {
+    console.log("Trying to add subject", item.name)
     const id = generateId(item.name);
-    const existing = await db.get('subjects').query(
-      Q.where('subjectId', id)
-    ).fetch();
+    const existingForAccount = await db.get('subjects').query(Q.where('subjectId', id)).fetch();
 
-    if (existing.length > 0) {continue;}
-
-    await db.write(async () => {
-      await db.get('subjects').create((record: Model) => {
-        const subject = record as Subject;
-        Object.assign(subject, {
-          subjectId: id,
-          name: item.name,
-          studentAverage: JSON.stringify(item.studentAverage),
-          classAverage: JSON.stringify(item.classAverage),
-          maximum: JSON.stringify(item.maximum),
-          minimum: JSON.stringify(item.minimum),
-          outOf: JSON.stringify(item.outOf),
-          periodGradeId: periodGradeId ?? null
+    if (existingForAccount.length === 0) {
+      await db.write(async () => {
+        await db.get('subjects').create((record: Model) => {
+          const subject = record as Subject;
+          Object.assign(subject, {
+            subjectId: id,
+            name: item.name,
+            studentAverage: JSON.stringify(item.studentAverage),
+            classAverage: JSON.stringify(item.classAverage),
+            maximum: JSON.stringify(item.maximum),
+            minimum: JSON.stringify(item.minimum),
+            outOf: JSON.stringify(item.outOf),
+            periodGradeId: periodGradeId ?? null
+          });
         });
       });
-    });
+    }
   }
 }

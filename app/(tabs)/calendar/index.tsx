@@ -447,9 +447,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <Icon>
-              <Papicons name={"Calendar"} color={"#D6502B"} size={28} />
-            </Icon>
+            <Papicons name={"Calendar"} color={"#D6502B"} size={28}/>
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
@@ -479,7 +477,7 @@ export default function TabOneScreen() {
             </Dynamic>
           </Dynamic>
           <Dynamic animated>
-            <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
+            <ChevronDown color={colors.text} opacity={0.7} />
           </Dynamic>
         </NativeHeaderTopPressable>
       </NativeHeaderTitle>

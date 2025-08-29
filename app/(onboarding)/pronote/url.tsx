@@ -21,6 +21,7 @@ import Svg, { Path } from 'react-native-svg';
 import { cleanURL, instance } from 'pawnote';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { useTheme } from '@react-navigation/native';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;
@@ -324,17 +325,7 @@ export default function URLInputScreen() {
           </Stack>
         </Reanimated.View>
 
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            staticStyles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill="#00000080" papicon>
-            <Papicons name={"ArrowLeft"} />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>
   );

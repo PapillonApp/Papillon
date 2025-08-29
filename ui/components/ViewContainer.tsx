@@ -12,7 +12,6 @@ export default function ViewContainer({ children }: Readonly<{ children: React.R
             style={{
                 flex: 1,
                 borderRadius: corners,
-                overflow: 'hidden',
                 backgroundColor: colors.background
             }}
         >

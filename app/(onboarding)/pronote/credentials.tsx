@@ -23,6 +23,7 @@ import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import { useTheme } from '@react-navigation/native';
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -302,17 +303,7 @@ export default function PronoteLoginWithCredentials() {
           />
         </Reanimated.View>
 
-        <Pressable
-          onPress={() => router.back()}
-          style={[
-            styles.backButton,
-            { top: insets.top + 4 }
-          ]}
-        >
-          <Icon size={26} fill={local.previousPage === "map" ? "#FFFFFF" : "#00000080"} papicon>
-            <Papicons name={"ArrowLeft"} />
-          </Icon>
-        </Pressable>
+        <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>
   );

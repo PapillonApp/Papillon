@@ -14,34 +14,32 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   for (const day of courses) {
     for (const item of day.courses) {
       const id = generateId(JSON.stringify({...item, id: undefined}));
-      const existing = await db.get('courses').query(
-        Q.where('courseId', id)
-      ).fetch();
+      const existingForAccount = await db.get('courses').query(Q.where('courseId', id)).fetch();
 
-      if (existing.length > 0) { continue; }
-
-      await db.write(async () => {
-        await db.get('courses').create((record: Model) => {
-          const course = record as Course;
-          Object.assign(course, {
-            createdByAccount: item.createdByAccount,
-            courseId: id,
-            subject: item.subject,
-            type: item.type,
-            from: item.from.getTime(),
-            to: item.to.getTime(),
-            additionalInfo: item.additionalInfo,
-            room: item.room,
-            teacher: item.teacher,
-            group: item.group,
-            backgroundColor: item.backgroundColor,
-            status: item.status,
-            customStatus: item.customStatus,
-            url: item.url,
-            kidName: item.kidName
+      if (existingForAccount.length === 0) {
+        await db.write(async () => {
+          await db.get('courses').create((record: Model) => {
+            const course = record as Course;
+            Object.assign(course, {
+              createdByAccount: item.createdByAccount,
+              courseId: id,
+              subject: item.subject,
+              type: item.type,
+              from: item.from.getTime(),
+              to: item.to.getTime(),
+              additionalInfo: item.additionalInfo,
+              room: item.room,
+              teacher: item.teacher,
+              group: item.group,
+              backgroundColor: item.backgroundColor,
+              status: item.status,
+              customStatus: item.customStatus,
+              url: item.url,
+              kidName: item.kidName
+            })
           })
         })
-      })
+      }
     }
   }
 }

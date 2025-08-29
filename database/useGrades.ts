@@ -76,34 +76,34 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
   const db = getDatabaseInstance();
   for (const item of grades) {
     const id = generateId(item.createdByAccount + item.description + item.givenAt)
-    const existing = await db.get('grades').query(
-      Q.where("id", id)
-    )
 
-    if (existing.length > 0) {continue;}
+    const existing = await db.get('grades').query(Q.where('gradeId', id)).fetch();
 
-    await db.write(async () => {
-      await db.get('grades').create((record: Model) => {
-        const grade = record as Grade
-        Object.assign(grade, {
-          id: id,
-          createdByAccount: item.createdByAccount,
-          subjectId: generateId(subject),
-          description: item.description,
-          givenAt: item.givenAt.getTime(),
-          subjectFile: JSON.stringify(item.subjectFile),
-          correctionFile: JSON.stringify(item.correctionFile),
-          bonus: item.bonus,
-          optional: item.optional,
-          outOf: JSON.stringify(item.outOf),
-          coefficient: item.coefficient,
-          studentScore: JSON.stringify(item.studentScore),
-          averageScore: JSON.stringify(item.averageScore),
-          minScore: JSON.stringify(item.minScore),
-          maxScore: JSON.stringify(item.maxScore)
+    if(existing.length === 0) {
+      await db.write(async () => {
+        await db.get('grades').create((record: Model) => {
+          const grade = record as Grade
+          Object.assign(grade, {
+            gradeId: id,
+            createdByAccount: item.createdByAccount,
+            subjectName: item.subjectName,
+            subjectId: generateId(subject),
+            description: item.description,
+            givenAt: item.givenAt.getTime(),
+            subjectFile: JSON.stringify(item.subjectFile),
+            correctionFile: JSON.stringify(item.correctionFile),
+            bonus: item.bonus,
+            optional: item.optional,
+            outOf: JSON.stringify(item.outOf),
+            coefficient: item.coefficient,
+            studentScore: JSON.stringify(item.studentScore),
+            averageScore: JSON.stringify(item.averageScore),
+            minScore: JSON.stringify(item.minScore),
+            maxScore: JSON.stringify(item.maxScore)
+          })
         })
       })
-    })
+    }
   }
 }
 

@@ -14,24 +14,22 @@ export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
   const db = getDatabaseInstance();
   for (const item of menus) {
     const id = generateId(item.createdByAccount + item.date)
-    const existing = await db.get('canteenmenus').query(
-      Q.where('menuId', id)
-    ).fetch();
+    const existing = await db.get('canteenmenus').query(Q.where('menuId', id)).fetch();
 
-    if (existing.length > 0) {continue;}
-		
-    await db.write(async () => {
-      await db.get('canteenmenus').create((record: Model) => {
-        const menu = record as CanteenMenu;
-        Object.assign(menu, {
-          menuId: id,
-          date: item.date.getTime(),
-          lunch: JSON.stringify(item.lunch),
-          dinner: JSON.stringify(item.dinner),
-          createdByAccount: item.createdByAccount
+    if (existing.length === 0) {
+      await db.write(async () => {
+        await db.get('canteenmenus').create((record: Model) => {
+          const menu = record as CanteenMenu;
+          Object.assign(menu, {
+            menuId: id,
+            date: item.date.getTime(),
+            lunch: JSON.stringify(item.lunch),
+            dinner: JSON.stringify(item.dinner),
+            createdByAccount: item.createdByAccount
+          });
         });
       });
-    });
+    }
   }
 }
 

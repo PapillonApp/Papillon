@@ -73,31 +73,29 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
 
   for (const hw of homeworks) {
     const id = generateId(hw.subject + hw.content + hw.dueDate.toISOString() + hw.createdByAccount + hw.kidName)
-    const existing = await db.get('homework').query(
-      Q.where('homeworkId', hw.id)
-    ).fetch();
+    const existing = await db.get('homework').query(Q.where('homeworkId', id)).fetch();
 
-    if (existing.length > 0) {continue;}
-
-    await db.write(async () => {
-      await db.get('homework').create((record: Model) => {
-        const homework = record as Homework;
-        Object.assign(homework, {
-          homeworkId: id,
-          subjectId: generateId(hw.subject),
-          content: hw.content,
-          dueDate: hw.dueDate.getTime(),
-          isDone: hw.isDone,
-          returnFormat: hw.returnFormat,
-          attachments: JSON.stringify(hw.attachments),
-          evaluation: hw.evaluation,
-          custom: hw.custom,
-          createdByAccount: hw.createdByAccount,
-          kidName: hw.kidName,
-          fromCache: true
+    if (existing.length === 0) {
+      await db.write(async () => {
+        await db.get('homework').create((record: Model) => {
+          const homework = record as Homework;
+          Object.assign(homework, {
+            homeworkId: id,
+            subjectId: generateId(hw.subject),
+            content: hw.content,
+            dueDate: hw.dueDate.getTime(),
+            isDone: hw.isDone,
+            returnFormat: hw.returnFormat,
+            attachments: JSON.stringify(hw.attachments),
+            evaluation: hw.evaluation,
+            custom: hw.custom,
+            createdByAccount: hw.createdByAccount,
+            kidName: hw.kidName,
+            fromCache: true
+          });
         });
       });
-    });
+    }
   }
 }
 
