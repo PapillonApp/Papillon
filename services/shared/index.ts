@@ -370,13 +370,14 @@ export class AccountManager {
 		)
 	}
 
-	async getCanteenBookingWeek(weekNumber: number): Promise<BookingDay[]> {
+	async getCanteenBookingWeek(weekNumber: number, clientId: string): Promise<BookingDay[]> {
 		return await this.fetchData(
 			Capabilities.CANTEEN_BOOKINGS,
 			async client =>
 				client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
 			{
-				multiple: true
+				multiple: true,
+        clientId
 			}
 		)
 	}
@@ -516,6 +517,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/ard/index");
       return new module.ARD(service.id);
+    }
+
+    if (service.serviceId === Services.IZLY) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/izly/index");
+      return new module.Izly(service.id);
     }
 
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");

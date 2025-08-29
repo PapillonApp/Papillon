@@ -78,6 +78,11 @@ export default function OnboardingLayout() {
                     initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
+                    name="izly/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ url: "", previousPage: "map" }}
+                />
+                <Stack.Screen
                     name="pronote/qrcode"
                     options={{ ...newScreenOptions }}
                 />

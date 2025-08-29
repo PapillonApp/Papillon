@@ -11,7 +11,6 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
@@ -22,6 +21,7 @@ import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { useAlert } from '@/ui/components/AlertProvider';
 
 const INITIAL_HEIGHT = 500;
 const COLLAPSED_HEIGHT = 270;
@@ -73,7 +73,6 @@ const staticStyles = StyleSheet.create({
 });
 
 export default function TurboSelfLoginWithCredentials() {
-  const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
 
   const [username, setUsername] = useState<string>("");
@@ -142,6 +141,8 @@ export default function TurboSelfLoginWithCredentials() {
   }, []);
 
   useFocusEffect(animationCallback);
+
+  const alert = useAlert();
 
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
     'worklet';
@@ -303,53 +304,63 @@ export default function TurboSelfLoginWithCredentials() {
             size='large'
             disableAnimation
             onPress={async () => {
-              const authenticator = new Authenticator();
-              const authentification = await authenticator.fromCredentials(siteId, username, password)
-              const accountId = uuid()
-              const store = useAccountStore.getState()
-              const service = {
-                id: accountId,
-                auth: {
-                  additionals: {
-                    schoolId: siteId,
-                    password,
-                    username
-                  }
-                },
-                serviceId: Services.ARD,
-                createdAt: (new Date()).toISOString(),
-                updatedAt: (new Date()).toISOString()
-              }
-
-              if (action === "addService") {
-                store.addServiceToAccount(store.lastUsedAccount, service)
-                router.back()
-                return router.back()
-              }
-
-              store.addAccount({
-                id: accountId,
-                firstName: "",
-                lastName: "",
-                schoolName: authentification.schoolName,
-                services: [service],
-                createdAt: (new Date()).toISOString(),
-                updatedAt: (new Date()).toISOString()
-              })
-
-              store.setLastUsedAccount(accountId)
-              return router.push({
-                pathname: "../end/color",
-                params: {
-                  accountId
+              try {
+                const authenticator = new Authenticator();
+                const authentification = await authenticator.fromCredentials(siteId, username, password)
+                const accountId = uuid()
+                const store = useAccountStore.getState()
+                const service = {
+                  id: accountId,
+                  auth: {
+                    additionals: {
+                      schoolId: siteId,
+                      password,
+                      username
+                    }
+                  },
+                  serviceId: Services.ARD,
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
                 }
-              });
 
+                if (action === "addService") {
+                  store.addServiceToAccount(store.lastUsedAccount, service)
+                  router.back()
+                  return router.back()
+                }
+
+                store.addAccount({
+                  id: accountId,
+                  firstName: "",
+                  lastName: "",
+                  schoolName: authentification.schoolName,
+                  services: [service],
+                  createdAt: (new Date()).toISOString(),
+                  updatedAt: (new Date()).toISOString()
+                })
+
+                store.setLastUsedAccount(accountId)
+                return router.push({
+                  pathname: "../end/color",
+                  params: {
+                    accountId
+                  }
+                });
+              } catch (error) {
+                alert.showAlert({
+                  title: "Erreur d'authentification",
+                  description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+                  icon: "TriangleAlert",
+                  color: "#D60046",
+                  technical: String(error),
+                  withoutNavbar: true
+                });
+              }
             }}
           />
         </Reanimated.View>
 
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );

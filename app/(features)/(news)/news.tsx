@@ -95,9 +95,13 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
   );
 }
 
-function Avatar({ author }: { author: string }) {
+export function Avatar({ author, dark = false, squared = false }: { author: string, dark?: boolean, squared?: boolean }) {
   const backgroundColor = `${getProfileColorByName(author)}90`;
   const textColor = adjust(getProfileColorByName(author), -0.6);
+  const initials = getInitials(author)
+
+  const theme = useTheme();
+  const { colors } = theme;
 
   return (
     <View
@@ -106,12 +110,12 @@ function Avatar({ author }: { author: string }) {
         height: 35,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor,
-        borderRadius: 50,
+        backgroundColor: dark ? colors.border : backgroundColor,
+        borderRadius: squared ? 10 : 50,
       }}
     >
-      <Typography variant="button" color={textColor}>
-        {getInitials(author)}
+      <Typography variant="button" color={dark ? colors.text : textColor}>
+        {initials || author}
       </Typography>
     </View>
   );
