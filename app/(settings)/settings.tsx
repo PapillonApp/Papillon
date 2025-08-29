@@ -244,7 +244,12 @@ const SettingsIndex = () => {
                     }
                     {establishment &&
                       <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                        <Typography variant={"body1"} color="secondary">
+                        <Typography
+                          variant={"body1"}
+                          color="secondary"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={{ maxWidth: 190 }}>
                           {establishment}
                         </Typography>
                       </Stack>
