@@ -12,6 +12,7 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { Fetcher } from "@literate.ink/utilities";
 
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
@@ -213,7 +214,33 @@ export default function PronoteLoginWithCredentials() {
             onPress={async () => {
               if (!username.trim() || !password.trim()) { return; }
               const device = uuid()
-              const session = createSessionHandle()
+              const customFetcher: Fetcher = async (options) => {
+                console.time(options.url.href);
+
+                const response = await fetch(options.url, {
+                  method: options.method,
+                  headers: {
+                    ...options.headers,
+                    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 PRONOTE Mobile APP Version/2.0.11"
+                  },
+                  body: options.method !== "GET" ? options.content : void 0,
+                  redirect: options.redirect
+                });
+
+                const content = await response.text();
+                console.timeEnd(options.url.href);
+
+                return {
+                  content,
+                  status: response.status,
+
+                  get headers() {
+                    console.info("-> Reading headers from fetcher !");
+                    return response.headers;
+                  }
+                };
+              };
+              const session = createSessionHandle(customFetcher)
               let authentication = null;
               try {
                 authentication = await loginCredentials(session, {
@@ -302,8 +329,7 @@ export default function PronoteLoginWithCredentials() {
             }}
           />
         </Reanimated.View>
-
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );
