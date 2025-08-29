@@ -442,7 +442,13 @@ export default function TabOneScreen() {
                   )}
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Typography variant={"body1"} color="secondary">
+                      <Typography
+                        variant={"body1"}
+                        color="secondary"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={{ maxWidth: 230 }}
+                      >
                         {establishment}
                       </Typography>
                     </Stack>
