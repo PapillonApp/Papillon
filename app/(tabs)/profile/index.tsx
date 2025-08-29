@@ -366,7 +366,6 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Pressed");
           }}
         >
           <Icon size={28}>

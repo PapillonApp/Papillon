@@ -32,6 +32,8 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { usePeriods, useTestGrades } from "@/database/usePeriodsCache";
+import { getGradePeriodsFromCache } from "@/database/useGrades";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -137,7 +139,7 @@ export default function TabOneScreen() {
   const [sorting, setSorting] = useState("alphabetical");
   const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
 
-  const [periods, setPeriods] = useState<Period[]>([]);
+  const periods = usePeriods();
   const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
   const [currentPeriod, setCurrentPeriod] = useState<Period>();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -146,29 +148,10 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  const fetchPeriods = async (managerToUse = manager) => {
-    if (currentPeriod) {
-      return;
-    }
-
-    if (!managerToUse) {
-      return;
-    }
-
-    const result = await managerToUse.getGradesPeriods()
-    setPeriods(result);
-
-    const currentPeriodFound = getCurrentPeriod(result)
+  if (!currentPeriod && periods.length > 0) {
+    const currentPeriodFound = getCurrentPeriod(periods)
     setCurrentPeriod(currentPeriodFound)
-  };
-
-  useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((updatedManager) => {
-      fetchPeriods(updatedManager);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  }
 
   const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
     if (period && managerToUse) {

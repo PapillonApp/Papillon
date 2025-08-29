@@ -16,8 +16,6 @@ export const useDatabase = () => useContext(DatabaseContext);
 
 export async function ClearDatabaseForAccount(accountId: string) {
   const db = getDatabaseInstance();
-  console.log("clearing all data for", accountId)
-
   const tablesWithAccount = [
     "homework",
     "news",

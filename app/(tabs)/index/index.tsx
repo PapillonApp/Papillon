@@ -91,7 +91,6 @@ export default function TabOneScreen() {
     const validPeriods: Period[] = []
     const date = new Date().getTime()
     for (const period of gradePeriods) {
-      console.log(period.start.getTime() > date && period.end.getTime() > date)
       if (period.start.getTime() > date && period.end.getTime() > date) {
         validPeriods.push(period);
       }

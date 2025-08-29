@@ -9,26 +9,6 @@ import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import { mapPeriodGradesToShared,mapPeriodToShared } from "./mappers/grade";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
 
-export function usePeriods(refresh = 0) {
-  const database = useDatabase();
-  const [periods, setPeriods] = useState<SharedPeriod[]>([]);
-
-  useEffect(() => {
-
-    const query = database.get<Period>('periods').query();
-
-    const sub = query.observe().subscribe(news =>
-      setPeriods(
-        news.map(mapPeriodToShared).sort((a, b) => a.end.getTime() - b.end.getTime())
-      )
-    );
-
-    return () => sub.unsubscribe();
-  }, [refresh, database]);
-
-  return periods;
-}
-
 export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
   const db = getDatabaseInstance();
   for (const item of periods) {
@@ -140,7 +120,6 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
 }
 
 export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {
-  console.log("Fetching from cache")
   try {
     const database = getDatabaseInstance();
     const id = generateId(period)

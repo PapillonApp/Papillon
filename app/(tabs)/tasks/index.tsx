@@ -440,7 +440,6 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Add new grade pressed");
           }}
         >
           <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
@@ -497,7 +496,6 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Add new grade pressed");
           }}
         >
           <Papicons name={"Search"} color={"#C54CB3"} size={26} />

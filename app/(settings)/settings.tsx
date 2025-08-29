@@ -80,7 +80,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
-          onPress: () => console.log("sus")
+          onPress: () => null
         },
         {
           title: t('Settings_Donate_Title'),
@@ -88,7 +88,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
-          onPress: () => console.log("sus")
+          onPress: () => null
         },
         {
           title: t('Settings_About_Title'),
@@ -96,7 +96,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
-          onPress: () => console.log("sus")
+          onPress: () => null
         }
       ]
     },

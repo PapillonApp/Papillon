@@ -30,9 +30,7 @@ export default function NewsPage() {
   useEffect(() => {
     const acknowledgeNews = async () => {
       if (!news.acknowledged) {
-        console.log("set to acknowledge");
         const manager = getManager();
-        console.log(news)
 
         const store = useAccountStore.getState()
         const account = store.accounts.find(account => account.id === store.lastUsedAccount)
@@ -120,8 +118,6 @@ export default function NewsPage() {
     });
     return htmlStyle;
   })();
-
-  console.log(currentHTMLStyle);
 
   const themes = [
     {
