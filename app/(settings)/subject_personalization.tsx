@@ -6,6 +6,7 @@ import Stack from "@/ui/components/Stack";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
+import { router } from "expo-router";
 
 const SubjectPersonalization = () => {
   const { colors } = useTheme();
@@ -44,7 +45,9 @@ const SubjectPersonalization = () => {
           </Typography>
           <Trailing>
             <AnimatedPressable
-              onPress={() => {}}
+              onPress={() => {
+                router.push("/(settings)/edit_subject")
+              }}
               style={{
                 borderRadius: 20,
                 overflow: "hidden",

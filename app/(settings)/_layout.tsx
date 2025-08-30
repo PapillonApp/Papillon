@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -78,8 +79,20 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_SubjectPersonalization_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: true,
+          headerTransparent: false,
           headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="edit_subject"
+        options={{
+          headerTitle: t("Settings_SubjectEdit_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerShown: false,
+          presentation: "modal",
+          contentStyle: {
+            borderRadius: Platform.OS === 'ios' ? 30 : 0,
+          }
         }}
       />
     </Stack>
