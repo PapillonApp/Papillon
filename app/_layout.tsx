@@ -17,7 +17,6 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 import { t } from 'i18next';
-import { useAccountStore } from '@/stores/account';
 import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
@@ -180,17 +179,20 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: true,
+                  headerShown: false,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
                   headerTransparent: runsIOS26(),
-                  headerLargeTitle: false,
+                  contentStyle: {
+                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
+                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                  },
                 }}
               />
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: true,
+                  headerShown: false,
                   headerTitle: t("Modal_Course_Title"),
                   headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
@@ -199,6 +201,19 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
                   }
+                }}
+              />
+              <Stack.Screen
+                name="(modals)/notifications"
+                options={{
+                  headerShown: false,
+                  headerTitle: "Notifications",
+                  headerTransparent: runsIOS26(),
+                  headerLargeTitle: false,
+                  presentation: "formSheet",
+                  sheetGrabberVisible: true,
+                  sheetAllowedDetents: [0.75, 1],
+                  sheetCornerRadius: 30,
                 }}
               />
 

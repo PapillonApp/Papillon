@@ -36,7 +36,6 @@ import { t } from "i18next";
 import { Grade, Period } from "@/services/shared/grade";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
-import { Account } from "@/stores/account/types";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
 
@@ -128,12 +127,11 @@ export default function TabOneScreen() {
   const theme = useTheme();
   const { colors } = theme;
 
-  const manager = getManager();
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
-  const [firstName, lastName, level, establishment] = useMemo(() => {
+  const [firstName] = useMemo(() => {
     if (!lastUsedAccount) return [null, null, null, null];
 
     let firstName = account?.firstName;
@@ -408,8 +406,8 @@ export default function TabOneScreen() {
             dev: false
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
-        keyExtractor={(item, index) => item.title}
-        renderItem={({ item, index }) => {
+        keyExtractor={(item) => item.title}
+        renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }
@@ -488,7 +486,9 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
 
       <NativeHeaderSide side="Right">
-        <NativeHeaderPressable>
+        <NativeHeaderPressable
+          onPress={() => router.navigate("/(modals)/notifications")}
+        >
           <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />
           </Icon>
