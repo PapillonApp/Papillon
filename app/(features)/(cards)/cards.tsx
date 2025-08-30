@@ -11,7 +11,7 @@ import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/se
 import { Papicons, Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 export { getServiceName } from "@/utils/services/helper"
 
@@ -32,6 +32,10 @@ export default function QRCodeAndCardsPage() {
     }
     setWallets(result);
   }
+
+  useEffect(() => {
+    fetchWallets();
+  }, [])
 
   const cardOffset = 60;
   const cardHeight = 210;

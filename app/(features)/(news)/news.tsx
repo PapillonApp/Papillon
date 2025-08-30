@@ -12,6 +12,7 @@ import { View, ScrollView, Pressable, FlatList } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
 import TableFlatList from "@/ui/components/TableFlatList";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Variant } from "@/ui/components/Typography"
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();
@@ -95,7 +96,7 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
   );
 }
 
-export function Avatar({ author, dark = false, squared = false, size = 35 }: { author: string, dark?: boolean, squared?: boolean, size?: number }) {
+export function Avatar({ author, dark = false, squared = false, size = 35, variant = "button" }: { author: string, dark?: boolean, squared?: boolean, size?: number, variant?: Variant }) {
   const backgroundColor = `${getProfileColorByName(author)}90`;
   const textColor = adjust(getProfileColorByName(author), -0.6);
   const initials = getInitials(author)
@@ -111,10 +112,10 @@ export function Avatar({ author, dark = false, squared = false, size = 35 }: { a
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: dark ? colors.border : backgroundColor,
-        borderRadius: squared ? 10 : 50,
+        borderRadius: squared ? 10 : 100
       }}
     >
-      <Typography variant="button" style={{ fontSize: size / 3.5 }} color={dark ? colors.text : textColor}>
+      <Typography variant={variant} color={dark ? colors.text : textColor}>
         {initials || author}
       </Typography>
     </View>
