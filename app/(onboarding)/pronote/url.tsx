@@ -1,11 +1,10 @@
-import React, { useEffect, useCallback, useMemo, useState } from "react";
-import { StyleSheet, Pressable, Keyboard } from "react-native";
+import { useTheme } from "@react-navigation/native";
 import { RelativePathString, router, useFocusEffect } from "expo-router";
 import LottieView from "lottie-react-native";
-
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
-import ViewContainer from "@/ui/components/ViewContainer";
+import { cleanURL, instance } from "pawnote";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Keyboard, Pressable, StyleSheet } from "react-native";
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -14,12 +13,13 @@ import Reanimated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
-import { cleanURL, instance } from "pawnote";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { useTheme } from "@react-navigation/native";
+
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useTranslation } from "react-i18next";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import ViewContainer from "@/ui/components/ViewContainer";
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;

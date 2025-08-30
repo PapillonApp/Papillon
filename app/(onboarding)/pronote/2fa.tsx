@@ -1,8 +1,8 @@
-import * as Papicons from '@getpapillon/papicons';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { finishLoginManually, SecurityError, securitySave, securitySource, SessionHandle } from 'pawnote';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
 import Reanimated, {
   Extrapolate,
@@ -12,16 +12,14 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
-import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
