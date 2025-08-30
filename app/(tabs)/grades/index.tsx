@@ -5,7 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
-import Reanimated, { FadeIn, FadeInUp, FadeOut, FadeOutUp } from "react-native-reanimated";
+import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
@@ -23,7 +23,6 @@ import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
 import { Papicons } from '@getpapillon/papicons';
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -32,7 +31,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import GradesModal from "@/app/(modals)/grade";
 import GradesWidget from "../index/widgets/Grades";
 
 const EmptyListComponent = memo(() => (
@@ -327,8 +325,6 @@ export default function TabOneScreen() {
       />
     );
   }, [getSubjectInfo]);
-
-  const memoizedRenderItem = useMemo(() => renderItem, []);
 
   const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
     if (item.type === "header") {

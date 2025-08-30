@@ -11,13 +11,11 @@ import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { t } from "i18next";
 
 import { LineChart } from "react-native-gifted-charts";
-import { useTheme } from "@react-navigation/native";
 import Stack from "@/ui/components/Stack";
 import { Dynamic } from "@/ui/components/Dynamic";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Animation } from "@/ui/utils/Animation";
 import { FadeIn, FadeOut } from "react-native-reanimated";
-import { set } from "date-fns";
 
 const GradesWidget = ({ accent = "#29947A", header = false }: { accent?: string, header?: boolean }) => {
   const manager = getManager();
