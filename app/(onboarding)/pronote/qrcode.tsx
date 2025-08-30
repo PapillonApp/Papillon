@@ -21,6 +21,7 @@ import { Papicons } from "@getpapillon/papicons";
 import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from "@/utils/pronote/fetcher";
+import { URLToBase64 } from "@/utils/attachments/helper";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -92,6 +93,10 @@ export default function PronoteLoginWithQR() {
         lastName: user.name.split(" ")[1],
         schoolName,
         className,
+        customisation: {
+          profilePicture: await URLToBase64(session.user.resources[0].profilePicture?.url ?? ""),
+          subjects: {}
+        },
         services: [{
           id: accountID,
           auth: {

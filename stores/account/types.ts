@@ -16,9 +16,11 @@ export interface AccountsStorage {
   setLastUsedAccount: (accountId: string) => void;
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;
   addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
+  setAccountName: (accountId: string, firstName: string, lastName: string) => void;
   setSubjectColor: (subject: string, color: string) => void;
   setSubjectEmoji: (subject: string, emoji: string) => void;
   setSubjectName: (subject: string, name: string) => void;
+  setAccountProfilePicture: (accountId: string, profilePicture: string) => void;
 }
 
 /**
@@ -45,6 +47,7 @@ export interface Account {
 }
 
 export interface CustomisationStorage {
+  profilePicture: string;
   subjects: Record<string, { color: string; emoji: string; name: string }>;
 }
 

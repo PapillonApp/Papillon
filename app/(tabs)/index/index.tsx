@@ -119,7 +119,7 @@ export default function TabOneScreen() {
     return () => unsubscribe();
   }, []);
 
-  const accounts = useAccountStore.getState().accounts;
+  const accounts = useAccountStore((state) => state.accounts);
 
   if (accounts.length === 0) {
     router.replace("/(onboarding)/welcome");
@@ -129,9 +129,9 @@ export default function TabOneScreen() {
   const { colors } = theme;
 
   const manager = getManager();
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
-  const store = useAccountStore.getState();
-  const lastUsedAccount = useMemo(() => store.accounts.find(account => account.id === store.lastUsedAccount) || null, [store]);
+  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!lastUsedAccount) return [null, null, null, null];
@@ -142,7 +142,7 @@ export default function TabOneScreen() {
     let establishment = lastUsedAccount.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [lastUsedAccount]);
+  }, [account, accounts]);
 
   const date = useMemo(() => new Date(), []);
 
@@ -153,6 +153,7 @@ export default function TabOneScreen() {
   const headerHeight = useHeaderHeight();
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
+
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
