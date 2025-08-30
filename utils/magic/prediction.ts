@@ -3,6 +3,7 @@ import ModelManager, { ModelPrediction } from "./ModelManager";
 import { generateId } from "../generateId";
 import regexPatterns from "./regex/homeworks.json";
 import * as Battery from "expo-battery";
+import { useSettingsStore } from "@/stores/settings";
 
 const compiledPatterns: Record<string, RegExp[]> = Object.fromEntries(
   Object.entries(regexPatterns).map(([category, patterns]) => [
@@ -25,9 +26,14 @@ export function isModelPrediction(object: unknown): object is ModelPrediction {
 export async function predictHomework(label: string): Promise<string> {
   const store = useMagicStore.getState();
   const homeworkId = generateId(label);
-
   const existingHomework = store.getHomework(homeworkId);
   if (existingHomework) return existingHomework.label;
+
+  const settingsStore = useSettingsStore(state => state.personalization);
+
+  if (!settingsStore.magicEnabled) {
+    return "";
+  }
 
   let batteryLevel = 1;
   try {
@@ -48,8 +54,6 @@ export async function predictHomework(label: string): Promise<string> {
     return "";
   }
 
-  // Sinon, on utilise uniquement le modèle
-  await ModelManager.init();
   const prediction = await ModelManager.predict(label);
 
   const finalLabel =
