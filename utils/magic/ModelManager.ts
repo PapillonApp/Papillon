@@ -133,6 +133,7 @@ class ModelManager {
         }
       }
       this.hasInitialized = true;
+      log("SafeInit completed successfully. Model is up-to-date.");
     } catch (error) {
       log(`Safe init error: ${String(error)}`);
       throw new Error(`Safe init error: ${String(error)}`);
@@ -333,21 +334,12 @@ class ModelManager {
 
       this.model = await loadTensorflowModel({ url: modelUri });
 
-      const shape = this.model?.inputs?.[0]?.shape;
-
-      this.batchSize = 1;
-      this.maxLen = 128;
-
-      log(
-        `[LOAD] Configuration forcée: batchSize=${this.batchSize}, maxLen=${this.maxLen}`
-      );
-
       const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
         encoding: FileSystem.EncodingType.UTF8,
       });
       const tokenizerJson = JSON.parse(tokenizerRaw);
       const config = tokenizerJson.config;
-      this.tokenizerConfig = config; // Stocker la configuration pour la tokenisation
+      this.tokenizerConfig = config;
 
       const wordIndexUri = dirUri + "model/word_index.json";
       const wordIndexInfo = await FileSystem.getInfoAsync(wordIndexUri);
@@ -384,20 +376,6 @@ class ModelManager {
         this.oovIndex = 1;
       }
 
-      const paddingWords = Object.keys(wordIndex).filter(
-        word => wordIndex[word] === 0
-      );
-      if (paddingWords.length === 0) {
-      } else {
-      }
-
-      // Log des tokens spéciaux
-      const specialTokens = Object.keys(wordIndex).filter(
-        w => w.startsWith("[") || w.startsWith("<")
-      );
-      if (specialTokens.length > 0) {
-      }
-
       const labelsRaw = await FileSystem.readAsStringAsync(labelsUri, {
         encoding: FileSystem.EncodingType.UTF8,
       });
@@ -406,103 +384,18 @@ class ModelManager {
       const labelToIdUri = dirUri + "model/label_to_id.json";
       const labelToIdInfo = await FileSystem.getInfoAsync(labelToIdUri);
       if (labelToIdInfo.exists) {
-        log(`[LOAD] Chargement du mapping label_to_id: ${labelToIdUri}`);
         const labelToIdRaw = await FileSystem.readAsStringAsync(labelToIdUri, {
           encoding: FileSystem.EncodingType.UTF8,
         });
         this.labelToId = JSON.parse(labelToIdRaw);
-        log(
-          `[LOAD] Label to ID mapping chargé: ${Object.keys(this.labelToId).length} mappings`
-        );
-
-        const labelsSet = new Set(this.labels.filter(label => label !== null));
-        const labelToIdSet = new Set(Object.keys(this.labelToId));
-
-        const missingInMapping = this.labels.filter(
-          label => label !== null && !(label in this.labelToId)
-        );
-        const extraInMapping = Object.keys(this.labelToId).filter(
-          label => !this.labels.includes(label)
-        );
-
-        const labelsCount = labelsSet.size;
-        const mappingCount = labelToIdSet.size;
-
-        if (labelsCount !== mappingCount) {
-          log(
-            `[LOAD ERROR] Cardinalité différente: labels.json a ${labelsCount} labels, label_to_id.json a ${mappingCount} mappings`
-          );
-        } else {
-          log(
-            `[LOAD OK] Cardinalité cohérente: ${labelsCount} labels = ${mappingCount} mappings`
-          );
-        }
-
-        if (missingInMapping.length > 0) {
-          log(
-            `[LOAD ERROR] Labels manquants dans label_to_id.json: [${missingInMapping.join(", ")}]`
-          );
-        }
-        if (extraInMapping.length > 0) {
-          log(
-            `[LOAD ERROR] Mappings supplémentaires dans label_to_id.json: [${extraInMapping.join(", ")}]`
-          );
-        }
-
-        if (
-          missingInMapping.length === 0 &&
-          extraInMapping.length === 0 &&
-          labelsCount === mappingCount
-        ) {
-          log(
-            `[LOAD OK] Cohérence parfaite entre labels.json et label_to_id.json`
-          );
-        } else {
-          log(
-            `[LOAD WARNING] Incohérences détectées entre labels.json et label_to_id.json`
-          );
-        }
-
-        const sampleMappings = Object.entries(this.labelToId).slice(0, 5);
-        log(
-          `[LOAD] Exemples de mappings: ${sampleMappings.map(([label, id]) => `"${label}":${id}`).join(", ")}`
-        );
-
-        let indexMismatches = 0;
-        for (let i = 0; i < this.labels.length; i++) {
-          const label = this.labels[i];
-          const expectedId = this.labelToId[label];
-          if (expectedId !== undefined && expectedId !== i) {
-            indexMismatches++;
-            if (indexMismatches <= 3) {
-              log(
-                `[LOAD MISMATCH] Label "${label}" à l'index ${i} mais mapping ID ${expectedId}`
-              );
-            }
-          }
-        }
-
-        if (indexMismatches > 0) {
-          log(
-            `[LOAD WARNING] ${indexMismatches} décalages détectés entre indices labels et IDs mappés`
-          );
-        } else {
-          log(`[LOAD OK] Indices des labels correspondent aux IDs mappés`);
-        }
       } else {
-        log(
-          `[LOAD] Aucun fichier label_to_id.json trouvé, utilisation de l'ordre des labels`
-        );
         this.labelToId = {};
         for (let i = 0; i < this.labels.length; i++) {
           this.labelToId[this.labels[i]] = i;
         }
       }
-
-      log("[LOAD] Modèle dynamique chargé avec succès");
     } catch (error) {
-      log(`[LOAD ERROR] ${String(error)}`);
-      throw error;
+      throw new Error(`Load error: ${String(error)}`);
     }
   }
 
