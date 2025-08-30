@@ -1,7 +1,7 @@
 import * as Papicons from '@getpapillon/papicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Reanimated, {
   Extrapolate,
@@ -184,9 +184,11 @@ export default function TurboSelfLoginWithCredentials() {
   }, []);
 
   const alert = useAlert();
+  const latestPassword = useRef<string>("");
 
   async function handleLogin(username: string, password: string) {
     try {
+      latestPassword.current = password;
       await login(username, password)
       setLinkSended(true);
     } catch (error) {
@@ -209,7 +211,7 @@ export default function TurboSelfLoginWithCredentials() {
       auth: {
         session: identification,
         additionals: {
-          secret: password
+          secret: latestPassword.current
         }
       },
       serviceId: Services.IZLY,
