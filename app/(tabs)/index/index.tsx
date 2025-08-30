@@ -38,7 +38,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
-import Pattern from "@/ui/components/Pattern/Pattern";
+import { Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {

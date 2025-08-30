@@ -1,31 +1,21 @@
-import { LegendList, LegendListProps } from "@legendapp/list";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { LegendList } from "@legendapp/list";
 import { useTheme } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import React from "react";
-import { Dimensions, FlatList, FlatListProps, Image, Platform, View } from "react-native";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
-import LinearGradient from "react-native-linear-gradient";
+import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList);
 
-const patterns = {
-  dots: require('@/assets/images/patterns/dots.png'),
-  checks: require('@/assets/images/patterns/checks.png'),
-  grades: require('@/assets/images/patterns/grades.png'),
-  cross: require('@/assets/images/patterns/cross.png'),
-};
-
 interface TabFlatListProps extends FlatListProps<any> {
   header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
-  pattern?: keyof typeof patterns;
+  pattern?: AvailablePatterns;
   height?: number;
   padding?: number;
   paddingTop?: number;
@@ -60,7 +50,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   let tabBarHeight = 0;
   try {
     tabBarHeight = 80;
-    if (typeof tabBarHeight !== 'number' || isNaN(tabBarHeight)) tabBarHeight = 0;
+    if (isNaN(tabBarHeight)) tabBarHeight = 0;
   } catch {
     tabBarHeight = 0;
   }
@@ -179,42 +169,10 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
           </View>
         </Reanimated.View>
 
-        <MaskedView
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 350,
-            zIndex: -999,
-            backgroundColor: backgroundColor,
-          }}
-          maskElement={
-            <LinearGradient
-              colors={['rgba(247, 232, 245, 0.00)', '#f7e8f5', 'rgba(247, 232, 245, 0.00)']}
-              locations={[0.1, 0.5, 0.8]}
-              start={{ x: 0.99, y: 0.0 }}
-              end={{ x: 0, y: 0.7 }}
-              style={{ flex: 1 }}
-            />
-          }
-        >
-          {pattern && patterns[pattern] ? (
-            <Image
-              source={patterns[pattern] as any}
-              tintColor={foregroundColor}
-              resizeMethod="resize"
-              style={{
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                opacity: 0.10,
-              }}
-            />
-          ) : null}
-        </MaskedView>
+        {/* Header Pattern */}
+        {pattern && (
+          <Pattern pattern={pattern} color={foregroundColor} height={finalHeight} />
+        )}
 
         {/* Background */}
         <View
