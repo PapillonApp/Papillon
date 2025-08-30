@@ -20,7 +20,7 @@ export default function WebViewScreen() {
 
   const { t } = useTranslation();
   const [deviceUUID] = useState(uuid());
-
+  const [received, setReceived] = useState<boolean>(false);
   console.log("WebViewScreen initialized with URL:", url);
 
   if (!url) {
@@ -91,6 +91,8 @@ export default function WebViewScreen() {
     `.trim();
 
   const onWebviewMessage = async ({ nativeEvent }: { nativeEvent: WebViewMessage }) => {
+    if (received) return;
+
     const message = JSON.parse(nativeEvent.data);
     console.log("Message received from WebView:", message);
 
@@ -105,6 +107,8 @@ export default function WebViewScreen() {
         console.warn("Login status is not valid:", message.data.status);
         return;
       }
+      setReceived(true);
+
       console.log(message.data.login, message.data.mdp);
       console.log("Creating session handle...");
       const session = createSessionHandle(customFetcher);
