@@ -1,6 +1,6 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
-import { ScrollView, Text } from "react-native";
+import { Linking, ScrollView, Text } from "react-native";
 
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
@@ -11,44 +11,44 @@ import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json"
 
 const SettingsAbout = () => {
   const theme = useTheme()
   const { colors } = theme
 
+
   const Items = [
     {
       title: "Donateurs",
       description: "Voir la liste des donateurs",
-      leading: "PiggyBank",
+      leading: <Papicons name="PiggyBank" />,
       onPress: () => console.log("sus"),
     },
     {
       title: "Serveur Discord",
       description: "Rejoindre le serveur Discord",
-      leading: "TextBubble",
-      onPress: () => console.log("sus"),
+      leading: <Papicons name="TextBubble" />,
+      onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
     },
     {
       title: "Projet GitHub",
       description: "Contribuer au projet sur GitHub",
-      leading: "TextBubble",
-      onPress: () => console.log("sus"),
+      leading: <Papicons name="TextBubble" />,
+      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
   ];
 
   const Infos = [
     {
-      title: "Version",
-      description: "Voir la liste des donateurs",
-      leading: "PiggyBank",
-      onPress: () => console.log("sus"),
+      title: "Version de l'application",
+      description: packageJson.version,
+      leading: <Papicons name="Butterfly" />,
     },
     {
-      title: "Serveur Discord",
-      description: "Rejoindre le serveur Discord",
-      leading: "TextBubble",
-      onPress: () => console.log("sus"),
+      title: "Version des dépendances",
+      description: `Expo: ${packageJson.dependencies?.expo || "N/A"} | RN: ${packageJson.dependencies?.["react-native"] || "N/A"}`,
+      leading: <Papicons name="Code" />,
     }
   ];
 
@@ -58,10 +58,9 @@ const SettingsAbout = () => {
       contentInsetAdjustmentBehavior="always"
     >
       <SettingsHeader
-        color={theme.dark ? "#003A21" : "#003A21"}
+        color={theme.dark ? "#003A21" : "#003A21" + "50"}
         title="Derrière Papillon"
         description="Papillon est maintenu par des étudiants 100% bénévoles"
-        imageSource={require("@/assets/images/logoabout.png")}
       />
       <List>
         {Items.map((item, index) => (
@@ -71,7 +70,7 @@ const SettingsAbout = () => {
           >
             <Leading>
               <Icon>
-                <Papicons name={item.leading} />
+                {item.leading}
               </Icon>
             </Leading>
             <Typography variant="title">
@@ -96,7 +95,7 @@ const SettingsAbout = () => {
           >
             <Leading>
               <Icon>
-                <Papicons name={item.leading} />
+                {item.leading}
               </Icon>
             </Leading>
             <Typography variant="title">

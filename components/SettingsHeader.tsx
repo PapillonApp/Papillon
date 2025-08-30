@@ -42,8 +42,8 @@ export default function SettingsHeader({
         padding: 13,
         backgroundColor: color,
         borderRadius: 25,
-        height,
-        justifyContent: "flex-end",
+        height: imageSource ? height : undefined,
+        justifyContent: imageSource ? "flex-end" : "center",
         borderWidth: 1,
         borderColor: colors.border
       }}
@@ -85,8 +85,6 @@ export default function SettingsHeader({
           <Typography style={{ opacity: 0.6 }} variant="caption">
             {description}
           </Typography>
-
-
         </Stack>
         {showSwitch && (
           <Stack direction="horizontal" style={{ alignItems: "center", gap: 8 }}>
