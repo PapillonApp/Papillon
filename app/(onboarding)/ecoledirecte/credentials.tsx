@@ -338,6 +338,15 @@ export default function EDLoginWithCredentials() {
                 autoComplete="url"
                 secureTextEntry
                 keyboardType="default"
+                onSubmitEditing={async () => {
+                  if (!username.trim() && !password.trim()) return;
+                  const device_uuid = uuid()
+                  if (!session) {
+                    const newSession = { username, device_uuid }
+                    setSession(newSession)
+                  }
+                  handleLogin(password, session!)
+                }}
               />
             </Stack>
           </Stack>
