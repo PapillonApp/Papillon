@@ -22,6 +22,7 @@ import { School as SkolengoSkool } from "skolengojs";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 export interface School {
   name: string,
@@ -103,7 +104,7 @@ export default function SelectSchoolOnMap() {
   const getPosition = useCallback(async () => {
     const fetchedSchools = await fetchSchools(Number(local.service), alert, local.method === "manual" ? String(local.city) : undefined);
     setSchools([]);
-    setTimeout(() => {setSchools(fetchedSchools);}, 10); // For letting placeholder animation play correctly
+    setTimeout(() => { setSchools(fetchedSchools); }, 10); // For letting placeholder animation play correctly
     setLoading(false);
   }, []);
 
@@ -152,13 +153,15 @@ export default function SelectSchoolOnMap() {
     title: "",
     description: "",
     initials: "",
-    onPress: () => {}
+    onPress: () => { }
   })
+
+  const { t } = useTranslation();
 
   return (
     <OnboardingScrollingFlatList
       lottie={require("@/assets/lotties/location.json")}
-      title={"Choisis ton établissement"}
+      title={t("ONBOARDING_SELECT_SCHOOL")}
       color={"#E50052"}
       step={2}
       totalSteps={3}
@@ -197,19 +200,19 @@ export default function SelectSchoolOnMap() {
               backgroundColor={loading ? colors.text + "20" : getProfileColorByName(item.initials) + "50"}
             >
               {!loading && (
-                  <Typography
-                    variant="h4"
-                    color={getProfileColorByName(item.initials)}
-                  >
-                    {item.initials}
-                  </Typography>
+                <Typography
+                  variant="h4"
+                  color={getProfileColorByName(item.initials)}
+                >
+                  {item.initials}
+                </Typography>
               )}
             </Stack>
-            <Stack gap={loading ? 5:0} style={{ width: "80%" }}>
+            <Stack gap={loading ? 5 : 0} style={{ width: "80%" }}>
               {
                 loading ? (
-                  <View style={{ width: "70%", height: 18, borderRadius: 5, backgroundColor: colors.text + "20" }}/>
-                ):(
+                  <View style={{ width: "70%", height: 18, borderRadius: 5, backgroundColor: colors.text + "20" }} />
+                ) : (
                   <Typography
                     style={{ width: "100%" }}
                     nowrap={true}
@@ -221,8 +224,8 @@ export default function SelectSchoolOnMap() {
               }
               {
                 loading ? (
-                  <View style={{ width: "40%", height: 12, borderRadius: 5, backgroundColor: colors.text + "20" }}/>
-                ):(
+                  <View style={{ width: "40%", height: 12, borderRadius: 5, backgroundColor: colors.text + "20" }} />
+                ) : (
                   <Typography
                     style={{ flex: 1 }}
                     nowrap

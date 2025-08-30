@@ -8,10 +8,13 @@ import { getSupportedUniversities, SupportedUniversity } from "../utils/constant
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { useTranslation } from 'react-i18next';
 
 export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
+
+  const { t } = useTranslation()
 
   const services = getSupportedUniversities((path: { pathname: string }) => {
     router.push(path.pathname as unknown as RelativePathString);
@@ -21,44 +24,44 @@ export default function WelcomeScreen() {
     <OnboardingScrollingFlatList
       color={'#1E3035'}
       lottie={require('@/assets/lotties/uni-services.json')}
-      title={"Sélectionne ton service universitaire"}
+      title={t("ONBOARDING_SELECT_UNIVERSITIESERVICE")}
       step={1}
       totalSteps={3}
       elements={services}
       renderItem={({ item, index }) =>
         (item as SupportedUniversity).type === 'separator' ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 18,
+              marginVertical: 6,
+              opacity: 0.4,
+              marginHorizontal: 32,
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 18,
-                marginVertical: 6,
-                opacity: 0.4,
-                marginHorizontal: 32,
+                flex: 1,
+                height: 2,
+                borderRadius: 4,
+                backgroundColor: colors.text,
+                opacity: 0.5
               }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  height: 2,
-                  borderRadius: 4,
-                  backgroundColor: colors.text,
-                  opacity: 0.5
-                }}
-              />
-              <Typography variant='title' inline>{(item as SupportedUniversity).title}</Typography>
-              <View
-                style={{
-                  flex: 1,
-                  height: 2,
-                  borderRadius: 4,
-                  backgroundColor: colors.text,
-                  opacity: 0.5
-                }}
-              />
-            </View>
-          ) :
+            />
+            <Typography variant='title' inline>{(item as SupportedUniversity).title}</Typography>
+            <View
+              style={{
+                flex: 1,
+                height: 2,
+                borderRadius: 4,
+                backgroundColor: colors.text,
+                opacity: 0.5
+              }}
+            />
+          </View>
+        ) :
           (
             <Reanimated.View
               entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}

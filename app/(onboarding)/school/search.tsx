@@ -125,6 +125,7 @@ MapIcon.displayName = 'MapIcon';
 
 import { School as SkolengoSkool } from 'skolengojs';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { useTranslation } from 'react-i18next';
 
 export interface School {
   name: string,
@@ -223,6 +224,8 @@ export default function SelectSchoolOnMap() {
     };
   }, []);
 
+  const { t } = useTranslation();
+
   return (
     <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
       <ViewContainer>
@@ -247,20 +250,20 @@ export default function SelectSchoolOnMap() {
                   variant="h5"
                   style={{ color: "white", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 2
+                  {t("STEP")} 2
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Entre le nom de ta ville et choisis ton établissement
+                {t("ONBOARDING_SEARCH_TITLE")}
               </Typography>
             </Stack>
           </Stack>
@@ -306,7 +309,7 @@ export default function SelectSchoolOnMap() {
             </Stack>
           </Stack>
         </Reanimated.View>
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable >
   );

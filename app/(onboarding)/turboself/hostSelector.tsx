@@ -25,6 +25,7 @@ import { Services } from '@/stores/account/types';
 import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -159,6 +160,8 @@ export default function TurboSelfSelectHost() {
   const theme = useTheme();
   const { colors } = theme;
 
+  const { t } = useTranslation();
+
   return (
     <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
       <ViewContainer>
@@ -188,20 +191,20 @@ export default function TurboSelfSelectHost() {
                   variant="h5"
                   style={{ color: "white", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Choisis l'hôté assigné au compte
+                {t("ONBOARDING_TURBOSELF_SELECTHOST")}
               </Typography>
             </Stack>
           </Stack>
@@ -276,7 +279,7 @@ export default function TurboSelfSelectHost() {
           />
         </Reanimated.View>
 
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );

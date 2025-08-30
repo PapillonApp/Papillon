@@ -12,11 +12,13 @@ import { customFetcher } from "@/utils/pronote/fetcher";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { useTranslation } from "react-i18next";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
   const infoMobileURL = url + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 
+  const { t } = useTranslation();
   const [deviceUUID] = useState(uuid());
 
   console.log("WebViewScreen initialized with URL:", url);
@@ -203,7 +205,7 @@ export default function WebViewScreen() {
 
   return (
     <OnboardingWebview
-      title={"Connecte-toi comme tu en as l'habitude"}
+      title={t("ONBOARDING_WEBVIEW_TITLE")}
       color={"#E50052"}
       step={3}
       totalSteps={3}

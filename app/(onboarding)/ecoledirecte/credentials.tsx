@@ -34,6 +34,7 @@ import TableFlatList from '@/ui/components/TableFlatList';
 import { Avatar } from '@/app/(features)/(news)/news';
 import OnboardingScrollingFlatList from '@/components/onboarding/OnboardingScrollingFlatList';
 import { error } from '@/utils/logger/logger';
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -49,6 +50,7 @@ export default function EDLoginWithCredentials() {
   const { colors } = theme;
 
   const alert = useAlert()
+  const { t } = useTranslation();
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("");
   const [session, setSession] = useState<Session>();
@@ -267,20 +269,20 @@ export default function EDLoginWithCredentials() {
                   variant="h5"
                   style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#FFFFFF" + "A6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "#FFFFFF", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte Ecole Directe
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} Ecole Directe
               </Typography>
             </Stack>
           </Stack>
@@ -304,7 +306,7 @@ export default function EDLoginWithCredentials() {
                 <Papicons name={"User"} />
               </Icon>
               <TextInput
-                placeholder="Nom d'utilisateur"
+                placeholder={t("INPUT_USERNAME")}
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setUsername}
                 value={username}
@@ -333,7 +335,7 @@ export default function EDLoginWithCredentials() {
                 <Papicons name={"Lock"} />
               </Icon>
               <TextInput
-                placeholder="Mot de passe"
+                placeholder={t("INPUT_PASSWORD")}
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setPassword}
                 value={password}
@@ -347,7 +349,7 @@ export default function EDLoginWithCredentials() {
             </Stack>
           </Stack>
           <Button
-            title='Se connecter'
+            title={t("LOGIN_BTN")}
             color='black'
             size='large'
             style={{ borderColor: colors.border, borderWidth: 1 }}

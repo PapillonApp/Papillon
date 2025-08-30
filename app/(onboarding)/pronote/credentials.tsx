@@ -23,6 +23,7 @@ import { useTheme } from '@react-navigation/native';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from '@/utils/pronote/fetcher';
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -101,6 +102,8 @@ export default function PronoteLoginWithCredentials() {
 
   useFocusEffect(animationCallback);
 
+  const { t } = useTranslation();
+
   return (
     <Pressable style={styles.pressableContainer} onPress={Keyboard.dismiss}>
       <ViewContainer>
@@ -122,20 +125,20 @@ export default function PronoteLoginWithCredentials() {
                   variant="h5"
                   style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: colors.text + "A6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: colors.text, fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte PRONOTE
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} PRONOTE
               </Typography>
             </Stack>
           </Stack>
@@ -144,7 +147,7 @@ export default function PronoteLoginWithCredentials() {
         <Reanimated.View style={AnimatedInputContainerStyle}>
           <OnboardingInput
             icon={"User"}
-            placeholder="Nom d'utilisateur"
+            placeholder={t("INPUT_USERNAME")}
             text={username}
             setText={setUsername}
             isPassword={false}
@@ -153,7 +156,7 @@ export default function PronoteLoginWithCredentials() {
           />
           <OnboardingInput
             icon={"Lock"}
-            placeholder="Mot de passe"
+            placeholder={t("INPUT_PASSWORD")}
             text={password}
             setText={setPassword}
             isPassword={true}
@@ -161,7 +164,7 @@ export default function PronoteLoginWithCredentials() {
             inputProps={{}}
           />
           <Button
-            title='Se connecter'
+            title={t("LOGIN_BTN")}
             style={{
               backgroundColor: theme.dark ? theme.colors.border : "black",
             }}

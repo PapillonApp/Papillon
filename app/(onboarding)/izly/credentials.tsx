@@ -23,6 +23,7 @@ import { useAccountStore } from '@/stores/account';
 import { ServiceAccount, Services } from '@/stores/account/types';
 import uuid from '@/utils/uuid/uuid';
 import { log } from '@/utils/logger/logger';
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 550;
 const COLLAPSED_HEIGHT = 270;
@@ -163,6 +164,8 @@ export default function TurboSelfLoginWithCredentials() {
 
   useFocusEffect(animationCallback);
 
+  const { t } = useTranslation();
+
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
     'worklet';
     const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
@@ -264,20 +267,20 @@ export default function TurboSelfLoginWithCredentials() {
                   variant="h5"
                   style={{ color: "#000000", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#000000A6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "#000000", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte Izly
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} Izly
               </Typography>
             </Stack>
           </Stack>
@@ -294,10 +297,10 @@ export default function TurboSelfLoginWithCredentials() {
             <ActivityIndicator />
             <View>
               <Typography variant="h4" color="text" align="center">
-                En attente
+                {t("WAITING")}
               </Typography>
               <Typography variant="body2" color="secondary" align="center">
-                Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.
+                {t("IZLY_SMS_SEND")}
               </Typography>
             </View>
           </View>
@@ -320,14 +323,14 @@ export default function TurboSelfLoginWithCredentials() {
                   <Papicons.User />
                 </Icon>
                 <TextInput
-                  placeholder="E-Mail ou numéro"
+                  placeholder={t("INPUT_MAIL")}
                   placeholderTextColor="#5B5B5B"
                   onChangeText={setUsername}
                   value={username}
                   style={staticStyles.textInput}
                   autoCapitalize="none"
                   autoCorrect={false}
-                  autoComplete="email" // changed from url
+                  autoComplete="email"
                   keyboardType="email-address"
                 />
               </Stack>
@@ -350,14 +353,14 @@ export default function TurboSelfLoginWithCredentials() {
                   <Papicons.Lock />
                 </Icon>
                 <TextInput
-                  placeholder="Mot de passe"
+                  placeholder={t("INPUT_PASSWORD")}
                   placeholderTextColor="#5B5B5B"
                   onChangeText={setPassword}
                   value={password}
                   style={staticStyles.textInput}
                   autoCapitalize="none"
                   autoCorrect={false}
-                  autoComplete="password" // changed from url
+                  autoComplete="password"
                   secureTextEntry
                   keyboardType="default"
                 />
@@ -365,7 +368,7 @@ export default function TurboSelfLoginWithCredentials() {
             </Stack>
 
             <Button
-              title="Se connecter"
+              title={t("LOGIN_BTN")}
               color="black"
               size="large"
               disableAnimation

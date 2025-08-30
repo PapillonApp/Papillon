@@ -3,6 +3,7 @@ import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 
 import { Services } from '@/stores/account/types';
+import { useTranslation } from 'react-i18next';
 
 export interface SupportedService {
     name: string;
@@ -19,6 +20,7 @@ export interface SupportedService {
 export function getSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
     const theme = useTheme();
     const { colors } = theme;
+    const { t } = useTranslation()
 
     return [
         {
@@ -65,9 +67,9 @@ export function getSupportedServices(redirect: (path: { pathname: string, option
             variant: 'service' as const,
             color: 'light' as const,
         },
-        {
+        /*{
             name: "university",
-            title: "Service universitaire",
+            title: t("ONBOARDING_UNIVERSITY"),
             type: "other",
             icon: <Papicons name={"Star"} />,
             onPress: () => {
@@ -76,10 +78,10 @@ export function getSupportedServices(redirect: (path: { pathname: string, option
             },
             variant: 'primary' as const,
             style: { backgroundColor: theme.dark ? colors.border : "black" },
-        },
+        }, */
         {
             name: "university",
-            title: "Service restauratif",
+            title: t("ONBOARDING_RESTAURANTS"),
             type: "other",
             icon: <Papicons name={"Cutlery"} />,
             onPress: () => {
@@ -187,11 +189,13 @@ export interface LoginMethod {
 }
 
 export function getLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
+    const { t } = useTranslation();
+
     return [
         {
             id: "map",
             availableFor: [Services.PRONOTE, Services.SKOLENGO],
-            description: "Utiliser ma position",
+            description: t("ONBOARDING_METHOD_POSITION"),
             icon: <Papicons name={"MapPin"} />,
             onPress: async () => {
                 redirect({ pathname: './map' });
@@ -200,7 +204,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
         {
             id: "search",
             availableFor: [Services.PRONOTE, Services.SKOLENGO],
-            description: "Rechercher une ville",
+            description: t("ONBOARDING_METHOD_SEARCH"),
             icon: <Papicons name={"Search"} />,
             onPress: () => {
                 redirect({ pathname: './search' })
@@ -209,7 +213,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
         {
             id: "qrcode",
             availableFor: [Services.PRONOTE],
-            description: "J'ai un QR-Code",
+            description: t("ONBOARDING_METHOD_QRCODE"),
             icon: <Papicons name={"QrCode"} />,
             onPress: () => {
                 redirect({ pathname: "/(onboarding)/pronote/qrcode" });
@@ -218,7 +222,7 @@ export function getLoginMethods(redirect: (path: { pathname: RelativePathString 
         {
             id: "url",
             availableFor: [Services.PRONOTE],
-            description: "J'ai une URL de connexion",
+            description: t("ONBOARDING_METHOD_LINK"),
             icon: <Papicons name={"Link"} />,
             onPress: () => {
                 redirect({ pathname: '../pronote/url' });
