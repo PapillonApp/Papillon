@@ -6,9 +6,8 @@ import { SettingsStorage, SettingsState, Personalization } from "./types";
 import { Colors } from "@/utils/colors";
 
 const defaultPersonalization: Personalization = {
-  profilePictureB64: undefined,
   colorSelected: Colors.PINK,
-  magicEnabled: false,
+  magicEnabled: true,
   hideNameOnHomeScreen: false,
 };
 
