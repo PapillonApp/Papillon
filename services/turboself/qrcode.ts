@@ -1,6 +1,5 @@
 import { Client } from "turboself-api";
 import { QRCode, QRType } from "../shared/canteen";
-import { error } from "@/utils/logger/logger";
 
 export function fetchTurboSelfQRCode(session: Client, accountId: string): QRCode {
 	if (session.host?.cardNumber) {
@@ -11,5 +10,9 @@ export function fetchTurboSelfQRCode(session: Client, accountId: string): QRCode
 		};
 	}
 	
-	error("No QRCode Found", "fetchTurboSelfQRCode")
+	return {
+		type: QRType.QRCode,
+		data: "",
+		createdByAccount: accountId
+	}
 }

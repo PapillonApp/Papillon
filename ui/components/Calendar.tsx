@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import * as Localization from "expo-localization";
 import React, { useState } from "react";
-import { Platform, Pressable,View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
@@ -12,6 +12,7 @@ import List from "./List";
 
 export interface CalendarProps {
   date?: Date;
+  topInset?: number;
   onDateChange?: (date: Date) => void;
   showDatePicker: boolean;
   setShowDatePicker: (show: boolean) => void;
@@ -19,6 +20,7 @@ export interface CalendarProps {
 
 const Calendar: React.FC<CalendarProps> = ({
   date: initialDate = new Date(),
+  topInset,
   onDateChange,
   showDatePicker,
   setShowDatePicker,
@@ -62,7 +64,7 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: runsIOS26() ? insets.top + 48 : 8,
+        top: runsIOS26() ? insets.top + 48 : topInset || 8,
         zIndex: 99999,
         width: "100%",
         height: "100%",
@@ -95,7 +97,7 @@ const Calendar: React.FC<CalendarProps> = ({
             accentColor={colors.primary}
             locale={Localization.getLocales()[0].languageTag}
             onChange={handleChange}
-            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
+            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10, }}
           />
         </List>
       </View>
