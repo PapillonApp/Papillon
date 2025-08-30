@@ -3,17 +3,20 @@ import { useAccountStore } from "@/stores/account";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { Bold, Font, Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { Papicons } from "@getpapillon/papicons";
 import { router } from "expo-router";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  View,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker"
-import ViewContainer from "@/ui/components/ViewContainer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -25,28 +28,40 @@ export default function CustomProfileScreen() {
 
   const [firstName, setFirstName] = useState<string>(account?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(account?.lastName ?? "");
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(account?.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
 
-  const { colors } = useTheme();
-  const profilePicture = useCallback(() => {
-    if (account && account.customisation?.profilePicture) {
-      return (
-        <Image
-          source={{ uri: `data:image/png;base64,${account.customisation.profilePicture}` }}
-          style={{ width: 117, height: 117, borderRadius: 500 }}
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          size={117}
-          variant="h1"
-          author={`${account?.firstName} ${account?.lastName}`}
-        />
-      );
+  useEffect(() => {
+    if (account) {
+      setFirstName(account.firstName);
+      setLastName(account.lastName);
+      setProfilePictureUrl(account.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
     }
   }, [account]);
 
   const insets = useSafeAreaInsets()
+
+  const updateProfilePictureFromLibrary = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      base64: true
+    });
+
+    if (!result.canceled) {
+      const b64 = result.assets[0].base64 ?? "";
+      store.setAccountProfilePicture(lastUsedAccount, b64);
+    }
+  }
+
+  const updateProfilePictureFromService = async () => {
+    Alert.alert(
+      "Ça arrive bientôt !",
+      "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
+      [{ text: "OK" }]
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -55,100 +70,71 @@ export default function CustomProfileScreen() {
       style={{ flex: 1 }}
     >
       <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
-        {profilePicture()}
-        <Button
-          inline
-          variant="outline"
-          size="small"
-          icon={<Papicons name="Camera" />}
-          title={t("Button_Change_ProfilePicture")}
-          onPress={async () => {
-            let result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images', 'videos'],
-              allowsEditing: true,
-              aspect: [4, 3],
-              quality: 1,
-              base64: true
-            });
+        <Avatar
+          size={117}
+          variant="h1"
+          author={`${firstName} ${lastName}`}
+          imageURL={profilePictureUrl || undefined}
+        />
 
-            if (!result.canceled) {
-              const b64 = result.assets[0].base64 ?? "";
-              store.setAccountProfilePicture(lastUsedAccount, b64);
+        <MenuView
+          actions={[
+            {
+              id: 'photo_library',
+              title: t("Button_Change_ProfilePicture_FromLibrary"),
+            },
+            {
+              id: 'from_service',
+              title: t("Button_Change_ProfilePicture_FromService"),
+            },
+            {
+              id: 'remove_photo',
+              title: t("Button_Change_ProfilePicture_Remove"),
+              attributes: { destructive: true }
+            }
+          ]}
+          onPressAction={(e: NativeActionEvent) => {
+            switch (e.nativeEvent.event) {
+              case 'photo_library':
+                updateProfilePictureFromLibrary();
+                break;
+              case 'from_service':
+                updateProfilePictureFromService();
+                break;
+              case 'remove_photo':
+                store.setAccountProfilePicture(lastUsedAccount, "");
+                break;
             }
           }}
-
-        />
+        >
+          <Button
+            inline
+            variant="outline"
+            size="small"
+            icon={<Papicons name="Camera" />}
+            title={t("Button_Change_ProfilePicture")}
+          />
+        </MenuView>
       </View>
 
       <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
         <View style={{ gap: 10 }}>
-          <Stack direction="horizontal" gap={5}>
-            <Icon papicon opacity={0.5}>
-              <Font />
-            </Icon>
-            <Typography color="secondary">Prénom</Typography>
-          </Stack>
-          <View
-            style={{
-              backgroundColor: "#F2F2F2",
-              width: "100%",
-              borderRadius: 50,
-              borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.15,
-              shadowRadius: 3.3,
-              elevation: 4,
-            }}
-          >
-            <TextInput
-              placeholder="Prénom"
-              value={firstName}
-              onChangeText={setFirstName}
-              style={{
-                padding: 23,
-                fontSize: 18,
-                fontWeight: "600",
-                letterSpacing: 0.18,
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={{ gap: 10 }}>
-          <Stack direction="horizontal" gap={5}>
-            <Icon papicon opacity={0.5}>
-              <Bold />
-            </Icon>
-            <Typography color="secondary">Nom</Typography>
-          </Stack>
-          <View
-            style={{
-              backgroundColor: "#F2F2F2",
-              width: "100%",
-              borderRadius: 50,
-              borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.15,
-              shadowRadius: 3.3,
-              elevation: 4,
-            }}
-          >
-            <TextInput
-              placeholder="Nom"
-              value={lastName}
-              onChangeText={setLastName}
-              style={{
-                padding: 23,
-                fontSize: 18,
-                fontWeight: "600",
-                letterSpacing: 0.18,
-              }}
-            />
-          </View>
+          <Typography color="secondary">Prénom</Typography>
+          <OnboardingInput
+            placeholder={"Prénom"}
+            text={firstName}
+            setText={setFirstName}
+            icon={"Font"}
+            inputProps={{}}
+          />
+          <Typography color="secondary">Nom</Typography>
+          <OnboardingInput
+            placeholder={"Nom"}
+            text={lastName}
+            setText={setLastName}
+            icon={"Bold"}
+            inputProps={{}}
+          />
         </View>
       </View>
       <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>

@@ -15,7 +15,6 @@ import Icon from "@/ui/components/Icon";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -38,7 +37,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
-import Pattern from "@/ui/components/Pattern/Pattern";
+import { Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {
@@ -285,6 +284,7 @@ export default function TabOneScreen() {
               >
                 {headerItems.map((item, i) => (
                   <Reanimated.View
+                    key={"pagination:" + i}
                     layout={Animation(LinearTransition)}
                     style={{
                       width: currentPage === i ? 16 : 6,
@@ -468,30 +468,16 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <NativeHeaderTitle>
-        <NativeHeaderTopPressable
-          layout={Animation(LinearTransition)}
-        >
-          <Dynamic
-            style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-          >
-            <Dynamic animated>
-              <Typography variant="navigation" color={foreground}>
-                {date.toLocaleDateString("fr-FR", { weekday: "long" })}
-              </Typography>
-            </Dynamic>
-            <Dynamic animated>
-              <NativeHeaderHighlight color={foreground} style={{ marginBottom: 0 }}>
-                {date.toLocaleDateString("fr-FR", { day: "numeric" })}
-              </NativeHeaderHighlight>
-            </Dynamic>
-            <Dynamic animated>
-              <Typography variant="navigation" color={foreground}>
-                {date.toLocaleDateString("fr-FR", { month: "long" })}
-              </Typography>
-            </Dynamic>
-          </Dynamic>
-        </NativeHeaderTopPressable>
+      <NativeHeaderTitle style={{ flexDirection: "row", alignItems: "center", gap: 4 }} ignoreTouch={true}>
+        <Typography variant="navigation" color={foreground}>
+          {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+        </Typography>
+        <NativeHeaderHighlight color={foreground} style={{ marginBottom: 0 }}>
+          {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+        </NativeHeaderHighlight>
+        <Typography variant="navigation" color={foreground}>
+          {date.toLocaleDateString("fr-FR", { month: "long" })}
+        </Typography>
       </NativeHeaderTitle>
 
       <NativeHeaderSide side="Right">

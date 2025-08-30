@@ -4,8 +4,12 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import CrossPattern from "@/ui/components/Pattern/CrossPattern";
 import { useTheme } from "@react-navigation/native";
 
+enum AvailablePatterns {
+  CROSS = "cross",
+}
+
 interface PatternProps extends ViewProps{
-  pattern: "cross";
+  pattern: AvailablePatterns;
   width?: DimensionValue
   height?: DimensionValue;
   color?: string;
@@ -36,7 +40,7 @@ const Pattern = (props: PatternProps) => {
         zIndex: 250,
         width: props.width || "100%",
         height: props.height || "100%",
-        opacity: props.opacity || 0.24,
+        opacity: props.opacity || 0.25,
       }}
     >
       {props.pattern === "cross" && (
@@ -46,4 +50,4 @@ const Pattern = (props: PatternProps) => {
   );
 }
 
-export default Pattern;
+export { AvailablePatterns, Pattern };

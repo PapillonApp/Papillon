@@ -8,9 +8,8 @@ import { getInitials } from "@/utils/chats/initials";
 import { formatRelativeTime } from "@/utils/date";
 import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
-import { View, ScrollView, Pressable, FlatList } from "react-native";
+import { View, FlatList, Image } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
-import TableFlatList from "@/ui/components/TableFlatList";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Variant } from "@/ui/components/Typography"
 
@@ -96,8 +95,8 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
   );
 }
 
-export function Avatar({ author, dark = false, squared = false, size = 35, variant = "button" }: { author: string, dark?: boolean, squared?: boolean, size?: number, variant?: Variant }) {
-  const backgroundColor = `${getProfileColorByName(author)}90`;
+export function Avatar({ author, dark = false, squared = false, size = 35, variant = "button", imageURL }: { author: string, dark?: boolean, squared?: boolean, size?: number, variant?: Variant, imageURL?: string }) {
+  const backgroundColor = `${getProfileColorByName(author)}20`;
   const textColor = adjust(getProfileColorByName(author), -0.6);
   const initials = getInitials(author)
 
@@ -118,6 +117,19 @@ export function Avatar({ author, dark = false, squared = false, size = 35, varia
       <Typography variant={variant} color={dark ? colors.text : textColor}>
         {initials || author}
       </Typography>
+      {imageURL && (
+        <Image
+          source={{ uri: imageURL }}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: squared ? 10 : 100,
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
     </View>
   );
 }
