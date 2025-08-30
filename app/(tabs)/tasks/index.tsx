@@ -2,7 +2,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
+import { Alert, FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
@@ -440,6 +440,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
+            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
           <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
@@ -496,6 +497,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
+            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
           <Papicons name={"Search"} color={"#C54CB3"} size={26} />

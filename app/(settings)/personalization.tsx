@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native";
+import { Alert, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
 import React from "react";
 import List from "@/ui/components/List";
@@ -151,6 +151,7 @@ const PersonalizationSettings = () => {
             </Trailing>
           </Item>
           <Item onPress={() => {
+            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
           >
             <Icon size={30}>

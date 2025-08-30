@@ -1,6 +1,6 @@
 import { useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Dimensions, FlatList, Platform, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
 
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
@@ -447,7 +447,11 @@ export default function TabOneScreen() {
       />
 
       <NativeHeaderSide side="Left">
-        <NativeHeaderPressable>
+        <NativeHeaderPressable
+          onPress={() => {
+            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+          }}
+        >
           <Icon size={28}>
             <Papicons name={"Menu"} color={foreground} />
           </Icon>
