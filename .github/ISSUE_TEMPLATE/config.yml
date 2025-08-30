@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Une faille de sécurité ?
+    url: https://github.com/PapillonApp/Papillon/security/advisories/new
+    about: Merci de remplir ce formulaire
+
+  - name: Une question ? Un problème personnel ?
+    url: https://discord.gg/WXntBawAk8
+    about: L'équipe Papillon est disponible sur Discord, nous te répondrons
