@@ -6,5 +6,5 @@ stores/* @raphckrman
 utils/magic/* @tryon-dev
 locales/* @tryon-dev
 
-app/* @ecnivtwelve
-components/* @ecnivtwelve
+ui/* @ecnivtwelve
+ui/components/Pattern/* @godetremy

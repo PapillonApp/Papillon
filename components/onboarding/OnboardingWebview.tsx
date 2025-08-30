@@ -134,11 +134,12 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
               onLoadEnd={(e) => {
                 webviewProps.onLoadEnd?.(e);
+                console.log(e.nativeEvent.url)
                 if (e.nativeEvent.url.includes("pronote")) {
                   if (e.nativeEvent.url !== webviewProps.source?.uri) {
                     setTotallyLoaded(true);
                   }
-                } else {
+                } else if (e.nativeEvent.url.includes("https://")) {
                   setTotallyLoaded(true);
                 }
               }}

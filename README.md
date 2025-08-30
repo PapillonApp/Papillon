@@ -14,14 +14,14 @@
 </p>
 
 <p align="middle">
-  <a href="mailto:vince@papillon.bzh#gh-light-mode-only"><img src=".github/assets/team/vince_light.png" alt="Vince" width="150"/></a>
-  <a href="mailto:vince@papillon.bzh#gh-dark-mode-only"><img src=".github/assets/team/vince_dark.png" alt="Vince" width="150"/></a>
-  <a href="mailto:godetremy@papillon.bzh#gh-light-mode-only"><img src=".github/assets/team/remy_light.png" alt="Rémy" width="150"/></a>
-  <a href="mailto:godetremy@papillon.bzh#gh-dark-mode-only"><img src=".github/assets/team/remy_dark.png" alt="Rémy" width="150"/></a>
-  <a href="mailto:raphael@papillon.bzh#gh-light-mode-only"><img src=".github/assets/team/raph_light.png" alt="Raphael" width="150"/></a>
-  <a href="mailto:raphael@papillon.bzh#gh-dark-mode-only"><img src=".github/assets/team/raph_dark.png" alt="Raphael" width="150"/></a>
-  <a href="mailto:lucas@papillon.bzh#gh-light-mode-only"><img src=".github/assets/team/lucas_light.png" alt="Lucas" width="150"/></a>
-  <a href="mailto:lucas@papillon.bzh#gh-dark-mode-only"><img src=".github/assets/team/lucas_dark.png" alt="Lucas" width="150"/></a>
-  <a href="mailto:tom@papillon.bzh#gh-light-mode-only"><img src=".github/assets/team/tom_light.png" alt="Tom" width="150"/></a>
-  <a href="mailto:tom@papillon.bzh#gh-dark-mode-only"><img src=".github/assets/team/tom_dark.png" alt="Tom" width="150"/></a>
+  <a href="mailto:vince@papillon.bzh?papillon=#gh-light-mode-only"><img src=".github/assets/team/vince_light.png" alt="Vince" width="150"/></a>
+  <a href="mailto:vince@papillon.bzh?papillon=#gh-dark-mode-only"><img src=".github/assets/team/vince_dark.png" alt="Vince" width="150"/></a>
+  <a href="mailto:godetremy@papillon.bzh?papillon=#gh-light-mode-only"><img src=".github/assets/team/remy_light.png" alt="Rémy" width="150"/></a>
+  <a href="mailto:godetremy@papillon.bzh?papillon=#gh-dark-mode-only"><img src=".github/assets/team/remy_dark.png" alt="Rémy" width="150"/></a>
+  <a href="mailto:raphael@papillon.bzh?papillon=#gh-light-mode-only"><img src=".github/assets/team/raph_light.png" alt="Raphael" width="150"/></a>
+  <a href="mailto:raphael@papillon.bzh?papillon=#gh-dark-mode-only"><img src=".github/assets/team/raph_dark.png" alt="Raphael" width="150"/></a>
+  <a href="mailto:lucas@papillon.bzh?papillon=#gh-light-mode-only"><img src=".github/assets/team/lucas_light.png" alt="Lucas" width="150"/></a>
+  <a href="mailto:lucas@papillon.bzh?papillon=#gh-dark-mode-only"><img src=".github/assets/team/lucas_dark.png" alt="Lucas" width="150"/></a>
+  <a href="mailto:tom@papillon.bzh?papillon=#gh-light-mode-only"><img src=".github/assets/team/tom_light.png" alt="Tom" width="150"/></a>
+  <a href="mailto:tom@papillon.bzh?papillon=#gh-dark-mode-only"><img src=".github/assets/team/tom_dark.png" alt="Tom" width="150"/></a>
 </p>

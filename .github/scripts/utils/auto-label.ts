@@ -34,7 +34,8 @@ export default async function autoLabel(
   const { owner, repo } = context.repo;
   const pull = context.payload.pull_request;
   const issue = context.payload.issue;
-  const labels = new Set<string>(["status: needs triage"]);
+	const isNew = context.payload.action === "opened" || context.payload.action === "reopened";
+	const labels = new Set<string>(isNew ? ["status: needs triage"] : []);
   const errors: string[] = [];
 
   const issue_number = pull?.number ?? issue?.number;
@@ -85,12 +86,12 @@ export default async function autoLabel(
     }
   }
 
-  await octokit.rest.issues.setLabels({
-    owner,
-    repo,
-    issue_number,
-    labels: [...labels],
-  });
+	await octokit.rest.issues.addLabels({
+		owner,
+		repo,
+		issue_number,
+		labels: [...labels],
+	});
 
   return { errors, labels: [...labels] };
 }
