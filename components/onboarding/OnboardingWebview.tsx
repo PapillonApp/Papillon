@@ -53,10 +53,10 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
         keyboardVerticalOffset={-insets.top + 20}
       >
         <Stack flex
-               direction="horizontal"
-               height={40}
-               style={{ position: "absolute", left: 75, top: insets.top + 7, zIndex: 2 }}
-               hAlign={"center"}
+          direction="horizontal"
+          height={40}
+          style={{ position: "absolute", left: 75, top: insets.top + 7, zIndex: 2 }}
+          hAlign={"center"}
         >
           <Typography
             variant="h5"
@@ -120,8 +120,8 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
                 opacity: totallyLoaded ? 0 : 1,
               }}
             >
-              <ActivityIndicator size={"large"}/>
-              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{marginTop: 10}}>Un peu de patience...</Typography>
+              <ActivityIndicator size={"large"} />
+              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>Un peu de patience...</Typography>
               <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>Nous chargons le site de ton établissement</Typography>
             </View>
             <WebView
@@ -133,11 +133,12 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
               onLoadEnd={(e) => {
                 webviewProps.onLoadEnd?.(e);
+                console.log(e.nativeEvent.url)
                 if (e.nativeEvent.url.includes("pronote")) {
                   if (e.nativeEvent.url !== webviewProps.source?.uri) {
                     setTotallyLoaded(true);
                   }
-                } else {
+                } else if (e.nativeEvent.url.includes("https://")) {
                   setTotallyLoaded(true);
                 }
               }}
