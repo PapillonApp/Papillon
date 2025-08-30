@@ -73,6 +73,15 @@ export default function Layout() {
           headerLargeTitle: false,
         }}
       />
+      <Stack.Screen
+        name="subject_personalization"
+        options={{
+          headerTitle: t("Settings_SubjectPersonalization_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: true,
+          headerLargeTitle: false,
+        }}
+      />
     </Stack>
   );
 }

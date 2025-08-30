@@ -15,6 +15,7 @@ import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
 import { t } from "i18next";
+import { router } from "expo-router";
 
 
 const PersonalizationSettings = () => {
@@ -165,6 +166,7 @@ const PersonalizationSettings = () => {
           </Item>
           <Item
             onPress={() => {
+              router.push("/(settings)/subject_personalization");
             }}
           >
             <Icon size={30}>
