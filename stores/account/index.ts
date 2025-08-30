@@ -50,6 +50,18 @@ export const useAccountStore = create<AccountsStorage>()(
           return account;
         }),
       }),
+      setAccountName: (accountId, firstName, lastName) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === accountId) {
+            return {
+              ...account,
+              firstName,
+              lastName
+            };
+          }
+          return account;
+        }),
+      }),
       setLastUsedAccount: (accountId: string) => set({ lastUsedAccount: accountId }),
       setSubjectColor: (subject: string, color: string) => set({
         accounts: get().accounts.map((account) => {

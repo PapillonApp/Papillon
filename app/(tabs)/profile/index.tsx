@@ -110,11 +110,6 @@ function Tabs() {
     return () => unsubscribe();
   }, []);
 
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-
-  const account = accounts.find((a) => a.id === lastUsedAccount);
-
   return (
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
       {enabledTabs.map((tab, index) => (
@@ -333,19 +328,11 @@ export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
 
   const manager = getManager();
-  const [account, setAccount] = useState<Account | null>(null);
 
-  useEffect(() => {
-    function fetchData() {
-      if (!manager) {
-        return;
-      }
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
-      const result = manager.getAccount();
-      setAccount(result);
-    }
-    fetchData();
-  }, [manager]);
+  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!account) { return [null, null, null, null]; }
@@ -382,7 +369,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            console.log("Pressed");
+            router.push("/(tabs)/profile/custom")
           }}
         >
           <Icon size={28}>
@@ -450,11 +437,11 @@ export default function TabOneScreen() {
                     style={{ width: 75, height: 75, borderRadius: 500 }}
                   />
                 ) : (
-                  <Avatar size={75} author={`${account?.firstName} ${account?.lastName}`} />
+                  <Avatar size={75} variant="h3" author={`${account?.firstName} ${account?.lastName}`} />
                 )
                 }
                 <Typography variant={"h3"} color="text">
-                  {manager ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
+                  {firstName} {lastName}
                 </Typography>
                 <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
                   {level && (

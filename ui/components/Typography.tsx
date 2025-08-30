@@ -97,7 +97,7 @@ const STATIC_COLORS = {
   danger: "#DC1400",
 } as const;
 
-type Variant = keyof typeof VARIANTS;
+export type Variant = keyof typeof VARIANTS;
 type Color = "primary" | "text" | "secondary" | "light" | "danger";
 type Alignment = keyof typeof ALIGNMENT_STYLES;
 
