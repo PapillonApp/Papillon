@@ -106,7 +106,7 @@
   "Home_Widget_NewGrades": "Nouvelles notes",
 
   "Tab_Calendar_Empty": "Aucun événement trouvé",
-  "Tab_Calendar_Empty_Description": "Ajoutez un évenement ou synchronisez votre calendrier pour commencer.",
+  "Tab_Calendar_Empty_Description": "Ajoutez un événement ou synchronisez votre calendrier pour commencer.",
 
   "Modal_Course_Title": "Mon cours",
   "Modal_Course_StartsIn": "Commence dans",
@@ -230,3 +230,4 @@
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
   "Settings_Personalization_Subject_Description": "Icônes, couleurs"
 }
+
