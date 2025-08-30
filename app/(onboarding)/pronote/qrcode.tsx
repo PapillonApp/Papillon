@@ -94,10 +94,6 @@ export default function PronoteLoginWithQR() {
         lastName: user.name.split(" ")[1],
         schoolName,
         className,
-        customisation: {
-          profilePicture: await URLToBase64(session.user.resources[0].profilePicture?.url ?? ""),
-          subjects: {}
-        },
         services: [{
           id: accountID,
           auth: {

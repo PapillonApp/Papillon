@@ -137,10 +137,6 @@ export default function WebViewScreen() {
           lastName: session.user.name.split(" ")[1],
           schoolName,
           className,
-          customisation: {
-            profilePicture: await URLToBase64(session.user.resources[0].profilePicture?.url ?? ""),
-            subjects: {}
-          },
           services: [{
             id: deviceUUID,
             auth: {
