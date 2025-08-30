@@ -55,7 +55,7 @@ import checkDescription from './utils/check-description';
 
   message += "\n\nNous espérons te revoir très bientôt avec une nouvelle proposition !\nÀ très vite sur **Papillon** 🦋";
 
-  const botMessage = messages.data.find(msg => msg.performed_via_github_app?.slug === "raphckrman");
+  const botMessage = messages.data.find(msg => msg.performed_via_github_app?.slug === "papillon-contribution-guard");
 
   if (botMessage) {
     await octokit.rest.issues.updateComment({

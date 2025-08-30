@@ -11,7 +11,7 @@ const commitLabelMap: Record<string, string> = {
   question: "type: question",
   refactor: "type: refactor",
   test: "type: tests",
-  chore: "",
+  chore: "type: chores",
   ci: "type: tests",
 };
 
