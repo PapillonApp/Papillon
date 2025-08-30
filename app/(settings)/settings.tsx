@@ -136,12 +136,12 @@ const SettingsIndex = () => {
       }
     },
     {
-      icon: <Papicons name={"Bell"} />,
-      title: "Notifications",
-      description: "Alertes, fréquence...",
+      icon: <Papicons name={"User"} />,
+      title: "Services",
+      description: "Comptes liés",
       color: "#DD9B00",
       onPress: () => {
-        console.log("sus")
+        // rien
       }
     },
     {
