@@ -80,9 +80,9 @@ export default function SettingsHeader({
           </Icon>
         )}
 
-        <Stack flex direction="vertical" style={{ flex: 1 }}>
+        <Stack flex style={{ flex: 1, gap: 0 }}>
           <Typography variant="title">{title}</Typography>
-          <Typography style={{ opacity: 0.6 }} variant="caption">
+          <Typography variant="caption" color="secondary">
             {description}
           </Typography>
         </Stack>

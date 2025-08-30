@@ -34,7 +34,7 @@ const SettingsAbout = () => {
     {
       title: "Projet GitHub",
       description: "Contribuer au projet sur GitHub",
-      leading: <Papicons name="TextBubble" />,
+      leading: <Papicons name="Ghost" />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
   ];
@@ -58,7 +58,7 @@ const SettingsAbout = () => {
       contentInsetAdjustmentBehavior="always"
     >
       <SettingsHeader
-        color={theme.dark ? "#003A21" : "#003A21" + "50"}
+        color={theme.dark ? "#121e2a" : "#dfebf7"}
         title="Derrière Papillon"
         description="Papillon est maintenu par des étudiants 100% bénévoles"
       />
