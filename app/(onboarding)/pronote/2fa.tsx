@@ -21,6 +21,7 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -103,6 +104,8 @@ export default function Pronote2FA() {
     };
   }, []);
 
+  const { t } = useTranslation();
+
   const animationCallback = useCallback(() => {
     if (animation.current) {
       animation.current.reset();
@@ -133,20 +136,20 @@ export default function Pronote2FA() {
                   variant="h5"
                   style={{ color: local.previousPage === "map" ? "white" : "#2F2F2F", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")}  3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: local.previousPage === "map" ? "#FFFFFFA6" : "#2F2F2FA6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: local.previousPage === "map" ? "white" : "#2F2F2F", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte PRONOTE
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} PRONOTE
               </Typography>
             </Stack>
           </Stack>
@@ -217,7 +220,7 @@ export default function Pronote2FA() {
             });
           }}
         />
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );

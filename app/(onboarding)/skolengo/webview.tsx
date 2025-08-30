@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AuthFlow, School } from "skolengojs";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
+import { useTranslation } from "react-i18next";
 
 export default function WebViewScreen() {
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
@@ -75,9 +76,11 @@ export default function WebViewScreen() {
     return true;
   };
 
+  const { t } = useTranslation();
+
   return (
     <OnboardingWebview
-      title={"Connecte-toi comme tu en as l'habitude"}
+      title={t("ONBOARDING_WEBVIEW_TITLE")}
       color={"#E50052"}
       step={3}
       totalSteps={3}

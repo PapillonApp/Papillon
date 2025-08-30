@@ -22,6 +22,7 @@ import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useAlert } from '@/ui/components/AlertProvider';
+import { t } from 'i18next';
 
 const INITIAL_HEIGHT = 500;
 const COLLAPSED_HEIGHT = 270;
@@ -190,20 +191,20 @@ export default function TurboSelfLoginWithCredentials() {
                   variant="h5"
                   style={{ color: "white", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte ARD
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} ARD
               </Typography>
             </Stack>
           </Stack>
@@ -227,7 +228,7 @@ export default function TurboSelfLoginWithCredentials() {
                 <Papicons.Link />
               </Icon>
               <TextInput
-                placeholder="Identifiant de ton établissement"
+                placeholder={t("INPUT_ETABID")}
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setSiteId}
                 value={siteId}
@@ -256,7 +257,7 @@ export default function TurboSelfLoginWithCredentials() {
                 <Papicons.User />
               </Icon>
               <TextInput
-                placeholder="Nom d'utilisateur"
+                placeholder={t("INPUT_USERNAME")}
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setUsername}
                 value={username}
@@ -285,7 +286,7 @@ export default function TurboSelfLoginWithCredentials() {
                 <Papicons.Lock />
               </Icon>
               <TextInput
-                placeholder="Mot de passe"
+                placeholder={t("INPUT_PASSWORD")}
                 placeholderTextColor="#5B5B5B"
                 onChangeText={setPassword}
                 value={password}
@@ -299,7 +300,7 @@ export default function TurboSelfLoginWithCredentials() {
             </Stack>
           </Stack>
           <Button
-            title='Se connecter'
+            title={t("LOGIN_BTN")}
             color='black'
             size='large'
             disableAnimation

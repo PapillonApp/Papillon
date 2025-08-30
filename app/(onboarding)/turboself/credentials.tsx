@@ -21,6 +21,7 @@ import uuid from '@/utils/uuid/uuid';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useTheme } from "@react-navigation/native";
+import { useTranslation } from 'react-i18next';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -73,6 +74,7 @@ const staticStyles = StyleSheet.create({
 
 export default function TurboSelfLoginWithCredentials() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const animation = React.useRef<LottieView>(null);
 
   const [username, setUsername] = useState<string>("")
@@ -187,20 +189,20 @@ export default function TurboSelfLoginWithCredentials() {
                   variant="h5"
                   style={{ color: "white", lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 3
+                  {t("STEP")} 3
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: "white", fontSize: 32, lineHeight: 34 }}
               >
-                Connecte-toi à ton compte TurboSelf
+                {t("ONBOARDING_LOGIN_CREDENTIALS")} TurboSelf
               </Typography>
             </Stack>
           </Stack>
@@ -209,7 +211,7 @@ export default function TurboSelfLoginWithCredentials() {
         <Reanimated.View style={AnimatedInputContainerStyle}>
           <OnboardingInput
             icon={"Mail"}
-            placeholder="Adresse e-mail"
+            placeholder={t("INPUT_MAIL")}
             text={username}
             setText={setUsername}
             isPassword={false}
@@ -218,7 +220,7 @@ export default function TurboSelfLoginWithCredentials() {
           />
           <OnboardingInput
             icon={"Lock"}
-            placeholder="Mot de passe"
+            placeholder={t("INPUT_PASSWORD")}
             text={password}
             setText={setPassword}
             isPassword={true}
@@ -226,7 +228,7 @@ export default function TurboSelfLoginWithCredentials() {
             inputProps={{}}
           />
           <Button
-            title='Se connecter'
+            title={t("LOGIN_BTN")}
             style={{
               backgroundColor: theme.dark ? theme.colors.border : "black",
             }}
@@ -290,7 +292,7 @@ export default function TurboSelfLoginWithCredentials() {
             }}
           />
         </Reanimated.View>
-        <OnboardingBackButton/>
+        <OnboardingBackButton />
       </ViewContainer >
     </Pressable>
   );

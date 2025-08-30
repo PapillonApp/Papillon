@@ -19,6 +19,7 @@ import adjust from "@/utils/adjustColor";
 import { AppColors } from "@/utils/colors";
 import AppColorsSelector from "@/components/AppColorsSelector";
 import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -54,6 +55,8 @@ export default function ChooseColorScreen() {
       }
     }, 50);
   }, [mutateProperty]);
+
+  const { t } = useTranslation();
 
   const gradientColors = useMemo(() => [selectedColor, selectedColor] as const, [selectedColor]);
   const logoKey = useMemo(() => `logo:${selectedColor}`, [selectedColor]);
@@ -95,10 +98,10 @@ export default function ChooseColorScreen() {
       </Reanimated.View>
       <View style={{ marginTop: 40, padding: 20, flex: 1, gap: 22 }}>
         <View>
-          <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h4">Avant de terminer</Typography>
+          <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h4">{t("ONBOARDING_COLOR_TITLE")}</Typography>
           <Stack gap={0}>
-            <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">Choisis une</Typography>
-            <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">couleur de thème</Typography>
+            <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">{t("ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION")}</Typography>
+            <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">{t("ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION")}</Typography>
           </Stack>
         </View>
         <View>

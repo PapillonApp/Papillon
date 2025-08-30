@@ -19,6 +19,7 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import { useTheme } from "@react-navigation/native";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useTranslation } from "react-i18next";
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;
@@ -93,6 +94,8 @@ export default function URLInputScreen() {
 
   const alert = useAlert();
   const [instanceURL, setInstanceURL] = useState<string>("");
+
+  const { t } = useTranslation();
 
   const scrollY = useSharedValue(0);
   const height = useSharedValue(INITIAL_HEIGHT);
@@ -249,7 +252,7 @@ export default function URLInputScreen() {
 
   return (
     <Pressable style={staticStyles.pressableContainer}
-               onPress={Keyboard.dismiss}
+      onPress={Keyboard.dismiss}
     >
       <ViewContainer>
         <Reanimated.View style={AnimatedHeaderStyle}>
@@ -269,26 +272,26 @@ export default function URLInputScreen() {
               gap={12}
             >
               <Stack flex
-                     direction="horizontal"
+                direction="horizontal"
               >
                 <Typography
                   variant="h5"
                   style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
                 >
-                  Étape 2
+                  {t("STEP")} 2
                 </Typography>
                 <Typography
                   variant="h5"
                   style={{ color: colors.text + "A6", lineHeight: 22, fontSize: 18 }}
                 >
-                  sur 3
+                  {t("STEP_OUTOF")} 3
                 </Typography>
               </Stack>
               <Typography
                 variant="h1"
                 style={{ color: colors.text, fontSize: 32, lineHeight: 34 }}
               >
-                Indique l’adresse URL de ton établissement
+                {t("ONBOARDING_URL")}
               </Typography>
             </Stack>
           </Stack>
@@ -296,7 +299,7 @@ export default function URLInputScreen() {
 
         <Reanimated.View style={AnimatedInputContainerStyle}>
           <OnboardingInput
-            placeholder={"URL de ton instance PRONOTE"}
+            placeholder={t("ONBOARDING_URL_PLACEHOLDER")}
             icon={"Link"}
             text={instanceURL}
             setText={setInstanceURL}

@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import { RelativePathString, router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import React from "react";
-import {  Image } from "react-native";
+import { Image } from "react-native";
 import Reanimated, { FadeInDown } from "react-native-reanimated";
 
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -10,12 +10,14 @@ import Typography from "@/ui/components/Typography";
 
 import { getSupportedRestaurants, SupportedRestaurant } from "../utils/constants";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { useTranslation } from "react-i18next";
 
 export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const animation = React.useRef<LottieView>(null);
 
+  const { t } = useTranslation()
   const params = useLocalSearchParams();
   const action = String(params.action);
 
@@ -35,12 +37,12 @@ export default function WelcomeScreen() {
   return (
     <OnboardingScrollingFlatList
       lottie={require("@/assets/lotties/self.json")}
-      title="Sélectionne ton service restauratif"
+      title={t("ONBOARDING_SELECT_RESTAURANTSERVICE")}
       color={"#60B400"}
       step={1}
       totalSteps={3}
       elements={services}
-      renderItem={({ item, index }: {item: SupportedRestaurant, index: number}) => (
+      renderItem={({ item, index }: { item: SupportedRestaurant, index: number }) => (
         <Reanimated.View
           entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
         >

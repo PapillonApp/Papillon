@@ -12,12 +12,14 @@ import Stack from '@/ui/components/Stack';
 import { Papicons } from '@getpapillon/papicons';
 import ViewContainer from '@/ui/components/ViewContainer';
 import * as Linking from 'expo-linking';
+import { useTranslation } from 'react-i18next';
 
 export default function WelcomeScreen() {
   const theme = useTheme();
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
+  const { t } = useTranslation()
 
   useFocusEffect(
     React.useCallback(() => {
@@ -76,13 +78,13 @@ export default function WelcomeScreen() {
               variant="h1"
               style={{ color: "white", fontSize: 32, lineHeight: 34 }}
             >
-              L'application pour gérer ta vie scolaire
+              {t("ONBOARDING_MAIN_TITLE")}
             </Typography>
             <Typography
               variant="h5"
               style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
             >
-              Connecte tes applications scolaires pour accéder à tes notes, cours, devoirs et bien plus dans l'interface Papillon !
+              {t("ONBOARDING_MAIN_DESCRIPTION")}
             </Typography>
           </Stack>
         </Stack>
@@ -95,7 +97,7 @@ export default function WelcomeScreen() {
           gap={10}
         >
           <Button
-            title="Commencer"
+            title={t("ONBOARDING_START_BTN")}
             onPress={() => {
               requestAnimationFrame(() => {
                 router.push('/(onboarding)/serviceSelection');
@@ -110,7 +112,7 @@ export default function WelcomeScreen() {
             }
           />
           <Button
-            title="Besoin d'aide ?"
+            title={t("ONBOARDING_HELP_BTN")}
             onPress={() => {
               Linking.openURL('https://support.papillon.bzh');
             }}

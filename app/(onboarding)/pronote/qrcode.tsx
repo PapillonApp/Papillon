@@ -22,6 +22,7 @@ import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { useTranslation } from "react-i18next";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -173,6 +174,8 @@ export default function PronoteLoginWithQR() {
 
   const local = useGlobalSearchParams();
 
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView style={styles.container}>
       <Modal
@@ -213,7 +216,7 @@ export default function PronoteLoginWithQR() {
               marginTop: 4,
             }}
           >
-            Cela peut prendre quelques instants...
+            {t("ONBOARDING_QRCODE_WAIT")}
           </Typography>
 
           <View style={{ flex: 1 }} />
@@ -272,7 +275,7 @@ export default function PronoteLoginWithQR() {
                 textAlign: "center",
               }}
             >
-              Validation du QR code
+              {t("ONBOARDING_QRCODE_VALIDATION")}
             </Typography>
           </View>
 
@@ -295,7 +298,7 @@ export default function PronoteLoginWithQR() {
               width: 300,
               marginBottom: 12
             }}>
-              Indique le code à 4 chiffres que tu viens de créer sur PRONOTE
+              {t("ONBOARDING_PRONOTE_PIN")}
             </Typography>
           </Reanimated.View>
 
@@ -341,14 +344,14 @@ export default function PronoteLoginWithQR() {
             }}
           >
             <Button
-              title="Confirmer"
+              title={t("CONFIRM_BTN")}
               onPress={() => {
                 setPinModalVisible(false);
                 loginQR();
               }}
             />
             <Button
-              title="Annuler"
+              title={t("CANCEL_BTN")}
               variant="outline"
               onPress={() => {
                 setPinModalVisible(false);
@@ -365,10 +368,10 @@ export default function PronoteLoginWithQR() {
           <Papicons name="QrCode" />
         </Icon>
         <Typography style={styles.title}>
-          Connexion à PRONOTE
+          {t("ONBOARDING_LOGIN_TO")} PRONOTE
         </Typography>
         <Typography style={styles.text}>
-          Scanne le QR code de ton établissement pour te connecter.
+          {t("ONBOARDING_SCAN_QRCODE")}
         </Typography>
       </View>
 
