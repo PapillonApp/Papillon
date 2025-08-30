@@ -125,44 +125,44 @@ const SettingsIndex = () => {
     }
   ]
 
-  const BigButtons: Array<{ icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void; }> = [
-    {
-      icon: <Papicons name={"Palette"} />,
-      title: "Personnalisation",
-      description: "Thèmes, matières...",
-      color: "#17C300",
-      onPress: () => {
-        router.navigate("/(settings)/personalization")
+  const BigButtons: Array<{
+    disabled?: boolean; icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void;
+  }> = [
+      {
+        icon: <Papicons name={"Palette"} />,
+        title: "Personnalisation",
+        description: "Thèmes, matières...",
+        color: "#17C300",
+        onPress: () => {
+          router.navigate("/(settings)/personalization")
+        }
+      },
+      {
+        icon: <Papicons name={"User"} />,
+        title: "Services",
+        description: "Comptes liés",
+        color: "#DD9B00",
+        disabled: true,
+      },
+      {
+        icon: <Papicons name={"Card"} />,
+        title: "Cartes",
+        description: "Cantine, accès",
+        color: "#0059DD",
+        onPress: () => {
+          router.navigate("/(settings)/cards")
+        }
+      },
+      {
+        icon: <Papicons name={"Sparkles"} />,
+        title: "Magic+",
+        description: "Fonctions I.A",
+        color: "#DD007D",
+        onPress: () => {
+          router.navigate("/(settings)/magic")
+        }
       }
-    },
-    {
-      icon: <Papicons name={"Bell"} />,
-      title: "Notifications",
-      description: "Alertes, fréquence...",
-      color: "#DD9B00",
-      onPress: () => {
-        console.log("sus")
-      }
-    },
-    {
-      icon: <Papicons name={"Card"} />,
-      title: "Cartes",
-      description: "Cantine, accès",
-      color: "#0059DD",
-      onPress: () => {
-        router.navigate("/(settings)/cards")
-      }
-    },
-    {
-      icon: <Papicons name={"Sparkles"} />,
-      title: "Magic+",
-      description: "Fonctions I.A",
-      color: "#DD007D",
-      onPress: () => {
-        router.navigate("/(settings)/magic")
-      }
-    }
-  ]
+    ]
 
   const RenderBigButtons = useCallback(() => {
     return (
@@ -175,7 +175,7 @@ const SettingsIndex = () => {
               return (
                 <AnimatedPressable
                   onPress={button.onPress}
-                  style={{ flex: 1, width: "50%" }}
+                  style={{ flex: 1, width: "50%", opacity: 0.3 }}
                   key={button.title}
                 >
                   <Stack
@@ -185,14 +185,14 @@ const SettingsIndex = () => {
                     gap={14}
                     padding={16}
                     radius={25}
-                    backgroundColor={adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                    backgroundColor={button.disabled ? "#e7e7e7ff" : adjust(button.color, theme.dark ? -0.85 : 0.85)}
                   >
-                    <Icon papicon size={24} fill={newButtonColor}>
+                    <Icon papicon size={24} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}
                     </Icon>
                     <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
-                      <Typography inline variant="title" color={newButtonColor}>{button.title}</Typography>
-                      <Typography inline variant="caption" color={newButtonColor}>{button.description}</Typography>
+                      <Typography inline variant="title" color={button.disabled ? "#505050" : newButtonColor}>{button.title}</Typography>
+                      <Typography inline variant="caption" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</Typography>
                     </Stack>
                   </Stack>
                 </AnimatedPressable>

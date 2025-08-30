@@ -31,18 +31,6 @@ const SettingsServices = () => {
         </List>
       )}
 
-      {accountStore.accounts.length > 0 && (
-        <List>
-          {accountStore.accounts.map((account, index) => (
-            <Item key={index}>
-              <Typography variant="body2">
-                {JSON.stringify(account, null, 2)}
-              </Typography>
-            </Item>
-          ))}
-        </List>
-      )}
-
       {accountStore.accounts.length === 0 && (
         <Stack
           vAlign="center"

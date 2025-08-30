@@ -214,6 +214,7 @@
   "Settings_Accessibility_Description": "Affichage, son...",
   "Settings_MagicPlus_Title": "Magic+",
   "Settings_MagicPlus_Description": "Fonctionnalités intelligentes",
+  "Settings_MagicPlus_ExplanationLocal": "Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil",
   "Settings_Donate_Title": "Faire un don",
   "Settings_Donate_Description": "Soutenir le projet",
   "Settings_About_Title": "À propos",

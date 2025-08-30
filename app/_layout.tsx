@@ -110,6 +110,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
+  const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
 
   const color = useMemo(() => {
     const color = selectedColorEnum != null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
@@ -117,8 +118,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   }, [selectedColorEnum]);
 
   useEffect(() => {
-    ModelManager.safeInit();
-  }, []);
+    if (magicEnabled) {
+      ModelManager.safeInit();
+    }
+  }, [magicEnabled]);
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {

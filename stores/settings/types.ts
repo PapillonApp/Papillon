@@ -13,7 +13,6 @@ export interface SettingsState {
 }
 
 export interface Personalization {
-  profilePictureB64?: string;
   colorSelected?: Colors;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;

@@ -37,6 +37,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "expo": "^54.0.0-preview.11",
+    "expo-battery": "^9.1.4",
     "expo-blur": "~15.0.4",
     "expo-build-properties": "~1.0.5",
     "expo-camera": "~17.0.4",
@@ -46,6 +47,7 @@
     "expo-file-system": "18.1.11",
     "expo-font": "~14.0.5",
     "expo-haptics": "~15.0.4",
+    "expo-image-picker": "~17.0.5",
     "expo-linear-gradient": "~15.0.4",
     "expo-linking": "~8.0.5",
     "expo-localization": "~17.0.4",
@@ -91,8 +93,7 @@
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.34.0",
     "victory-native": "^41.19.3",
-    "zustand": "^5.0.4",
-    "expo-image-picker": "~17.0.5"
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

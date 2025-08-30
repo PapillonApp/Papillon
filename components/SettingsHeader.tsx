@@ -17,6 +17,7 @@ interface SettingsHeaderProps {
   onSwitchChange?: (value: boolean) => void
   switchLabel?: string
   switchColor?: string
+  disableMargin?: boolean
 }
 
 export default function SettingsHeader({
@@ -30,7 +31,8 @@ export default function SettingsHeader({
   switchValue = false,
   onSwitchChange,
   switchLabel,
-  switchColor
+  switchColor,
+  disableMargin = false,
 }: SettingsHeaderProps) {
   const theme = useTheme()
   const { colors } = theme
@@ -42,15 +44,15 @@ export default function SettingsHeader({
         padding: 13,
         backgroundColor: color,
         borderRadius: 25,
-        height,
-        justifyContent: "flex-end",
+        height: imageSource ? height : undefined,
+        justifyContent: imageSource ? "flex-end" : "center",
         borderWidth: 1,
         borderColor: colors.border
       }}
       hAlign="center"
     >
       {imageSource && (
-        <View style={{ justifyContent: "flex-end", alignItems: "center", marginBottom: 5 }}>
+        <View style={{ justifyContent: "flex-end", alignItems: "center", marginBottom: disableMargin ? -5 : 5 }}>
           <Image
             source={imageSource}
             style={{
@@ -80,13 +82,11 @@ export default function SettingsHeader({
           </Icon>
         )}
 
-        <Stack flex direction="vertical" style={{ flex: 1 }}>
+        <Stack flex style={{ flex: 1, gap: 0 }}>
           <Typography variant="title">{title}</Typography>
-          <Typography style={{ opacity: 0.6 }} variant="caption">
+          <Typography variant="caption" color="secondary">
             {description}
           </Typography>
-
-
         </Stack>
         {showSwitch && (
           <Stack direction="horizontal" style={{ alignItems: "center", gap: 8 }}>
