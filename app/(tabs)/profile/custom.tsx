@@ -57,7 +57,7 @@ export default function CustomProfileScreen() {
 
   const updateProfilePictureFromService = async () => {
     Alert.alert(
-      "Ça arrive bientôt !",
+      t("Feature_Soon"),
       "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
       [{ text: "OK" }]
     );
