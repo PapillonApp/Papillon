@@ -182,6 +182,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Modal_Grades_Title"),
+                  presentation: "modal",
                   headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
                 }}
