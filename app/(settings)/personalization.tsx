@@ -9,7 +9,7 @@ import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
 import AppColorsSelector from "@/components/AppColorsSelector";
-import { AppColors, Colors } from "@/utils/colors";
+import { AppColors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
@@ -163,8 +163,9 @@ const PersonalizationSettings = () => {
               color={"secondary"}
             >{t("Settings_Personalization_Icon_Description")}</Typography>
           </Item>
-          <Item onPress={() => {
-          }}
+          <Item
+            onPress={() => {
+            }}
           >
             <Icon size={30}>
               <Papicons name={"PenAlt"}

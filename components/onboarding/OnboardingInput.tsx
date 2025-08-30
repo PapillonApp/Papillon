@@ -14,7 +14,7 @@ const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputPro
   keyboardType?: KeyboardTypeOptions
   inputProps: TextInputProps
 }) => {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
 
   return (
     <Stack flex direction="horizontal" hAlign="center" vAlign="center">
@@ -27,7 +27,7 @@ const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputPro
         style={{
           flex: 1,
           padding: 20,
-          backgroundColor: colors.text + "15",
+          backgroundColor: colors.text + (dark ? "15":"08"),
           borderRadius: 300,
           borderWidth: 1,
           borderColor: colors.border
@@ -36,18 +36,19 @@ const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputPro
         <Icon
           papicon
           size={24}
-          fill={colors.text + "7F"}
+          fill={colors.text + "AF"}
         >
           <Papicons name={icon} />
         </Icon>
         <TextInput
           placeholder={placeholder}
-          placeholderTextColor="#5B5B5B"
+          placeholderTextColor={colors.text + "7F"}
           onChangeText={setText}
           value={text}
           style={{
-            color: colors.text + "7F",
-            fontSize: 18,
+            color: colors.text + "AF",
+            fontFamily: "semibold",
+            fontSize: 19,
             fontWeight: "600",
             flex: 1,
           }}
