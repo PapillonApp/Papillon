@@ -9,6 +9,7 @@ import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
+import { useTheme } from "@react-navigation/native";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");
@@ -43,6 +44,9 @@ export default function TabOneScreen() {
     }
   };
 
+  const theme = useTheme();
+  const { colors } = theme;
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -51,17 +55,17 @@ export default function TabOneScreen() {
     >
       <List>
         {icalUrl.length > 0 &&
-                    <Item>
-                      <Icon>
-                        <TypeIcon opacity={icalTitle.length > 0 ? 1 : 0.5} />
-                      </Icon>
-                      <TextInput
-                        placeholder={t("Form_Title")}
-                        value={icalTitle}
-                        onChangeText={setIcalTitle}
-                        style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium" }}
-                      />
-                    </Item>
+          <Item>
+            <Icon>
+              <TypeIcon opacity={icalTitle.length > 0 ? 1 : 0.5} />
+            </Icon>
+            <TextInput
+              placeholder={t("Form_Title")}
+              value={icalTitle}
+              onChangeText={setIcalTitle}
+              style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
+            />
+          </Item>
         }
         <Item>
           <Icon>
@@ -71,7 +75,7 @@ export default function TabOneScreen() {
             placeholder={t("Tab_Calendar_Icals_Add_URL")}
             value={icalUrl}
             onChangeText={setIcalUrl}
-            style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium" }}
+            style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
           />
           {icalUrl.length > 0 && (
             <Trailing>
