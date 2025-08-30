@@ -20,7 +20,7 @@ export default function QRCodeAndCardsPage() {
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => account.id === store.lastUsedAccount)
   const selfCompatible = account?.services.filter(
-    service => [Services.TURBOSELF, Services.ARD].includes(service.serviceId)
+    service => [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId)
   );
 
   async function fetchWallets() {
