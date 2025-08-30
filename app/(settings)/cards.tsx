@@ -13,6 +13,7 @@ import List from "@/ui/components/List"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 import SettingsHeader from "@/components/SettingsHeader"
+import { getServiceBackground, getServiceName } from "@/utils/services/helper";
 import { useTranslation } from "react-i18next";
 
 export default function CardView() {
@@ -20,10 +21,11 @@ export default function CardView() {
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => account.id === store.lastUsedAccount);
   const selfCompatible = account?.services.filter(
-    service => [Services.TURBOSELF, Services.ARD].includes(service.serviceId)
+    service => [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId)
   );
 
   const theme = useTheme()
+  const { colors } = theme;
   const { t } = useTranslation();
 
   return (
@@ -54,16 +56,16 @@ export default function CardView() {
                 {selfCompatible?.map(service => (
                   <Item key={service.id}>
                     <Leading>
-                      <Image source={require("@/assets/images/turboself_card.png")} style={{
+                      <Image source={getServiceBackground(service.serviceId)} style={{
                         width: 60,
                         height: 40,
                         borderRadius: 4
                       }} />
                     </Leading>
                     <Trailing>
-                      <Papicons name={"ChevronRight"} />
+                      <Papicons name={"ChevronRight"} fill={colors.text} opacity={0.5} />
                     </Trailing>
-                    <Typography>{Services[service.serviceId].charAt(0).toUpperCase() + Services[service.serviceId].slice(1).toLowerCase()}</Typography>
+                    <Typography>{getServiceName(service.serviceId)}</Typography>
                     <Typography style={{ opacity: 0.5 }}>Ajoutée le {new Date(service.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}</Typography>
                   </Item>
                 ))}
