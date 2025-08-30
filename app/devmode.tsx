@@ -51,30 +51,6 @@ export default function Devmode() {
           <Trailing>
             <Switch
               style={{ marginRight: 10 }}
-              value={showAccountStore}
-              onValueChange={() => {
-                requestAnimationFrame(() => {
-                  setShowAccountStore(!showAccountStore);
-                });
-              }}
-            />
-          </Trailing>
-          <Typography variant="title">Account Store</Typography>
-        </Item>
-        {showAccountStore && (
-          <Item>
-            <Typography variant="body2">
-              {JSON.stringify(accountStore, null, 2)}
-            </Typography>
-          </Item>
-        )}
-      </List>
-
-      <List>
-        <Item>
-          <Trailing>
-            <Switch
-              style={{ marginRight: 10 }}
               value={showLogsStore}
               onValueChange={() => {
                 requestAnimationFrame(() => {
@@ -85,15 +61,7 @@ export default function Devmode() {
           </Trailing>
           <Typography variant="title">Logs Store</Typography>
         </Item>
-        <Item onPress={() => {
-          const accounts = useAccountStore.getState().accounts
-          for (const account of accounts) {
-            useAccountStore.getState().removeAccount(account)
-          }
-          Alert.alert("Success")
-        }}>
-          <Typography variant="title">Reset Account Store</Typography>
-        </Item>
+
 
         {showLogsStore &&
           logsStore.logs
@@ -112,6 +80,7 @@ export default function Devmode() {
               </Item>
             ))}
 
+
         {showLogsStore && visibleLogsCount < logsStore.logs.length && (
           <Item onPress={loadMoreLogs}>
             <Leading>
@@ -120,6 +89,15 @@ export default function Devmode() {
             <Typography variant="title">Charger plus</Typography>
           </Item>
         )}
+        <Item onPress={() => {
+          const accounts = useAccountStore.getState().accounts
+          for (const account of accounts) {
+            useAccountStore.getState().removeAccount(account)
+          }
+          Alert.alert("Success")
+        }}>
+          <Typography variant="title">Reset Account Store</Typography>
+        </Item>
       </List>
 
       <List>

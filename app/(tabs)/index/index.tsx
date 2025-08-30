@@ -388,20 +388,6 @@ export default function TabOneScreen() {
           },
           {
             icon: <Papicons name={"Butterfly"} />,
-            title: "Onboarding",
-            redirect: "/(onboarding)/welcome",
-            buttonLabel: "Aller",
-            dev: false
-          },
-          {
-            icon: <Papicons name={"Palette"} />,
-            title: "Onboarding Color",
-            redirect: "/(onboarding)/end/color",
-            buttonLabel: "Aller",
-            dev: false
-          },
-          {
-            icon: <Papicons name={"Butterfly"} />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
