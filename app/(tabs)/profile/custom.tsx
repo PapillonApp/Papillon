@@ -10,8 +10,10 @@ import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, TextInput, View } from "react-native";
+import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import * as ImagePicker from "expo-image-picker"
+import ViewContainer from "@/ui/components/ViewContainer";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -44,9 +46,14 @@ export default function CustomProfileScreen() {
     }
   }, [account]);
 
+  const insets = useSafeAreaInsets()
 
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={"position"}
+      keyboardVerticalOffset={-insets.top * 3.2}
+      style={{ flex: 1 }}
+    >
       <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
         {profilePicture()}
         <Button
@@ -75,7 +82,7 @@ export default function CustomProfileScreen() {
 
       <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
         <View style={{ gap: 10 }}>
-          <Stack direction="horizontal" style={{ borderRightWidth: 1, borderRightColor: colors.border }} gap={5}>
+          <Stack direction="horizontal" gap={5}>
             <Icon papicon opacity={0.5}>
               <Font />
             </Icon>
@@ -110,7 +117,7 @@ export default function CustomProfileScreen() {
         </View>
 
         <View style={{ gap: 10 }}>
-          <Stack direction="horizontal" style={{ borderRightWidth: 1, borderRightColor: colors.border }} gap={5}>
+          <Stack direction="horizontal" gap={5}>
             <Icon papicon opacity={0.5}>
               <Bold />
             </Icon>
@@ -157,6 +164,6 @@ export default function CustomProfileScreen() {
         </NativeHeaderPressable>
 
       </NativeHeaderSide>
-    </>
+    </ KeyboardAvoidingView >
   );
 }
