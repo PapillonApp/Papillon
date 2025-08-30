@@ -1,4 +1,4 @@
-![Contribution](https://github.com/PapillonApp/papillon-v8/raw/main/.github/contribution_header.png)
+![Contribution](https://github.com/PapillonApp/papillon-v8/raw/main/.github/assets/contribution_header.png)
 
 # Règles de contribution
 > [!CAUTION]
