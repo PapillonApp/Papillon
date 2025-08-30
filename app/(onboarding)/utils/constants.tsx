@@ -104,6 +104,8 @@ export interface SupportedUniversity {
 }
 
 export function getSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
+    const { t } = useTranslation();
+
     return [
         {
             name: "univ-lorraine",
@@ -139,7 +141,7 @@ export function getSupportedUniversities(redirect: (path: { pathname: string }) 
         },
         {
             name: "limited-functions",
-            title: "Fonctionnalités limitées",
+            title: t("Feature_Limited"),
             hasLimitedSupport: true,
             image: require("@/assets/images/univ_lannion.png"),
             type: "separator",

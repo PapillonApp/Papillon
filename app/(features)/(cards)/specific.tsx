@@ -30,6 +30,7 @@ import { Card } from "./cards";
 import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { Services } from "@/stores/account/types";
+import { useTranslation } from "react-i18next";
 
 export { getServiceName };
 
@@ -130,6 +131,8 @@ export default function QRCodeAndCardsPage() {
       );
     }
   };
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -240,10 +243,10 @@ export default function QRCodeAndCardsPage() {
                     <Papicons name="Card" />
                   </Icon>
                   <Typography variant="h4" color="text" align="center">
-                    Aucune réservation
+                    {t("Profile_Cards_No_Reservation")}
                   </Typography>
                   <Typography variant="body2" color="secondary" align="center">
-                    Il semblerait que tu ne puisses pas réserver ce jour.
+                    {t("Profile_Cards_No_Available_Reservation")}
                   </Typography>
                 </View>
               </Stack>
@@ -256,7 +259,7 @@ export default function QRCodeAndCardsPage() {
                 <Icon papicon opacity={0.5}>
                   <Clock />
                 </Icon>
-                <Typography color="secondary">Historique</Typography>
+                <Typography color="secondary">{t("Profile_Cards_History")}</Typography>
               </Stack>
               <List>
                 {history.map(c => <HistoryEntry key={c.date.toISOString()} {...c} />)}

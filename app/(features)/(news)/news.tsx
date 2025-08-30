@@ -12,6 +12,7 @@ import { View, FlatList, Image } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Variant } from "@/ui/components/Typography"
+import { useTranslation } from "react-i18next";
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();
@@ -46,6 +47,8 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
     });
   };
 
+  const { t } = useTranslation();
+
   return (
     <AnimatedPressable onPress={handlePress} style={{ overflow: "visible" }}>
       <Stack
@@ -58,9 +61,9 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
             style={{ paddingHorizontal: 15, paddingTop: 5 }}
           >
             <Icon papicon fill="#DD00D2">
-              <Papicons name={Sparkles} />
+              <Papicons name={"Sparkles"} />
             </Icon>
-            <Typography color="#DD00D2">Peut-être important</Typography>
+            <Typography color="#DD00D2">{t("Magic_Important")}</Typography>
           </Stack>
         )}
         <View

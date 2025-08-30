@@ -1,9 +1,8 @@
-import { Butterfly, Papicons } from '@getpapillon/papicons';
-import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { Papicons } from '@getpapillon/papicons';
+import { router, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { AccountKind, createSessionHandle, loginCredentials, SecurityError } from 'pawnote';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, FlatList, Keyboard, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Dimensions, Keyboard, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Reanimated, {
   Extrapolate,
   FadeInDown,
@@ -13,8 +12,6 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { Fetcher } from "@literate.ink/utilities";
 
 import { useAccountStore } from '@/stores/account';
 import { Account, Services } from '@/stores/account/types';
@@ -27,16 +24,12 @@ import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import { useTheme } from '@react-navigation/native';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { customFetcher } from '@/utils/pronote/fetcher';
 import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session } from 'pawdirecte';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import TableFlatList from '@/ui/components/TableFlatList';
-import { Avatar } from '@/app/(features)/(news)/news';
 import OnboardingScrollingFlatList from '@/components/onboarding/OnboardingScrollingFlatList';
 import { error } from '@/utils/logger/logger';
 import { useTranslation } from 'react-i18next';
 
-const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
 const KEYBOARD_HEIGHT = 270;
 const ANIMATION_DURATION = 170;
@@ -44,7 +37,6 @@ const OPACITY_THRESHOLD = 600;
 
 
 export default function EDLoginWithCredentials() {
-  const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
   const theme = useTheme();
   const { colors } = theme;
@@ -58,8 +50,9 @@ export default function EDLoginWithCredentials() {
   const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthChallenge | null>(null);
   const [doubleAuthAnswer, setDoubleAuthAnswer] = useState<string | null>(null);
 
+  const { height: screenHeight } = Dimensions.get("screen");
+  const INITIAL_HEIGHT = screenHeight / 1.5;
   const height = useSharedValue(INITIAL_HEIGHT);
-  const local = useGlobalSearchParams();
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
@@ -345,6 +338,15 @@ export default function EDLoginWithCredentials() {
                 autoComplete="url"
                 secureTextEntry
                 keyboardType="default"
+                onSubmitEditing={async () => {
+                  if (!username.trim() && !password.trim()) return;
+                  const device_uuid = uuid()
+                  if (!session) {
+                    const newSession = { username, device_uuid }
+                    setSession(newSession)
+                  }
+                  handleLogin(password, session!)
+                }}
               />
             </Stack>
           </Stack>

@@ -12,16 +12,18 @@ import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
+import { useTranslation } from "react-i18next";
 
 const SettingsAbout = () => {
   const theme = useTheme()
   const { colors } = theme
 
+  const { t } = useTranslation();
 
   const Items = [
     {
-      title: "Donateurs",
-      description: "Voir la liste des donateurs",
+      title: t("Settings_Donator"),
+      description: t("Settings_Donator_Description"),
       leading: <Papicons name="PiggyBank" />,
       onPress: () => console.log("sus"),
     },
@@ -41,7 +43,7 @@ const SettingsAbout = () => {
 
   const Infos = [
     {
-      title: "Version de l'application",
+      title: t("Settings_App_Version"),
       description: packageJson.version,
       leading: <Papicons name="Butterfly" />,
     },
