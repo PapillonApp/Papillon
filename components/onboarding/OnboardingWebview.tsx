@@ -9,6 +9,7 @@ import { WebView, WebViewProps } from "react-native-webview";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import Animated from "react-native-reanimated";
+import { t } from "i18next";
 
 const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webViewRef }: {
   title: string
@@ -121,7 +122,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
             >
               <ActivityIndicator size={"large"} />
-              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>Un peu de patience...</Typography>
+              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>{t("Webview_Wait")}</Typography>
               <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>Nous chargons le site de ton établissement</Typography>
             </View>
             <WebView
