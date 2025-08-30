@@ -5,7 +5,7 @@ import { KeyboardTypeOptions, TextInput, TextInputProps } from "react-native";
 import React from "react";
 import { useTheme } from "@react-navigation/native";
 
-const OnboardingInput = ({placeholder, text, setText, isPassword, icon}: {
+const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputProps}: {
   placeholder: string
   text: string
   setText: (text: string) => void
@@ -53,6 +53,7 @@ const OnboardingInput = ({placeholder, text, setText, isPassword, icon}: {
           }}
           secureTextEntry={isPassword ?? false}
           keyboardType={"default"}
+          {...inputProps}
         />
       </Stack>
     </Stack>
