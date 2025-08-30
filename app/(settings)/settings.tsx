@@ -80,7 +80,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
-          onPress: () => console.log("sus")
+          onPress: () => null
         },
         {
           title: t('Settings_Donate_Title'),
@@ -88,7 +88,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
-          onPress: () => console.log("sus")
+          onPress: () => null
         },
         {
           title: t('Settings_About_Title'),
@@ -96,7 +96,7 @@ const SettingsIndex = () => {
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
-          onPress: () => console.log("sus")
+          onPress: () => router.navigate("/(settings)/about")
         }
       ]
     },
@@ -139,14 +139,18 @@ const SettingsIndex = () => {
       title: "Personnalisation",
       description: "Thèmes, matières...",
       color: "#17C300",
-      href: "personalization"
+      onPress: () => {
+        router.navigate("/(settings)/personalization")
+      }
     },
     {
       icon: <Papicons name={"Bell"} />,
       title: "Notifications",
       description: "Alertes, fréquence...",
       color: "#DD9B00",
-      href: "notifications"
+      onPress: () => {
+        console.log("sus")
+      }
     },
     {
       icon: <Papicons name={"Card"} />,
@@ -162,7 +166,9 @@ const SettingsIndex = () => {
       title: "Magic+",
       description: "Fonctions I.A",
       color: "#DD007D",
-      href: "magic"
+      onPress: () => {
+        router.navigate("/(settings)/magic")
+      }
     }
   ]
 
@@ -216,7 +222,7 @@ const SettingsIndex = () => {
           >
             <List>
               <Item
-                onPress={() => router.replace("./services")}
+                onPress={() => router.navigate("/(settings)/services")}
               >
                 <Leading>
                   <Image
@@ -238,7 +244,12 @@ const SettingsIndex = () => {
                     }
                     {establishment &&
                       <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                        <Typography variant={"body1"} color="secondary">
+                        <Typography
+                          variant={"body1"}
+                          color="secondary"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={{ maxWidth: 190 }}>
                           {establishment}
                         </Typography>
                       </Stack>

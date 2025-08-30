@@ -13,7 +13,6 @@ export async function addSubjectsToDatabase(
   const db = getDatabaseInstance();
 
   for (const item of subjects) {
-    console.log("Trying to add subject", item.name)
     const id = generateId(item.name);
     const existingForAccount = await db.get('subjects').query(Q.where('subjectId', id)).fetch();
 

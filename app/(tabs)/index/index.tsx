@@ -38,6 +38,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { Account } from "@/stores/account/types";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import GradesWidget from "./widgets/Grades";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -91,7 +92,6 @@ export default function TabOneScreen() {
     const validPeriods: Period[] = []
     const date = new Date().getTime()
     for (const period of gradePeriods) {
-      console.log(period.start.getTime() > date && period.end.getTime() > date)
       if (period.start.getTime() > date && period.end.getTime() > date) {
         validPeriods.push(period);
       }
@@ -134,12 +134,12 @@ export default function TabOneScreen() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) return [null, null, null, null];
+    if (!lastUsedAccount) return [null, null, null, null];
 
-    let firstName = account.firstName;
-    let lastName = account.lastName;
-    let level = account.className;
-    let establishment = account.schoolName;
+    let firstName = lastUsedAccount.firstName;
+    let lastName = lastUsedAccount.lastName;
+    let level = lastUsedAccount.className;
+    let establishment = lastUsedAccount.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account, accounts]);
@@ -183,6 +183,7 @@ export default function TabOneScreen() {
         </Typography>
       </Stack>
     ),
+    <GradesWidget header accent={foreground} />,
   ];
 
   return (
@@ -220,22 +221,22 @@ export default function TabOneScreen() {
 
       <TabFlatList
         translucent={true}
+        removeClippedSubviews={true}
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
-        height={180}
+        height={200}
         header={
           <>
             <FlatList
               style={{
                 backgroundColor: "transparent",
-                borderRadius: 26,
                 borderCurve: "continuous",
                 paddingBottom: 12
               }}
               horizontal
               data={headerItems}
               snapToInterval={Dimensions.get("window").width}
-              decelerationRate="fast"
+              decelerationRate={"fast"}
               showsHorizontalScrollIndicator={false}
               onScroll={e => {
                 const page = Math.round(
@@ -244,6 +245,10 @@ export default function TabOneScreen() {
                 setCurrentPage(page);
               }}
               scrollEventThrottle={16}
+              keyExtractor={(_, index) => "headerItem:" + index}
+              initialNumToRender={1}
+              maxToRenderPerBatch={1}
+              removeClippedSubviews={true}
               renderItem={({ item }) => (
                 <View
                   style={{
@@ -267,7 +272,7 @@ export default function TabOneScreen() {
                   justifyContent: "center",
                   alignItems: "center",
                   position: "absolute",
-                  bottom: 0,
+                  bottom: 10,
                   gap: 6,
                 }}
               >
@@ -277,9 +282,9 @@ export default function TabOneScreen() {
                     style={{
                       width: currentPage === i ? 16 : 6,
                       height: currentPage === i ? 8 : 6,
-                      backgroundColor: colors.text,
+                      backgroundColor: currentPage === i ? foreground : foregroundSecondary,
                       borderRadius: 200,
-                      opacity: currentPage === i ? 0.5 : 0.25
+                      opacity: currentPage === i ? 1 : 0.5
                     }}
                   />
                 ))}
@@ -308,10 +313,10 @@ export default function TabOneScreen() {
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
                     onPress={() => {
-                      navigation.navigate('(modals)/course', {
+                      (navigation as any).navigate('(modals)/course', {
                         course: item,
                         subjectInfo: {
-                          id: item.subjectId,
+                          id: item.id,
                           name: item.subject,
                           color: getSubjectColor(item.subject),
                           emoji: getSubjectEmoji(item.subject),
@@ -358,7 +363,7 @@ export default function TabOneScreen() {
                     date={item.givenAt}
                     variant="home"
                     onPress={() => {
-                      navigation.navigate('(modals)/grade', {
+                      (navigation as any).navigate('(modals)/grade', {
                         grade: item,
                         subjectInfo: {
                           id: item.subjectId,
@@ -403,8 +408,8 @@ export default function TabOneScreen() {
             dev: false
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
-        keyExtractor={(item, index) => item.title + index}
-        renderItem={({ item }) => {
+        keyExtractor={(item, index) => item.title}
+        renderItem={({ item, index }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
           }

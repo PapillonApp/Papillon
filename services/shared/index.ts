@@ -475,7 +475,6 @@ export class AccountManager {
         return combinedResult;
       }
     } catch (e) {
-      console.log("Error fetching data for capability " + capability + ":", e)
       if (options?.fallback) {
         return await options.fallback();
       }

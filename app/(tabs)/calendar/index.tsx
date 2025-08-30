@@ -23,8 +23,9 @@ import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
-import { warn } from "@/utils/logger/logger";
+import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -110,11 +111,9 @@ export default function TabOneScreen() {
             ...prevFetchedWeeks,
             ...weeksToFetch,
           ]);
-
-          console.log('Fetched events for weeks:', weeksToFetch);
         }
       } catch (error) {
-        console.error('Error fetching weekly timetable:', error);
+        log('Error fetching weekly timetable: ' + error);
       } finally {
         setManualRefreshing(false);
         fetchTimeoutRef.current = null;
@@ -151,7 +150,8 @@ export default function TabOneScreen() {
     fetchWeeklyTimetable(weekNumber, true);
   }, [weekNumber]);
 
-  const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
+  const headerHeight = insets.top + 42;
   const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
   const windowWidth = Dimensions.get("window").width;
@@ -201,7 +201,6 @@ export default function TabOneScreen() {
     }
 
     if (newWeekNumber !== weekNumber) {
-      console.log('Date picker changed week from', weekNumber, 'to', newWeekNumber);
       setWeekNumber(newWeekNumber);
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
@@ -231,7 +230,6 @@ export default function TabOneScreen() {
       setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
       const newWeekNumber = getWeekNumberFromDate(newDate);
       if (newWeekNumber !== weekNumber) {
-        console.log('Week changed from', weekNumber, 'to', newWeekNumber);
         setWeekNumber(newWeekNumber);
         // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
       }
@@ -331,8 +329,6 @@ export default function TabOneScreen() {
           keyExtractor={(item) => item.id}
           ListEmptyComponent={<EmptyListComponent />}
           renderItem={({ item }: { item: SharedCourse }) => {
-            console.log(item)
-
             if ((item as any).type === 'separator') {
               return (
                 <Course
@@ -447,7 +443,7 @@ export default function TabOneScreen() {
           }}
         >
           <NativeHeaderPressable>
-            <Papicons name={"Calendar"} color={"#D6502B"} size={28}/>
+            <Papicons name={"Calendar"} color={"#D6502B"} size={28} />
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>

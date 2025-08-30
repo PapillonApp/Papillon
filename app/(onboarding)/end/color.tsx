@@ -18,6 +18,7 @@ import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { AppColors } from "@/utils/colors";
 import AppColorsSelector from "@/components/AppColorsSelector";
+import { t } from "i18next";
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -72,7 +73,7 @@ export default function ChooseColorScreen() {
         />
       </Reanimated.View>
       <LinearGradient
-        colors={["rgba(255,255,255,0)", "#FFF"]}
+        colors={[colors.background + "00", colors.background]}
         locations={[0.0498, 0.8193]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -94,16 +95,25 @@ export default function ChooseColorScreen() {
       </Reanimated.View>
       <View style={{ marginTop: 40, padding: 20, flex: 1, gap: 22 }}>
         <View>
-          <Typography color={adjust(selectedColor, -0.3)} variant="h4">Avant de terminer</Typography>
+          <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h4">Avant de terminer</Typography>
           <Stack gap={0}>
-            <Typography color={adjust(selectedColor, -0.3)} variant="h2">Choisis une</Typography>
-            <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, -0.3)} variant="h2">couleur de thème</Typography>
+            <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">Choisis une</Typography>
+            <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">couleur de thème</Typography>
           </Stack>
         </View>
-        <AppColorsSelector
-          onChangeColor={handleColorChange}
-          accountId={accountId}
-        />
+        <View>
+          <AppColorsSelector
+            onChangeColor={handleColorChange}
+            accountId={accountId}
+          />
+        </View>
+        <Typography
+          style={{ paddingTop: 10, flex: 1 }}
+          color="#7F7F7F"
+          variant="caption"
+        >
+          {t("Settings_Personalization_Accent_Description")}
+        </Typography>
         <Button
           title="Terminer"
           onPress={async () => {

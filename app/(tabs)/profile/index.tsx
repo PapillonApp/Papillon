@@ -39,6 +39,7 @@ import { warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
 import { Avatar } from "@/app/(features)/(news)/news";
 
+
 function Tabs() {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [discussion, setDiscussion] = useState<Chat[]>([]);
@@ -335,15 +336,15 @@ export default function TabOneScreen() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) { return [null, null, null, null]; }
+    if (!lastUsedAccount) return [null, null, null, null];
 
-    const firstName = account.firstName;
-    const lastName = account.lastName;
-    const level = account.className;
-    const establishment = account.schoolName;
+    let firstName = lastUsedAccount.firstName;
+    let lastName = lastUsedAccount.lastName;
+    let level = lastUsedAccount.className;
+    let establishment = lastUsedAccount.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [account]);
+  }, [lastUsedAccount]);
 
   const headerHeight = useHeaderHeight();
 
@@ -453,7 +454,13 @@ export default function TabOneScreen() {
                   )}
                   {establishment && (
                     <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Typography variant={"body1"} color="secondary">
+                      <Typography
+                        variant={"body1"}
+                        color="secondary"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={{ maxWidth: 230 }}
+                      >
                         {establishment}
                       </Typography>
                     </Stack>

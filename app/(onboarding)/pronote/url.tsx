@@ -1,27 +1,24 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
-import { RelativePathString, router, useFocusEffect } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
+import React, { useEffect, useCallback, useMemo, useState } from "react";
+import { StyleSheet, Pressable, Keyboard } from "react-native";
+import { RelativePathString, router, useFocusEffect } from "expo-router";
+import LottieView from "lottie-react-native";
 
-import Typography from '@/ui/components/Typography';
-import Stack from '@/ui/components/Stack';
-
-import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
-import ViewContainer from '@/ui/components/ViewContainer';
+import Typography from "@/ui/components/Typography";
+import Stack from "@/ui/components/Stack";
+import ViewContainer from "@/ui/components/ViewContainer";
 import Reanimated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withTiming
-} from 'react-native-reanimated';
-import Svg, { Path } from 'react-native-svg';
-import { cleanURL, instance } from 'pawnote';
-import { useAlert } from '@/ui/components/AlertProvider';
-import { useTheme } from '@react-navigation/native';
+  withTiming,
+} from "react-native-reanimated";
+import Svg, { Path } from "react-native-svg";
+import { cleanURL, instance } from "pawnote";
+import { useAlert } from "@/ui/components/AlertProvider";
+import { useTheme } from "@react-navigation/native";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 const INITIAL_HEIGHT = 680;
 const COLLAPSED_HEIGHT = 270;
@@ -37,8 +34,8 @@ const staticStyles = StyleSheet.create({
     flex: 1,
   },
   stackContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    alignItems: "center",
+    justifyContent: "flex-end",
     borderBottomLeftRadius: 42,
     borderBottomRightRadius: 42,
     paddingBottom: 34,
@@ -46,10 +43,10 @@ const staticStyles = StyleSheet.create({
     height: "100%",
   },
   backButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 16,
     zIndex: 200,
-    backgroundColor: '#ffffff42',
+    backgroundColor: "#ffffff42",
     padding: 10,
     borderRadius: 100,
   },
@@ -86,35 +83,34 @@ const LinkIcon = React.memo(() => (
     />
   </Svg>
 ));
-LinkIcon.displayName = 'LinkIcon';
+LinkIcon.displayName = "LinkIcon";
 
 
 export default function URLInputScreen() {
-  const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
   const theme = useTheme();
   const { colors } = theme;
 
-  const alert = useAlert()
-  const [instanceURL, setInstanceURL] = useState<string>("")
+  const alert = useAlert();
+  const [instanceURL, setInstanceURL] = useState<string>("");
 
   const scrollY = useSharedValue(0);
   const height = useSharedValue(INITIAL_HEIGHT);
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
-      'worklet';
+      "worklet";
       height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
     },
     hide: () => {
-      'worklet';
+      "worklet";
       height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
-    }
+    },
   }), [height]);
 
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardWillShow', keyboardListeners.show);
-    const hideSub = Keyboard.addListener('keyboardWillHide', keyboardListeners.hide);
+    const showSub = Keyboard.addListener("keyboardWillShow", keyboardListeners.show);
+    const hideSub = Keyboard.addListener("keyboardWillHide", keyboardListeners.hide);
 
     return () => {
       showSub.remove();
@@ -123,7 +119,7 @@ export default function URLInputScreen() {
   }, [keyboardListeners]);
 
   const AnimatedHeaderStyle = useAnimatedStyle(() => {
-    'worklet';
+    "worklet";
     const heightDiff = height.value - COLLAPSED_HEIGHT;
 
     return {
@@ -131,7 +127,7 @@ export default function URLInputScreen() {
         scrollY.value,
         [0, heightDiff],
         [height.value, COLLAPSED_HEIGHT],
-        Extrapolate.CLAMP
+        Extrapolate.CLAMP,
       ),
       height: height.value,
       position: "absolute",
@@ -143,7 +139,7 @@ export default function URLInputScreen() {
   }, []);
 
   const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
-    'worklet';
+    "worklet";
     const heightDiff = height.value - COLLAPSED_HEIGHT;
     const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
 
@@ -153,14 +149,14 @@ export default function URLInputScreen() {
         scrollY.value,
         [0, heightDiff],
         [1, 0],
-        Extrapolate.CLAMP
+        Extrapolate.CLAMP,
       );
 
     const scale = interpolate(
       scrollY.value,
       [0, heightDiff],
       [1, 0.8],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
 
     return {
@@ -171,12 +167,12 @@ export default function URLInputScreen() {
       elevation: 4,
       opacity: withTiming(opacity, { duration: isKeyboardVisible ? 150 : 100 }),
       transform: [{ scale }],
-      paddingBottom: 113
+      paddingBottom: 113,
     };
   }, []);
 
   const AnimatedInputContainerStyle = useAnimatedStyle(() => {
-    'worklet';
+    "worklet";
     return {
       paddingTop: height.value + 16,
       paddingHorizontal: 21,
@@ -192,13 +188,74 @@ export default function URLInputScreen() {
 
   useFocusEffect(animationCallback);
 
+  const onValidate = async () => {
+    Keyboard.dismiss();
+
+    if (instanceURL.includes("http") && !instanceURL.includes("https")) {
+      return alert.showAlert({
+        title: "Instance non supportée",
+        description: "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous vous recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        withoutNavbar: true,
+      });
+    }
+
+    const cleanedURL = cleanURL(instanceURL);
+    let instanceInfo = null;
+
+    if (instanceURL.includes("demo")) {
+      return alert.showAlert({
+        title: "Connexion impossible",
+        description: "Papillon n'est pas fait pour fonctionner avec des instances de démonstration, merci d'utiliser une autre instance.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        withoutNavbar: true,
+      });
+    }
+
+    try {
+      instanceInfo = await instance(cleanedURL);
+    } catch {
+      try {
+        instanceInfo = await instance(cleanedURL.replace(".index-education.net", ".pronote.toutatice.fr"));
+      } catch (error) {
+        return alert.showAlert({
+          title: "Connexion impossible",
+          description: "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
+          icon: "TriangleAlert",
+          technical: String(error),
+          color: "#D60046",
+          withoutNavbar: true,
+        });
+      }
+    }
+
+    if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
+      return router.push({
+        pathname: "./webview" as unknown as RelativePathString,
+        params: { url: cleanedURL },
+      });
+    }
+
+    return router.push({
+      pathname: "./credentials",
+      params: {
+        url: cleanedURL,
+        previousPage: "url",
+      },
+    });
+  };
+
   return (
-    <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
+    <Pressable style={staticStyles.pressableContainer}
+               onPress={Keyboard.dismiss}
+    >
       <ViewContainer>
         <Reanimated.View style={AnimatedHeaderStyle}>
           <Stack
             padding={32}
-            backgroundColor={theme.dark ? '#2f2f2fff' : '#C6C6C6'}
+            backgroundColor={theme.dark ? "#2f2f2fff" : "#C6C6C6"}
             gap={20}
             style={staticStyles.stackContainer}
           >
@@ -206,12 +263,14 @@ export default function URLInputScreen() {
               <LinkIcon />
             </Reanimated.View>
             <Stack
-              vAlign='start'
-              hAlign='start'
+              vAlign="start"
+              hAlign="start"
               width="100%"
               gap={12}
             >
-              <Stack flex direction="horizontal">
+              <Stack flex
+                     direction="horizontal"
+              >
                 <Typography
                   variant="h5"
                   style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
@@ -236,97 +295,21 @@ export default function URLInputScreen() {
         </Reanimated.View>
 
         <Reanimated.View style={AnimatedInputContainerStyle}>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={[staticStyles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons name={"Link"} />
-              </Icon>
-              <TextInput
-                placeholder="URL de ton instance PRONOTE"
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setInstanceURL}
-                value={instanceURL}
-                style={[staticStyles.textInput, { color: colors.text }]}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                keyboardType="url"
-                onSubmitEditing={async () => {
-                  Keyboard.dismiss();
-
-                  if (instanceURL.includes("http") && !instanceURL.includes("https")) {
-                    return alert.showAlert({
-                      title: "Instance non supportée",
-                      description: "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous vous recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
-                      icon: "TriangleAlert",
-                      color: "#D60046",
-                      withoutNavbar: true
-                    })
-                  }
-
-                  const cleanedURL = cleanURL(instanceURL);
-                  let instanceInfo = null;
-
-                  if (instanceURL.includes("demo")) {
-                    return alert.showAlert({
-                      title: "Connexion impossible",
-                      description: "Papillon n'est pas fait pour fonctionner avec des instances de démonstration, merci d'utiliser une autre instance.",
-                      icon: "TriangleAlert",
-                      color: "#D60046",
-                      withoutNavbar: true
-                    });
-                  }
-
-                  try {
-                    instanceInfo = await instance(cleanedURL);
-                  } catch {
-                    try {
-                      instanceInfo = await instance(cleanedURL.replace(".index-education.net", ".pronote.toutatice.fr"));
-                    } catch (error) {
-                      return alert.showAlert({
-                        title: "Connexion impossible",
-                        description: "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
-                        icon: "TriangleAlert",
-                        technical: String(error),
-                        color: "#D60046",
-                        withoutNavbar: true
-                      });
-                    }
-                  }
-
-                  if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
-                    return router.push({
-                      pathname: "./webview" as unknown as RelativePathString,
-                      params: { url: cleanedURL }
-                    })
-                  }
-
-                  return router.push({
-                    pathname: "./credentials",
-                    params: {
-                      url: cleanedURL,
-                      previousPage: "url"
-                    }
-                  })
-                }}
-              />
-            </Stack>
-          </Stack>
+          <OnboardingInput
+            placeholder={"URL de ton instance PRONOTE"}
+            icon={"Link"}
+            text={instanceURL}
+            setText={setInstanceURL}
+            isPassword={false}
+            keyboardType={"url"}
+            inputProps={{
+              onSubmitEditing: onValidate,
+            }}
+          />
         </Reanimated.View>
 
         <OnboardingBackButton />
-      </ViewContainer >
+      </ViewContainer>
     </Pressable>
   );
 }

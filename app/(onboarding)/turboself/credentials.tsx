@@ -1,8 +1,7 @@
-import { Papicons } from '@getpapillon/papicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -10,18 +9,18 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authenticateWithCredentials } from 'turboself-api'
 
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import Button from '@/ui/components/Button';
-import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import uuid from '@/utils/uuid/uuid';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useTheme } from "@react-navigation/native";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -73,7 +72,7 @@ const staticStyles = StyleSheet.create({
 });
 
 export default function TurboSelfLoginWithCredentials() {
-  const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const animation = React.useRef<LottieView>(null);
 
   const [username, setUsername] = useState<string>("")
@@ -208,68 +207,29 @@ export default function TurboSelfLoginWithCredentials() {
         </Reanimated.View>
 
         <Reanimated.View style={AnimatedInputContainerStyle}>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={staticStyles.inputContainer}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons name={"User"} />
-              </Icon>
-              <TextInput
-                placeholder="Nom d'utilisateur"
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setUsername}
-                value={username}
-                style={staticStyles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                keyboardType="email-address"
-              />
-            </Stack>
-          </Stack>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={staticStyles.inputContainer}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons name={"Lock"} />
-              </Icon>
-              <TextInput
-                placeholder="Mot de passe"
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setPassword}
-                value={password}
-                style={staticStyles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                secureTextEntry
-                keyboardType="default"
-              />
-            </Stack>
-          </Stack>
+          <OnboardingInput
+            icon={"Mail"}
+            placeholder="Adresse e-mail"
+            text={username}
+            setText={setUsername}
+            isPassword={false}
+            keyboardType={"email-address"}
+            inputProps={{}}
+          />
+          <OnboardingInput
+            icon={"Lock"}
+            placeholder="Mot de passe"
+            text={password}
+            setText={setPassword}
+            isPassword={true}
+            keyboardType={"default"}
+            inputProps={{}}
+          />
           <Button
             title='Se connecter'
-            color='black'
+            style={{
+              backgroundColor: theme.dark ? theme.colors.border : "black",
+            }}
             size='large'
             disableAnimation
             onPress={async () => {
@@ -330,7 +290,6 @@ export default function TurboSelfLoginWithCredentials() {
             }}
           />
         </Reanimated.View>
-
         <OnboardingBackButton/>
       </ViewContainer >
     </Pressable>

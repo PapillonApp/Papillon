@@ -1,9 +1,8 @@
-import { Papicons } from '@getpapillon/papicons';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { AccountKind, createSessionHandle, loginCredentials, SecurityError } from 'pawnote';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
+import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -11,14 +10,11 @@ import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { Fetcher } from "@literate.ink/utilities";
 
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
-import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
@@ -26,16 +22,15 @@ import uuid from '@/utils/uuid/uuid';
 import { useTheme } from '@react-navigation/native';
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from '@/utils/pronote/fetcher';
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
 const KEYBOARD_HEIGHT = 270;
 const ANIMATION_DURATION = 170;
-const OPACITY_THRESHOLD = 600;
 
 
 export default function PronoteLoginWithCredentials() {
-  const insets = useSafeAreaInsets();
   const animation = React.useRef<LottieView>(null);
   const theme = useTheme();
   const { colors } = theme;
@@ -147,70 +142,30 @@ export default function PronoteLoginWithCredentials() {
         </Reanimated.View>
 
         <Reanimated.View style={AnimatedInputContainerStyle}>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={styles.iconBackground}
-              >
-                <Papicons name={"User"} />
-              </Icon>
-              <TextInput
-                placeholder="Nom d'utilisateur"
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setUsername}
-                value={username}
-                style={[styles.textInput, { color: colors.text }]}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                keyboardType="email-address"
-              />
-            </Stack>
-          </Stack>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={styles.iconBackground}
-              >
-                <Papicons name={"Lock"} />
-              </Icon>
-              <TextInput
-                placeholder="Mot de passe"
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setPassword}
-                value={password}
-                style={styles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                secureTextEntry
-                keyboardType="default"
-              />
-            </Stack>
-          </Stack>
+          <OnboardingInput
+            icon={"User"}
+            placeholder="Nom d'utilisateur"
+            text={username}
+            setText={setUsername}
+            isPassword={false}
+            keyboardType={"default"}
+            inputProps={{}}
+          />
+          <OnboardingInput
+            icon={"Lock"}
+            placeholder="Mot de passe"
+            text={password}
+            setText={setPassword}
+            isPassword={true}
+            keyboardType={"default"}
+            inputProps={{}}
+          />
           <Button
             title='Se connecter'
-            color='black'
+            style={{
+              backgroundColor: theme.dark ? theme.colors.border : "black",
+            }}
             size='large'
-            style={{ borderColor: colors.border, borderWidth: 1 }}
             disableAnimation
             onPress={async () => {
               if (!username.trim() || !password.trim()) { return; }
