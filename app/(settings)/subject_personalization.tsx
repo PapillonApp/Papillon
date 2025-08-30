@@ -7,9 +7,83 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import { router } from "expo-router";
+import { useAccountStore } from "@/stores/account";
 
 const SubjectPersonalization = () => {
   const { colors } = useTheme();
+
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const account = accounts.find((a) => a.id === lastUsedAccount);
+  const subjects = Object.entries(account?.customisation?.subjects ?? {}).map(([key, value]) => ({
+    id: key,
+    ...value,
+  }));
+
+  function renderItem(emoji: string, name: string, id: string, color: string) {
+    return (<Item>
+      <Leading>
+        <Stack
+          backgroundColor={color + "20"}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 40,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography
+            style={{
+              fontSize: 25,
+              lineHeight: 32,
+            }}
+          >
+            {emoji}
+          </Typography>
+        </Stack>
+      </Leading>
+      <Typography variant={"title"}>
+        {name}
+      </Typography>
+      <Trailing>
+        <AnimatedPressable
+          onPress={() => {
+            router.push({
+              pathname: "/(settings)/edit_subject",
+              params: {
+                id,
+                emoji,
+                color,
+                name
+              }
+            })
+          }}
+          style={{
+            borderRadius: 20,
+            overflow: "hidden",
+            borderWidth: 1,
+            borderColor: colors.border,
+            paddingHorizontal: 8,
+            paddingRight: 10,
+            height: 35,
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: 5,
+          }}
+        >
+          <Papicons name={"PenAlt"} color={colors.text + "7F"} />
+          <Typography
+            color={"secondary"}
+          >
+            Modifier
+          </Typography>
+        </AnimatedPressable>
+      </Trailing>
+    </Item>)
+  }
 
   return (
     <ScrollView
@@ -18,59 +92,7 @@ const SubjectPersonalization = () => {
       contentInsetAdjustmentBehavior={"always"}
     >
       <List>
-        <Item>
-          <Leading>
-            <Stack
-              backgroundColor={"#009EC5" + "20"}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 40,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography
-                style={{
-                  fontSize: 25,
-                  lineHeight: 32,
-                }}
-              >
-                📖
-              </Typography>
-            </Stack>
-          </Leading>
-          <Typography variant={"title"}>
-            Français
-          </Typography>
-          <Trailing>
-            <AnimatedPressable
-              onPress={() => {
-                router.push("/(settings)/edit_subject")
-              }}
-              style={{
-                borderRadius: 20,
-                overflow: "hidden",
-                borderWidth: 1,
-                borderColor: colors.border,
-                paddingHorizontal: 8,
-                paddingRight: 10,
-                height: 35,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                gap: 5,
-              }}
-            >
-              <Papicons name={"PenAlt"} color={colors.text + "7F"} />
-              <Typography
-                color={"secondary"}
-              >
-                Modifier
-              </Typography>
-            </AnimatedPressable>
-          </Trailing>
-        </Item>
+        {subjects.map(item => renderItem(item.emoji, item.name, item.id, item.color))}
       </List>
     </ScrollView>
   );

@@ -32,6 +32,7 @@ import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "../index/widgets/Grades";
+import { useAccountStore } from "@/stores/account";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -218,6 +219,7 @@ export default function TabOneScreen() {
       setShownAverage(average);
     }
   }, [average]);
+  const accounts = useAccountStore((state) => state.accounts);
 
   const subjectData = useMemo(() => {
     const subjectMap = new Map();
@@ -233,7 +235,8 @@ export default function TabOneScreen() {
       }
     });
     return subjectMap;
-  }, [newSubjects]);
+  }, [accounts]);
+
 
   const getSubjectInfo = useCallback((subjectName: string) => {
     const cleanedName = subjectName.toLocaleLowerCase().trim().replace(/\s+/g, ' ').replace(/[^\w\s]/gi, '');
@@ -243,7 +246,7 @@ export default function TabOneScreen() {
       name: getSubjectName(subjectName),
       originalName: subjectName
     };
-  }, [subjectData]);
+  }, [accounts]);
 
   // Transform subjects into a list with headers and grades
   const transformedData = useMemo(() => {
