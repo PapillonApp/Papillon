@@ -2,11 +2,12 @@ import { useMagicStore } from "@/stores/magic";
 import ModelManager, { ModelPrediction } from "./ModelManager";
 import { generateId } from "../generateId";
 import regexPatterns from "./regex/homeworks.json";
+import * as Battery from "expo-battery";
 
 const compiledPatterns: Record<string, RegExp[]> = Object.fromEntries(
   Object.entries(regexPatterns).map(([category, patterns]) => [
     category,
-    (patterns as string[]).map(p => new RegExp(p, "i"))
+    (patterns as string[]).map(p => new RegExp(p, "i")),
   ])
 );
 
@@ -28,13 +29,26 @@ export async function predictHomework(label: string): Promise<string> {
   const existingHomework = store.getHomework(homeworkId);
   if (existingHomework) return existingHomework.label;
 
-  for (const [category, regexList] of Object.entries(compiledPatterns)) {
-    if (regexList.some(rgx => rgx.test(label))) {
-      store.addHomework({ id: homeworkId, label: category });
-      return category;
-    }
+  let batteryLevel = 1;
+  try {
+    batteryLevel = await Battery.getBatteryLevelAsync();
+  } catch (e) {
+    batteryLevel = 1;
   }
 
+  // Si batterie < 10%, on utilise le regex
+  if (batteryLevel < 0.1) {
+    for (const [category, regexList] of Object.entries(compiledPatterns)) {
+      if (regexList.some(rgx => rgx.test(label))) {
+        store.addHomework({ id: homeworkId, label: category });
+        return category;
+      }
+    }
+    store.addHomework({ id: homeworkId, label: "" });
+    return "";
+  }
+
+  // Sinon, on utilise uniquement le modèle
   await ModelManager.init();
   const prediction = await ModelManager.predict(label);
 
