@@ -13,6 +13,7 @@ import List from "@/ui/components/List"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 import SettingsHeader from "@/components/SettingsHeader"
+import { useTranslation } from "react-i18next";
 
 export default function CardView() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function CardView() {
   );
 
   const theme = useTheme()
+  const { t } = useTranslation();
 
   return (
     <ScrollView
@@ -32,8 +34,8 @@ export default function CardView() {
     >
       <SettingsHeader
         color={theme.dark ? "#001533" + "80" : "#D9E6FA"}
-        title="Cartes"
-        description="Ajoute tes cartes de cantine et de transport pour y accéder n'importe-où depuis ton téléphone sur Papillon"
+        title={t("Settings_Cards_Banner_Title")}
+        description={t("Settings_Cards_Banner_Description")}
         iconName="Card"
         imageSource={require("@/assets/images/cards.png")}
       />
@@ -76,7 +78,7 @@ export default function CardView() {
               }} />
             </ScrollView>
           </View>
-          <Typography variant="caption" style={{ opacity: 0.5 }}>Ajoute une nouvelle carte depuis l’onglet Profil accessible dans la barre de navigation</Typography>
+          <Typography variant="caption" style={{ opacity: 0.5 }}>{t("Feature_Add_Card")}</Typography>
         </>
       ) : (
         <Stack
@@ -94,10 +96,10 @@ export default function CardView() {
               <Papicons name={"Card"} />
             </Icon>
             <Typography variant="h4" color="text" align="center">
-              Aucune carte
+              {t("Settings_Cards_None_Title")}
             </Typography>
             <Typography variant="body2" color="secondary" align="center">
-              Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore
+              {t("Settings_Cards_None_Description")}
             </Typography>
           </View>
           <Button color="blue" title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {

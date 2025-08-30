@@ -146,7 +146,7 @@ const SettingsIndex = () => {
       },
       {
         icon: <Papicons name={"Card"} />,
-        title: "Cartes",
+        title: t("Settings_Cards_Banner_Title"),
         description: "Cantine, accès",
         color: "#0059DD",
         onPress: () => {

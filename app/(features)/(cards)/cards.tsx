@@ -12,6 +12,7 @@ import { Papicons, Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, View } from "react-native";
 export { getServiceName } from "@/utils/services/helper"
 
@@ -41,6 +42,7 @@ export default function QRCodeAndCardsPage() {
   const cardHeight = 210;
 
   const pileHeight = cardHeight + (wallets.length - 1) * cardOffset;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -89,10 +91,10 @@ export default function QRCodeAndCardsPage() {
                 <Papicons name={"Card"} />
               </Icon>
               <Typography variant="h4" color="text" align="center">
-                Aucune carte
+                {t("Settings_Cards_None_Title")}
               </Typography>
               <Typography variant="body2" color="secondary" align="center">
-                Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore
+                {t("Settings_Cards_None_Description")}
               </Typography>
             </View>
             <Button title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
@@ -115,7 +117,7 @@ export default function QRCodeAndCardsPage() {
       </NativeHeaderSide>
 
       <NativeHeaderTitle>
-        <Typography>QR-Code et cartes</Typography>
+        <Typography>{t("Profile_QRCards")}</Typography>
       </NativeHeaderTitle>
     </>
   );

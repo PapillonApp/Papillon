@@ -235,7 +235,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   presentation: "modal",
-                  headerTitle: "QR-Code et cartes",
+                  headerTitle: t("Profile_QRCards"),
                   headerTransparent: false,
                 }}
               />
@@ -245,7 +245,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   presentation: "modal",
-                  headerTitle: "QR-Code et cartes",
+                  headerTitle: t("Profile_QRCards"),
                   headerTransparent: true,
                 }}
               />
