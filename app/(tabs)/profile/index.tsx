@@ -338,10 +338,10 @@ export default function TabOneScreen() {
   const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!lastUsedAccount) return [null, null, null, null];
 
-    let firstName = lastUsedAccount.firstName;
-    let lastName = lastUsedAccount.lastName;
-    let level = lastUsedAccount.className;
-    let establishment = lastUsedAccount.schoolName;
+    let firstName = account?.firstName;
+    let lastName = account?.lastName;
+    let level = account?.className;
+    let establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [lastUsedAccount]);
@@ -433,7 +433,7 @@ export default function TabOneScreen() {
                 {account && account.customisation && account.customisation.profilePicture ? (
                   <Image
                     source={
-                      { uri: account.customisation.profilePicture }
+                      { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
                     }
                     style={{ width: 75, height: 75, borderRadius: 500 }}
                   />

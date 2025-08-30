@@ -91,7 +91,8 @@
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.34.0",
     "victory-native": "^41.19.3",
-    "zustand": "^5.0.4"
+    "zustand": "^5.0.4",
+    "expo-image-picker": "~17.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

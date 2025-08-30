@@ -8,40 +8,68 @@ import Typography from "@/ui/components/Typography";
 import { Bold, Font, Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, TextInput, View } from "react-native";
+import * as ImagePicker from "expo-image-picker"
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
-  const store = useAccountStore.getState()
-  const accounts = store.accounts
-  const lastUsedAccount = store.lastUsedAccount
+  const store = useAccountStore.getState();
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, setFirstName] = useState<string>(account?.firstName ?? "");
   const [lastName, setLastName] = useState<string>(account?.lastName ?? "");
 
   const { colors } = useTheme();
+  const profilePicture = useCallback(() => {
+    if (account && account.customisation?.profilePicture) {
+      return (
+        <Image
+          source={{ uri: `data:image/png;base64,${account.customisation.profilePicture}` }}
+          style={{ width: 117, height: 117, borderRadius: 500 }}
+        />
+      );
+    } else {
+      return (
+        <Avatar
+          size={117}
+          variant="h1"
+          author={`${account?.firstName} ${account?.lastName}`}
+        />
+      );
+    }
+  }, [account]);
+
 
   return (
     <>
-      {/* Profil */}
       <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
-        {account && account.customisation?.profilePicture ? (
-          <Image
-            source={{ uri: account.customisation.profilePicture }}
-            style={{ width: 117, height: 117, borderRadius: 500 }}
-          />
-        ) : (
-          <Avatar size={117} variant="h1" author={`${account?.firstName} ${account?.lastName}`} />
-        )}
+        {profilePicture()}
         <Button
           inline
           variant="outline"
           size="small"
           icon={<Papicons name="Camera" />}
           title={t("Button_Change_ProfilePicture")}
+          onPress={async () => {
+            let result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ['images', 'videos'],
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 1,
+              base64: true
+            });
+
+            if (!result.canceled) {
+              const b64 = result.assets[0].base64 ?? "";
+              store.setAccountProfilePicture(lastUsedAccount, b64);
+            }
+          }}
+
         />
       </View>
 

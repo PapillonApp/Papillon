@@ -57,6 +57,12 @@ module.exports = {
       "expo-router",
       "expo-font",
       "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil"
+        }
+      ],
       "expo-web-browser",
       [
         "react-native-fast-tflite",
