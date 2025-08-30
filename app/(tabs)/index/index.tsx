@@ -38,6 +38,8 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
+import Pattern from "@/ui/components/Pattern/Pattern";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -45,6 +47,7 @@ export default function TabOneScreen() {
   const [courses, setCourses] = useState<SharedCourse[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
 
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const navigation = useNavigation();
   const alert = useAlert();
@@ -190,6 +193,12 @@ export default function TabOneScreen() {
         colors={[accent + "77", accent + "00"]}
         locations={[0, 0.5]}
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
+      />
+      <Pattern
+        pattern={"cross"}
+        width={"100%"}
+        height={250 + insets.top}
+        color={foreground}
       />
 
       {!runsIOS26() && fullyScrolled && (

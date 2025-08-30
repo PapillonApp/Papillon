@@ -521,7 +521,7 @@ export default function TabOneScreen() {
         engine="FlatList"
         backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
         foregroundColor="#29947A"
-        pattern="checks"
+        pattern="cross"
         initialNumToRender={2}
         removeClippedSubviews={true}
         onFullyScrolled={handleFullyScrolled}
