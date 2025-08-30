@@ -8,7 +8,7 @@
   "Tab_Profile": "Profile",
   "Tab_Page": "Page",
   "Tab_Settings": "Settings",
-  
+
   "Tab_New_Event": "New event",
 
   "Tab_Calendar_Icals": "iCal Management",
@@ -76,7 +76,7 @@
   "Grades_Avg_Subject_Short": "Overall avg.",
   "Grades_Avg_Median_Title": "Median",
   "Grades_Avg_Median_Short": "Median",
-  
+
   "Grades_Method_AllGrades": "All grades",
   "Grades_Method_Weighted": "Weighted",
 
@@ -132,6 +132,7 @@
   "Settings_Accessibility_Description": "Display, sound...",
   "Settings_MagicPlus_Title": "Magic+",
   "Settings_MagicPlus_Description": "Smart features",
+  "Settings_MagicPlus_ExplanationLocal": "Fully local model, no data is transferred outside your device",
   "Settings_Donate_Title": "Donate",
   "Settings_Donate_Description": "Support the project",
   "Settings_About_Title": "About",

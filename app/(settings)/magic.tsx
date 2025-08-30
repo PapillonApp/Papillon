@@ -12,6 +12,7 @@ import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
 import SettingsHeader from "@/components/SettingsHeader";
 import { useSettingsStore } from "@/stores/settings";
+import { t } from "i18next";
 
 const SettingsMagic = () => {
   const theme = useTheme()
@@ -27,7 +28,7 @@ const SettingsMagic = () => {
       contentInsetAdjustmentBehavior="always"
     >
       <SettingsHeader
-        color={theme.dark ? "#FAD9EC" : "#FAD9EC"}
+        color={theme.dark ? "#1a0b14ff" : "#FAD9EC"}
         title="Activer Magic+"
         description="Tri intelligemment tes tâches pour une meilleure productivité"
         imageSource={require("@/assets/images/magic.png")}
@@ -36,7 +37,7 @@ const SettingsMagic = () => {
         showSwitch={true}
         switchColor={"#DD007D"}
       />
-      <Typography variant="caption" color="secondary">Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil</Typography>
+      <Typography variant="caption" color="secondary">{t("Settings_MagicPlus_ExplanationLocal")}</Typography>
 
     </ScrollView>
   );
