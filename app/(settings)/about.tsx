@@ -61,6 +61,9 @@ const SettingsAbout = () => {
         color={theme.dark ? "#121e2a" : "#dfebf7"}
         title="Derrière Papillon"
         description="Papillon est maintenu par des étudiants 100% bénévoles"
+        imageSource={require("@/assets/images/about_papillon.png")}
+        disableMargin
+        height={270}
       />
       <List>
         {Items.map((item, index) => (
