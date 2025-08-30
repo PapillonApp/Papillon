@@ -24,6 +24,7 @@ import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Account } from "@/stores/account/types";
+import { Avatar } from "../(features)/(news)/news";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -32,19 +33,10 @@ const SettingsIndex = () => {
 
   const manager = getManager();
   const accountStore = useAccountStore();
-  const [account, setAccount] = useState<Account | null>(null);
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
-  useEffect(() => {
-    function fetchData() {
-      if (!manager) {
-        return;
-      }
-
-      const result = manager.getAccount();
-      setAccount(result);
-    }
-    fetchData();
-  }, [manager]);
+  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
     if (!account) return [null, null, null, null];
@@ -225,10 +217,17 @@ const SettingsIndex = () => {
                 onPress={() => router.navigate("/(settings)/services")}
               >
                 <Leading>
-                  <Image
-                    source={require('@/assets/images/default_profile.jpg')}
-                    style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
-                  />
+                  {account && account.customisation && account.customisation.profilePicture ? (
+                    <Image
+                      source={
+                        { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
+                      }
+                      style={{ width: 48, height: 48, borderRadius: 500 }}
+                    />
+                  ) : (
+                    <Avatar size={48} variant="h3" author={`${account?.firstName} ${account?.lastName}`} />
+                  )
+                  }
                 </Leading>
                 <Typography variant="title">
                   {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
