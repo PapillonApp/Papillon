@@ -266,36 +266,6 @@ export default function EDLoginWithCredentials() {
             >
               {t("STEP_OUTOF")} 3
             </Typography>
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={styles.iconBackground}
-              >
-                <Papicons name={"Lock"} />
-              </Icon>
-              <TextInput
-                placeholder={t("INPUT_PASSWORD")}
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setPassword}
-                value={password}
-                style={styles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                secureTextEntry
-                keyboardType="default"
-                onSubmitEditing={async () => {
-                  if (!username.trim() && !password.trim()) return;
-                  const device_uuid = uuid()
-                  if (!session) {
-                    const newSession = { username, device_uuid }
-                    setSession(newSession)
-                  }
-                  handleLogin(password, session!)
-                }}
-              />
-            </Stack>
           </Stack>
           <Typography
             variant="h1"

@@ -1,4 +1,3 @@
-
 import { router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
@@ -92,7 +91,6 @@ export default function TurboSelfLoginWithCredentials() {
   const { t } = useTranslation();
 
   const alert = useAlert();
-  const latestPassword = useRef<string>("");
 
   async function handleLogin(username: string, password: string) {
     try {

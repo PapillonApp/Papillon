@@ -10,16 +10,14 @@ import Reanimated, {
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useAccountStore } from '@/stores/account';
-import { Account, Services } from '@/stores/account/types';
+import { Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import uuid from '@/utils/uuid/uuid';
 import { useTheme } from '@react-navigation/native';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from '@/utils/pronote/fetcher';
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
