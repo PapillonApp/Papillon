@@ -1,7 +1,9 @@
+import { useTheme } from '@react-navigation/native';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { AccountKind, createSessionHandle, loginCredentials, SecurityError } from 'pawnote';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, StyleSheet } from 'react-native';
 import Reanimated, {
   Extrapolate,
@@ -11,20 +13,21 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useAccountStore } from '@/stores/account';
-import { Services } from '@/stores/account/types';
+import { Account, Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
-import uuid from '@/utils/uuid/uuid';
-import { useTheme } from '@react-navigation/native';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { URLToBase64 } from '@/utils/attachments/helper';
 import { customFetcher } from '@/utils/pronote/fetcher';
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useTranslation } from 'react-i18next';
 import { GetIdentityFromPronoteUsername } from '@/utils/pronote/name';
+import uuid from '@/utils/uuid/uuid';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -221,13 +224,20 @@ export default function PronoteLoginWithCredentials() {
               const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
               const schoolName = session.user.resources[0].establishmentName
               const className = session.user.resources[0].className
-
-              const account = {
+              let pp = "";
+              if (session.user.resources[0].profilePicture?.url) {
+                pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
+              }
+              const account: Account = {
                 id: device,
                 firstName,
                 lastName,
                 schoolName,
                 className,
+                customisation: {
+                  profilePicture: pp,
+                  subjects: {}
+                },
                 services: [{
                   id: device,
                   auth: {

@@ -1,19 +1,20 @@
 import { router, useGlobalSearchParams } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
 import { createRef, RefObject, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
+import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
+import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
-import uuid from "@/utils/uuid/uuid";
-import { customFetcher } from "@/utils/pronote/fetcher";
-import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
-import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { URLToBase64 } from "@/utils/attachments/helper";
 import { useTranslation } from "react-i18next";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
+import { customFetcher } from "@/utils/pronote/fetcher";
+import uuid from "@/utils/uuid/uuid";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -92,7 +93,7 @@ export default function WebViewScreen() {
     `.trim();
 
   const onWebviewMessage = async ({ nativeEvent }: { nativeEvent: WebViewMessage }) => {
-    if (received) return;
+    if (received) { return; }
 
     const message = JSON.parse(nativeEvent.data);
     console.log("Message received from WebView:", message);
@@ -134,6 +135,11 @@ export default function WebViewScreen() {
         const className = session.user.resources[0].className;
         const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
 
+        let pp = "";
+        if (session.user.resources[0].profilePicture?.url) {
+          pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
+        }
+        
         useAccountStore.getState().addAccount({
           id: deviceUUID,
           firstName,
@@ -141,7 +147,7 @@ export default function WebViewScreen() {
           schoolName,
           className,
           customisation: {
-            profilePicture: await URLToBase64(session.user.resources[0].profilePicture?.url ?? ""),
+            profilePicture: pp,
             subjects: {}
           },
           services: [{
