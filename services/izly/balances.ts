@@ -12,7 +12,7 @@ export async function fetchIzlyBalances(accountId: string, session: Identificati
   
   return [
     {
-      amount: fetchedBalance.value,
+      amount: fetchedBalance.value * 100,
       currency: "€",
       lunchRemaining: remainingMeal,
       lunchPrice: mealPrice,
@@ -21,7 +21,7 @@ export async function fetchIzlyBalances(accountId: string, session: Identificati
     },
     ...(fetchedBalance.cashValue > 0
       ? [{
-          amount: fetchedBalance.cashValue,
+          amount: fetchedBalance.cashValue * 100,
           currency: "€",
           lunchRemaining: remainingMeal,
           lunchPrice: mealPrice,
