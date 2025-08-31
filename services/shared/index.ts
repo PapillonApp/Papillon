@@ -391,7 +391,7 @@ export class AccountManager {
     );
   }
 
-  private getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
+  getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
       client.capabilities.includes(capability)
     );
