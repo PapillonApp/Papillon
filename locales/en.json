@@ -52,7 +52,10 @@
   "STEP_OUTOF": "of",
   "INPUT_USERNAME": "Username",
   "INPUT_MAIL": "Email address",
+  "INPUT_MAIL_OR_USERNAME": "Email address or username",
+  "INPUT_PHONE_OR_MAIL": "Phone number or email adress",
   "INPUT_PASSWORD": "Password",
+  "INPUT_PASSWORD_CODE": "Access code",
   "INPUT_ETABID": "Your school ID",
   "LOGIN_BTN": "Log in",
   "CONFIRM_BTN": "Confirm",
@@ -170,6 +173,7 @@
   "Profile_News_Denominator_Single": "new",
   "Profile_News_Denominator_Plural": "news",
   "Profile_News_Open": "Open",
+  "Profile_News_Loading_Title": "Loading news...",
 
   "Profile_Cards_Title": "QR code and cards",
 
