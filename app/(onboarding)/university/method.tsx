@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router } from 'expo-router';
+import { RelativePathString, router, UnknownInputParams } from 'expo-router';
 
 import Typography from '@/ui/components/Typography';
 import { getSupportedUniversities, SupportedUniversity } from "../utils/constants";
@@ -16,8 +16,8 @@ export default function WelcomeScreen() {
 
   const { t } = useTranslation()
 
-  const services = getSupportedUniversities((path: { pathname: string }) => {
-    router.push(path.pathname as unknown as RelativePathString);
+  const services = getSupportedUniversities((path: { pathname: string, options?: UnknownInputParams }) => {
+    router.push({ pathname: path.pathname as unknown as RelativePathString, params: path.options ?? {} as unknown as UnknownInputParams });
   });
 
   return (
@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
       color={'#1E3035'}
       lottie={require('@/assets/lotties/uni-services.json')}
       title={t("ONBOARDING_SELECT_UNIVERSITIESERVICE")}
-      step={1}
+      step={2}
       totalSteps={3}
       elements={services}
       renderItem={({ item, index }) =>
