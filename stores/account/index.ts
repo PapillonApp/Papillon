@@ -9,7 +9,15 @@ export const useAccountStore = create<AccountsStorage>()(
     (set, get) => ({
       lastUsedAccount: '',
       accounts: [],
-      removeAccount: (account) => set({ accounts: [...get().accounts.filter((a) => a.id !== account.id)] }),
+      removeAccount: (account) => {
+        const accounts = get().accounts.filter((a) => a.id !== account.id);
+        const lastUsedAccount = get().lastUsedAccount;
+
+        set({
+          accounts,
+          lastUsedAccount: lastUsedAccount === account.id ? (accounts[0]?.id ?? '') : lastUsedAccount,
+        });
+      },
       addAccount: (account) => set({ accounts: [...get().accounts, account] }),
       updateServiceAuthData: (serviceId: string, authData: Auth) => set({
         accounts: get().accounts.map((account) => {
