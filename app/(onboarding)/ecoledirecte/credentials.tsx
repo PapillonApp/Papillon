@@ -1,5 +1,8 @@
+import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session } from "pawdirecte";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -14,24 +17,20 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import uuid from "@/utils/uuid/uuid";
-import { useTheme } from "@react-navigation/native";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session } from "pawdirecte";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { error } from "@/utils/logger/logger";
-import { useTranslation } from "react-i18next";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 170;
-
 
 export default function EDLoginWithCredentials() {
   const insets = useSafeAreaInsets();
@@ -40,12 +39,14 @@ export default function EDLoginWithCredentials() {
 
   const alert = useAlert();
   const { t } = useTranslation();
-  const [session, setSession] = useState<Session>();
+
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
   const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthChallenge | null>(null);
   const [doubleAuthAnswer, setDoubleAuthAnswer] = useState<string | null>(null);
 
-  const [username, setUsername] = useState<string>("")
+  const sessionRef = useRef<Session | null>(null);
+
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const opacity = useSharedValue(1);
@@ -74,66 +75,69 @@ export default function EDLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  function handleDoubleAuthLogin() {
-    if (!session || !doubleAuthAnswer) {
-      error("Skill Issue");
+  async function handleDoubleAuthLogin() {
+    if (!sessionRef.current || !doubleAuthAnswer) {
+      error("Error during login");
+      return;
     }
 
-    const correct = checkDoubleAuth(session, doubleAuthAnswer);
+    const correct = checkDoubleAuth(sessionRef.current, doubleAuthAnswer);
     if (!correct) {
-      console.log(correct);
+      console.log("Mauvaise réponse double auth");
+      return;
     }
 
-    queueMicrotask(() => void handleLogin("", session));
+    await handleLogin("");
   }
 
-  async function handleLogin(password: string, session: Session) {
+  async function handleLogin(passwordParam: string) {
     try {
       const store = useAccountStore.getState();
-      const accounts = await login(session, password);
+
+      sessionRef.current ??= {
+        username,
+        device_uuid: uuid(),
+      };
+
+      const accounts = await login(sessionRef.current, passwordParam || password);
       const EDAccount = accounts[0];
 
       const account: Account = {
-        id: session.device_uuid,
+        id: sessionRef.current.device_uuid,
         firstName: EDAccount?.firstName ?? "",
         lastName: EDAccount?.lastName ?? "",
         schoolName: EDAccount?.schoolName,
         className: EDAccount?.class.short,
         services: [
           {
-            id: session.device_uuid,
-            auth: {
-              session: session,
-            },
+            id: sessionRef.current.device_uuid,
+            auth: { session: sessionRef.current },
             serviceId: Services.ECOLEDIRECTE,
-            createdAt: (new Date()).toISOString(),
-            updatedAt: (new Date()).toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
           },
         ],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       store.addAccount(account);
-      store.setLastUsedAccount(session.device_uuid);
+      store.setLastUsedAccount(sessionRef.current.device_uuid);
 
-      return router.push({
+      router.push({
         pathname: "../end/color",
-        params: {
-          accountId: session.device_uuid,
-        },
+        params: { accountId: sessionRef.current.device_uuid },
       });
-    } catch (error) {
-      if (error instanceof DoubleAuthRequired) {
-        setSession(session);
-        setDoubleAuthChallenge(await initDoubleAuth(session));
+    } catch (err) {
+      if (err instanceof DoubleAuthRequired && sessionRef.current) {
+        const challenge = await initDoubleAuth(sessionRef.current);
+        setDoubleAuthChallenge(challenge);
         setChallengeModalVisible(true);
-      }
-
-      if (error instanceof Error) {
+      } else if (err instanceof Error) {
         alert.showAlert({
           title: "Erreur d'authentification",
-          description: "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
+          description:
+            "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
           icon: "TriangleAlert",
           color: "#D60046",
           withoutNavbar: true,
@@ -142,36 +146,33 @@ export default function EDLoginWithCredentials() {
     }
   }
 
-  function questionComponent({ item, index }: { item: string, index: number }) {
+  const loginED = () => {
+    if (!username.trim() || !password.trim()) { return; }
+    handleLogin(password);
+  };
+
+  function questionComponent({ item, index }: { item: string; index: number }) {
     return (
       <Reanimated.View
         entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
         exiting={FadeOutUp.springify().duration(400).delay(index * 80 + 150)}
       >
         <AnimatedPressable
-          pointerEvents={"auto"}
           onPress={() => {
             setDoubleAuthAnswer(item);
-            if (session && doubleAuthAnswer) {
-              handleDoubleAuthLogin();
-            }
+            handleDoubleAuthLogin();
           }}
-          style={[
-            {
-              paddingHorizontal: 10,
-              paddingVertical: 10,
-              paddingRight: 18,
-              borderColor: colors.border,
-              borderWidth: 1.5,
-              borderRadius: 80,
-              borderCurve: "continuous",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 16,
-              overflow: "hidden",
-              display: "flex",
-            },
-          ]}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 10,
+            paddingRight: 18,
+            borderColor: colors.border,
+            borderWidth: 1.5,
+            borderRadius: 80,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 16,
+          }}
         >
           <Stack
             width={45}
@@ -181,21 +182,12 @@ export default function EDLoginWithCredentials() {
             radius={80}
             backgroundColor={colors.border}
           >
-            <Typography
-              variant="h4"
-              color={colors.text}
-            >
+            <Typography variant="h4" color={colors.text}>
               {index + 1}
             </Typography>
           </Stack>
-          <Stack gap={0}
-                 style={{ width: "80%" }}
-          >
-            <Typography
-              style={{ width: "100%" }}
-              nowrap={true}
-              variant="title"
-            >
+          <Stack gap={0} style={{ width: "80%" }}>
+            <Typography nowrap variant="title" style={{ width: "100%" }}>
               {item}
             </Typography>
           </Stack>
@@ -204,21 +196,8 @@ export default function EDLoginWithCredentials() {
     );
   }
 
-  const loginED = () => {
-    if (!username.trim() && !password.trim()) return;
-    const device_uuid = uuid();
-    if (!session) {
-      const newSession = { username, device_uuid };
-      setSession(newSession);
-    }
-    handleLogin(password, session!);
-  };
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, marginBottom: insets.bottom }}
-      behavior="padding"
-    >
+    <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
       <View
         style={{
           alignItems: "center",
@@ -228,7 +207,6 @@ export default function EDLoginWithCredentials() {
           padding: 20,
           paddingTop: insets.top + 20,
           paddingBottom: 34,
-          borderCurve: "continuous",
           flex: 1,
           backgroundColor: "#E50052",
         }}
@@ -242,42 +220,23 @@ export default function EDLoginWithCredentials() {
             opacity: opacity,
             transform: [{ scale: scale }],
           }}
-        >
-
-        </Reanimated.View>
-        <Stack
-          vAlign="start"
-          hAlign="start"
-          width="100%"
-          gap={12}
-        >
-          <Stack
-            direction="horizontal"
-          >
-            <Typography
-              variant="h5"
-              style={{ color: "#FFF", lineHeight: 22, fontSize: 18 }}
-            >
-              {t("STEP")} 2
+        />
+        <Stack vAlign="start" hAlign="start" width="100%" gap={12}>
+          <Stack direction="horizontal">
+            <Typography variant="h5" style={{ color: "#FFF", fontSize: 18 }}>
+              {t("STEP")} 3
             </Typography>
-            <Typography
-              variant="h5"
-              style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
-            >
+            <Typography variant="h5" style={{ color: "#FFFFFF90", fontSize: 18 }}>
               {t("STEP_OUTOF")} 3
             </Typography>
           </Stack>
-          <Typography
-            variant="h1"
-            style={{ color: "#FFF", fontSize: 32, lineHeight: 34 }}
-          >
+          <Typography variant="h1" style={{ color: "#FFF", fontSize: 32 }}>
             {t("ONBOARDING_LOGIN_CREDENTIALS")} Ecole Directe
           </Typography>
         </Stack>
       </View>
-      <Stack padding={20}
-             gap={10}
-      >
+
+      <Stack padding={20} gap={10}>
         <OnboardingInput
           icon={"User"}
           placeholder={t("INPUT_USERNAME")}
@@ -306,7 +265,6 @@ export default function EDLoginWithCredentials() {
             textContentType: "password",
             onSubmitEditing: () => {
               Keyboard.dismiss();
-              // Trigger login
               loginED();
             },
             returnKeyType: "done",
@@ -322,25 +280,24 @@ export default function EDLoginWithCredentials() {
           onPress={loginED}
         />
       </Stack>
+
       <OnboardingBackButton />
+
       <Modal
         visible={challengeModalVisible}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => {
-          setChallengeModalVisible(false);
-        }}
+        onRequestClose={() => setChallengeModalVisible(false)}
       >
         <OnboardingScrollingFlatList
-          title={doubleAuthChallenge?.question ?? "Tu as les crampté ?"}
+          title={doubleAuthChallenge?.question ?? "Double Auth"}
           color={"#E50052"}
           step={3}
           hasReturnButton={false}
           totalSteps={3}
-          elements={doubleAuthChallenge?.answers ?? ["Quoi", "cou", "beh"]}
+          elements={doubleAuthChallenge?.answers ?? []}
           renderItem={questionComponent}
         />
-        );
       </Modal>
     </KeyboardAvoidingView>
   );
