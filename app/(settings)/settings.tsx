@@ -182,7 +182,7 @@ const SettingsIndex = () => {
                     gap={14}
                     padding={16}
                     radius={25}
-                    backgroundColor={button.disabled ? "#e7e7e7ff" : adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                    backgroundColor={button.disabled ? theme.colors.border : adjust(button.color, theme.dark ? -0.85 : 0.85)}
                   >
                     <Icon papicon size={24} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}
