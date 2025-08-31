@@ -59,7 +59,7 @@ const ALERT_SCREEN_OPTIONS = {
   headerShown: false,
   presentation: 'formSheet' as const,
   sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' as const : [0.9],
-  sheetBorderRadius: Platform.OS === 'ios' ? undefined : 16,
+  sheetCornerRadius: 32,
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,
@@ -182,10 +182,11 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: false,
+                  headerShown: runsIOS26() ? true : false,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
                   headerTransparent: runsIOS26(),
+                  headerLargeTitle: false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -195,7 +196,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: false,
+                  headerShown: runsIOS26() ? true : false,
                   headerTitle: t("Modal_Course_Title"),
                   headerTransparent: runsIOS26(),
                   headerLargeTitle: false,
@@ -215,8 +216,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerLargeTitle: false,
                   presentation: "formSheet",
                   sheetGrabberVisible: true,
-                  sheetAllowedDetents: [0.75, 1],
-                  sheetCornerRadius: 30,
+                  sheetAllowedDetents: [0.5, 0.75, 1],
+                  sheetCornerRadius: runsIOS26() ? undefined : 30,
                 }}
               />
 

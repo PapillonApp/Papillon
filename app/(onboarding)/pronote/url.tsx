@@ -1,72 +1,22 @@
-import { useTheme } from "@react-navigation/native";
-import { RelativePathString, router, useFocusEffect } from "expo-router";
-import LottieView from "lottie-react-native";
-import { cleanURL, instance } from "pawnote";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Keyboard, Pressable, StyleSheet } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Keyboard, View, KeyboardAvoidingView } from "react-native";
+import { RelativePathString, router } from "expo-router";
+
+import Typography from "@/ui/components/Typography";
+import Stack from "@/ui/components/Stack";
 import Reanimated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
-
+import { cleanURL, instance } from "pawnote";
+import { useAlert } from "@/ui/components/AlertProvider";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useAlert } from "@/ui/components/AlertProvider";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import ViewContainer from "@/ui/components/ViewContainer";
+import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const INITIAL_HEIGHT = 680;
-const COLLAPSED_HEIGHT = 270;
-const KEYBOARD_HEIGHT = 440;
 const ANIMATION_DURATION = 250;
-const OPACITY_THRESHOLD = 600;
-
-const staticStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  pressableContainer: {
-    flex: 1,
-  },
-  stackContainer: {
-    alignItems: "center",
-    justifyContent: "flex-end",
-    borderBottomLeftRadius: 42,
-    borderBottomRightRadius: 42,
-    paddingBottom: 34,
-    borderCurve: "continuous",
-    height: "100%",
-  },
-  backButton: {
-    position: "absolute",
-    left: 16,
-    zIndex: 200,
-    backgroundColor: "#ffffff42",
-    padding: 10,
-    borderRadius: 100,
-  },
-  inputContainer: {
-    flex: 1,
-    padding: 23,
-    borderRadius: 300,
-    borderWidth: 1,
-    borderColor: "#0000001F",
-  },
-  textInput: {
-    fontSize: 18,
-    fontWeight: "600",
-    flex: 1,
-  },
-  iconBackground: {
-    backgroundColor: "transparent",
-  },
-});
 
 const LinkIcon = React.memo(() => (
   <Svg
@@ -88,28 +38,26 @@ LinkIcon.displayName = "LinkIcon";
 
 
 export default function URLInputScreen() {
-  const animation = React.useRef<LottieView>(null);
-  const theme = useTheme();
-  const { colors } = theme;
+  const insets = useSafeAreaInsets();
 
   const alert = useAlert();
   const [instanceURL, setInstanceURL] = useState<string>("");
 
-  const { t } = useTranslation();
-
-  const scrollY = useSharedValue(0);
-  const height = useSharedValue(INITIAL_HEIGHT);
+  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1);
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
       "worklet";
-      height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
+      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
     },
     hide: () => {
       "worklet";
-      height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
+      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(1, { duration: ANIMATION_DURATION });
     },
-  }), [height]);
+  }), [opacity]);
 
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardWillShow", keyboardListeners.show);
@@ -121,75 +69,7 @@ export default function URLInputScreen() {
     };
   }, [keyboardListeners]);
 
-  const AnimatedHeaderStyle = useAnimatedStyle(() => {
-    "worklet";
-    const heightDiff = height.value - COLLAPSED_HEIGHT;
-
-    return {
-      maxHeight: interpolate(
-        scrollY.value,
-        [0, heightDiff],
-        [height.value, COLLAPSED_HEIGHT],
-        Extrapolate.CLAMP,
-      ),
-      height: height.value,
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 2,
-    };
-  }, []);
-
-  const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
-    "worklet";
-    const heightDiff = height.value - COLLAPSED_HEIGHT;
-    const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
-
-    const opacity = isKeyboardVisible
-      ? 0
-      : interpolate(
-        scrollY.value,
-        [0, heightDiff],
-        [1, 0],
-        Extrapolate.CLAMP,
-      );
-
-    const scale = interpolate(
-      scrollY.value,
-      [0, heightDiff],
-      [1, 0.8],
-      Extrapolate.CLAMP,
-    );
-
-    return {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 4,
-      opacity: withTiming(opacity, { duration: isKeyboardVisible ? 150 : 100 }),
-      transform: [{ scale }],
-      paddingBottom: 113,
-    };
-  }, []);
-
-  const AnimatedInputContainerStyle = useAnimatedStyle(() => {
-    "worklet";
-    return {
-      paddingTop: height.value + 16,
-      paddingHorizontal: 21,
-    };
-  }, []);
-
-  const animationCallback = useCallback(() => {
-    if (animation.current) {
-      animation.current.reset();
-      animation.current.play();
-    }
-  }, []);
-
-  useFocusEffect(animationCallback);
+  const { t } = useTranslation();
 
   const onValidate = async () => {
     Keyboard.dismiss();
@@ -251,68 +131,82 @@ export default function URLInputScreen() {
   };
 
   return (
-    <Pressable style={staticStyles.pressableContainer}
-      onPress={Keyboard.dismiss}
+    <KeyboardAvoidingView
+      style={{ flex: 1, marginBottom: insets.bottom }}
+      behavior="padding"
     >
-      <ViewContainer>
-        <Reanimated.View style={AnimatedHeaderStyle}>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "flex-end",
+          borderBottomLeftRadius: 42,
+          borderBottomRightRadius: 42,
+          padding: 20,
+          paddingTop: insets.top + 20,
+          paddingBottom: 34,
+          borderCurve: "continuous",
+          flex: 1,
+          backgroundColor: "#C6C6C6",
+        }}
+      >
+        <Reanimated.View
+          style={{
+            flex: 1,
+            marginBottom: 16,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: opacity,
+            transform: [{ scale: scale }],
+          }}
+        >
+          <LinkIcon />
+        </Reanimated.View>
+        <Stack
+          vAlign="start"
+          hAlign="start"
+          width="100%"
+          gap={12}
+        >
           <Stack
-            padding={32}
-            backgroundColor={theme.dark ? "#2f2f2fff" : "#C6C6C6"}
-            gap={20}
-            style={staticStyles.stackContainer}
+            direction="horizontal"
           >
-            <Reanimated.View style={AnimatedLottieContainerStyle}>
-              <LinkIcon />
-            </Reanimated.View>
-            <Stack
-              vAlign="start"
-              hAlign="start"
-              width="100%"
-              gap={12}
+            <Typography
+              variant="h5"
+              style={{ color: "#000", lineHeight: 22, fontSize: 18 }}
             >
-              <Stack flex
-                direction="horizontal"
-              >
-                <Typography
-                  variant="h5"
-                  style={{ color: colors.text, lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP")} 2
-                </Typography>
-                <Typography
-                  variant="h5"
-                  style={{ color: colors.text + "A6", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP_OUTOF")} 3
-                </Typography>
-              </Stack>
-              <Typography
-                variant="h1"
-                style={{ color: colors.text, fontSize: 32, lineHeight: 34 }}
-              >
-                {t("ONBOARDING_URL")}
-              </Typography>
-            </Stack>
+              {t("STEP")} 2
+            </Typography>
+            <Typography
+              variant="h5"
+              style={{ color: "#00000090", lineHeight: 22, fontSize: 18 }}
+            >
+              {t("STEP_OUTOF")} 3
+            </Typography>
           </Stack>
-        </Reanimated.View>
-
-        <Reanimated.View style={AnimatedInputContainerStyle}>
-          <OnboardingInput
-            placeholder={t("ONBOARDING_URL_PLACEHOLDER")}
-            icon={"Link"}
-            text={instanceURL}
-            setText={setInstanceURL}
-            isPassword={false}
-            keyboardType={"url"}
-            inputProps={{
-              onSubmitEditing: onValidate,
-            }}
-          />
-        </Reanimated.View>
-
-        <OnboardingBackButton />
-      </ViewContainer>
-    </Pressable>
+          <Typography
+            variant="h1"
+            style={{ color: "#000", fontSize: 32, lineHeight: 34 }}
+          >
+            {t("ONBOARDING_URL")}
+          </Typography>
+        </Stack>
+      </View>
+      <Stack padding={20}>
+        <OnboardingInput
+          placeholder={t("ONBOARDING_URL_PLACEHOLDER")}
+          icon={"Link"}
+          text={instanceURL}
+          setText={setInstanceURL}
+          isPassword={false}
+          keyboardType={"url"}
+          inputProps={{
+            autoCapitalize: "none",
+            autoCorrect: false,
+            onSubmitEditing: onValidate,
+          }}
+        />
+      </Stack>
+      <OnboardingBackButton />
+    </KeyboardAvoidingView>
   );
 }

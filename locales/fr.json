@@ -52,7 +52,10 @@
   "STEP_OUTOF": "sur",
   "INPUT_USERNAME": "Nom d'utilisateur",
   "INPUT_MAIL": "Adresse e-mail",
+  "INPUT_MAIL_OR_USERNAME": "Adresse e-mail ou nom d'utilisateur",
+  "INPUT_PHONE_OR_MAIL": "Numéro de téléphone ou adresse e-mail",
   "INPUT_PASSWORD": "Mot de passe",
+  "INPUT_PASSWORD_CODE": "Code d'accès",
   "INPUT_ETABID": "Identifiant de ton établissement",
   "LOGIN_BTN": "Se connecter",
   "CONFIRM_BTN": "Confirmer",
@@ -170,6 +173,7 @@
   "Profile_News_Denominator_Single": "nouveau",
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
+  "Profile_News_Loading_Title": "Chargement des actualités...",
 
   "Profile_Cards_Title": "QR-Code et cartes",
 

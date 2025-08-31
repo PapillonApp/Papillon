@@ -390,14 +390,14 @@ export default function TabOneScreen() {
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
-            dev: false
+            dev: true
           },
           {
             icon: <Papicons name={"Butterfly"} />,
             title: "Demo components",
             redirect: "/demo",
             buttonLabel: "Aller",
-            dev: false
+            dev: true
           },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
         keyExtractor={(item) => item.title}
