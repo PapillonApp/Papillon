@@ -1,80 +1,31 @@
-import * as Papicons from '@getpapillon/papicons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import LottieView from 'lottie-react-native';
-import { Authenticator } from 'pawrd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, Pressable, StyleSheet, TextInput } from 'react-native';
+import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
+import { Authenticator } from "pawrd";
+import React, { useEffect, useMemo, useState } from "react";
+import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import Reanimated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
   useSharedValue,
-  withTiming
-} from 'react-native-reanimated';
+  withTiming,
+} from "react-native-reanimated";
 
-import { useAccountStore } from '@/stores/account';
-import { Services } from '@/stores/account/types';
-import Button from '@/ui/components/Button';
-import Icon from '@/ui/components/Icon';
-import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import ViewContainer from '@/ui/components/ViewContainer';
-import uuid from '@/utils/uuid/uuid';
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import Button from "@/ui/components/Button";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import uuid from "@/utils/uuid/uuid";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useAlert } from '@/ui/components/AlertProvider';
-import { t } from 'i18next';
+import { useAlert } from "@/ui/components/AlertProvider";
+import { t } from "i18next";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@react-navigation/native";
 
-const INITIAL_HEIGHT = 500;
-const COLLAPSED_HEIGHT = 270;
-const KEYBOARD_HEIGHT = 250;
 const ANIMATION_DURATION = 100;
-const OPACITY_THRESHOLD = 400;
-
-const staticStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  pressableContainer: {
-    flex: 1,
-  },
-  stackContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    borderBottomLeftRadius: 42,
-    borderBottomRightRadius: 42,
-    paddingBottom: 34,
-    borderCurve: "continuous",
-    height: "100%",
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 200,
-    backgroundColor: '#ffffff42',
-    padding: 10,
-    borderRadius: 100,
-  },
-  inputContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 300,
-    borderWidth: 1,
-    borderColor: "#0000001F",
-  },
-  textInput: {
-    color: "#5B5B5B",
-    fontSize: 18,
-    fontWeight: "600",
-    flex: 1,
-  },
-  iconBackground: {
-    backgroundColor: "transparent",
-  },
-});
 
 export default function TurboSelfLoginWithCredentials() {
-  const animation = React.useRef<LottieView>(null);
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -82,22 +33,26 @@ export default function TurboSelfLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
-  const height = useSharedValue(INITIAL_HEIGHT);
+  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1);
+  const alert = useAlert();
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
-      'worklet';
-      height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
+      "worklet";
+      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
     },
     hide: () => {
-      'worklet';
-      height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
-    }
-  }), [height]);
+      "worklet";
+      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(1, { duration: ANIMATION_DURATION });
+    },
+  }), [opacity]);
 
   useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardWillShow', keyboardListeners.show);
-    const hideSub = Keyboard.addListener('keyboardWillHide', keyboardListeners.hide);
+    const showSub = Keyboard.addListener("keyboardWillShow", keyboardListeners.show);
+    const hideSub = Keyboard.addListener("keyboardWillHide", keyboardListeners.hide);
 
     return () => {
       showSub.remove();
@@ -105,264 +60,190 @@ export default function TurboSelfLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  const AnimatedHeaderStyle = useAnimatedStyle(() => {
-    'worklet';
-    const heightDiff = height.value - COLLAPSED_HEIGHT;
+  const loginARD = async () => {
+    try {
+      const authenticator = new Authenticator();
+      const authentification = await authenticator.fromCredentials(siteId, username, password);
+      const accountId = uuid();
+      const store = useAccountStore.getState();
+      const service = {
+        id: accountId,
+        auth: {
+          additionals: {
+            schoolId: siteId,
+            password,
+            username,
+          },
+        },
+        serviceId: Services.ARD,
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString(),
+      };
 
-    return {
-      maxHeight: interpolate(
-        0,
-        [0, heightDiff],
-        [height.value, COLLAPSED_HEIGHT],
-        Extrapolate.CLAMP
-      ),
-      height: height.value,
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 2,
-    };
-  }, []);
+      if (action === "addService") {
+        store.addServiceToAccount(store.lastUsedAccount, service);
+        router.back();
+        return router.back();
+      }
 
-  const AnimatedInputContainerStyle = useAnimatedStyle(() => {
-    'worklet';
-    return {
-      paddingTop: height.value + 16,
-      paddingHorizontal: 21,
-      gap: 9
-    };
-  }, []);
+      store.addAccount({
+        id: accountId,
+        firstName: "",
+        lastName: "",
+        schoolName: authentification.schoolName,
+        services: [service],
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString(),
+      });
 
-  const animationCallback = useCallback(() => {
-    if (animation.current) {
-      animation.current.reset();
-      animation.current.play();
+      store.setLastUsedAccount(accountId);
+      return router.push({
+        pathname: "../end/color",
+        params: {
+          accountId,
+        },
+      });
+    } catch (error) {
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(error),
+        withoutNavbar: true,
+      });
     }
-  }, []);
-
-  useFocusEffect(animationCallback);
-
-  const alert = useAlert();
-
-  const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
-    'worklet';
-    const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
-
-    const opacity = isKeyboardVisible ? 0 : 1
-
-    return {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 4,
-      opacity: withTiming(opacity, { duration: isKeyboardVisible ? 150 : 100 }),
-      paddingBottom: 20
-    };
-  }, []);
+  };
 
   return (
-    <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
-      <ViewContainer>
-        <Reanimated.View style={AnimatedHeaderStyle}>
-          <Stack
-            padding={32}
-            backgroundColor={'#275F8A'}
-            gap={20}
-            style={staticStyles.stackContainer}
-          >
-            <Reanimated.View style={AnimatedLottieContainerStyle}>
-              <LottieView
-                autoPlay
-                loop={false}
-                style={{ width: 230, height: 230 }}
-                source={require('@/assets/lotties/ard.json')}
-              />
-            </Reanimated.View>
-            <Stack
-              vAlign='start'
-              hAlign='start'
-              width="100%"
-              gap={12}
-            >
-              <Stack flex direction="horizontal">
-                <Typography
-                  variant="h5"
-                  style={{ color: "white", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP")} 3
-                </Typography>
-                <Typography
-                  variant="h5"
-                  style={{ color: "#FFFFFFA6", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP_OUTOF")} 3
-                </Typography>
-              </Stack>
-              <Typography
-                variant="h1"
-                style={{ color: "white", fontSize: 32, lineHeight: 34 }}
-              >
-                {t("ONBOARDING_LOGIN_CREDENTIALS")} ARD
-              </Typography>
-            </Stack>
-          </Stack>
-        </Reanimated.View>
-
-        <Reanimated.View style={AnimatedInputContainerStyle}>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={staticStyles.inputContainer}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons.Link />
-              </Icon>
-              <TextInput
-                placeholder={t("INPUT_ETABID")}
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setSiteId}
-                value={siteId}
-                style={staticStyles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                keyboardType="email-address"
-              />
-            </Stack>
-          </Stack>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={staticStyles.inputContainer}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons.User />
-              </Icon>
-              <TextInput
-                placeholder={t("INPUT_USERNAME")}
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setUsername}
-                value={username}
-                style={staticStyles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                keyboardType="email-address"
-              />
-            </Stack>
-          </Stack>
-          <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-            <Stack
-              flex
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
-              style={staticStyles.inputContainer}
-            >
-              <Icon
-                papicon
-                size={24}
-                fill="#5B5B5B"
-                style={staticStyles.iconBackground}
-              >
-                <Papicons.Lock />
-              </Icon>
-              <TextInput
-                placeholder={t("INPUT_PASSWORD")}
-                placeholderTextColor="#5B5B5B"
-                onChangeText={setPassword}
-                value={password}
-                style={staticStyles.textInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="url"
-                secureTextEntry
-                keyboardType="default"
-              />
-            </Stack>
-          </Stack>
-          <Button
-            title={t("LOGIN_BTN")}
-            color='black'
-            size='large'
-            disableAnimation
-            onPress={async () => {
-              try {
-                const authenticator = new Authenticator();
-                const authentification = await authenticator.fromCredentials(siteId, username, password)
-                const accountId = uuid()
-                const store = useAccountStore.getState()
-                const service = {
-                  id: accountId,
-                  auth: {
-                    additionals: {
-                      schoolId: siteId,
-                      password,
-                      username
-                    }
-                  },
-                  serviceId: Services.ARD,
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                }
-
-                if (action === "addService") {
-                  store.addServiceToAccount(store.lastUsedAccount, service)
-                  router.back()
-                  return router.back()
-                }
-
-                store.addAccount({
-                  id: accountId,
-                  firstName: "",
-                  lastName: "",
-                  schoolName: authentification.schoolName,
-                  services: [service],
-                  createdAt: (new Date()).toISOString(),
-                  updatedAt: (new Date()).toISOString()
-                })
-
-                store.setLastUsedAccount(accountId)
-                return router.push({
-                  pathname: "../end/color",
-                  params: {
-                    accountId
-                  }
-                });
-              } catch (error) {
-                alert.showAlert({
-                  title: "Erreur d'authentification",
-                  description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
-                  icon: "TriangleAlert",
-                  color: "#D60046",
-                  technical: String(error),
-                  withoutNavbar: true
-                });
-              }
-            }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, marginBottom: insets.bottom }}
+      behavior="padding"
+    >
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "flex-end",
+          borderBottomLeftRadius: 42,
+          borderBottomRightRadius: 42,
+          padding: 20,
+          paddingTop: insets.top + 20,
+          paddingBottom: 34,
+          borderCurve: "continuous",
+          flex: 1,
+          backgroundColor: "#275F8A",
+        }}
+      >
+        <Reanimated.View
+          style={{
+            flex: 1,
+            marginBottom: 16,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: opacity,
+            transform: [{ scale: scale }],
+          }}
+        >
+          <LottieView
+            autoPlay
+            loop={false}
+            style={{ width: 230, height: 230 }}
+            source={require("@/assets/lotties/ard.json")}
           />
         </Reanimated.View>
-
-        <OnboardingBackButton />
-      </ViewContainer >
-    </Pressable>
+        <Reanimated.View
+          style={{
+            width: "100%",
+            gap: 12,
+            opacity: opacity,
+            transform: [{ scale: scale }],
+          }}
+        >
+          <Stack
+            direction="horizontal"
+          >
+            <Typography
+              variant="h5"
+              style={{ color: "#FFF", lineHeight: 22, fontSize: 18 }}
+            >
+              {t("STEP")} 2
+            </Typography>
+            <Typography
+              variant="h5"
+              style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+            >
+              {t("STEP_OUTOF")} 3
+            </Typography>
+          </Stack>
+          <Typography
+            variant="h1"
+            style={{ color: "#FFF", fontSize: 32, lineHeight: 34 }}
+          >
+            {t("ONBOARDING_LOGIN_CREDENTIALS")} ARD
+          </Typography>
+        </Reanimated.View>
+      </View>
+      <Stack padding={20}
+             gap={10}
+      >
+        <OnboardingInput
+          icon={"Link"}
+          placeholder={t("INPUT_ETABID")}
+          text={siteId}
+          setText={setSiteId}
+          isPassword={false}
+          keyboardType={"default"}
+          inputProps={{
+            autoCapitalize: "none",
+            autoCorrect: false,
+            spellCheck: false,
+          }}
+        />
+        <OnboardingInput
+          icon={"User"}
+          placeholder={t("INPUT_USERNAME")}
+          text={username}
+          setText={setUsername}
+          isPassword={false}
+          keyboardType={"default"}
+          inputProps={{
+            autoCapitalize: "none",
+            autoCorrect: false,
+            spellCheck: false,
+            textContentType: "username",
+          }}
+        />
+        <OnboardingInput
+          icon={"Lock"}
+          placeholder={t("INPUT_PASSWORD")}
+          text={password}
+          setText={setPassword}
+          isPassword={true}
+          keyboardType={"default"}
+          inputProps={{
+            autoCapitalize: "none",
+            autoCorrect: false,
+            spellCheck: false,
+            textContentType: "password",
+            onSubmitEditing: () => {
+              Keyboard.dismiss();
+              // Trigger login
+              loginARD();
+            },
+            returnKeyType: "done",
+          }}
+        />
+        <Button
+          title={t("LOGIN_BTN")}
+          style={{
+            backgroundColor: theme.dark ? theme.colors.border : "black",
+          }}
+          size="large"
+          disableAnimation
+          onPress={loginARD}
+        />
+      </Stack>
+      <OnboardingBackButton />
+    </KeyboardAvoidingView>
   );
 }

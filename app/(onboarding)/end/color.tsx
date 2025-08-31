@@ -18,7 +18,6 @@ import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { AppColors } from "@/utils/colors";
 import AppColorsSelector from "@/components/AppColorsSelector";
-import { t } from "i18next";
 import { useTranslation } from "react-i18next";
 
 export default function ChooseColorScreen() {
@@ -63,7 +62,7 @@ export default function ChooseColorScreen() {
   const gradientKey = useMemo(() => `gradient:${selectedColor}`, [selectedColor]);
 
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, marginBottom: insets.bottom }}>
       <Reanimated.View
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(100)}
@@ -83,12 +82,15 @@ export default function ChooseColorScreen() {
         style={StyleSheet.absoluteFill}
       />
       <Reanimated.View style={{
-        marginTop: 90,
+        padding: 20,
+        paddingTop: insets.top + 20,
         alignItems: "center",
+        justifyContent: "center",
         shadowColor: "rgba(0, 0, 0, 0.25)",
-        shadowOffset: { width: 0, height: 1.752 },
+        shadowOffset: { width: 0, height: 1},
         shadowOpacity: 1,
-        shadowRadius: 8.061
+        shadowRadius: 8,
+        flex: 1,
       }}
         entering={ZoomIn.springify().duration(300)}
         exiting={FadeOut.duration(100)}
@@ -96,7 +98,7 @@ export default function ChooseColorScreen() {
       >
         <PapillonLogo color={selectedColor} />
       </Reanimated.View>
-      <View style={{ marginTop: 40, padding: 20, flex: 1, gap: 22 }}>
+      <View style={{ paddingHorizontal: 20, gap: 22, paddingBottom: 20 }}>
         <View>
           <Typography color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h4">{t("ONBOARDING_COLOR_TITLE")}</Typography>
           <Stack gap={0}>
@@ -104,14 +106,12 @@ export default function ChooseColorScreen() {
             <Typography style={{ marginBottom: -5 }} color={adjust(selectedColor, theme.dark ? 0.7 : -0.5)} variant="h2">{t("ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION")}</Typography>
           </Stack>
         </View>
-        <View>
-          <AppColorsSelector
-            onChangeColor={handleColorChange}
-            accountId={accountId}
-          />
-        </View>
+        <AppColorsSelector
+          onChangeColor={handleColorChange}
+          accountId={accountId}
+        />
         <Typography
-          style={{ paddingTop: 10, flex: 1 }}
+          style={{ paddingTop: 10, marginTop: -20 }}
           color="#7F7F7F"
           variant="caption"
         >
@@ -127,8 +127,6 @@ export default function ChooseColorScreen() {
           }}
           style={{
             backgroundColor: theme.dark ? colors.border : "black",
-            position: "absolute",
-            bottom: insets.bottom,
             alignSelf: "center"
           }}
           size='large'
@@ -152,8 +150,8 @@ const styles = StyleSheet.create({
 
 const PapillonLogo = React.memo(({ color }: { color: string }) => (
   <Svg
-    width={149}
-    height={134}
+    viewBox={"0 0 149 134"}
+    style={{maxHeight: 150}}
   >
     <Path
       fill="#fff"
