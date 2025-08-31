@@ -18,8 +18,10 @@ export { getServiceName } from "@/utils/services/helper"
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
-  const store = useAccountStore.getState()
-  const account = store.accounts.find(account => account.id === store.lastUsedAccount)
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const account = accounts.find((a) => a.id === lastUsedAccount);
   const selfCompatible = account?.services.filter(
     service => [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId)
   );
@@ -36,7 +38,7 @@ export default function QRCodeAndCardsPage() {
 
   useEffect(() => {
     fetchWallets();
-  }, [])
+  }, [accounts])
 
   const cardOffset = 60;
   const cardHeight = 210;
@@ -152,7 +154,6 @@ export function Card({
         width: "100%",
         minHeight: 235,
         borderRadius: 25,
-        backgroundColor: "green",
         overflow: "hidden",
         transform: [{ translateY: offset }],
         zIndex: 100 + index,
