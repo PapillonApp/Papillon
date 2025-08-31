@@ -4,7 +4,6 @@ stores/* @raphckrman
 .github/* @raphckrman
 
 utils/magic/* @tryon-dev
-locales/* @tryon-dev
 
 ui/* @ecnivtwelve
 ui/components/Pattern/* @godetremy
