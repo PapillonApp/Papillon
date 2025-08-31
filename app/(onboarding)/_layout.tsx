@@ -87,7 +87,7 @@ export default function OnboardingLayout() {
                     options={{ ...newScreenOptions }}
                 />
                 <Stack.Screen
-                    name="pronote/2FA"
+                    name="pronote/2fa"
                     options={{ ...newScreenOptions }}
                     initialParams={{ error: {}, session: {}, device: "" }}
                 />
