@@ -121,11 +121,6 @@ export default function TabOneScreen() {
   }, []);
 
   const accounts = useAccountStore((state) => state.accounts);
-
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null;
-  }
   const theme = useTheme();
   const { colors } = theme;
 
@@ -159,6 +154,10 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
   const headerItems = [
     (
       <Stack

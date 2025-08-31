@@ -38,9 +38,11 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
 import { Avatar } from "@/app/(features)/(news)/news";
+import { Capabilities } from "@/services/shared/types";
 
 
 function Tabs() {
+  const [availableClientsAttendance, setAvailableClientsAttendance] = useState<number>(0);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [discussion, setDiscussion] = useState<Chat[]>([]);
   const [attendancePeriods, setAttendancePeriods] = useState<Period[]>([]);
@@ -53,7 +55,9 @@ function Tabs() {
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
+      disabled: !(availableClientsAttendance),
       onPress: () => {
+        if (attendances.length === 0 || attendancePeriods.length === 0) return;
         router.push({
           pathname: "/(features)/attendance",
           params: {
@@ -83,6 +87,8 @@ function Tabs() {
       warn('Manager is null, skipping attendance fetch');
       return;
     }
+    const availableClients = manager.getAvailableClients(Capabilities.ATTENDANCE)
+    setAvailableClientsAttendance(availableClients.length)
     const periods = await manager.getAttendancePeriods();
     const currentPeriod = getCurrentPeriod(periods)
     const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
@@ -119,6 +125,7 @@ function Tabs() {
           exiting={PapillonAppearOut}
           key={"tab_profile:" + index + ":" + tab.unread}
           style={{ flex: 1 }}
+          disabled={tab.disabled}
           onPress={tab.onPress}
         >
           <Stack
@@ -430,7 +437,7 @@ export default function TabOneScreen() {
           <>
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
-                {account && account.customisation && account.customisation.profilePicture ? (
+                {account && account.customisation && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? (
                   <Image
                     source={
                       { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
