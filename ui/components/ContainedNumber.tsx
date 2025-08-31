@@ -15,13 +15,13 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         backgroundColor: color + '26',
         borderRadius: 80,
         borderCurve: 'continuous',
-        paddingHorizontal: 8,
-        paddingVertical: 2,
+        paddingHorizontal: 10,
+        paddingVertical: 1,
         gap: 2,
         flexDirection: 'row',
         alignItems: 'flex-end',
         borderColor: color + '46',
-        borderWidth: 1,
+        borderWidth: 0,
         minWidth: 50,
         justifyContent: "center"
       }}
@@ -32,7 +32,7 @@ const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, c
         </Typography>
       )}
       {denominator && (
-        <Typography variant='body2' color={color + "a6"}>
+        <Typography variant='body2' color={color + "a6"} style={{ marginBottom: 3 }}>
           {denominator}
         </Typography>
       )}

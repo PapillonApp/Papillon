@@ -534,7 +534,11 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item.ui.key}
         ListEmptyComponent={<EmptyListComponent />}
         header={(
-          <GradesWidget accent="#29947A" />
+          <GradesWidget
+            accent="#29947A"
+            algorithm={currentAlgorithm}
+            period={currentPeriod}
+          />
         )}
         ListHeaderComponent={transformedData.length > 0 ? <LatestGrades /> : null}
         refreshControl={

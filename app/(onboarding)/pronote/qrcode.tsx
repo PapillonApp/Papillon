@@ -1,5 +1,3 @@
-
-
 import { Papicons } from "@getpapillon/papicons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "@react-navigation/native";
@@ -22,6 +20,7 @@ import { URLToBase64 } from "@/utils/attachments/helper";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import uuid from "@/utils/uuid/uuid";
+import { useTranslation } from "react-i18next";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();

@@ -184,6 +184,10 @@ function NewsSection() {
     return () => unsubscribe();
   }, []);
 
+  if (news.length === 0 && !loading) {
+    return null;
+  }
+
   return (
     <>
       <Reanimated.View
@@ -249,7 +253,7 @@ function NewsSection() {
             </Stack>
           </Pressable>
         </Stack>
-        <List marginBottom={0} radius={24} style={{ height: 138 }}>
+        <List marginBottom={0} radius={24}>
           {news.map((item, index) => (
             <Item
               key={index}
@@ -261,7 +265,6 @@ function NewsSection() {
                   }
                 })
               }}
-              style={{ height: 138 / 2 }}
             >
               <Typography variant="title" color="text">
                 {item.title}
@@ -272,7 +275,7 @@ function NewsSection() {
             </Item>
           ))}
           {loading && (
-            <Item style={{ height: 138 / 2 }}>
+            <Item>
               <Leading>
                 <ActivityIndicator />
               </Leading>
