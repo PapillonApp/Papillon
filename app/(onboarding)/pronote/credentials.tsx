@@ -24,8 +24,6 @@ import Typography from '@/ui/components/Typography';
 import ViewContainer from '@/ui/components/ViewContainer';
 import { URLToBase64 } from '@/utils/attachments/helper';
 import { customFetcher } from '@/utils/pronote/fetcher';
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useTranslation } from 'react-i18next';
 import { GetIdentityFromPronoteUsername } from '@/utils/pronote/name';
 import uuid from '@/utils/uuid/uuid';
 

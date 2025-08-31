@@ -20,7 +20,6 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
-import { useTranslation } from "react-i18next";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import uuid from "@/utils/uuid/uuid";
