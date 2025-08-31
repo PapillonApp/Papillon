@@ -437,7 +437,7 @@ export default function TabOneScreen() {
           <>
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
-                {account && account.customisation && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? (
+                {account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? (
                   <Image
                     source={
                       { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
