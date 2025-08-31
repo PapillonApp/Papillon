@@ -2,7 +2,7 @@ import * as Papicons from '@getpapillon/papicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, Linking, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Keyboard, Linking, Pressable, StyleSheet, TextInput, View } from "react-native";
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -25,7 +25,6 @@ import uuid from '@/utils/uuid/uuid';
 import { log } from '@/utils/logger/logger';
 import { useTranslation } from 'react-i18next';
 
-const INITIAL_HEIGHT = 550;
 const COLLAPSED_HEIGHT = 270;
 const KEYBOARD_HEIGHT = 270;
 const ANIMATION_DURATION = 100;
@@ -84,6 +83,7 @@ export default function TurboSelfLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action)
 
+  const INITIAL_HEIGHT = Dimensions.get("window").height / 1.5;
   const height = useSharedValue(INITIAL_HEIGHT);
 
   const keyboardListeners = useMemo(() => ({
