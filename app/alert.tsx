@@ -8,6 +8,7 @@ import Reanimated, { Easing,LinearTransition } from "react-native-reanimated";
 
 import Button from "@/ui/components/Button";
 import Typography from "@/ui/components/Typography";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function AlertModal() {
   const { t } = useTranslation();
@@ -26,12 +27,9 @@ export default function AlertModal() {
       style={{
         padding: 18,
         paddingTop: 20,
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
         gap: 22,
-        marginBottom: Platform.OS === 'ios' ? -32 : 0,
+        marginBottom: runsIOS26() ? -32 : 0,
         alignSelf: "center",
-        maxWidth: 500,
       }}
     >
       <View
@@ -77,7 +75,7 @@ export default function AlertModal() {
               zIndex: 1000,
             },
             showTechnicalDetails && {
-              backgroundColor: colors.text + "20",
+              backgroundColor: "#222",
               paddingHorizontal: 16,
               paddingVertical: 12,
               gap: 8,
@@ -98,11 +96,11 @@ export default function AlertModal() {
               setShowTechnicalDetails(!showTechnicalDetails);
             }}
           >
-            <Typography variant="h6" color={showTechnicalDetails ? colors.text : colors.primary}>{t('Alert_TechnicalDetails')}</Typography>
+            <Typography variant="h6" color={showTechnicalDetails ? "#FFF" : colors.primary}>{t('Alert_TechnicalDetails')}</Typography>
 
             {showTechnicalDetails
-              ? <LucideIcons.ChevronUp color={showTechnicalDetails ? colors.text : colors.primary} size={24} strokeWidth={2.5} />
-              : <LucideIcons.ChevronDown color={showTechnicalDetails ? colors.text : colors.primary} size={24} strokeWidth={2.5} />}
+              ? <LucideIcons.ChevronUp color={showTechnicalDetails ? "#FFF" : colors.primary} size={24} strokeWidth={2.5} />
+              : <LucideIcons.ChevronDown color={showTechnicalDetails ? "#FFF" : colors.primary} size={24} strokeWidth={2.5} />}
           </Pressable>
 
           {showTechnicalDetails && (
@@ -114,7 +112,7 @@ export default function AlertModal() {
             >
               <Text
                 style={{
-                  color: colors.text,
+                  color: "#FFF",
                   fontSize: 14,
                   lineHeight: 20,
                   fontFamily: Platform.OS === 'ios' ? "Courier" : "monospace",

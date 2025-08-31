@@ -1,101 +1,71 @@
-import * as Papicons from '@getpapillon/papicons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import LottieView from 'lottie-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, Keyboard, Linking, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Linking,
+  View,
+} from "react-native";
 import Reanimated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
   useSharedValue,
-  withTiming
-} from 'react-native-reanimated';
+  withTiming,
+} from "react-native-reanimated";
 
-import Button from '@/ui/components/Button';
-import Icon from '@/ui/components/Icon';
-import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import ViewContainer from '@/ui/components/ViewContainer';
+import Button from "@/ui/components/Button";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { login, tokenize } from 'ezly';
-import { useAlert } from '@/ui/components/AlertProvider';
-import { useAccountStore } from '@/stores/account';
-import { ServiceAccount, Services } from '@/stores/account/types';
-import uuid from '@/utils/uuid/uuid';
-import { log } from '@/utils/logger/logger';
-import { useTranslation } from 'react-i18next';
+import { login, tokenize } from "ezly";
+import { useAlert } from "@/ui/components/AlertProvider";
+import { useAccountStore } from "@/stores/account";
+import { ServiceAccount, Services } from "@/stores/account/types";
+import uuid from "@/utils/uuid/uuid";
+import { log } from "@/utils/logger/logger";
+import { useTranslation } from "react-i18next";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@react-navigation/native";
 
-const COLLAPSED_HEIGHT = 270;
-const KEYBOARD_HEIGHT = 270;
 const ANIMATION_DURATION = 100;
-const OPACITY_THRESHOLD = 400;
-
-const staticStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  pressableContainer: {
-    flex: 1,
-  },
-  stackContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    borderBottomLeftRadius: 42,
-    borderBottomRightRadius: 42,
-    paddingBottom: 34,
-    borderCurve: "continuous",
-    height: "100%",
-  },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 200,
-    backgroundColor: '#ffffff42',
-    padding: 10,
-    borderRadius: 100,
-  },
-  inputContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F2F2F2",
-    borderRadius: 300,
-    borderWidth: 1,
-    borderColor: "#0000001F",
-  },
-  textInput: {
-    color: "#5B5B5B",
-    fontSize: 18,
-    fontWeight: "600",
-    flex: 1,
-  },
-  iconBackground: {
-    backgroundColor: "transparent",
-  },
-});
 
 export default function TurboSelfLoginWithCredentials() {
-  const animation = React.useRef<LottieView>(null);
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [linkSended, setLinkSended] = useState<boolean>(false);
 
   const params = useLocalSearchParams();
-  const action = String(params.action)
+  const action = String(params.action);
 
-  const INITIAL_HEIGHT = Dimensions.get("window").height / 1.5;
-  const height = useSharedValue(INITIAL_HEIGHT);
+  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1);
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
-      'worklet';
-      height.value = withTiming(KEYBOARD_HEIGHT, { duration: ANIMATION_DURATION });
+      "worklet";
+      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
     },
     hide: () => {
-      'worklet';
-      height.value = withTiming(INITIAL_HEIGHT, { duration: ANIMATION_DURATION });
-    }
-  }), [height]);
+      "worklet";
+      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+      scale.value = withTiming(1, { duration: ANIMATION_DURATION });
+    },
+  }), [opacity]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardWillShow", keyboardListeners.show);
+    const hideSub = Keyboard.addListener("keyboardWillHide", keyboardListeners.hide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardListeners]);
 
   useEffect(() => {
     const handleDeepLink = (event: { url: string }) => {
@@ -116,79 +86,14 @@ export default function TurboSelfLoginWithCredentials() {
     });
 
     Linking.addEventListener("url", handleDeepLink);
-
-    const showSub = Keyboard.addListener('keyboardWillShow', keyboardListeners.show);
-    const hideSub = Keyboard.addListener('keyboardWillHide', keyboardListeners.hide);
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
   }, [keyboardListeners]);
-
-  const AnimatedHeaderStyle = useAnimatedStyle(() => {
-    'worklet';
-    const heightDiff = height.value - COLLAPSED_HEIGHT;
-
-    return {
-      maxHeight: interpolate(
-        0,
-        [0, heightDiff],
-        [height.value, COLLAPSED_HEIGHT],
-        Extrapolate.CLAMP
-      ),
-      height: height.value,
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 2,
-    };
-  }, []);
-
-  const AnimatedInputContainerStyle = useAnimatedStyle(() => {
-    'worklet';
-    return {
-      paddingTop: height.value + 16,
-      paddingHorizontal: 21,
-      gap: 9
-    };
-  }, []);
-
-  const animationCallback = useCallback(() => {
-    if (animation.current) {
-      animation.current.reset();
-      animation.current.play();
-    }
-  }, []);
-
-  useFocusEffect(animationCallback);
 
   const { t } = useTranslation();
 
-  const AnimatedLottieContainerStyle = useAnimatedStyle(() => {
-    'worklet';
-    const isKeyboardVisible = height.value < OPACITY_THRESHOLD;
-
-    const opacity = isKeyboardVisible ? 0 : 1
-
-    return {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 4,
-      opacity: withTiming(opacity, { duration: isKeyboardVisible ? 150 : 100 }),
-      paddingBottom: 20
-    };
-  }, []);
-
   const alert = useAlert();
-  const latestPassword = useRef<string>("");
 
   async function handleLogin(username: string, password: string) {
     try {
-      latestPassword.current = password;
       await login(username, password)
       setLinkSended(true);
     } catch (error) {
@@ -198,33 +103,33 @@ export default function TurboSelfLoginWithCredentials() {
         icon: "TriangleAlert",
         color: "#D60046",
         technical: String(error),
-        withoutNavbar: true
+        withoutNavbar: true,
       });
     }
   }
 
   async function handleActivation(url: string) {
-    const id = uuid()
-    const { identification, profile } = await tokenize(url)
+    const id = uuid();
+    const { identification, profile } = await tokenize(url);
     const service: ServiceAccount = {
       id,
       auth: {
         session: identification,
         additionals: {
-          secret: latestPassword.current
-        }
+          secret: password,
+        },
       },
       serviceId: Services.IZLY,
       createdAt: (new Date()).toISOString(),
-      updatedAt: (new Date()).toISOString()
-    }
+      updatedAt: (new Date()).toISOString(),
+    };
 
-    const store = useAccountStore.getState()
+    const store = useAccountStore.getState();
 
     if (action === "addService") {
-      store.addServiceToAccount(store.lastUsedAccount, service)
-      router.back()
-      return router.back()
+      store.addServiceToAccount(store.lastUsedAccount, service);
+      router.back();
+      return router.back();
     }
 
     store.addAccount({
@@ -233,154 +138,165 @@ export default function TurboSelfLoginWithCredentials() {
       lastName: profile.lastName,
       services: [service],
       createdAt: (new Date()).toISOString(),
-      updatedAt: (new Date()).toISOString()
-    })
-    store.setLastUsedAccount(id)
+      updatedAt: (new Date()).toISOString(),
+    });
+    store.setLastUsedAccount(id);
 
     return router.push({
       pathname: "/(onboarding)/end/color",
       params: {
-        accountId: id
-      }
+        accountId: id,
+      },
     });
   }
 
   return (
-    <Pressable style={staticStyles.pressableContainer} onPress={Keyboard.dismiss}>
-      <ViewContainer>
-        <Reanimated.View style={AnimatedHeaderStyle}>
-          <Stack
-            padding={32}
-            backgroundColor={'#56CEF5'}
-            gap={20}
-            style={staticStyles.stackContainer}
-          >
-            <Reanimated.View style={AnimatedLottieContainerStyle}>
-              <LottieView
-                autoPlay
-                loop={false}
-                style={{ width: 230, height: 230 }}
-                source={require('@/assets/lotties/izly.json')}
-              />
-            </Reanimated.View>
-            <Stack vAlign="start" hAlign="start" width="100%" gap={12}>
-              <Stack flex direction="horizontal">
-                <Typography
-                  variant="h5"
-                  style={{ color: "#000000", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP")} 3
-                </Typography>
-                <Typography
-                  variant="h5"
-                  style={{ color: "#000000A6", lineHeight: 22, fontSize: 18 }}
-                >
-                  {t("STEP_OUTOF")} 3
-                </Typography>
-              </Stack>
-              <Typography
-                variant="h1"
-                style={{ color: "#000000", fontSize: 32, lineHeight: 34 }}
-              >
-                {t("ONBOARDING_LOGIN_CREDENTIALS")} Izly
-              </Typography>
-            </Stack>
-          </Stack>
-        </Reanimated.View>
-
-        {linkSended ? (
-          <View
+    <KeyboardAvoidingView
+      style={{ flex: 1, marginBottom: insets.bottom }}
+      behavior="padding"
+    >
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "flex-end",
+          borderBottomLeftRadius: 42,
+          borderBottomRightRadius: 42,
+          padding: 20,
+          paddingTop: insets.top + 20,
+          paddingBottom: 34,
+          borderCurve: "continuous",
+          flex: 1,
+          backgroundColor: "#56CEF5",
+        }}
+      >
+        <Reanimated.View
+          style={{
+            flex: 1,
+            marginBottom: 16,
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: opacity,
+            transform: [{ scale: scale }],
+          }}
+        >
+          <LottieView
+            source={require("../../../assets/lotties/izly.json")}
+            autoPlay
+            loop={false}
             style={{
-              alignItems: "center",
-              paddingTop: INITIAL_HEIGHT + 70,
-              gap: 20,
+              aspectRatio: 1,
+              height: "100%",
+              maxHeight: 250,
             }}
+          />
+        </Reanimated.View>
+        <Stack
+          vAlign="start"
+          hAlign="start"
+          width="100%"
+          gap={12}
+        >
+          <Stack
+            direction="horizontal"
           >
-            <ActivityIndicator />
-            <View>
-              <Typography variant="h4" color="text" align="center">
-                {t("WAITING")}
-              </Typography>
-              <Typography variant="body2" color="secondary" align="center">
-                {t("IZLY_SMS_SEND")}
-              </Typography>
-            </View>
+            <Typography
+              variant="h5"
+              style={{ color: "#FFF", lineHeight: 22, fontSize: 18 }}
+            >
+              {t("STEP")} 2
+            </Typography>
+            <Typography
+              variant="h5"
+              style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
+            >
+              {t("STEP_OUTOF")} 3
+            </Typography>
+          </Stack>
+          <Typography
+            variant="h1"
+            style={{ color: "#FFF", fontSize: 32, lineHeight: 34 }}
+          >
+            {t("ONBOARDING_LOGIN_CREDENTIALS")} Izly
+          </Typography>
+        </Stack>
+      </View>
+      {linkSended ? (
+        <View
+          style={{
+            alignItems: "center",
+            gap: 10,
+            padding: 20,
+            height: 200,
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator />
+          <View>
+            <Typography variant="h4"
+                        color="text"
+                        align="center"
+            >
+              {t("WAITING")}
+            </Typography>
+            <Typography variant="body2"
+                        color="secondary"
+                        align="center"
+            >
+              {t("IZLY_SMS_SEND")}
+            </Typography>
           </View>
-        ) : (
-          <Reanimated.View style={AnimatedInputContainerStyle}>
-            <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-              <Stack
-                flex
-                direction="horizontal"
-                vAlign="center"
-                hAlign="center"
-                style={staticStyles.inputContainer}
-              >
-                <Icon
-                  papicon
-                  size={24}
-                  fill="#5B5B5B"
-                  style={staticStyles.iconBackground}
-                >
-                  <Papicons.User />
-                </Icon>
-                <TextInput
-                  placeholder={t("INPUT_PHONE_OR_MAIL")}
-                  placeholderTextColor="#5B5B5B"
-                  onChangeText={setUsername}
-                  value={username}
-                  style={staticStyles.textInput}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="email"
-                  keyboardType="email-address"
-                />
-              </Stack>
-            </Stack>
+        </View>
+      ) : (
+        <Stack padding={20}
+               gap={10}
+        >
 
-            <Stack flex direction="horizontal" hAlign="center" vAlign="center">
-              <Stack
-                flex
-                direction="horizontal"
-                vAlign="center"
-                hAlign="center"
-                style={staticStyles.inputContainer}
-              >
-                <Icon
-                  papicon
-                  size={24}
-                  fill="#5B5B5B"
-                  style={staticStyles.iconBackground}
-                >
-                  <Papicons.Lock />
-                </Icon>
-                <TextInput
-                  placeholder={t("INPUT_PASSWORD_CODE")}
-                  placeholderTextColor="#5B5B5B"
-                  onChangeText={setPassword}
-                  value={password}
-                  style={staticStyles.textInput}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="password"
-                  secureTextEntry
-                  keyboardType="numeric"
-                />
-              </Stack>
-            </Stack>
-
-            <Button
-              title={t("LOGIN_BTN")}
-              color="black"
-              size="large"
-              disableAnimation
-              onPress={() => handleLogin(username, password)}
-            />
-          </Reanimated.View>
-        )}
-
-        <OnboardingBackButton />
-      </ViewContainer>
-    </Pressable>
+          <OnboardingInput
+            icon={"User"}
+            placeholder={t("INPUT_USERNAME")}
+            text={username}
+            setText={setUsername}
+            isPassword={false}
+            keyboardType={"default"}
+            inputProps={{
+              autoCapitalize: "none",
+              autoCorrect: false,
+              spellCheck: false,
+              textContentType: "username",
+            }}
+          />
+          <OnboardingInput
+            icon={"Lock"}
+            placeholder={t("INPUT_PASSWORD")}
+            text={password}
+            setText={setPassword}
+            isPassword={true}
+            keyboardType={"default"}
+            inputProps={{
+              autoCapitalize: "none",
+              autoCorrect: false,
+              spellCheck: false,
+              textContentType: "password",
+              onSubmitEditing: () => {
+                Keyboard.dismiss();
+                // Trigger login
+                handleLogin(username, password);
+              },
+              returnKeyType: "done",
+            }}
+          />
+          <Button
+            title={t("LOGIN_BTN")}
+            style={{
+              backgroundColor: theme.dark ? theme.colors.border : "black",
+            }}
+            size="large"
+            disableAnimation
+            onPress={() => handleLogin(username, password)}
+          />
+        </Stack>
+      )}
+      <OnboardingBackButton />
+    </KeyboardAvoidingView>
   );
 }
