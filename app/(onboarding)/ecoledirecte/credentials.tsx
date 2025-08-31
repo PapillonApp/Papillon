@@ -224,7 +224,7 @@ export default function EDLoginWithCredentials() {
         <Stack vAlign="start" hAlign="start" width="100%" gap={12}>
           <Stack direction="horizontal">
             <Typography variant="h5" style={{ color: "#FFF", fontSize: 18 }}>
-              {t("STEP")} 2
+              {t("STEP")} 3
             </Typography>
             <Typography variant="h5" style={{ color: "#FFFFFF90", fontSize: 18 }}>
               {t("STEP_OUTOF")} 3
