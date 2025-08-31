@@ -1,13 +1,18 @@
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
 import { Papicons, Phone } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import QRCode from 'react-native-qrcode-svg';
 
 export default function QRCodePage() {
+  const theme = useTheme();
+  const { colors } = theme;
+
   const search = useLocalSearchParams();
   const qr = String(search.qrcode)
 
@@ -17,7 +22,7 @@ export default function QRCodePage() {
     <>
       <View
         style={{
-          backgroundColor: "black",
+          backgroundColor: adjust(colors.primary, -0.6),
           flex: 1,
           padding: 100,
           paddingTop: 200,
@@ -32,7 +37,7 @@ export default function QRCodePage() {
             alignSelf: "center"
           }}
         >
-          <QRCode value={qr} size={170} />
+          <QRCode value={qr} size={Dimensions.get("window").width - 100} />
         </View>
 
         <Stack style={{ width: "100%" }} hAlign="center">
