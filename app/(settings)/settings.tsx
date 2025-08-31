@@ -1,9 +1,9 @@
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { RelativePathString, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import { Alert, Image, Platform, View } from "react-native";
@@ -18,20 +18,17 @@ import adjust from "@/utils/adjustColor";
 import List from "@/ui/components/List";
 import Item, { Leading } from "@/ui/components/Item";
 import { useAccountStore } from "@/stores/account";
-import { getManager } from "@/services/shared";
-import { log } from "@/utils/logger/logger";
 import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { Account } from "@/stores/account/types";
 import { Avatar } from "../(features)/(news)/news";
+import * as WebBrowser from "expo-web-browser";
 
 const SettingsIndex = () => {
   const router = useRouter();
   const theme = useTheme();
   const { colors } = theme;
 
-  const manager = getManager();
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -72,7 +69,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
-          onPress: () => null
+          onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
         },
         {
           title: t('Settings_Donate_Title'),
@@ -80,7 +77,7 @@ const SettingsIndex = () => {
           papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
-          onPress: () => null
+          onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
         },
         {
           title: t('Settings_About_Title'),
@@ -146,7 +143,7 @@ const SettingsIndex = () => {
       },
       {
         icon: <Papicons name={"Card"} />,
-        title: "Cartes",
+        title: t("Settings_Cards_Banner_Title"),
         description: "Cantine, accès",
         color: "#0059DD",
         onPress: () => {
@@ -185,7 +182,7 @@ const SettingsIndex = () => {
                     gap={14}
                     padding={16}
                     radius={25}
-                    backgroundColor={button.disabled ? "#e7e7e7ff" : adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                    backgroundColor={button.disabled ? theme.colors.border : adjust(button.color, theme.dark ? -0.85 : 0.85)}
                   >
                     <Icon papicon size={24} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}

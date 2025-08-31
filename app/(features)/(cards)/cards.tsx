@@ -2,25 +2,35 @@ import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
+import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
 import { Papicons, Plus } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, Image, Pressable, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 export { getServiceName } from "@/utils/services/helper"
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
-  const store = useAccountStore.getState()
-  const account = store.accounts.find(account => account.id === store.lastUsedAccount)
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const [loadingWallets, setLoadingWallets] = useState(true);
+
+  const account = accounts.find((a) => a.id === lastUsedAccount);
   const selfCompatible = account?.services.filter(
-    service => [Services.TURBOSELF, Services.ARD].includes(service.serviceId)
+    service => [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId)
   );
 
   async function fetchWallets() {
@@ -31,30 +41,41 @@ export default function QRCodeAndCardsPage() {
       result.push(balance)
     }
     setWallets(result);
+    setLoadingWallets(false);
   }
 
   useEffect(() => {
     fetchWallets();
-  }, [])
+  }, [accounts])
 
   const cardOffset = 60;
   const cardHeight = 210;
 
   const pileHeight = cardHeight + (wallets.length - 1) * cardOffset;
+  const { t } = useTranslation();
+
+  const { colors } = useTheme();
 
   return (
     <>
-      <View style={{ padding: 20, flex: 1 }}>
+      <ScrollView style={{ padding: 20, flex: 1 }}>
         {selfCompatible && selfCompatible?.length > 0 ? (
           <>
             <View style={{ position: "relative", height: pileHeight }}>
               {wallets.map((c, i) => (
-                <Card
+                <Dynamic
+                  animated
                   key={c.createdByAccount + c.label}
-                  index={i}
-                  wallet={c}
-                  service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}
-                />
+                  entering={PapillonAppearIn}
+                  exiting={PapillonAppearOut}
+                >
+                  <Card
+                    key={c.createdByAccount + c.label}
+                    index={i}
+                    wallet={c}
+                    service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}
+                  />
+                </Dynamic>
               ))}
             </View>
 
@@ -89,10 +110,10 @@ export default function QRCodeAndCardsPage() {
                 <Papicons name={"Card"} />
               </Icon>
               <Typography variant="h4" color="text" align="center">
-                Aucune carte
+                {t("Settings_Cards_None_Title")}
               </Typography>
               <Typography variant="body2" color="secondary" align="center">
-                Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore
+                {t("Settings_Cards_None_Description")}
               </Typography>
             </View>
             <Button title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
@@ -104,7 +125,7 @@ export default function QRCodeAndCardsPage() {
             }} />
           </Stack>
         )}
-      </View>
+      </ScrollView>
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable onPress={() => router.back()}>
@@ -115,7 +136,7 @@ export default function QRCodeAndCardsPage() {
       </NativeHeaderSide>
 
       <NativeHeaderTitle>
-        <Typography>QR-Code et cartes</Typography>
+        <Typography>{t("Profile_QRCards")}</Typography>
       </NativeHeaderTitle>
     </>
   );
@@ -137,7 +158,7 @@ export function Card({
   const offset = index * 60;
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={() => {
         if (!disabled) {
           router.push({
@@ -148,9 +169,8 @@ export function Card({
       }}
       style={{
         width: "100%",
-        minHeight: 235,
+        minHeight: 210,
         borderRadius: 25,
-        backgroundColor: "green",
         overflow: "hidden",
         transform: [{ translateY: offset }],
         zIndex: 100 + index,
@@ -169,7 +189,7 @@ export function Card({
           right: 0,
           left: 0,
           width: "100%",
-          height: 245,
+          height: 215,
         }}
         resizeMode="cover"
       />
@@ -217,6 +237,6 @@ export function Card({
           </Stack>
         </Stack>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   )
 }

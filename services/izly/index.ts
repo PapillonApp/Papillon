@@ -12,7 +12,7 @@ import { fetchIzlyQRCode } from "./qrcode";
 export class Izly implements SchoolServicePlugin {
   displayName = "Izly";
   service = Services.IZLY;
-  capabilities: Capabilities[] = [];
+  capabilities: Capabilities[] = [Capabilities.REFRESH, Capabilities.CANTEEN_BALANCE, Capabilities.CANTEEN_HISTORY, Capabilities.CANTEEN_QRCODE];
   session: Identification | undefined;
   authData: Auth = {};
 

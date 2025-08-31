@@ -7,6 +7,8 @@ export function getServiceName(service: Services): string {
       return "TurboSelf";
     case Services.ARD:
       return "ARD";
+    case Services.IZLY:
+      return "Izly";
     default:
       return "Pronote";
   }
@@ -18,6 +20,8 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
       return require("@/assets/images/turboself.png")
     case Services.ARD:
       return require("@/assets/images/ard.png")
+    case Services.IZLY:
+      return require("@/assets/images/izly.png")
     default: 
       return require("@/assets/images/turboself.png")
   }
@@ -27,6 +31,8 @@ export function getServiceBackground(service: Services): ImageSourcePropType {
   switch(service) {
     case Services.TURBOSELF:
       return require("@/assets/images/turboself_background_card.png")
+    case Services.IZLY:
+      return require("@/assets/images/izly_background_card.png")
     default: 
       return require("@/assets/images/ard_background_card.png")
   }

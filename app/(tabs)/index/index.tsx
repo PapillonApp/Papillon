@@ -1,6 +1,6 @@
 import { useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Dimensions, FlatList, Platform, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
 
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
@@ -121,11 +121,6 @@ export default function TabOneScreen() {
   }, []);
 
   const accounts = useAccountStore((state) => state.accounts);
-
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null;
-  }
   const theme = useTheme();
   const { colors } = theme;
 
@@ -159,6 +154,10 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
   const headerItems = [
     (
       <Stack
@@ -447,7 +446,11 @@ export default function TabOneScreen() {
       />
 
       <NativeHeaderSide side="Left">
-        <NativeHeaderPressable>
+        <NativeHeaderPressable
+          onPress={() => {
+            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+          }}
+        >
           <Icon size={28}>
             <Papicons name={"Menu"} color={foreground} />
           </Icon>

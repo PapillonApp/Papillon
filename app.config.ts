@@ -21,6 +21,7 @@ module.exports = {
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
+      icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
       infoPlist: {
         CFBundleURLTypes: [
@@ -29,7 +30,7 @@ module.exports = {
           },
         ],
       },
-      supportsTablet: true,
+      supportsTablet: false,
       config: {
         usesNonExemptEncryption: false,
       },
@@ -47,6 +48,7 @@ module.exports = {
         resizeMode: "cover",
         backgroundColor: "#003A21",
       },
+      supportsTablet: false,
     },
     web: {
       bundler: "metro",

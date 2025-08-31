@@ -117,7 +117,7 @@ export default function WelcomeScreen() {
                   :
                   <Image
                     source={item.image}
-                    style={{ width: 32, height: 32 }}
+                    style={{ width: 32, height: 32, borderRadius: 20 }}
                     resizeMode="cover"
                   />
                 }

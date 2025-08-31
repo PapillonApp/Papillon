@@ -7,8 +7,10 @@ import Reanimated, {
   withTiming
 } from 'react-native-reanimated';
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useAccountStore } from '@/stores/account';
-import { Services } from '@/stores/account/types';
+import { Account, Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';

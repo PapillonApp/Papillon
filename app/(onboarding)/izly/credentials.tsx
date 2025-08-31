@@ -1,3 +1,4 @@
+
 import { router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
@@ -91,10 +92,11 @@ export default function TurboSelfLoginWithCredentials() {
   const { t } = useTranslation();
 
   const alert = useAlert();
+  const latestPassword = useRef<string>("");
 
   async function handleLogin(username: string, password: string) {
     try {
-      await login(username, password);
+      await login(username, password)
       setLinkSended(true);
     } catch (error) {
       alert.showAlert({
@@ -143,7 +145,7 @@ export default function TurboSelfLoginWithCredentials() {
     store.setLastUsedAccount(id);
 
     return router.push({
-      pathname: "../end/color",
+      pathname: "/(onboarding)/end/color",
       params: {
         accountId: id,
       },

@@ -85,12 +85,16 @@ export default function WebViewScreen() {
       step={3}
       totalSteps={3}
       webviewProps={{
-        source: loginURL ? { uri: loginURL } : { html: "<h1>Chargement...</h1>" },
+        source: loginURL
+          ? { uri: loginURL }
+          : { html: "<h1>Chargement...</h1>" },
         onShouldStartLoadWithRequest: (request: ShouldStartLoadRequest) => {
-          handleRequest(request).then((result) => {
-            return result;
-          });
-          return false;
+          if (request.url.startsWith("skoapp-prod://")) {
+            handleRequest(request);
+            return false;
+          }
+
+          return true;
         }
       }}
     />

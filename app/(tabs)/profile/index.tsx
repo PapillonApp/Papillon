@@ -5,7 +5,7 @@ import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import { SettingsIcon, UserPenIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Dimensions, Image, Platform, Pressable, View } from "react-native";
+import { ActivityIndicator, Dimensions, Image, Platform, Pressable, View } from "react-native";
 import {
   FadeInUp,
   FadeOutUp,
@@ -23,7 +23,7 @@ import { Account } from "@/stores/account/types";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
-import Item from "@/ui/components/Item";
+import Item, { Leading } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
@@ -38,9 +38,11 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
 import { Avatar } from "@/app/(features)/(news)/news";
+import { Capabilities } from "@/services/shared/types";
 
 
 function Tabs() {
+  const [availableClientsAttendance, setAvailableClientsAttendance] = useState<number>(0);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [discussion, setDiscussion] = useState<Chat[]>([]);
   const [attendancePeriods, setAttendancePeriods] = useState<Period[]>([]);
@@ -53,7 +55,9 @@ function Tabs() {
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
+      disabled: !(availableClientsAttendance),
       onPress: () => {
+        if (attendances.length === 0 || attendancePeriods.length === 0) return;
         router.push({
           pathname: "/(features)/attendance",
           params: {
@@ -83,6 +87,8 @@ function Tabs() {
       warn('Manager is null, skipping attendance fetch');
       return;
     }
+    const availableClients = manager.getAvailableClients(Capabilities.ATTENDANCE)
+    setAvailableClientsAttendance(availableClients.length)
     const periods = await manager.getAttendancePeriods();
     const currentPeriod = getCurrentPeriod(periods)
     const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
@@ -119,6 +125,7 @@ function Tabs() {
           exiting={PapillonAppearOut}
           key={"tab_profile:" + index + ":" + tab.unread}
           style={{ flex: 1 }}
+          disabled={tab.disabled}
           onPress={tab.onPress}
         >
           <Stack
@@ -151,6 +158,7 @@ function NewsSection() {
   const { colors } = theme;
 
   const [news, setNews] = useState<News[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchNews = useCallback(() => {
     try {
@@ -160,7 +168,8 @@ function NewsSection() {
         return;
       }
       manager.getNews().then((fetchedNews) => {
-        setNews(fetchedNews);
+        setNews(fetchedNews.splice(0, 2));
+        setLoading(false);
       });
     } catch (error) {
       console.error("Error fetching news:", error);
@@ -177,94 +186,103 @@ function NewsSection() {
 
   return (
     <>
-      {news.length > 0 ? (
-        <Reanimated.View
-          layout={Animation(LinearTransition, "list")}
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
+      <Reanimated.View
+        layout={Animation(LinearTransition, "list")}
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+      >
+        <Stack
+          direction="horizontal"
+          gap={12}
+          card
+          vAlign="start"
+          hAlign="center"
+          style={{
+            paddingHorizontal: 10,
+            paddingTop: 8,
+            paddingBottom: 8 + 38,
+            marginBottom: -38,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+          }}
+          backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
         >
-          <Stack
-            direction="horizontal"
-            gap={12}
-            card
-            vAlign="start"
-            hAlign="center"
-            style={{
-              paddingHorizontal: 10,
-              paddingTop: 8,
-              paddingBottom: 8 + 38,
-              marginBottom: -38,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-            }}
-            backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
+          <Icon
+            fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+            size={24}
+            style={{ marginLeft: 8, marginRight: 0 }}
+            papicon
           >
-            <Icon
-              fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-              size={24}
-              style={{ marginLeft: 8, marginRight: 0 }}
-              papicon
+            <Papicons name={"Newspaper"} />
+          </Icon>
+          <Typography
+            color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+            style={{ flex: 1 }}
+            variant="h5"
+          >
+            {t("Profile_News_Title")}
+          </Typography>
+          <Pressable onPress={() => {
+            router.push({
+              pathname: "/(features)/(news)/news",
+              params: {
+                news: JSON.stringify(news)
+              }
+            })
+          }}>
+            <Stack
+              direction="horizontal"
+              vAlign="center"
+              hAlign="center"
+              inline
+              padding={[12, 6]}
+              radius={100}
+              height={32}
+              backgroundColor={"#7DBB0040"}
             >
-              <Papicons name={"Newspaper"} />
-            </Icon>
-            <Typography
-              color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-              style={{ flex: 1 }}
-              variant="h5"
-            >
-              {t("Profile_News_Title")}
-            </Typography>
-            <Pressable onPress={() => {
-              router.push({
-                pathname: "/(features)/(news)/news",
-                params: {
-                  news: JSON.stringify(news)
-                }
-              })
-            }}>
-              <Stack
-                direction="horizontal"
-                vAlign="center"
-                hAlign="center"
-                inline
-                padding={[12, 6]}
-                radius={100}
-                height={32}
-                backgroundColor={"#7DBB0040"}
-              >
-                <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00", -0.3)}>
-                  {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
-                </Typography>
-                <Icon papicon size={20} fill={adjust("#7DBB00", -0.3)} >
-                  <Papicons name={"ArrowRightUp"} />
-                </Icon>
-              </Stack>
-            </Pressable>
-          </Stack>
-          <List marginBottom={0} radius={24}>
-            {news.map((item, index) => (
-              <Item key={index} onPress={() => {
+              <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00", -0.3)}>
+                {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
+              </Typography>
+              <Icon papicon size={20} fill={adjust("#7DBB00", -0.3)} >
+                <Papicons name={"ArrowRightUp"} />
+              </Icon>
+            </Stack>
+          </Pressable>
+        </Stack>
+        <List marginBottom={0} radius={24} style={{ height: 138 }}>
+          {news.map((item, index) => (
+            <Item
+              key={index}
+              onPress={() => {
                 router.push({
                   pathname: "/(features)/(news)/specific",
                   params: {
                     news: JSON.stringify(item)
                   }
                 })
-              }}>
-                <Typography variant="title" color="text">
-                  {item.title}
-                </Typography>
-                <Typography variant="caption" color="secondary">
-                  {item.createdAt.getDate()}  ·  {item.author}
-                </Typography>
-              </Item>
-            ))}
-          </List>
-        </Reanimated.View>
-      ) : (
-        <>
-        </>
-      )}
+              }}
+              style={{ height: 138 / 2 }}
+            >
+              <Typography variant="title" color="text">
+                {item.title}
+              </Typography>
+              <Typography variant="caption" color="secondary">
+                {item.createdAt.getDate()}  ·  {item.author}
+              </Typography>
+            </Item>
+          ))}
+          {loading && (
+            <Item style={{ height: 138 / 2 }}>
+              <Leading>
+                <ActivityIndicator />
+              </Leading>
+              <Typography variant="title" color="text">
+                {t("Profile_News_Loading_Title")}
+              </Typography>
+            </Item>
+          )}
+        </List>
+      </Reanimated.View>
     </>
   )
 }
@@ -430,7 +448,7 @@ export default function TabOneScreen() {
           <>
             <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
               <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
-                {account && account.customisation && account.customisation.profilePicture ? (
+                {account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? (
                   <Image
                     source={
                       { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
