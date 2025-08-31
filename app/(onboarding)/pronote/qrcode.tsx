@@ -20,6 +20,8 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { useTranslation } from "react-i18next";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import uuid from "@/utils/uuid/uuid";
 
@@ -86,6 +88,7 @@ export default function PronoteLoginWithQR() {
       const user = session.user.resources[0];
       const schoolName = user.establishmentName;
       const className = user.className;
+      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
       let pp = "";
       if (session.user.resources[0].profilePicture?.url) {
         pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
@@ -93,8 +96,8 @@ export default function PronoteLoginWithQR() {
 
       useAccountStore.getState().addAccount({
         id: accountID,
-        firstName: user.name.split(" ")[0],
-        lastName: user.name.split(" ")[1],
+        firstName,
+        lastName,
         schoolName,
         className,
         customisation: {

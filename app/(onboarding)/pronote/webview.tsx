@@ -11,6 +11,8 @@ import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
+import { useTranslation } from "react-i18next";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import uuid from "@/utils/uuid/uuid";
 
@@ -131,14 +133,17 @@ export default function WebViewScreen() {
         console.log("Login successful, adding account to store...");
         const schoolName = session.user.resources[0].establishmentName;
         const className = session.user.resources[0].className;
+        const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
+
         let pp = "";
         if (session.user.resources[0].profilePicture?.url) {
           pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
         }
+        
         useAccountStore.getState().addAccount({
           id: deviceUUID,
-          firstName: session.user.name.split(" ")[0],
-          lastName: session.user.name.split(" ")[1],
+          firstName,
+          lastName,
           schoolName,
           className,
           customisation: {
