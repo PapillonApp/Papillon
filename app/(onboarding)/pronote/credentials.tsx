@@ -24,6 +24,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from '@/utils/pronote/fetcher';
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useTranslation } from 'react-i18next';
+import { GetIdentityFromPronoteUsername } from '@/utils/pronote/name';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;
@@ -217,9 +218,7 @@ export default function PronoteLoginWithCredentials() {
                 });
               }
 
-              const splittedUsername = session.user.name.split(" ")
-              const firstName = splittedUsername[splittedUsername.length - 1]
-              const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
+              const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
               const schoolName = session.user.resources[0].establishmentName
               const className = session.user.resources[0].className
 

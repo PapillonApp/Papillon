@@ -13,6 +13,7 @@ import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { URLToBase64 } from "@/utils/attachments/helper";
 import { useTranslation } from "react-i18next";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -131,10 +132,12 @@ export default function WebViewScreen() {
         console.log("Login successful, adding account to store...");
         const schoolName = session.user.resources[0].establishmentName;
         const className = session.user.resources[0].className;
+        const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
+
         useAccountStore.getState().addAccount({
           id: deviceUUID,
-          firstName: session.user.name.split(" ")[0],
-          lastName: session.user.name.split(" ")[1],
+          firstName,
+          lastName,
           schoolName,
           className,
           customisation: {

@@ -23,6 +23,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import { URLToBase64 } from "@/utils/attachments/helper";
 import { useTranslation } from "react-i18next";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -87,11 +88,12 @@ export default function PronoteLoginWithQR() {
       const user = session.user.resources[0];
       const schoolName = user.establishmentName;
       const className = user.className;
+      const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
 
       useAccountStore.getState().addAccount({
         id: accountID,
-        firstName: user.name.split(" ")[0],
-        lastName: user.name.split(" ")[1],
+        firstName,
+        lastName,
         schoolName,
         className,
         customisation: {
