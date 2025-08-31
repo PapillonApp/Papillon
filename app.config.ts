@@ -30,7 +30,7 @@ module.exports = {
           },
         ],
       },
-      supportsTablet: false,
+      supportsTablet: true,
       config: {
         usesNonExemptEncryption: false,
       },
@@ -48,7 +48,7 @@ module.exports = {
         resizeMode: "cover",
         backgroundColor: "#003A21",
       },
-      supportsTablet: false,
+      supportsTablet: true,
     },
     web: {
       bundler: "metro",
