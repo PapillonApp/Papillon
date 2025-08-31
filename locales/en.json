@@ -28,7 +28,7 @@
   "ONBOARDING_LOGIN_METHOD": "How would you like to log in?",
   "ONBOARDING_METHOD_POSITION": "Use my location",
   "ONBOARDING_METHOD_SEARCH": "Search a city",
-  "ONBOARDING_METHOD_QRCODE": "I have a QR code",
+  "ONBOARDING_METHOD_QRCODE": "I have a QR-code",
   "ONBOARDING_METHOD_LINK": "I have a login URL",
   "ONBOARDING_SELECT_SCHOOL": "Choose your school",
   "ONBOARDING_SEARCH_TITLE": "Enter your city name and choose your school",
@@ -36,9 +36,9 @@
   "ONBOARDING_LOGIN_CREDENTIALS": "Log in to your account",
   "ONBOARDING_TURBOSELF_SELECTHOST": "Choose the host assigned to the account",
   "ONBOARDING_PRONOTE_PIN": "Enter the 4-digit code you just created on PRONOTE",
-  "ONBOARDING_LOGIN_TO": "Login to",
-  "ONBOARDING_SCAN_QRCODE": "Scan your school’s QR code to log in.",
-  "ONBOARDING_QRCODE_VALIDATION": "QR code validation",
+  "ONBOARDING_LOGIN_TO": "Log in to",
+  "ONBOARDING_SCAN_QRCODE": "Scan your school’s QR-code to log in.",
+  "ONBOARDING_QRCODE_VALIDATION": "QR-code validation",
   "ONBOARDING_QRCODE_WAIT": "This may take a few moments...",
   "ONBOARDING_URL": "Enter your school’s URL",
   "ONBOARDING_URL_PLACEHOLDER": "URL of your PRONOTE instance",
@@ -52,7 +52,10 @@
   "STEP_OUTOF": "of",
   "INPUT_USERNAME": "Username",
   "INPUT_MAIL": "Email address",
+  "INPUT_MAIL_OR_USERNAME": "Email address or username",
+  "INPUT_PHONE_OR_MAIL": "Phone number or email adress",
   "INPUT_PASSWORD": "Password",
+  "INPUT_PASSWORD_CODE": "Access code",
   "INPUT_ETABID": "Your school ID",
   "LOGIN_BTN": "Log in",
   "CONFIRM_BTN": "Confirm",
@@ -170,8 +173,9 @@
   "Profile_News_Denominator_Single": "new",
   "Profile_News_Denominator_Plural": "news",
   "Profile_News_Open": "Open",
+  "Profile_News_Loading_Title": "Loading news...",
 
-  "Profile_Cards_Title": "QR code and cards",
+  "Profile_Cards_Title": "QR-code and cards",
 
   "Modal_Grades_Title": "Grade details",
 
@@ -246,20 +250,22 @@
 
   "Webview_Wait": "Please wait...",
 
-  "Profile_QRCards": "QR code and cards",
+  "Profile_QRCards": "QR-code and cards",
 
   "Settings_Cards_Banner_Title": "Cards",
   "Settings_Cards_Banner_Description": "Add your cafeteria and transport cards to access them anywhere from your phone with Papillon",
   "Settings_Cards_None_Title": "No cards",
+
   "Settings_Cards_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
   "Settings_Subjects_None_Title": "No subjects",
   "Settings_Subjects_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
+
 
   "Settings_Donator": "Donors",
   "Settings_Donator_Description": "View the list of donors",
   "Settings_App_Version": "App version",
 
-  "Profile_Cards_Scan_Orientation": "Point the QR code towards the terminal scanner",
+  "Profile_Cards_Scan_Orientation": "Point the QR-code towards the terminal scanner",
   "Profile_Cards_No_Reservation": "No reservation",
   "Profile_Cards_No_Available_Reservation": "It looks like you can’t make a reservation today.",
   "Profile_Cards_History": "History",

@@ -22,9 +22,9 @@
   "ONBOARDING_START_BTN": "Commencer",
   "ONBOARDING_HELP_BTN": "Besoin d'aide ?",
   "ONBOARDING_UNIVERSITY": "Service universitaire",
-  "ONBOARDING_RESTAURANTS": "Service restauratif",
+  "ONBOARDING_RESTAURANTS": "Service de restauration",
   "ONBOARDING_SELECT_SCHOOLSERVICE": "Sélectionne ton service scolaire",
-  "ONBOARDING_SELECT_RESTAURANTSERVICE": "Sélectionne ton service restauratif",
+  "ONBOARDING_SELECT_RESTAURANTSERVICE": "Sélectionne ton service de restauration",
   "ONBOARDING_SELECT_UNIVERSITIESERVICE": "Sélectionne ton service universitaire",
   "ONBOARDING_LOGIN_METHOD": "Comment souhaites-tu te connecter ?",
   "ONBOARDING_METHOD_POSITION": "Utiliser ma position",
@@ -34,12 +34,12 @@
   "ONBOARDING_SELECT_SCHOOL": "Choisis ton établissement",
   "ONBOARDING_SEARCH_TITLE": "Entre le nom de ta ville et choisis ton établissement",
   "ONBOARDING_WEBVIEW_TITLE": "Connecte-toi comme tu en as l'habitude",
-  "ONBOARDING_LOGIN_CREDENTIALS": "Connecte toi à ton compte",
+  "ONBOARDING_LOGIN_CREDENTIALS": "Connecte-toi à ton compte",
   "ONBOARDING_TURBOSELF_SELECTHOST": "Choisis l'hôte assigné au compte",
   "ONBOARDING_PRONOTE_PIN": "Indique le code à 4 chiffres que tu viens de créer sur PRONOTE",
   "ONBOARDING_LOGIN_TO": "Connexion à",
-  "ONBOARDING_SCAN_QRCODE": "Scanne le QR code de ton établissement pour te connecter.",
-  "ONBOARDING_QRCODE_VALIDATION": "Validation du QR code",
+  "ONBOARDING_SCAN_QRCODE": "Scanne le QR-Code de ton établissement pour te connecter.",
+  "ONBOARDING_QRCODE_VALIDATION": "Validation du QR-Code",
   "ONBOARDING_QRCODE_WAIT": "Cela peut prendre quelques instants...",
   "ONBOARDING_URL": "Indique l’adresse URL de ton établissement",
   "ONBOARDING_URL_PLACEHOLDER": "URL de ton instance PRONOTE",
@@ -65,14 +65,14 @@
   "Tab_New_Event": "Nouvel événement",
 
   "Tab_Calendar_Icals": "Gestion des iCal",
-  "Tab_Calendar_Icals_Description": "Gérer vos URL iCal",
+  "Tab_Calendar_Icals_Description": "Gérer tes URL iCal",
 
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
-  "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec votre calendrier.",
+  "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec ton calendrier.",
 
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
-  "TabUnderConstruction_Details": "Veuillez revenir plus tard pour des mises à jour.",
+  "TabUnderConstruction_Details": "Reviens plus tard pour des mises à jour.",
 
   "TabDevModeNotice_Title": "Mode Développement",
   "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs.",
@@ -85,7 +85,7 @@
   "Canceled_Course": "Cours annulé",
   "No_Course_Room": "Salle inconnue",
   "Event_DeleteEvent": "Supprimer l'événement",
-  "Event_Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
+  "Event_Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Context_Delete": "Supprimer",
   "Context_Cancel": "Annuler",
@@ -98,7 +98,7 @@
   "Form_Start": "Début",
   "Form_End": "Fin",
 
-  "Confirm_DeleteEvent": "Êtes-vous sûr de vouloir supprimer cet événement ?",
+  "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
   "Home_Welcome": "Bonjour !",
@@ -110,7 +110,7 @@
   "Home_Widget_NewGrades": "Nouvelles notes",
 
   "Tab_Calendar_Empty": "Aucun événement trouvé",
-  "Tab_Calendar_Empty_Description": "Ajoutez un événement ou synchronisez votre calendrier pour commencer.",
+  "Tab_Calendar_Empty_Description": "Ajoute un événement ou synchronise ton calendrier pour commencer.",
 
   "Modal_Course_Title": "Mon cours",
   "Modal_Course_StartsIn": "Commence dans",
@@ -131,7 +131,7 @@
   "Tasks_Nav_Completed": "Tout est terminé !",
   "Tasks_Week": "Semaine",
   "Tasks_NoTasks_Title": "Aucune tâche",
-  "Tasks_NoTasks_Description": "Il n'y a pas de tâches prévues pour cette semaine. Profites-en pour te reposer !",
+  "Tasks_NoTasks_Description": "Il n'y a pas de tâches prévues pour cette semaine. Profite-en pour te reposer !",
   "Tasks_NoTasks_ForWeek": "pour la semaine {{week}}",
   "Tasks_NoTasks_Nav": "Aucune tâche",
   "Task_Start": "À faire",
@@ -158,7 +158,7 @@
   "Grades_Menu_AverageBy": "Moyenne par",
 
   "Grades_Empty_Title": "Aucune note",
-  "Grades_Empty_Description": "Vous n'avez pas encore été noté sur cette période.",
+  "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
 
   "Grade_NoDescription": "Devoir de {{subject}}",
 
@@ -232,7 +232,7 @@
   "Settings_Personalization_Accent_Description": "La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.",
   "Settings_Personalization_Theme": "Thème",
   "Settings_Personalization_Icon_Title": "Changer l’icône",
-  "Settings_Personalization_Icon_Description": "Personnalisez l’icône de l’application",
+  "Settings_Personalization_Icon_Description": "Personnalise l’icône de l’application",
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
   "Settings_Personalization_Subject_Description": "Icônes, couleurs",
 
@@ -240,10 +240,10 @@
   "Alert_Auth_Error": "Erreur d'authentification",
   "Alert_Auth_Bad_Creds": "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
   "Alert_Not_Supported": "Instance non supportée",
-  "Alert_Security_Instance_HTTP": "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous vous recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
+  "Alert_Security_Instance_HTTP": "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous te recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
   "Alert_NoDemo": "Papillon n'est pas fait pour fonctionner avec des instances de démonstration, merci d'utiliser une autre instance.",
   "Alert_Invalid_Instance": "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
-  "Alert_No_Pos": "Impossible de récuperer la position",
+  "Alert_No_Pos": "Impossible de récupérer la position",
   "Alert_Connexion_Fail": "Connexion impossible",
 
   "Feature_Limited": "Fonctionnalités limitées",
@@ -255,20 +255,21 @@
   "Profile_QRCards": "QR-Code et cartes",
 
   "Settings_Cards_Banner_Title": "Cartes",
-  "Settings_Cards_Banner_Description": "Ajoute tes cartes de cantine et de transport pour y accéder n'importe-où depuis ton téléphone sur Papillon",
+  "Settings_Cards_Banner_Description": "Ajoute tes cartes de cantine et de transport pour y accéder n'importe où depuis ton téléphone sur Papillon",
   "Settings_Cards_None_Title": "Aucune carte",
+
   "Settings_Cards_None_Description":  "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
   "Settings_Subjects_None_Title": "Aucune matière",
   "Settings_Subjects_None_Description":  "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
+
 
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Voir la liste des donateurs",
   "Settings_App_Version": "Version de l'application",
 
-  "Profile_Cards_Scan_Orientation": "Orientez le code QR vers le scanner de la borne",
+  "Profile_Cards_Scan_Orientation": "Oriente le QR-Code vers le scanner de la borne",
   "Profile_Cards_No_Reservation": "Aucune réservation",
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important"
 }
-
