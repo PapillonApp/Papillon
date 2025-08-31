@@ -325,7 +325,7 @@ export default function TurboSelfLoginWithCredentials() {
                   <Papicons.User />
                 </Icon>
                 <TextInput
-                  placeholder={t("INPUT_MAIL")}
+                  placeholder={t("INPUT_PHONE_OR_MAIL")}
                   placeholderTextColor="#5B5B5B"
                   onChangeText={setUsername}
                   value={username}
@@ -355,7 +355,7 @@ export default function TurboSelfLoginWithCredentials() {
                   <Papicons.Lock />
                 </Icon>
                 <TextInput
-                  placeholder={t("INPUT_PASSWORD")}
+                  placeholder={t("INPUT_PASSWORD_CODE")}
                   placeholderTextColor="#5B5B5B"
                   onChangeText={setPassword}
                   value={password}
@@ -364,7 +364,7 @@ export default function TurboSelfLoginWithCredentials() {
                   autoCorrect={false}
                   autoComplete="password"
                   secureTextEntry
-                  keyboardType="default"
+                  keyboardType="numeric"
                 />
               </Stack>
             </Stack>
