@@ -14,7 +14,7 @@ const NotificationsModal = () => {
       hAlign={"center"}
       vAlign={"center"}
       padding={20}
-      style={{ width: "100%", height: Dimensions.get("window").height * 0.6 }}
+      style={{ width: "100%", height: Dimensions.get("window").height * 0.45 }}
     >
       <Papicons name={"Clock"} size={80} style={{ marginBottom: 10 }} opacity={0.5} color={colors.text} />
       <Typography variant="h2" align={"center"}>
