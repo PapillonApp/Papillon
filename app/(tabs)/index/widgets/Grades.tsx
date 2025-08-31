@@ -304,7 +304,7 @@ const GradesWidget = (
           <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`selectionDate:${selectionDate?.getTime()}:${currentAlgorithm}`} style={{ width: "100%" }}>
             <Typography variant="body1" color="secondary" align={header ? "center" : "left"} inline style={{ marginTop: 3, width: "100%" }}>
               {selectionDate ?
-                t("DatePrefix") + selectionDate.toLocaleDateString("fr-FR", {
+                t("Global_DatePrefix") + selectionDate.toLocaleDateString("fr-FR", {
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
