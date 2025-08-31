@@ -1,3 +1,4 @@
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
@@ -19,7 +20,7 @@ const Tabs = withLayoutContext<
 >(BottomTabNavigator);
 
 // Static platform detection - computed once at module load
-const IS_IOS_WITH_PADDING = Platform.OS === 'ios' && !Platform.isPad && parseInt(Platform.Version) >= 26;
+const IS_IOS_WITH_PADDING = runsIOS26();
 const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
