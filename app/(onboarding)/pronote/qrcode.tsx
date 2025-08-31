@@ -8,7 +8,6 @@ import * as Haptics from "expo-haptics";
 import { router, useGlobalSearchParams } from "expo-router";
 import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
