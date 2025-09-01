@@ -45,6 +45,8 @@
   "ONBOARDING_COLOR_TITLE": "Before finishing",
   "ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION": "Choose a",
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "theme color",
+  "ONBOARDING_LOGIN_PINCODE": "Enter your PRONOTE PIN code",
+  "INPUT_PIN": "PIN code",
 
   "WAITING": "Waiting",
   "IZLY_SMS_SEND": "You just received a login link, click on it and follow the steps.",
