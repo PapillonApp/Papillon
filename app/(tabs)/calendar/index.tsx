@@ -153,7 +153,7 @@ export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = insets.top + 42;
   const bottomHeight = 80;
-  const globalPaddingTop = runsIOS26() ? headerHeight + 8 : 12;
+  const globalPaddingTop = runsIOS26() ? headerHeight + 8 : headerHeight + 16;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
