@@ -1,6 +1,7 @@
+/* eslint-disable camelcase */
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session } from "pawdirecte";
+import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session, setAccessToken } from "pawdirecte";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -42,9 +43,9 @@ export default function EDLoginWithCredentials() {
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
   const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthChallenge | null>(null);
-  const [doubleAuthAnswer, setDoubleAuthAnswer] = useState<string | null>(null);
 
-  const sessionRef = useRef<Session | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [cachedPassword, setCachedPassword] = useState<string>("");
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -75,43 +76,54 @@ export default function EDLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  async function handleDoubleAuthLogin() {
-    if (!sessionRef.current || !doubleAuthAnswer) {
-      error("Error during login");
-      return;
-    }
+  async function handleChallenge(answer: string) {
+    setChallengeModalVisible(false);
 
-    const correct = checkDoubleAuth(sessionRef.current, doubleAuthAnswer);
+    if (!session) { return };
+    const currentSession = { ...session };
+    const correct = await checkDoubleAuth(currentSession, answer)
+
     if (!correct) {
-      console.log("Mauvaise réponse double auth");
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description:
+          "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        withoutNavbar: true,
+      });
+      setDoubleAuthChallenge(null);
+      setSession(null);
       return;
     }
 
-    await handleLogin("");
+    queueMicrotask(() => void handleLogin("", "", currentSession));
   }
 
-  async function handleLogin(passwordParam: string) {
+  const handleLogin = async (username: string, password: string, currentSession = session) => {
     try {
       const store = useAccountStore.getState();
 
-      sessionRef.current ??= {
-        username,
-        device_uuid: uuid(),
-      };
+      if (currentSession === null) {
+        const accountID = uuid();
+        currentSession = { username, device_uuid: accountID };
+        setCachedPassword(password);
+      }
 
-      const accounts = await login(sessionRef.current, passwordParam || password);
-      const EDAccount = accounts[0];
+      const accounts = await login(currentSession, password || cachedPassword);
+      const userAccount = accounts[0];
 
+      setAccessToken(currentSession, userAccount);
       const account: Account = {
-        id: sessionRef.current.device_uuid,
-        firstName: EDAccount?.firstName ?? "",
-        lastName: EDAccount?.lastName ?? "",
-        schoolName: EDAccount?.schoolName,
-        className: EDAccount?.class.short,
+        id: currentSession.device_uuid,
+        firstName: userAccount.firstName,
+        lastName: userAccount.lastName,
+        schoolName: userAccount.schoolName,
+        className: userAccount.class.short,
         services: [
           {
-            id: sessionRef.current.device_uuid,
-            auth: { session: sessionRef.current },
+            id: currentSession.device_uuid,
+            auth: { session: currentSession },
             serviceId: Services.ECOLEDIRECTE,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -122,22 +134,43 @@ export default function EDLoginWithCredentials() {
       };
 
       store.addAccount(account);
-      store.setLastUsedAccount(sessionRef.current.device_uuid);
+      store.setLastUsedAccount(currentSession.device_uuid);
 
-      router.push({
-        pathname: "../end/color",
-        params: { accountId: sessionRef.current.device_uuid },
+      queueMicrotask(() => {
+        router.push({
+          pathname: "../end/color",
+          params: { accountId: currentSession!.device_uuid },
+        });
       });
     } catch (err) {
-      if (err instanceof DoubleAuthRequired && sessionRef.current) {
-        const challenge = await initDoubleAuth(sessionRef.current);
+      if (err instanceof DoubleAuthRequired) {
+        const challenge = await initDoubleAuth(currentSession!).catch((e) => {
+          alert.showAlert({
+            title: "Erreur",
+            technical: String(e)
+          })
+          return null;
+        });
         setDoubleAuthChallenge(challenge);
+        setSession(currentSession);
         setChallengeModalVisible(true);
-      } else if (err instanceof Error) {
+        return;
+      }
+      if (error instanceof Error) {
         alert.showAlert({
           title: "Erreur d'authentification",
           description:
             "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
+          icon: "TriangleAlert",
+          color: "#D60046",
+          withoutNavbar: true,
+        });
+      }
+      else {
+        alert.showAlert({
+          title: "Erreur d'authentification",
+          description:
+            "Une erreur inconnue est survenue...",
           icon: "TriangleAlert",
           color: "#D60046",
           withoutNavbar: true,
@@ -148,7 +181,7 @@ export default function EDLoginWithCredentials() {
 
   const loginED = () => {
     if (!username.trim() || !password.trim()) { return; }
-    handleLogin(password);
+    handleLogin(username, password);
   };
 
   function questionComponent({ item, index }: { item: string; index: number }) {
@@ -159,8 +192,7 @@ export default function EDLoginWithCredentials() {
       >
         <AnimatedPressable
           onPress={() => {
-            setDoubleAuthAnswer(item);
-            handleDoubleAuthLogin();
+            handleChallenge(item);
           }}
           style={{
             paddingHorizontal: 10,
@@ -224,7 +256,7 @@ export default function EDLoginWithCredentials() {
         <Stack vAlign="start" hAlign="start" width="100%" gap={12}>
           <Stack direction="horizontal">
             <Typography variant="h5" style={{ color: "#FFF", fontSize: 18 }}>
-              {t("STEP")} 3
+              {t("STEP")} 2
             </Typography>
             <Typography variant="h5" style={{ color: "#FFFFFF90", fontSize: 18 }}>
               {t("STEP_OUTOF")} 3
