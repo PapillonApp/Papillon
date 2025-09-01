@@ -60,7 +60,7 @@ const GradesWidget = (
   const manager = getManager();
 
   const [periods, setPeriods] = useState<Period[]>([]);
-  const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
+  const [subjects, setSubjects] = useState<Array<SharedSubject>>([]);
   const [currentPeriod, setCurrentPeriod] = useState<Period | undefined>(period);
   const [serviceAverage, setServiceAverage] = useState<number | undefined>(undefined);
 
@@ -69,9 +69,6 @@ const GradesWidget = (
   const getAverageHistory = useCallback((grades: SharedGrade[]) => {
     if (grades.length === 0) {
       return [];
-    }
-    else if (grades.length === 1) {
-      return [{ date: grades[0].givenAt.getTime(), average: grades[0].studentScore.value }];
     }
 
     // Filter out grades without valid scores and dates
@@ -86,18 +83,19 @@ const GradesWidget = (
     }
 
     // Sort grades by date in ascending order
-    const sortedGrades = validGrades.sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
+    const sortedGrades = [...validGrades].sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
 
     // Initialize an array to store the average history
     const averageHistory: { date: number; average: number; }[] = [];
 
+    // Find the algorithm once outside the loop
+    const selectedAlgorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
+    if (!selectedAlgorithm) return [];
+
     // Iterate through the sorted grades and calculate the average progressively
     sortedGrades.forEach((currentGrade, index) => {
       const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
-
-      // use currentAlgorithm to determine the average calculation method
-      const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
-      const currentAverage = algorithm ? algorithm.algorithm(gradesUpToCurrent) : 0;
+      const currentAverage = selectedAlgorithm.algorithm(gradesUpToCurrent);
 
       if (!isNaN(currentAverage)) {
         averageHistory.push({
@@ -111,21 +109,21 @@ const GradesWidget = (
   }, [currentAlgorithm]);
 
   const grades = useMemo(() => {
-    return newSubjects.flatMap(subject => subject.grades).filter(grade =>
+    return subjects.flatMap(subject => subject.grades).filter(grade =>
       grade.studentScore?.value !== undefined &&
       grade.givenAt &&
       !isNaN(grade.studentScore.value)
     );
-  }, [newSubjects]);
+  }, [subjects]);
 
   const currentAverageHistory = useMemo(() => {
     if (grades.length > 0) {
       return getAverageHistory(grades);
     }
     return [];
-  }, [newSubjects, currentAlgorithm, getAverageHistory]);
+  }, [grades, getAverageHistory]);
 
-  const fetchPeriods = async (managerToUse = manager) => {
+  const fetchPeriods = useCallback(async (managerToUse = manager) => {
     if (period) {
       setCurrentPeriod(period);
       return;
@@ -136,32 +134,42 @@ const GradesWidget = (
     if (!managerToUse) {
       return;
     }
-    const result = await managerToUse.getGradesPeriods();
-    setPeriods(result);
-    const currentPeriodFound = getCurrentPeriod(result);
-    setCurrentPeriod(currentPeriodFound);
-  };
+    try {
+      const result = await managerToUse.getGradesPeriods();
+      setPeriods(result);
+      const currentPeriodFound = getCurrentPeriod(result);
+      setCurrentPeriod(currentPeriodFound);
+    } catch (error) {
+      console.error("Failed to fetch periods:", error);
+    }
+  }, [period, currentPeriod, manager]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
       fetchPeriods(updatedManager);
     });
-    return () => unsubscribe();
-  }, [period]);
+    fetchPeriods(); // Initial fetch
 
-  const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+    return () => unsubscribe();
+  }, [fetchPeriods]);
+
+  const fetchGradesForPeriod = useCallback(async (period: Period | undefined, managerToUse = manager) => {
     if (period && managerToUse) {
-      const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
-      setSubjects(grades.subjects);
-      if (grades.studentOverall.value) {
-        setServiceAverage(grades.studentOverall.value)
+      try {
+        const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+        setSubjects(grades.subjects);
+        if (grades.studentOverall.value) {
+          setServiceAverage(grades.studentOverall.value)
+        }
+      } catch (error) {
+        console.error("Failed to fetch grades:", error);
       }
     }
-  };
+  }, [manager]);
 
   useEffect(() => {
     fetchGradesForPeriod(currentPeriod);
-  }, [currentPeriod]);
+  }, [currentPeriod, fetchGradesForPeriod]);
 
   // If the period prop changes, update currentPeriod
   useEffect(() => {
@@ -170,49 +178,51 @@ const GradesWidget = (
     }
   }, [period]);
 
-  const graphWidth = Dimensions.get("window").width + (16 * 2);
+  const windowDimensions = useWindowDimensions();
+  const graphWidth = useMemo(() => windowDimensions.width + (16 * 2), [windowDimensions.width]);
 
   const initialAverage = useMemo(() => {
     if (serviceAverage && currentAlgorithm === "subject") {
       return serviceAverage;
     }
-    if (currentAverageHistory && currentAverageHistory?.length > 0) {
+    if (currentAverageHistory && currentAverageHistory.length > 0) {
       return currentAverageHistory[currentAverageHistory.length - 1]?.average;
     }
     return -1;
   }, [currentAverageHistory, serviceAverage, currentAlgorithm]);
 
+  const [shownAverage, setShownAverage] = useState<number | undefined>(initialAverage);
+  const [selectionDate, setSelectionDate] = useState<Date | undefined>(undefined);
+
   useEffect(() => {
     setShownAverage(initialAverage);
   }, [initialAverage]);
 
-  const [shownAverage, setShownAverage] = useState<number | undefined>(initialAverage);
-  const [selectionDate, setSelectionDate] = useState<Date | undefined>(undefined);
-
   const graphAxis = useMemo(() => {
-    const newGraph = currentAverageHistory
+    return currentAverageHistory
       .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
       .map(item => ({
         value: item.average,
         date: new Date(item.date)
       }));
-
-    return newGraph;
-  }, [currentAverageHistory, currentAlgorithm]);
+  }, [currentAverageHistory]);
 
   const graphRef = useRef<any>(null);
 
   const handleGestureUpdate = useCallback((p: { value: number, date: Date }) => {
     setShownAverage(p.value);
     setSelectionDate(p.date);
-  }, [currentAverageHistory]);
+  }, []);
 
   const handleGestureEnd = useCallback(() => {
     setShownAverage(initialAverage);
     setSelectionDate(undefined);
   }, [initialAverage]);
 
-  const windowDimensions = useWindowDimensions();
+  const selectedAlgorithm = useMemo(() =>
+    avgAlgorithms.find(a => a.value === currentAlgorithm),
+    [currentAlgorithm]
+  );
 
   return (
     <View
@@ -229,7 +239,7 @@ const GradesWidget = (
         <View style={{ height: 140 }} />
 
         <Reanimated.View
-          key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
+          key={`grades-graph-container:${graphAxis.length}:${currentAlgorithm}`}
           style={{
             width: windowDimensions.width + (header ? 0 : 36 - 8),
             height: 140,
@@ -243,24 +253,28 @@ const GradesWidget = (
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
-          <LineGraph
-            points={graphAxis}
-            animated={true}
-            color={accent}
-            enablePanGesture={true}
-            onPointSelected={handleGestureUpdate}
-            onGestureEnd={handleGestureEnd}
-            verticalPadding={30}
-            horizontalPadding={30}
-            lineThickness={5}
-            panGestureDelay={0}
-            enableIndicator={true}
-            indicatorPulsating={true}
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
+          {graphAxis.length > 0 ? (
+            <LineGraph
+              points={graphAxis}
+              animated={true}
+              color={accent}
+              enablePanGesture={true}
+              onPointSelected={handleGestureUpdate}
+              onGestureEnd={handleGestureEnd}
+              verticalPadding={30}
+              horizontalPadding={30}
+              lineThickness={5}
+              panGestureDelay={0}
+              enableIndicator={true}
+              indicatorPulsating={true}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          ) : (
+            <></>
+          )}
         </Reanimated.View>
 
         <View
@@ -282,20 +296,20 @@ const GradesWidget = (
               </Typography>
             </Dynamic>
           </Stack>
-          <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"currentAlgorithm:" + currentAlgorithm} style={{ width: "100%" }}>
+          <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`currentAlgorithm:${currentAlgorithm}`} style={{ width: "100%" }}>
             <Typography variant="title" color={accent} align={header ? "center" : "left"} style={{ width: "100%" }}>
-              {avgAlgorithms.find(a => a.value === currentAlgorithm)?.label || "Aucune moyenne"}
+              {selectedAlgorithm?.label || t("NoAverage")}
             </Typography>
           </Dynamic>
-          <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={"selectionDate:" + selectionDate + ":" + currentAlgorithm} style={{ width: "100%" }}>
+          <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`selectionDate:${selectionDate?.getTime()}:${currentAlgorithm}`} style={{ width: "100%" }}>
             <Typography variant="body1" color="secondary" align={header ? "center" : "left"} inline style={{ marginTop: 3, width: "100%" }}>
               {selectionDate ?
-                "au " + selectionDate.toLocaleDateString("fr-FR", {
+                t("Global_DatePrefix") + selectionDate.toLocaleDateString("fr-FR", {
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
                 })
-                : avgAlgorithms.find(a => a.value === currentAlgorithm)?.subtitle || "Aucune moyenne"}
+                : selectedAlgorithm?.subtitle || t("NoAverage")}
             </Typography>
           </Dynamic>
         </View>

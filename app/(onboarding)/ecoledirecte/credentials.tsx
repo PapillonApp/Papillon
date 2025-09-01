@@ -2,7 +2,7 @@
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session, setAccessToken } from "pawdirecte";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Keyboard,
