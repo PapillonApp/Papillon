@@ -1,8 +1,9 @@
 import { NewsInformation } from "pawnote";
 import { News as SkolengoNews } from "skolengojs";
 
-import { Attachment} from "@/services/shared/attachment";
+import { Attachment } from "@/services/shared/attachment";
 import { GenericInterface } from "@/services/shared/types";
+import { ActualitiesResponse } from "esup-multi.js";
 
 /**
  * This interface defines the general structure of a news item.
@@ -24,5 +25,5 @@ export interface News extends GenericInterface {
   content: string;
   author: string;
   category: string;
-  ref?: NewsInformation | SkolengoNews;
+  ref?: NewsInformation | SkolengoNews | ActualitiesResponse;
 }

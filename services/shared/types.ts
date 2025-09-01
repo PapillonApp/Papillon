@@ -23,11 +23,13 @@ import { Skolengo } from "../skolengo";
 import { Kid } from "./kid";
 import { Client as TurboselfClient } from "turboself-api";
 import { Client as ArdClient } from "pawrd";
+import { Multi as MultiClient } from "esup-multi.js";
 import { TurboSelf } from "../turboself";
 import { ARD } from "../ard";
 import { Balance } from "./balance";
 import { Izly } from "../izly";
 import { Identification } from "ezly";
+import { Multi } from "../multi";
 
 /** Represents a plugin for a school service.
  *
@@ -41,17 +43,20 @@ export interface SchoolServicePlugin {
   capabilities: Capabilities[];
   authData: Auth;
   session:
-    | SessionHandle
-    | SkolengoSession
-    | Session
-    | TurboselfClient
     | ArdClient
     | Identification
+    | MultiClient
+    | SessionHandle
+    | Session
+    | SkolengoSession
+    | TurboselfClient
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly>;
+  ) => Promise<
+    Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly | Multi
+  >;
   getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
@@ -107,7 +112,7 @@ export enum Capabilities {
   CANTEEN_BALANCE,
   CANTEEN_HISTORY,
   CANTEEN_BOOKINGS,
-  CANTEEN_QRCODE
+  CANTEEN_QRCODE,
 }
 
 /**
