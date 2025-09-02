@@ -47,6 +47,7 @@
   "ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION": "Choisis une",
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "couleur de thème",
   "ONBOARDING_LOGIN_PINCODE": "Entre le Code PIN de ton PRONOTE",
+  "Onboarding_Load_Webview_Description": "Nous chargeons le site de ton établissement",
   "INPUT_PIN": "Code PIN",
 
   "WAITING": "En attente",

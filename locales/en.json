@@ -47,6 +47,7 @@
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "theme color",
   "ONBOARDING_LOGIN_PINCODE": "Enter your PRONOTE PIN code",
   "INPUT_PIN": "PIN code",
+  "Onboarding_Load_Webview_Description": "We are loading your school’s website",
 
   "WAITING": "Waiting",
   "IZLY_SMS_SEND": "You just received a login link, click on it and follow the steps.",
