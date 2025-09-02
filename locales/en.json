@@ -234,7 +234,7 @@
   "Alert_Auth_Error": "Authentication error",
   "Alert_Auth_Bad_Creds": "The credentials you entered are either incorrect or from a parent account. Parent accounts are yet to be supported by Papillon.",
   "Alert_Not_Supported": "Instance not supported",
-  "Alert_Security_Instance_HTTP": "For security reasons, Papillon does not accept instances that uses the HTTP protocol. Please inform the school principal so they can update this instance and preserve its security.",
+  "Alert_Security_Instance_HTTP": "For security reasons, Papillon does not accept instances that uses the HTTP protocol. You can always inform the school principal about it so they can update this instance and preserve its security.",
   "Alert_NoDemo": "Papillon is not meant to work with demo instances, please use another instance.",
   "Alert_Invalid_Instance": "Papillon cannot retrieve information from this PRONOTE instance. Is it still valid?",
   "Alert_No_Pos": "Unable to retrieve location",
@@ -253,7 +253,7 @@
   "Settings_Cards_None_Title": "No cards",
   "Settings_Cards_None_Description": "Add a card to access your cafeteria balance, scan your QR code and more",
   "Settings_Subjects_None_Title": "No subjects",
-  "Settings_Subjects_None_Description": "Add a subject to access your cafeteria balance, scan your QR code and more",
+  "Settings_Subjects_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
 
 
   "Settings_Donator": "Donors",
@@ -266,4 +266,5 @@
   "Profile_Cards_History": "History",
   "Magic_Important": "May be important"
 }
+
 
