@@ -1,8 +1,8 @@
 import { router, useGlobalSearchParams } from "expo-router";
-import { AccountKind, createSessionHandle, loginToken, SecurityError } from "pawnote";
+import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
 import { createRef, RefObject, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
@@ -14,6 +14,7 @@ import { URLToBase64 } from "@/utils/attachments/helper";
 import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
 import uuid from "@/utils/uuid/uuid";
+import { Pronote2FAModal } from "./2fa";
 
 export default function WebViewScreen() {
   const { url } = useGlobalSearchParams<{ url: string }>();
@@ -23,6 +24,11 @@ export default function WebViewScreen() {
   const [deviceUUID] = useState(uuid());
   const [received, setReceived] = useState<boolean>(false);
   console.log("WebViewScreen initialized with URL:", url);
+
+  const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
+  const [doubleAuthError, setDoubleAuthError] = useState<SecurityError | null>(null);
+  const [doubleAuthSession, setDoubleAuthSession] = useState<SessionHandle | null>(null);
+  const [deviceId, setDeviceId] = useState<string>("");
 
   if (!url) {
     console.warn("No URL provided");
@@ -177,14 +183,9 @@ export default function WebViewScreen() {
         });
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          router.push({
-            pathname: "/(onboarding)/pronote/2fa",
-            params: {
-              error: JSON.stringify(error),
-              session: JSON.stringify(session),
-              deviceId: deviceUUID,
-            },
-          });
+          setDoubleAuthError(error)
+          setDoubleAuthSession(session)
+          setDeviceId(deviceUUID)
         } else {
           console.error("Error during login:", error);
           throw error;
@@ -216,20 +217,30 @@ export default function WebViewScreen() {
   };
 
   return (
-    <OnboardingWebview
-      title={t("ONBOARDING_WEBVIEW_TITLE")}
-      color={"#E50052"}
-      step={3}
-      totalSteps={3}
-      webviewProps={{
-        source: { uri: infoMobileURL },
-        incognito: true,
-        userAgent: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
-        onMessage: onWebviewMessage,
-        onLoadEnd: onWebviewLoadEnd,
-      }}
-      webViewRef={webViewRef}
-    />
+    <>
+      <OnboardingWebview
+        title={t("ONBOARDING_WEBVIEW_TITLE")}
+        color={"#E50052"}
+        step={3}
+        totalSteps={3}
+        webviewProps={{
+          source: { uri: infoMobileURL },
+          incognito: true,
+          userAgent: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
+          onMessage: onWebviewMessage,
+          onLoadEnd: onWebviewLoadEnd,
+        }}
+        webViewRef={webViewRef}
+      />
+      <Modal
+        visible={challengeModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setChallengeModalVisible(false)}
+      >
+        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} />
+      </Modal>
+    </>
   );
 }
 

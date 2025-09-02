@@ -39,7 +39,12 @@ yarn-error.*
 ios/
 !ios/Papillon
 !ios/Papillon.xcodeproj/xcshareddata/xcschemes
-android/
 ios/Podfile
+android/**
+android/*
+!android/app/
+!android/app/src/
+!android/app/src/main/
+!android/app/src/main/AndroidManifest.xml
 
 bun.lock

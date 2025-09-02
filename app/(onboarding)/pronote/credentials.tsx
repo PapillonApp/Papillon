@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { AccountKind, createSessionHandle, loginCredentials, SecurityError } from 'pawnote';
+import { AccountKind, createSessionHandle, loginCredentials, SecurityError, SessionHandle } from 'pawnote';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Modal, View } from "react-native";
 import Reanimated, {
   useSharedValue,
   withTiming
@@ -20,9 +20,9 @@ import { useTheme } from '@react-navigation/native';
 import { customFetcher } from '@/utils/pronote/fetcher';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pronote2FAModal } from "./2fa";
 
 const ANIMATION_DURATION = 170;
-
 
 export default function PronoteLoginWithCredentials() {
   const theme = useTheme();
@@ -61,7 +61,12 @@ export default function PronoteLoginWithCredentials() {
 
   const { t } = useTranslation();
 
-  const loginPronote =async () => {
+  const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
+  const [doubleAuthError, setDoubleAuthError] = useState<SecurityError | null>(null);
+  const [doubleAuthSession, setDoubleAuthSession] = useState<SessionHandle | null>(null);
+  const [deviceId, setDeviceId] = useState<string>("");
+
+  const loginPronote = async () => {
     if (!username.trim() || !password.trim()) { return; }
     const device = uuid()
     const session = createSessionHandle(customFetcher)
@@ -75,14 +80,9 @@ export default function PronoteLoginWithCredentials() {
         password: password.trim()
       }).catch((error) => {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          router.push({
-            pathname: "/(onboarding)/pronote/2fa",
-            params: {
-              error: JSON.stringify(error),
-              session: JSON.stringify(session),
-              deviceId: device
-            }
-          })
+          setDoubleAuthError(error)
+          setDoubleAuthSession(session)
+          setDeviceId(device)
         } else {
           throw error;
         }
@@ -200,7 +200,7 @@ export default function PronoteLoginWithCredentials() {
             </Typography>
             <Typography
               variant="h5"
-              style={{ color:  theme.dark ? '#FFFFFF90' : '#00000090', lineHeight: 22, fontSize: 18 }}
+              style={{ color: theme.dark ? '#FFFFFF90' : '#00000090', lineHeight: 22, fontSize: 18 }}
             >
               {t("STEP_OUTOF")} 3
             </Typography>
@@ -259,6 +259,14 @@ export default function PronoteLoginWithCredentials() {
         />
       </Stack>
       <OnboardingBackButton />
+      <Modal
+        visible={challengeModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setChallengeModalVisible(false)}
+      >
+        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} />
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
