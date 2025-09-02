@@ -30,9 +30,20 @@ export class Pronote implements SchoolServicePlugin {
   service = Services.PRONOTE;
   capabilities: Capabilities[] = [Capabilities.REFRESH];
   session : SessionHandle | undefined = undefined;
+  tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
   authData: Auth = {};
 
   constructor(public accountId: string) {}
+
+  private async checkTokenValidty(): Promise<boolean> {
+    const time = new Date().getTime();
+    if (time > this.tokenExpiration) {
+      this.tokenExpiration = new Date().getTime() + (5 * 60 * 1000);
+      await this.refreshAccount(this.authData);
+      return new Date().getTime() <= this.tokenExpiration;
+    }
+    return true;
+  }
 
   async refreshAccount(credentials: Auth): Promise<Pronote> {
     const refresh = (await refreshPronoteAccount(this.accountId, credentials));
@@ -60,6 +71,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteHomeworks(this.session, this.accountId, weekNumber);
     }
@@ -68,6 +81,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getNews(): Promise<News[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteNews(this.session, this.accountId);
     }
@@ -76,6 +91,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteGrades(this.session, this.accountId, period);
     }
@@ -84,6 +101,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getGradesPeriods(): Promise<Period[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteGradePeriods(this.session, this.accountId);
     }
@@ -92,6 +111,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteAttendance(this.session, this.accountId, period);
     }
@@ -100,6 +121,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteAttendancePeriods(this.session, this.accountId);
     }
@@ -108,6 +131,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getWeeklyCanteenMenu(startDate: Date): Promise<CanteenMenu[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteCanteenMenu(this.session, this.accountId, startDate);
     }
@@ -116,6 +141,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteWeekTimetable(this.session, this.accountId, weekNumber);
     }
@@ -124,6 +151,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getCourseResources(course: Course): Promise<CourseResource[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteCourseResources(this.session, course);
     }
@@ -132,6 +161,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getChats(): Promise<Chat[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteChats(this.session, this.accountId);
     }
@@ -140,6 +171,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getChatRecipients(chat: Chat): Promise<Recipient[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteChatRecipients(this.session, chat);
     }
@@ -148,6 +181,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getChatMessages(chat: Chat): Promise<Message[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteChatMessages(this.session, this.accountId, chat);
     }
@@ -156,6 +191,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async getRecipientsAvailableForNewChat(): Promise<Recipient[]> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return fetchPronoteRecipients(this.session);
     }
@@ -164,6 +201,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async sendMessageInChat(chat: Chat, content: string): Promise<void> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       await sendPronoteMessageInChat(this.session, chat, content);
     }
@@ -172,6 +211,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async setNewsAsAcknowledged(news: News): Promise<News> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return setPronoteNewsAsAcknowledged(this.session, news);
     }
@@ -180,6 +221,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return setPronoteHomeworkAsDone(this.session, homework, state)
     }
@@ -187,6 +230,8 @@ export class Pronote implements SchoolServicePlugin {
   }
 
   async createMail(subject: string, content: string, recipients: Recipient[]): Promise<Chat> {
+    await this.checkTokenValidty()
+
     if (this.session) {
       return createPronoteMail(this.session, this.accountId, subject, content, recipients)
     }
