@@ -80,7 +80,7 @@ export default function TabOneScreen() {
     date.setUTCHours(0, 0, 0, 0);
     const currentWeekNumber = getWeekNumberFromDate(date)
     const weeklyTimetable = await manager.getWeeklyTimetable(currentWeekNumber)
-    return setCourses(weeklyTimetable.find(day => day.date === date)?.courses ?? [])
+    return setCourses(weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [])
   }, []);
 
   const fetchGrades = useCallback(async () => {
