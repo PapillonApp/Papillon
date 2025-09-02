@@ -21,7 +21,7 @@ const NotificationsModal = () => {
         {t("Feature_Soon")}
       </Typography>
       <Typography variant={"caption"} align={"center"} color={"secondary"}>
-        Nous travaillons dur pour vous offrir cette fonctionnalité dans une future mise à jour.
+        Nous travaillons dur pour t'offrir cette fonctionnalité dans une future mise à jour.
       </Typography>
     </Stack>
   )
