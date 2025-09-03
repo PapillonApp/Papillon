@@ -151,7 +151,7 @@ export default function TabOneScreen() {
   }, [weekNumber]);
 
   const insets = useSafeAreaInsets();
-  const headerHeight = insets.top + 42;
+  const headerHeight = 0;
   const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : headerHeight + 16;
   const windowWidth = Dimensions.get("window").width;
