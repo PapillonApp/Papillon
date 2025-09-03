@@ -2,11 +2,12 @@ import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import uuid from "@/utils/uuid/uuid";
 import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { AuthFlow, School } from "skolengojs";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AuthFlow, ChallengeMethod, GetOIDCAccessTokens, GetUserInfo, School } from "skolengojs";
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
-import { ShouldStartLoadRequest } from "react-native-webview/lib/WebViewTypes";
+import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
+import { log } from "@/utils/logger/logger";
 
 export default function WebViewScreen() {
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
@@ -15,18 +16,41 @@ export default function WebViewScreen() {
   const parsedRef = typeof ref === "string" ? JSON.parse(ref) : {};
   const school = new School(parsedRef.id, parsedRef.name, parsedRef.emsCode, parsedRef.OIDCWellKnown, parsedRef.location, parsedRef.homepage);
 
+  useEffect(() => {
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      const scheme = url.split(":")[0];
+      if (scheme === "skoapp-prod") {
+        log("[Skolengo] Activation link received:", url);
+        handleRequest(url);
+      } else {
+        log("[Skolengo] Ignoring link:", url);
+      }
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+
+    Linking.addEventListener("url", handleDeepLink);
+  }, []);
+
+  const flowRef = useRef<AuthFlow | null>(null);
+
   const initLogin = useCallback(async () => {
-    const flow = await school.initializeLogin()
-    setFlow(flow)
-    return setLoginURL(flow.loginURL)
+    const flow = await school.initializeLogin(ChallengeMethod.PLAIN);
+    flowRef.current = flow;
+    setFlow(flow);
+    setLoginURL(flow.loginURL);
   }, []);
 
   useEffect(() => {
     initLogin();
   }, [initLogin]);
 
-  const handleRequest = async (request: { url: string }) => {
-    const url = request.url;
+  const handleRequest = async (url: string) => {
 
     console.log(url)
 
@@ -35,8 +59,11 @@ export default function WebViewScreen() {
       const state = url.match(/state=([^&]*)/)
 
       if (!code || !state) return false;
-
-      const auth = await flow?.finalizeLogin(code[1], state[1])
+      if (!flowRef.current) {
+        console.log("Flow not initialized yet");
+        return false;
+      }
+      const auth = await flowRef.current.finalizeLogin(code[1], state[1])
       const store = useAccountStore.getState();
       const id = uuid()
 
@@ -50,7 +77,14 @@ export default function WebViewScreen() {
           {
             id: id,
             auth: {
-              session: auth
+              accessToken: auth.refreshToken,
+              refreshToken: auth.refreshToken,
+              additionals: {
+                refreshUrl: auth.refreshURL,
+                wellKnown: flowRef.current.endpoints.wellKnown,
+                tokenEndpoint: flowRef.current.endpoints.tokenEndpoint,
+                emsCode: flowRef.current.school.emsCode
+              }
             },
             serviceId: Services.SKOLENGO,
             createdAt: (new Date()).toISOString(),
@@ -88,12 +122,8 @@ export default function WebViewScreen() {
         source: loginURL
           ? { uri: loginURL }
           : { html: "<h1>Chargement...</h1>" },
-        onShouldStartLoadWithRequest: (request: ShouldStartLoadRequest) => {
-          if (request.url.startsWith("skoapp-prod://")) {
-            handleRequest(request);
-            return false;
-          }
-
+        onShouldStartLoadWithRequest: (request) => {
+          console.log("[WEBVIEWSKOLENGO]", request.url)
           return true;
         }
       }}

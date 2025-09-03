@@ -29,7 +29,7 @@ module.exports = {
       infoPlist: {
         CFBundleURLTypes: [
           {
-            CFBundleURLSchemes: ["papillon", "izly"],
+            CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
       },
