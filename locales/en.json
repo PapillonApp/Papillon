@@ -116,6 +116,9 @@
 
   "Modal_Course_Title": "My class",
   "Modal_Course_StartsIn": "Starts in",
+  "Modal_Course_StartedAgo": "Started ago",
+  "Modal_Course_Ongoing": "Ongoing",
+
   "Modal_Course_Group": "Group",
   "Modal_Course_Group_Full": "Class",
 
@@ -205,6 +208,8 @@
   "Attendance_NoReason": "No reason",
   "Attendance_NoEvent_Title": "No event",
   "Attendance_NoEvent_Description": "No absences or delays recorded for this period.",
+
+  
 
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",

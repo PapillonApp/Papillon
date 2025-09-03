@@ -23,6 +23,7 @@ import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Avatar } from "../(features)/(news)/news";
 import * as WebBrowser from "expo-web-browser";
+import packagejson from "../../package.json"
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -81,7 +82,7 @@ const SettingsIndex = () => {
         },
         {
           title: t('Settings_About_Title'),
-          description: t('Settings_About_Description'),
+          description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
@@ -232,20 +233,20 @@ const SettingsIndex = () => {
                 {(level || establishment) &&
                   <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
                     {level &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flexShrink: 0 }}>
                         <Typography variant={"body1"} color="secondary">
                           {level}
                         </Typography>
                       </Stack>
                     }
                     {establishment &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flex: 1 }}>
                         <Typography
                           variant={"body1"}
                           color="secondary"
                           numberOfLines={1}
                           ellipsizeMode="tail"
-                          style={{ maxWidth: 190 }}>
+                          style={{ flexShrink: 1 }}>
                           {establishment}
                         </Typography>
                       </Stack>

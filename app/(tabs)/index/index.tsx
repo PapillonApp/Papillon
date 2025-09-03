@@ -309,6 +309,7 @@ export default function TabOneScreen() {
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
                 {courses.slice(0, 2).map(item => (
                   <Course
+                    key={item.id}
                     id={item.id}
                     name={item.subject}
                     teacher={item.teacher}
