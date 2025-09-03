@@ -233,20 +233,20 @@ const SettingsIndex = () => {
                 {(level || establishment) &&
                   <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
                     {level &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flexShrink: 0 }}>
                         <Typography variant={"body1"} color="secondary">
                           {level}
                         </Typography>
                       </Stack>
                     }
                     {establishment &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flex: 1 }}>
                         <Typography
                           variant={"body1"}
                           color="secondary"
                           numberOfLines={1}
                           ellipsizeMode="tail"
-                          style={{ maxWidth: 190 }}>
+                          style={{ flexShrink: 1 }}>
                           {establishment}
                         </Typography>
                       </Stack>
