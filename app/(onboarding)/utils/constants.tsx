@@ -148,6 +148,15 @@ export function getSupportedUniversities(redirect: (path: { pathname: string }) 
             onPress: () => { }
         },
         {
+            name: "univ-lyon-1",
+            title: "Université Lyon 1",
+            hasLimitedSupport: true,
+            image: require("@/assets/images/univ_lyon1.png"),
+            type: "main",
+            onPress: () => {
+            }
+        },
+        {
             name: "univ-rennes-1",
             title: "Université de Rennes 1",
             hasLimitedSupport: true,
