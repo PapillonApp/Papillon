@@ -17,10 +17,10 @@ export async function fetchSkolengoTimetable(session: Skolengo, accountId: strin
   }
 
   if (session.kind === Kind.STUDENT) {
-    getTimetable(session)
+    await getTimetable(session)
   } else {
     for (const kid of (session.kids ?? [])) {
-      getTimetable(kid, `${kid.firstName} ${kid.firstName}`)
+      await getTimetable(kid, `${kid.firstName} ${kid.firstName}`)
     }
   }
   return result;

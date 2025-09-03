@@ -106,7 +106,10 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { Buffer } from 'buffer';
+
 const RootLayoutNav = React.memo(function RootLayoutNav() {
+  global.Buffer = Buffer
   const colorScheme = useColorScheme();
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);

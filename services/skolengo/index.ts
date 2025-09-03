@@ -30,11 +30,7 @@ export class Skolengo implements SchoolServicePlugin {
   constructor(public accountId: string){}
 
   async refreshAccount(credentials: Auth): Promise<Skolengo> {
-    if (!credentials.session) {
-      error("This account seems to not be initialized")
-    }
-
-    const refresh = (await refreshSkolengoAccount(this.accountId, credentials.session as SkolengoSession))
+    const refresh = (await refreshSkolengoAccount(this.accountId, credentials))
     this.authData = refresh.auth
     this.session = refresh.session
 
