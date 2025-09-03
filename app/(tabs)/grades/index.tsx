@@ -39,7 +39,6 @@ const EmptyListComponent = memo(() => (
     <Stack
       hAlign="center"
       vAlign="center"
-      backgroundColor="#FF0000"
       flex
       style={{ width: "100%" }}
     >
