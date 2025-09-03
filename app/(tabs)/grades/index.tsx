@@ -39,7 +39,9 @@ const EmptyListComponent = memo(() => (
     <Stack
       hAlign="center"
       vAlign="center"
-      margin={16}
+      backgroundColor="#FF0000"
+      flex
+      style={{ width: "100%" }}
     >
       <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
         <Papicons name={"Grades"} />
