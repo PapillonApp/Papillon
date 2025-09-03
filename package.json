@@ -44,7 +44,7 @@
     "expo-crypto": "~15.0.5",
     "expo-dev-client": "~6.0.7",
     "expo-device": "~8.0.5",
-    "expo-file-system": "~19.0.7",
+    "expo-file-system": "18.1.11",
     "expo-font": "~14.0.6",
     "expo-haptics": "~15.0.5",
     "expo-image-picker": "~17.0.5",
