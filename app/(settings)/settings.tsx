@@ -23,6 +23,7 @@ import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Avatar } from "../(features)/(news)/news";
 import * as WebBrowser from "expo-web-browser";
+import packagejson from "../../package.json"
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -81,7 +82,7 @@ const SettingsIndex = () => {
         },
         {
           title: t('Settings_About_Title'),
-          description: t('Settings_About_Description'),
+          description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
