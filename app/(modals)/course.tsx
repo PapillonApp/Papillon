@@ -137,7 +137,11 @@ const CourseModal: React.FC<GradesModalProps> = () => {
                     <Papicons.Clock />
                   </Icon>
                   <Typography color="secondary">
-                    {t("Modal_Course_StartsIn")}
+                    {startTime * 1000 > Date.now()
+                      ? t("Modal_Course_StartsIn")
+                      : endTime * 1000 > Date.now()
+                        ? t("Modal_Course_Ongoing")
+                        : t("Modal_Course_StartedAgo")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
                     {formatDistanceToNow(startTime * 1000, { locale: fr })}
