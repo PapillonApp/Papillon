@@ -21,7 +21,7 @@ import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
-import { getSubjectColor } from "@/utils/subjects/colors";
+import { Colors, getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
@@ -151,7 +151,8 @@ export default function TabOneScreen() {
   }, [weekNumber]);
 
   const insets = useSafeAreaInsets();
-  const headerHeight = insets.top + 42;
+
+  const headerHeight = useHeaderHeight()
   const bottomHeight = 80;
   const globalPaddingTop = runsIOS26() ? headerHeight + 8 : headerHeight + 16;
   const windowWidth = Dimensions.get("window").width;
@@ -348,7 +349,7 @@ export default function TabOneScreen() {
                 name={item.subject}
                 teacher={item.teacher}
                 room={item.room}
-                color={getSubjectColor(item.subject)}
+                color={getSubjectColor(item.subject) || Colors[0]}
                 status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
                 variant="primary"
                 start={Math.floor(item.from.getTime() / 1000)}
@@ -360,7 +361,7 @@ export default function TabOneScreen() {
                     subjectInfo: {
                       id: item.subjectId,
                       name: item.subject,
-                      color: getSubjectColor(item.subject),
+                      color: getSubjectColor(item.subject) || Colors[0],
                       emoji: getSubjectEmoji(item.subject),
                     }
                   });
