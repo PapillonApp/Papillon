@@ -301,38 +301,41 @@ export default function TabOneScreen() {
         }
         gap={12}
         data={[
-          courses.length > 0 && {
+          courses.filter(c => c.from.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                {courses.slice(0, 2).map(item => (
-                  <Course
-                    key={item.id}
-                    id={item.id}
-                    name={item.subject}
-                    teacher={item.teacher}
-                    room={item.room}
-                    color={getSubjectColor(item.subject)}
-                    status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                    variant="primary"
-                    start={Math.floor(item.from.getTime() / 1000)}
-                    end={Math.floor(item.to.getTime() / 1000)}
-                    readonly={!!item.createdByAccount}
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/course', {
-                        course: item,
-                        subjectInfo: {
-                          id: item.id,
-                          name: item.subject,
-                          color: getSubjectColor(item.subject),
-                          emoji: getSubjectEmoji(item.subject),
-                        }
-                      });
-                    }}
-                  />
-                ))}
+                {courses
+                  .filter(item => item.from.getTime() > Date.now())
+                  .slice(0, 2)
+                  .map(item => (
+                    <Course
+                      key={item.id}
+                      id={item.id}
+                      name={item.subject}
+                      teacher={item.teacher}
+                      room={item.room}
+                      color={getSubjectColor(item.subject)}
+                      status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+                      variant="primary"
+                      start={Math.floor(item.from.getTime() / 1000)}
+                      end={Math.floor(item.to.getTime() / 1000)}
+                      readonly={!!item.createdByAccount}
+                      onPress={() => {
+                        (navigation as any).navigate('(modals)/course', {
+                          course: item,
+                          subjectInfo: {
+                            id: item.id,
+                            name: item.subject,
+                            color: getSubjectColor(item.subject),
+                            emoji: getSubjectEmoji(item.subject),
+                          }
+                        });
+                      }}
+                    />
+                  ))}
               </Stack>
             )
           },
