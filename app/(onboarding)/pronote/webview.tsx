@@ -233,6 +233,12 @@ export default function WebViewScreen() {
             webViewRef.current?.stopLoading();
             webViewRef.current?.injectJavaScript(`window.location.assign("${evt.nativeEvent.targetUrl}");`); // Yes, this is tricky, but it's in official documentation
           }),
+          injectedJavaScript: `
+        var meta = document.createElement('meta');
+        meta.setAttribute('name', 'viewport');
+        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        `
         }}
         webViewRef={webViewRef}
       />
