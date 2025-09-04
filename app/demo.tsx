@@ -159,6 +159,36 @@ export default function TabOneScreen() {
       <SkeletonView style={{ width: 100, height: 20, borderRadius: 4 }}/>
       <Typography variant="h1" skeleton>This is a skeleton text</Typography>
       <Typography skeleton skeletonLines={2}>This is a description with multiple lines</Typography>
+      <Course
+        id="id1"
+        name="Traitement des données"
+        teacher="Baptive V."
+        room="Bât. 12 amphi 4"
+        color="#0095D6"
+        status={{ label: "Travail dirigé", canceled: false }}
+        variant="primary"
+        start={1750126049}
+        end={1750129649}
+        magicInfo={{
+          label: "Dans 20 minutes",
+          icon: ({ color }) => <Icon papicon size={24} fill={color}>
+            <Papicons name={"Clock"} />
+          </Icon>,
+        }}
+        skeleton
+      />
+      <Course
+        id="id1"
+        name="Traitement des données"
+        teacher="Baptive V."
+        room="Bât. 12 amphi 4"
+        color="#0095D6"
+        status={{ label: "Travail dirigé", canceled: false }}
+        variant="separator"
+        start={1750126049}
+        end={1750129649}
+        skeleton
+      />
       <SectionTitle title={"Avatar"} colors={colors} />
       <Stack direction={"horizontal"} gap={10} hAlign="center">
         <Avatar size={80} />

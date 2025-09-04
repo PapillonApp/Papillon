@@ -38,6 +38,7 @@ interface CourseProps {
     label: string;
     icon: React.FC<{ color?: string }>;
   };
+  skeleton?: boolean;
 }
 
 const Course = React.memo(
@@ -59,6 +60,7 @@ const Course = React.memo(
      magicInfo,
      onPress,
      containerStyle,
+     skeleton = false,
    }: CourseProps) => {
     const duration = end - start;
     const { t } = useTranslation();
@@ -87,6 +89,7 @@ const Course = React.memo(
                         variant="h5"
                         align="center"
                         style={{ lineHeight: 20, width: 60 }}
+                        skeleton={skeleton}
             >
               {fStart.toLocaleTimeString("fr-FR", {
                 hour: "2-digit",
@@ -98,6 +101,7 @@ const Course = React.memo(
                         color="secondary"
                         align="center"
                         style={{ width: 60 }}
+                        skeleton={skeleton}
             >
               {fEnd.toLocaleTimeString("fr-FR", {
                 hour: "2-digit",
@@ -118,11 +122,12 @@ const Course = React.memo(
             style={{
               flex: 1,
               marginVertical: 0,
+              backgroundColor: skeleton ? colors.text + "05" : "00",
             }}
           >
             <Icon papicon
                   size={24}
-                  opacity={0.6}
+                  opacity={skeleton ? 0.1:0.6}
             >
               {
                 hStart < 11 ? <Papicons name={"Sunrise"} /> :
@@ -134,6 +139,7 @@ const Course = React.memo(
                         style={{ flex: 1, opacity: 0.6 }}
                         nowrap
                         color="text"
+                        skeleton={skeleton}
             >
               {
                 hStart < 11 ? "Pause matinale" :
@@ -143,6 +149,7 @@ const Course = React.memo(
             </Typography>
             <Typography variant="body1"
                         color="secondary"
+                        skeleton={skeleton}
             >
               {formatDuration(duration)}
             </Typography>
@@ -153,6 +160,7 @@ const Course = React.memo(
             scaleTo={onPress ? 0.97 : 1}
             opacityTo={onPress ? 0.8 : 1}
             onPress={() => onPress?.()}
+            pointerEvents={(readonly || skeleton) ? "none" : "auto"}
           >
             <View style={[
               status?.canceled && {
@@ -171,7 +179,11 @@ const Course = React.memo(
                 flex: 1, display: "flex",
                 borderRadius: compact ? 18 : 25,
                 overflow: "hidden",
-              }]}
+              },
+              skeleton && {
+                backgroundColor: "#00000005",
+              }
+              ]}
             >
               {(status?.canceled) && (
                 <Stack
@@ -182,14 +194,15 @@ const Course = React.memo(
                 >
                   <Icon papicon
                         size={20}
-                        fill={adjust("#DC1400", theme.dark ? 0.4 : -0.2)}
+                        fill={skeleton ? colors.text + "10":adjust("#DC1400", theme.dark ? 0.4 : -0.2)}
                   >
                     <Papicons name={"Ghost"} />
                   </Icon>
                   <Typography nowrap
                               color={adjust("#DC1400", theme.dark ? 0.4 : -0.2)}
                               variant="h4"
-                              style={[styles.room, { paddingBottom: 6, paddingTop: 8 }]}
+                              style={[styles.room, { paddingBottom: 6, paddingTop: 8, opacity: skeleton ? 0.5 : 1 }]}
+                              skeleton={skeleton}
                   >
                     {status.label}
                   </Typography>
@@ -201,11 +214,12 @@ const Course = React.memo(
                        style={{ paddingHorizontal: 15 }}
                        gap={6}
                 >
-                  {magicInfo.icon && <magicInfo.icon color={color} />}
+                  {magicInfo.icon && <magicInfo.icon color={skeleton ? colors.text + "10" : color} />}
                   <Typography color="primary"
                               variant="h4"
-                              style={[styles.room, { paddingVertical: 6, color: color }]}
+                              style={[styles.room, { paddingVertical: 6, color: color, opacity: skeleton ? 0.5 : 1 }]}
                               nowrap
+                              skeleton={skeleton}
                   >
                     {magicInfo.label}
                   </Typography>
@@ -229,8 +243,11 @@ const Course = React.memo(
                     shadowColor: "#000",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.15,
-                    shadowRadius: 3.3,
+                    shadowRadius: skeleton ? 0 : 3.3,
                     elevation: 3,
+                  },
+                  skeleton && {
+                    backgroundColor: colors.text + "05",
                   },
                 ]}
               >
@@ -238,7 +255,7 @@ const Course = React.memo(
                        hAlign="center"
                        vAlign="center"
                        gap={10}
-                       style={{ justifyContent: "space-between" }}
+                       style={{ justifyContent: "space-between", opacity: skeleton ? 0.5 : 1 }}
                 >
                   <Typography
                     color="light"
@@ -248,6 +265,7 @@ const Course = React.memo(
                       styles.label,
                       (status?.canceled) ? styles.canceled : {},
                     ]}
+                    skeleton={skeleton}
                   >
                     {name}
                   </Typography>
@@ -256,12 +274,12 @@ const Course = React.memo(
                   <Stack direction="horizontal"
                          hAlign="center"
                          gap={10}
-                         style={{ marginTop: -2, overflow: "hidden" }}
+                         style={{ marginTop: -2, overflow: "hidden", opacity: skeleton ? 0.5 : 1 }}
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start" }}>
                       <Icon papicon
                             size={20}
-                            fill={status?.canceled ? "#555555" : "white"}
+                            fill={skeleton ? colors.text + "20" : (status?.canceled ? "#555555" : "white")}
                       >
                         <Papicons name={"MapPin"} />
                       </Icon>
@@ -269,6 +287,7 @@ const Course = React.memo(
                                   color="light"
                                   variant="body1"
                                   style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}
+                                  skeleton={skeleton}
                       >
                         {room || t("No_Course_Room")}
                       </Typography>
@@ -276,7 +295,7 @@ const Course = React.memo(
                     <View
                       style={[
                         styles.separator,
-                        { backgroundColor: status?.canceled ? "#606060" : "#FFFFFF" },
+                        { backgroundColor: skeleton ? colors.text + "20" : (status?.canceled ? "#606060" : "white") },
                       ]}
                     />
                     <View style={{
@@ -289,7 +308,7 @@ const Course = React.memo(
                     >
                       <Icon papicon
                             size={20}
-                            fill={status?.canceled ? "#555555" : "white"}
+                            fill={skeleton ? colors.text + "20" : (status?.canceled ? "#555555" : "white")}
                       >
                         <Papicons name={"User"} />
                       </Icon>
@@ -297,6 +316,7 @@ const Course = React.memo(
                                   color="light"
                                   variant="body1"
                                   style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}
+                                  skeleton={skeleton}
                       >
                         {teacher}
                       </Typography>
@@ -310,16 +330,21 @@ const Course = React.memo(
                     alignItems: "center",
                     gap: 7,
                     marginTop: status.label && status.label !== "" ? 6 : 0,
+                    opacity: skeleton ? 0.5:1
                   }}
                   >
                     {!!(status.label && status.label !== "") &&
                       <Stack radius={300}
-                             backgroundColor="#FFFFFF"
+                             backgroundColor={skeleton ? colors.text + "09":"#FFFFFF"}
                              style={styles.statusLabelContainer}
                       >
                         <Typography color="light"
                                     variant="h4"
-                                    style={[styles.statusLabel, { color: color }]}
+                                    style={[
+                                      styles.statusLabel,
+                                      { color: color },
+                                    ]}
+                                    skeleton={skeleton}
                         >
                           {status.label}
                         </Typography>
@@ -328,6 +353,7 @@ const Course = React.memo(
                     <Typography color="light"
                                 variant="h4"
                                 style={[styles.statusDuration]}
+                                skeleton={skeleton}
                     >
                       {formatDuration(duration)}
                     </Typography>
