@@ -9,6 +9,9 @@ import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { log } from "@/utils/logger/logger";
 import Icon from "@/ui/components/Icon";
+import SkeletonView from "@/ui/components/SkeletonView";
+import Avatar from "@/ui/components/Avatar";
+import Stack from "@/ui/components/Stack";
 
 
 
@@ -152,6 +155,22 @@ export default function TabOneScreen() {
           </Typography>
         </Item>
       </List>
+      <SectionTitle title={"Skeleton"} colors={colors} />
+      <SkeletonView style={{ width: 100, height: 20, borderRadius: 4 }}/>
+      <Typography variant="h1" skeleton>This is a skeleton text</Typography>
+      <Typography skeleton skeletonLines={2}>This is a description with multiple lines</Typography>
+      <SectionTitle title={"Avatar"} colors={colors} />
+      <Stack direction={"horizontal"} gap={10} hAlign="center">
+        <Avatar size={80} />
+        <Avatar size={64} initials={"VL"} color={"#009EC5"} />
+        <Avatar size={40} initials={"RG"} color={"#DD0030"} shape={"square"} />
+        <Avatar size={40} imageUrl={"https://avatars.githubusercontent.com/u/114444115"} />
+        <Avatar size={80} shape={"square"} imageUrl={"https://avatars.githubusercontent.com/u/114444115"} />
+      </Stack>
+      <Stack direction={"horizontal"} gap={10} hAlign="center">
+        <Avatar size={64} imageUrl={"https://avatars.githubusercontent.com/u/-1"} />
+        <Avatar size={64} skeleton />
+      </Stack>
     </ScrollView>
   );
 }
