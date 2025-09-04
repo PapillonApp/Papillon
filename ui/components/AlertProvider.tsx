@@ -11,6 +11,7 @@ import React, {
   useState,
 } from "react";
 import {
+  KeyboardAvoidingView,
   Pressable,
   StyleSheet,
 } from "react-native";
@@ -18,15 +19,15 @@ import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 
-import { Animation } from '../utils/Animation';
+import { Animation } from "../utils/Animation";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 
-import { useTheme } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
-import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
 
 // Extend Alert type with unique ID for better performance
@@ -106,7 +107,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   // Memoized alert press handler
   const handleAlertPress = useCallback((alert: Alert, alertId: string) => {
     router.push({
-      pathname: '/alert',
+      pathname: "/alert",
       params: {
         ...alert,
       },
@@ -131,6 +132,11 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     <AlertContext.Provider value={contextValue}>
       {children}
 
+      <KeyboardAvoidingView
+        behavior={"height"}
+        style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000}}
+        pointerEvents={"box-none"}
+      >
       {alerts.length > 0 && (
         <Reanimated.View
           layout={Animation(LinearTransition)}
@@ -145,6 +151,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
           ))}
         </Reanimated.View>
       )}
+      </KeyboardAvoidingView>
     </AlertContext.Provider>
   );
 };
@@ -155,7 +162,9 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
 
   // Memoized icon component to prevent re-renders
   const IconComponent = useMemo(() => {
-    if (!alert.icon || typeof alert.icon !== "string") { return null; }
+    if (!alert.icon) {
+      return null;
+    }
     return LucideIcons[alert.icon as keyof typeof LucideIcons] as ComponentType<any>;
   }, [alert.icon]);
 
@@ -165,7 +174,7 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
     {
       backgroundColor: colors.card,
       borderColor: colors.text + "30",
-    }
+    },
   ], [colors.card, colors.text]);
 
   const iconColor = useMemo(() => alert.color ?? colors.text, [alert.color, colors.text]);
@@ -177,29 +186,35 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
   }, [onPress]);
 
   return (
-    <AnimatedPressable
-      onPress={handlePress}
-      layout={Animation(LinearTransition)}
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
-      style={containerStyle}
-    >
-      {IconComponent && (
-        <Reanimated.View style={styles.iconContainer}>
-          <IconComponent size={24} color={iconColor} />
-        </Reanimated.View>
-      )}
-      <Reanimated.View style={styles.textContainer}>
-        <Typography variant='title' color='text'>{alert.title}</Typography>
-        {alert.message && (
-          <Typography variant='body1' color='secondary'>{alert.message}</Typography>
+      <AnimatedPressable
+        onPress={handlePress}
+        layout={Animation(LinearTransition)}
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+        style={containerStyle}
+      >
+        {IconComponent && (
+          <Reanimated.View style={styles.iconContainer}>
+            <IconComponent size={24}
+                           color={iconColor}
+            />
+          </Reanimated.View>
         )}
-      </Reanimated.View>
-    </AnimatedPressable>
+        <Reanimated.View style={styles.textContainer}>
+          <Typography variant="title"
+                      color="text"
+          >{alert.title}</Typography>
+          {alert.message && (
+            <Typography variant="body1"
+                        color="secondary"
+            >{alert.message}</Typography>
+          )}
+        </Reanimated.View>
+      </AnimatedPressable>
   );
 });
 
-AlertComponent.displayName = 'AlertComponent';
+AlertComponent.displayName = "AlertComponent";
 
 // Export Alert for backwards compatibility
 export const Alert = AlertComponent;
@@ -208,9 +223,9 @@ export const Alert = AlertComponent;
 const styles = StyleSheet.create({
   alertContainer: {
     borderWidth: 0.5,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 16,
@@ -231,8 +246,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: 0,
   },
 });

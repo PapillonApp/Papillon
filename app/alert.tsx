@@ -81,7 +81,7 @@ export default function AlertModal() {
               gap: 8,
             }
           ]}
-          layout={LinearTransition.duration(200).easing(Easing.inOut(Easing.quad))}
+          layout={Platform.OS === "ios" ? LinearTransition.duration(200).easing(Easing.inOut(Easing.quad)):undefined}
         >
           <Pressable
             style={{
