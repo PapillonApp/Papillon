@@ -161,6 +161,7 @@ function NewsSection() {
         warn('Manager is null, skipping news fetch');
         return;
       }
+      manager.getNews();
     } catch (error) {
       console.error("Error fetching news:", error);
     }
