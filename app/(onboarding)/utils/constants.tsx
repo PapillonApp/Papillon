@@ -116,7 +116,6 @@ export function getSupportedUniversities(redirect: (path: { pathname: string, op
             type: "main",
             onPress: () => {
                 redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
-
             },
         },
         {
