@@ -229,6 +229,10 @@ export default function WebViewScreen() {
           userAgent: "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
           onMessage: onWebviewMessage,
           onLoadEnd: onWebviewLoadEnd,
+          onOpenWindow: (evt => {
+            webViewRef.current?.stopLoading();
+            webViewRef.current?.injectJavaScript(`window.location.assign("${evt.nativeEvent.targetUrl}");`); // Yes, this is tricky, but it's in official documentation
+          }),
         }}
         webViewRef={webViewRef}
       />
