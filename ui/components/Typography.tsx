@@ -150,17 +150,48 @@ const Typography: React.FC<TypographyProps> = React.memo(
   }) => {
     const { colors } = useTheme();
 
+    const getStyle = (): TextStyle => {
+      return StyleSheet.flatten(style || {}) as TextStyle;
+    }
+
+    const getFlexAlignment = () => {
+      switch (align) {
+        case "left":
+          return "flex-start";
+        case "center":
+          return "center";
+        case "right":
+          return "flex-end";
+        case "justify":
+          return "stretch";
+        default:
+          return "flex-start";
+      }
+    }
+
+    const getFontSize = () => {
+      const flattenedStyle = getStyle();
+      return flattenedStyle.fontSize || VARIANTS[variant].fontSize;
+    }
+
+    const getLineHeight = () => {
+      const flattenedStyle = getStyle();
+      return (flattenedStyle.lineHeight || VARIANTS[variant].lineHeight) - (getFontSize() || 16);
+    }
+
     if (skeleton)
       return (
-        <View>
+        <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
           {Array.from({ length: skeletonLines }).map((_, index) => (
             <SkeletonView
               key={index}
               style={{
                 width: `${(((rest.children) as string).length * 2) * (1 - (index / 5))}%`,
-                height: VARIANTS[variant].fontSize,
+                minWidth: 50,
+                height: getFontSize() || 16,
                 borderRadius: 4,
-                marginBottom: index < skeletonLines - 1 ? 6 : 0,
+                marginTop: getLineHeight() / 2,
+                marginBottom: getLineHeight() / 2,
               }}
             />
           ))}
