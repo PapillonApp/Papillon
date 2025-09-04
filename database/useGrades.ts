@@ -5,34 +5,37 @@ import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPer
 import { generateId } from "@/utils/generateId";
 import { error, warn } from "@/utils/logger/logger";
 
-import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
+import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapPeriodGradesToShared,mapPeriodToShared } from "./mappers/grade";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
 
 export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
   const db = getDatabaseInstance();
-  for (const item of periods) {
-    const id = generateId(item.name + item.createdByAccount)
-    const existing = await db.get('periods').query(
-      Q.where("id", id)
-    ).fetch();
 
-    if (existing.length > 0) {continue;}
+  await db.write(async () => {
+    for (const item of periods) {
+      const id = generateId(item.name + item.createdByAccount);
 
-    await db.write(async () => {
-      await db.get('periods').create((record: Model) => {
-        const period = record as Period;
-        Object.assign(period, {
-          id: id,
-          name: item.name,
-          createdByAccount: item.createdByAccount,
-          start: item.start.getTime(),
-          end: item.end.getTime()
-        })
-      })
-    })
-  }
+      const existing = await db.get('periods')
+        .query(Q.where("periodId", id))
+        .fetch();
+
+      if (existing.length === 0) {
+        await db.get('periods').create((record: Model) => {
+          const period = record as Period;
+          Object.assign(period, {
+            periodId: id,
+            name: item.name,
+            createdByAccount: item.createdByAccount,
+            start: item.start.getTime(),
+            end: item.end.getTime(),
+          });
+        });
+      }
+    }
+  });
 }
+
 
 export async function getPeriodsFromCache(): Promise<SharedPeriod[]> {
   try {
