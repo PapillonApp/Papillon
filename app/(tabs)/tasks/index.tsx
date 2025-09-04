@@ -28,6 +28,65 @@ import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
 import { predictHomework } from "@/utils/magic/prediction";
+import { useSettingsStore } from "@/stores/settings";
+
+const useMagicPrediction = (content: string) => {
+  const [magic, setMagic] = useState<any>(undefined);
+  const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadMagic = async () => {
+      try {
+        const prediction = await predictHomework(content, magicEnabled);
+        if (!isCancelled) {
+          setMagic(prediction);
+        }
+      } catch (error) {
+        console.error("Error predicting homework:", error);
+        if (!isCancelled) {
+          setMagic(undefined);
+        }
+      }
+    };
+
+    if (content) {
+      loadMagic();
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [content, magicEnabled]);
+
+  return magic;
+};
+
+const TaskItem = memo(({ item, index, onProgressChange }: {
+  item: Homework;
+  index: number;
+  onProgressChange: (index: number, newProgress: number) => void;
+}) => {
+  const cleanContent = item.content.replace(/<[^>]*>/g, "");
+  const magic = useMagicPrediction(cleanContent);
+
+  return (
+    <Task
+      subject={getSubjectName(item.subject)}
+      emoji={getSubjectEmoji(item.subject)}
+      title={""}
+      color={getSubjectColor(item.subject)}
+      description={cleanContent}
+      date={new Date(item.dueDate)}
+      progress={item.isDone ? 1 : 0}
+      index={index}
+      magic={magic}
+      fromCache={item.fromCache ?? false}
+      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+    />
+  );
+});
 
 const EmptyListComponent = memo(() => (
   <LayoutAnimationConfig skipEntering>
@@ -81,7 +140,11 @@ export default function TabOneScreen() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [selectedWeek]);
+
+  useEffect(() => {
+    fetchHomeworks();
+  }, [selectedWeek]);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -167,19 +230,11 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
-  const renderItem = useCallback(async ({ item, index }: { item: Homework; index: number }) => (
-    <Task
-      subject={getSubjectName(item.subject)}
-      emoji={getSubjectEmoji(item.subject)}
-      title={""}
-      color={getSubjectColor(item.subject)}
-      description={item.content.replace(/<[^>]*>/g, "")}
-      date={new Date(item.dueDate)}
-      progress={item.isDone ? 1 : 0}
+  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
+    <TaskItem
+      item={item}
       index={index}
-      magic={await predictHomework(item.content.replace(/<[^>]*>/g, ""))}
-      fromCache={item.fromCache ?? false}
-      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+      onProgressChange={onProgressChange}
     />
   ), [onProgressChange]);
 
@@ -246,14 +301,10 @@ export default function TabOneScreen() {
     <>
       <TabFlatList
         radius={36}
-        waitForInitialLayout
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        pattern="cross"
         data={memoizedData}
         initialNumToRender={2}
-        recycleItems={true}
-        estimatedItemSize={212}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         refreshControl={

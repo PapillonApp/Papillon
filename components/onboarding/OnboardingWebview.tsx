@@ -123,7 +123,7 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
             >
               <ActivityIndicator size={"large"} />
               <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>{t("Webview_Wait")}</Typography>
-              <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>Nous chargons le site de ton établissement</Typography>
+              <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>{t("Onboarding_Load_Webview_Description")}</Typography>
             </View>
             <WebView
               ref={webViewRef}

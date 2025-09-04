@@ -1,3 +1,5 @@
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { warn } from "@/utils/logger/logger";
 
 export interface SerializableClass {

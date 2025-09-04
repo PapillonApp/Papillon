@@ -3,7 +3,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
 import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
-import { CalendarDaysIcon, ChevronDown } from "lucide-react-native";
+import { ChevronDown } from "lucide-react-native";
 import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { LinearTransition } from "react-native-reanimated";
@@ -14,18 +14,16 @@ import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeH
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 import { Papicons } from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
-import { getSubjectColor } from "@/utils/subjects/colors";
+import { Colors, getSubjectColor } from "@/utils/subjects/colors";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -150,10 +148,8 @@ export default function TabOneScreen() {
     fetchWeeklyTimetable(weekNumber, true);
   }, [weekNumber]);
 
-  const insets = useSafeAreaInsets();
-  const headerHeight = insets.top + 42;
+  const headerHeight = useHeaderHeight()
   const bottomHeight = 80;
-  const globalPaddingTop = runsIOS26() ? headerHeight + 8 : headerHeight + 16;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
   const [currentIndex, setCurrentIndex] = useState(INITIAL_INDEX);
@@ -236,7 +232,7 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, _, bottomHeight, isRefreshing, onRefresh, colors }: { dayDate: Date, headerHeight: number, bottomHeight: number, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors }: { dayDate: Date, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
     normalizedDayDate.setHours(0, 0, 0, 0);
 
@@ -310,14 +306,14 @@ export default function TabOneScreen() {
           data={separatedDayEvents}
           style={styles.container}
           showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior={"always"}
           contentContainerStyle={
             {
               paddingHorizontal: 12,
-              paddingBottom: bottomHeight + 12,
+              paddingVertical: 12,
               gap: 4,
             }
           }
-          ListHeaderComponent={<View style={{ height: globalPaddingTop }} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -348,7 +344,7 @@ export default function TabOneScreen() {
                 name={item.subject}
                 teacher={item.teacher}
                 room={item.room}
-                color={getSubjectColor(item.subject)}
+                color={getSubjectColor(item.subject) || Colors[0]}
                 status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
                 variant="primary"
                 start={Math.floor(item.from.getTime() / 1000)}
@@ -360,7 +356,7 @@ export default function TabOneScreen() {
                     subjectInfo: {
                       id: item.subjectId,
                       name: item.subject,
-                      color: getSubjectColor(item.subject),
+                      color: getSubjectColor(item.subject) || Colors[0],
                       emoji: getSubjectEmoji(item.subject),
                     }
                   });
@@ -386,8 +382,6 @@ export default function TabOneScreen() {
     return (
       <DayEventsPage
         dayDate={dayDate}
-        headerHeight={headerHeight}
-        bottomHeight={bottomHeight}
         isRefreshing={manualRefreshing}
         onRefresh={handleRefresh}
         colors={colors}

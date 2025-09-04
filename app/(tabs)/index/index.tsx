@@ -80,7 +80,8 @@ export default function TabOneScreen() {
     date.setUTCHours(0, 0, 0, 0);
     const currentWeekNumber = getWeekNumberFromDate(date)
     const weeklyTimetable = await manager.getWeeklyTimetable(currentWeekNumber)
-    return setCourses(weeklyTimetable.find(day => day.date === date)?.courses ?? [])
+    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? []
+    return setCourses(dayCourse.filter(courses => courses.from.getTime() > date.getTime()))
   }, []);
 
   const fetchGrades = useCallback(async () => {
@@ -306,8 +307,9 @@ export default function TabOneScreen() {
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                {courses.map(item => (
+                {courses.slice(0, 2).map(item => (
                   <Course
+                    key={item.id}
                     id={item.id}
                     name={item.subject}
                     teacher={item.teacher}
