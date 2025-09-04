@@ -170,7 +170,7 @@ export default function TabOneScreen() {
         alert.showAlert({
           title: "Une erreur est survenue",
           message: "Ce devoir n'a pas été mis à jour",
-          description: "Nous n'avons pas réussi à mettre à jour l'état du devoir, si ce devoir est important, merci de vous rendre sur l'application officiel de votre établissement afin de définir son état.",
+          description: "Nous n'avons pas réussi à mettre à jour l'état du devoir, si ce devoir est important, merci de vous rendre sur l'application officielle de votre établissement afin de définir son état.",
           color: "#D60046",
           icon: "TriangleAlert",
           technical: String(error)
