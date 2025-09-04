@@ -177,9 +177,12 @@ export default function TabOneScreen() {
           </Typography>
         </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
-          {courses.length == 0 ? t("Home_Planned_None")
-            : courses.length == 1 ? t("Home_Planned_One")
-              : t("Home_Planned_Number", { number: courses.length })}
+          {(() => {
+            const upcomingCourses = courses.filter(c => c.from.getTime() > Date.now());
+            if (upcomingCourses.length === 0) return t("Home_Planned_None");
+            if (upcomingCourses.length === 1) return t("Home_Planned_One");
+            return t("Home_Planned_Number", { number: upcomingCourses.length });
+          })()}
         </Typography>
       </Stack>
     ),
