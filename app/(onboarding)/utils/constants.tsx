@@ -137,7 +137,6 @@ export function getSupportedUniversities(redirect: (path: { pathname: string, op
             type: "main",
             onPress: () => {
                 redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
-
             },
         },
         // {
