@@ -25,6 +25,7 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { useTimetable } from '@/database/useTimetable';
+import { getSubjectName } from '@/utils/subjects/name';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -267,6 +268,14 @@ export default function TabOneScreen() {
 
     const threshold = 30;
 
+    for (const day of timetable) {
+      for (const course of day.courses) {
+        getSubjectColor(course.subject)
+        getSubjectEmoji(course.subject)
+        getSubjectName(course.subject)
+      }
+    }
+
     const separatedDayEvents = useMemo(() => {
       if (!dayEvents || dayEvents.length === 0) return dayEvents;
       const separated: any[] = [];
@@ -332,7 +341,7 @@ export default function TabOneScreen() {
             return (
               <Course
                 id={item.id}
-                name={item.subject}
+                name={getSubjectName(item.subject)}
                 teacher={item.teacher}
                 room={item.room}
                 color={getSubjectColor(item.subject) || Colors[0]}
@@ -346,7 +355,7 @@ export default function TabOneScreen() {
                     course: item,
                     subjectInfo: {
                       id: item.subjectId,
-                      name: item.subject,
+                      name: getSubjectName(item.subject),
                       color: getSubjectColor(item.subject) || Colors[0],
                       emoji: getSubjectEmoji(item.subject),
                     }
