@@ -43,8 +43,6 @@ export default function MultiLoginWithCredentials() {
   const { t } = useTranslation();
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("");
-  const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
-  const [doubleAuthAnswer, setDoubleAuthAnswer] = useState<string | null>(null);
   const param = useLocalSearchParams();
   const instanceUrl = String(param.url);
   const university = String(param.university);
