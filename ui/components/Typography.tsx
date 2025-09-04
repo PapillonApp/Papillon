@@ -1,8 +1,9 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
+import { StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
 
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import SkeletonView from "@/ui/components/SkeletonView";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
@@ -109,6 +110,8 @@ export interface TypographyProps extends TextProps {
   inline?: boolean;
   nowrap?: boolean;
   weight?: keyof typeof WEIGHT_STYLES;
+  skeleton?: boolean;
+  skeletonLines?: number;
 }
 
 // Cache for computed color styles per theme
@@ -141,9 +144,28 @@ const Typography: React.FC<TypographyProps> = React.memo(
     nowrap = false,
     weight,
     style,
+    skeleton = false,
+    skeletonLines = 1,
     ...rest
   }) => {
     const { colors } = useTheme();
+
+    if (skeleton)
+      return (
+        <View>
+          {Array.from({ length: skeletonLines }).map((_, index) => (
+            <SkeletonView
+              key={index}
+              style={{
+                width: `${(((rest.children) as string).length * 2) * (1 - (index / 5))}%`,
+                height: VARIANTS[variant].fontSize,
+                borderRadius: 4,
+                marginBottom: index < skeletonLines - 1 ? 6 : 0,
+              }}
+            />
+          ))}
+        </View>
+      );
 
     // Generate cache key for this specific combination
     const cacheKey = React.useMemo(() => {
