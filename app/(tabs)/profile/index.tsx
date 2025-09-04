@@ -3,23 +3,20 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
-import { SettingsIcon, UserPenIcon } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Dimensions, Image, Platform, Pressable, View } from "react-native";
+import { ActivityIndicator, Image, Platform, Pressable, View } from "react-native";
 import {
   FadeInUp,
   FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { Period } from "@/services/shared/grade";
 import { News } from "@/services/shared/news";
-import { Account } from "@/stores/account/types";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
@@ -109,7 +106,7 @@ function Tabs() {
 
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((manager) => {
+    const unsubscribe = subscribeManagerUpdate((_) => {
       fetchAttendance();
       fetchDiscussions();
     });
@@ -155,7 +152,6 @@ function Tabs() {
 
 function NewsSection() {
   const theme = useTheme();
-  const { colors } = theme;
 
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,7 +164,11 @@ function NewsSection() {
         return;
       }
       manager.getNews().then((fetchedNews) => {
-        setNews(fetchedNews.splice(0, 2));
+        setNews(
+          fetchedNews
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .splice(0, 2)
+        );
         setLoading(false);
       });
     } catch (error) {
@@ -177,7 +177,7 @@ function NewsSection() {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((manager) => {
+    const unsubscribe = subscribeManagerUpdate((_) => {
       fetchNews();
     });
 
@@ -270,7 +270,7 @@ function NewsSection() {
                 {item.title}
               </Typography>
               <Typography variant="caption" color="secondary">
-                {item.createdAt.getDate()}  ·  {item.author}
+                {item.createdAt.toLocaleDateString()}  ·  {item.author}
               </Typography>
             </Item>
           ))}
@@ -345,11 +345,8 @@ function Cards() {
 }
 
 export default function TabOneScreen() {
-  const insets = useSafeAreaInsets();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(new Date());
-
-  const manager = getManager();
 
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -371,7 +368,6 @@ export default function TabOneScreen() {
 
   const router = useRouter();
 
-  const windowHeight = Dimensions.get('window').height;
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker((prev) => !prev);
   }, []);
@@ -440,7 +436,7 @@ export default function TabOneScreen() {
         data={["tabs", "news", "cards", "apps"]}
         gap={16}
         radius={42}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           item === "tabs" ?
             <Tabs /> : item === "news" ?
               <NewsSection /> : item === "cards" ?
