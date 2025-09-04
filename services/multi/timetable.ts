@@ -17,22 +17,19 @@ export async function fetchMultiTimetable(
   const { start, end } = getDateRangeOfWeek(weekNumber);
   const result: CourseDay[] = [];
 
-  const getTimetable = async (sessionToUse: Multi, kidName?: string) => {
-    const timetable = await sessionToUse.getSchedules({
-      startDate: start.toISOString().split("T")[0],
-      endDate: end.toISOString().split("T")[0],
-    });
-    result.push(
-      ...timetable.plannings.map(day => ({
-        date: day.events[0]?.startDateTime
-          ? new Date(day.events[0].startDateTime)
-          : new Date(),
-        courses: mapMultiCourse(day.events, accountId),
-      }))
-    );
-  };
+  const timetable = await session.getSchedules({
+    startDate: start.toISOString().split("T")[0],
+    endDate: end.toISOString().split("T")[0],
+  });
 
-  getTimetable(session);
+  result.push(
+    ...timetable.plannings.map(day => ({
+      date: day.events[0]?.startDateTime
+        ? new Date(day.events[0].startDateTime)
+        : new Date(),
+      courses: mapMultiCourse(day.events, accountId),
+    }))
+  );
 
   return result;
 }
