@@ -1,21 +1,32 @@
 import { Account, AttendanceItem, Session, studentAttendance } from "pawdirecte";
 
-import { error } from "@/utils/logger/logger";
+import { error, warn } from "@/utils/logger/logger";
 
 import { Absence, Attendance, Punishment } from "../shared/attendance";
 import { durationToMinutes } from "../skolengo/attendance";
 
 export async function fetchEDAttendance(session: Session, account: Account, accountId: string): Promise<Attendance> {
-  const attendance = await studentAttendance(session, account);
-  const punishments = mapEcoleDirectePunishments(attendance.punishments, accountId);
-  const exemptions = mapEcoleDirectePunishments(attendance.exemptions, accountId);
-  const absences = mapEcoleDirecteAbsences(attendance.absences, accountId);
-  return {
-    absences: absences,
-    punishments: [...punishments, ...exemptions],
-    delays: [],
-    observations: [],
-    createdByAccount: accountId
+  try {
+    const attendance = await studentAttendance(session, account);
+    const punishments = mapEcoleDirectePunishments(attendance.punishments, accountId);
+    const exemptions = mapEcoleDirectePunishments(attendance.exemptions, accountId);
+    const absences = mapEcoleDirecteAbsences(attendance.absences, accountId);
+    return {
+      absences: absences,
+      punishments: [...punishments, ...exemptions],
+      delays: [],
+      observations: [],
+      createdByAccount: accountId
+    }
+  } catch (error) {
+    warn(String(error))
+    return {
+      absences: [],
+      punishments: [],
+      delays: [],
+      observations: [],
+      createdByAccount: accountId
+    }
   }
 }
 
