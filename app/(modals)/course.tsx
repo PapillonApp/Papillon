@@ -21,7 +21,6 @@ import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
-import { getSubjectColor } from "@/utils/subjects/colors";
 import { getStatusText } from "../(tabs)/calendar";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
@@ -106,7 +105,7 @@ const CourseModal: React.FC<GradesModalProps> = () => {
                 name={item.subject}
                 teacher={item.teacher}
                 room={item.room}
-                color={getSubjectColor(item.subject)}
+                color={subjectInfo.color}
                 status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
                 variant="primary"
                 start={Math.floor(item.from.getTime() / 1000)}
@@ -137,7 +136,11 @@ const CourseModal: React.FC<GradesModalProps> = () => {
                     <Papicons.Clock />
                   </Icon>
                   <Typography color="secondary">
-                    {t("Modal_Course_StartsIn")}
+                    {startTime * 1000 > Date.now()
+                      ? t("Modal_Course_StartsIn")
+                      : endTime * 1000 > Date.now()
+                        ? t("Modal_Course_Ongoing")
+                        : t("Modal_Course_StartedAgo")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
                     {formatDistanceToNow(startTime * 1000, { locale: fr })}

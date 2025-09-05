@@ -106,7 +106,10 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { Buffer } from 'buffer';
+
 const RootLayoutNav = React.memo(function RootLayoutNav() {
+  global.Buffer = Buffer
   const colorScheme = useColorScheme();
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
@@ -182,11 +185,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: runsIOS26() ? true : false,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
-                  headerTransparent: runsIOS26(),
-                  headerLargeTitle: false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -196,10 +198,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: runsIOS26() ? true : false,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: runsIOS26(),
-                  headerLargeTitle: false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
                   presentation: "modal",
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,

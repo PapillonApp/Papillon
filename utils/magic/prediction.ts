@@ -23,15 +23,13 @@ export function isModelPrediction(object: unknown): object is ModelPrediction {
   );
 }
 
-export async function predictHomework(label: string): Promise<string> {
+export async function predictHomework(label: string, magicEnabled: boolean = true): Promise<string> {
   const store = useMagicStore.getState();
   const homeworkId = generateId(label);
   const existingHomework = store.getHomework(homeworkId);
   if (existingHomework) return existingHomework.label;
 
-  const settingsStore = useSettingsStore(state => state.personalization);
-
-  if (!settingsStore.magicEnabled) {
+  if (!magicEnabled) {
     return "";
   }
 

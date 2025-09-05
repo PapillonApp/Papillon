@@ -32,33 +32,46 @@ export function useNews(refresh = 0) {
 
 export async function addNewsToDatabase(news: SharedNews[]) {
   const db = getDatabaseInstance();
-  
-  for (const nw of news) {
-    const id = generateId(nw.createdAt + nw.content + nw.author + nw.createdByAccount)
 
-    const existingForAccount = await db.get('news').query(Q.where('createdByAccount', nw.createdByAccount)).fetch();
-    const existing = existingForAccount.filter(news => (news as News).newsId === id);
+  await db.write(async () => {
+    for (const item of news) {
+      const id = generateId(item.author + item.title + item.createdByAccount);
 
-    if (existing.length === 0) {
-      await db.write(async () => {
+      const existingRecords = await db.get('news')
+        .query(Q.where("newsId", id))
+        .fetch();
+
+      if (existingRecords.length === 0) {
         await db.get('news').create((record: Model) => {
-          const news = record as News;
-          Object.assign(news, {
-            newsId: id,
-            title: nw.title ?? "",
-            createdAt: nw.createdAt.getTime(),
-            acknowledged: nw.acknowledged,
-            attachments: JSON.stringify(nw.attachments),
-            content: nw.content,
-            author: nw.author,
-            category: nw.category,
-            createdByAccount: nw.createdByAccount
-          })
-        })
-      })
+          const newsModel = record as News;
+          newsModel.newsId = id;
+          newsModel.title = item.title ?? "";
+          newsModel.createdAt = item.createdAt.getTime();
+          newsModel.acknowledged = item.acknowledged;
+          newsModel.attachments = JSON.stringify(item.attachments ?? []);
+          newsModel.content = item.content ?? "";
+          newsModel.author = item.author ?? "";
+          newsModel.category = item.category ?? "";
+          newsModel.createdByAccount = item.createdByAccount ?? "";
+        });
+      } else {
+        const recordToUpdate = existingRecords[0];
+        await recordToUpdate.update((record: Model) => {
+          const newsModel = record as News;
+          newsModel.title = item.title ?? newsModel.title;
+          newsModel.createdAt = item.createdAt.getTime();
+          newsModel.acknowledged = item.acknowledged;
+          newsModel.attachments = JSON.stringify(item.attachments ?? []);
+          newsModel.content = item.content ?? newsModel.content;
+          newsModel.author = item.author ?? newsModel.author;
+          newsModel.category = item.category ?? newsModel.category;
+          newsModel.createdByAccount = item.createdByAccount ?? newsModel.createdByAccount;
+        });
+      }
     }
-  }
+  });
 }
+
 
 export async function getNewsFromCache(): Promise<SharedNews[]> {
   try {

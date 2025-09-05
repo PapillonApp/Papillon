@@ -21,8 +21,10 @@ import { useAccountStore } from "@/stores/account";
 import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { Avatar } from "../(features)/(news)/news";
 import * as WebBrowser from "expo-web-browser";
+import packagejson from "../../package.json"
+import Avatar from "@/ui/components/Avatar";
+import { getInitials } from "@/utils/chats/initials";
 
 const SettingsIndex = () => {
   const router = useRouter();
@@ -81,7 +83,7 @@ const SettingsIndex = () => {
         },
         {
           title: t('Settings_About_Title'),
-          description: t('Settings_About_Description'),
+          description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
@@ -214,17 +216,11 @@ const SettingsIndex = () => {
                 onPress={() => router.navigate("/(settings)/services")}
               >
                 <Leading>
-                  {account && account.customisation && account.customisation.profilePicture ? (
-                    <Image
-                      source={
-                        { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
-                      }
-                      style={{ width: 48, height: 48, borderRadius: 500 }}
-                    />
-                  ) : (
-                    <Avatar size={48} variant="h3" author={`${account?.firstName} ${account?.lastName}`} />
-                  )
-                  }
+                  <Avatar
+                    size={48}
+                    initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
+                    imageUrl={account && account.customisation && account.customisation.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
+                  />
                 </Leading>
                 <Typography variant="title">
                   {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
@@ -232,20 +228,20 @@ const SettingsIndex = () => {
                 {(level || establishment) &&
                   <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
                     {level &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flexShrink: 0 }}>
                         <Typography variant={"body1"} color="secondary">
                           {level}
                         </Typography>
                       </Stack>
                     }
                     {establishment &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flex: 1 }}>
                         <Typography
                           variant={"body1"}
                           color="secondary"
                           numberOfLines={1}
                           ellipsizeMode="tail"
-                          style={{ maxWidth: 190 }}>
+                          style={{ flexShrink: 1 }}>
                           {establishment}
                         </Typography>
                       </Stack>

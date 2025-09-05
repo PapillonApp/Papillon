@@ -61,7 +61,7 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_About_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: true,
+          headerTransparent: Platform.OS === "ios",
           headerLargeTitle: false,
         }}
       />
@@ -70,7 +70,7 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_MagicPlus_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: true,
+          headerTransparent: Platform.OS === "ios",
           headerLargeTitle: false,
         }}
       />

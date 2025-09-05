@@ -117,6 +117,8 @@
 
   "Modal_Course_Title": "Mon cours",
   "Modal_Course_StartsIn": "Commence dans",
+  "Modal_Course_StartedAgo": "Terminé il y a",
+  "Modal_Course_Ongoing": "Commencé depuis",
   "Modal_Course_Group": "Groupe",
   "Modal_Course_Group_Full": "Classe",
 
@@ -226,7 +228,7 @@
   "Settings_Donate_Title": "Faire un don",
   "Settings_Donate_Description": "Soutenir le projet",
   "Settings_About_Title": "À propos",
-  "Settings_About_Description": "version 8.0.0",
+  "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
 
