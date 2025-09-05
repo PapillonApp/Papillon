@@ -1,0 +1,308 @@
+name: Build Applications
+on:
+  workflow_dispatch:
+    inputs:
+      build_android:
+        description: 'Build Android APK'
+        type: boolean
+        default: true
+      build_ios:
+        description: 'Build iOS IPA'
+        type: boolean
+        default: true
+      sign_android:
+        description: 'Sign Android APK'
+        type: boolean
+        default: false
+      sign_ios:
+        description: 'Sign iOS IPA'
+        type: boolean
+        default: false
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.build_android || inputs.build_ios }}
+    steps:
+      - name: 🧹 • Clean Environment
+        run: |
+          rm -rf node_modules
+          rm -rf ~/Library/Developer/Xcode/DerivedData
+          rm -rf $HOME/.gradle/caches/
+
+  # ===== ANDROID BUILD =====
+  build_android:
+    needs: clean
+    runs-on: ubuntu-latest
+    if: ${{ inputs.build_android }}
+    steps:
+      - uses: actions/checkout@v4
+     
+      - name: 📀 • Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: ☕ • Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          
+      - name: 🗂️ • Install Node Dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: 🔨 • Prebuild Android
+        run: npx expo prebuild -p android --clean
+
+      - name: 🏗️ • Build Android
+        run: |
+          cd android
+          ./gradlew assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Papillon-unsigned.apk
+
+      - name: 🌍 • Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-unsigned
+          path: android/app/build/outputs/apk/release/Papillon-unsigned.apk
+          if-no-files-found: error
+
+  # ===== ANDROID SIGNING =====
+  sign_android:
+    needs: build_android
+    runs-on: ubuntu-latest
+    if: ${{ inputs.sign_android && inputs.build_android }}
+    steps:
+      - name: 🔍 • Check Android Signing Secrets
+        id: check_secrets
+        run: |
+          if [[ -z "${{ secrets.ANDROID_KEYSTORE }}" || \
+                -z "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" || \
+                -z "${{ secrets.ANDROID_KEY_PASSWORD }}" || \
+                -z "${{ secrets.ANDROID_KEY_ALIAS }}" ]]; then
+            echo "❌ Missing Android signing secrets."
+            echo "secrets_available=false" >> $GITHUB_OUTPUT
+            echo "## ⚠️ Android Signing Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Missing required secrets for Android signing." >> $GITHUB_STEP_SUMMARY
+            echo "**Required:** ANDROID_KEYSTORE, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_PASSWORD, ANDROID_KEY_ALIAS" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ Android signing secrets are available."
+            echo "secrets_available=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ☕ • Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 📥 • Download Unsigned APK
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk-unsigned
+          path: ./
+
+      - name: 🔐 • Setup Android Signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > release.keystore
+
+      - name: ✍️ • Sign Android APK
+        run: |
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)/apksigner sign \
+            --ks release.keystore \
+            --ks-key-alias "${{ secrets.ANDROID_KEY_ALIAS }}" \
+            --ks-pass pass:"${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            --key-pass pass:"${{ secrets.ANDROID_KEY_PASSWORD }}" \
+            --out Papillon-signed.apk \
+            Papillon-unsigned.apk
+          
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)/apksigner verify \
+            Papillon-signed.apk
+
+      - name: 🌍 • Upload Signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-signed
+          path: Papillon-signed.apk
+          if-no-files-found: error
+
+  # ===== iOS BUILD =====
+  build_ios:
+    needs: clean
+    runs-on: macos-latest
+    if: ${{ inputs.build_ios }}
+    steps:
+      - uses: actions/checkout@v4
+     
+      - name: 📀 • Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: 🗂️ • Install Node Dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: 🔨 • Prebuild iOS
+        run: npx expo prebuild -p ios --clean
+
+      - name: 🏗️ • Build iOS
+        run: |
+          cd ios
+          xcodebuild -workspace Papillon.xcworkspace \
+                     -scheme Papillon \
+                     -configuration Release \
+                     -destination generic/platform=iOS \
+                     -derivedDataPath ./build \
+                     IPHONEOS_DEPLOYMENT_TARGET=15.1 \
+                     CODE_SIGN_STYLE=Manual \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGN_IDENTITY="" \
+                     ENABLE_USER_SCRIPT_SANDBOXING=NO
+
+      - name: 📦 • Bundle IPA
+        run: |
+          cd ios
+          mkdir -p build
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/Papillon.app Payload/
+          zip -r Papillon-unsigned.ipa Payload
+          mv Papillon-unsigned.ipa build/Papillon-unsigned.ipa
+          rm -rf Payload
+
+      - name: 🌍 • Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app-unsigned
+          path: ios/build/Papillon-unsigned.ipa
+          if-no-files-found: error
+
+  # ===== iOS SIGNING =====
+  sign_ios:
+    needs: build_ios
+    runs-on: macos-latest
+    if: ${{ inputs.sign_ios && inputs.build_ios }}
+    steps:
+      - name: 🔍 • Check iOS Signing Secrets
+        id: check_secrets
+        run: |
+          if [[ -z "${{ secrets.IOS_CERTIFICATE_P12 }}" || \
+                -z "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" ]]; then
+            echo "❌ Missing iOS signing secrets."
+            echo "secrets_available=false" >> $GITHUB_OUTPUT
+            echo "## ⚠️ iOS Signing Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Missing required secrets for iOS signing." >> $GITHUB_STEP_SUMMARY
+            echo "**Required:** IOS_CERTIFICATE_P12, IOS_CERTIFICATE_PASSWORD" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ iOS signing secrets are available."
+            echo "secrets_available=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📥 • Download Unsigned IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-app-unsigned
+          path: ./
+
+      - name: 🔐 • Setup iOS Signing
+        run: |
+          echo "${{ secrets.IOS_CERTIFICATE_P12 }}" | base64 --decode > certificate.p12
+          
+          KEYCHAIN_PASSWORD="temp-build-$(date +%s)"
+          
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          
+          security import certificate.p12 -k build.keychain -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
+      - name: ✍️ • Sign iOS IPA
+        run: |
+          mkdir -p TempPayload
+          cd TempPayload
+          unzip -q ../Papillon-unsigned.ipa
+          
+          echo "🔍 Auto-detecting signing identity..."
+          SIGN_IDENTITY=$(security find-identity -v -p codesigning build.keychain | grep -o '"[^"]*"' | head -1 | tr -d '"')
+          
+          echo "✍️ Signing with development certificate..."
+          codesign --force --sign "$SIGN_IDENTITY" \
+                   --timestamp \
+                   Payload/Papillon.app
+          
+          echo "🔍 Verifying signature..."
+          codesign --verify --verbose Payload/Papillon.app
+          
+          zip -r ../Papillon-signed.ipa Payload
+          cd ..
+          rm -rf TempPayload
+
+      - name: 🌍 • Upload Signed IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app-signed
+          path: Papillon-signed.ipa
+          if-no-files-found: error
+
+  # ===== SUMMARY =====
+  summary:
+    needs: [build_android, build_ios, sign_android, sign_ios]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: 📋 • Build Summary
+        run: |
+          echo "## Build Summary 📱" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ inputs.build_android }}" == "true" ]; then
+            if [ "${{ needs.build_android.result }}" == "success" ]; then
+              echo "✅ **Android APK**: Built successfully" >> $GITHUB_STEP_SUMMARY
+              echo "   - 📦 Unsigned APK: ✅ Success" >> $GITHUB_STEP_SUMMARY
+              if [ "${{ inputs.sign_android }}" == "true" ]; then
+                if [ "${{ needs.sign_android.result }}" == "success" ]; then
+                  echo "   - ✍️ Signed APK: ✅ Success" >> $GITHUB_STEP_SUMMARY
+                elif [ "${{ needs.sign_android.result }}" == "failure" ]; then
+                  echo "   - ✍️ Signed APK: ❌ Failed (missing secrets or error)" >> $GITHUB_STEP_SUMMARY
+                else
+                  echo "   - ✍️ Signed APK: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
+                fi
+              fi
+            else
+              echo "❌ **Android APK**: Build failed" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⏭️ **Android APK**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ inputs.build_ios }}" == "true" ]; then
+            if [ "${{ needs.build_ios.result }}" == "success" ]; then
+              echo "✅ **iOS IPA**: Built successfully" >> $GITHUB_STEP_SUMMARY
+              echo "   - 📦 Unsigned IPA: ✅ Success" >> $GITHUB_STEP_SUMMARY
+              if [ "${{ inputs.sign_ios }}" == "true" ]; then
+                if [ "${{ needs.sign_ios.result }}" == "success" ]; then
+                  echo "   - ✍️ Signed IPA: ✅ Success" >> $GITHUB_STEP_SUMMARY
+                elif [ "${{ needs.sign_ios.result }}" == "failure" ]; then
+                  echo "   - ✍️ Signed IPA: ❌ Failed (missing secrets or error)" >> $GITHUB_STEP_SUMMARY
+                else
+                  echo "   - ✍️ Signed IPA: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
+                fi
+              fi
+            else
+              echo "❌ **iOS IPA**: Build failed" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⏭️ **iOS IPA**: Skipped" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
