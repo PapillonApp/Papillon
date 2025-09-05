@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
+import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
 
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
@@ -112,6 +112,7 @@ export interface TypographyProps extends TextProps {
   weight?: keyof typeof WEIGHT_STYLES;
   skeleton?: boolean;
   skeletonLines?: number;
+  skeletonWidth?: DimensionValue;
 }
 
 // Cache for computed color styles per theme
@@ -146,6 +147,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
     style,
     skeleton = false,
     skeletonLines = 1,
+    skeletonWidth,
     ...rest
   }) => {
     const { colors } = useTheme();
@@ -179,6 +181,19 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return (flattenedStyle.lineHeight || VARIANTS[variant].lineHeight) - (getFontSize() || 16);
     }
 
+    const calculateSkeletonWidth = (index: number) => {
+      if (typeof skeletonWidth === "number") {
+        return (skeletonWidth as number) * (1 - (index / 5));
+      } else if (typeof skeletonWidth === "string" && skeletonWidth.endsWith("%")) {
+        const percentage = parseFloat(skeletonWidth) / 100;
+        return `${percentage * (1 - (index / 5)) * 100}%`;
+      }
+      if (typeof rest.children === "string") {
+        return `${(rest.children.length * 2) * (1 - (index / 5))}%`;
+      }
+      return "100%";
+    }
+
     if (skeleton)
       return (
         <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
@@ -186,7 +201,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
             <SkeletonView
               key={index}
               style={{
-                width: `${(((rest.children) as string).length * 2) * (1 - (index / 5))}%`,
+                width: calculateSkeletonWidth(index),
                 minWidth: 50,
                 height: getFontSize() || 16,
                 borderRadius: 4,
