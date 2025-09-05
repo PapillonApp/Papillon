@@ -1,9 +1,0 @@
-services/* @raphckrman
-database/* @raphckrman
-stores/* @raphckrman
-.github/* @raphckrman
-
-utils/magic/* @tryon-dev
-
-ui/* @ecnivtwelve
-ui/components/Pattern/* @godetremy
