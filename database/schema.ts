@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 25,
+  version: 29,
   tables: [
     tableSchema({
       name: 'events',
@@ -58,7 +58,7 @@ export const mySchema = appSchema({
     tableSchema({
       name: 'news',
       columns: [
-        { name: 'newsId', type: 'string', isIndexed: true },
+        { name: 'newsId', type: 'string' },
         { name: 'title', type: 'string' },
         { name: 'createdAt', type: 'number' },
         { name: 'acknowledged', type: 'boolean' },

@@ -39,11 +39,15 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
 import { Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTimetable } from "@/database/useTimetable";
 
 export default function TabOneScreen() {
+  const now = new Date();
+  const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
 
   const [courses, setCourses] = useState<SharedCourse[]>([]);
+  const weeklyTimetable = useTimetable(undefined, weekNumber);
   const [grades, setGrades] = useState<Grade[]>([]);
 
   const insets = useSafeAreaInsets();
@@ -70,18 +74,12 @@ export default function TabOneScreen() {
     Initialize();
   }, []);
 
+
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
-    if (!manager) {
-      warn('Manager is null, skipping EDT fetch');
-      return;
-    }
     const date = new Date();
-    date.setUTCHours(0, 0, 0, 0);
-    const currentWeekNumber = getWeekNumberFromDate(date)
-    const weeklyTimetable = await manager.getWeeklyTimetable(currentWeekNumber)
-    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? []
-    return setCourses(dayCourse.filter(courses => courses.from.getTime() > date.getTime()))
+    const weekNumber = getWeekNumberFromDate(date)
+    await manager.getWeeklyTimetable(weekNumber)
   }, []);
 
   const fetchGrades = useCallback(async () => {
@@ -111,6 +109,13 @@ export default function TabOneScreen() {
 
     setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
+
+  useEffect(() => {
+    date.setUTCHours(0, 0, 0, 0);
+
+    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
+    setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+  }, [weeklyTimetable]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {

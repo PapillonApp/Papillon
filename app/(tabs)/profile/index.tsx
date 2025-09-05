@@ -36,6 +36,7 @@ import { warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
 import { Avatar } from "@/app/(features)/(news)/news";
 import { Capabilities } from "@/services/shared/types";
+import { useNews } from "@/database/useNews";
 
 
 function Tabs() {
@@ -118,8 +119,6 @@ function Tabs() {
     <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
       {enabledTabs.map((tab, index) => (
         <AnimatedPressable
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
           key={"tab_profile:" + index + ":" + tab.unread}
           style={{ flex: 1 }}
           disabled={tab.disabled}
@@ -153,8 +152,7 @@ function Tabs() {
 function NewsSection() {
   const theme = useTheme();
 
-  const [news, setNews] = useState<News[]>([]);
-  const [loading, setLoading] = useState(true);
+  const news = useNews();
 
   const fetchNews = useCallback(() => {
     try {
@@ -163,14 +161,7 @@ function NewsSection() {
         warn('Manager is null, skipping news fetch');
         return;
       }
-      manager.getNews().then((fetchedNews) => {
-        setNews(
-          fetchedNews
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            .splice(0, 2)
-        );
-        setLoading(false);
-      });
+      manager.getNews();
     } catch (error) {
       console.error("Error fetching news:", error);
     }
@@ -184,7 +175,7 @@ function NewsSection() {
     return () => unsubscribe();
   }, []);
 
-  if (news.length === 0 && !loading) {
+  if (news.length === 0) {
     return null;
   }
 
@@ -274,16 +265,6 @@ function NewsSection() {
               </Typography>
             </Item>
           ))}
-          {loading && (
-            <Item>
-              <Leading>
-                <ActivityIndicator />
-              </Leading>
-              <Typography variant="title" color="text">
-                {t("Profile_News_Loading_Title")}
-              </Typography>
-            </Item>
-          )}
         </List>
       </Reanimated.View>
     </>
