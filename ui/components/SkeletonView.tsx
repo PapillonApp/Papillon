@@ -4,7 +4,8 @@ import { useTheme } from "@react-navigation/native";
 import { useEffect, useMemo } from "react";
 import LinearGradient from "react-native-linear-gradient";
 
-export interface SkeletonViewProps extends ViewProps {}
+export interface SkeletonViewProps extends ViewProps {
+}
 
 const SkeletonView = (props: SkeletonViewProps) => {
   const { colors } = useTheme();
@@ -20,7 +21,7 @@ const SkeletonView = (props: SkeletonViewProps) => {
         easing: Easing.linear,
       }),
       -1,
-      false
+      false,
     );
   }, []);
 
@@ -35,11 +36,11 @@ const SkeletonView = (props: SkeletonViewProps) => {
 
   const AnimatedLinearGradient = useMemo(
     () => Reanimated.createAnimatedComponent(LinearGradient),
-    []
+    [],
   );
 
 
-  return useMemo(() => (
+  return (
     <View
       {...props}
       style={[{
@@ -54,7 +55,7 @@ const SkeletonView = (props: SkeletonViewProps) => {
         style={skeletonTranslation}
       />
     </View>
-  ), []);
-}
+  );
+};
 
 export default SkeletonView;
