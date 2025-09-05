@@ -20,6 +20,8 @@ import { t } from "i18next";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
+import { fetchARDHistory } from "@/services/ard/history";
+import { detectMealPrice } from "@/utils/restaurant/detect-price";
 
 const ANIMATION_DURATION = 100;
 
@@ -66,6 +68,10 @@ export default function TurboSelfLoginWithCredentials() {
       const authentification = await authenticator.fromCredentials(siteId, username, password);
       const accountId = uuid();
       const store = useAccountStore.getState();
+
+      const history = await fetchARDHistory(authentification, "")
+      const mealPrice = detectMealPrice(history)
+
       const service = {
         id: accountId,
         auth: {
@@ -73,6 +79,7 @@ export default function TurboSelfLoginWithCredentials() {
             schoolId: siteId,
             password,
             username,
+            mealPrice: String(mealPrice)
           },
         },
         serviceId: Services.ARD,
@@ -184,7 +191,7 @@ export default function TurboSelfLoginWithCredentials() {
         </Reanimated.View>
       </View>
       <Stack padding={20}
-             gap={10}
+        gap={10}
       >
         <OnboardingInput
           icon={"Link"}
