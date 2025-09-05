@@ -20,7 +20,7 @@
 # Capture(s) d'écran
 
 > [!NOTE]
-> Uniquement si tes changements concernent l'interface utilisateur, inclue des captures d'écran pour illustrer tes modifications.
+> Si tes changements concernent l'interface utilisateur, inclue des captures d'écran pour illustrer tes modifications.
 
 # Informations supplémentaires
 > [!NOTE]
