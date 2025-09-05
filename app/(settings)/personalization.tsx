@@ -1,4 +1,4 @@
-import { Alert, ScrollView } from "react-native";
+import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
 import React from "react";
 import List from "@/ui/components/List";
@@ -16,6 +16,7 @@ import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
 import { t } from "i18next";
 import { router } from "expo-router";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 
 const PersonalizationSettings = () => {
@@ -25,10 +26,11 @@ const PersonalizationSettings = () => {
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  // Trouve la couleur par défaut à partir de l'enum stocké
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
   const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
+
+  const height = useHeaderHeight()
 
   return (
     <>
@@ -46,7 +48,7 @@ const PersonalizationSettings = () => {
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
-        style={{ flex: 1 }}
+        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
       >
         <Stack direction="horizontal"
           gap={10}
