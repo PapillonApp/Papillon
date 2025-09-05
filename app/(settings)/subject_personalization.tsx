@@ -1,16 +1,17 @@
-import Typography from "@/ui/components/Typography";
-import List from "@/ui/components/List";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import { ScrollView, View } from "react-native";
-import Stack from "@/ui/components/Stack";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useTheme } from "@react-navigation/native";
 import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useAccountStore } from "@/stores/account";
-import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { ScrollView, View } from "react-native";
+
+import { useAccountStore } from "@/stores/account";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading, Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 const SubjectPersonalization = () => {
   const { colors } = useTheme();
@@ -25,67 +26,69 @@ const SubjectPersonalization = () => {
   })).filter(item => item.name && item.emoji && item.color);
 
   function renderItem(emoji: string, name: string, id: string, color: string) {
-    return (<Item>
-      <Leading>
-        <Stack
-          backgroundColor={color + "20"}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 40,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Typography
+    return (
+      <Item>
+        <Leading>
+          <Stack
+            backgroundColor={color + "20"}
             style={{
-              fontSize: 25,
-              lineHeight: 32,
+              width: 40,
+              height: 40,
+              borderRadius: 40,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {emoji}
-          </Typography>
-        </Stack>
-      </Leading>
-      <Typography variant={"title"}>
-        {name}
-      </Typography>
-      <Trailing>
-        <AnimatedPressable
-          onPress={() => {
-            router.push({
-              pathname: "/(settings)/edit_subject",
-              params: {
-                id,
-                emoji,
-                color,
-                name
-              }
-            })
-          }}
-          style={{
-            borderRadius: 20,
-            overflow: "hidden",
-            borderWidth: 1,
-            borderColor: colors.border,
-            paddingHorizontal: 8,
-            paddingRight: 10,
-            height: 35,
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "row",
-            gap: 5,
-          }}
-        >
-          <Papicons name={"PenAlt"} color={colors.text + "7F"} />
-          <Typography
-            color={"secondary"}
+            <Typography
+              style={{
+                fontSize: 25,
+                lineHeight: 32,
+              }}
+            >
+              {emoji}
+            </Typography>
+          </Stack>
+        </Leading>
+        <Typography variant={"title"}>
+          {name}
+        </Typography>
+        <Trailing>
+          <AnimatedPressable
+            onPress={() => {
+              router.push({
+                pathname: "/(settings)/edit_subject",
+                params: {
+                  id,
+                  emoji,
+                  color,
+                  name
+                }
+              })
+            }}
+            style={{
+              borderRadius: 20,
+              overflow: "hidden",
+              borderWidth: 1,
+              borderColor: colors.border,
+              paddingHorizontal: 8,
+              paddingRight: 10,
+              height: 35,
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              gap: 5,
+            }}
           >
-            Modifier
-          </Typography>
-        </AnimatedPressable>
-      </Trailing>
-    </Item>)
+            <Papicons name={"PenAlt"} color={colors.text + "7F"} />
+            <Typography
+              color={"secondary"}
+            >
+              Modifier
+            </Typography>
+          </AnimatedPressable>
+        </Trailing>
+      </Item>
+    )
   }
 
   const { t } = useTranslation();

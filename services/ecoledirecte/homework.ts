@@ -1,5 +1,7 @@
 import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
 
+import { warn } from "@/utils/logger/logger";
+
 import { Attachment, AttachmentType } from "../shared/attachment";
 import { Homework } from "../shared/homework";
 
@@ -9,25 +11,30 @@ export async function fetchEDHomeworks(
   accountId: string,
   weekNumber: number
 ): Promise<Homework[]> {
-  const weekdays = weekNumberToDaysList(weekNumber);
-  const allHomeworks = await Promise.all(
-    weekdays.map(day =>
-      studentHomeworks(session, account, day.toISOString().split("T")[0]).then(res =>
-        res.homeworks.map(hw => ({
-          id: String(hw.id),
-          subject: hw.subject,
-          content: hw.content,
-          dueDate: day,
-          isDone: hw.done,
-          attachments: mapEDAttachments(hw.attachments, accountId),
-          evaluation: hw.exam,
-          custom: false,
-          createdByAccount: accountId
-        }))
+  try {
+    const weekdays = weekNumberToDaysList(weekNumber);
+    const allHomeworks = await Promise.all(
+      weekdays.map(day =>
+        studentHomeworks(session, account, day.toISOString().split("T")[0]).then(res =>
+          res.homeworks.map(hw => ({
+            id: String(hw.id),
+            subject: hw.subject,
+            content: hw.content,
+            dueDate: day,
+            isDone: hw.done,
+            attachments: mapEDAttachments(hw.attachments, accountId),
+            evaluation: hw.exam,
+            custom: false,
+            createdByAccount: accountId
+          }))
+        )
       )
-    )
-  );
-  return allHomeworks.flat();
+    );
+    return allHomeworks.flat();
+  } catch (error) {
+    warn(String(error))
+    return []
+  }
 }
 
 function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
