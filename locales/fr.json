@@ -105,9 +105,9 @@
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
   "Home_Welcome": "Bonjour !",
-  "Home_Planned_None": "Tu n'as aucun cours de prévu aujourd'hui",
+  "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
-  "Home_Planned_Number": "Tu as {{number}} cours prévus aujourd'hui",
+  "Home_Planned_Number": "Tu as {{number}} cours restants aujourd'hui",
 
   "Home_Widget_NextCourses": "Prochains cours",
   "Home_Widget_NewGrades": "Nouvelles notes",
