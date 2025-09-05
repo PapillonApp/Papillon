@@ -119,10 +119,10 @@ export default function TabOneScreen() {
 
   const currentDate = new Date();
   const weekNumber = getDateWeek(currentDate);
-    // Réinitialise la semaine sélectionnée à la semaine actuelle à chaque affichage ou changement de date
-    useEffect(() => {
-      setSelectedWeek(weekNumber);
-    }, [weekNumber]);
+  // Réinitialise la semaine sélectionnée à la semaine actuelle à chaque affichage ou changement de date
+  useEffect(() => {
+    setSelectedWeek(weekNumber);
+  }, [weekNumber]);
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(weekNumber);
