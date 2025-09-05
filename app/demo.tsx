@@ -12,6 +12,10 @@ import Icon from "@/ui/components/Icon";
 import SkeletonView from "@/ui/components/SkeletonView";
 import Avatar from "@/ui/components/Avatar";
 import Stack from "@/ui/components/Stack";
+import Grade from "@/ui/components/Grade";
+import Subject from "@/ui/components/Subject";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import Task from "@/ui/components/Task";
 
 
 export default function TabOneScreen() {
@@ -222,7 +226,10 @@ export default function TabOneScreen() {
         end={1750129649}
         skeleton
       />
-      <Stack direction={"horizontal"} hAlign={"center"} gap={10}>
+      <Stack direction={"horizontal"}
+             hAlign={"center"}
+             gap={10}
+      >
         <Icon skeleton>
           <Papicons name={"Placeholder"} />
         </Icon>
@@ -232,6 +239,42 @@ export default function TabOneScreen() {
           <Papicons name={"Placeholder"} />
         </Icon>
       </Stack>
+      <Subject
+        emoji={"📐"}
+        name={"Mathématiques"}
+        color={"#0095D6"}
+        outOf={20}
+        average={12.5}
+        skeleton
+      />
+      <Grade title={"Hello"}
+             date={Date.now()}
+             score={15}
+             outOf={20}
+             skeleton
+             isLast={true}
+             isFirst={true}
+      />
+      <CompactGrade
+        color={"#0095D6"}
+        emoji={"📐"}
+        title={"Mathématiques"}
+        description={"Contrôle continu"}
+        score={14}
+        outOf={20}
+        date={new Date()}
+        skeleton
+      />
+      <Task
+        color={"#0095D6"}
+        emoji={"📝"}
+        subject={"Mathématiques"}
+        date={(new Date()).setDate((new Date()).getDate() + 9999999)}
+        progress={0.5}
+        title={"Do something"}
+        description={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+        magic={"Dans 2 jours"}
+      />
       <SectionTitle title={"Avatar"}
                     colors={colors}
       />
