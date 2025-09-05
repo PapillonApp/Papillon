@@ -101,7 +101,7 @@ export default function PronoteLoginWithCredentials() {
     if (!authentication) {
       return alert.showAlert({
         title: "Erreur d'authentification",
-        description: "Une erreur inattendue s'est produite. Réessaie.",
+        description: "Une erreur inattendue s'est produite. Réessaie plus tard.",
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true
