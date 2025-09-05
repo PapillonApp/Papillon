@@ -33,7 +33,7 @@ export class ARD implements SchoolServicePlugin {
 
   async getCanteenBalances(): Promise<Balance[]> {
     if (this.session) {
-      return fetchArdBalance(this.session, this.accountId);
+      return fetchArdBalance(this.session, this.accountId, this.authData);
     }
 		
     error("Session is not valid", "ARD.getCanteenBalances");
