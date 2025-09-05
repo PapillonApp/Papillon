@@ -1,8 +1,9 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
+import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
 
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import SkeletonView from "@/ui/components/SkeletonView";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
@@ -109,6 +110,9 @@ export interface TypographyProps extends TextProps {
   inline?: boolean;
   nowrap?: boolean;
   weight?: keyof typeof WEIGHT_STYLES;
+  skeleton?: boolean;
+  skeletonLines?: number;
+  skeletonWidth?: DimensionValue;
 }
 
 // Cache for computed color styles per theme
@@ -141,9 +145,73 @@ const Typography: React.FC<TypographyProps> = React.memo(
     nowrap = false,
     weight,
     style,
+    skeleton = false,
+    skeletonLines = 1,
+    skeletonWidth,
     ...rest
   }) => {
     const { colors } = useTheme();
+
+    const getStyle = (): TextStyle => {
+      return StyleSheet.flatten(style || {}) as TextStyle;
+    }
+
+    const getFlexAlignment = () => {
+      switch (align) {
+        case "left":
+          return "flex-start";
+        case "center":
+          return "center";
+        case "right":
+          return "flex-end";
+        case "justify":
+          return "stretch";
+        default:
+          return "flex-start";
+      }
+    }
+
+    const getFontSize = () => {
+      const flattenedStyle = getStyle();
+      return flattenedStyle.fontSize || VARIANTS[variant].fontSize;
+    }
+
+    const getLineHeight = () => {
+      const flattenedStyle = getStyle();
+      return (flattenedStyle.lineHeight || VARIANTS[variant].lineHeight) - (getFontSize() || 16);
+    }
+
+    const calculateSkeletonWidth = (index: number) => {
+      if (typeof skeletonWidth === "number") {
+        return (skeletonWidth as number) * (1 - (index / 5));
+      } else if (typeof skeletonWidth === "string" && skeletonWidth.endsWith("%")) {
+        const percentage = parseFloat(skeletonWidth) / 100;
+        return `${percentage * (1 - (index / 5)) * 100}%`;
+      }
+      if (typeof rest.children === "string") {
+        return `${(rest.children.length * 2) * (1 - (index / 5))}%`;
+      }
+      return "100%";
+    }
+
+    if (skeleton)
+      return (
+        <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
+          {Array.from({ length: skeletonLines }).map((_, index) => (
+            <SkeletonView
+              key={index}
+              style={{
+                width: calculateSkeletonWidth(index),
+                minWidth: 50,
+                height: getFontSize() || 16,
+                borderRadius: 4,
+                marginTop: getLineHeight() / 2,
+                marginBottom: getLineHeight() / 2,
+              }}
+            />
+          ))}
+        </View>
+      );
 
     // Generate cache key for this specific combination
     const cacheKey = React.useMemo(() => {

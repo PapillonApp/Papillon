@@ -3,6 +3,7 @@ import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import AnimatedPressable from "./AnimatedPressable";
+import SkeletonView from "@/ui/components/SkeletonView";
 
 interface CompactGradeProps {
   emoji: string;
@@ -16,6 +17,7 @@ interface CompactGradeProps {
   onPress?: () => void,
   color?: string;
   variant?: "normal" | "home";
+  skeleton?: boolean;
 }
 
 export const CompactGrade = ({
@@ -29,7 +31,8 @@ export const CompactGrade = ({
   status,
   onPress,
   variant,
-  color = "#888888"
+  color = "#888888",
+  skeleton = false,
 }: CompactGradeProps) => {
   const { colors } = useTheme();
 
@@ -47,7 +50,7 @@ export const CompactGrade = ({
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 3,
-        backgroundColor: variant === "home" ? colors.card : color + "33",
+        backgroundColor: skeleton ? colors.text + "10" : (variant === "home" ? colors.card : color + "33"),
       }}
     >
       <View
@@ -70,17 +73,20 @@ export const CompactGrade = ({
             },
           ]}
         >
-          <Text>
-            {emoji}
-          </Text>
+          {skeleton ? (
+            <SkeletonView style={{ width: 25, height: 25, borderRadius: 100 }} />
+          ):(
+            <Text>{emoji}</Text>
+          )}
+
         </View>
         {title &&
-          <Typography variant="body1" color={variant === "home" ? colors.text : color} style={{ flex: 1 }} nowrap weight="semibold">
+          <Typography variant="body1" color={variant === "home" ? colors.text : color} style={{ flex: 1 }} nowrap weight="semibold" skeleton={skeleton} skeletonWidth={80}>
             {capitalizeWords(title)}
           </Typography>
         }
         {date &&
-          <Typography variant="body1" color={variant === "home" ? "secondary" : color} nowrap>
+          <Typography variant="body1" color={variant === "home" ? "secondary" : color} nowrap skeleton={skeleton}>
             {date.toLocaleDateString("fr-FR", {
               day: "2-digit",
               month: "short",
@@ -103,7 +109,7 @@ export const CompactGrade = ({
           alignItems: "flex-start",
         }}
       >
-        <Typography variant="body1" color="text" style={{ lineHeight: 20 }} numberOfLines={2}>
+        <Typography variant="body1" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
           {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
         <View style={{
@@ -115,14 +121,20 @@ export const CompactGrade = ({
           borderRadius: 120,
           paddingHorizontal: 7,
           paddingVertical: 3,
-          backgroundColor: color + "33",
+          backgroundColor: skeleton ? colors.text + "10" : color + "33",
         }}>
-          <Typography variant="h4" color={color}>
-            {disabled ? status : (score ?? 0).toFixed(2)}
-          </Typography>
-          <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
-            / {outOf ?? 20}
-          </Typography>
+          {skeleton ? (
+            <Typography skeleton variant={"h4"} skeletonWidth={20} style={{borderRadius: 100, overflow: "hidden"}}/>
+            ):(
+            <>
+              <Typography variant="h4" color={color}>
+                {disabled ? status : (score ?? 0).toFixed(2)}
+              </Typography>
+              <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
+                / {outOf ?? 20}
+              </Typography>
+            </>
+          )}
         </View>
       </View>
     </AnimatedPressable>

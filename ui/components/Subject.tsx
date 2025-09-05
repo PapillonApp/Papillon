@@ -5,6 +5,7 @@ import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Stack from "./Stack";
 import Typography from "./Typography";
+import SkeletonView from "@/ui/components/SkeletonView";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -16,6 +17,7 @@ export interface SubjectProps {
   disabled?: boolean;
   status?: string;
   outOf: number;
+  skeleton?: boolean;
 }
 
 const Subject: React.FC<SubjectProps> = ({
@@ -25,42 +27,51 @@ const Subject: React.FC<SubjectProps> = ({
   average,
   disabled = false,
   status,
-  outOf
+  outOf,
+  skeleton = false,
 }) => {
-  const theme = useTheme();
-  const { colors } = theme;
+  const { colors } = useTheme();
 
   return (
     <Reanimated.View
       layout={ListGradesLayoutTransition}
-      style={[styles.container, { backgroundColor: color + 33 }]}
+      style={[styles.container, { backgroundColor: skeleton ? colors.text + "10" : color + 33 }]}
     >
       <Stack direction="horizontal" hAlign="center" gap={12}>
-        <View style={[styles.emojiContainer, { backgroundColor: color + 50 }]}>
-          <Text style={styles.emoji}>
-            {emoji}
-          </Text>
-        </View>
-
-        <Typography nowrap variant="title" color={color} style={styles.flex1}>
+        {skeleton ? (
+          <SkeletonView style={styles.emojiContainer} />
+        ):(
+          <View style={[styles.emojiContainer, { backgroundColor: color + 50 }]}>
+            <Text style={styles.emoji}>
+              {emoji}
+            </Text>
+          </View>
+        )}
+        <Typography nowrap variant="title" color={color} style={styles.flex1} skeleton={skeleton} skeletonWidth={120}>
           {name}
         </Typography>
 
         <Stack
           direction="horizontal"
-          backgroundColor={colors.card}
+          backgroundColor={skeleton ? colors.text + "05" : color + "25"}
           inline
           radius={120}
           gap={1}
           hAlign="end"
           style={styles.gradeContainer}
         >
-          <Typography variant="body1" weight="bold" color={color}>
-            {disabled ? status : (average ?? 0).toFixed(2)}
-          </Typography>
-          <Typography variant="caption" weight="semibold" color="secondary" style={{ fontSize: 13, opacity: 0.8 }}>
-            {`/${outOf}`}
-          </Typography>
+          {skeleton ? (
+            <Typography skeleton />
+          ) : (
+            <>
+              <Typography variant="body1" weight="bold" color={color}>
+                {disabled ? status : (average ?? 0).toFixed(2)}
+              </Typography>
+              <Typography variant="caption" weight="semibold" color={color + "DF"} style={{ fontSize: 13, opacity: 0.8 }}>
+                {`/${outOf}`}
+              </Typography>
+            </>
+          )}
         </Stack>
       </Stack>
     </Reanimated.View>

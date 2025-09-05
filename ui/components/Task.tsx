@@ -13,6 +13,9 @@ import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } 
 import { Dynamic } from './Dynamic';
 import Stack from './Stack';
 import Typography from './Typography';
+import Icon from "@/ui/components/Icon";
+import SkeletonView from "@/ui/components/SkeletonView";
+import { Papicons } from "@getpapillon/papicons";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -29,6 +32,7 @@ interface TaskProps {
   magic?: string; // For future use, if needed
   onPress?: () => void;
   onProgressChange?: (progress: number) => void;
+  skeleton?: boolean;
 }
 
 const Task: React.FC<TaskProps> = ({
@@ -44,6 +48,7 @@ const Task: React.FC<TaskProps> = ({
   magic,
   onPress = () => { },
   onProgressChange = () => { },
+  skeleton = false,
 }) => {
   const theme = useTheme();
   const { colors } = theme;
@@ -96,7 +101,6 @@ const Task: React.FC<TaskProps> = ({
         { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
         { translateY: withSpring(isHovered ? -4 : isPressed ? -2 : 0) },
       ],
-      boxShadow: isPressed ? '0px 2px 10px rgba(0, 0, 0, 0.24)' : '0px 0px 3px rgba(0, 0, 0, 0.22)',
       borderColor: completed ? color + "88" : isPressed ? colors.text + '40' : colors.text + '22',
     };
   }, [isPressed, colors.text]);
@@ -115,11 +119,11 @@ const Task: React.FC<TaskProps> = ({
             left: 0,
             width: "100%",
             height: 38 + 20,
-            backgroundColor: color + "33",
+            backgroundColor: skeleton ? colors.text + "10" : color + "33",
             zIndex: -1,
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
-            borderColor: color + "42",
+            borderColor: skeleton ? colors.border : color + "33",
             borderWidth: 1,
           }}
           layout={Animation(LinearTransition, "list")}
@@ -135,8 +139,10 @@ const Task: React.FC<TaskProps> = ({
               gap: 8,
             }}
           >
-            <Sparkle fill={color} stroke={color} strokeWidth={2} size={14} />
-            <Typography color={color} weight='semibold'>
+            <Icon size={14} skeleton={skeleton}>
+              <Sparkle fill={color} stroke={color} strokeWidth={2}  />
+            </Icon>
+            <Typography color={color} weight='semibold' skeleton={skeleton} skeletonWidth={200}>
               {magic}
             </Typography>
           </Reanimated.View>
@@ -162,19 +168,25 @@ const Task: React.FC<TaskProps> = ({
         <LayoutAnimationConfig skipEntering skipExiting>
           <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={{ marginBottom: 10 }}>
             {emoji && (
-              <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>
-                <Text style={{ fontSize: 12 }}>
-                  {emoji}
-                </Text>
-              </Stack>
+              <>
+                {skeleton ? (
+                  <SkeletonView style={{width: 26, height: 26, borderRadius: 80 }}/>
+                ):(
+                  <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>
+                    <Text style={{ fontSize: 12 }}>
+                      {emoji}
+                    </Text>
+                  </Stack>
+                )}
+              </>
             )}
             {subject && (
-              <Typography variant='body1' weight='semibold' color={color} style={{ flex: 1 }}>
+              <Typography variant='body1' weight='semibold' color={color} style={{ flex: 1 }} skeleton={skeleton} skeletonWidth={150}>
                 {subject}
               </Typography>
             )}
             {currentDate && (
-              <Typography variant='body2' weight='medium' color="secondary">
+              <Typography variant='body2' weight='medium' color="secondary" skeleton={skeleton}>
                 {currentDate.toLocaleDateString('fr-FR', {
                   day: 'numeric',
                   month: 'short',
@@ -183,12 +195,12 @@ const Task: React.FC<TaskProps> = ({
             )}
           </Stack>
           {title && (
-            <Typography variant='h5' weight='bold' style={{ marginBottom: 4, lineHeight: 24 }}>
+            <Typography variant='h5' weight='bold' style={{ marginBottom: 4, lineHeight: 24 }} skeleton={skeleton} skeletonWidth={250}>
               {title}
             </Typography>
           )}
           {description && (
-            <Typography variant='body2' color='secondary' style={{ lineHeight: 20 }}>
+            <Typography variant='body2' color='secondary' style={{ lineHeight: 20 }} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
               {description}
             </Typography>
           )}
@@ -205,8 +217,9 @@ const Task: React.FC<TaskProps> = ({
                   onPress={toggleProgress}
                   layout={Animation(LinearTransition, "list")}
                   style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
+                  pointerEvents={skeleton ? "none":"auto"}
                 >
-                  {(notStarted || completed) && (
+                  {(notStarted || completed) && !skeleton && (
                     <Dynamic
                       animated
                       layout={Animation(LinearTransition, "list")}
@@ -222,7 +235,7 @@ const Task: React.FC<TaskProps> = ({
                     </Dynamic>
                   )}
 
-                  {!notStarted && !completed && (
+                  {!notStarted && !completed && !skeleton && (
                     <Dynamic animated>
                       <Reanimated.View
                         layout={Animation(LinearTransition, "list")}
@@ -240,13 +253,13 @@ const Task: React.FC<TaskProps> = ({
 
                   <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
                     {!notStarted && !completed && (
-                      <Typography variant='body2'>
+                      <Typography variant='body2' skeleton={skeleton} skeletonWidth={80}>
                         {Math.ceil(currentProgress * 100)}%
                       </Typography>
                     )}
 
                     {(notStarted || completed) && (
-                      <Typography variant='body2' color={!notStarted ? color : 'secondary'}>
+                      <Typography variant='body2' color={!notStarted ? color : 'secondary'} skeleton={skeleton} skeletonWidth={80}>
                         {notStarted ? t('Task_Start') : t('Task_Complete')}
                       </Typography>
                     )}
@@ -259,12 +272,10 @@ const Task: React.FC<TaskProps> = ({
                   layout={Animation(LinearTransition, "list")}
                   style={[styles.chip, backgroundStyle]}
                 >
-                  <Calendar
-                    size={20}
-                    strokeWidth={2.5}
-                    color={colors.text}
-                  />
-                  <Typography variant='body2' color='text'>
+                  <Icon size={20} fill={colors.text} skeleton={skeleton}>
+                    <Papicons name={"Calendar"} />
+                  </Icon>
+                  <Typography variant='body2' color='text' skeleton={skeleton}>
                     {formatDistanceToNow(currentDate, {
                       addSuffix: true,
                       locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
@@ -296,7 +307,6 @@ const styles = StyleSheet.create({
     height: 42,
     paddingHorizontal: 12,
     borderWidth: 1,
-    boxShadow: '0px 0px 3px rgba(0, 0, 0, 0.22)',
     borderRadius: 160,
     borderCurve: 'continuous',
     flexDirection: 'row',

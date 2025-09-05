@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, Platform, Pressable, View } from "react-native";
+import { Image, Platform, Pressable, View } from "react-native";
 import {
   FadeInUp,
   FadeOutUp,
@@ -16,11 +16,10 @@ import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { Period } from "@/services/shared/grade";
-import { News } from "@/services/shared/news";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
-import Item, { Leading } from "@/ui/components/Item";
+import Item from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
@@ -34,9 +33,10 @@ import adjust from "@/utils/adjustColor";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
 import { useAccountStore } from "@/stores/account";
-import { Avatar } from "@/app/(features)/(news)/news";
 import { Capabilities } from "@/services/shared/types";
 import { useNews } from "@/database/useNews";
+import Avatar from "@/ui/components/Avatar";
+import { getInitials } from "@/utils/chats/initials";
 
 
 function Tabs() {
@@ -61,10 +61,10 @@ function Tabs() {
           params: {
             periods: JSON.stringify(attendancePeriods),
             currentPeriod: JSON.stringify(getCurrentPeriod(attendancePeriods)),
-            attendances: JSON.stringify(attendances)
-          }
-        })
-      }
+            attendances: JSON.stringify(attendances),
+          },
+        });
+      },
     },
     {
       icon: TextBubble,
@@ -73,7 +73,7 @@ function Tabs() {
       denominator: t("Profile_Discussions_Denominator_Single"),
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
-    }
+    },
   ], [attendances]);
 
   const theme = useTheme();
@@ -82,23 +82,23 @@ function Tabs() {
   const fetchAttendance = useCallback(async () => {
     const manager = getManager();
     if (!manager) {
-      warn('Manager is null, skipping attendance fetch');
+      warn("Manager is null, skipping attendance fetch");
       return;
     }
-    const availableClients = manager.getAvailableClients(Capabilities.ATTENDANCE)
-    setAvailableClientsAttendance(availableClients.length)
+    const availableClients = manager.getAvailableClients(Capabilities.ATTENDANCE);
+    setAvailableClientsAttendance(availableClients.length);
     const periods = await manager.getAttendancePeriods();
-    const currentPeriod = getCurrentPeriod(periods)
+    const currentPeriod = getCurrentPeriod(periods);
     const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
 
-    setAttendancePeriods(periods)
+    setAttendancePeriods(periods);
     setAttendances(attendances);
   }, []);
 
   const fetchDiscussions = useCallback(async () => {
     const manager = getManager();
     if (!manager) {
-      warn('Manager is null, skipping discussions fetch');
+      warn("Manager is null, skipping discussions fetch");
       return;
     }
     const chats = await manager.getChats();
@@ -116,7 +116,11 @@ function Tabs() {
   }, []);
 
   return (
-    <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
+    <Stack direction="horizontal"
+           hAlign="center"
+           vAlign="center"
+           gap={10}
+    >
       {enabledTabs.map((tab, index) => (
         <AnimatedPressable
           key={"tab_profile:" + index + ":" + tab.unread}
@@ -135,12 +139,24 @@ function Tabs() {
             radius={200}
             backgroundColor={tab.unread > 0 ? adjust(tab.color, theme.dark ? -0.85 : 0.85) : colors.card}
           >
-            <Icon papicon fill={tab.unread > 0 ? tab.color : colors.text}>
+            <Icon papicon
+                  fill={tab.unread > 0 ? tab.color : colors.text}
+            >
               <tab.icon />
             </Icon>
-            <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
-              <Typography inline variant="title" color={tab.unread > 0 ? tab.color : colors.text}>{tab.title}</Typography>
-              <Typography inline variant="caption" color={tab.unread > 0 ? tab.color : "secondary"}>{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
+            <Stack direction="vertical"
+                   hAlign="start"
+                   gap={2}
+                   style={{ marginBottom: -2 }}
+            >
+              <Typography inline
+                          variant="title"
+                          color={tab.unread > 0 ? tab.color : colors.text}
+              >{tab.title}</Typography>
+              <Typography inline
+                          variant="caption"
+                          color={tab.unread > 0 ? tab.color : "secondary"}
+              >{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
             </Stack>
           </Stack>
         </AnimatedPressable>
@@ -158,7 +174,7 @@ function NewsSection() {
     try {
       const manager = getManager();
       if (!manager) {
-        warn('Manager is null, skipping news fetch');
+        warn("Manager is null, skipping news fetch");
         return;
       }
       manager.getNews();
@@ -221,10 +237,11 @@ function NewsSection() {
             router.push({
               pathname: "/(features)/(news)/news",
               params: {
-                news: JSON.stringify(news)
-              }
-            })
-          }}>
+                news: JSON.stringify(news),
+              },
+            });
+          }}
+          >
             <Stack
               direction="horizontal"
               vAlign="center"
@@ -235,16 +252,24 @@ function NewsSection() {
               height={32}
               backgroundColor={"#7DBB0040"}
             >
-              <Typography style={{ marginBottom: -3 }} inline color={adjust("#7DBB00", -0.3)}>
+              <Typography style={{ marginBottom: -3 }}
+                          inline
+                          color={adjust("#7DBB00", -0.3)}
+              >
                 {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
               </Typography>
-              <Icon papicon size={20} fill={adjust("#7DBB00", -0.3)} >
+              <Icon papicon
+                    size={20}
+                    fill={adjust("#7DBB00", -0.3)}
+              >
                 <Papicons name={"ArrowRightUp"} />
               </Icon>
             </Stack>
           </Pressable>
         </Stack>
-        <List marginBottom={0} radius={24}>
+        <List marginBottom={0}
+              radius={24}
+        >
           {news.map((item, index) => (
             <Item
               key={index}
@@ -252,23 +277,27 @@ function NewsSection() {
                 router.push({
                   pathname: "/(features)/(news)/specific",
                   params: {
-                    news: JSON.stringify(item)
-                  }
-                })
+                    news: JSON.stringify(item),
+                  },
+                });
               }}
             >
-              <Typography variant="title" color="text">
+              <Typography variant="title"
+                          color="text"
+              >
                 {item.title}
               </Typography>
-              <Typography variant="caption" color="secondary">
-                {item.createdAt.toLocaleDateString()}  ·  {item.author}
+              <Typography variant="caption"
+                          color="secondary"
+              >
+                {item.createdAt.toLocaleDateString()} · {item.author}
               </Typography>
             </Item>
           ))}
         </List>
       </Reanimated.View>
     </>
-  )
+  );
 }
 
 function Cards() {
@@ -282,9 +311,18 @@ function Cards() {
       exiting={PapillonAppearOut}
     >
       <Pressable onPress={() => {
-        router.push("/(features)/(cards)/cards")
-      }}>
-        <Stack card height={84} direction="horizontal" vAlign="start" hAlign="center" gap={12} padding={18} radius={24}>
+        router.push("/(features)/(cards)/cards");
+      }}
+      >
+        <Stack card
+               height={84}
+               direction="horizontal"
+               vAlign="start"
+               hAlign="center"
+               gap={12}
+               padding={18}
+               radius={24}
+        >
           <Icon
             fill={colors.text}
             opacity={0.6}
@@ -293,7 +331,10 @@ function Cards() {
           >
             <Papicons name={"Card"} />
           </Icon>
-          <Typography variant="h5" color="text" style={{ opacity: 0.6 }}>
+          <Typography variant="h5"
+                      color="text"
+                      style={{ opacity: 0.6 }}
+          >
             {t("Profile_Cards_Title")}
           </Typography>
 
@@ -309,7 +350,7 @@ function Cards() {
             }}
           >
             <Image
-              source={require('@/assets/images/cartes.png')}
+              source={require("@/assets/images/cartes.png")}
               style={{
                 width: 140,
                 height: 120,
@@ -368,7 +409,7 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPress={() => {
-            router.push("/(tabs)/profile/custom")
+            router.push("/(tabs)/profile/custom");
           }}
         >
           <Icon size={28}>
@@ -376,7 +417,9 @@ export default function TabOneScreen() {
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>
-      <NativeHeaderTitle ignoreTouch key={`header-title:` + fullyScrolled}>
+      <NativeHeaderTitle ignoreTouch
+                         key={`header-title:` + fullyScrolled}
+      >
         <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
           <Dynamic
             animated={true}
@@ -387,9 +430,19 @@ export default function TabOneScreen() {
             }}
           >
             {fullyScrolled && (
-              <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 200, justifyContent: "center" }}>
+              <Dynamic animated
+                       style={{
+                         flexDirection: "row",
+                         alignItems: "center",
+                         gap: 4,
+                         width: 200,
+                         justifyContent: "center",
+                       }}
+              >
                 <Dynamic animated>
-                  <Typography inline variant="navigation">
+                  <Typography inline
+                              variant="navigation"
+                  >
                     {(firstName || lastName) ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
                   </Typography>
                 </Dynamic>
@@ -426,32 +479,59 @@ export default function TabOneScreen() {
         keyExtractor={(item) => item + "a"}
         header={
           <>
-            <Stack direction={"horizontal"} hAlign={"center"} style={{ padding: 20, paddingTop: 0 }}>
-              <Stack direction={"vertical"} hAlign={"center"} gap={10} style={{ flex: 1 }}>
-                {account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? (
-                  <Image
-                    source={
-                      { uri: `data:image/png;base64,${account.customisation.profilePicture}` }
-                    }
-                    style={{ width: 75, height: 75, borderRadius: 500 }}
-                  />
-                ) : (
-                  <Avatar size={75} variant="h3" author={`${account?.firstName} ${account?.lastName}`} />
-                )
-                }
-                <Typography variant={"h3"} color="text">
+            <Stack direction={"horizontal"}
+                   hAlign={"center"}
+                   style={{ padding: 20, paddingTop: 0 }}
+            >
+              <Stack direction={"vertical"}
+                     hAlign={"center"}
+                     gap={10}
+                     style={{ flex: 1 }}
+              >
+                <Avatar
+                  size={75}
+                  initials={ getInitials(`${account?.firstName} ${account?.lastName}`)}
+                  imageUrl={account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
+                />
+                <Typography variant={"h3"}
+                            color="text"
+                >
                   {firstName} {lastName}
                 </Typography>
-                <Stack direction={"horizontal"} hAlign={"center"} vAlign={"center"} gap={6}>
+                <Stack direction={"horizontal"}
+                       hAlign={"center"}
+                       vAlign={"center"}
+                       gap={6}
+                >
                   {level && (
-                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
-                      <Typography variant={"body1"} color="secondary">
+                    <Stack direction={"horizontal"}
+                           gap={8}
+                           hAlign={"center"}
+                           radius={100}
+                           backgroundColor={colors.background}
+                           inline
+                           padding={[12, 5]}
+                           card
+                           flat
+                    >
+                      <Typography variant={"body1"}
+                                  color="secondary"
+                      >
                         {level}
                       </Typography>
                     </Stack>
                   )}
                   {establishment && (
-                    <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 5]} card flat>
+                    <Stack direction={"horizontal"}
+                           gap={8}
+                           hAlign={"center"}
+                           radius={100}
+                           backgroundColor={colors.background}
+                           inline
+                           padding={[12, 5]}
+                           card
+                           flat
+                    >
                       <Typography
                         variant={"body1"}
                         color="secondary"
@@ -484,13 +564,13 @@ export default function TabOneScreen() {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === 'android' && {
+            Platform.OS === "android" && {
               elevation: 4,
             },
-            Platform.OS === 'ios' && {
+            Platform.OS === "ios" && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
-            }
+            },
           ]}
         />
       )}

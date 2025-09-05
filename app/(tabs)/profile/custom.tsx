@@ -1,4 +1,3 @@
-import { Avatar } from "@/app/(features)/(news)/news";
 import { useAccountStore } from "@/stores/account";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
@@ -17,6 +16,8 @@ import * as ImagePicker from "expo-image-picker"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { getInitials } from "@/utils/chats/initials";
+import Avatar from "@/ui/components/Avatar";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -72,9 +73,8 @@ export default function CustomProfileScreen() {
       <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
         <Avatar
           size={117}
-          variant="h1"
-          author={`${firstName} ${lastName}`}
-          imageURL={profilePictureUrl || undefined}
+          initials={getInitials(`${firstName} ${lastName}`)}
+          imageUrl={profilePictureUrl || undefined}
         />
 
         <MenuView

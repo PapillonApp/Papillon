@@ -5,7 +5,6 @@ import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Stack from "./Stack";
 import Typography from "./Typography";
-import AnimatedPressable from "./AnimatedPressable";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -21,20 +20,21 @@ export interface GradeProps {
   status?: string;
   color?: string; // Optional color prop for custom styling
   onPress?: () => void;
+  skeleton?: boolean;
 }
 
 const Grade: React.FC<GradeProps> = React.memo(
-  ({ isFirst, isLast, title, date, score, outOf, color, disabled, status, onPress }) => {
+  ({ isFirst, isLast, title, date, score, outOf, color, disabled, status, onPress, skeleton = false }) => {
     const theme = useTheme();
     const { colors } = theme;
 
     const formattedDate = useMemo(
-      () => new Date(date).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
+      () => new Date(date).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
       }),
-      [date]
+      [date],
     );
     const formattedScore = useMemo(() => score.toFixed(2), [score]);
 
@@ -70,7 +70,7 @@ const Grade: React.FC<GradeProps> = React.memo(
             flex: 1,
           },
         }),
-      [colors]
+      [colors],
     );
 
     const [isPressed, setIsPressed] = useState(false);
@@ -111,9 +111,21 @@ const Grade: React.FC<GradeProps> = React.memo(
               vAlign="center"
               style={styles.stackPadding}
             >
-              <Stack inline style={styles.flexContainer} gap={0}>
-                <Typography variant="title">{title}</Typography>
-                <Typography variant="body2" color="secondary" inline style={{ marginTop: 2, marginBottom: 2 }}>
+              <Stack inline
+                     style={styles.flexContainer}
+                     gap={0}
+              >
+                <Typography variant="title"
+                            skeleton={skeleton}
+                            skeletonWidth={150}
+                >{title}</Typography>
+                <Typography variant="body2"
+                            color="secondary"
+                            inline
+                            style={{ marginTop: skeleton ? 0 : 2, marginBottom: skeleton ? 0 : 2 }}
+                            skeleton={skeleton}
+                            skeletonWidth={100}
+                >
                   {formattedDate}
                 </Typography>
               </Stack>
@@ -131,17 +143,34 @@ const Grade: React.FC<GradeProps> = React.memo(
                   borderRadius: 20,
                 }}
               >
-                <Typography variant="h5" color={color}>{disabled ? status : formattedScore}</Typography>
-                <Typography variant="caption" color={color} style={{ marginBottom: 4 }}>
-                  /{outOf}
-                </Typography>
+                {skeleton ? (
+                  <Typography variant="h5"
+                              skeleton
+                  />
+                ) : (
+                  <>
+                    <Typography
+                      variant="h5"
+                      color={color}
+                    >
+                      {disabled ? status : formattedScore}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color={color}
+                      style={{ marginBottom: 4 }}
+                    >
+                      /{outOf}
+                    </Typography>
+                  </>
+                )}
               </Stack>
             </Stack>
           </Reanimated.View>
         </Pressable>
       </Reanimated.View>
     );
-  }
+  },
 );
 
 export default Grade;

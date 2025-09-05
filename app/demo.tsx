@@ -2,14 +2,20 @@ import { useTheme } from "@react-navigation/native";
 import { Hamburger } from "lucide-react-native";
 import React, { ScrollView, StyleSheet, View } from "react-native";
 
-import { Papicons } from "@getpapillon/papicons"
+import { Papicons } from "@getpapillon/papicons";
 import Course from "@/ui/components/Course";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { log } from "@/utils/logger/logger";
 import Icon from "@/ui/components/Icon";
-
+import SkeletonView from "@/ui/components/SkeletonView";
+import Avatar from "@/ui/components/Avatar";
+import Stack from "@/ui/components/Stack";
+import Grade from "@/ui/components/Grade";
+import Subject from "@/ui/components/Subject";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import Task from "@/ui/components/Task";
 
 
 export default function TabOneScreen() {
@@ -20,7 +26,9 @@ export default function TabOneScreen() {
       contentContainerStyle={styles.containerContent}
       style={styles.container}
     >
-      <SectionTitle title={"Typography"} colors={colors} />
+      <SectionTitle title={"Typography"}
+                    colors={colors}
+      />
       <View style={styles.typographyContainer}>
         <Typography variant="h1">
           Lorem ipsum
@@ -41,16 +49,26 @@ export default function TabOneScreen() {
           Lorem ipsum
         </Typography>
         <Typography variant="body1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus
+          purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at,
+          condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
         </Typography>
         <Typography variant="body2">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus
+          purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at,
+          condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
         </Typography>
-        <Typography variant="caption" color="secondary">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at, condimentum nibh.
+        <Typography variant="caption"
+                    color="secondary"
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus
+          purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at,
+          condimentum nibh.
         </Typography>
       </View>
-      <SectionTitle title={"Timetable"} colors={colors} />
+      <SectionTitle title={"Timetable"}
+                    colors={colors}
+      />
       <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
         <Course
           id="id1"
@@ -112,13 +130,18 @@ export default function TabOneScreen() {
           showTimes={false}
           magicInfo={{
             label: "Dans 20 minutes",
-            icon: ({ color }) => <Icon papicon size={24} fill={color}>
+            icon: ({ color }) => <Icon papicon
+                                       size={24}
+                                       fill={color}
+            >
               <Papicons name={"Clock"} />
             </Icon>,
           }}
         />
       </View>
-      <SectionTitle title={"List & Item"} colors={colors} />
+      <SectionTitle title={"List & Item"}
+                    colors={colors}
+      />
       <List>
         <Item>
           <Typography variant="body1">
@@ -137,21 +160,158 @@ export default function TabOneScreen() {
         </Item>
         <Item>
           <Leading>
-            <Hamburger size={24} color={colors.primary} />
+            <Hamburger size={24}
+                       color={colors.primary}
+            />
           </Leading>
-          <Typography variant="body1" color="primary">
+          <Typography variant="body1"
+                      color="primary"
+          >
             Item with Leading
           </Typography>
         </Item>
         <Item>
           <Trailing>
-            <Hamburger size={24} color={colors.primary} />
+            <Hamburger size={24}
+                       color={colors.primary}
+            />
           </Trailing>
-          <Typography variant="body1" color="primary">
+          <Typography variant="body1"
+                      color="primary"
+          >
             Item with Trailing
           </Typography>
         </Item>
       </List>
+      <SectionTitle title={"Skeleton"}
+                    colors={colors}
+      />
+      <SkeletonView style={{ width: 100, height: 20, borderRadius: 4 }} />
+      <Typography variant="h1"
+                  skeleton
+      >This is a skeleton text</Typography>
+      <Typography skeleton
+                  skeletonLines={2}
+      >This is a description with multiple lines</Typography>
+      <Course
+        id="id1"
+        name="Traitement des données"
+        teacher="Baptive V."
+        room="Bât. 12 amphi 4"
+        color="#0095D6"
+        status={{ label: "Travail dirigé", canceled: false }}
+        variant="primary"
+        start={1750126049}
+        end={1750129649}
+        magicInfo={{
+          label: "Dans 20 minutes",
+          icon: ({ color }) => <Icon papicon
+                                     size={24}
+                                     fill={color}
+          >
+            <Papicons name={"Clock"} />
+          </Icon>,
+        }}
+        skeleton
+      />
+      <Course
+        id="id1"
+        name="Traitement des données"
+        teacher="Baptive V."
+        room="Bât. 12 amphi 4"
+        color="#0095D6"
+        status={{ label: "Travail dirigé", canceled: false }}
+        variant="separator"
+        start={1750126049}
+        end={1750129649}
+        skeleton
+      />
+      <Stack direction={"horizontal"}
+             hAlign={"center"}
+             gap={10}
+      >
+        <Icon skeleton>
+          <Papicons name={"Placeholder"} />
+        </Icon>
+        <Icon skeleton
+              size={64}
+        >
+          <Papicons name={"Placeholder"} />
+        </Icon>
+      </Stack>
+      <Subject
+        emoji={"📐"}
+        name={"Mathématiques"}
+        color={"#0095D6"}
+        outOf={20}
+        average={12.5}
+        skeleton
+      />
+      <Grade title={"Hello"}
+             date={Date.now()}
+             score={15}
+             outOf={20}
+             skeleton
+             isLast={true}
+             isFirst={true}
+      />
+      <CompactGrade
+        color={"#0095D6"}
+        emoji={"📐"}
+        title={"Mathématiques"}
+        description={"Contrôle continu"}
+        score={14}
+        outOf={20}
+        date={new Date()}
+        skeleton
+      />
+      <Task
+        color={"#0095D6"}
+        emoji={"📝"}
+        subject={"Mathématiques"}
+        date={(new Date()).setDate((new Date()).getDate() + 9999999)}
+        progress={0.5}
+        title={"Do something"}
+        description={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+        magic={"Dans 2 jours"}
+        skeleton
+      />
+      <SectionTitle title={"Avatar"}
+                    colors={colors}
+      />
+      <Stack direction={"horizontal"}
+             gap={10}
+             hAlign="center"
+      >
+        <Avatar size={80} />
+        <Avatar size={64}
+                initials={"VL"}
+                color={"#009EC5"}
+        />
+        <Avatar size={40}
+                initials={"RG"}
+                color={"#DD0030"}
+                shape={"square"}
+        />
+        <Avatar size={40}
+                imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
+        />
+        <Avatar size={80}
+                shape={"square"}
+                imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
+        />
+      </Stack>
+      <Stack direction={"horizontal"}
+             gap={10}
+             hAlign="center"
+      >
+        <Avatar size={64}
+                imageUrl={"https://avatars.githubusercontent.com/u/-1"}
+        />
+        <Avatar size={64}
+                skeleton
+        />
+      </Stack>
     </ScrollView>
   );
 }
@@ -170,7 +330,9 @@ const SectionTitle = ({ title, colors }: SectionTitleProps) => (
       gap: 5,
     }}
   >
-    <Typography variant="h4" color="primary">
+    <Typography variant="h4"
+                color="primary"
+    >
       {title}
     </Typography>
     <View
