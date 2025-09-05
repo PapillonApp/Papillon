@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { View, ViewProps } from "react-native";
 
 import { LEADING_TYPE } from "./Item";
+import SkeletonView from "@/ui/components/SkeletonView";
 
 interface IconProps extends ViewProps {
   children?: React.ReactNode;
@@ -11,6 +12,7 @@ interface IconProps extends ViewProps {
   size?: number;
   papicon?: boolean;
   fill?: string;
+  skeleton?: boolean;
 }
 
 // Pre-computed frozen style objects for maximum performance
@@ -75,9 +77,19 @@ const Icon = React.memo<IconProps>(({
   size = 24,
   papicon,
   fill,
+  skeleton = false,
   ...rest
 }) => {
   const { colors } = useTheme();
+
+  if (skeleton)
+    return <SkeletonView
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size * 0.5,
+      }}
+    />
 
   // Ultra-fast memoization with optimized dependencies
   const { containerStyle, childColor, enhancedChildren } = useMemo(() => {
