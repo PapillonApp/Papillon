@@ -274,6 +274,7 @@ export default function TabOneScreen() {
         title={"Do something"}
         description={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
         magic={"Dans 2 jours"}
+        skeleton
       />
       <SectionTitle title={"Avatar"}
                     colors={colors}

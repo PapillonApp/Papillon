@@ -1,8 +1,8 @@
 import { Dimensions, View, ViewProps } from "react-native";
-import Reanimated, { Easing, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import LinearGradient from "react-native-linear-gradient";
 
 export interface SkeletonViewProps extends ViewProps {}
 
@@ -11,20 +11,35 @@ const SkeletonView = (props: SkeletonViewProps) => {
 
   const translationX = useSharedValue(-200);
 
+  const window_width = Dimensions.get("window").width;
+
   useEffect(() => {
     translationX.value = withRepeat(
-      withTiming(Dimensions.get("window").width + 200, {
-        duration: 1000,
+      withTiming(window_width, {
+        duration: 2000,
         easing: Easing.linear,
       }),
       -1,
       false
     );
-  }, [translationX]);
+  }, []);
 
-  const AnimatedLinearGradient = Reanimated.createAnimatedComponent(LinearGradient);
+  const skeletonTranslation = useAnimatedStyle(() => ({
+    position: "absolute",
+    top: 0,
+    left: -200,
+    bottom: 0,
+    width: 200,
+    transform: [{ translateX: translationX.value }],
+  }));
 
-  return (
+  const AnimatedLinearGradient = useMemo(
+    () => Reanimated.createAnimatedComponent(LinearGradient),
+    []
+  );
+
+
+  return useMemo(() => (
     <View
       {...props}
       style={[{
@@ -36,17 +51,10 @@ const SkeletonView = (props: SkeletonViewProps) => {
         colors={[colors.text + "00", colors.text + "10", colors.text + "00"]}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
-        style={{
-          position: "absolute",
-          top: -100,
-          left: -200,
-          bottom: 0,
-          width: 200,
-          transform: [{ translateX: translationX }],
-        }}
+        style={skeletonTranslation}
       />
     </View>
-  );
+  ), []);
 }
 
 export default SkeletonView;
