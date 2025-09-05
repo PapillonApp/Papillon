@@ -1,8 +1,0 @@
-{
-  "name": "papillon-ui",
-  "version": "0.1.0",
-  "description": "The official Papillon UI library",
-  "main": "./index.js",
-  "author": "PapillonApp",
-  "license": "GPL-3.0-or-later"
-}
