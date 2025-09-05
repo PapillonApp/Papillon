@@ -5,12 +5,11 @@ import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Platform, Pressable, View } from "react-native";
-import {
+import Reanimated, {
   FadeInUp,
   FadeOutUp,
   LinearTransition,
 } from "react-native-reanimated";
-import Reanimated from "react-native-reanimated";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
@@ -115,11 +114,15 @@ function Tabs() {
     return () => unsubscribe();
   }, []);
 
+  function getTabBackground(): number {
+    return theme.dark ? -0.85 : 0.85
+  }
+
   return (
     <Stack direction="horizontal"
-           hAlign="center"
-           vAlign="center"
-           gap={10}
+      hAlign="center"
+      vAlign="center"
+      gap={10}
     >
       {enabledTabs.map((tab, index) => (
         <AnimatedPressable
@@ -137,25 +140,25 @@ function Tabs() {
             padding={16}
             height={58}
             radius={200}
-            backgroundColor={tab.unread > 0 ? adjust(tab.color, theme.dark ? -0.85 : 0.85) : colors.card}
+            backgroundColor={tab.unread > 0 ? adjust(tab.color, getTabBackground()) : colors.card}
           >
             <Icon papicon
-                  fill={tab.unread > 0 ? tab.color : colors.text}
+              fill={tab.unread > 0 ? tab.color : colors.text}
             >
               <tab.icon />
             </Icon>
             <Stack direction="vertical"
-                   hAlign="start"
-                   gap={2}
-                   style={{ marginBottom: -2 }}
+              hAlign="start"
+              gap={2}
+              style={{ marginBottom: -2 }}
             >
               <Typography inline
-                          variant="title"
-                          color={tab.unread > 0 ? tab.color : colors.text}
+                variant="title"
+                color={tab.unread > 0 ? tab.color : colors.text}
               >{tab.title}</Typography>
               <Typography inline
-                          variant="caption"
-                          color={tab.unread > 0 ? tab.color : "secondary"}
+                variant="caption"
+                color={tab.unread > 0 ? tab.color : "secondary"}
               >{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
             </Stack>
           </Stack>
@@ -196,107 +199,105 @@ function NewsSection() {
   }
 
   return (
-    <>
-      <Reanimated.View
-        layout={Animation(LinearTransition, "list")}
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
+    <Reanimated.View
+      layout={Platform.OS === "android" ? undefined : Animation(LinearTransition, "list")}
+      entering={Platform.OS === "android" ? undefined : PapillonAppearIn}
+      exiting={Platform.OS === "android" ? undefined : PapillonAppearOut}
+    >
+      <Stack
+        direction="horizontal"
+        gap={12}
+        card
+        vAlign="start"
+        hAlign="center"
+        style={{
+          paddingHorizontal: 10,
+          paddingTop: 8,
+          paddingBottom: 8 + 38,
+          marginBottom: -38,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+        }}
+        backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
       >
-        <Stack
-          direction="horizontal"
-          gap={12}
-          card
-          vAlign="start"
-          hAlign="center"
-          style={{
-            paddingHorizontal: 10,
-            paddingTop: 8,
-            paddingBottom: 8 + 38,
-            marginBottom: -38,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-          }}
-          backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
+        <Icon
+          fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          size={24}
+          style={{ marginLeft: 8, marginRight: 0 }}
+          papicon
         >
-          <Icon
-            fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-            size={24}
-            style={{ marginLeft: 8, marginRight: 0 }}
-            papicon
+          <Papicons name={"Newspaper"} />
+        </Icon>
+        <Typography
+          color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          style={{ flex: 1 }}
+          variant="h5"
+        >
+          {t("Profile_News_Title")}
+        </Typography>
+        <Pressable onPress={() => {
+          router.push({
+            pathname: "/(features)/(news)/news",
+            params: {
+              news: JSON.stringify(news),
+            },
+          });
+        }}
+        >
+          <Stack
+            direction="horizontal"
+            vAlign="center"
+            hAlign="center"
+            inline
+            padding={[12, 6]}
+            radius={100}
+            height={32}
+            backgroundColor={"#7DBB0040"}
           >
-            <Papicons name={"Newspaper"} />
-          </Icon>
-          <Typography
-            color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
-            style={{ flex: 1 }}
-            variant="h5"
-          >
-            {t("Profile_News_Title")}
-          </Typography>
-          <Pressable onPress={() => {
-            router.push({
-              pathname: "/(features)/(news)/news",
-              params: {
-                news: JSON.stringify(news),
-              },
-            });
-          }}
-          >
-            <Stack
-              direction="horizontal"
-              vAlign="center"
-              hAlign="center"
+            <Typography style={{ marginBottom: -3 }}
               inline
-              padding={[12, 6]}
-              radius={100}
-              height={32}
-              backgroundColor={"#7DBB0040"}
+              color={adjust("#7DBB00", -0.3)}
             >
-              <Typography style={{ marginBottom: -3 }}
-                          inline
-                          color={adjust("#7DBB00", -0.3)}
-              >
-                {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
-              </Typography>
-              <Icon papicon
-                    size={20}
-                    fill={adjust("#7DBB00", -0.3)}
-              >
-                <Papicons name={"ArrowRightUp"} />
-              </Icon>
-            </Stack>
-          </Pressable>
-        </Stack>
-        <List marginBottom={0}
-              radius={24}
-        >
-          {news.map((item, index) => (
-            <Item
-              key={index}
-              onPress={() => {
-                router.push({
-                  pathname: "/(features)/(news)/specific",
-                  params: {
-                    news: JSON.stringify(item),
-                  },
-                });
-              }}
+              {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
+            </Typography>
+            <Icon papicon
+              size={20}
+              fill={adjust("#7DBB00", -0.3)}
             >
-              <Typography variant="title"
-                          color="text"
-              >
-                {item.title}
-              </Typography>
-              <Typography variant="caption"
-                          color="secondary"
-              >
-                {item.createdAt.toLocaleDateString()} · {item.author}
-              </Typography>
-            </Item>
-          ))}
-        </List>
-      </Reanimated.View>
-    </>
+              <Papicons name={"ArrowRightUp"} />
+            </Icon>
+          </Stack>
+        </Pressable>
+      </Stack>
+      <List marginBottom={0}
+        radius={24}
+      >
+        {news.map((item, index) => (
+          <Item
+            key={index}
+            onPress={() => {
+              router.push({
+                pathname: "/(features)/(news)/specific",
+                params: {
+                  news: JSON.stringify(item),
+                },
+              });
+            }}
+          >
+            <Typography variant="title"
+              color="text"
+            >
+              {item.title}
+            </Typography>
+            <Typography variant="caption"
+              color="secondary"
+            >
+              {item.createdAt.toLocaleDateString()} · {item.author}
+            </Typography>
+          </Item>
+        ))}
+      </List>
+    </Reanimated.View>
   );
 }
 
@@ -306,22 +307,22 @@ function Cards() {
 
   return (
     <Reanimated.View
-      layout={Animation(LinearTransition, "list")}
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
+      layout={Platform.OS === "android" ? undefined : Animation(LinearTransition, "list")}
+      entering={Platform.OS === "android" ? undefined : PapillonAppearIn}
+      exiting={Platform.OS === "android" ? undefined : PapillonAppearOut}
     >
       <Pressable onPress={() => {
         router.push("/(features)/(cards)/cards");
       }}
       >
         <Stack card
-               height={84}
-               direction="horizontal"
-               vAlign="start"
-               hAlign="center"
-               gap={12}
-               padding={18}
-               radius={24}
+          height={84}
+          direction="horizontal"
+          vAlign="start"
+          hAlign="center"
+          gap={12}
+          padding={18}
+          radius={24}
         >
           <Icon
             fill={colors.text}
@@ -332,8 +333,8 @@ function Cards() {
             <Papicons name={"Card"} />
           </Icon>
           <Typography variant="h5"
-                      color="text"
-                      style={{ opacity: 0.6 }}
+            color="text"
+            style={{ opacity: 0.6 }}
           >
             {t("Profile_Cards_Title")}
           </Typography>
@@ -418,7 +419,7 @@ export default function TabOneScreen() {
         </NativeHeaderPressable>
       </NativeHeaderSide>
       <NativeHeaderTitle ignoreTouch
-                         key={`header-title:` + fullyScrolled}
+        key={`header-title:` + fullyScrolled}
       >
         <NativeHeaderTopPressable layout={Animation(LinearTransition)}>
           <Dynamic
@@ -431,17 +432,17 @@ export default function TabOneScreen() {
           >
             {fullyScrolled && (
               <Dynamic animated
-                       style={{
-                         flexDirection: "row",
-                         alignItems: "center",
-                         gap: 4,
-                         width: 200,
-                         justifyContent: "center",
-                       }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                  width: 200,
+                  justifyContent: "center",
+                }}
               >
                 <Dynamic animated>
                   <Typography inline
-                              variant="navigation"
+                    variant="navigation"
                   >
                     {(firstName || lastName) ? `${firstName} ${lastName}` : t("Settings_Account_Title")}
                   </Typography>
@@ -478,75 +479,73 @@ export default function TabOneScreen() {
         )}
         keyExtractor={(item) => item + "a"}
         header={
-          <>
-            <Stack direction={"horizontal"}
-                   hAlign={"center"}
-                   style={{ padding: 20, paddingTop: 0 }}
+          <Stack direction={"horizontal"}
+            hAlign={"center"}
+            style={{ padding: 20, paddingTop: 0 }}
+          >
+            <Stack direction={"vertical"}
+              hAlign={"center"}
+              gap={10}
+              style={{ flex: 1 }}
             >
-              <Stack direction={"vertical"}
-                     hAlign={"center"}
-                     gap={10}
-                     style={{ flex: 1 }}
+              <Avatar
+                size={75}
+                initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
+                imageUrl={account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
+              />
+              <Typography variant={"h3"}
+                color="text"
               >
-                <Avatar
-                  size={75}
-                  initials={ getInitials(`${account?.firstName} ${account?.lastName}`)}
-                  imageUrl={account && account.customisation && account.customisation.profilePicture && !account.customisation.profilePicture.startsWith("PCFET0NUWVBFIGh0bWw+") ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
-                />
-                <Typography variant={"h3"}
-                            color="text"
-                >
-                  {firstName} {lastName}
-                </Typography>
-                <Stack direction={"horizontal"}
-                       hAlign={"center"}
-                       vAlign={"center"}
-                       gap={6}
-                >
-                  {level && (
-                    <Stack direction={"horizontal"}
-                           gap={8}
-                           hAlign={"center"}
-                           radius={100}
-                           backgroundColor={colors.background}
-                           inline
-                           padding={[12, 5]}
-                           card
-                           flat
+                {firstName} {lastName}
+              </Typography>
+              <Stack direction={"horizontal"}
+                hAlign={"center"}
+                vAlign={"center"}
+                gap={6}
+              >
+                {level && (
+                  <Stack direction={"horizontal"}
+                    gap={8}
+                    hAlign={"center"}
+                    radius={100}
+                    backgroundColor={colors.background}
+                    inline
+                    padding={[12, 5]}
+                    card
+                    flat
+                  >
+                    <Typography variant={"body1"}
+                      color="secondary"
                     >
-                      <Typography variant={"body1"}
-                                  color="secondary"
-                      >
-                        {level}
-                      </Typography>
-                    </Stack>
-                  )}
-                  {establishment && (
-                    <Stack direction={"horizontal"}
-                           gap={8}
-                           hAlign={"center"}
-                           radius={100}
-                           backgroundColor={colors.background}
-                           inline
-                           padding={[12, 5]}
-                           card
-                           flat
+                      {level}
+                    </Typography>
+                  </Stack>
+                )}
+                {establishment && (
+                  <Stack direction={"horizontal"}
+                    gap={8}
+                    hAlign={"center"}
+                    radius={100}
+                    backgroundColor={colors.background}
+                    inline
+                    padding={[12, 5]}
+                    card
+                    flat
+                  >
+                    <Typography
+                      variant={"body1"}
+                      color="secondary"
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={{ maxWidth: 230 }}
                     >
-                      <Typography
-                        variant={"body1"}
-                        color="secondary"
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                        style={{ maxWidth: 230 }}
-                      >
-                        {establishment}
-                      </Typography>
-                    </Stack>
-                  )}
-                </Stack>
+                      {establishment}
+                    </Typography>
+                  </Stack>
+                )}
               </Stack>
             </Stack>
-          </>
+          </Stack>
         }
       />
 
