@@ -212,6 +212,7 @@
   "Settings_Account_Title": "Mon compte",
   "Settings_Account_Description": "Mon compte",
   "Settings_Services_Title": "Comptes liés",
+  "Settings_Services_Title_LastAccountUsed": "Dernier compte utilisé",
   "Settings_Notifications_Title": "Notifications",
   "Settings_Notifications_Description": "Alertes, fréquence...",
   "Settings_Subjects_Title": "Matières",
@@ -224,6 +225,7 @@
   "Settings_Accessibility_Description": "Affichage, son...",
   "Settings_MagicPlus_Title": "Magic+",
   "Settings_MagicPlus_Description": "Fonctionnalités intelligentes",
+  "Settings_MagicPlus_Description_Card": "Fonctionnalités I.A",
   "Settings_MagicPlus_ExplanationLocal": "Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil",
   "Settings_Donate_Title": "Faire un don",
   "Settings_Donate_Description": "Soutenir le projet",
@@ -232,6 +234,8 @@
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
 
+  "Settings_Personalization_Title_Card": "Personnalisation",
+  "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
   "Settings_SubjectPersonalization_Title": "Personnaliser les matières",
   "Settings_Personalization_Accent": "Couleur d'accentuation",
   "Settings_Personalization_Accent_Description": "La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.",
@@ -261,8 +265,10 @@
   "Profile_QRCards": "QR-Code et cartes",
 
   "Settings_Cards_Banner_Title": "Cartes",
+  "Settings_Cantineen_Subtitle_Card": "Cantine, accès",
   "Settings_Cards_Banner_Description": "Ajoute tes cartes de cantine et de transport pour y accéder n'importe où depuis ton téléphone sur Papillon",
   "Settings_Cards_None_Title": "Aucune carte",
+  "Settings_Cards_Add_Button": "Ajouter",
 
   "Settings_Cards_None_Description": "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
   "Settings_Subjects_None_Title": "Aucune matière",
@@ -276,5 +282,8 @@
   "Profile_Cards_No_Reservation": "Aucune réservation",
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
-  "Magic_Important": "Peut-être important"
+  "Magic_Important": "Peut-être important",
+
+  "OnBoarding_Step": "Étape ",
+  "OnBoarding_Step_Of": "sur "
 }
