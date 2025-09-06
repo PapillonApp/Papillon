@@ -28,6 +28,7 @@ import { getInitials } from "@/utils/chats/initials";
 
 const SettingsIndex = () => {
   const router = useRouter();
+
   const theme = useTheme();
   const { colors } = theme;
 
@@ -137,8 +138,8 @@ const SettingsIndex = () => {
   }> = [
       {
         icon: <Papicons name={"Palette"} />,
-        title: "Personnalisation",
-        description: "Thèmes, matières...",
+        title: t('Settings_Personalization_Title_Card'),
+        description: t('Settings_Personalization_Subtitle_Card'),
         color: "#17C300",
         onPress: () => {
           router.navigate("/(settings)/personalization")
@@ -147,14 +148,14 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"User"} />,
         title: "Services",
-        description: "Comptes liés",
+        description: t('Settings_Services_Title'),
         color: "#DD9B00",
         disabled: true,
       },
       {
         icon: <Papicons name={"Card"} />,
         title: t("Settings_Cards_Banner_Title"),
-        description: "Cantine, accès",
+        description: t('Settings_Cantineen_Subtitle_Card'),
         color: "#0059DD",
         onPress: () => {
           router.navigate("/(settings)/cards")
@@ -163,7 +164,7 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"Sparkles"} />,
         title: "Magic+",
-        description: "Fonctions I.A",
+        description: t('Settings_MagicPlus_Description_Card'),
         color: "#DD007D",
         onPress: () => {
           router.navigate("/(settings)/magic")
