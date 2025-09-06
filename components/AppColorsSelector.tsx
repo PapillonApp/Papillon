@@ -118,13 +118,11 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
       selected={selectedColor === item.mainColor}
       mainColor={item.mainColor}
       backgroundColor={adjust(item.mainColor, theme.dark ? -0.8 : 0.8)}
-      name={item.name}
+      name={t(item.nameKey)}
       onPress={() => handleColorPress(item)}
       itemWidth={itemWidth}
     />
   ), [selectedColor, theme.dark, handleColorPress, itemWidth]);
-
-  const keyExtractor = useCallback((item: typeof AppColors[0]) => item.name, []);
 
   return (
     <FlatList
@@ -132,7 +130,7 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
       data={AppColors}
       numColumns={3}
       renderItem={renderItem}
-      keyExtractor={keyExtractor}
+      keyExtractor={(item) => item.colorEnum.toString()}
       showsHorizontalScrollIndicator={false}
       onLayout={(event) => {
         const { width } = event.nativeEvent.layout;

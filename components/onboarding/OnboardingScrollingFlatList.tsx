@@ -6,6 +6,7 @@ import Reanimated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Stack from "@/ui/components/Stack";
+import { useTranslation } from "react-i18next";
 import LottieView from "lottie-react-native";
 import Typography from "@/ui/components/Typography";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
@@ -30,6 +31,7 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
   const animation = React.useRef<LottieView>(null);
 
   const scrollY = React.useRef(useSharedValue(0)).current;
+  const { t } = useTranslation();
 
   let height: number = lottie ? 500 : 250;
 
@@ -133,13 +135,13 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
                 variant="h5"
                 style={{ color: "white", lineHeight: 22, fontSize: 18 }}
               >
-                {"Étape " + step}
+                {t('OnBoarding_Step') + step}
               </Typography>
               <Typography
                 variant="h5"
                 style={{ color: "#FFFFFF90", lineHeight: 22, fontSize: 18 }}
               >
-                {"sur " + totalSteps}
+                {t('OnBoarding_Step_Of') + totalSteps}
               </Typography>
             </Stack>
             <Typography

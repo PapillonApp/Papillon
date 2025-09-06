@@ -212,6 +212,7 @@
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",
   "Settings_Services_Title": "Linked accounts",
+  "Settings_Services_Title_LastAccountUsed": "Last account used",
   "Settings_Notifications_Title": "Notifications",
   "Settings_Notifications_Description": "Alerts, frequency...",
   "Settings_Subjects_Title": "Subjects",
@@ -224,6 +225,9 @@
   "Settings_Accessibility_Description": "Display, sound...",
   "Settings_MagicPlus_Title": "Magic+",
   "Settings_MagicPlus_Description": "Smart features",
+  "Settings_MagicPlus_Description_Card": "A.I features",
+  "Settings_MagicPlus_Enable": "Enable Magic+",
+  "Settings_MagicPlus_Description_Optimization": "Automatically optimize your task organization to improve your productivity",
   "Settings_MagicPlus_ExplanationLocal": "Fully local model, no data is transferred outside your device",
   "Settings_Donate_Title": "Donate",
   "Settings_Donate_Description": "Support the project",
@@ -231,7 +235,8 @@
   "Settings_About_Description": "version 8.0.0",
   "Settings_Logout_Title": "Log out",
   "Settings_Logout_Description": "Remove this account from Papillon",
-
+  "Settings_Personalization_Title_Card": "Personalization",
+  "Settings_Personalization_Subtitle_Card": "Themes, subject...",
   "Settings_Personalization_Accent": "Accent color",
   "Settings_Personalization_Accent_Description": "The color you choose here will apply to Papillon’s home page.",
   "Settings_Personalization_Theme": "Theme",
@@ -239,6 +244,13 @@
   "Settings_Personalization_Icon_Description": "Customize the app icon",
   "Settings_Personalization_Subject_Title": "Customize subjects",
   "Settings_Personalization_Subject_Description": "Icons, colors",
+  "Settings_About_Papillion_Behind": "Behind Papillon",
+  "Settings_About_Papillion_Behind_Description": "Papillon is maintained by 100% student volunteers",
+  "Settings_About_Discord": "Discord Server",
+  "Settings_About_Discord_Description": "Join the Discord server",
+  "Settings_About_Github": "Github Project",
+  "Settings_About_Github_Description": "Contribute to the project on GitHub",
+  "Settings_About_Dependency_Version": "Dependency Version",
 
   "Alert_No_Technical": "No technical information available.",
   "Alert_Auth_Error": "Authentication error",
@@ -260,8 +272,10 @@
   "Profile_QRCards": "QR-code and cards",
 
   "Settings_Cards_Banner_Title": "Cards",
+  "Settings_Cantineen_Subtitle_Card": "Canteen, access",
   "Settings_Cards_Banner_Description": "Add your cafeteria and transport cards to access them anywhere from your phone with Papillon",
   "Settings_Cards_None_Title": "No cards",
+  "Settings_Cards_Add_Button": "Add",
 
   "Settings_Cards_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
   "Settings_Subjects_None_Title": "No subjects",
@@ -276,6 +290,10 @@
   "Profile_Cards_No_Available_Reservation": "It looks like you can’t make a reservation today.",
   "Profile_Cards_History": "History",
   "Magic_Important": "May be important",
+
+
+  "OnBoarding_Step": "Step ",
+  "OnBoarding_Step_Of": "of "
 
   "Consent_Advanced_Title": "I want to help Papillon",
   "Consent_Advanced_Description": "We collect more detailed and anonymous information about your usage.",
