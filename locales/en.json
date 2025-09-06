@@ -209,8 +209,6 @@
   "Attendance_NoEvent_Title": "No event",
   "Attendance_NoEvent_Description": "No absences or delays recorded for this period.",
 
-  
-
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",
   "Settings_Services_Title": "Linked accounts",
@@ -254,6 +252,7 @@
 
   "Feature_Limited": "Limited features",
   "Feature_Soon": "Coming soon!",
+  "Feature_Soon_Notification": "We work hard to offer you this functionality in a future update.",
   "Feature_Add_Card": "Add a new card from the Profile tab accessible in the navigation bar",
 
   "Webview_Wait": "Please wait...",
@@ -267,7 +266,6 @@
   "Settings_Cards_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
   "Settings_Subjects_None_Title": "No subjects",
   "Settings_Subjects_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
-
 
   "Settings_Donator": "Donors",
   "Settings_Donator_Description": "View the list of donors",

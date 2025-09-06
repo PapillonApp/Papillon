@@ -253,6 +253,7 @@
 
   "Feature_Limited": "Fonctionnalités limitées",
   "Feature_Soon": "Ça arrive bientôt !",
+  "Feature_Soon_Notification": "Nous travaillons dur pour vous offrir cette fonctionnalité dans une future mise à jour.",
   "Feature_Add_Card": "Ajoute une nouvelle carte depuis l’onglet Profil accessible dans la barre de navigation",
 
   "Webview_Wait": "Un peu de patience...",
@@ -263,10 +264,9 @@
   "Settings_Cards_Banner_Description": "Ajoute tes cartes de cantine et de transport pour y accéder n'importe où depuis ton téléphone sur Papillon",
   "Settings_Cards_None_Title": "Aucune carte",
 
-  "Settings_Cards_None_Description":  "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
+  "Settings_Cards_None_Description": "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
   "Settings_Subjects_None_Title": "Aucune matière",
-  "Settings_Subjects_None_Description":  "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
-
+  "Settings_Subjects_None_Description": "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
 
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Voir la liste des donateurs",
