@@ -1,7 +1,7 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
 import { ScrollView } from "react-native";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";
@@ -11,6 +11,7 @@ import Typography from "@/ui/components/Typography";
 
 const SettingsServices = () => {
   const accountStore = useAccountStore();
+  const { t } = useTranslation();
 
   return (
     <ScrollView
