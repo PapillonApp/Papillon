@@ -57,7 +57,7 @@ export async function addCanteenTransactionToDatabase(transactions: SharedCantee
   for (const item of transactions) {
     const id = generateId(item.createdByAccount + item.date + item.amount + item.label + item.currency)
     const existing = await db.get('canteentransactions').query(
-      Q.where('menuId', id)
+      Q.where('transactionId', id)
     ).fetch();
 
     if (existing.length > 0) {continue;}

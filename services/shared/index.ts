@@ -391,6 +391,14 @@ export class AccountManager {
     );
   }
 
+  clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
+    const client = this.clients[clientId]
+    if (client?.capabilities.includes(capatibility)) {
+      return true;
+    }
+    return false;
+  }
+
   getAvailableClients(capability: Capabilities): SchoolServicePlugin[] {
     return Object.values(this.clients).filter(client =>
       client.capabilities.includes(capability)

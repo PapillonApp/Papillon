@@ -29,6 +29,7 @@ import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { getDateWeek } from "@/utils/week";
 import { predictHomework } from "@/utils/magic/prediction";
 import { useSettingsStore } from "@/stores/settings";
+import { getWeekNumberFromDate } from "@/database/useHomework";
 
 const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -118,7 +119,7 @@ export default function TabOneScreen() {
   const windowDimensions = useWindowDimensions();
 
   const currentDate = new Date();
-  const weekNumber = getDateWeek(currentDate);
+  const weekNumber = getWeekNumberFromDate(currentDate)
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(weekNumber);

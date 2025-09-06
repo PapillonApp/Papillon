@@ -619,7 +619,7 @@ export default function TabOneScreen() {
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
-                <Typography inline variant="navigation">{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
+                <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
               {currentPeriod?.name &&
                 <Dynamic animated style={{ marginTop: -3 }}>

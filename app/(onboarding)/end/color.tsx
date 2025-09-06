@@ -1,13 +1,15 @@
 import { Papicons } from "@getpapillon/papicons"
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState, useCallback, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
-import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
 import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, useGlobalSearchParams } from "expo-router";
+import React, { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform, StyleSheet, View } from "react-native";
+import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg"
 
+import AppColorsSelector from "@/components/AppColorsSelector";
 import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
@@ -17,8 +19,6 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { AppColors } from "@/utils/colors";
-import AppColorsSelector from "@/components/AppColorsSelector";
-import { useTranslation } from "react-i18next";
 
 export default function ChooseColorScreen() {
   const theme = useTheme();
@@ -87,13 +87,13 @@ export default function ChooseColorScreen() {
         alignItems: "center",
         justifyContent: "center",
         shadowColor: "rgba(0, 0, 0, 0.25)",
-        shadowOffset: { width: 0, height: 1},
+        shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 1,
         shadowRadius: 8,
         flex: 1,
       }}
-        entering={ZoomIn.springify().duration(300)}
-        exiting={FadeOut.duration(100)}
+        entering={Platform.OS === "android" ? undefined : ZoomIn.springify().duration(300)}
+        exiting={Platform.OS === "android" ? undefined : FadeOut.duration(100)}
         key={logoKey}
       >
         <PapillonLogo color={selectedColor} />
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
 const PapillonLogo = React.memo(({ color }: { color: string }) => (
   <Svg
     viewBox={"0 0 149 134"}
-    style={{maxHeight: 150}}
+    style={{ maxHeight: 150 }}
   >
     <Path
       fill="#fff"

@@ -110,12 +110,20 @@ export default function TabOneScreen() {
     setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
 
-  useEffect(() => {
-    date.setUTCHours(0, 0, 0, 0);
+  const date = useMemo(() => new Date(), []);
 
-    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
-    setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
-  }, [weeklyTimetable]);
+  useEffect(() => {
+    const todayDate = new Date(date);
+    todayDate.setUTCHours(0, 0, 0, 0);
+
+    const now = new Date();
+
+    const dayCourse = weeklyTimetable.find(
+      (day) => day.date.getTime() === todayDate.getTime()
+    )?.courses ?? [];
+
+    setCourses(dayCourse.filter(course => course.to > now));
+  }, [weeklyTimetable, date]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {
@@ -144,8 +152,6 @@ export default function TabOneScreen() {
 
     return [firstName, lastName, level, establishment];
   }, [account, accounts]);
-
-  const date = useMemo(() => new Date(), []);
 
   const accent = colors.primary;
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);

@@ -1,10 +1,9 @@
 import React from "react";
 import { Pressable, PressableProps } from "react-native";
 import Reanimated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
-  runOnUI,
 } from "react-native-reanimated";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
@@ -47,11 +46,11 @@ export default function AnimatedPressable({
       {...props}
       style={[animatedStyle, props.style]}
       onPressIn={(e) => {
-        runOnUI(pressIn)(); // animation on UI thread
+        pressIn(); // animation on UI thread
         props.onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        runOnUI(pressOut)(); // animation on UI thread
+        pressOut(); // animation on UI thread
         props.onPressOut?.(e);
       }}
     >

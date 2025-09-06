@@ -51,9 +51,6 @@ export default function WebViewScreen() {
   }, [initLogin]);
 
   const handleRequest = async (url: string) => {
-
-    console.log(url)
-
     if (url.startsWith("skoapp-prod://")) {
       const code = url.match(/code=([^&]*)/)
       const state = url.match(/state=([^&]*)/)
@@ -123,7 +120,7 @@ export default function WebViewScreen() {
           ? { uri: loginURL }
           : { html: "<h1>Chargement...</h1>" },
         onShouldStartLoadWithRequest: (request) => {
-          console.log("[WEBVIEWSKOLENGO]", request.url)
+          handleRequest(request.url)
           return true;
         }
       }}
