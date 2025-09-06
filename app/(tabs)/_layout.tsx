@@ -60,7 +60,7 @@ const useTabTranslations = () => {
   }), [t]);
 };
 
-function TabLayout() {
+export default function TabLayout() {
   // Use optimized translation hook
   const translations = useTabTranslations();
   const { colors } = useTheme();
@@ -124,6 +124,3 @@ function TabLayout() {
     </Tabs>
   );
 }
-
-// Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(TabLayout);

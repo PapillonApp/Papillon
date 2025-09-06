@@ -9,7 +9,7 @@ import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 
-const SettingsServices = () => {
+export default function SettingsServices() {
   const accountStore = useAccountStore();
   const { t } = useTranslation();
 
@@ -53,5 +53,3 @@ const SettingsServices = () => {
     </ScrollView>
   );
 }
-
-export default SettingsServices;

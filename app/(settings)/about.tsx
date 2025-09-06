@@ -1,6 +1,6 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
-import { Linking, ScrollView, Text } from "react-native";
+import { Alert, Linking, ScrollView, Text } from "react-native";
 
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
@@ -14,7 +14,7 @@ import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
 import { useTranslation } from "react-i18next";
 
-const SettingsAbout = () => {
+export default function SettingsAbout() {
   const theme = useTheme()
   const { colors } = theme
 
@@ -25,7 +25,7 @@ const SettingsAbout = () => {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
       leading: <Papicons name="PiggyBank" />,
-      onPress: () => console.log("sus"),
+      onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible."),
     },
     {
       title: t("Settings_About_Discord"),
@@ -115,5 +115,3 @@ const SettingsAbout = () => {
     </ScrollView>
   );
 }
-
-export default SettingsAbout;

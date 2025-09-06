@@ -11,7 +11,7 @@ import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAccountStore } from "@/stores/account";
 
-const EditSubject = () => {
+export default function EditSubject() {
   const { colors } = useTheme();
 
   const params = useLocalSearchParams();
@@ -246,5 +246,3 @@ const EditSubject = () => {
     </View>
   );
 };
-
-export default EditSubject;

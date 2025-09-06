@@ -14,7 +14,7 @@ import SettingsHeader from "@/components/SettingsHeader";
 import { useSettingsStore } from "@/stores/settings";
 import { t } from "i18next";
 
-const SettingsMagic = () => {
+export default function SettingsMagic() {
   const theme = useTheme()
   const { colors } = theme
 
@@ -41,5 +41,3 @@ const SettingsMagic = () => {
     </ScrollView>
   );
 }
-
-export default SettingsMagic;
