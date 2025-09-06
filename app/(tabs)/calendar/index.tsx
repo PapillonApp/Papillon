@@ -26,6 +26,7 @@ import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { useTimetable } from '@/database/useTimetable';
 import { getSubjectName } from '@/utils/subjects/name';
+import { useAccountStore } from '@/stores/account';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -62,8 +63,15 @@ export default function TabOneScreen() {
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
-  const timetable = useTimetable(undefined, weekNumber)
   const manager = getManager();
+
+  const store = useAccountStore.getState()
+  const account = store.accounts.find(account => store.lastUsedAccount);
+  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const timetable = useTimetable(undefined, weekNumber).map(day => ({
+    ...day,
+    courses: day.courses.filter(course => services.includes(course.createdByAccount))
+  })).filter(day => day.courses.length > 0);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {

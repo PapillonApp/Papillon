@@ -70,86 +70,66 @@ export default function PronoteLoginWithCredentials() {
     if (!username.trim() || !password.trim()) { return; }
     const device = uuid()
     const session = createSessionHandle(customFetcher)
-    let authentication = null;
+
     try {
-      authentication = await loginCredentials(session, {
+      const authentication = await loginCredentials(session, {
         url: String(local.url),
         deviceUUID: device,
         kind: AccountKind.STUDENT,
         username: username.trim(),
         password: password.trim()
-      }).catch((error) => {
-        if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
-          setDoubleAuthError(error)
-          setDoubleAuthSession(session)
-          setDeviceId(device)
-        } else {
-          throw error;
+      })
+
+      const splittedUsername = session.user.name.split(" ")
+      const firstName = splittedUsername[splittedUsername.length - 1]
+      const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
+      const schoolName = session.user.resources[0].establishmentName
+      const className = session.user.resources[0].className
+
+      const account = {
+        id: device,
+        firstName,
+        lastName,
+        schoolName,
+        className,
+        services: [{
+          id: device,
+          auth: {
+            accessToken: authentication.token,
+            refreshToken: authentication.token,
+            additionals: {
+              instanceURL: authentication.url,
+              kind: authentication.kind,
+              username: authentication.username,
+              deviceUUID: device
+            }
+          },
+          serviceId: Services.PRONOTE,
+          createdAt: (new Date()).toISOString(),
+          updatedAt: (new Date()).toISOString()
+        }],
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString()
+      }
+
+      const store = useAccountStore.getState()
+      store.addAccount(account)
+      store.setLastUsedAccount(device)
+
+      router.push({
+        pathname: "../end/color",
+        params: {
+          accountId: device
         }
       });
     } catch (error) {
-      return alert.showAlert({
-        title: "Identifiants incorrects",
-        description: "Nous n’avons pas réussi à te connecter à ton compte Pronote. Vérifie ton identifiant et ton mot de passe puis essaie de nouveau.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        technical: String(error),
-        withoutNavbar: true
-      })
-    }
-
-    if (!authentication) {
-      return alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur inattendue s'est produite. Veuillez réessayer.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        withoutNavbar: true
-      });
-    }
-
-    const splittedUsername = session.user.name.split(" ")
-    const firstName = splittedUsername[splittedUsername.length - 1]
-    const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
-    const schoolName = session.user.resources[0].establishmentName
-    const className = session.user.resources[0].className
-
-    const account = {
-      id: device,
-      firstName,
-      lastName,
-      schoolName,
-      className,
-      services: [{
-        id: device,
-        auth: {
-          accessToken: authentication.token,
-          refreshToken: authentication.token,
-          additionals: {
-            instanceURL: authentication.url,
-            kind: authentication.kind,
-            username: authentication.username,
-            deviceUUID: device
-          }
-        },
-        serviceId: Services.PRONOTE,
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
-      }],
-      createdAt: (new Date()).toISOString(),
-      updatedAt: (new Date()).toISOString()
-    }
-
-    const store = useAccountStore.getState()
-    store.addAccount(account)
-    store.setLastUsedAccount(device)
-
-    router.push({
-      pathname: "../end/color",
-      params: {
-        accountId: device
+      if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
+        setDoubleAuthError(error)
+        setDoubleAuthSession(session)
+        setDeviceId(device)
+        setChallengeModalVisible(true)
       }
-    });
+    }
   }
 
   return (
