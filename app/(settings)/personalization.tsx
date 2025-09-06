@@ -17,6 +17,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { t } from "i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { EarthIcon } from "lucide-react-native";
 
 
 const PersonalizationSettings = () => {
@@ -181,6 +182,20 @@ const PersonalizationSettings = () => {
             <Typography variant={"caption"}
               color={"secondary"}
             >{t("Settings_Personalization_Subject_Description")}</Typography>
+          </Item>
+          <Item
+            onPress={() => {
+              const newLang = i18n.language === "fr" ? "en" : "fr";
+              i18n.changeLanguage(newLang);
+            }}
+          >
+            <Icon size={30}>
+              <EarthIcon width={25} height={25} stroke="#818181" />
+            </Icon>
+            <Typography variant={"title"}>Language</Typography>
+            <Typography variant={"caption"} color={"secondary"}>
+              {i18n.language === "fr" ? "Français" : "English"}
+            </Typography>
           </Item>
         </List>
       </ScrollView>
