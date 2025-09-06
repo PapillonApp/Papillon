@@ -39,7 +39,7 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
     if (pos === null) {
       alert.showAlert({
         title: "Impossible de récuperer la position",
-        description: "Nous n'avons pas pu récupérer votre position. Veuillez vérifier que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
+        description: "Nous n'avons pas pu récupérer ta position. Vérifie que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,
