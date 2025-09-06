@@ -45,9 +45,16 @@ export default function TabOneScreen() {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
+  const account = accounts.find((a) => a.id === lastUsedAccount);
   const [courses, setCourses] = useState<SharedCourse[]>([]);
-  const weeklyTimetable = useTimetable(undefined, weekNumber);
+  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const weeklyTimetable = useTimetable(undefined, weekNumber).map(day => ({
+    ...day,
+    courses: day.courses.filter(course => services.includes(course.createdByAccount))
+  })).filter(day => day.courses.length > 0);;
   const [grades, setGrades] = useState<Grade[]>([]);
 
   const insets = useSafeAreaInsets();
@@ -134,13 +141,8 @@ export default function TabOneScreen() {
     return () => unsubscribe();
   }, []);
 
-  const accounts = useAccountStore((state) => state.accounts);
   const theme = useTheme();
   const { colors } = theme;
-
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-
-  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName] = useMemo(() => {
     if (!lastUsedAccount) return [null, null, null, null];
