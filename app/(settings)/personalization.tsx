@@ -193,9 +193,63 @@ const PersonalizationSettings = () => {
               <EarthIcon width={25} height={25} stroke="#818181" />
             </Icon>
             <Typography variant={"title"}>Language</Typography>
-            <Typography variant={"caption"} color={"secondary"}>
-              {i18n.language === "fr" ? "Français" : "English"}
-            </Typography>
+            <Trailing>
+              <Stack
+                bordered={true}
+                direction={"horizontal"}
+                height={40}
+                hAlign={"center"}
+                vAlign={"center"}
+              >
+                <AnimatedPressable onPress={() => i18n.changeLanguage("fr")}
+                  style={{ height: "100%" }}
+                >
+                  <Stack
+                    style={{ paddingHorizontal: 15, height: "100%" }}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={i18n.language === "fr" ? selectedColor : "transparent"}
+                    radius={20}
+                  >
+                    <Typography style={{ fontSize: 18 }}>
+                      🇫🇷
+                    </Typography>
+                  </Stack>
+                </AnimatedPressable>
+
+                <AnimatedPressable onPress={() => i18n.changeLanguage("en")}
+                  style={{ height: "100%" }}
+                >
+                  <Stack
+                    style={{ paddingHorizontal: 15, height: "100%" }}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={i18n.language === "en" ? selectedColor : "transparent"}
+                    radius={20}
+                  >
+                    <Typography style={{ fontSize: 18 }}>
+                      🇬🇧
+                    </Typography>
+                  </Stack>
+                </AnimatedPressable>
+
+                <AnimatedPressable onPress={() => i18n.changeLanguage("de")}
+                  style={{ height: "100%" }}
+                >
+                  <Stack
+                    style={{ paddingHorizontal: 15, height: "100%" }}
+                    hAlign={"center"}
+                    vAlign={"center"}
+                    backgroundColor={i18n.language === "de" ? selectedColor : "transparent"}
+                    radius={20}
+                  >
+                    <Typography style={{ fontSize: 18 }}>
+                      🇩🇪
+                    </Typography>
+                  </Stack>
+                </AnimatedPressable>
+              </Stack>
+            </Trailing>
           </Item>
         </List>
       </ScrollView>
