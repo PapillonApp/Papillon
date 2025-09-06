@@ -1,7 +1,7 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
 import { ScrollView } from "react-native";
-
+import { t } from "i18next";
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";
@@ -22,7 +22,7 @@ const SettingsServices = () => {
         <List>
           <Item>
             <Typography variant="caption" color="secondary">
-              Dernier compte utilisé
+              {t('Settings_Services_Title_LastAccountUsed')}
             </Typography>
             <Typography variant="title">
               {accountStore.lastUsedAccount}
