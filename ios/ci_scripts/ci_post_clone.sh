@@ -12,6 +12,7 @@ cd ../..
 npm install --legacy-peer-deps
 echo "===== Adding secrets ====="
 printf "{\"APP_KEY\":\"%s\",\"SALT\":\"%s\",\"SERVER_URL\":\"%s\"}" "$APP_KEY" "$SALT" "$SERVER_URL" >> secrets.json
+cat secrets.json
 echo "===== Running expo prebuild ====="
 npx expo prebuild --no-install
 echo "===== Running git restore ====="
