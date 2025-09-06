@@ -177,17 +177,23 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       countlyConfig.enableCrashReporting();
       countlyConfig.enableParameterTamperingProtection(SALT);
 
+      // Use a static device ID for better user tracking before consent is given
+      countlyConfig.setDeviceID("papillon-unset");
+
       if (consent.given) {
         if (consent.required) {
           countlyConfig.giveConsent(["sessions"]);
+          countlyConfig.setDeviceID("papillon-required");
         }
 
         if (consent.optional) {
           countlyConfig.giveConsent(["sessions", "crashes", "users"]);
+          countlyConfig.setDeviceID("papillon-optional");
         }
 
         if (consent.advanced) {
           countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+          countlyConfig.setDeviceID("papillon-advanced");
         }
 
         if (consent.required || consent.optional || consent.advanced) {
