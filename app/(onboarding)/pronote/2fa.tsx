@@ -32,7 +32,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       await securitySource(session, "Papillon sur " + deviceName)
       await securitySave(session, error.handle, {
         pin: pinCode,
-        deviceName: deviceName || "Papillon"
+        deviceName: "Papillon sur " + deviceName || "Papillon"
       })
 
       const context = error.handle.context;
