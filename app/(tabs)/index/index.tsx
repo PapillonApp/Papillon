@@ -45,9 +45,25 @@ export default function TabOneScreen() {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const account = accounts.find((a) => a.id === lastUsedAccount);
+
+  const services = useMemo(() =>
+    account?.services?.map((service: { id: string }) => service.id) ?? [],
+    [account?.services]
+  );
 
   const [courses, setCourses] = useState<SharedCourse[]>([]);
-  const weeklyTimetable = useTimetable(undefined, weekNumber);
+
+  const timetableData = useTimetable(undefined, weekNumber);
+  const weeklyTimetable = useMemo(() =>
+    timetableData.map(day => ({
+      ...day,
+      courses: day.courses.filter(course => services.includes(course.createdByAccount))
+    })).filter(day => day.courses.length > 0),
+    [timetableData, services]
+  );
   const [grades, setGrades] = useState<Grade[]>([]);
 
   const insets = useSafeAreaInsets();
@@ -110,20 +126,12 @@ export default function TabOneScreen() {
     setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
   }, [])
 
-  const date = useMemo(() => new Date(), []);
-
   useEffect(() => {
-    const todayDate = new Date(date);
-    todayDate.setUTCHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
 
-    const now = new Date();
-
-    const dayCourse = weeklyTimetable.find(
-      (day) => day.date.getTime() === todayDate.getTime()
-    )?.courses ?? [];
-
-    setCourses(dayCourse.filter(course => course.to > now));
-  }, [weeklyTimetable, date]);
+    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
+    setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+  }, [weeklyTimetable]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {
@@ -134,13 +142,8 @@ export default function TabOneScreen() {
     return () => unsubscribe();
   }, []);
 
-  const accounts = useAccountStore((state) => state.accounts);
   const theme = useTheme();
   const { colors } = theme;
-
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-
-  const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName] = useMemo(() => {
     if (!lastUsedAccount) return [null, null, null, null];
@@ -152,6 +155,8 @@ export default function TabOneScreen() {
 
     return [firstName, lastName, level, establishment];
   }, [account, accounts]);
+
+  const date = useMemo(() => new Date(), []);
 
   const accent = colors.primary;
   const foreground = adjust(accent, theme.dark ? 0.4 : -0.4);
