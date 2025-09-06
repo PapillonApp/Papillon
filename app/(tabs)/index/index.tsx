@@ -40,6 +40,8 @@ import GradesWidget from "./widgets/Grades";
 import { Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
+import { on } from "events";
+import { checkConsent } from "@/utils/logger/consent";
 
 export default function TabOneScreen() {
   const now = new Date();
@@ -54,6 +56,14 @@ export default function TabOneScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const alert = useAlert();
+
+  useEffect(() => {
+    checkConsent().then(consent => {
+      if (!consent.given) {
+        router.push("../consent");
+      }
+    })
+  }, [])
 
   const Initialize = async () => {
     try {

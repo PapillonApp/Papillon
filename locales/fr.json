@@ -227,6 +227,8 @@
   "Settings_MagicPlus_ExplanationLocal": "Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil",
   "Settings_Donate_Title": "Faire un don",
   "Settings_Donate_Description": "Soutenir le projet",
+  "Settings_Telemetry_Title": "Télémétrie et vie privée",
+  "Settings_Telemetry_Description": "Gérer les données collectées",
   "Settings_About_Title": "À propos",
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
@@ -276,5 +278,21 @@
   "Profile_Cards_No_Reservation": "Aucune réservation",
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
-  "Magic_Important": "Peut-être important"
+  "Magic_Important": "Peut-être important",
+
+  "Consent_Advanced_Title": "Je veux aider Papillon",
+  "Consent_Advanced_Description": "On récolte plus d’informations détaillées et anonymes sur ton utilisation.",
+  "Consent_Optional_Title": "Les informations importantes",
+  "Consent_Optional_Description": "En gros, savoir que quelqu’un a utilisé Papillon, si ça s’est bien passé et quel service il utilise.",
+  "Consent_Required_Title": "Juste l'essentiel",
+  "Consent_Required_Description": "On sait juste que quelqu’un a utilisé Papillon pendant un certain temps.",
+  "Consent_None_Title": "Rien du tout",
+  "Consent_None_Description": "On ne sera même pas au courant de ton existence.",
+  "Consent_Title": "Télémétrie & vie privée",
+  "Consent_Intro1": "On aimerait savoir combien vous êtes et comment se passe votre expérience pour améliorer l’application.",
+  "Consent_Intro2": "Tout cela de manière toujours anonyme et vous avez complètement le choix de dire non.",
+  "Consent_PrivacyPolicy": "En cas de doute, consultez notre politique de confidentialité",
+  "Consent_Refuse": "Refuser",
+  "Consent_Accept": "Accepter",
+  "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli."
 }

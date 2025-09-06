@@ -10,7 +10,7 @@ import Typography from "./Typography";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'outline' | 'light' | 'ghost' | 'service';
-export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black' | 'card' | 'blue';
+export type Color = 'primary' | 'text' | 'light' | 'danger' | 'cherry' | 'black' | 'card' | 'blue' | 'orange';
 type Size = 'small' | 'medium' | 'large';
 type Alignment = 'start' | 'center' | 'end';
 
@@ -67,7 +67,8 @@ const Button: React.FC<ButtonProps> = React.memo(({
     danger: '#DC1400',
     cherry: '#D60046',
     black: '#000000',
-    blue: '#0059DD'
+    blue: '#0059DD',
+    orange: '#C94F1A',
   }), [colors]);
 
   // Animation scale
