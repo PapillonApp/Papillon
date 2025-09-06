@@ -65,6 +65,8 @@ export default function TurboSelfLoginWithCredentials() {
   const loginARD = async () => {
     try {
       const authenticator = new Authenticator();
+      // ARD require 2 connections, WHY ?
+      const _ = await authenticator.fromCredentials(siteId, username, password);
       const authentification = await authenticator.fromCredentials(siteId, username, password);
       const accountId = uuid();
       const store = useAccountStore.getState();

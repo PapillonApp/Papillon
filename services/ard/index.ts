@@ -20,7 +20,7 @@ export class ARD implements SchoolServicePlugin {
   private async initCapabilities() {
     setTimeout(() => {
       this.capabilities.push(Capabilities.CANTEEN_BALANCE, Capabilities.CANTEEN_HISTORY)
-    }, 5000)
+    }, 3000)
   }
 
   async refreshAccount(credentials: Auth): Promise<ARD> {

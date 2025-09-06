@@ -275,9 +275,11 @@ export default function QRCodeAndCardsPage() {
                     </Trailing>
                     <Typography>{c.label}</Typography>
                     <Stack direction="horizontal" hAlign="center">
-                      <Typography color="secondary">12/05/2025</Typography>
+                      <Typography color="secondary">{c.date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}</Typography>
                       <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.text + 80 }} />
-                      <Typography color="secondary">21:47</Typography>
+                      <Typography color="secondary">
+                        {c.date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                      </Typography>
                     </Stack>
                   </Item>)}
               </List>
