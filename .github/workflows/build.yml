@@ -260,49 +260,57 @@ jobs:
     steps:
       - name: 📋 • Build Summary
         run: |
+          APP_VERSION=$(node -p "require('./package.json').version")
+          
+          COMMIT_ID=$(git rev-parse --short HEAD)
+          
           echo "## Build Summary 📱" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📙 **App Version**: $APP_VERSION ($COMMIT_ID)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
+          echo "🤖 **Android APK**:" >> $GITHUB_STEP_SUMMARY
           if [ "${{ inputs.build_android }}" == "true" ]; then
             if [ "${{ needs.build_android.result }}" == "success" ]; then
-              echo "✅ **Android APK**: Built successfully" >> $GITHUB_STEP_SUMMARY
               echo "   - 📦 Unsigned APK: ✅ Success" >> $GITHUB_STEP_SUMMARY
-              if [ "${{ inputs.sign_android }}" == "true" ]; then
-                if [ "${{ needs.sign_android.result }}" == "success" ]; then
-                  echo "   - ✍️ Signed APK: ✅ Success" >> $GITHUB_STEP_SUMMARY
-                elif [ "${{ needs.sign_android.result }}" == "failure" ]; then
-                  echo "   - ✍️ Signed APK: ❌ Failed (missing secrets or error)" >> $GITHUB_STEP_SUMMARY
-                else
-                  echo "   - ✍️ Signed APK: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
-                fi
+            else
+              echo "   - 📦 Unsigned APK: ❌ Failed" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [ "${{ inputs.sign_android }}" == "true" ]; then
+              if [ "${{ needs.sign_android.result }}" == "success" ]; then
+                echo "   - ✍️ Signed APK: ✅ Success" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "   - ✍️ Signed APK: ❌ Failed" >> $GITHUB_STEP_SUMMARY
               fi
             else
-              echo "❌ **Android APK**: Build failed" >> $GITHUB_STEP_SUMMARY
+              echo "   - ✍️ Signed APK: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "⏭️ **Android APK**: Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "   - 📦 Unsigned APK: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "   - ✍️ Signed APK: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
           
+          echo "🍎 **iOS IPA**:" >> $GITHUB_STEP_SUMMARY
           if [ "${{ inputs.build_ios }}" == "true" ]; then
             if [ "${{ needs.build_ios.result }}" == "success" ]; then
-              echo "✅ **iOS IPA**: Built successfully" >> $GITHUB_STEP_SUMMARY
               echo "   - 📦 Unsigned IPA: ✅ Success" >> $GITHUB_STEP_SUMMARY
-              if [ "${{ inputs.sign_ios }}" == "true" ]; then
-                if [ "${{ needs.sign_ios.result }}" == "success" ]; then
-                  echo "   - ✍️ Signed IPA: ✅ Success" >> $GITHUB_STEP_SUMMARY
-                elif [ "${{ needs.sign_ios.result }}" == "failure" ]; then
-                  echo "   - ✍️ Signed IPA: ❌ Failed (missing secrets or error)" >> $GITHUB_STEP_SUMMARY
-                else
-                  echo "   - ✍️ Signed IPA: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
-                fi
+            else
+              echo "   - 📦 Unsigned IPA: ❌ Failed" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [ "${{ inputs.sign_ios }}" == "true" ]; then
+              if [ "${{ needs.sign_ios.result }}" == "success" ]; then
+                echo "   - ✍️ Signed IPA: ✅ Success" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "   - ✍️ Signed IPA: ❌ Failed" >> $GITHUB_STEP_SUMMARY
               fi
             else
-              echo "❌ **iOS IPA**: Build failed" >> $GITHUB_STEP_SUMMARY
+              echo "   - ✍️ Signed IPA: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "⏭️ **iOS IPA**: Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "   - 📦 Unsigned IPA: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "   - ✍️ Signed IPA: ⏭️ Skipped" >> $GITHUB_STEP_SUMMARY
           fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
