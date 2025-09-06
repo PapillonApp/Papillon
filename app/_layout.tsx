@@ -189,10 +189,13 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         if (consent.advanced) {
           countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
         }
-      }
 
-      await Countly.initWithConfig(countlyConfig);
+        if (consent.required || consent.optional || consent.advanced) {
+          await Countly.initWithConfig(countlyConfig);
+        }
+      }
     }
+
     initializeCountly();
   }, [])
 
