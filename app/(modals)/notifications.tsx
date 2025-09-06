@@ -5,7 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { Dimensions } from "react-native";
 
-const NotificationsModal = () => {
+export default function NotificationsModal() {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -26,5 +26,3 @@ const NotificationsModal = () => {
     </Stack>
   )
 }
-
-export default NotificationsModal;

@@ -327,6 +327,13 @@ export default function TabOneScreen() {
         }
         gap={12}
         data={[
+          {
+            icon: <Papicons name={"Butterfly"} />,
+            title: "Papillon 8 est là !",
+            redirect: "/changelog",
+            buttonLabel: "En savoir plus",
+            dev: true
+          },
           courses.length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),

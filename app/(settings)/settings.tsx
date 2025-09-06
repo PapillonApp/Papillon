@@ -26,7 +26,7 @@ import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 
-const SettingsIndex = () => {
+export default function SettingsIndex() {
   const router = useRouter();
 
   const theme = useTheme();
@@ -151,6 +151,9 @@ const SettingsIndex = () => {
         description: t('Settings_Services_Title'),
         color: "#DD9B00",
         disabled: true,
+        onPress: () => {
+          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+        }
       },
       {
         icon: <Papicons name={"Card"} />,
@@ -299,5 +302,3 @@ const SettingsIndex = () => {
     </>
   );
 };
-
-export default SettingsIndex;
