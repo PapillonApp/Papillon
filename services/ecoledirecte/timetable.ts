@@ -9,7 +9,7 @@ export async function fetchEDTimetable(session: Session, account: Account, accou
   try {
     const { start, end } = getDateRangeOfWeek(weekNumber);
 
-    const timetable = await studentTimetable(session, account, start, end);
+    const timetable = (await studentTimetable(session, account, start, end)).filter(course => course.subjectShortName !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
