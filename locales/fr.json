@@ -313,5 +313,12 @@
   "Consent_PrivacyPolicy": "En cas de doute, consultez notre politique de confidentialité",
   "Consent_Refuse": "Refuser",
   "Consent_Accept": "Accepter",
-  "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli."
+  "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli.",
+
+  "Colors.rose": "Rose",
+  "Colors.yellow": "Jaune",
+  "Colors.green": "Vert",
+  "Colors.purple": "Violet",
+  "Colors.blue": "Bleu",
+  "Colors.black": "Noir"
 }
