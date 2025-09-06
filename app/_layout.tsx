@@ -19,8 +19,6 @@ const APP_KEY = secrets.APP_KEY;
 const SALT = secrets.SALT;
 const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
 
-console.log("Countly Config:", { APP_KEY, SALT, SERVER_URL });
-
 import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
