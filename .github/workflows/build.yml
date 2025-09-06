@@ -260,7 +260,7 @@ jobs:
     steps:
       - name: 📋 • Build Summary
         run: |
-          APP_VERSION=$(node -p "require('./package.json').version")
+          APP_VERSION=$(cat package.json | grep '"version"' | cut -d'"' -f4)
           
           COMMIT_ID=$(git rev-parse --short HEAD)
           
