@@ -29,9 +29,6 @@ export default function QRCodeAndCardsPage() {
   const [loadingWallets, setLoadingWallets] = useState(true);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
-  const selfCompatible = account?.services.filter(
-    service => [Services.TURBOSELF, Services.ARD, Services.IZLY].includes(service.serviceId)
-  );
 
   async function fetchWallets() {
     const manager = getManager()
@@ -49,7 +46,7 @@ export default function QRCodeAndCardsPage() {
   }, [accounts])
 
   const cardOffset = 60;
-  const cardHeight = 210;
+  const cardHeight = 170;
 
   const pileHeight = cardHeight + (wallets.length - 1) * cardOffset;
   const { t } = useTranslation();
@@ -59,7 +56,7 @@ export default function QRCodeAndCardsPage() {
   return (
     <>
       <ScrollView style={{ padding: 20, flex: 1 }}>
-        {selfCompatible && selfCompatible?.length > 0 ? (
+        {wallets && wallets?.length > 0 ? (
           <>
             <View style={{ position: "relative", height: pileHeight }}>
               {wallets.map((c, i) => (

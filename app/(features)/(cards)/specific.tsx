@@ -31,6 +31,7 @@ import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "
 import { useAlert } from "@/ui/components/AlertProvider";
 import { Services } from "@/stores/account/types";
 import { useTranslation } from "react-i18next";
+import { Capabilities } from "@/services/shared/types";
 
 export { getServiceName };
 
@@ -46,6 +47,7 @@ export default function QRCodeAndCardsPage() {
   const headerHeight = useHeaderHeight();
 
   const manager = getManager();
+  const hasBookingCapacity = manager.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");
@@ -198,60 +200,62 @@ export default function QRCodeAndCardsPage() {
                 <Papicons name="Cutlery" />
               </Icon>
               <Typography color="secondary">Repas restants</Typography>
-              <ContainedNumber color={serviceColor}>{String(wallet.lunchRemaining)}</ContainedNumber>
+              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? Math.floor(wallet.amount / wallet.lunchPrice) : "Indéterminé"}</ContainedNumber>
             </Stack>
           </Stack>
 
-          <View>
-            <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
-              <Stack hAlign="center" vAlign="center">
-                <Stack direction="horizontal" style={{ flex: 1 }} gap={5}>
-                  <Icon papicon opacity={0.5}>
-                    <CalendarIcon />
-                  </Icon>
-                  <Typography color="secondary">Réserver mon repas</Typography>
+          {hasBookingCapacity && (
+            <View>
+              <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
+                <Stack hAlign="center" vAlign="center">
+                  <Stack direction="horizontal" style={{ flex: 1 }} gap={5}>
+                    <Icon papicon opacity={0.5}>
+                      <CalendarIcon />
+                    </Icon>
+                    <Typography color="secondary">Réserver mon repas</Typography>
+                  </Stack>
+                  <Stack direction="horizontal" style={{ flex: 1 }} gap={5} hAlign="center" vAlign="center">
+                    <Typography color="secondary">
+                      {date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
+                    </Typography>
+                    <ChevronDown opacity={0.5} size={18} />
+                  </Stack>
                 </Stack>
-                <Stack direction="horizontal" style={{ flex: 1 }} gap={5} hAlign="center" vAlign="center">
-                  <Typography color="secondary">
-                    {date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
-                  </Typography>
-                  <ChevronDown opacity={0.5} size={18} />
+              </AnimatedPressable>
+              {bookingDay ? (
+                <TableFlatList
+                  sections={[
+                    {
+                      items: bookingDay.available.map((item, index) => ({
+                        title: "Borne Self",
+                        trailing: (
+                          <Switch
+                            disabled={!item.canBook || (wallet.lunchRemaining < 1 && wallet.lunchPrice !== 0)}
+                            value={item.booked}
+                            onValueChange={() => handleToggle(index)}
+                          />
+                        ),
+                      })),
+                    },
+                  ]}
+                />
+              ) : (
+                <Stack hAlign="center" vAlign="center" margin={16} gap={16}>
+                  <View style={{ alignItems: "center" }}>
+                    <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                      <Papicons name="Card" />
+                    </Icon>
+                    <Typography variant="h4" color="text" align="center">
+                      {t("Profile_Cards_No_Reservation")}
+                    </Typography>
+                    <Typography variant="body2" color="secondary" align="center">
+                      {t("Profile_Cards_No_Available_Reservation")}
+                    </Typography>
+                  </View>
                 </Stack>
-              </Stack>
-            </AnimatedPressable>
-            {bookingDay ? (
-              <TableFlatList
-                sections={[
-                  {
-                    items: bookingDay.available.map((item, index) => ({
-                      title: "Borne Self",
-                      trailing: (
-                        <Switch
-                          disabled={!item.canBook || wallet.lunchRemaining < 1}
-                          value={item.booked}
-                          onValueChange={() => handleToggle(index)}
-                        />
-                      ),
-                    })),
-                  },
-                ]}
-              />
-            ) : (
-              <Stack hAlign="center" vAlign="center" margin={16} gap={16}>
-                <View style={{ alignItems: "center" }}>
-                  <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                    <Papicons name="Card" />
-                  </Icon>
-                  <Typography variant="h4" color="text" align="center">
-                    {t("Profile_Cards_No_Reservation")}
-                  </Typography>
-                  <Typography variant="body2" color="secondary" align="center">
-                    {t("Profile_Cards_No_Available_Reservation")}
-                  </Typography>
-                </View>
-              </Stack>
-            )}
-          </View>
+              )}
+            </View>
+          )}
 
           {history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
@@ -262,7 +266,22 @@ export default function QRCodeAndCardsPage() {
                 <Typography color="secondary">{t("Profile_Cards_History")}</Typography>
               </Stack>
               <List>
-                {history.map(c => <HistoryEntry key={c.date.toISOString()} {...c} />)}
+                {history.slice(0, 10).map(c =>
+                  <Item key={c.label}>
+                    <Trailing>
+                      <ContainedNumber color={adjust(c.amount < 0 ? "#C50000" : "#42C500", -0.1)}>
+                        {c.amount > 0 ? "+" : ""}{(c.amount / 100).toFixed(2)} {c.currency}
+                      </ContainedNumber>
+                    </Trailing>
+                    <Typography>{c.label}</Typography>
+                    <Stack direction="horizontal" hAlign="center">
+                      <Typography color="secondary">{c.date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}</Typography>
+                      <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.text + 80 }} />
+                      <Typography color="secondary">
+                        {c.date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                      </Typography>
+                    </Stack>
+                  </Item>)}
               </List>
             </View>
           )}
@@ -281,27 +300,5 @@ export default function QRCodeAndCardsPage() {
         <Typography>{serviceName}</Typography>
       </NativeHeaderTitle>
     </>
-  );
-}
-
-function HistoryEntry({ amount, currency, label }: { amount: number; currency: string; label: string }) {
-  const theme = useTheme();
-  const { colors } = theme;
-  const color = adjust(amount < 0 ? "#C50000" : "#42C500", -0.1);
-
-  return (
-    <Item>
-      <Trailing>
-        <ContainedNumber color={color}>
-          {amount > 0 ? "+" : ""}{amount} {currency}
-        </ContainedNumber>
-      </Trailing>
-      <Typography>{label}</Typography>
-      <Stack direction="horizontal" hAlign="center">
-        <Typography color="secondary">12/05/2025</Typography>
-        <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.text + 80 }} />
-        <Typography color="secondary">21:47</Typography>
-      </Stack>
-    </Item>
   );
 }

@@ -20,7 +20,7 @@ export class ARD implements SchoolServicePlugin {
   private async initCapabilities() {
     setTimeout(() => {
       this.capabilities.push(Capabilities.CANTEEN_BALANCE, Capabilities.CANTEEN_HISTORY)
-    }, 5000)
+    }, 3000)
   }
 
   async refreshAccount(credentials: Auth): Promise<ARD> {
@@ -33,7 +33,7 @@ export class ARD implements SchoolServicePlugin {
 
   async getCanteenBalances(): Promise<Balance[]> {
     if (this.session) {
-      return fetchArdBalance(this.session, this.accountId);
+      return fetchArdBalance(this.session, this.accountId, this.authData);
     }
 		
     error("Session is not valid", "ARD.getCanteenBalances");
