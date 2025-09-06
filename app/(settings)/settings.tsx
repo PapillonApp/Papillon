@@ -82,6 +82,14 @@ const SettingsIndex = () => {
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
         },
         {
+          title: t('Settings_Telemetry_Title'),
+          description: `${t('Settings_Telemetry_Description')}`,
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
+        {
           title: t('Settings_About_Title'),
           description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,

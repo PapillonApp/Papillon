@@ -275,5 +275,21 @@
   "Profile_Cards_No_Reservation": "No reservation",
   "Profile_Cards_No_Available_Reservation": "It looks like you can’t make a reservation today.",
   "Profile_Cards_History": "History",
-  "Magic_Important": "May be important"
+  "Magic_Important": "May be important",
+
+  "Consent_Advanced_Title": "I want to help Papillon",
+  "Consent_Advanced_Description": "We collect more detailed and anonymous information about your usage.",
+  "Consent_Optional_Title": "Important information",
+  "Consent_Optional_Description": "Basically, knowing someone used Papillon, if it went well, and which service they use.",
+  "Consent_Required_Title": "Just the essentials",
+  "Consent_Required_Description": "We only know that someone used Papillon for a certain time.",
+  "Consent_None_Title": "Nothing at all",
+  "Consent_None_Description": "We won't even know you exist.",
+  "Consent_Title": "Telemetry & privacy",
+  "Consent_Intro1": "We’d like to know how many of you there are and how your experience is going to improve the app.",
+  "Consent_Intro2": "All of this is always anonymous and you are completely free to say no.",
+  "Consent_PrivacyPolicy": "If in doubt, check our privacy policy",
+  "Consent_Refuse": "Refuse",
+  "Consent_Accept": "Accept",
+  "Consent_ChangeMind": "You can change your mind at any time from the app settings."
 }
