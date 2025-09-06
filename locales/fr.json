@@ -1,7 +1,6 @@
 {
   "Global_Back": "Retour",
   "Global_DatePrefix": "le",
-
   "Tab_Home": "Accueil",
   "Tab_Calendar": "Cours",
   "Tab_Tasks": "Tâches",
@@ -16,7 +15,6 @@
   "Tab_Page": "Page",
   "Tab_Settings": "Paramètres",
   "Tab_News": "Actualités",
-
   "ONBOARDING_MAIN_TITLE": "L'application pour gérer ta vie scolaire",
   "ONBOARDING_MAIN_DESCRIPTION": "Connecte tes applications scolaires pour accéder à tes notes, cours, devoirs et bien plus dans l'interface Papillon !",
   "ONBOARDING_START_BTN": "Commencer",
@@ -49,7 +47,6 @@
   "ONBOARDING_LOGIN_PINCODE": "Entre le Code PIN de ton PRONOTE",
   "Onboarding_Load_Webview_Description": "Nous chargeons le site de ton établissement",
   "INPUT_PIN": "Code PIN",
-
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
   "STEP": "Étape",
@@ -64,24 +61,17 @@
   "LOGIN_BTN": "Se connecter",
   "CONFIRM_BTN": "Confirmer",
   "CANCEL_BTN": "Annuler",
-
   "Tab_New_Event": "Nouvel événement",
-
   "Tab_Calendar_Icals": "Gestion des iCal",
   "Tab_Calendar_Icals_Description": "Gérer tes URL iCal",
-
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec ton calendrier.",
-
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
   "TabUnderConstruction_Details": "Reviens plus tard pour des mises à jour.",
-
   "TabDevModeNotice_Title": "Mode Développement",
   "TabDevModeNotice_Details": "Environnement de test complet pour les développeurs.",
-
   "Alert_TechnicalDetails": "Détails techniques",
-
   "Online_Course": "En ligne",
   "Evaluated_Course": "Évaluation",
   "Edited_Course": "Cours modifié",
@@ -89,44 +79,35 @@
   "No_Course_Room": "Salle inconnue",
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
-
   "Context_Delete": "Supprimer",
   "Context_Cancel": "Annuler",
   "Context_Edit": "Modifier",
   "Context_Add": "Ajouter",
-
   "Form_Title": "Titre",
   "Form_Location": "Emplacement",
   "Form_Organizer": "Organisateur",
   "Form_Start": "Début",
   "Form_End": "Fin",
-
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
-
   "Home_Welcome_Name": "Bonjour, {{name}} !",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
   "Home_Planned_Number": "Tu as {{number}} cours restants aujourd'hui",
-
   "Home_Widget_NextCourses": "Prochains cours",
   "Home_Widget_NewGrades": "Nouvelles notes",
-
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoute un événement ou synchronise ton calendrier pour commencer.",
-
   "Modal_Course_Title": "Mon cours",
   "Modal_Course_StartsIn": "Commence dans",
   "Modal_Course_StartedAgo": "Terminé il y a",
   "Modal_Course_Ongoing": "Commencé depuis",
   "Modal_Course_Group": "Groupe",
   "Modal_Course_Group_Full": "Classe",
-
   "Modal_Course_Details": "Détails du cours",
   "Modal_Course_Teacher": "Enseignant",
   "Modal_Course_Room": "Salle",
   "Modal_Course_Duration": "Durée",
-
   "Tasks_LeftHomeworks_Title": "tâches restantes",
   "Tasks_LeftHomeworks_Time": "cette semaine",
   "Tasks_Done_AllTasks": "Toutes les tâches",
@@ -142,49 +123,36 @@
   "Task_Start": "À faire",
   "Task_Complete": "Terminé",
   "Settings_General": "Général",
-
   "Latest_Grades": "Nouvelles notes",
-
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
   "Grades_Avg_Subject_Title": "Moyenne des notes",
   "Grades_Avg_Subject_Short": "Moy. notes",
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
-
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
-
   "Grades_Sorting_Alphabetical": "Alphabétique",
   "Grades_Sorting_Averages": "Moyennes",
   "Grades_Sorting_Date": "Date",
-
   "Grades_Menu_SortBy": "Tri par",
   "Grades_Menu_AverageBy": "Moyenne par",
-
   "Grades_Empty_Title": "Aucune note",
   "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
-
   "Grade_NoDescription": "Devoir de {{subject}}",
-
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",
   "Profile_Attendance_Denominator_Plural": "absences",
-
   "Profile_Discussions_Title": "Discussions",
   "Profile_Discussions_Denominator_Single": "non lu",
   "Profile_Discussions_Denominator_Plural": "non lus",
-
   "Profile_News_Title": "Actualités",
   "Profile_News_Denominator_Single": "nouveau",
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
   "Profile_News_Loading_Title": "Chargement des actualités...",
-
   "Profile_Cards_Title": "QR-Code et cartes",
-
   "Modal_Grades_Title": "Détail de la note",
-
   "Grades_Details_Title": "Détails",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
@@ -194,13 +162,10 @@
   "Grades_Avg_Group_Title": "Moyenne du groupe",
   "Grades_Coefficient": "Coefficient",
   "Grades_Avg_Group_Short": "Moy. groupe",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Un thème doux et élégant",
-
   "News_Theme_Reading_Title": "Lecture",
   "News_Theme_Reading_Description": "Un thème conçu pour la lecture",
-
   "Attendance_Hours_Missed": "Heures manquées",
   "Attendance_Hours_Unjustified": "Heures injustifiées",
   "Attendance_Missing": "Absences",
@@ -208,7 +173,6 @@
   "Attendance_NoReason": "Aucune raison",
   "Attendance_NoEvent_Title": "Aucun événement",
   "Attendance_NoEvent_Description": "Pas d'absences ou de retards enregistrés pour cette période.",
-
   "Settings_Account_Title": "Mon compte",
   "Settings_Account_Description": "Mon compte",
   "Settings_Services_Title": "Comptes liés",
@@ -233,7 +197,6 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
-
   "Settings_SubjectPersonalization_Title": "Personnaliser les matières",
   "Settings_Personalization_Accent": "Couleur d'accentuation",
   "Settings_Personalization_Accent_Description": "La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.",
@@ -242,7 +205,6 @@
   "Settings_Personalization_Icon_Description": "Personnalise l’icône de l’application",
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
   "Settings_Personalization_Subject_Description": "Icônes, couleurs",
-
   "Alert_No_Technical": "Aucune information technique disponible.",
   "Alert_Auth_Error": "Erreur d'authentification",
   "Alert_Auth_Bad_Creds": "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
@@ -252,34 +214,26 @@
   "Alert_Invalid_Instance": "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
   "Alert_No_Pos": "Impossible de récupérer la position",
   "Alert_Connexion_Fail": "Connexion impossible",
-
   "Feature_Limited": "Fonctionnalités limitées",
   "Feature_Soon": "Ça arrive bientôt !",
   "Feature_Soon_Notification": "Nous travaillons dur pour vous offrir cette fonctionnalité dans une future mise à jour.",
   "Feature_Add_Card": "Ajoute une nouvelle carte depuis l’onglet Profil accessible dans la barre de navigation",
-
   "Webview_Wait": "Un peu de patience...",
-
   "Profile_QRCards": "QR-Code et cartes",
-
   "Settings_Cards_Banner_Title": "Cartes",
   "Settings_Cards_Banner_Description": "Ajoute tes cartes de cantine et de transport pour y accéder n'importe où depuis ton téléphone sur Papillon",
   "Settings_Cards_None_Title": "Aucune carte",
-
   "Settings_Cards_None_Description": "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
   "Settings_Subjects_None_Title": "Aucune matière",
   "Settings_Subjects_None_Description": "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
-
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Voir la liste des donateurs",
   "Settings_App_Version": "Version de l'application",
-
   "Profile_Cards_Scan_Orientation": "Oriente le QR-Code vers le scanner de la borne",
   "Profile_Cards_No_Reservation": "Aucune réservation",
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important",
-
   "Consent_Advanced_Title": "Je veux aider Papillon",
   "Consent_Advanced_Description": "On récolte plus d’informations détaillées et anonymes sur ton utilisation.",
   "Consent_Optional_Title": "Les informations importantes",
