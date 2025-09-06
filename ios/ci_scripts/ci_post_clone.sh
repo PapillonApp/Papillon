@@ -1,6 +1,8 @@
 #!/bin/zsh
+echo "===== Logging package.json ====="
+cat package.json
 
-echo "===== Installling CocoaPods ====="
+echo "===== Installing CocoaPods ====="
 export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
 brew install cocoapods
 echo "===== Installing Node.js ====="
