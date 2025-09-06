@@ -24,58 +24,75 @@ export async function fetchEDGradePeriods(session: Session, account: Account, ac
 export async function fetchEDGrades(session: Session, account: Account, accountId: string, period: Period): Promise<PeriodGrades> {
   try {
     const grades = await studentGrades(session, account, "")
+    
+    if (!grades?.overview?.[period.id!]) {
+      warn("Invalid grades data structure or period not found")
+      return {
+        createdByAccount: accountId,
+        classAverage: { value: 16.66, disabled: true },
+        studentOverall: { value: 16.66, disabled: true },
+        subjects: []
+      }
+    }
+    
     const overview = grades.overview[period.id!];
     const subjects: Record<string, Subject> = {}
 
-    for (const subject of overview.subjects) {
-      subjects[subject.name] = {
-        id: subject.id,
-        name: subject.name,
-        studentAverage: mapEDGradeScore(subject.studentAverage),
-        classAverage: mapEDGradeScore(subject.classAverage),
-        minimum: mapEDGradeScore(subject.minAverage),
-        maximum: mapEDGradeScore(subject.maxAverage),
-        outOf: mapEDGradeScore(subject.outOf),
-        grades: []
+    if (overview.subjects) {
+      for (const subject of overview.subjects) {
+        subjects[subject.name] = {
+          id: subject.id,
+          name: subject.name,
+          studentAverage: mapEDGradeScore(subject.studentAverage),
+          classAverage: mapEDGradeScore(subject.classAverage),
+          minimum: mapEDGradeScore(subject.minAverage),
+          maximum: mapEDGradeScore(subject.maxAverage),
+          outOf: mapEDGradeScore(subject.outOf),
+          grades: []
+        }
       }
     }
 
-    for (const grade of grades.grades) {
-      subjects[grade.subject.name].grades.push({
-        id: generateId(JSON.stringify(grade)),
-        subjectId: grade.subject.id,
-        subjectName: grade.subject.name,
-        description: grade.comment,
-        givenAt: grade.date,
-        subjectFile: {
-          type: AttachmentType.LINK,
-          name: "Sujet",
-          url: grade.subjectFilePath,
-          createdByAccount: accountId
-        },
-        correctionFile: {
-          type: AttachmentType.LINK,
-          name: "Sujet",
-          url: grade.correctionFilePath,
-          createdByAccount: accountId
-        },
-        bonus: false,
-        optional: grade.isOptional,
-        outOf: { value: grade.outOf },
-        coefficient: grade.coefficient,
-        studentScore: mapEDGradeScore(grade.value),
-        averageScore: mapEDGradeScore(grade.average),
-        minScore: mapEDGradeScore(grade.min),
-        maxScore: mapEDGradeScore(grade.max),
-        createdByAccount: accountId
-      })
+    if (grades.grades) {
+      for (const grade of grades.grades) {
+        if (subjects[grade.subject.name]) {
+          subjects[grade.subject.name].grades.push({
+            id: generateId(JSON.stringify(grade)),
+            subjectId: grade.subject.id,
+            subjectName: grade.subject.name,
+            description: grade.comment,
+            givenAt: grade.date,
+            subjectFile: {
+              type: AttachmentType.LINK,
+              name: "Sujet",
+              url: grade.subjectFilePath,
+              createdByAccount: accountId
+            },
+            correctionFile: {
+              type: AttachmentType.LINK,
+              name: "Sujet",
+              url: grade.correctionFilePath,
+              createdByAccount: accountId
+            },
+            bonus: false,
+            optional: grade.isOptional,
+            outOf: { value: grade.outOf },
+            coefficient: grade.coefficient,
+            studentScore: mapEDGradeScore(grade.value),
+            averageScore: mapEDGradeScore(grade.average),
+            minScore: mapEDGradeScore(grade.min),
+            maxScore: mapEDGradeScore(grade.max),
+            createdByAccount: accountId
+          })
+        }
+      }
     }
 
     return {
       createdByAccount: accountId,
       classAverage: mapEDGradeScore(overview.classAverage),
       studentOverall: mapEDGradeScore(overview.overallAverage),
-      subjects: Object.values(subjects)
+      subjects: Object.values(subjects).filter(subject => subject.grades.length > 0)
     }
   } catch (error) {
     warn(String(error))

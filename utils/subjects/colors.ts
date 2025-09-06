@@ -7,6 +7,9 @@ export function getSubjectColor(subject: string): string {
   const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
   const subjectProperties = useAccountStore.getState().accounts.find(a => a.id === lastUsedAccount)?.customisation?.subjects[cleanedName]
   if (subjectProperties && subjectProperties.color !== "") {
+    if (subjectProperties.color === undefined) {
+      return Colors[0]
+    }
     return subjectProperties.color;
   }
 
