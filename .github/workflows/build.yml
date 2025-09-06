@@ -60,13 +60,13 @@ jobs:
         run: |
           cd android
           ./gradlew assembleRelease
-          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Papillon-unsigned.apk
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/Papillon.apk
 
       - name: 🌍 • Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk-unsigned
-          path: android/app/build/outputs/apk/release/Papillon-unsigned.apk
+          name: android-apk
+          path: android/app/build/outputs/apk/release/Papillon.apk
           if-no-files-found: error
 
   # ===== ANDROID SIGNING =====
@@ -102,7 +102,7 @@ jobs:
       - name: 📥 • Download Unsigned APK
         uses: actions/download-artifact@v4
         with:
-          name: android-apk-unsigned
+          name: android-apk
           path: ./
 
       - name: 🔐 • Setup Android Signing
@@ -117,7 +117,7 @@ jobs:
             --ks-pass pass:"${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
             --key-pass pass:"${{ secrets.ANDROID_KEY_PASSWORD }}" \
             --out Papillon-signed.apk \
-            Papillon-unsigned.apk
+            Papillon.apk
           
           $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)/apksigner verify \
             Papillon-signed.apk
@@ -169,15 +169,15 @@ jobs:
           mkdir -p build
           mkdir -p Payload
           cp -r build/Build/Products/Release-iphoneos/Papillon.app Payload/
-          zip -r Papillon-unsigned.ipa Payload
-          mv Papillon-unsigned.ipa build/Papillon-unsigned.ipa
+          zip -r Papillon.ipa Payload
+          mv Papillon.ipa build/Papillon.ipa
           rm -rf Payload
 
       - name: 🌍 • Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ios-app-unsigned
-          path: ios/build/Papillon-unsigned.ipa
+          name: ios-ipa
+          path: ios/build/Papillon.ipa
           if-no-files-found: error
 
   # ===== iOS SIGNING =====
@@ -205,7 +205,7 @@ jobs:
       - name: 📥 • Download Unsigned IPA
         uses: actions/download-artifact@v4
         with:
-          name: ios-app-unsigned
+          name: ios-ipa
           path: ./
 
       - name: 🔐 • Setup iOS Signing
@@ -228,7 +228,7 @@ jobs:
         run: |
           mkdir -p TempPayload
           cd TempPayload
-          unzip -q ../Papillon-unsigned.ipa
+          unzip -q ../Papillon.ipa
           
           echo "🔍 Auto-detecting signing identity..."
           SIGN_IDENTITY=$(security find-identity -v -p codesigning build.keychain | grep -o '"[^"]*"' | head -1 | tr -d '"')
@@ -248,7 +248,7 @@ jobs:
       - name: 🌍 • Upload Signed IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ios-app-signed
+          name: ios-ipa-signed
           path: Papillon-signed.ipa
           if-no-files-found: error
 
