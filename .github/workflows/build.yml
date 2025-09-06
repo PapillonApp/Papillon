@@ -258,9 +258,13 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: 📋 • Build Summary
         run: |
-          APP_VERSION=$(cat package.json | grep '"version"' | cut -d'"' -f4)
+          APP_VERSION=$(node -p "require('./package.json').version")
           
           COMMIT_ID=$(git rev-parse --short HEAD)
           
