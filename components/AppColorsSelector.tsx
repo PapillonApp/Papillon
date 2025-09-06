@@ -126,6 +126,7 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
 
   const keyExtractor = useCallback((item: typeof AppColors[0]) => item.colorEnum.toString(), []);
 
+
   return (
     <FlatList
       scrollEnabled={false}
