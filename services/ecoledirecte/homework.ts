@@ -54,24 +54,26 @@ export async function setEDHomeworkAsDone(session: Session, account: Account, ho
   }
 }
 
-// From https://github.com/PapillonApp/Papillon/blob/main/src/utils/epochWeekNumber.ts
-
-const EPOCH_WN_CONFIG = {
-  setHour: 6, // We are in Europe, so we set the hour to 6 UTC to avoid any problem with the timezone (= 2h in the morning in Summer Paris timezone)
-  setStartDay: 1, // We set the first day of the week to Monday to ensure that the week number is the same for the whole world
-  setMiddleDay: 3, // We set the middle day of the week to Wednesday to ensure <... same than above ...>
-  setEndDay: 7, // We set the last day of the week to Sunday to ensure <...>
-  numberOfMsInAWeek: 1000 /* ms */ * 60 /* s */ * 60 /* min */ * 24 /* h */ * 7, /* days */
-  adjustEpochInitialDate: 259200000, // =(((new Date(0)).getDay()-1) * EPOCH_WN_CONFIG.numberOfMsInAWeek/7) // We need to substract this for having a good range cause 01/01/1970 was not a Monday and the "-1" is to have Monday as the first day of the week
-};
-
-export const weekNumberToDaysList = (epochWeekNumber: number): Date[] => {
-  const baseTime =
-    epochWeekNumber * EPOCH_WN_CONFIG.numberOfMsInAWeek -
-    EPOCH_WN_CONFIG.adjustEpochInitialDate;
+export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
+  const currentYear = year || new Date().getFullYear();
+  
+  const firstDayOfYear = new Date(currentYear, 0, 1);
+  
+  const firstMonday = new Date(firstDayOfYear);
+  const dayOfWeek = firstDayOfYear.getDay();
+  const daysToAdd = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
+  firstMonday.setDate(firstDayOfYear.getDate() + daysToAdd);
+  
+  const weekStart = new Date(firstMonday);
+  weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
+  
   const weekdays = [];
   for (let i = 0; i < 7; i++) {
-    weekdays.push(new Date(baseTime + i * 86400000));
+    const day = new Date(weekStart);
+    day.setDate(weekStart.getDate() + i);
+    weekdays.push(day);
   }
+  
+  console.log(weekdays);
   return weekdays;
 };
