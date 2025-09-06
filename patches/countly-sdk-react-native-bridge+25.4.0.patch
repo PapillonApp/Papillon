@@ -1,0 +1,23 @@
+diff --git a/node_modules/countly-sdk-react-native-bridge/lib/configuration_interfaces/countly_config_limits.js b/node_modules/countly-sdk-react-native-bridge/lib/configuration_interfaces/countly_config_limits.js
+index ed410a8..8faf712 100644
+--- a/node_modules/countly-sdk-react-native-bridge/lib/configuration_interfaces/countly_config_limits.js
++++ b/node_modules/countly-sdk-react-native-bridge/lib/configuration_interfaces/countly_config_limits.js
+@@ -8,12 +8,12 @@
+ // You can chain multiple configurations.
+ class CountlyConfigSDKInternalLimits {
+     constructor() {
+-        _maxKeyLength = 0;
+-        _maxValueSize = 0;
+-        _maxSegmentationValues = 0;
+-        _maxBreadcrumbCount = 0;
+-        _maxStackTraceLinesPerThread = 0;
+-        _maxStackTraceLineLength = 0;
++        this._maxKeyLength = 0;
++        this._maxValueSize = 0;
++        this._maxSegmentationValues = 0;
++        this._maxBreadcrumbCount = 0;
++        this._maxStackTraceLinesPerThread = 0;
++        this._maxStackTraceLineLength = 0;
+     }
+ 
+     // getters

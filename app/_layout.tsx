@@ -2,6 +2,25 @@
 import 'react-native-reanimated';
 import "@/utils/i18n";
 
+import { MMKV } from 'react-native-mmkv'
+
+import Countly from 'countly-sdk-react-native-bridge';
+import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
+
+let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
+
+try {
+  secrets = require('../secrets.json') ?? { APP_KEY: "", SALT: "", SERVER_URL: "" };
+} catch {
+  console.warn("No secrets.json file found, Countly will not be initialized properly.");
+}
+
+const APP_KEY = secrets.APP_KEY;
+const SALT = secrets.SALT;
+const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
+
+console.log("Countly Config:", { APP_KEY, SALT, SERVER_URL });
+
 import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -75,6 +94,16 @@ const DEMO_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
 }
 
+const CONSENT_SCREEN_OPTIONS = {
+  gesturesEnabled: false,
+  fullScreenGestureEnabled: false,
+  presentation: "fullScreenModal" as const,
+  backButtonVisible: false,
+  headerLargeTitle: false,
+  headerShown: false,
+
+} as const;
+
 const AI_SCREEN_OPTIONS = {
   headerTitle: "AI",
   headerShown: false,
@@ -107,6 +136,7 @@ export default function RootLayout() {
 }
 
 import { Buffer } from 'buffer';
+import { checkConsent } from '@/utils/logger/consent';
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
@@ -125,6 +155,49 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       ModelManager.safeInit();
     }
   }, [magicEnabled]);
+
+  useEffect(() => {
+    /*
+    DONNÉES D'ANALYSE : serveur Countly (https://countly.papillon.bzh)
+
+    - full opt out possible
+
+    - sessions (obligatoire) : durée d'utilisation, nombre d'ouvertures
+    - crashes (optionnel) : rapports de crash (inclut les logs)
+    - users (optionnel) : service utilisé, ENT, détails d'usage groupés sans données d'identification
+    */
+
+    async function initializeCountly() {
+      const consent = await checkConsent();
+      console.log("Countly Consent:", consent);
+
+      const countlyConfig = new CountlyConfig(SERVER_URL, APP_KEY);
+      countlyConfig.setRequiresConsent(true);
+      countlyConfig.setLoggingEnabled(false);
+      countlyConfig.enableCrashReporting();
+      countlyConfig.enableParameterTamperingProtection(SALT);
+
+      if (consent.given) {
+        if (consent.required) {
+          countlyConfig.giveConsent(["sessions"]);
+        }
+
+        if (consent.optional) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users"]);
+        }
+
+        if (consent.advanced) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+        }
+
+        if (consent.required || consent.optional || consent.advanced) {
+          await Countly.initWithConfig(countlyConfig);
+        }
+      }
+    }
+
+    initializeCountly();
+  }, [])
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
@@ -178,6 +251,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+              <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
               <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
@@ -185,10 +259,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -198,9 +272,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
                   presentation: "modal",
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
