@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale';
 import * as Localization from "expo-localization";
 import { t } from 'i18next';
-import { Calendar, CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
+import { CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
 import React, { useCallback, useMemo } from 'react';
 import { Dimensions, Linking, Pressable, StyleSheet, Text } from 'react-native';
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
