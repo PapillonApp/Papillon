@@ -33,6 +33,7 @@ import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "../index/widgets/Grades";
 import { useAccountStore } from "@/stores/account";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -54,25 +55,6 @@ const EmptyListComponent = memo(() => (
     </Stack>
   </Dynamic>
 ));
-
-export const getPeriodName = (name: string) => {
-  // return only digits
-  let digits = name.replace(/[^0-9]/g, '').trim();
-  let newName = name.replace(digits, '').trim();
-
-  return newName;
-}
-
-export const getPeriodNumber = (name: string) => {
-  // return only digits
-  let newName = name.replace(/[^0-9]/g, '').trim();
-
-  if (newName.length === 0) {
-    newName = name[0].toUpperCase();
-  }
-
-  return newName.toString()[0];
-}
 
 export default function TabOneScreen() {
   const theme = useTheme();

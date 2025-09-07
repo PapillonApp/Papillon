@@ -38,17 +38,6 @@ import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-// eslint-disable-next-line camelcase
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -183,8 +172,6 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       if (consent.given) {
         if (consent.required) {
           countlyConfig.giveConsent(["sessions"]);
-          countlyConfig.setDeviceID("papillon-required");
-          await Countly.deviceId.setID("papillon-required");
         }
 
         if (consent.optional) {

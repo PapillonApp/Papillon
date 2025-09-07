@@ -105,6 +105,7 @@ export default function AnimatedModalLayout({
       willChange: 'borderTopRightRadius, borderTopLeftRadius, minHeight', // Hint for native optimization
     };
   });
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {background}

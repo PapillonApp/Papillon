@@ -19,7 +19,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Image, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-export { getServiceName } from "@/utils/services/helper"
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);

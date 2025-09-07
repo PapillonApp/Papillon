@@ -43,7 +43,7 @@ import { useTimetable } from "@/database/useTimetable";
 import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 
-export default function TabOneScreen() {
+const IndexScreen = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
@@ -515,3 +515,5 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+export default IndexScreen;
