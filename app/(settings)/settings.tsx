@@ -70,8 +70,8 @@ export default function SettingsIndex() {
       title: t('Settings_More'),
       content: [
         ...(settingsStore.showDevMode ? [{
-          title: t('Settings_DevMode_Title'),
-          description: t('Settings_DevMode_Description'),
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
           papicon: <Papicons name={"Code"} />,
           icon: <InfoIcon />,
           color: "#FF6B35",
