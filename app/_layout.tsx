@@ -171,20 +171,17 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       countlyConfig.enableParameterTamperingProtection(SALT);
 
       if (consent.given) {
-        if (consent.required) {
-          countlyConfig.giveConsent(["sessions"]);
+        if (consent.advanced) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
         }
 
         if (consent.optional) {
           countlyConfig.giveConsent(["sessions", "crashes", "users"]);
         }
 
-        if (consent.advanced) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+        if (consent.required) {
+          countlyConfig.giveConsent(["sessions"]);
         }
-
-        let currentDeviceId = await Countly.deviceId.getID();
-        console.log("Countly Device ID:", currentDeviceId);
 
         if (consent.required || consent.optional || consent.advanced) {
           await Countly.initWithConfig(countlyConfig);

@@ -69,14 +69,14 @@ export default function SettingsIndex() {
     {
       title: t('Settings_More'),
       content: [
-        {
+        /*{
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-        },
+        },*/
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
@@ -95,19 +95,6 @@ export default function SettingsIndex() {
         }
       ]
     },
-    ...(settingsStore.showDevMode ? [{
-      title: t('Settings_Dev'),
-      content: [
-        ...(settingsStore.showDevMode ? [{
-          title: "Mode développeur",
-          description: "Options avancées pour les développeurs.",
-          papicon: <Papicons name={"Code"} />,
-          icon: <InfoIcon />,
-          color: "#FF6B35",
-          onPress: () => router.navigate("/devmode")
-        }] : []),
-      ]
-    }] : []),
     {
       title: t('Settings_About'),
       content: [
@@ -145,7 +132,20 @@ export default function SettingsIndex() {
           }
         },
       ]
-    }
+    },
+    ...(settingsStore.showDevMode ? [{
+      title: t('Settings_Dev'),
+      content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
+      ]
+    }] : []),
   ]
 
   const BigButtons: Array<{
@@ -296,7 +296,7 @@ export default function SettingsIndex() {
             ) : null,
             papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
             onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
-            tags: 'tags' in item ? item.tags as string[] | undefined : undefined
+            tags: 'tags' in item ? item.tags as string[] | undefined : undefined,
           })),
         }))}
       />
