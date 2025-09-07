@@ -161,6 +161,7 @@
 
   "Grades_Menu_SortBy": "Tri par",
   "Grades_Menu_AverageBy": "Moyenne par",
+  "NoAverage": "Aucune moyenne",
 
   "Grades_Empty_Title": "Aucune note",
   "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
@@ -315,10 +316,5 @@
   "Consent_Accept": "Accepter",
   "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli.",
 
-  "Colors.rose": "Rose",
-  "Colors.yellow": "Jaune",
-  "Colors.green": "Vert",
-  "Colors.purple": "Violet",
-  "Colors.blue": "Bleu",
-  "Colors.black": "Noir"
+  "Changelog_Title": "Notes de mise à jour"
 }
