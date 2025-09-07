@@ -287,7 +287,7 @@ function NewsSection() {
             <Typography variant="title"
               color="text"
             >
-              {item.title}
+              {item.title || "Aucun titre"}
             </Typography>
             <Typography variant="caption"
               color="secondary"

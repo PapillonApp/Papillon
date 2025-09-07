@@ -69,24 +69,28 @@ const TaskItem = memo(({ item, index, onProgressChange }: {
   index: number;
   onProgressChange: (index: number, newProgress: number) => void;
 }) => {
-  const cleanContent = item.content.replace(/<[^>]*>/g, "");
-  const magic = useMagicPrediction(cleanContent);
+  try {
+    const cleanContent = item.content.replace(/<[^>]*>/g, "");
+    const magic = useMagicPrediction(cleanContent);
 
-  return (
-    <Task
-      subject={getSubjectName(item.subject)}
-      emoji={getSubjectEmoji(item.subject)}
-      title={""}
-      color={getSubjectColor(item.subject)}
-      description={cleanContent}
-      date={new Date(item.dueDate)}
-      progress={item.isDone ? 1 : 0}
-      index={index}
-      magic={magic}
-      fromCache={item.fromCache ?? false}
-      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
-    />
-  );
+    return (
+      <Task
+        subject={getSubjectName(item.subject)}
+        emoji={getSubjectEmoji(item.subject)}
+        title={""}
+        color={getSubjectColor(item.subject)}
+        description={cleanContent}
+        date={new Date(item.dueDate)}
+        progress={item.isDone ? 1 : 0}
+        index={index}
+        magic={magic}
+        fromCache={item.fromCache ?? false}
+        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+      />
+    );
+  } catch (error) {
+    return null;
+  }
 });
 
 const EmptyListComponent = memo(() => (

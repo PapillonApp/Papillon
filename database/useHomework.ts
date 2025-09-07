@@ -32,19 +32,11 @@ export function useHomeworkForWeek(weekNumber: number, refresh = 0) {
   const [homeworks, setHomeworks] = useState<SharedHomework[]>([]);
 
   useEffect(() => {
-    const { start, end } = getDateRangeOfWeek(weekNumber);
-
-    const query = database.get<Homework>('homework').query(
-      Q.where('dueDate', Q.between(start.getTime(), end.getTime()))
-    );
-
-    const sub = query.observe().subscribe(homeworks =>
-      setHomeworks(
-        homeworks.map(mapHomeworkToShared).sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
-      )
-    );
-
-    return () => sub.unsubscribe();
+    const fetchHomeworks = async () => {
+      const homeworksFetched = await getHomeworksFromCache(weekNumber);
+      setHomeworks(homeworksFetched);
+    };
+    fetchHomeworks();
   }, [weekNumber, refresh, database]);
 
   return homeworks;

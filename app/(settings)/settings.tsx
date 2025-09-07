@@ -26,8 +26,9 @@ import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
 
-const SettingsIndex = () => {
+export default function SettingsIndex() {
   const router = useRouter();
+
   const theme = useTheme();
   const { colors } = theme;
 
@@ -82,6 +83,14 @@ const SettingsIndex = () => {
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
         },
         {
+          title: t('Settings_Telemetry_Title'),
+          description: `${t('Settings_Telemetry_Description')}`,
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
+        {
           title: t('Settings_About_Title'),
           description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
@@ -129,8 +138,8 @@ const SettingsIndex = () => {
   }> = [
       {
         icon: <Papicons name={"Palette"} />,
-        title: "Personnalisation",
-        description: "Thèmes, matières...",
+        title: t('Settings_Personalization_Title_Card'),
+        description: t('Settings_Personalization_Subtitle_Card'),
         color: "#17C300",
         onPress: () => {
           router.navigate("/(settings)/personalization")
@@ -139,14 +148,17 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"User"} />,
         title: "Services",
-        description: "Comptes liés",
+        description: t('Settings_Services_Title'),
         color: "#DD9B00",
         disabled: true,
+        onPress: () => {
+          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+        }
       },
       {
         icon: <Papicons name={"Card"} />,
         title: t("Settings_Cards_Banner_Title"),
-        description: "Cantine, accès",
+        description: t('Settings_Cantineen_Subtitle_Card'),
         color: "#0059DD",
         onPress: () => {
           router.navigate("/(settings)/cards")
@@ -155,7 +167,7 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"Sparkles"} />,
         title: "Magic+",
-        description: "Fonctions I.A",
+        description: t('Settings_MagicPlus_Description_Card'),
         color: "#DD007D",
         onPress: () => {
           router.navigate("/(settings)/magic")
@@ -290,5 +302,3 @@ const SettingsIndex = () => {
     </>
   );
 };
-
-export default SettingsIndex;

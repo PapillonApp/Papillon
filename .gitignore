@@ -48,3 +48,5 @@ android/*
 !android/app/src/main/AndroidManifest.xml
 
 bun.lock
+
+secrets.json

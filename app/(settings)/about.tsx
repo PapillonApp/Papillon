@@ -1,6 +1,6 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
-import { Linking, ScrollView, Text } from "react-native";
+import { Alert, Linking, ScrollView, Text } from "react-native";
 
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
@@ -14,7 +14,7 @@ import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
 import { useTranslation } from "react-i18next";
 
-const SettingsAbout = () => {
+export default function SettingsAbout() {
   const theme = useTheme()
   const { colors } = theme
 
@@ -25,17 +25,17 @@ const SettingsAbout = () => {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
       leading: <Papicons name="PiggyBank" />,
-      onPress: () => console.log("sus"),
+      onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible."),
     },
     {
-      title: "Serveur Discord",
-      description: "Rejoindre le serveur Discord",
+      title: t("Settings_About_Discord"),
+      description: t("Settings_About_Discord_Description"),
       leading: <Papicons name="TextBubble" />,
       onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
     },
     {
-      title: "Projet GitHub",
-      description: "Contribuer au projet sur GitHub",
+      title: t("Settings_About_Github"),
+      description: t("Settings_About_Github_Description"),
       leading: <Papicons name="Ghost" />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
@@ -48,7 +48,7 @@ const SettingsAbout = () => {
       leading: <Papicons name="Butterfly" />,
     },
     {
-      title: "Version des dépendances",
+      title: t("Settings_About_Dependency_Version"),
       description: `Expo: ${packageJson.dependencies?.expo || "N/A"} | RN: ${packageJson.dependencies?.["react-native"] || "N/A"}`,
       leading: <Papicons name="Code" />,
     }
@@ -61,8 +61,8 @@ const SettingsAbout = () => {
     >
       <SettingsHeader
         color={theme.dark ? "#121e2a" : "#dfebf7"}
-        title="Derrière Papillon"
-        description="Papillon est maintenu par des étudiants 100% bénévoles"
+        title={t('Settings_About_Papillion_Behind')}
+        description={t('Settings_About_Papillion_Behind_Description')}
         imageSource={require("@/assets/images/about_papillon.png")}
         disableMargin
         height={270}
@@ -115,5 +115,3 @@ const SettingsAbout = () => {
     </ScrollView>
   );
 }
-
-export default SettingsAbout;

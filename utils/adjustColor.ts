@@ -1,4 +1,5 @@
 export default function adjust(hex: string, percent: number) {
+  if (!hex) return hex;
   hex = hex.replace(/^#/, '');
 
   if (hex.length === 3) {

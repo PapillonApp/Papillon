@@ -6,7 +6,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { useLocalSearchParams, useNavigation } from "expo-router"
 import { useEffect, useState } from "react";
-import { Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Attachment, News as SkolengoNews } from "skolengojs"
 import * as Papicons from '@getpapillon/papicons';
 
@@ -139,21 +139,25 @@ export default function NewsPage() {
         style={{ flex: 1, backgroundColor: styles[style].background }}
       >
         {news.attachments.length > 0 && (
-          <List>
-            {news.attachments.map((attachment, i) => (
-              <Item key={i}>
-                <Icon papicon>
-                  {attachment.type === 0 ? (
-                    <Papicons.Link />
-                  ) : (
-                    <Papicons.Paper />
-                  )}
-                </Icon>
-                <Typography nowrap variant="title">{attachment.name}</Typography>
-                <Typography nowrap variant="caption">{attachment.url}</Typography>
-              </Item>
-            ))}
-          </List>
+          <View style={{ padding: 16, width: "100%" }}>
+            <List>
+              {news.attachments.map((attachment, i) => (
+                <Item key={i}
+                  onPress={() => { Linking.openURL(attachment.url) }}
+                >
+                  <Icon papicon>
+                    {attachment.type === 0 ? (
+                      <Papicons.Link />
+                    ) : (
+                      <Papicons.Paper />
+                    )}
+                  </Icon>
+                  <Typography nowrap variant="title">{attachment.name}</Typography>
+                  <Typography nowrap variant="caption">{attachment.url}</Typography>
+                </Item>
+              ))}
+            </List>
+          </View>
         )}
 
         <HTMLView

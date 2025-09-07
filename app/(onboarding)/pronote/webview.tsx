@@ -186,6 +186,7 @@ export default function WebViewScreen() {
           setDoubleAuthError(error)
           setDoubleAuthSession(session)
           setDeviceId(deviceUUID)
+          setChallengeModalVisible(true)
         } else {
           console.error("Error during login:", error);
           throw error;

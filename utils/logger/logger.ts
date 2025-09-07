@@ -1,6 +1,9 @@
 /* eslint-disable no-console */
 import { LogType } from '@/stores/logs/types';
 
+// Reporting (if consent has been given)
+import Countly from 'countly-sdk-react-native-bridge';
+
 import { useLogStore } from '../../stores/logs/index'
 const format = "[%DATE%][%FROM%] %MESSAGE%";
 
@@ -40,6 +43,9 @@ function obtainFunctionName(from?: string): string {
 
 function saveLog(date: string, message: string, type: LogType, from?: string) {
   useLogStore.getState().addItem({ date, message, from, type });
+
+  // Does NOT sends anything to the server --> only if crash happens
+  Countly.addCrashLog(message);
 }
 
 function log(message: string, from?: string): void {
@@ -56,7 +62,10 @@ function error(message: string, from?: string): never {
   const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(entry);
+  // Sends crash to the server (if consent given)
+  Countly.logException(entry, true, JSON.parse(JSON.stringify(entry)));
   throw new Error(entry);
+
 }
 
 function warn(message: string, from?: string): void {
