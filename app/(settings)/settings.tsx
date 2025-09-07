@@ -62,7 +62,7 @@ export default function SettingsIndex() {
     for (const service of account.services) {
       ClearDatabaseForAccount(service.id)
     }
-    return router.push("/(onboarding)/welcome")
+    router.push("/(onboarding)/welcome");
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
