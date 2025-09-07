@@ -33,8 +33,6 @@ import { Services } from "@/stores/account/types";
 import { useTranslation } from "react-i18next";
 import { Capabilities } from "@/services/shared/types";
 
-export { getServiceName };
-
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
   const search = useLocalSearchParams();

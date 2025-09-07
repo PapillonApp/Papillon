@@ -44,7 +44,7 @@ import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
 
-export default function TabOneScreen() {
+const IndexScreen = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
@@ -243,7 +243,7 @@ export default function TabOneScreen() {
         color={foreground}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -532,3 +532,5 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+export default IndexScreen;

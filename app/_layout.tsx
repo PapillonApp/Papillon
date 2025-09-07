@@ -38,17 +38,6 @@ import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-// eslint-disable-next-line camelcase
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -183,8 +172,6 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       if (consent.given) {
         if (consent.required) {
           countlyConfig.giveConsent(["sessions"]);
-          countlyConfig.setDeviceID("papillon-required");
-          await Countly.deviceId.setID("papillon-required");
         }
 
         if (consent.optional) {
@@ -237,7 +224,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Combined effect for system UI updates to reduce effect overhead
   useEffect(() => {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       SystemUI.setBackgroundColorAsync(backgroundColor);
     }
     else {
@@ -268,10 +255,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -281,9 +268,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   presentation: "modal",
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
@@ -296,12 +283,12 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: false,
                   headerTitle: "Notifications",
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: false,
                   presentation: "formSheet",
                   sheetGrabberVisible: true,
                   sheetAllowedDetents: [0.5, 0.75, 1],
-                  sheetCornerRadius: runsIOS26() ? undefined : 30,
+                  sheetCornerRadius: runsIOS26 ? undefined : 30,
                 }}
               />
 
@@ -310,7 +297,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: true,
                 }}
               />
@@ -350,7 +337,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_Attendance"),
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: true,
                   presentation: "modal"
                 }}

@@ -17,7 +17,7 @@ export interface SupportedService {
     style?: { [key: string]: any }
 }
 
-export function getSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
+export function GetSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
     const theme = useTheme();
     const { colors } = theme;
     const { t } = useTranslation()
@@ -103,7 +103,7 @@ export interface SupportedUniversity {
     onPress: () => void;
 }
 
-export function getSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
+export function GetSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
     const { t } = useTranslation();
 
     return [
@@ -190,7 +190,7 @@ export interface LoginMethod {
     onPress: () => void;
 }
 
-export function getLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
+export function GetLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
     const { t } = useTranslation();
 
     return [
@@ -242,7 +242,7 @@ export interface SupportedRestaurant {
     onPress: () => void;
 }
 
-export function getSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
+export function GetSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
     return [
         {
             name: "turboself",

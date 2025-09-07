@@ -33,6 +33,7 @@ import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "../index/widgets/Grades";
 import { useAccountStore } from "@/stores/account";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -54,25 +55,6 @@ const EmptyListComponent = memo(() => (
     </Stack>
   </Dynamic>
 ));
-
-export const getPeriodName = (name: string) => {
-  // return only digits
-  let digits = name.replace(/[^0-9]/g, '').trim();
-  let newName = name.replace(digits, '').trim();
-
-  return newName;
-}
-
-export const getPeriodNumber = (name: string) => {
-  // return only digits
-  let newName = name.replace(/[^0-9]/g, '').trim();
-
-  if (newName.length === 0) {
-    newName = name[0].toUpperCase();
-  }
-
-  return newName.toString()[0];
-}
 
 export default function TabOneScreen() {
   const theme = useTheme();
@@ -463,7 +445,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -526,16 +508,16 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
               {currentPeriod?.name &&
                 <Dynamic animated style={{ marginTop: -3 }}>
-                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
                     {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
                   </NativeHeaderHighlight>
                 </Dynamic>

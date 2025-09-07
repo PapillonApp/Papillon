@@ -1,10 +1,10 @@
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
-import { type ComponentType,useState } from "react";
+import { type ComponentType, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, { Platform, Pressable, Text, View } from "react-native";
-import Reanimated, { Easing,LinearTransition } from "react-native-reanimated";
+import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Button from "@/ui/components/Button";
 import Typography from "@/ui/components/Typography";
@@ -28,7 +28,7 @@ export default function AlertModal() {
         padding: 18,
         paddingTop: 20,
         gap: 22,
-        marginBottom: runsIOS26() ? -32 : 0,
+        marginBottom: runsIOS26 ? -32 : 0,
         alignSelf: "center",
       }}
     >
@@ -81,7 +81,7 @@ export default function AlertModal() {
               gap: 8,
             }
           ]}
-          layout={Platform.OS === "ios" ? LinearTransition.duration(200).easing(Easing.inOut(Easing.quad)):undefined}
+          layout={Platform.OS === "ios" ? LinearTransition.duration(200).easing(Easing.inOut(Easing.quad)) : undefined}
         >
           <Pressable
             style={{

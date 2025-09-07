@@ -300,11 +300,11 @@ export default function SettingsIndex() {
         Platform.OS === 'ios' && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
-              tintColor={runsIOS26() ? colors.text : colors.primary}
+              tintColor={runsIOS26 ? colors.text : colors.primary}
               onPress={() => router.back()}
 
               style={{
-                marginLeft: runsIOS26() ? 3 : -32,
+                marginLeft: runsIOS26 ? 3 : -32,
               }}
             />
           </NativeHeaderSide>

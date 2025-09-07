@@ -8,7 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber } from "../(tabs)/grades";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
