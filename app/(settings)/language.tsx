@@ -5,7 +5,9 @@ import { ScrollView, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import Icon from "@/ui/components/Icon";
+import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
+import { t } from "i18next";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 
@@ -23,48 +25,25 @@ const LanguagePersonalization = () => {
         <ScrollView
             style={{ flex: 1 }}
             contentContainerStyle={{ padding: 16 }}
-            contentInsetAdjustmentBehavior={"always"}
+
         >
             <List>
                 {languages.map((lang) => {
                     const isSelected = i18n.language === lang.id;
 
                     return (
-                        <TouchableOpacity
+                        <Item
                             key={lang.id}
                             onPress={() => {
-                                log("PRESSED!" + lang.id, " I18NMANAGER")
                                 i18n.changeLanguage(lang.id);
                             }}
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                padding: 16,
-                                margin: 4,
-                                borderRadius: 16,
-                                backgroundColor: isSelected ? lang.color + "30" : "transparent",
-                            }}
                         >
-                            <Stack
-                                backgroundColor={lang.color + "20"}
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 40,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    marginRight: 16,
-                                }}
-                            >
-                                <Typography
-                                    style={{
-                                        fontSize: 25,
-                                        lineHeight: 32,
-                                    }}
-                                >
-                                    {lang.emoji}
-                                </Typography>
-                            </Stack>
+                            <Typography style={{
+                                fontSize: 25,
+                                lineHeight: 32,
+                            }}>
+                                {lang.emoji}
+                            </Typography>
 
                             <Typography
                                 variant={"title"}
@@ -77,14 +56,16 @@ const LanguagePersonalization = () => {
                             </Typography>
 
                             {isSelected && (
-                                <Icon size={22} papicon>
-                                    <Papicons name={"Check"} color={colors.primary} />
-                                </Icon>
+                                <Trailing>
+                                    <Icon size={22} papicon>
+                                        <Papicons name={"Check"} color={colors.primary} />
+                                    </Icon>
+                                </Trailing>
+
                             )}
-                        </TouchableOpacity>
+                        </Item>
                     );
                 })}
-
             </List>
         </ScrollView>
     );
