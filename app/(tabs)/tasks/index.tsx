@@ -288,7 +288,7 @@ export default function TabOneScreen() {
   const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
 
   function marginTop(): number {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       if (fullyScrolled) {
         return 6
       }
@@ -368,7 +368,7 @@ export default function TabOneScreen() {
         ListEmptyComponent={<EmptyListComponent />}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -518,12 +518,12 @@ export default function TabOneScreen() {
               marginTop: marginTop(),
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26 && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
@@ -537,7 +537,7 @@ export default function TabOneScreen() {
                 style={{
                   width: 200,
                   alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
-                  marginTop: !runsIOS26() ? -4 : 0,
+                  marginTop: !runsIOS26 ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>

@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
-import React, { Suspense,useMemo } from "react";
-import { ActivityIndicator,Dimensions, StyleSheet, View } from "react-native";
+import React, { Suspense, useMemo } from "react";
+import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   Extrapolate,
   interpolate,

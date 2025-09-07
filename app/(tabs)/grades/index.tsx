@@ -463,7 +463,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -526,16 +526,16 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
               {currentPeriod?.name &&
                 <Dynamic animated style={{ marginTop: -3 }}>
-                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
                     {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
                   </NativeHeaderHighlight>
                 </Dynamic>
