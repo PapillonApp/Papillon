@@ -16,4 +16,6 @@ export interface Personalization {
   colorSelected?: Colors;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
+  showAlertAtLogin?: boolean;
+  showDevMode?: boolean;
 }

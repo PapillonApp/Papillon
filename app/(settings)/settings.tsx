@@ -25,6 +25,7 @@ import * as WebBrowser from "expo-web-browser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -35,6 +36,8 @@ export default function SettingsIndex() {
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -66,6 +69,14 @@ export default function SettingsIndex() {
     {
       title: t('Settings_More'),
       content: [
+        ...(settingsStore.showDevMode ? [{
+          title: t('Settings_DevMode_Title'),
+          description: t('Settings_DevMode_Description'),
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
         {
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),

@@ -42,6 +42,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
 import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function TabOneScreen() {
   const now = new Date();
@@ -73,6 +74,8 @@ export default function TabOneScreen() {
   const navigation = useNavigation();
   const alert = useAlert();
 
+  const settingsStore = useSettingsStore(state => state.personalization)
+
   useEffect(() => {
     checkConsent().then(consent => {
       if (!consent.given) {
@@ -88,14 +91,17 @@ export default function TabOneScreen() {
 
       await Promise.all([fetchEDT(), fetchGrades()]);
 
-      alert.showAlert({
-        title: "Synchronisation réussie",
-        description: "Toutes vos données ont été mises à jour avec succès.",
-        icon: "CheckCircle",
-        color: "#00C851",
-        withoutNavbar: true,
-        delay: 1000
-      });
+      if (settingsStore.showAlertAtLogin) {
+        alert.showAlert({
+          title: "Synchronisation réussie",
+          description: "Toutes vos données ont été mises à jour avec succès.",
+          icon: "CheckCircle",
+          color: "#00C851",
+          withoutNavbar: true,
+          delay: 1000
+        });
+      }
+
     } catch (error) {
       alert.showAlert({
         title: "Connexion impossible",

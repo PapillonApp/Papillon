@@ -209,6 +209,15 @@ export default function Devmode() {
         >
           <Typography variant="title">Error Alert</Typography>
         </Item>
+        <Item>
+          <Typography variant="title">Activer Alert au Login</Typography>
+          <Trailing>
+            <Switch
+              value={settingStore.showAlertAtLogin}
+              onValueChange={value => mutateProperty("personalization", { showAlertAtLogin: value })}
+            />
+          </Trailing>
+        </Item>
       </List>
     </ScrollView >
   );
