@@ -24,8 +24,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
@@ -129,6 +129,7 @@ export default function RootLayout() {
 
 import { Buffer } from 'buffer';
 import { checkConsent } from '@/utils/logger/consent';
+import { initializeAccountManager } from '@/services/shared';
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
@@ -142,6 +143,34 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
     const color = selectedColorEnum != null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
     return color || AppColors[0]; // Fallback vers la première couleur si aucune n'est trouvée
   }, [selectedColorEnum]);
+
+  const appState = useRef<AppStateStatus>(AppState.currentState);
+  const [lastBackground, setLastBackground] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+        if (lastBackground) {
+          const now = new Date();
+          const durationMs = now.getTime() - lastBackground.getTime();
+
+          if (durationMs > 5 * 60 * 1000) {
+            initializeAccountManager();
+          }
+        }
+      }
+
+      if (nextAppState === "background") {
+        setLastBackground(new Date());
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [lastBackground]);
 
   useEffect(() => {
     if (magicEnabled) {
