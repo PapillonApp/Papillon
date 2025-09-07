@@ -21,7 +21,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 
 import Reanimated from "react-native-reanimated";
 
-export const avgAlgorithms = [
+const avgAlgorithms = [
   {
     label: t("Grades_Avg_All_Title"),
     short: t("Grades_Avg_All_Short"),
@@ -318,4 +318,4 @@ const GradesWidget = (
   )
 }
 
-export default memo(GradesWidget);
+export default GradesWidget;

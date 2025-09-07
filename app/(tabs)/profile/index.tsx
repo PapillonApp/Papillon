@@ -385,7 +385,7 @@ export default function TabOneScreen() {
     let establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [lastUsedAccount]);
+  }, [lastUsedAccount, accounts]);
 
   const headerHeight = useHeaderHeight();
 
@@ -549,7 +549,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}

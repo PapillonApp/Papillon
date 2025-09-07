@@ -25,6 +25,7 @@ import * as WebBrowser from "expo-web-browser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -35,6 +36,8 @@ export default function SettingsIndex() {
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -83,14 +86,6 @@ export default function SettingsIndex() {
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
         },
         {
-          title: t('Settings_Telemetry_Title'),
-          description: `${t('Settings_Telemetry_Description')}`,
-          icon: <InfoIcon />,
-          papicon: <Papicons name={"Check"} />,
-          color: "#797979",
-          onPress: () => router.navigate("../consent")
-        },
-        {
           title: t('Settings_About_Title'),
           description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
@@ -100,9 +95,29 @@ export default function SettingsIndex() {
         }
       ]
     },
+    ...(settingsStore.showDevMode ? [{
+      title: t('Settings_Dev'),
+      content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
+      ]
+    }] : []),
     {
       title: t('Settings_About'),
       content: [
+        {
+          title: t('Settings_Telemetry_Title'),
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
@@ -289,11 +304,11 @@ export default function SettingsIndex() {
         Platform.OS === 'ios' && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
-              tintColor={runsIOS26() ? colors.text : colors.primary}
+              tintColor={runsIOS26 ? colors.text : colors.primary}
               onPress={() => router.back()}
 
               style={{
-                marginLeft: runsIOS26() ? 3 : -32,
+                marginLeft: runsIOS26 ? 3 : -32,
               }}
             />
           </NativeHeaderSide>

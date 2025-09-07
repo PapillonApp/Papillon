@@ -12,7 +12,7 @@ export default function Layout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerLargeTitle: runsIOS26(),
+    headerLargeTitle: runsIOS26,
     headerBackVisible: true,
   }), []);
 
