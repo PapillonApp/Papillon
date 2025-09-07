@@ -65,7 +65,7 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: runsIOS26 ? insets.top + 48 : topInset || 8,
+        top: insets.top + 48,
         zIndex: 99999,
         width: "100%",
         height: "100%",
