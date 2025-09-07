@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
-import Reanimated, { LinearTransition,useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Reanimated, { LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { Animation } from "@/ui/utils/Animation";
 
@@ -44,7 +44,7 @@ const NativeHeaderTopPressable = React.memo(function NativeHeaderTopPressable({
   }, [opacity]);
 
   const handlePress = useCallback(() => {
-    if (onPress) {onPress();}
+    if (onPress) { onPress(); }
   }, [onPress]);
 
   return (

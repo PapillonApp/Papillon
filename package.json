@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "expo-router/entry",
-  "version": "8.0.0",
+  "version": "8.0.2",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -34,6 +34,7 @@
     "@shopify/react-native-skia": "^2.2.7",
     "@types/uuid": "^10.0.0",
     "buffer": "^6.0.3",
+    "countly-sdk-react-native-bridge": "^25.4.0",
     "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",

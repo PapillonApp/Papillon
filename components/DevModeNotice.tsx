@@ -42,4 +42,4 @@ function DevModeNotice() {
   );
 }
 
-export default memo(DevModeNotice);
+export default DevModeNotice;

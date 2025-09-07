@@ -29,7 +29,7 @@ interface GradesModalProps {
   allGrades: SharedGrade[];
 }
 
-const GradesModal: React.FC<GradesModalProps> = () => {
+export default function GradesModal() {
   const { params } = useRoute();
   const { colors } = useTheme();
 
@@ -202,5 +202,3 @@ const GradesModal: React.FC<GradesModalProps> = () => {
     </>
   )
 }
-
-export default GradesModal;

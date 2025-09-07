@@ -2,6 +2,23 @@
 import 'react-native-reanimated';
 import "@/utils/i18n";
 
+import { MMKV } from 'react-native-mmkv'
+
+import Countly from 'countly-sdk-react-native-bridge';
+import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
+
+let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
+
+try {
+  secrets = require('../secrets.json') ?? { APP_KEY: "", SALT: "", SERVER_URL: "" };
+} catch {
+  console.warn("No secrets.json file found, Countly will not be initialized properly.");
+}
+
+const APP_KEY = secrets.APP_KEY;
+const SALT = secrets.SALT;
+const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
+
 import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -20,17 +37,6 @@ import { t } from 'i18next';
 import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-// eslint-disable-next-line camelcase
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -75,6 +81,21 @@ const DEMO_SCREEN_OPTIONS = {
   headerBackButtonDisplayMode: "minimal" as const,
 }
 
+const CONSENT_SCREEN_OPTIONS = {
+  gesturesEnabled: false,
+  fullScreenGestureEnabled: false,
+  presentation: "fullScreenModal" as const,
+  backButtonVisible: false,
+  headerLargeTitle: false,
+  headerShown: false,
+
+} as const;
+
+const CHANGELOG_SCREEN_OPTIONS = {
+  headerTitle: t("Changelog_Title"),
+  headerLargeTitle: false,
+}
+
 const AI_SCREEN_OPTIONS = {
   headerTitle: "AI",
   headerShown: false,
@@ -107,10 +128,12 @@ export default function RootLayout() {
 }
 
 import { Buffer } from 'buffer';
+import { checkConsent } from '@/utils/logger/consent';
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
   const colorScheme = useColorScheme();
+  const selectedTheme = useSettingsStore(state => state.personalization.theme);
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -126,9 +149,52 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
     }
   }, [magicEnabled]);
 
+  useEffect(() => {
+    /*
+    DONNÉES D'ANALYSE : serveur Countly (https://countly.papillon.bzh)
+
+    - full opt out possible
+
+    - sessions (obligatoire) : durée d'utilisation, nombre d'ouvertures
+    - crashes (optionnel) : rapports de crash (inclut les logs)
+    - users (optionnel) : service utilisé, ENT, détails d'usage groupés sans données d'identification
+    */
+
+    async function initializeCountly() {
+      const consent = await checkConsent();
+      console.log("Countly Consent:", consent);
+
+      const countlyConfig = new CountlyConfig(SERVER_URL, APP_KEY);
+      countlyConfig.setRequiresConsent(true);
+      countlyConfig.setLoggingEnabled(false);
+      countlyConfig.enableCrashReporting();
+      countlyConfig.enableParameterTamperingProtection(SALT);
+
+      if (consent.given) {
+        if (consent.advanced) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
+        }
+
+        if (consent.optional) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users"]);
+        }
+
+        if (consent.required) {
+          countlyConfig.giveConsent(["sessions"]);
+        }
+
+        if (consent.required || consent.optional || consent.advanced) {
+          await Countly.initWithConfig(countlyConfig);
+        }
+      }
+    }
+
+    initializeCountly();
+  }, [])
+
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    const newScheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    const newScheme = selectedTheme === 'auto' ? (colorScheme === 'dark' ? DarkTheme : DefaultTheme) : (selectedTheme === 'dark' ? DarkTheme : DefaultTheme);
     return {
       ...newScheme,
       colors: {
@@ -136,7 +202,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         primary: color?.mainColor ?? newScheme.colors.primary,
       },
     };
-  }, [colorScheme, color]);
+  }, [colorScheme, color, selectedTheme]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
@@ -156,7 +222,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Combined effect for system UI updates to reduce effect overhead
   useEffect(() => {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       SystemUI.setBackgroundColorAsync(backgroundColor);
     }
     else {
@@ -178,6 +244,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+              <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
+              <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
               <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
@@ -185,10 +253,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -198,9 +266,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26():true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26():false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   presentation: "modal",
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
@@ -213,12 +281,12 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: false,
                   headerTitle: "Notifications",
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: false,
                   presentation: "formSheet",
                   sheetGrabberVisible: true,
                   sheetAllowedDetents: [0.5, 0.75, 1],
-                  sheetCornerRadius: runsIOS26() ? undefined : 30,
+                  sheetCornerRadius: runsIOS26 ? undefined : 30,
                 }}
               />
 
@@ -227,8 +295,18 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26(),
-                  headerLargeTitle: true,
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(news)/specific"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_News"),
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
                 }}
               />
 
@@ -267,7 +345,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_Attendance"),
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: true,
                   presentation: "modal"
                 }}

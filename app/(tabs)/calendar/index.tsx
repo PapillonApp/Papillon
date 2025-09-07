@@ -26,6 +26,7 @@ import { log, warn } from "@/utils/logger/logger";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { useTimetable } from '@/database/useTimetable';
 import { getSubjectName } from '@/utils/subjects/name';
+import { useAccountStore } from '@/stores/account';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -62,8 +63,15 @@ export default function TabOneScreen() {
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
-  const timetable = useTimetable(undefined, weekNumber)
   const manager = getManager();
+
+  const store = useAccountStore.getState()
+  const account = store.accounts.find(account => store.lastUsedAccount);
+  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const timetable = useTimetable(undefined, weekNumber).map(day => ({
+    ...day,
+    courses: day.courses.filter(course => services.includes(course.createdByAccount))
+  })).filter(day => day.courses.length > 0);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
@@ -334,6 +342,17 @@ export default function TabOneScreen() {
                   start={Math.floor(item.from.getTime() / 1000)}
                   end={Math.floor(item.to.getTime() / 1000)}
                   showTimes={false}
+                  onPress={() => {
+                    navigation.navigate('(modals)/course', {
+                      course: item,
+                      subjectInfo: {
+                        id: item.subjectId,
+                        name: getSubjectName(item.subject),
+                        color: getSubjectColor(item.subject) || Colors[0],
+                        emoji: getSubjectEmoji(item.subject),
+                      }
+                    });
+                  }}
                 />
               );
             }
@@ -413,6 +432,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
+      {/*
       <NativeHeaderSide side="Right">
         <MenuView
           actions={[
@@ -441,6 +461,7 @@ export default function TabOneScreen() {
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
+      */}
 
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable

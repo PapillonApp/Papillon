@@ -12,7 +12,7 @@ export default function Layout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerLargeTitle: runsIOS26(),
+    headerLargeTitle: runsIOS26,
     headerBackVisible: true,
   }), []);
 
@@ -70,7 +70,7 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_MagicPlus_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: Platform.OS === "ios",
+          headerTransparent: false,
           headerLargeTitle: false,
         }}
       />

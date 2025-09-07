@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import {
   Alert,
   KeyboardAvoidingView,
+  Platform,
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker"
@@ -18,6 +19,7 @@ import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { getInitials } from "@/utils/chats/initials";
 import Avatar from "@/ui/components/Avatar";
+import { useTheme } from "@react-navigation/native";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -64,6 +66,8 @@ export default function CustomProfileScreen() {
     );
   }
 
+  const { colors } = useTheme();
+
   return (
     <KeyboardAvoidingView
       behavior={"position"}
@@ -82,15 +86,30 @@ export default function CustomProfileScreen() {
             {
               id: 'photo_library',
               title: t("Button_Change_ProfilePicture_FromLibrary"),
+              image: Platform.select({
+                ios: 'photo',
+                android: 'ic_menu_gallery',
+              }),
+              imageColor: colors.text
             },
             {
               id: 'from_service',
               title: t("Button_Change_ProfilePicture_FromService"),
+              image: Platform.select({
+                ios: 'square.and.arrow.down',
+                android: 'ic_menu_save',
+              }),
+              imageColor: colors.text
             },
             {
               id: 'remove_photo',
               title: t("Button_Change_ProfilePicture_Remove"),
-              attributes: { destructive: true }
+              attributes: { destructive: true },
+              image: Platform.select({
+                ios: 'trash',
+                android: 'ic_menu_delete',
+              }),
+              imageColor: "#FF0000"
             }
           ]}
           onPressAction={(e: NativeActionEvent) => {

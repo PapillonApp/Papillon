@@ -26,10 +26,12 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import { getDateWeek } from "@/utils/week";
 import { predictHomework } from "@/utils/magic/prediction";
 import { useSettingsStore } from "@/stores/settings";
-import { getWeekNumberFromDate } from "@/database/useHomework";
+import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
+import { generateId } from "@/utils/generateId";
+import { useAccountStore } from "@/stores/account";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -64,29 +66,34 @@ const useMagicPrediction = (content: string) => {
   return magic;
 };
 
-const TaskItem = memo(({ item, index, onProgressChange }: {
+const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
   item: Homework;
+  fromCache: boolean;
   index: number;
-  onProgressChange: (index: number, newProgress: number) => void;
+  onProgressChange: (item: Homework, newProgress: number) => void;
 }) => {
-  const cleanContent = item.content.replace(/<[^>]*>/g, "");
-  const magic = useMagicPrediction(cleanContent);
+  try {
+    const cleanContent = item.content.replace(/<[^>]*>/g, "");
+    const magic = useMagicPrediction(cleanContent);
 
-  return (
-    <Task
-      subject={getSubjectName(item.subject)}
-      emoji={getSubjectEmoji(item.subject)}
-      title={""}
-      color={getSubjectColor(item.subject)}
-      description={cleanContent}
-      date={new Date(item.dueDate)}
-      progress={item.isDone ? 1 : 0}
-      index={index}
-      magic={magic}
-      fromCache={item.fromCache ?? false}
-      onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
-    />
-  );
+    return (
+      <Task
+        subject={getSubjectName(item.subject)}
+        emoji={getSubjectEmoji(item.subject)}
+        title={""}
+        color={getSubjectColor(item.subject)}
+        description={cleanContent}
+        date={new Date(item.dueDate)}
+        progress={item.isDone ? 1 : 0}
+        index={index}
+        magic={magic}
+        fromCache={item.fromCache ?? false}
+        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+      />
+    );
+  } catch (error) {
+    return null;
+  }
 });
 
 const EmptyListComponent = memo(() => (
@@ -118,12 +125,18 @@ export default function TabOneScreen() {
   const alert = useAlert()
   const windowDimensions = useWindowDimensions();
 
-  const currentDate = new Date();
-  const weekNumber = getWeekNumberFromDate(currentDate)
+  const currentDate = new Date()
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState(weekNumber);
+  const [selectedWeek, setSelectedWeek] = useState<number>(getWeekNumberFromDate(currentDate));
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const store = useAccountStore.getState()
+  const account = store.accounts.find(account => store.lastUsedAccount);
+  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const homeworksFromCache = useHomeworkForWeek(selectedWeek, refreshTrigger).filter(homework => services.includes(homework.createdByAccount));
+  const [homework, setHomework] = useState<Record<string, Homework>>({});
 
   const manager = getManager();
 
@@ -132,7 +145,14 @@ export default function TabOneScreen() {
       return;
     }
     const result = await managerToUse.getHomeworks(selectedWeek);
-    setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+    const newHomeworks: Record<string, Homework> = {};
+    for (const hw of result) {
+      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      newHomeworks[id] = hw;
+    }
+    setHomework(newHomeworks);
+    setRefreshTrigger(prev => prev + 1);
+
   };
 
   useEffect(() => {
@@ -151,22 +171,22 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-  const [homework, setHomework] = useState<Record<number, Homework[]>>({});
 
-  const currentHomework = React.useMemo(() => {
-    return homework[selectedWeek] || [];
-  }, [homework, selectedWeek]);
-
-  const onProgressChange = useCallback((index: number, newProgress: number) => {
-    const updateHomeworkCompletion = async (homeworkItem: Homework, index: number) => {
+  const onProgressChange = useCallback((item: Homework, newProgress: number) => {
+    const updateHomeworkCompletion = async (homeworkItem: Homework) => {
       try {
         const manager = getManager();
-        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
-        setHomework((prev) => {
-          const updated = [...prev[selectedWeek]];
-          updated[index] = updatedHomework;
-          return { ...prev, [selectedWeek]: updated };
-        });
+        const id = generateId(item.subject + item.content + item.createdByAccount);
+        await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
+        updateHomeworkIsDone(id, !homeworkItem.isDone)
+        setRefreshTrigger(prev => prev + 1);
+        setHomework(prev => ({
+          ...prev,
+          [id]: {
+            ...prev[id],
+            isDone: !homeworkItem.isDone,
+          }
+        }));
       } catch (error) {
         alert.showAlert({
           title: "Une erreur est survenue",
@@ -179,30 +199,16 @@ export default function TabOneScreen() {
       }
     };
 
-    setHomework((prev) => {
-      if (!prev[selectedWeek] || !prev[selectedWeek][index]) {
-        return prev;
-      }
-
-      if (prev[selectedWeek][index].progress === newProgress) {
-        return prev;
-      }
-
-      updateHomeworkCompletion(prev[selectedWeek][index], index);
-
-      const updated = [...prev[selectedWeek]];
-      updated[index] = { ...updated[index], progress: newProgress };
-      return { ...prev, [selectedWeek]: updated };
-    });
+    updateHomeworkCompletion(item);
   }, [selectedWeek]);
 
   const lengthHomeworks = React.useMemo(() => {
-    return currentHomework.length;
-  }, [currentHomework]);
+    return homeworksFromCache.length;
+  }, [homeworksFromCache]);
 
   const leftHomeworks = React.useMemo(() => {
-    return (currentHomework.filter((h) => !h.isDone).length);
-  }, [currentHomework]);
+    return (homeworksFromCache.filter((h) => !h.isDone).length);
+  }, [homeworksFromCache]);
 
   const percentageComplete = React.useMemo(() => {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
@@ -213,7 +219,12 @@ export default function TabOneScreen() {
     const fetchHomeworks = async () => {
       try {
         const result = await manager.getHomeworks(selectedWeek);
-        setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+        const newHomeworks: Record<string, Homework> = {};
+        for (const hw of result) {
+          const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+          newHomeworks[id] = hw;
+        }
+        setHomework(prev => ({ ...prev, ...newHomeworks }));
       } catch (error) {
         alert.showAlert({
           title: "Erreur de chargement",
@@ -231,17 +242,19 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
-  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
-    <TaskItem
-      item={item}
-      index={index}
-      onProgressChange={onProgressChange}
-    />
-  ), [onProgressChange]);
+  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => {
+    const inFresh = homework[item.id]
+    return (
+      <TaskItem
+        item={item}
+        index={index}
+        fromCache={!inFresh}
+        onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
+      />
+    )
+  }, [onProgressChange, homework]);
 
   const keyExtractor = useCallback((item: Homework) => item.id, []);
-
-  const memoizedData = useMemo(() => currentHomework, [currentHomework]);
 
   const [showWeekPicker, setShowWeekPicker] = useState(false);
   const WeekPickerRef = useRef<FlatList>(null);
@@ -284,7 +297,7 @@ export default function TabOneScreen() {
   const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
 
   function marginTop(): number {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       if (fullyScrolled) {
         return 6
       }
@@ -298,13 +311,16 @@ export default function TabOneScreen() {
     return -2
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <TabFlatList
         radius={36}
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        data={memoizedData}
+        key={homeworksFromCache.length}
+        data={homeworksFromCache}
         initialNumToRender={2}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
@@ -312,7 +328,7 @@ export default function TabOneScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            progressViewOffset={100}
+            progressViewOffset={200}
           />
         }
         gap={16}
@@ -364,7 +380,7 @@ export default function TabOneScreen() {
         ListEmptyComponent={<EmptyListComponent />}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -514,12 +530,12 @@ export default function TabOneScreen() {
               marginTop: marginTop(),
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26 && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
@@ -533,7 +549,7 @@ export default function TabOneScreen() {
                 style={{
                   width: 200,
                   alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
-                  marginTop: !runsIOS26() ? -4 : 0,
+                  marginTop: !runsIOS26 ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>

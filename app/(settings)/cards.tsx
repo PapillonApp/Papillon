@@ -104,7 +104,7 @@ export default function CardView() {
               {t("Settings_Cards_None_Description")}
             </Typography>
           </View>
-          <Button color="blue" title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
+          <Button color="blue" title={t('Settings_Cards_Add_Button')} icon={<Papicons name={"Plus"} />} onPress={() => {
             router.push({
               pathname: "/(onboarding)/restaurants/method",
               params: {
