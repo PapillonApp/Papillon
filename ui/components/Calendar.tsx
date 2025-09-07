@@ -87,7 +87,7 @@ const Calendar: React.FC<CalendarProps> = ({
             maxHeight: 320,
             borderColor: colors.text + "26",
             borderWidth: 0.5,
-            top: useHeaderHeight(),
+            top: 4,
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
