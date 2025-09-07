@@ -13,12 +13,15 @@ import { Papicons } from "@getpapillon/papicons";
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
 import { useTranslation } from "react-i18next";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsAbout() {
   const theme = useTheme()
   const { colors } = theme
 
   const { t } = useTranslation();
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const Items = [
     {
@@ -41,11 +44,28 @@ export default function SettingsAbout() {
     },
   ];
 
+  const [tapCount, setTapCount] = React.useState(0);
+
+  const handleVersionTap = () => {
+    setTapCount(prev => prev + 1);
+    if (tapCount + 1 >= 8) {
+      setTapCount(0);
+      if (settingsStore.showDevMode) {
+        Alert.alert("Dev Mode", "Dev mode désactivé!");
+        mutateProperty("personalization", { showDevMode: false });
+      } else {
+        Alert.alert("Dev Mode", "Dev mode activé!");
+        mutateProperty("personalization", { showDevMode: true });
+      }
+    }
+  };
+
   const Infos = [
     {
       title: t("Settings_App_Version"),
       description: packageJson.version,
       leading: <Papicons name="Butterfly" />,
+      onPress: handleVersionTap,
     },
     {
       title: t("Settings_About_Dependency_Version"),

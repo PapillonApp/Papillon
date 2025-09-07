@@ -39,6 +39,7 @@ type Alert = {
   icon?: string;
   color?: string;
   withoutNavbar?: boolean;
+  delay?: number;
 };
 
 type AlertContextType = {
@@ -77,7 +78,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     const timeout = setTimeout(() => {
       setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
-    }, 5000);
+    }, alert.delay || 5000);
 
     timeoutRefs.current.set(alertId, timeout);
   }, []);
