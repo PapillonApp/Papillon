@@ -33,7 +33,7 @@ const LanguagePersonalization = () => {
                         <TouchableOpacity
                             key={lang.id}
                             onPress={() => {
-                                console.log("PRESSED!", lang.id);
+                                log("PRESSED!" + lang.id, " I18NMANAGER")
                                 i18n.changeLanguage(lang.id);
                             }}
                             style={{
