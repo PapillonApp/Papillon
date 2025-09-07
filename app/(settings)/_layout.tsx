@@ -70,7 +70,7 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_MagicPlus_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
+          headerTransparent: Platform.OS === "ios",
           headerLargeTitle: false,
         }}
       />
@@ -93,6 +93,15 @@ export default function Layout() {
           contentStyle: {
             borderRadius: Platform.OS === 'ios' ? 30 : 0,
           }
+        }}
+      />
+      <Stack.Screen
+        name="language"
+        options={{
+          headerTitle: t("Settings_Language_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: false,
+          headerLargeTitle: false,
         }}
       />
     </Stack>

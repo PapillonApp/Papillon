@@ -1,6 +1,7 @@
 import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
 import React from "react";
+import { EarthIcon } from "lucide-react-native";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
@@ -14,14 +15,16 @@ import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
+import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import i18n from "@/utils/i18n";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { EarthIcon } from "lucide-react-native";
 
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
+  const { t, i18n } = useTranslation()
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -185,70 +188,20 @@ const PersonalizationSettings = () => {
           </Item>
           <Item
             onPress={() => {
-              const newLang = i18n.language === "fr" ? "en" : "fr";
-              i18n.changeLanguage(newLang);
+              router.push("/(settings)/language");
             }}
           >
             <Icon size={30}>
               <EarthIcon width={25} height={25} stroke="#818181" />
             </Icon>
-            <Typography variant={"title"}>Language</Typography>
+            <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Language_Description")}</Typography>
             <Trailing>
-              <Stack
-                bordered={true}
-                direction={"horizontal"}
-                height={40}
-                hAlign={"center"}
-                vAlign={"center"}
-              >
-                <AnimatedPressable onPress={() => i18n.changeLanguage("fr")}
-                  style={{ height: "100%" }}
-                >
-                  <Stack
-                    style={{ paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={i18n.language === "fr" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Typography style={{ fontSize: 18 }}>
-                      🇫🇷
-                    </Typography>
-                  </Stack>
-                </AnimatedPressable>
-
-                <AnimatedPressable onPress={() => i18n.changeLanguage("en")}
-                  style={{ height: "100%" }}
-                >
-                  <Stack
-                    style={{ paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={i18n.language === "en" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Typography style={{ fontSize: 18 }}>
-                      🇬🇧
-                    </Typography>
-                  </Stack>
-                </AnimatedPressable>
-
-                <AnimatedPressable onPress={() => i18n.changeLanguage("de")}
-                  style={{ height: "100%" }}
-                >
-                  <Stack
-                    style={{ paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={i18n.language === "de" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Typography style={{ fontSize: 18 }}>
-                      🇩🇪
-                    </Typography>
-                  </Stack>
-                </AnimatedPressable>
-              </Stack>
+              <Icon>
+                <Papicons name="ChevronRight" color="#818181" />
+              </Icon>
             </Trailing>
           </Item>
         </List>
