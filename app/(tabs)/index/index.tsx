@@ -15,18 +15,17 @@ import Icon from "@/ui/components/Icon";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Course from "@/ui/components/Course";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { Animation } from "@/ui/utils/Animation";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 
-import Reanimated from "react-native-reanimated";
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { log, warn } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
-import { getWeekNumberFromDate } from "@/database/useHomework";
+import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
@@ -37,12 +36,19 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "./widgets/Grades";
-import { Pattern } from "@/ui/components/Pattern/Pattern";
+import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
 import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
+import { Homework } from "@/services/shared/homework";
+import Task from "@/ui/components/Task";
+import { getSubjectName } from "@/utils/subjects/name";
+import { truncatenateString } from "@/ui/utils/Truncatenate";
+import { Sparkle } from "lucide-react-native";
+import { useMagicPrediction } from "../tasks";
+import { generateId } from "@/utils/generateId";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -117,6 +123,39 @@ const IndexScreen = () => {
     await manager.getWeeklyTimetable(weekNumber)
   }, []);
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [freshHomeworks, setFreshHomeworks] = useState<Record<string, Homework>>({});
+  const [homeworks, setHomeworks] = useState<Homework[]>([]);
+
+  const fetchHomeworks = useCallback(async () => {
+    const manager = getManager();
+    const current = await manager.getHomeworks(weekNumber);
+    const next = await manager.getHomeworks(weekNumber + 1);
+    const result = [...current, ...next]
+    const newHomeworks: Record<string, Homework> = {};
+    for (const hw of result) {
+      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      newHomeworks[id] = hw;
+    }
+    setFreshHomeworks(newHomeworks);
+    setRefreshTrigger(prev => prev + 1);
+  }, [weekNumber]);
+
+  async function setHomeworkAsDone(homework: Homework) {
+    const manager = getManager();
+    const id = generateId(homework.subject + homework.content + homework.createdByAccount);
+    await manager.setHomeworkCompletion(homework, !homework.isDone);
+    updateHomeworkIsDone(id, !homework.isDone)
+    setRefreshTrigger(prev => prev + 1);
+    setFreshHomeworks(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        isDone: !homework.isDone,
+      }
+    }));
+  }
+
   const fetchGrades = useCallback(async () => {
     const manager = getManager();
     if (!manager) {
@@ -146,16 +185,29 @@ const IndexScreen = () => {
   }, [])
 
   useEffect(() => {
-    date.setUTCHours(0, 0, 0, 0);
+    const fetchHomeworksFromCache = async () => {
+      const currentWeekHomeworks = await getHomeworksFromCache(weekNumber);
+      const nextWeekHomeworks = await getHomeworksFromCache(weekNumber + 1);
+      setHomeworks([...currentWeekHomeworks, ...nextWeekHomeworks]);
+    };
+    fetchHomeworksFromCache();
+  }, [refreshTrigger])
 
-    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
-    setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+  useEffect(() => {
+    const fetchData = async () => {
+      date.setUTCHours(0, 0, 0, 0);
+
+      const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
+      setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+    };
+    fetchData();
   }, [weeklyTimetable]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {
       fetchEDT()
       fetchGrades()
+      fetchHomeworks()
     });
 
     return () => unsubscribe();
@@ -206,6 +258,27 @@ const IndexScreen = () => {
     }
   }, []);
 
+  const MagicTaskWrapper = useCallback(({ item }: { item: Homework }) => {
+    const description = item.content.replace(/<[^>]*>/g, "");
+    const dueDate = new Date(item.dueDate);
+    const inFresh = freshHomeworks[item.id]
+
+    return (
+      <CompactTask
+        fromCache={false}
+        setHomeworkAsDone={() => setHomeworkAsDone(inFresh)}
+        ref={item}
+        subject={getSubjectName(item.subject)}
+        color={getSubjectColor(item.subject)}
+        description={description}
+        emoji={getSubjectEmoji(item.subject)}
+        dueDate={dueDate}
+        done={item.isDone}
+      />
+
+    );
+  }, [freshHomeworks]);
+
   const headerItems = [
     (
       <Stack
@@ -241,7 +314,7 @@ const IndexScreen = () => {
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
       />
       <Pattern
-        pattern={"cross"}
+        pattern={AvailablePatterns.CROSS}
         width={"100%"}
         height={250 + insets.top}
         color={foreground}
@@ -389,6 +462,36 @@ const IndexScreen = () => {
               </Stack>
             )
           },
+          homeworks.length > 0 && {
+            icon: <Papicons name={"Tasks"} />,
+            title: "Tâches",
+            redirect: "/(tabs)/task",
+            render: () => (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                style={{
+                  borderBottomLeftRadius: 26,
+                  borderBottomRightRadius: 26,
+                  overflow: "hidden",
+                  width: "100%",
+                  padding: 20,
+                  gap: 10
+                }}
+                contentContainerStyle={{
+                  paddingTop: 8,
+                  paddingBottom: 14,
+                  paddingHorizontal: 14,
+                  gap: 12
+                }}
+                data={homeworks}
+                keyExtractor={(item, index) => item.id + index}
+                renderItem={({ item }) => (
+                  <MagicTaskWrapper item={item} />
+                )}
+
+              />
+            )
+          },
           grades.length > 0 && {
             icon: <Papicons name={"Grades"} />,
             title: t("Home_Widget_NewGrades"),
@@ -468,7 +571,7 @@ const IndexScreen = () => {
               layout={Animation(LinearTransition, "list")}
             >
               <Stack card radius={26}>
-                <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                <Stack direction="horizontal" vAlign="center" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
                     {item.icon}
                   </Icon>
@@ -535,6 +638,97 @@ const IndexScreen = () => {
       </NativeHeaderSide>
     </>
   );
+}
+
+function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, description, emoji, dueDate, done, magic }: { fromCache: boolean, setHomeworkAsDone: (ref: Homework) => void, ref: Homework, subject: string, color: string, description: string, emoji: string, dueDate: Date, done: boolean, magic?: string }) {
+  const { colors } = useTheme();
+
+  return (
+    <Stack
+      style={{
+        backgroundColor: color + 50,
+        borderRadius: 25,
+        width: "100%",
+        flex: 1,
+        overflow: "hidden",
+        borderWidth: 1,
+        borderColor: colors.border
+      }}
+    >
+      {magic && (
+        <Stack gap={10} direction="horizontal" hAlign="center" style={{ paddingHorizontal: 16, paddingTop: 6 }}>
+          <Icon size={14} skeleton={false}>
+            <Sparkle fill={color} stroke={color} strokeWidth={2} />
+          </Icon>
+          <Typography color={color} weight='semibold' skeleton={false} skeletonWidth={200}>
+            {magic}
+          </Typography>
+        </Stack>
+      )}
+
+      <Stack
+        direction="horizontal"
+        vAlign="center"
+        hAlign="center"
+        gap={10}
+        padding={15}
+        style={{ paddingTop: 20, backgroundColor: colors.card, borderTopRightRadius: magic ? 7.5 : undefined, borderTopLeftRadius: magic ? 7.5 : undefined }}
+      >
+        <Stack
+          style={{
+            backgroundColor: color + "70",
+            width: 30,
+            height: 30,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 80,
+          }}
+        >
+          <Typography>{emoji}</Typography>
+        </Stack>
+
+        <Stack style={{ flex: 1 }}>
+          <Typography variant="body2">{subject}</Typography>
+          <Typography color={colors.text + "95"} numberOfLines={2}>{description}</Typography>
+          <Typography color="secondary">
+            {dueDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}
+          </Typography>
+        </Stack>
+
+        <AnimatedPressable
+          style={{
+            width: 25,
+            height: 25,
+            borderWidth: 2,
+            borderColor: colors.border,
+            borderRadius: 80,
+            padding: 1.3,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+          disabled={fromCache}
+          onPress={() => {
+            setHomeworkAsDone(ref)
+          }}
+        >
+          {done && (
+            <View
+              style={{
+                backgroundColor: color,
+                width: 20,
+                height: 20,
+                borderRadius: 80,
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <Papicons size={13} name="Check" fill={"white"} />
+            </View>
+          )}
+        </AnimatedPressable>
+      </Stack>
+    </Stack>
+  )
 }
 
 export default IndexScreen;
