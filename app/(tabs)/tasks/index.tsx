@@ -147,7 +147,6 @@ export default function TabOneScreen() {
       newHomeworks[id] = hw;
     }
     setHomework(newHomeworks);
-    console.log(homework)
     setRefreshTrigger(prev => prev + 1);
 
   };
