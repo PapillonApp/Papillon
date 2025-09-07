@@ -76,30 +76,6 @@ export default function EDLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  async function handleChallenge(answer: string) {
-    setChallengeModalVisible(false);
-
-    if (!session) { return };
-    const currentSession = { ...session };
-    const correct = await checkDoubleAuth(currentSession, answer)
-
-    if (!correct) {
-      alert.showAlert({
-        title: "Erreur d'authentification",
-        description:
-          "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        withoutNavbar: true,
-      });
-      setDoubleAuthChallenge(null);
-      setSession(null);
-      return;
-    }
-
-    queueMicrotask(() => void handleLogin("", "", currentSession));
-  }
-
   const handleLogin = async (username: string, password: string, currentSession = session) => {
     try {
       const store = useAccountStore.getState();
@@ -183,6 +159,30 @@ export default function EDLoginWithCredentials() {
     if (!username.trim() || !password.trim()) { return; }
     handleLogin(username, password);
   };
+
+  async function handleChallenge(answer: string) {
+    setChallengeModalVisible(false);
+
+    if (!session) { return };
+    const currentSession = { ...session };
+    const correct = await checkDoubleAuth(currentSession, answer)
+
+    if (!correct) {
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description:
+          "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        withoutNavbar: true,
+      });
+      setDoubleAuthChallenge(null);
+      setSession(null);
+      return;
+    }
+
+    queueMicrotask(() => void handleLogin("", "", currentSession));
+  }
 
   function questionComponent({ item, index }: { item: string; index: number }) {
     return (
