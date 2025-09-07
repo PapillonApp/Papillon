@@ -23,7 +23,6 @@ import { Animation } from "../utils/Animation";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 

@@ -65,7 +65,7 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: runsIOS26() ? insets.top + 48 : topInset || 8,
+        top: insets.top + 48,
         zIndex: 99999,
         width: "100%",
         height: "100%",
@@ -87,7 +87,7 @@ const Calendar: React.FC<CalendarProps> = ({
             maxHeight: 320,
             borderColor: colors.text + "26",
             borderWidth: 0.5,
-            top: useHeaderHeight(),
+            top: 4,
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}

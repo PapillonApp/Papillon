@@ -305,16 +305,20 @@
   "Consent_Optional_Title": "Les informations importantes",
   "Consent_Optional_Description": "En gros, savoir que quelqu’un a utilisé Papillon et si ça s’est bien passé, quel service il utilise.",
   "Consent_Required_Title": "Juste l'essentiel",
-  "Consent_Required_Description": "On sait juste que quelqu’un a utilisé Papillon pendant un certain temps.",
+  "Consent_Required_Description": "En gros, savoir que quelqu’un a utilisé Papillon, si ça s’est bien passé et quel service il utilise.",
   "Consent_None_Title": "Rien du tout",
   "Consent_None_Description": "On ne sera même pas au courant de ton existence.",
-  "Consent_Title": "Télémétrie & vie privée",
-  "Consent_Intro1": "On voudrais savoir combien de vous nous supporte et comment se passe votre expérience pour améliorer l’application.",
+  
+  "Consent_Title": "Toi et Papillon",
+  "Consent_Intro1": "Pour aider à faire grandir Papillon, tu peux choisir de partager quelques infos d’usage.",
   "Consent_Intro2": "Tout cela de manière toujours anonyme et vous avez complètement le choix de dire non.",
   "Consent_PrivacyPolicy": "En cas de doute, consultez notre politique de confidentialité",
   "Consent_Refuse": "Non Merci",
   "Consent_Accept": "Tres Bien",
   "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli.",
+  "Consent_Arg1": "Sert uniquement à améliorer l’application",
+  "Consent_Arg2": "Anonyme & sans lien avec ton identité",
+  "Consent_Arg3": "On n'a pas accès à tes comptes",
 
   "Changelog_Title": "Notes de mise à jour"
 }

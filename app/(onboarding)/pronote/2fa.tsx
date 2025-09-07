@@ -29,10 +29,11 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       const error = doubleAuthError
       const session = doubleAuthSession
       const deviceName = Device.deviceName
-      await securitySource(session, "Papillon sur " + deviceName)
+      const source = "Papillon sur " + deviceName
+      await securitySource(session, source.length > 30 ? "Papillon" : "Papillon sur " + deviceName)
       await securitySave(session, error.handle, {
         pin: pinCode,
-        deviceName: "Papillon sur " + deviceName || "Papillon"
+        deviceName: source.length > 30 ? "Papillon" : "Papillon sur " + deviceName || "Papillon"
       })
 
       const context = error.handle.context;
@@ -159,7 +160,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
     },
     {
       name: "del",
-      icon: <Papicons name="ArrowLeft" />,
+      icon: <Papicons name="ArrowLeft" fill={colors.text} />,
       onPress: () => {
         setPinCode((prev) => prev.slice(0, -1));
       }
@@ -172,7 +173,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
     },
     {
       name: "check",
-      icon: <Papicons name="Check" />,
+      icon: <Papicons name="Check" fill={colors.text} />,
       onPress: () => {
         solveDoubleAuth(pinCode);
 
@@ -199,7 +200,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
   ), [data]);
 
   return (
-    <>
+    <View style={{ backgroundColor: colors.background, width: "100%", height: "100%" }}>
       <View
         style={{
           alignItems: "center",
@@ -279,5 +280,5 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         maxToRenderPerBatch={6}
         windowSize={1}
       />
-    </>)
+    </View>)
 }

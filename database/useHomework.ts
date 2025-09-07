@@ -12,8 +12,8 @@ import Homework from './models/Homework';
 
 function mapHomeworkToShared(homework: Homework): SharedHomework {
   return {
-    id: homework.id,
-    subject: homework.subject.name,
+    id: homework.homeworkId,
+    subject: homework.subject,
     content: homework.content,
     dueDate: new Date(homework.dueDate),
     isDone: homework.isDone,
@@ -64,7 +64,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   const db = getDatabaseInstance();
 
   for (const hw of homeworks) {
-    const id = generateId(hw.subject + hw.content + hw.dueDate.toISOString() + hw.createdByAccount + hw.kidName)
+    const id = generateId(hw.subject + hw.content + hw.createdByAccount)
     const existing = await db.get('homework').query(Q.where('homeworkId', id)).fetch();
 
     if (existing.length === 0) {
@@ -73,7 +73,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
           const homework = record as Homework;
           Object.assign(homework, {
             homeworkId: id,
-            subjectId: generateId(hw.subject),
+            subject: hw.subject,
             content: hw.content,
             dueDate: hw.dueDate.getTime(),
             isDone: hw.isDone,
@@ -87,8 +87,48 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
           });
         });
       });
+    } else {
+      const recordToUpdate = existing[0];
+      await db.write(async () => {
+        await recordToUpdate.update((record: Model) => {
+          const homework = record as Homework;
+          Object.assign(homework, {
+            subject: hw.subject,
+            content: hw.content,
+            dueDate: hw.dueDate.getTime(),
+            isDone: hw.isDone,
+            returnFormat: hw.returnFormat,
+            attachments: JSON.stringify(hw.attachments),
+            evaluation: hw.evaluation,
+            custom: hw.custom,
+            createdByAccount: hw.createdByAccount,
+            kidName: hw.kidName,
+            fromCache: true,
+          });
+        });
+      });
     }
   }
+}
+
+export async function updateHomeworkIsDone(homeworkId: string, isDone: boolean) {
+  const db = getDatabaseInstance();
+
+  const existing = await db.get('homework').query(Q.where('homeworkId', homeworkId)).fetch();
+
+  if (existing.length === 0) {
+    console.warn(`Homework with ID ${homeworkId} not found`);
+    return;
+  }
+
+  const recordToUpdate = existing[0];
+
+  await db.write(async () => {
+    await recordToUpdate.update((record: Model) => {
+      const homework = record as Homework;
+      homework.isDone = isDone;
+    });
+  });
 }
 
 export function getDateRangeOfWeek(weekNumber: number, year = new Date().getFullYear()) {

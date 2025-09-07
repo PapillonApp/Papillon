@@ -44,7 +44,7 @@ import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
 
-export default function TabOneScreen() {
+const IndexScreen = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
@@ -75,14 +75,6 @@ export default function TabOneScreen() {
   const alert = useAlert();
 
   const settingsStore = useSettingsStore(state => state.personalization)
-
-  useEffect(() => {
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
-      }
-    })
-  }, [])
 
   const Initialize = async () => {
     try {
@@ -198,10 +190,22 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+
   if (accounts.length === 0) {
     router.replace("/(onboarding)/welcome");
-    return null;
+    return null
   }
+
+  useEffect(() => {
+    if (accounts.length > 0) {
+      checkConsent().then(consent => {
+        if (!consent.given) {
+          router.push("../consent");
+        }
+      });
+    }
+  }, []);
+
   const headerItems = [
     (
       <Stack
@@ -243,7 +247,7 @@ export default function TabOneScreen() {
         color={foreground}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -532,3 +536,5 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+export default IndexScreen;

@@ -3,9 +3,9 @@ import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale';
 import * as Localization from "expo-localization";
 import { t } from 'i18next';
-import { Calendar, CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
+import { CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
 import React, { useCallback, useMemo } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
+import { Dimensions, Linking, Pressable, StyleSheet, Text } from 'react-native';
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Animation } from '../utils/Animation';
@@ -16,6 +16,8 @@ import Typography from './Typography';
 import Icon from "@/ui/components/Icon";
 import SkeletonView from "@/ui/components/SkeletonView";
 import { Papicons } from "@getpapillon/papicons";
+import { Attachment } from '@/services/shared/attachment';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -29,6 +31,7 @@ interface TaskProps {
   date?: string | Date;
   progress?: number; // 0 to 1
   index?: number;
+  attachments?: Attachment[];
   magic?: string; // For future use, if needed
   onPress?: () => void;
   onProgressChange?: (progress: number) => void;
@@ -39,6 +42,7 @@ const Task: React.FC<TaskProps> = ({
   title,
   description,
   fromCache,
+  attachments,
   color = "#888888",
   emoji,
   subject,
@@ -140,7 +144,7 @@ const Task: React.FC<TaskProps> = ({
             }}
           >
             <Icon size={14} skeleton={skeleton}>
-              <Sparkle fill={color} stroke={color} strokeWidth={2}  />
+              <Sparkle fill={color} stroke={color} strokeWidth={2} />
             </Icon>
             <Typography color={color} weight='semibold' skeleton={skeleton} skeletonWidth={200}>
               {magic}
@@ -170,8 +174,8 @@ const Task: React.FC<TaskProps> = ({
             {emoji && (
               <>
                 {skeleton ? (
-                  <SkeletonView style={{width: 26, height: 26, borderRadius: 80 }}/>
-                ):(
+                  <SkeletonView style={{ width: 26, height: 26, borderRadius: 80 }} />
+                ) : (
                   <Stack backgroundColor={color + '32'} inline radius={80} vAlign="center" hAlign="center" style={{ width: 26, height: 26 }}>
                     <Text style={{ fontSize: 12 }}>
                       {emoji}
@@ -204,7 +208,45 @@ const Task: React.FC<TaskProps> = ({
               {description}
             </Typography>
           )}
-
+          {attachments && attachments.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingTop: 15, gap: 5, flex: 1 }}>
+              {fromCache ? (
+                <AnimatedPressable
+                  layout={Animation(LinearTransition, "list")}
+                  style={[styles.chip, backgroundStyle]}
+                >
+                  <Icon size={20} fill={"#D60046" + 80} skeleton={skeleton}>
+                    <Papicons name={"Cross"} />
+                  </Icon>
+                  <Typography variant='body2' color={"#D60046" + 80} skeleton={skeleton}>
+                    Impossible de récupérer la pièce jointe
+                  </Typography>
+                </AnimatedPressable>
+              ) : (
+                <>
+                  {
+                    attachments.map(attachment => (
+                      <AnimatedPressable
+                        key={attachment.url}
+                        layout={Animation(LinearTransition, "list")}
+                        onPress={() => {
+                          Linking.openURL(attachment.url);
+                        }}
+                        style={[styles.chip, backgroundStyle]}
+                      >
+                        <Icon size={20} fill={colors.text} skeleton={skeleton}>
+                          <Papicons name={"Paper"} />
+                        </Icon>
+                        <Typography variant='body2' color='text' skeleton={skeleton}>
+                          {attachment.name}
+                        </Typography>
+                      </AnimatedPressable>
+                    ))
+                  }
+                </>
+              )}
+            </ScrollView>
+          )}
           {(progress !== undefined || currentDate) && (
             <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
               {progress !== undefined && (
@@ -217,7 +259,7 @@ const Task: React.FC<TaskProps> = ({
                   onPress={toggleProgress}
                   layout={Animation(LinearTransition, "list")}
                   style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
-                  pointerEvents={skeleton ? "none":"auto"}
+                  pointerEvents={skeleton ? "none" : "auto"}
                 >
                   {(notStarted || completed) && !skeleton && (
                     <Dynamic

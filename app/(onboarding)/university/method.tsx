@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { RelativePathString, router } from 'expo-router';
 
 import Typography from '@/ui/components/Typography';
-import { getSupportedUniversities, SupportedUniversity } from "../utils/constants";
+import { GetSupportedUniversities, SupportedUniversity } from "../utils/constants";
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
 
   const { t } = useTranslation()
 
-  const services = getSupportedUniversities((path: { pathname: string }) => {
+  const services = GetSupportedUniversities((path: { pathname: string }) => {
     router.push(path.pathname as unknown as RelativePathString);
   });
 
