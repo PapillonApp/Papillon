@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Platform, Pressable, View } from "react-native";
 import Reanimated, {
   FadeInUp,
   FadeOutUp,
@@ -72,6 +72,9 @@ function Tabs() {
       denominator: t("Profile_Discussions_Denominator_Single"),
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
+      onPress: () => {
+        Alert.alert("Ça arrive bientôt ! 😉", "On travaille activement pour vous apporter cette fonctionnalité.");
+      },
     },
   ], [attendances]);
 
@@ -287,7 +290,7 @@ function NewsSection() {
             <Typography variant="title"
               color="text"
             >
-              {item.title}
+              {item.title || "Aucun titre"}
             </Typography>
             <Typography variant="caption"
               color="secondary"
@@ -385,7 +388,7 @@ export default function TabOneScreen() {
     let establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [lastUsedAccount]);
+  }, [lastUsedAccount, accounts]);
 
   const headerHeight = useHeaderHeight();
 
@@ -549,7 +552,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}

@@ -25,15 +25,19 @@ import * as WebBrowser from "expo-web-browser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
+import { useSettingsStore } from "@/stores/settings";
 
-const SettingsIndex = () => {
+export default function SettingsIndex() {
   const router = useRouter();
+
   const theme = useTheme();
   const { colors } = theme;
 
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -58,21 +62,21 @@ const SettingsIndex = () => {
     for (const service of account.services) {
       ClearDatabaseForAccount(service.id)
     }
-    return router.push("/(onboarding)/welcome")
+    router.push("/(onboarding)/welcome");
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
     {
       title: t('Settings_More'),
       content: [
-        {
+        /*{
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-        },
+        },*/
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
@@ -80,14 +84,6 @@ const SettingsIndex = () => {
           icon: <HeartIcon />,
           color: "#EFA400",
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
-        },
-        {
-          title: t('Settings_Telemetry_Title'),
-          description: `${t('Settings_Telemetry_Description')}`,
-          icon: <InfoIcon />,
-          papicon: <Papicons name={"Check"} />,
-          color: "#797979",
-          onPress: () => router.navigate("../consent")
         },
         {
           title: t('Settings_About_Title'),
@@ -102,6 +98,13 @@ const SettingsIndex = () => {
     {
       title: t('Settings_About'),
       content: [
+        {
+          title: t('Settings_Telemetry_Title'),
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
@@ -129,7 +132,20 @@ const SettingsIndex = () => {
           }
         },
       ]
-    }
+    },
+    ...(settingsStore.showDevMode ? [{
+      title: t('Settings_Dev'),
+      content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
+      ]
+    }] : []),
   ]
 
   const BigButtons: Array<{
@@ -137,8 +153,8 @@ const SettingsIndex = () => {
   }> = [
       {
         icon: <Papicons name={"Palette"} />,
-        title: "Personnalisation",
-        description: "Thèmes, matières...",
+        title: t('Settings_Personalization_Title_Card'),
+        description: t('Settings_Personalization_Subtitle_Card'),
         color: "#17C300",
         onPress: () => {
           router.navigate("/(settings)/personalization")
@@ -147,14 +163,17 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"User"} />,
         title: "Services",
-        description: "Comptes liés",
+        description: t('Settings_Services_Title'),
         color: "#DD9B00",
         disabled: true,
+        onPress: () => {
+          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+        }
       },
       {
         icon: <Papicons name={"Card"} />,
         title: t("Settings_Cards_Banner_Title"),
-        description: "Cantine, accès",
+        description: t('Settings_Cantineen_Subtitle_Card'),
         color: "#0059DD",
         onPress: () => {
           router.navigate("/(settings)/cards")
@@ -163,7 +182,7 @@ const SettingsIndex = () => {
       {
         icon: <Papicons name={"Sparkles"} />,
         title: "Magic+",
-        description: "Fonctions I.A",
+        description: t('Settings_MagicPlus_Description_Card'),
         color: "#DD007D",
         onPress: () => {
           router.navigate("/(settings)/magic")
@@ -277,7 +296,7 @@ const SettingsIndex = () => {
             ) : null,
             papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
             onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
-            tags: 'tags' in item ? item.tags as string[] | undefined : undefined
+            tags: 'tags' in item ? item.tags as string[] | undefined : undefined,
           })),
         }))}
       />
@@ -285,11 +304,11 @@ const SettingsIndex = () => {
         Platform.OS === 'ios' && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
-              tintColor={runsIOS26() ? colors.text : colors.primary}
+              tintColor={runsIOS26 ? colors.text : colors.primary}
               onPress={() => router.back()}
 
               style={{
-                marginLeft: runsIOS26() ? 3 : -32,
+                marginLeft: runsIOS26 ? 3 : -32,
               }}
             />
           </NativeHeaderSide>
@@ -298,5 +317,3 @@ const SettingsIndex = () => {
     </>
   );
 };
-
-export default SettingsIndex;

@@ -342,6 +342,17 @@ export default function TabOneScreen() {
                   start={Math.floor(item.from.getTime() / 1000)}
                   end={Math.floor(item.to.getTime() / 1000)}
                   showTimes={false}
+                  onPress={() => {
+                    navigation.navigate('(modals)/course', {
+                      course: item,
+                      subjectInfo: {
+                        id: item.subjectId,
+                        name: getSubjectName(item.subject),
+                        color: getSubjectColor(item.subject) || Colors[0],
+                        emoji: getSubjectEmoji(item.subject),
+                      }
+                    });
+                  }}
                 />
               );
             }
@@ -421,6 +432,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
+      {/*
       <NativeHeaderSide side="Right">
         <MenuView
           actions={[
@@ -449,6 +461,7 @@ export default function TabOneScreen() {
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
+      */}
 
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable

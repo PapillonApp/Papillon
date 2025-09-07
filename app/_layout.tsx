@@ -19,15 +19,13 @@ const APP_KEY = secrets.APP_KEY;
 const SALT = secrets.SALT;
 const SERVER_URL = secrets.SERVER_URL ?? "https://analytics.papillon.bzh";
 
-console.log("Countly Config:", { APP_KEY, SALT, SERVER_URL });
-
 import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Platform, StatusBar, useColorScheme } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
@@ -39,17 +37,6 @@ import { t } from 'i18next';
 import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-// eslint-disable-next-line camelcase
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -104,6 +91,11 @@ const CONSENT_SCREEN_OPTIONS = {
 
 } as const;
 
+const CHANGELOG_SCREEN_OPTIONS = {
+  headerTitle: t("Changelog_Title"),
+  headerLargeTitle: false,
+}
+
 const AI_SCREEN_OPTIONS = {
   headerTitle: "AI",
   headerShown: false,
@@ -137,10 +129,12 @@ export default function RootLayout() {
 
 import { Buffer } from 'buffer';
 import { checkConsent } from '@/utils/logger/consent';
+import { initializeAccountManager } from '@/services/shared';
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
   const colorScheme = useColorScheme();
+  const selectedTheme = useSettingsStore(state => state.personalization.theme);
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -149,6 +143,34 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
     const color = selectedColorEnum != null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
     return color || AppColors[0]; // Fallback vers la première couleur si aucune n'est trouvée
   }, [selectedColorEnum]);
+
+  const appState = useRef<AppStateStatus>(AppState.currentState);
+  const [lastBackground, setLastBackground] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+        if (lastBackground) {
+          const now = new Date();
+          const durationMs = now.getTime() - lastBackground.getTime();
+
+          if (durationMs > 5 * 60 * 1000) {
+            initializeAccountManager();
+          }
+        }
+      }
+
+      if (nextAppState === "background") {
+        setLastBackground(new Date());
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [lastBackground]);
 
   useEffect(() => {
     if (magicEnabled) {
@@ -177,23 +199,17 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       countlyConfig.enableCrashReporting();
       countlyConfig.enableParameterTamperingProtection(SALT);
 
-      // Use a static device ID for better user tracking before consent is given
-      countlyConfig.setDeviceID("papillon-unset");
-
       if (consent.given) {
-        if (consent.required) {
-          countlyConfig.giveConsent(["sessions"]);
-          countlyConfig.setDeviceID("papillon-required");
+        if (consent.advanced) {
+          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
         }
 
         if (consent.optional) {
           countlyConfig.giveConsent(["sessions", "crashes", "users"]);
-          countlyConfig.setDeviceID("papillon-optional");
         }
 
-        if (consent.advanced) {
-          countlyConfig.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
-          countlyConfig.setDeviceID("papillon-advanced");
+        if (consent.required) {
+          countlyConfig.giveConsent(["sessions"]);
         }
 
         if (consent.required || consent.optional || consent.advanced) {
@@ -207,7 +223,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    const newScheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    const newScheme = selectedTheme === 'auto' ? (colorScheme === 'dark' ? DarkTheme : DefaultTheme) : (selectedTheme === 'dark' ? DarkTheme : DefaultTheme);
     return {
       ...newScheme,
       colors: {
@@ -215,7 +231,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         primary: color?.mainColor ?? newScheme.colors.primary,
       },
     };
-  }, [colorScheme, color]);
+  }, [colorScheme, color, selectedTheme]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
@@ -235,7 +251,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Combined effect for system UI updates to reduce effect overhead
   useEffect(() => {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       SystemUI.setBackgroundColorAsync(backgroundColor);
     }
     else {
@@ -258,6 +274,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="page" />
               <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
               <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
+              <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
               <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
@@ -265,10 +282,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Grades_Title"),
                   presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
                     overflow: Platform.OS === 'ios' ? "hidden" : "visible",
@@ -278,9 +295,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26() : true,
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Course_Title"),
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26() : false,
+                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   presentation: "modal",
                   contentStyle: {
                     borderRadius: Platform.OS === 'ios' ? 30 : 0,
@@ -293,12 +310,12 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: false,
                   headerTitle: "Notifications",
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: false,
                   presentation: "formSheet",
                   sheetGrabberVisible: true,
                   sheetAllowedDetents: [0.5, 0.75, 1],
-                  sheetCornerRadius: runsIOS26() ? undefined : 30,
+                  sheetCornerRadius: runsIOS26 ? undefined : 30,
                 }}
               />
 
@@ -307,8 +324,18 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26(),
-                  headerLargeTitle: true,
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(news)/specific"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_News"),
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
                 }}
               />
 
@@ -347,7 +374,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: true,
                   headerTitle: t("Tab_Attendance"),
-                  headerTransparent: runsIOS26(),
+                  headerTransparent: runsIOS26,
                   headerLargeTitle: true,
                   presentation: "modal"
                 }}

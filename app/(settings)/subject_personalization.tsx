@@ -13,7 +13,7 @@ import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 
-const SubjectPersonalization = () => {
+export default function SubjectPersonalization() {
   const { colors } = useTheme();
 
   const accounts = useAccountStore((state) => state.accounts);
@@ -130,5 +130,3 @@ const SubjectPersonalization = () => {
     </ScrollView>
   );
 };
-
-export default SubjectPersonalization;

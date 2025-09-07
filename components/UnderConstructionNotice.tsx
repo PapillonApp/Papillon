@@ -40,4 +40,4 @@ function UnderConstructionNotice() {
   );
 }
 
-export default memo(UnderConstructionNotice);
+export default UnderConstructionNotice;
