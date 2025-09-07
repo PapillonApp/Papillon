@@ -61,8 +61,7 @@ function error(message: string, from?: string): never {
   const functionName = obtainFunctionName(from)
   const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
-  console.error(entry);
-  // Sends crash to the server (if consent given)
+  console.error(message);
   Countly.logException(entry, true, JSON.parse(JSON.stringify(entry)));
   throw new Error(entry);
 
