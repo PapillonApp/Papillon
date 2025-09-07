@@ -69,14 +69,6 @@ export default function SettingsIndex() {
     {
       title: t('Settings_More'),
       content: [
-        ...(settingsStore.showDevMode ? [{
-          title: "Mode développeur",
-          description: "Options avancées pour les développeurs.",
-          papicon: <Papicons name={"Code"} />,
-          icon: <InfoIcon />,
-          color: "#FF6B35",
-          onPress: () => router.navigate("/devmode")
-        }] : []),
         {
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
@@ -94,14 +86,6 @@ export default function SettingsIndex() {
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
         },
         {
-          title: t('Settings_Telemetry_Title'),
-          description: `${t('Settings_Telemetry_Description')}`,
-          icon: <InfoIcon />,
-          papicon: <Papicons name={"Check"} />,
-          color: "#797979",
-          onPress: () => router.navigate("../consent")
-        },
-        {
           title: t('Settings_About_Title'),
           description: `${t('Settings_About_Description')} ${packagejson.version}`,
           icon: <InfoIcon />,
@@ -111,9 +95,29 @@ export default function SettingsIndex() {
         }
       ]
     },
+    ...(settingsStore.showDevMode ? [{
+      title: t('Settings_Dev'),
+      content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
+      ]
+    }] : []),
     {
       title: t('Settings_About'),
       content: [
+        {
+          title: t('Settings_Telemetry_Title'),
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),

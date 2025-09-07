@@ -133,6 +133,7 @@ import { checkConsent } from '@/utils/logger/consent';
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
   const colorScheme = useColorScheme();
+  const selectedTheme = useSettingsStore(state => state.personalization.theme);
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -196,7 +197,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   // Memoize theme selection to prevent unnecessary re-computations
   const theme = useMemo(() => {
-    const newScheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    const newScheme = selectedTheme === 'auto' ? (colorScheme === 'dark' ? DarkTheme : DefaultTheme) : (selectedTheme === 'dark' ? DarkTheme : DefaultTheme);
     return {
       ...newScheme,
       colors: {
@@ -204,7 +205,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         primary: color?.mainColor ?? newScheme.colors.primary,
       },
     };
-  }, [colorScheme, color]);
+  }, [colorScheme, color, selectedTheme]);
 
   // Memoize background color to prevent string recreation
   const backgroundColor = useMemo(() => {
@@ -298,7 +299,17 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerShown: true,
                   headerTitle: t("Tab_News"),
                   headerTransparent: runsIOS26,
-                  headerLargeTitle: true,
+                  headerLargeTitle: false,
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(news)/specific"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_News"),
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
                 }}
               />
 
