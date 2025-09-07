@@ -76,14 +76,6 @@ const IndexScreen = () => {
 
   const settingsStore = useSettingsStore(state => state.personalization)
 
-  useEffect(() => {
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
-      }
-    })
-  }, [])
-
   const Initialize = async () => {
     try {
       await initializeAccountManager()
@@ -198,10 +190,22 @@ const IndexScreen = () => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
+
   if (accounts.length === 0) {
     router.replace("/(onboarding)/welcome");
-    return null;
+    return null
   }
+
+  useEffect(() => {
+    if (accounts.length > 0) {
+      checkConsent().then(consent => {
+        if (!consent.given) {
+          router.push("../consent");
+        }
+      });
+    }
+  }, []);
+
   const headerItems = [
     (
       <Stack
