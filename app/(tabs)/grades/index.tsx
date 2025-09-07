@@ -34,6 +34,7 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "../index/widgets/Grades";
 import { useAccountStore } from "@/stores/account";
 import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -411,6 +412,8 @@ export default function TabOneScreen() {
       </Stack>
     </Reanimated.View>
   ), [newSubjects, colors]);
+
+  const insets = useSafeAreaInsets();
 
   return (
     <>

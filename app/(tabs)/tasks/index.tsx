@@ -31,6 +31,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { useAccountStore } from "@/stores/account";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -310,6 +311,8 @@ export default function TabOneScreen() {
     return -2
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <TabFlatList
@@ -325,7 +328,7 @@ export default function TabOneScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            progressViewOffset={100}
+            progressViewOffset={200}
           />
         }
         gap={16}
