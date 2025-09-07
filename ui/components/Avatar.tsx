@@ -45,20 +45,19 @@ const Avatar = ({
       justifyContent: "center",
       alignItems: "center",
       overflow: "hidden",
-      borderWidth: 2,
     };
 
     if (hasFailed)
       baseStyle.backgroundColor = adjust("#DD0030", dark ? -0.6 : 0.9);
     else if (!imageUrl && !skeleton)
-      baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
+      baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.85);
 
     if (hasFailed)
       baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
     else if (imageUrl || skeleton)
       baseStyle.borderColor = colors.border;
     else
-      baseStyle.borderColor = adjust(color ?? colors.primary, 0.2);
+      baseStyle.borderColor = colors.border
 
     return baseStyle;
   }
