@@ -9,6 +9,8 @@ const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
   magicEnabled: true,
   hideNameOnHomeScreen: false,
+  showAlertAtLogin: false,
+  showDevMode: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(
