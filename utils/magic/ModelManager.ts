@@ -291,6 +291,20 @@ class ModelManager {
     wordIndexSize: number;
     oovIndex: number;
     tokenizerConfigLoaded: boolean;
+    isInitializing: boolean;
+    hasInitialized: boolean;
+    labels: string[];
+    modelType: string;
+    tokenizerInfo: {
+      hasFilters: boolean;
+      hasLowerCase: boolean;
+      oovToken: string | null;
+      configKeys: string[];
+    };
+    memoryInfo: {
+      globalPromiseActive: boolean;
+      instanceExists: boolean;
+    };
   } {
     return {
       hasModel: this.model !== null,
@@ -301,6 +315,20 @@ class ModelManager {
       wordIndexSize: Object.keys(this.wordIndex).length,
       oovIndex: this.oovIndex,
       tokenizerConfigLoaded: Object.keys(this.tokenizerConfig).length > 0,
+      isInitializing: this.isInitializing,
+      hasInitialized: this.hasInitialized,
+      labels: [...this.labels],
+      modelType: this.model ? "TensorFlow Lite" : "None",
+      tokenizerInfo: {
+        hasFilters: this.tokenizerConfig.filters !== undefined,
+        hasLowerCase: this.tokenizerConfig.lower === true,
+        oovToken: this.tokenizerConfig.oov_token || null,
+        configKeys: Object.keys(this.tokenizerConfig),
+      },
+      memoryInfo: {
+        globalPromiseActive: globalInitializationPromise !== null,
+        instanceExists: ModelManager.instance !== undefined,
+      },
     };
   }
 

@@ -33,6 +33,7 @@ import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import GradesWidget from "../index/widgets/Grades";
 import { useAccountStore } from "@/stores/account";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -54,25 +55,6 @@ const EmptyListComponent = memo(() => (
     </Stack>
   </Dynamic>
 ));
-
-export const getPeriodName = (name: string) => {
-  // return only digits
-  let digits = name.replace(/[^0-9]/g, '').trim();
-  let newName = name.replace(digits, '').trim();
-
-  return newName;
-}
-
-export const getPeriodNumber = (name: string) => {
-  // return only digits
-  let newName = name.replace(/[^0-9]/g, '').trim();
-
-  if (newName.length === 0) {
-    newName = name[0].toUpperCase();
-  }
-
-  return newName.toString()[0];
-}
 
 export default function TabOneScreen() {
   const theme = useTheme();
@@ -344,94 +326,6 @@ export default function TabOneScreen() {
     return null;
   }, [renderItemSubject, renderItemGrade]);
 
-  const getAverageHistory = useCallback((grades: SharedGrade[]) => {
-    // Filter out grades without valid scores and dates
-    const validGrades = grades.filter(grade =>
-      grade.studentScore?.value !== undefined &&
-      grade.givenAt &&
-      !isNaN(grade.studentScore.value)
-    );
-
-    // Sort grades by date in ascending order
-    const sortedGrades = validGrades.sort((a, b) => a.givenAt.getTime() - b.givenAt.getTime());
-
-    // Initialize an array to store the average history
-    const averageHistory: { date: number; average: number; }[] = [];
-
-    // Iterate through the sorted grades and calculate the average progressively
-    sortedGrades.forEach((currentGrade, index) => {
-      const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
-
-      // use currentAlgorithm to determine the average calculation method
-      const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
-      const currentAverage = algorithm ? algorithm.algorithm(gradesUpToCurrent) : 0;
-
-      if (!isNaN(currentAverage)) {
-        averageHistory.push({
-          date: currentGrade.givenAt.getTime(),
-          average: currentAverage,
-        });
-      }
-    });
-
-    return averageHistory;
-  }, [currentAlgorithm]);
-
-  const currentAverageHistory = useMemo(() => {
-    const grades = newSubjects.flatMap(subject => subject.grades).filter(grade =>
-      grade.studentScore?.value !== undefined &&
-      grade.givenAt &&
-      !isNaN(grade.studentScore.value)
-    );
-    return getAverageHistory(grades);
-  }, [newSubjects, currentAlgorithm, getAverageHistory]);
-
-  const graphAxis = useMemo(() => {
-    const newGraph = currentAverageHistory
-      .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
-      .map(item => ({
-        value: item.average,
-        date: new Date(item.date)
-      }));
-
-    return newGraph;
-  }, [currentAverageHistory]);
-
-  const handleGestureUpdate = useCallback((p: { value: number, date: Date }) => {
-    setShownAverage(p.value);
-    setSelectionDate(p.date.getTime());
-  }, [currentAverageHistory]);
-
-  const handleGestureEnd = useCallback(() => {
-    setShownAverage(average);
-    setSelectionDate(null);
-  }, [average]);
-
-  const GradesGraph = useCallback(() => (
-    <Reanimated.View
-      key={"grades-graph-container:" + graphAxis.length + ":" + currentAlgorithm}
-      style={{
-        width: windowDimensions.width + 36 - 8,
-        height: 140,
-        position: 'absolute',
-        top: 0,
-        left: -36,
-        right: 0,
-        zIndex: 1000,
-        paddingBottom: 20,
-      }}
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
-    >
-      <React.Suspense fallback={
-        <View style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator size="large" color="#29947A" />
-        </View>
-      }>
-      </React.Suspense>
-    </Reanimated.View>
-  ), [graphAxis, handleGestureUpdate, handleGestureEnd, windowDimensions.width]);
-
   const navigation = useNavigation();
 
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
@@ -551,7 +445,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -614,16 +508,16 @@ export default function TabOneScreen() {
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26() ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
               </Dynamic>
               {currentPeriod?.name &&
                 <Dynamic animated style={{ marginTop: -3 }}>
-                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26() && fullyScrolled}>
+                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
                     {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
                   </NativeHeaderHighlight>
                 </Dynamic>

@@ -25,8 +25,9 @@ import * as WebBrowser from "expo-web-browser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
+import { useSettingsStore } from "@/stores/settings";
 
-const SettingsIndex = () => {
+export default function SettingsIndex() {
   const router = useRouter();
 
   const theme = useTheme();
@@ -35,6 +36,8 @@ const SettingsIndex = () => {
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -66,6 +69,14 @@ const SettingsIndex = () => {
     {
       title: t('Settings_More'),
       content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
         {
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
@@ -151,6 +162,9 @@ const SettingsIndex = () => {
         description: t('Settings_Services_Title'),
         color: "#DD9B00",
         disabled: true,
+        onPress: () => {
+          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+        }
       },
       {
         icon: <Papicons name={"Card"} />,
@@ -286,11 +300,11 @@ const SettingsIndex = () => {
         Platform.OS === 'ios' && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
-              tintColor={runsIOS26() ? colors.text : colors.primary}
+              tintColor={runsIOS26 ? colors.text : colors.primary}
               onPress={() => router.back()}
 
               style={{
-                marginLeft: runsIOS26() ? 3 : -32,
+                marginLeft: runsIOS26 ? 3 : -32,
               }}
             />
           </NativeHeaderSide>
@@ -299,5 +313,3 @@ const SettingsIndex = () => {
     </>
   );
 };
-
-export default SettingsIndex;

@@ -2,7 +2,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import Button from "@/ui/components/Button";
 import { useHeaderHeight } from "@react-navigation/elements";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from "react-native";
 import i18n from "@/utils/i18n";
 const t = i18n.t.bind(i18n);
@@ -12,7 +12,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { setConsent } from "@/utils/logger/consent";
+import { checkConsent, setConsent } from "@/utils/logger/consent";
 
 export default function ConsentScreen() {
   const insets = useSafeAreaInsets();
@@ -24,6 +24,20 @@ export default function ConsentScreen() {
 
   const theme = useTheme();
   const { colors } = theme;
+
+  useEffect(() => {
+    checkConsent().then((consent) => {
+      if (consent.advanced) {
+        setCurrentConsent("advanced");
+      } else if (consent.optional) {
+        setCurrentConsent("optional");
+      } else if (consent.required) {
+        setCurrentConsent("required");
+      } else {
+        setCurrentConsent("none");
+      }
+    });
+  }, []);
 
   const consents = [
     {

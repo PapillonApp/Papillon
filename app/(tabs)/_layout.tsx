@@ -20,7 +20,7 @@ const Tabs = withLayoutContext<
 >(BottomTabNavigator);
 
 // Static platform detection - computed once at module load
-const IS_IOS_WITH_PADDING = runsIOS26();
+const IS_IOS_WITH_PADDING = runsIOS26;
 const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
@@ -60,7 +60,7 @@ const useTabTranslations = () => {
   }), [t]);
 };
 
-function TabLayout() {
+export default function TabLayout() {
   // Use optimized translation hook
   const translations = useTabTranslations();
   const { colors } = useTheme();
@@ -124,6 +124,3 @@ function TabLayout() {
     </Tabs>
   );
 }
-
-// Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(TabLayout);

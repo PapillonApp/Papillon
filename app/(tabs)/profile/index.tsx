@@ -549,7 +549,7 @@ export default function TabOneScreen() {
         }
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}

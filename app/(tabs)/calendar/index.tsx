@@ -421,6 +421,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
+      {/*
       <NativeHeaderSide side="Right">
         <MenuView
           actions={[
@@ -449,6 +450,7 @@ export default function TabOneScreen() {
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
+      */}
 
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable

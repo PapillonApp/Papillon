@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import List from "./List";
+import { useHeaderHeight } from '@react-navigation/elements';
 
 export interface CalendarProps {
   date?: Date;
@@ -64,7 +65,7 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: runsIOS26() ? insets.top + 48 : topInset || 8,
+        top: runsIOS26 ? insets.top + 48 : topInset || 8,
         zIndex: 99999,
         width: "100%",
         height: "100%",
@@ -86,6 +87,7 @@ const Calendar: React.FC<CalendarProps> = ({
             maxHeight: 320,
             borderColor: colors.text + "26",
             borderWidth: 0.5,
+            top: useHeaderHeight(),
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
@@ -97,7 +99,7 @@ const Calendar: React.FC<CalendarProps> = ({
             accentColor={colors.primary}
             locale={Localization.getLocales()[0].languageTag}
             onChange={handleChange}
-            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10, }}
+            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: 0, marginHorizontal: 10, }}
           />
         </List>
       </View>

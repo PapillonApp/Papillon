@@ -71,25 +71,28 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
   index: number;
   onProgressChange: (item: Homework, newProgress: number) => void;
 }) => {
-  const cleanContent = item.content.replace(/<[^>]*>/g, "");
-  const magic = useMagicPrediction(cleanContent);
+  try {
+    const cleanContent = item.content.replace(/<[^>]*>/g, "");
+    const magic = useMagicPrediction(cleanContent);
 
-  return (
-    <Task
-      subject={getSubjectName(item.subject)}
-      emoji={getSubjectEmoji(item.subject)}
-      title={""}
-      color={getSubjectColor(item.subject)}
-      description={cleanContent}
-      date={item.dueDate ? item.dueDate : new Date()}
-      progress={item.isDone ? 1 : 0}
-      index={index}
-      magic={magic}
-      attachments={item.attachments}
-      fromCache={fromCache}
-      onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
-    />
-  );
+    return (
+      <Task
+        subject={getSubjectName(item.subject)}
+        emoji={getSubjectEmoji(item.subject)}
+        title={""}
+        color={getSubjectColor(item.subject)}
+        description={cleanContent}
+        date={new Date(item.dueDate)}
+        progress={item.isDone ? 1 : 0}
+        index={index}
+        magic={magic}
+        fromCache={item.fromCache ?? false}
+        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+      />
+    );
+  } catch (error) {
+    return null;
+  }
 });
 
 const EmptyListComponent = memo(() => (
@@ -293,7 +296,7 @@ export default function TabOneScreen() {
   const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
 
   function marginTop(): number {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       if (fullyScrolled) {
         return 6
       }
@@ -374,7 +377,7 @@ export default function TabOneScreen() {
         ListEmptyComponent={<EmptyListComponent />}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -524,12 +527,12 @@ export default function TabOneScreen() {
               marginTop: marginTop(),
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26 && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
@@ -543,7 +546,7 @@ export default function TabOneScreen() {
                 style={{
                   width: 200,
                   alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
-                  marginTop: !runsIOS26() ? -4 : 0,
+                  marginTop: !runsIOS26 ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>

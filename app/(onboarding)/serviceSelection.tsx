@@ -7,7 +7,7 @@ import LottieView from 'lottie-react-native';
 import Typography from '@/ui/components/Typography';
 
 import Icon from '@/ui/components/Icon';
-import { getSupportedServices, SupportedService } from './utils/constants';
+import { GetSupportedServices, SupportedService } from './utils/constants';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
   const { t } = useTranslation();
   const animation = React.useRef<LottieView>(null);
 
-  const services = getSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
+  const services = GetSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
     router.push({
       pathname: path.pathname as unknown as RelativePathString,
       params: path.options ?? {} as unknown as UnknownInputParams
