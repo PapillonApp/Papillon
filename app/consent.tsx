@@ -2,7 +2,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import Button from "@/ui/components/Button";
 import { useHeaderHeight } from "@react-navigation/elements";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from "react-native";
 import i18n from "@/utils/i18n";
 const t = i18n.t.bind(i18n);
@@ -13,28 +13,33 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { checkConsent, setConsent } from "@/utils/logger/consent";
+import { LinearGradient } from "expo-linear-gradient";
+import List from "@/ui/components/List";
+import Icon from "@/ui/components/Icon";
+import Item from "@/ui/components/Item";
 
 export default function ConsentScreen() {
   const insets = useSafeAreaInsets();
-  const accent = "#C94F1A";
 
   const router = useRouter();
 
-  const [currentConsent, setCurrentConsent] = useState("optional");
+  const [currentConsent, setCurrentConsent] = useState(null);
 
   const theme = useTheme();
   const { colors } = theme;
 
   useEffect(() => {
     checkConsent().then((consent) => {
-      if (consent.advanced) {
-        setCurrentConsent("advanced");
-      } else if (consent.optional) {
-        setCurrentConsent("optional");
-      } else if (consent.required) {
-        setCurrentConsent("required");
-      } else {
-        setCurrentConsent("none");
+      if (consent.given) {
+        if (consent.advanced) {
+          setCurrentConsent("advanced");
+        } else if (consent.optional) {
+          setCurrentConsent("optional");
+        } else if (consent.required) {
+          setCurrentConsent("required");
+        } else {
+          setCurrentConsent("none");
+        }
       }
     });
   }, []);
@@ -44,27 +49,28 @@ export default function ConsentScreen() {
       key: "advanced",
       title: t("Consent_Advanced_Title"),
       description: t("Consent_Advanced_Description"),
-      icon: "emoji"
+      icon: "emoji",
+      color: "#C50083"
     },
     {
       key: "optional",
-      title: t("Consent_Optional_Title"),
-      description: t("Consent_Optional_Description"),
-      icon: "grades"
-    },
-    {
-      key: "required",
       title: t("Consent_Required_Title"),
       description: t("Consent_Required_Description"),
-      icon: "ghost"
+      icon: "ghost",
+      color: "#0080C5"
     },
     {
       key: "none",
       title: t("Consent_None_Title"),
       description: t("Consent_None_Description"),
-      icon: "cross"
+      icon: "cross",
+      color: "#5A5A5A"
     }
   ];
+
+  const accent = useMemo(() => {
+    return consents.find(c => c.key === currentConsent)?.color || theme.colors.primary;
+  }, [currentConsent, theme]);
 
   const saveConsentState = async (consent: string) => {
     await setConsent(consent as "none" | "required" | "optional" | "advanced");
@@ -75,19 +81,32 @@ export default function ConsentScreen() {
     <View
       style={{ flex: 1 }}
     >
+      <LinearGradient
+        colors={[accent, colors.background]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 400,
+          zIndex: -1,
+          opacity: 0.2,
+        }}
+      />
+
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
           padding: 16,
           paddingTop: insets.top + 26,
-          gap: 24,
+          gap: 16,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <Stack gap={16}>
+        <Stack gap={16} style={{ marginBottom: 8 }}>
           <Image
-            source={require("../assets/images/emoji_relieved.png")}
-            style={{ width: 60, height: 60, alignSelf: "center" }}
+            source={require("../assets/images/papillon_heart.png")}
+            style={{ width: 98, height: 72, alignSelf: "center" }}
           />
           <Typography variant="h3" color="text" align="center" style={{ width: "100%" }}>
             {t("Consent_Title")}
@@ -95,13 +114,37 @@ export default function ConsentScreen() {
           <Typography variant="body2" color="secondary" align="center">
             {t("Consent_Intro1")}
           </Typography>
-          <Typography variant="body2" color="secondary" align="center">
-            {t("Consent_Intro2")}
-          </Typography>
           <Typography onPress={() => Linking.openURL("https://docs.papillon.bzh/privacy-policy")} variant="caption" color={accent} align="center" style={{ textDecorationLine: "underline" }}>
             {t("Consent_PrivacyPolicy")}
           </Typography>
         </Stack>
+
+        <List>
+          <Item>
+            <Icon>
+              <Papicons name="check" />
+            </Icon>
+            <Typography variant="body2">
+              {t("Consent_Arg1")}
+            </Typography>
+          </Item>
+          <Item>
+            <Icon>
+              <Papicons name="link" size={24} color={colors.text} />
+            </Icon>
+            <Typography variant="body2">
+              {t("Consent_Arg2")}
+            </Typography>
+          </Item>
+          <Item>
+            <Icon>
+              <Papicons name="lock" size={24} color={colors.text} />
+            </Icon>
+            <Typography variant="body2">
+              {t("Consent_Arg3")}
+            </Typography>
+          </Item>
+        </List>
 
         <View
           style={{
@@ -123,14 +166,14 @@ export default function ConsentScreen() {
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 16,
-                  borderColor: currentConsent === consent.key ? accent : colors.border,
+                  borderColor: currentConsent === consent.key ? consent.color : colors.border,
                   borderWidth: 1,
                   borderRadius: 16,
                   borderCurve: 'continuous',
-                  backgroundColor: currentConsent === consent.key ? accent + "20" : colors.background,
+                  backgroundColor: currentConsent === consent.key ? consent.color + "20" : colors.background,
                 }}
               >
-                <Papicons name={consent.icon} size={32} color={currentConsent !== consent.key ? colors.text + "50" : accent} />
+                <Papicons name={consent.icon} size={32} color={currentConsent !== consent.key ? colors.text + "50" : consent.color} />
                 <View
                   style={{
                     gap: 4,
@@ -153,20 +196,34 @@ export default function ConsentScreen() {
       <View
         style={{
           padding: 16,
-          paddingBottom: insets.bottom + 24,
+          paddingBottom: insets.bottom + 12,
           borderTopWidth: StyleSheet.hairlineWidth,
           borderColor: "#888888",
           gap: 12,
         }}
       >
-        <Button
-          title={currentConsent === "none" ? t("Consent_Refuse") : t("Consent_Accept")}
-          variant={currentConsent === "none" ? "outline" : "primary"}
-          color="orange"
-          onPress={() => {
-            saveConsentState(currentConsent);
+        <AnimatedPressable
+          style={{
+            width: "100%",
+            padding: 12,
+            borderRadius: 80,
+            borderCurve: 'continuous',
+            backgroundColor: currentConsent ? accent : "transparent",
+            borderColor: colors.border,
+            borderWidth: currentConsent ? 0 : 1,
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: 8,
           }}
-        />
+          disabled={!currentConsent}
+          onPress={() => { if (currentConsent) saveConsentState(currentConsent) }}
+        >
+          <Papicons name={currentConsent === "none" ? "cross" : "check"} color={currentConsent ? "#FFFFFF" : colors.text + "44"} />
+          <Typography color={currentConsent ? "#FFFFFF" : colors.text + "44"} variant="button">
+            {currentConsent === "none" ? t("Consent_Refuse") : t("Consent_Accept")}
+          </Typography>
+        </AnimatedPressable>
         <Typography variant="caption" color="secondary" align="center">
           {t("Consent_ChangeMind")}
         </Typography>
