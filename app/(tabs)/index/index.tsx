@@ -43,6 +43,7 @@ import { useTimetable } from "@/database/useTimetable";
 import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
+import { error } from "@/utils/logger/logger";
 
 const IndexScreen = () => {
   const now = new Date();
