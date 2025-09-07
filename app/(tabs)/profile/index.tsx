@@ -385,7 +385,7 @@ export default function TabOneScreen() {
     let establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
-  }, [lastUsedAccount]);
+  }, [lastUsedAccount, accounts]);
 
   const headerHeight = useHeaderHeight();
 
