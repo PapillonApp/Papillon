@@ -308,5 +308,6 @@
   "Consent_PrivacyPolicy": "If in doubt, check our privacy policy",
   "Consent_Refuse": "Refuse",
   "Consent_Accept": "Accept",
-  "Consent_ChangeMind": "You can change your mind at any time from the app settings."
+  "Consent_ChangeMind": "You can change your mind at any time from the app settings.",
+  "Changelog_Title": "Changelog"
 }
