@@ -36,7 +36,6 @@ export default function SettingsMagic() {
       const status = ModelManager.getStatus();
       setModelStatus(status);
 
-      // Récupérer les infos du modèle actuel
       try {
         const ptr = await getCurrentPtr();
         setCurrentPtr(ptr);
@@ -45,10 +44,9 @@ export default function SettingsMagic() {
       }
     };
 
-    updateStatus(); // Charger une seule fois au début
+    updateStatus();
   }, []);
 
-  // Fonction pour rafraîchir manuellement le statut
   const refreshStatus = async () => {
     const status = ModelManager.getStatus();
     setModelStatus(status);
@@ -88,9 +86,7 @@ export default function SettingsMagic() {
       const result = await checkAndUpdateModel(packageJson.version, MAGIC_URL);
 
       if (result.updated) {
-        // Réinitialiser le ModelManager pour charger le nouveau modèle
         await ModelManager.safeInit();
-        // Rafraîchir le statut après la mise à jour
         refreshStatus();
       }
     } catch (error) {
@@ -104,7 +100,6 @@ export default function SettingsMagic() {
     try {
       const result = await ModelManager.reset();
       if (result.success) {
-        // Rafraîchir le statut après la réinitialisation
         refreshStatus();
       }
     } catch (error) {
@@ -123,7 +118,6 @@ export default function SettingsMagic() {
         description="Optimise automatiquement l'organisation de tes tâches pour améliorer ta productivité"
         imageSource={require("@/assets/images/magic.png")}
         onSwitchChange={(isSwitchOn) => {
-          // Si Magic+ est actuellement activé et qu'on le désactive
           if (settingsStore.magicEnabled && !isSwitchOn) {
             Alert.alert(
               "Désactivation de Magic+",
@@ -133,7 +127,6 @@ export default function SettingsMagic() {
           }
 
           mutateProperty("personalization", { magicEnabled: !settingsStore.magicEnabled });
-          // Rafraîchir le statut quand Magic+ est activé/désactivé
           setTimeout(refreshStatus, 100);
         }}
         switchValue={settingsStore.magicEnabled}
