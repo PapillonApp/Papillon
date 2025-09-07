@@ -83,6 +83,7 @@ const TaskItem = memo(({ item, index, onProgressChange }: {
       progress={item.isDone ? 1 : 0}
       index={index}
       magic={magic}
+      attachments={item.attachments}
       fromCache={item.fromCache ?? false}
       onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
     />
