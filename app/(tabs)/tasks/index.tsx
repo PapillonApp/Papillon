@@ -81,7 +81,7 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
       title={""}
       color={getSubjectColor(item.subject)}
       description={cleanContent}
-      date={new Date(item.dueDate)}
+      date={item.dueDate ? item.dueDate : new Date()}
       progress={item.isDone ? 1 : 0}
       index={index}
       magic={magic}
