@@ -84,6 +84,18 @@ export default function TabOneScreen() {
   const Initialize = async () => {
     try {
       await initializeAccountManager()
+      log("Refreshed Manager received")
+
+      await Promise.all([fetchEDT(), fetchGrades()]);
+
+      alert.showAlert({
+        title: "Synchronisation réussie",
+        description: "Toutes vos données ont été mises à jour avec succès.",
+        icon: "CheckCircle",
+        color: "#00C851",
+        withoutNavbar: true,
+        delay: 1000
+      });
     } catch (error) {
       alert.showAlert({
         title: "Connexion impossible",
@@ -93,7 +105,6 @@ export default function TabOneScreen() {
         technical: String(error)
       })
     }
-    log("Refreshed Manager received")
   };
 
   useMemo(() => {
