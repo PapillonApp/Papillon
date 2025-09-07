@@ -316,5 +316,9 @@
   "Consent_Arg2": "Anonyme & sans lien avec ton identité",
   "Consent_Arg3": "On n'a pas accès à tes comptes",
 
-  "Changelog_Title": "Notes de mise à jour"
+  "Changelog_Title": "Notes de mise à jour",
+
+  "Tasks_Sorting_Methods_DueDate": "Date de rendu",
+  "Tasks_Sorting_Methods_Subject": "Matières",
+  "Tasks_Sorting_Methods_Done": "Non terminé"
 }
