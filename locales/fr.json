@@ -237,7 +237,7 @@
   "Settings_About_Title": "À propos",
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
-  "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+  "Settings_Logout_Description": "Supprimer ce compte",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
@@ -250,7 +250,7 @@
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
   "Settings_Personalization_Subject_Description": "Icônes, couleurs",
   "Settings_About_Papillion_Behind": "Derrière Papillon",
-  "Settings_About_Papillion_Behind_Description": "Papillon est maintenu par des étudiants 100% bénévoles",
+  "Settings_About_Papillion_Behind_Description": "Papillon est maintenu a 100% par des étudiants bénévoles",
   "Settings_About_Discord": "Serveur Discord",
   "Settings_About_Discord_Description": "Rejoindre le serveur Discord",
   "Settings_About_Github": "Projet GitHub",
@@ -301,20 +301,21 @@
   "OnBoarding_Step_Of": "sur ",
 
   "Consent_Advanced_Title": "Je veux aider Papillon",
-  "Consent_Advanced_Description": "On récolte plus d’informations détaillées sur ton utilisation.",
+  "Consent_Advanced_Description": "On récolte plus d’informations détaillées sur comment vous utilisez Papillon.",
   "Consent_Optional_Title": "Les informations importantes",
-  "Consent_Optional_Description": "En gros, savoir que quelqu’un a utilisé Papillon, si ça s’est bien passé et quel service il utilise.",
+  "Consent_Optional_Description": "En gros, savoir que quelqu’un a utilisé Papillon et si ça s’est bien passé, quel service il utilise.",
   "Consent_Required_Title": "Juste l'essentiel",
   "Consent_Required_Description": "On sait juste que quelqu’un a utilisé Papillon pendant un certain temps.",
   "Consent_None_Title": "Rien du tout",
   "Consent_None_Description": "On ne sera même pas au courant de ton existence.",
   "Consent_Title": "Télémétrie & vie privée",
-  "Consent_Intro1": "On aimerait savoir combien vous êtes et comment se passe votre expérience pour améliorer l’application.",
+  "Consent_Intro1": "On voudrais savoir combien de vous nous supporte et comment se passe votre expérience pour améliorer l’application.",
   "Consent_Intro2": "Tout cela de manière toujours anonyme et vous avez complètement le choix de dire non.",
   "Consent_PrivacyPolicy": "En cas de doute, consultez notre politique de confidentialité",
-  "Consent_Refuse": "Refuser",
-  "Consent_Accept": "Accepter",
+  "Consent_Refuse": "Non Merci",
+  "Consent_Accept": "Tres Bien",
   "Consent_ChangeMind": "Vous pouvez changer d’avis à tout moment depuis les paramètres de l’appli.",
 
   "Changelog_Title": "Notes de mise à jour"
 }
+
