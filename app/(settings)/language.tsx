@@ -38,12 +38,12 @@ const LanguagePersonalization = () => {
                                 i18n.changeLanguage(lang.id);
                             }}
                         >
-                            <Typography style={{
-                                fontSize: 25,
-                                lineHeight: 32,
-                            }}>
-                                {lang.emoji}
-                            </Typography>
+                            <Leading>
+                                <Typography>
+                                    {lang.emoji}
+                                </Typography>
+
+                            </Leading>
 
                             <Typography
                                 variant={"title"}
