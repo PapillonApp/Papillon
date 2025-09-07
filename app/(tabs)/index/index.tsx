@@ -42,8 +42,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
 import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
+import { useSettingsStore } from "@/stores/settings";
 
-export default function TabOneScreen() {
+const IndexScreen = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
@@ -73,6 +74,8 @@ export default function TabOneScreen() {
   const navigation = useNavigation();
   const alert = useAlert();
 
+  const settingsStore = useSettingsStore(state => state.personalization)
+
   useEffect(() => {
     checkConsent().then(consent => {
       if (!consent.given) {
@@ -84,6 +87,21 @@ export default function TabOneScreen() {
   const Initialize = async () => {
     try {
       await initializeAccountManager()
+      log("Refreshed Manager received")
+
+      await Promise.all([fetchEDT(), fetchGrades()]);
+
+      if (settingsStore.showAlertAtLogin) {
+        alert.showAlert({
+          title: "Synchronisation réussie",
+          description: "Toutes vos données ont été mises à jour avec succès.",
+          icon: "CheckCircle",
+          color: "#00C851",
+          withoutNavbar: true,
+          delay: 1000
+        });
+      }
+
     } catch (error) {
       alert.showAlert({
         title: "Connexion impossible",
@@ -93,7 +111,6 @@ export default function TabOneScreen() {
         technical: String(error)
       })
     }
-    log("Refreshed Manager received")
   };
 
   useMemo(() => {
@@ -226,7 +243,7 @@ export default function TabOneScreen() {
         color={foreground}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -515,3 +532,5 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+export default IndexScreen;

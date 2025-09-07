@@ -2,6 +2,7 @@ import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
 import React from "react";
 import { EarthIcon } from "lucide-react-native";
+import React, { useEffect } from "react";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
@@ -35,6 +36,19 @@ const PersonalizationSettings = () => {
   const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
 
   const height = useHeaderHeight()
+
+  useEffect(() => {
+    if (settingsStore.theme) {
+      setSelectedTheme(settingsStore.theme);
+    }
+  }, []);
+
+  useEffect(() => {
+    // change theme in store
+    mutateProperty('personalization', {
+      theme: selectedTheme
+    });
+  }, [selectedTheme]);
 
   return (
     <>
@@ -157,6 +171,7 @@ const PersonalizationSettings = () => {
               </Stack>
             </Trailing>
           </Item>
+          {/*
           <Item onPress={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
@@ -171,6 +186,7 @@ const PersonalizationSettings = () => {
               color={"secondary"}
             >{t("Settings_Personalization_Icon_Description")}</Typography>
           </Item>
+          */}
           <Item
             onPress={() => {
               router.push("/(settings)/subject_personalization");

@@ -1,3 +1,4 @@
+import Countly from "countly-sdk-react-native-bridge";
 import { MMKV } from "react-native-mmkv";
 
 interface ConsentStatus {
@@ -37,16 +38,19 @@ export const setConsent = async (consent: keyof ConsentLevels) => {
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", false);
     await consentConfig.set("countly-consent-advanced", false);
+    Countly.giveConsent(["sessions"]);
   } else if (consent === "optional") {
     await consentConfig.set("consent", true);
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", true);
     await consentConfig.set("countly-consent-advanced", false);
+    Countly.giveConsent(["sessions", "crashes", "users"]);
   } else if (consent === "advanced") {
     await consentConfig.set("consent", true);
     await consentConfig.set("countly-consent-required", true);
     await consentConfig.set("countly-consent-optional", true);
     await consentConfig.set("countly-consent-advanced", true);
+    Countly.giveConsent(["sessions", "crashes", "users", "location", "attribution", "push", "star-rating", "feedback"]);
   }
 
   return;

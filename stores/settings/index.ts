@@ -7,8 +7,11 @@ import { Colors } from "@/utils/colors";
 
 const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
+  theme: "auto",
   magicEnabled: true,
   hideNameOnHomeScreen: false,
+  showAlertAtLogin: false,
+  showDevMode: false,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(
