@@ -209,24 +209,42 @@ const Task: React.FC<TaskProps> = ({
             </Typography>
           )}
           {attachments && attachments.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingTop: 5, gap: 5, flex: 1 }}>
-              {attachments.map(attachment => (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingTop: 15, gap: 5, flex: 1 }}>
+              {fromCache ? (
                 <AnimatedPressable
-                  key={attachment.url}
                   layout={Animation(LinearTransition, "list")}
-                  onPress={() => {
-                    Linking.openURL(attachment.url);
-                  }}
                   style={[styles.chip, backgroundStyle]}
                 >
-                  <Icon size={20} fill={colors.text} skeleton={skeleton}>
-                    <Papicons name={"Paper"} />
+                  <Icon size={20} fill={"#D60046" + 80} skeleton={skeleton}>
+                    <Papicons name={"Cross"} />
                   </Icon>
-                  <Typography variant='body2' color='text' skeleton={skeleton}>
-                    {attachment.name}
+                  <Typography variant='body2' color={"#D60046" + 80} skeleton={skeleton}>
+                    Impossible de récupérer la pièce jointe
                   </Typography>
                 </AnimatedPressable>
-              ))}
+              ) : (
+                <>
+                  {
+                    attachments.map(attachment => (
+                      <AnimatedPressable
+                        key={attachment.url}
+                        layout={Animation(LinearTransition, "list")}
+                        onPress={() => {
+                          Linking.openURL(attachment.url);
+                        }}
+                        style={[styles.chip, backgroundStyle]}
+                      >
+                        <Icon size={20} fill={colors.text} skeleton={skeleton}>
+                          <Papicons name={"Paper"} />
+                        </Icon>
+                        <Typography variant='body2' color='text' skeleton={skeleton}>
+                          {attachment.name}
+                        </Typography>
+                      </AnimatedPressable>
+                    ))
+                  }
+                </>
+              )}
             </ScrollView>
           )}
           {(progress !== undefined || currentDate) && (
