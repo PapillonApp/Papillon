@@ -25,14 +25,14 @@ export interface AvatarProps extends ViewProps {
 }
 
 const Avatar = ({
-                  size = 40,
-                  initials,
-                  imageUrl,
-                  shape = "circle",
-                  color,
-                  skeleton = false,
-                  ...rest
-                }: AvatarProps) => {
+  size = 40,
+  initials,
+  imageUrl,
+  shape = "circle",
+  color,
+  skeleton = false,
+  ...rest
+}: AvatarProps) => {
   const { colors, dark } = useTheme();
   const [hasFailed, setHasFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -45,7 +45,7 @@ const Avatar = ({
       justifyContent: "center",
       alignItems: "center",
       overflow: "hidden",
-      borderWidth: 1,
+      borderWidth: 2,
     };
 
     if (hasFailed)
@@ -54,11 +54,11 @@ const Avatar = ({
       baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
 
     if (hasFailed)
-      baseStyle.borderColor = "#DD003010";
+      baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
     else if (imageUrl || skeleton)
       baseStyle.borderColor = colors.border;
     else
-      baseStyle.borderColor = (color ?? colors.primary) + "10";
+      baseStyle.borderColor = adjust(color ?? colors.primary, 0.2);
 
     return baseStyle;
   }
