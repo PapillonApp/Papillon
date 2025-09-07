@@ -331,8 +331,7 @@ export default function TabOneScreen() {
             icon: <Papicons name={"Butterfly"} />,
             title: "Papillon 8 est là !",
             redirect: "/changelog",
-            buttonLabel: "En savoir plus",
-            dev: true
+            buttonLabel: "En savoir plus"
           },
           courses.length > 0 && {
             icon: <Papicons name={"Calendar"} />,
