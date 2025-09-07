@@ -137,7 +137,7 @@
   "Grades_Sorting_Date": "Date",
   "Grades_Menu_SortBy": "Sort by",
   "Grades_Menu_AverageBy": "Average by",
-  "NoAverage": "Aucune moyenne",
+  "NoAverage": "No average",
   "Grades_Empty_Title": "No grades",
   "Grades_Empty_Description": "You haven’t been graded yet for this period.",
   "Grade_NoDescription": "{{subject}} assignment",
@@ -267,5 +267,5 @@
   "Consent_Refuse": "Refuse",
   "Consent_Accept": "Accept",
   "Consent_ChangeMind": "You can change your mind at any time from the app settings.",
-  "Changelog_Title": "Notes de mise à jour"
+  "Changelog_Title": "Release notes"
 }
