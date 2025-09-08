@@ -39,7 +39,6 @@ import GradesWidget from "./widgets/Grades";
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
-import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
 import { Homework } from "@/services/shared/homework";
@@ -549,6 +548,13 @@ const IndexScreen = () => {
                 )}
               />
             )
+          },
+          {
+            icon: <Papicons name={"Butterfly"} />,
+            title: "Onboarding",
+            redirect: "/(onboarding)/welcome",
+            buttonLabel: "Aller",
+            dev: true
           },
           {
             icon: <Papicons name={"Butterfly"} />,
