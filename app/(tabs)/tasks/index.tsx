@@ -146,6 +146,7 @@ export default function TabOneScreen() {
       return;
     }
     const result = await managerToUse.getHomeworks(selectedWeek);
+    result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
       const id = generateId(hw.subject + hw.content + hw.createdByAccount);
