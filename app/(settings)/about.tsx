@@ -192,7 +192,7 @@ export default function SettingsAbout() {
         {contributors.map(item => (
           <Item key={item.login}>
             <Leading>
-              <Avatar size={40} squared author={item.login} imageURL={item.avatar_url} />,
+              <Avatar size={40} squared author={item.login} imageURL={item.avatar_url} />
             </Leading>
             <Typography>{item.login}</Typography>
             <Typography color="secondary">{item.contributions} contributions</Typography>
