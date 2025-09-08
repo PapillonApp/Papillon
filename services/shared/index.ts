@@ -27,6 +27,7 @@ import { error, log, warn } from "@/utils/logger/logger";
 import { Kid } from "./kid";
 import { Balance } from "./balance";
 import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
+import module from "@/services/izly";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
@@ -531,6 +532,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/izly/index");
       return new module.Izly(service.id);
+    }
+
+    if (service.serviceId === Services.APPSCHO) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/appscho/index");
+      return new module.Appscho(service.id);
     }
 
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
