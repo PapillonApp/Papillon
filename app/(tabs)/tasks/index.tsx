@@ -34,7 +34,7 @@ import { useAccountStore } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MenuView } from "@react-native-menu/menu";
 
-const useMagicPrediction = (content: string) => {
+export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
 
@@ -89,7 +89,7 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
         index={index}
         magic={magic}
         fromCache={fromCache ?? false}
-        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+        onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
       />
     );
   } catch (error) {
@@ -153,7 +153,6 @@ export default function TabOneScreen() {
     }
     setHomework(newHomeworks);
     setRefreshTrigger(prev => prev + 1);
-
   };
 
   useEffect(() => {
