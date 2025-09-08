@@ -31,7 +31,6 @@ import { useSettingsStore } from "@/stores/settings";
 import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { useAccountStore } from "@/stores/account";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MenuView } from "@react-native-menu/menu";
 
 export const useMagicPrediction = (content: string) => {
@@ -83,7 +82,7 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
         emoji={getSubjectEmoji(item.subject)}
         title={""}
         color={getSubjectColor(item.subject)}
-        description={cleanContent}
+        description={item.content}
         date={new Date(item.dueDate)}
         progress={item.isDone ? 1 : 0}
         index={index}
@@ -311,8 +310,6 @@ export default function TabOneScreen() {
 
     return -2
   }
-
-  const insets = useSafeAreaInsets();
 
   const sortingMethods = [
     {
