@@ -201,9 +201,10 @@ const IndexScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       date.setUTCHours(0, 0, 0, 0);
+      const currentTime = new Date();
 
       const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
-      setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+      setCourses(dayCourse.filter(course => course.from.getTime() > currentTime.getTime()));
     };
     fetchData();
   }, [weeklyTimetable]);
