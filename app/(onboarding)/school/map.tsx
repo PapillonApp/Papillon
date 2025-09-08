@@ -47,7 +47,7 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
     }
   }
 
-  if (city) {
+  if (city && service !== Services.SKOLENGO) {
     pos = await GeographicQuerying(city);
   }
 
@@ -61,13 +61,38 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
   }
 
   if (service === Services.SKOLENGO) {
-    let cityName: string = city || (await GeographicReverse(pos?.latitude ?? 0, pos?.longitude ?? 0)).city;
+    let cityName: string | undefined;
+
+    if (city) {
+      cityName = city;
+    }
+    else if (pos?.latitude && pos?.longitude) {
+      cityName = (await GeographicReverse(pos.latitude, pos.longitude)).city;
+    }
+    else {
+      return [];
+    }
+
     const schools = await SearchSchools(cityName, 50);
     const list: School[] = [];
 
     for (const school of schools) {
-      const position = await GeographicQuerying(`${school.location.addressLine} ${school.location.city} ${school.location.zipCode}`);
-      const distance = calculateDistanceBetweenPositions(pos?.latitude ?? 0, pos?.longitude ?? 0, position.longitude, position.latitude);
+      let distance = 0;
+
+      if (pos?.latitude && pos?.longitude) {
+        if (school.location.addressLine?.trim() && school.location.city?.trim() && school.location.zipCode?.trim()) {
+          const position = await GeographicQuerying(
+            `${school.location.addressLine} ${school.location.city} ${school.location.zipCode}`
+          );
+          distance = calculateDistanceBetweenPositions(
+            pos.latitude,
+            pos.longitude,
+            position.longitude,
+            position.latitude
+          );
+        }
+      }
+
       list.push({
         name: school.name,
         distance: distance / 1000,
@@ -78,6 +103,7 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
 
     return list;
   }
+
 
   return [];
 }
@@ -100,9 +126,10 @@ export default function SelectSchoolOnMap() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const local = useGlobalSearchParams();
-
+  console.log(local)
+  const city = local.method === "manual" ? local.city : undefined
   const getPosition = useCallback(async () => {
-    const fetchedSchools = await fetchSchools(Number(local.service), alert, local.method === "manual" ? String(local.city) : undefined);
+    const fetchedSchools = await fetchSchools(Number(local.service), alert, city?.toString());
     setSchools([]);
     setTimeout(() => { setSchools(fetchedSchools); }, 10); // For letting placeholder animation play correctly
     setLoading(false);
@@ -128,7 +155,8 @@ export default function SelectSchoolOnMap() {
       const sanitizedSchoolName = sanitizeSchoolName(school.name);
       return {
         title: school.name,
-        description: "à " + (school.distance / 100).toFixed(2) + "km de " + (local.method === "manual" ? local.city : "toi"),
+        distance: school.distance,
+        description: "à " + ((school.distance / 100).toFixed(2)) + "km de " + (local.method === "manual" ? local.city : "toi"),
         initials: getInitials(sanitizedSchoolName),
         onPress: () => {
           log("Opening Webview for service " + Services[Number(local.service)] + " and URL " + school.url);
@@ -222,18 +250,21 @@ export default function SelectSchoolOnMap() {
                   </Typography>
                 )
               }
+
               {
                 loading ? (
                   <View style={{ width: "40%", height: 12, borderRadius: 5, backgroundColor: colors.text + "20" }} />
                 ) : (
-                  <Typography
-                    style={{ flex: 1 }}
-                    nowrap
-                    variant="caption"
-                    color={colors.text + "99"}
-                  >
-                    {item.description}
-                  </Typography>
+                  item.distance !== 0 && (
+                    <Typography
+                      style={{ flex: 1 }}
+                      nowrap
+                      variant="caption"
+                      color={colors.text + "99"}
+                    >
+                      {item.description}
+                    </Typography>
+                  )
                 )
               }
             </Stack>

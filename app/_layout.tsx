@@ -135,6 +135,13 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
   const colorScheme = useColorScheme();
   const selectedTheme = useSettingsStore(state => state.personalization.theme);
+  const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+  if (!selectedTheme) {
+    mutateProperty('personalization', {
+      theme: "auto"
+    });
+  }
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);

@@ -11,6 +11,7 @@ import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import AnimatedPressable from "./AnimatedPressable";
+import { truncatenateString } from "../utils/Truncatenate";
 
 type Variant = "primary" | "separator";
 
@@ -293,7 +294,7 @@ const Course = React.memo(
                         style={[styles.room, ...(status?.canceled ? [styles.canceled] : [])]}
                         skeleton={skeleton}
                       >
-                        {room || t("No_Course_Room")}
+                        {room ? truncatenateString(room, 10) : t("No_Course_Room")}
                       </Typography>
                     </View>
                     <View
