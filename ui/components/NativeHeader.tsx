@@ -199,7 +199,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
   }));
 
   const handlePressIn = () => {
-    opacity.value = withTiming(runsIOS26() ? 0.5 : 0.3, { duration: 20 });
+    opacity.value = withTiming(runsIOS26 ? 0.5 : 0.3, { duration: 20 });
     scale.value = withTiming(0.9, { duration: 100 });
   };
 

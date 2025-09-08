@@ -68,7 +68,7 @@
     "\\bconférence\\s?orale\\b(?:\\s+\\w+){0,3}",
     "\\bcompte-rendu\\s?oral\\b(?:\\s+\\w+){0,3}"
   ],
-  "Fiches": [
+  "Fiche": [
     "\\bfaire\\s(?:une?|des|la|les)\\sfiche(?:s)?\\b(?:\\s+\\w+){0,3}",
     "\\bcréer\\s(?:une?|des|la|les)\\sfiche(?:s)?\\b(?:\\s+\\w+){0,3}",
     "\\brédiger\\s(?:une?|des|la|les)\\sfiche(?:s)?\\b(?:\\s+\\w+){0,3}",

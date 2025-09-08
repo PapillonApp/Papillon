@@ -4,6 +4,7 @@ import { cleanSubjectName } from "./name";
 import lessonFormats from "./lesson_formats.json";
 
 function normalizeSubjectName(subject: string): string {
+  if (!subject) return "";
   return subject
     .split(/\s*[>|]\s*/)[0]
     .toLowerCase()

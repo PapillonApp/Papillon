@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
-import React, { Suspense,useMemo } from "react";
-import { ActivityIndicator,Dimensions, StyleSheet, View } from "react-native";
+import React, { Suspense, useMemo } from "react";
+import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -105,6 +105,7 @@ export default function AnimatedModalLayout({
       willChange: 'borderTopRightRadius, borderTopLeftRadius, minHeight', // Hint for native optimization
     };
   });
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {background}

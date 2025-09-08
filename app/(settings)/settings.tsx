@@ -25,6 +25,7 @@ import * as WebBrowser from "expo-web-browser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
+import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -35,6 +36,8 @@ export default function SettingsIndex() {
   const accountStore = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -59,21 +62,21 @@ export default function SettingsIndex() {
     for (const service of account.services) {
       ClearDatabaseForAccount(service.id)
     }
-    return router.push("/(onboarding)/welcome")
+    router.push("/(onboarding)/welcome");
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [
     {
       title: t('Settings_More'),
       content: [
-        {
+        /*{
           title: t('Settings_Accessibility_Title'),
           description: t('Settings_Accessibility_Description'),
           papicon: <Papicons name={"Accessibility"} />,
           icon: <AccessibilityIcon />,
           color: "#0038A8",
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-        },
+        },*/
         {
           title: t('Settings_Donate_Title'),
           description: t('Settings_Donate_Description'),
@@ -81,14 +84,6 @@ export default function SettingsIndex() {
           icon: <HeartIcon />,
           color: "#EFA400",
           onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
-        },
-        {
-          title: t('Settings_Telemetry_Title'),
-          description: `${t('Settings_Telemetry_Description')}`,
-          icon: <InfoIcon />,
-          papicon: <Papicons name={"Check"} />,
-          color: "#797979",
-          onPress: () => router.navigate("../consent")
         },
         {
           title: t('Settings_About_Title'),
@@ -103,6 +98,13 @@ export default function SettingsIndex() {
     {
       title: t('Settings_About'),
       content: [
+        {
+          title: t('Settings_Telemetry_Title'),
+          icon: <InfoIcon />,
+          papicon: <Papicons name={"Check"} />,
+          color: "#797979",
+          onPress: () => router.navigate("../consent")
+        },
         {
           title: t('Settings_Logout_Title'),
           description: t('Settings_Logout_Description'),
@@ -130,7 +132,20 @@ export default function SettingsIndex() {
           }
         },
       ]
-    }
+    },
+    ...(settingsStore.showDevMode ? [{
+      title: t('Settings_Dev'),
+      content: [
+        ...(settingsStore.showDevMode ? [{
+          title: "Mode développeur",
+          description: "Options avancées pour les développeurs.",
+          papicon: <Papicons name={"Code"} />,
+          icon: <InfoIcon />,
+          color: "#FF6B35",
+          onPress: () => router.navigate("/devmode")
+        }] : []),
+      ]
+    }] : []),
   ]
 
   const BigButtons: Array<{
@@ -281,7 +296,7 @@ export default function SettingsIndex() {
             ) : null,
             papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
             onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
-            tags: 'tags' in item ? item.tags as string[] | undefined : undefined
+            tags: 'tags' in item ? item.tags as string[] | undefined : undefined,
           })),
         }))}
       />
@@ -289,11 +304,11 @@ export default function SettingsIndex() {
         Platform.OS === 'ios' && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
-              tintColor={runsIOS26() ? colors.text : colors.primary}
+              tintColor={runsIOS26 ? colors.text : colors.primary}
               onPress={() => router.back()}
 
               style={{
-                marginLeft: runsIOS26() ? 3 : -32,
+                marginLeft: runsIOS26 ? 3 : -32,
               }}
             />
           </NativeHeaderSide>

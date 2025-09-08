@@ -8,7 +8,7 @@ import Reanimated, { FadeInDown } from "react-native-reanimated";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Typography from "@/ui/components/Typography";
 
-import { getSupportedRestaurants, SupportedRestaurant } from "../utils/constants";
+import { GetSupportedRestaurants, SupportedRestaurant } from "../utils/constants";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { useTranslation } from "react-i18next";
 
@@ -21,7 +21,7 @@ export default function WelcomeScreen() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
-  const services = getSupportedRestaurants((path: { pathname: string }) => {
+  const services = GetSupportedRestaurants((path: { pathname: string }) => {
     router.push({ pathname: path.pathname as unknown as RelativePathString, params: { action } });
   });
 

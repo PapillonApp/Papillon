@@ -12,6 +12,10 @@ import List from '@/ui/components/List';
 import Typography from "@/ui/components/Typography";
 import { useSettingsStore } from "@/stores/settings";
 import ModelManager from "@/utils/magic/ModelManager";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Stack from "@/ui/components/Stack";
+import Icon from "@/ui/components/Icon";
+import { Papicons } from "@getpapillon/papicons";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -20,6 +24,7 @@ export default function Devmode() {
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
 
   const { colors } = useTheme();
+  const alert = useAlert();
 
   const [showAccountStore, setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
@@ -100,17 +105,25 @@ export default function Devmode() {
         </Item>
       </List>
 
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Sparkles"} size={18} />
+        </Icon>
+        <Typography>
+          Magic+
+        </Typography>
+      </Stack>
+
+
       <List>
         <Item>
           <Typography>
-            {settingStore.magicEnabled ? "true" : "false"}
-          </Typography>
-        </Item>
-        <Item
-          onPress={() => mutateProperty("personalization", { magicEnabled: !settingStore.magicEnabled })}
-        >
-          <Typography>
-            {settingStore.magicEnabled ? "Activer" : "Desactiver"} Papillon Magic+
+            {settingStore.magicEnabled ? "Papillon Magic+ est Activé" : "Papillon Magic+ est Désactivé"}
           </Typography>
         </Item>
         <Item
@@ -170,7 +183,43 @@ export default function Devmode() {
         </Item>
 
       </List>
-    </ScrollView>
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Alert
+        </Typography>
+      </Stack>
+
+      <List>
+        <Item
+          onPress={() => alert.showAlert({
+            title: "Connexion impossible",
+            description: "Bla Bla Bla",
+            icon: "TriangleAlert",
+            color: "#D60046",
+            technical: String(" Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28")
+          })}
+        >
+          <Typography variant="title">Error Alert</Typography>
+        </Item>
+        <Item>
+          <Typography variant="title">Activer Alert au Login</Typography>
+          <Trailing>
+            <Switch
+              value={settingStore.showAlertAtLogin}
+              onValueChange={value => mutateProperty("personalization", { showAlertAtLogin: value })}
+            />
+          </Trailing>
+        </Item>
+      </List>
+    </ScrollView >
   );
 }
 

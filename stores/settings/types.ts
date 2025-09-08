@@ -14,6 +14,9 @@ export interface SettingsState {
 
 export interface Personalization {
   colorSelected?: Colors;
+  theme?: "light" | "dark" | "auto";
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
+  showAlertAtLogin?: boolean;
+  showDevMode?: boolean;
 }
