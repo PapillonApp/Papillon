@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { FlatList, View, Dimensions } from "react-native";
+import { FlatList, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 
@@ -8,6 +8,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useSettingsStore } from "@/stores/settings";
 import { Colors, AppColors } from "@/utils/colors";
 import adjust from "@/utils/adjustColor";
+import { ImpactFeedbackStyle } from "expo-haptics";
 
 export { Colors, AppColors };
 
@@ -22,7 +23,6 @@ interface ColorSelectorProps {
 
 interface AppColorsSelectorProps {
   onChangeColor?: (color: string) => void;
-  accountId?: string;
 }
 
 const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
@@ -37,7 +37,9 @@ const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
 
   const handlePress = useCallback(() => {
     onPress?.();
-  }, [onPress]); const containerStyle = useMemo(() => ({
+  }, [onPress]);
+
+  const containerStyle = useMemo(() => ({
     width: itemWidth,
     height: itemWidth * 0.95,
     margin: 6,
@@ -71,7 +73,7 @@ const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
   }, [mainColor, itemWidth]);
 
   return (
-    <AnimatedPressable onPress={handlePress} style={containerStyle}>
+    <AnimatedPressable onPress={handlePress} style={containerStyle} hapticFeedback={ImpactFeedbackStyle.Light}>
       <View style={circleStyle} />
       <Typography variant="h6" color={mainColor}>
         {name}
@@ -81,8 +83,7 @@ const ColorSelector = React.memo<ColorSelectorProps>(function ColorSelector({
 });
 
 const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsSelector({
-  onChangeColor,
-  accountId
+  onChangeColor
 }) {
   const settingsStore = useSettingsStore(state => state.personalization);
   const theme = useTheme();

@@ -39,7 +39,6 @@ import GradesWidget from "./widgets/Grades";
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTimetable } from "@/database/useTimetable";
-import { on } from "events";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
 import { Homework } from "@/services/shared/homework";
@@ -188,7 +187,15 @@ const IndexScreen = () => {
     const fetchHomeworksFromCache = async () => {
       const currentWeekHomeworks = await getHomeworksFromCache(weekNumber);
       const nextWeekHomeworks = await getHomeworksFromCache(weekNumber + 1);
-      setHomeworks([...currentWeekHomeworks, ...nextWeekHomeworks]);
+      const fullHomeworks = [...currentWeekHomeworks, ...nextWeekHomeworks];
+
+      // get the closest due date from now
+      const sortedHomeworks = fullHomeworks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      // Filter done homeworks
+      const filteredHomeworks = sortedHomeworks.filter(hw => !hw.isDone).length > 0 ? sortedHomeworks.filter(hw => !hw.isDone) : sortedHomeworks;
+      // Take the first 3 homeworks
+      const splicedHomeworks = filteredHomeworks.splice(0, 3);
+      setHomeworks(splicedHomeworks);
     };
     fetchHomeworksFromCache();
   }, [refreshTrigger])
@@ -487,13 +494,11 @@ const IndexScreen = () => {
                   borderBottomRightRadius: 26,
                   overflow: "hidden",
                   width: "100%",
-                  padding: 20,
+                  padding: 10,
+                  paddingHorizontal: 10,
                   gap: 10
                 }}
                 contentContainerStyle={{
-                  paddingTop: 8,
-                  paddingBottom: 14,
-                  paddingHorizontal: 14,
                   gap: 12
                 }}
                 data={homeworks.slice(0, 3)}
@@ -554,6 +559,13 @@ const IndexScreen = () => {
                 )}
               />
             )
+          },
+          {
+            icon: <Papicons name={"Butterfly"} />,
+            title: "Onboarding",
+            redirect: "/(onboarding)/welcome",
+            buttonLabel: "Aller",
+            dev: true
           },
           {
             icon: <Papicons name={"Butterfly"} />,
@@ -659,7 +671,7 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
     <Stack
       style={{
         backgroundColor: color + 50,
-        borderRadius: 25,
+        borderRadius: 20,
         width: "100%",
         flex: 1,
         overflow: "hidden",
@@ -682,9 +694,9 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
         direction="horizontal"
         vAlign="center"
         hAlign="center"
-        gap={10}
-        padding={15}
-        style={{ paddingTop: 20, backgroundColor: colors.card, borderTopRightRadius: magic ? 7.5 : undefined, borderTopLeftRadius: magic ? 7.5 : undefined }}
+        gap={16}
+        padding={[16, 12]}
+        style={{ backgroundColor: colors.card, borderTopRightRadius: magic ? 7.5 : undefined, borderTopLeftRadius: magic ? 7.5 : undefined }}
       >
         <Stack
           style={{
@@ -699,20 +711,21 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
           <Typography>{emoji}</Typography>
         </Stack>
 
-        <Stack style={{ flex: 1 }}>
+        <Stack style={{ flex: 1 }} gap={2}>
           <Typography variant="body2">{subject}</Typography>
-          <Typography color={colors.text + "95"} numberOfLines={2}>{description}</Typography>
-          <Typography color="secondary">
+          <Typography variant="body2" color={colors.text + "95"} numberOfLines={2}>{description}</Typography>
+          <Typography variant="caption" color="secondary">
             {dueDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}
           </Typography>
         </Stack>
 
         <AnimatedPressable
+          scaleTo={0.8}
           style={{
-            width: 25,
-            height: 25,
+            width: 24,
+            height: 24,
             borderWidth: 2,
-            borderColor: colors.border,
+            borderColor: done ? color : colors.border,
             borderRadius: 80,
             padding: 1.3,
             justifyContent: "center",
@@ -727,8 +740,8 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
             <View
               style={{
                 backgroundColor: color,
-                width: 20,
-                height: 20,
+                width: 24,
+                height: 24,
                 borderRadius: 80,
                 alignItems: "center",
                 justifyContent: "center"

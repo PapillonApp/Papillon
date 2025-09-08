@@ -4,16 +4,13 @@ import * as Haptics from "expo-haptics";
 import * as Localization from "expo-localization";
 import React, { useState } from "react";
 import { Platform, Pressable, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { runsIOS26 } from "../utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import List from "./List";
-import { useHeaderHeight } from '@react-navigation/elements';
+import Reanimated from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 
 export interface CalendarProps {
   date?: Date;
-  topInset?: number;
   onDateChange?: (date: Date) => void;
   showDatePicker: boolean;
   setShowDatePicker: (show: boolean) => void;
@@ -21,13 +18,11 @@ export interface CalendarProps {
 
 const Calendar: React.FC<CalendarProps> = ({
   date: initialDate = new Date(),
-  topInset,
   onDateChange,
   showDatePicker,
   setShowDatePicker,
 }) => {
   const [date, setDate] = useState(initialDate);
-  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const handleChange = (event: any, selectedDate?: Date) => {
@@ -65,10 +60,11 @@ const Calendar: React.FC<CalendarProps> = ({
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: insets.top + 48,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
         zIndex: 99999,
-        width: "100%",
-        height: "100%",
         alignItems: "center",
         justifyContent: "flex-start",
         shadowColor: "#000",
@@ -78,8 +74,7 @@ const Calendar: React.FC<CalendarProps> = ({
       }}
     >
       <View style={{ pointerEvents: "box-none" }}>
-        <List
-          disablePadding
+        <Reanimated.View
           style={{
             overflow: "hidden",
             maxWidth: "90%",
@@ -87,11 +82,24 @@ const Calendar: React.FC<CalendarProps> = ({
             maxHeight: 320,
             borderColor: colors.text + "26",
             borderWidth: 0.5,
+            borderRadius: 16,
             top: 4,
+            backgroundColor: colors.background + "CF",
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
+          <BlurView
+            tint={"prominent"}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: -1,
+            }}
+          />
           <DateTimePicker
             value={date}
             mode="date"
@@ -99,9 +107,9 @@ const Calendar: React.FC<CalendarProps> = ({
             accentColor={colors.primary}
             locale={Localization.getLocales()[0].languageTag}
             onChange={handleChange}
-            style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: 0, marginHorizontal: 10, }}
+            style={{ maxHeight: 320, height: 320, paddingHorizontal: 10 }}
           />
-        </List>
+        </Reanimated.View>
       </View>
     </Pressable>
   );
