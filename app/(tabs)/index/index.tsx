@@ -191,7 +191,10 @@ const IndexScreen = () => {
 
       // get the closest due date from now
       const sortedHomeworks = fullHomeworks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-      const splicedHomeworks = sortedHomeworks.splice(0, 3);
+      // Filter done homeworks
+      const filteredHomeworks = sortedHomeworks.filter(hw => !hw.isDone).length > 0 ? sortedHomeworks.filter(hw => !hw.isDone) : sortedHomeworks;
+      // Take the first 3 homeworks
+      const splicedHomeworks = filteredHomeworks.splice(0, 3);
       setHomeworks(splicedHomeworks);
     };
     fetchHomeworksFromCache();
