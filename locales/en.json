@@ -96,6 +96,7 @@
   "Home_Planned_Number": "You have {{number}} classes scheduled today",
   "Home_Widget_NextCourses": "Upcoming classes",
   "Home_Widget_NewGrades": "New grades",
+  "Home_Widget_NewHomeworks": "To do",
   "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
   "Modal_Course_Title": "My class",
