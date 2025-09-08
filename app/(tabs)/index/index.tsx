@@ -242,12 +242,6 @@ const IndexScreen = () => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null
-  }
-
   useEffect(() => {
     if (accounts.length > 0) {
       checkConsent().then(consent => {
@@ -305,6 +299,11 @@ const IndexScreen = () => {
     ),
     <GradesWidget header accent={foreground} />,
   ];
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null
+  }
 
   return (
     <>
