@@ -5,7 +5,7 @@ import * as Localization from "expo-localization";
 import { t } from 'i18next';
 import { CheckCheck, CircleDashed, Sparkle } from 'lucide-react-native';
 import React, { useCallback, useMemo } from 'react';
-import { Dimensions, Linking, Pressable, StyleSheet, Text } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text } from 'react-native';
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 
 import { Animation } from '../utils/Animation';
@@ -18,6 +18,7 @@ import SkeletonView from "@/ui/components/SkeletonView";
 import { Papicons } from "@getpapillon/papicons";
 import { Attachment } from '@/services/shared/attachment';
 import { ScrollView } from 'react-native-gesture-handler';
+import HTMLTypography from "@/ui/components/HTMLTypography";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -84,8 +85,6 @@ const Task: React.FC<TaskProps> = ({
       onProgressChange(0);
     }
   }, []);
-
-  const screenWidth = Dimensions.get('window').width; // Get screen width for percentage calculation
 
   const [isPressed, setIsPressed] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
@@ -204,9 +203,9 @@ const Task: React.FC<TaskProps> = ({
             </Typography>
           )}
           {description && (
-            <Typography variant='body2' color='secondary' style={{ lineHeight: 20 }} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
+            <HTMLTypography variant='body2' color='secondary' style={{ lineHeight: 20 }} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
               {description}
-            </Typography>
+            </HTMLTypography>
           )}
           {attachments && attachments.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingTop: 15, gap: 5, flex: 1 }}>
