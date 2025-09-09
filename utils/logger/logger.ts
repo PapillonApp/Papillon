@@ -62,7 +62,7 @@ function error(message: string, from?: string): never {
   const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(message);
-  Countly.logException(entry, true, JSON.parse(JSON.stringify(entry)));
+  Countly.logException(message, true, JSON.parse(JSON.stringify(entry)));
   throw new Error(entry);
 
 }

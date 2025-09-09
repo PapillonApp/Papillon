@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -67,48 +67,10 @@ export default function TurboSelfLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  useEffect(() => {
-    const handleDeepLink = (event: { url: string }) => {
-      const url = event.url;
-      const scheme = url.split(":")[0];
-      if (scheme === "izly") {
-        log("[IzlyActivation] Activation link received:", url);
-        handleActivation(url);
-      } else {
-        log("[IzlyActivation] Ignoring link:", url);
-      }
-    };
-
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        handleDeepLink({ url });
-      }
-    });
-
-    Linking.addEventListener("url", handleDeepLink);
-  }, [keyboardListeners]);
-
   const { t } = useTranslation();
-
   const alert = useAlert();
 
-  async function handleLogin(username: string, password: string) {
-    try {
-      await login(username, password)
-      setLinkSended(true);
-    } catch (error) {
-      alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        technical: String(error),
-        withoutNavbar: true,
-      });
-    }
-  }
-
-  async function handleActivation(url: string) {
+  const handleActivation = useCallback(async (url: string) => {
     const id = uuid();
     const { identification, profile } = await tokenize(url);
     const service: ServiceAccount = {
@@ -148,6 +110,47 @@ export default function TurboSelfLoginWithCredentials() {
         accountId: id,
       },
     });
+  }, [password, action]);
+
+  useEffect(() => {
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      const scheme = url.split(":")[0];
+      if (scheme === "izly") {
+        log("[IzlyActivation] Activation link received:", url);
+        handleActivation(url);
+      } else {
+        log("[IzlyActivation] Ignoring link:", url);
+      }
+    };
+
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+
+    const listener = Linking.addEventListener("url", handleDeepLink);
+
+    return () => {
+      listener?.remove();
+    };
+  }, [handleActivation]);
+
+  async function handleLogin(username: string, password: string) {
+    try {
+      await login(username, password)
+      setLinkSended(true);
+    } catch (error) {
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(error),
+        withoutNavbar: true,
+      });
+    }
   }
 
   return (
@@ -233,14 +236,14 @@ export default function TurboSelfLoginWithCredentials() {
           <ActivityIndicator />
           <View>
             <Typography variant="h4"
-                        color="text"
-                        align="center"
+              color="text"
+              align="center"
             >
               {t("WAITING")}
             </Typography>
             <Typography variant="body2"
-                        color="secondary"
-                        align="center"
+              color="secondary"
+              align="center"
             >
               {t("IZLY_SMS_SEND")}
             </Typography>
@@ -248,12 +251,11 @@ export default function TurboSelfLoginWithCredentials() {
         </View>
       ) : (
         <Stack padding={20}
-               gap={10}
+          gap={10}
         >
-
           <OnboardingInput
             icon={"User"}
-            placeholder={t("INPUT_USERNAME")}
+            placeholder={t("INPUT_PHONE_OR_MAIL")}
             text={username}
             setText={setUsername}
             isPassword={false}
@@ -267,11 +269,11 @@ export default function TurboSelfLoginWithCredentials() {
           />
           <OnboardingInput
             icon={"Lock"}
-            placeholder={t("INPUT_PASSWORD")}
+            placeholder={t("INPUT_PASSWORD_CODE")}
             text={password}
             setText={setPassword}
             isPassword={true}
-            keyboardType={"default"}
+            keyboardType={"number-pad"}
             inputProps={{
               autoCapitalize: "none",
               autoCorrect: false,

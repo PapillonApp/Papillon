@@ -31,9 +31,9 @@ import { useSettingsStore } from "@/stores/settings";
 import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { useAccountStore } from "@/stores/account";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MenuView } from "@react-native-menu/menu";
 
-const useMagicPrediction = (content: string) => {
+export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
 
@@ -82,13 +82,13 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
         emoji={getSubjectEmoji(item.subject)}
         title={""}
         color={getSubjectColor(item.subject)}
-        description={cleanContent}
+        description={item.content}
         date={new Date(item.dueDate)}
         progress={item.isDone ? 1 : 0}
         index={index}
         magic={magic}
-        fromCache={item.fromCache ?? false}
-        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+        fromCache={fromCache ?? false}
+        onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
       />
     );
   } catch (error) {
@@ -145,6 +145,7 @@ export default function TabOneScreen() {
       return;
     }
     const result = await managerToUse.getHomeworks(selectedWeek);
+    result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
       const id = generateId(hw.subject + hw.content + hw.createdByAccount);
@@ -152,7 +153,6 @@ export default function TabOneScreen() {
     }
     setHomework(newHomeworks);
     setRefreshTrigger(prev => prev + 1);
-
   };
 
   useEffect(() => {
@@ -252,7 +252,7 @@ export default function TabOneScreen() {
         onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
       />
     )
-  }, [onProgressChange, homework]);
+  }, [onProgressChange, homeworksFromCache]);
 
   const keyExtractor = useCallback((item: Homework) => item.id, []);
 
@@ -311,7 +311,36 @@ export default function TabOneScreen() {
     return -2
   }
 
-  const insets = useSafeAreaInsets();
+  const sortingMethods = [
+    {
+      label: t('Tasks_Sorting_Methods_DueDate'),
+      method: (a: Homework, b: Homework) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+      image: Platform.select({
+        ios: "calendar"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Subject'),
+      method: (a: Homework, b: Homework) => a.subject.localeCompare(b.subject),
+      image: Platform.select({
+        ios: "character"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Done'),
+      method: (a: Homework, b: Homework) => Number(a.isDone) - Number(b.isDone),
+      image: Platform.select({
+        ios: "checkmark.circle"
+      }),
+    },
+  ]
+
+  const [selectedMethod, setSelectedMethod] = useState(0);
+
+  const sortedHomeworks = useMemo(() => {
+    const sortingMethod = sortingMethods[selectedMethod].method;
+    return [...homeworksFromCache].sort(sortingMethod);
+  }, [homeworksFromCache, selectedMethod]);
 
   return (
     <>
@@ -319,8 +348,8 @@ export default function TabOneScreen() {
         radius={36}
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        key={homeworksFromCache.length}
-        data={homeworksFromCache}
+        key={sortedHomeworks.length}
+        data={sortedHomeworks}
         initialNumToRender={2}
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
@@ -505,15 +534,31 @@ export default function TabOneScreen() {
         </Reanimated.View>
       )}
 
-      <NativeHeaderSide side="Left">
-        <NativeHeaderPressable
-          onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+      <NativeHeaderSide side="Left" key={`header-left-hw:` + selectedMethod}>
+        <MenuView
+          actions={[
+            ...sortingMethods.map((method, index) => ({
+              title: method.label,
+              id: index.toString(),
+              state: index === selectedMethod ? 'on' : 'off',
+              image: method.image ? method.image : undefined,
+              imageColor: colors.text,
+            })),
+          ]}
+          onPressAction={({ nativeEvent }) => {
+            const selected = sortingMethods[parseInt(nativeEvent.event)];
+            if (selected) {
+              setSelectedMethod(parseInt(nativeEvent.event));
+            }
           }}
         >
-          <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
-        </NativeHeaderPressable>
+          <NativeHeaderPressable>
+            <Papicons name={"Filter"} color={"#C54CB3"} size={28} />
+          </NativeHeaderPressable>
+        </MenuView>
       </NativeHeaderSide>
+
+
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
         <NativeHeaderTopPressable layout={Animation(LinearTransition)} onPress={() => {
           toggleWeekPicker();

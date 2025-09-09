@@ -42,7 +42,7 @@ export default function QRCodeAndCardsPage() {
 
   useEffect(() => {
     fetchWallets();
-  }, [accounts])
+  }, [accounts, account])
 
   const cardOffset = 60;
   const cardHeight = 170;
@@ -75,7 +75,7 @@ export default function QRCodeAndCardsPage() {
               ))}
             </View>
 
-            <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 40 }}>
+            <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 60 }}>
               <Button
                 inline
                 title="Ajouter"
@@ -184,7 +184,7 @@ export function Card({
           bottom: 0,
           right: 0,
           left: 0,
-          width: "100%",
+          width: "104%",
           height: 215,
         }}
         resizeMode="cover"

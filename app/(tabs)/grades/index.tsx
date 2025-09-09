@@ -4,7 +4,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -35,6 +35,7 @@ import GradesWidget from "../index/widgets/Grades";
 import { useAccountStore } from "@/stores/account";
 import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FlashList } from "@shopify/flash-list";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -329,6 +330,10 @@ export default function TabOneScreen() {
 
   const navigation = useNavigation();
 
+  const recentGrades = useMemo(() => {
+    return newSubjects.flatMap(subject => subject.grades).sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).slice(0, 6);
+  }, [newSubjects]);
+
   const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
     const subject = newSubjects.find(s => s.id === item.subjectId);
     const subjectInfo = getSubjectInfo(subject?.name ?? "");
@@ -377,10 +382,10 @@ export default function TabOneScreen() {
           {t("Latest_Grades")}
         </Typography>
       </Stack>
-      <LegendList
+      <FlatList
         horizontal
         keyExtractor={(item: SharedGrade) => item.id}
-        data={newSubjects.flatMap(subject => subject.grades).sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime())}
+        data={recentGrades}
         renderItem={({ item }) => (
           <LatestGradeItem item={item} />
         )}

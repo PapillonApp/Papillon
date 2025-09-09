@@ -21,6 +21,8 @@ import { t } from "i18next";
 import i18n from "@/utils/i18n";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { FadeIn, FadeOut } from "react-native-reanimated";
 
 
 const PersonalizationSettings = () => {
@@ -44,24 +46,30 @@ const PersonalizationSettings = () => {
   }, []);
 
   useEffect(() => {
-    // change theme in store
-    mutateProperty('personalization', {
-      theme: selectedTheme
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        // change theme in store
+        mutateProperty('personalization', {
+          theme: selectedTheme
+        });
+      }, 100);
     });
   }, [selectedTheme]);
 
   return (
     <>
-      <LinearGradient
-        colors={[selectedColor + "50", selectedColor + "00"]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 400,
-        }}
-      />
+      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + selectedColor}>
+        <LinearGradient
+          colors={[selectedColor + "50", selectedColor + "00"]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 400,
+          }}
+        />
+      </Dynamic>
 
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
