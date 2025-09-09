@@ -255,7 +255,7 @@ export default function TurboSelfLoginWithCredentials() {
         >
           <OnboardingInput
             icon={"User"}
-            placeholder={t("INPUT_USERNAME")}
+            placeholder={t("INPUT_PHONE_OR_MAIL")}
             text={username}
             setText={setUsername}
             isPassword={false}
@@ -269,11 +269,11 @@ export default function TurboSelfLoginWithCredentials() {
           />
           <OnboardingInput
             icon={"Lock"}
-            placeholder={t("INPUT_PASSWORD")}
+            placeholder={t("INPUT_PASSWORD_CODE")}
             text={password}
             setText={setPassword}
             isPassword={true}
-            keyboardType={"default"}
+            keyboardType={"number-pad"}
             inputProps={{
               autoCapitalize: "none",
               autoCorrect: false,

@@ -329,6 +329,7 @@ const IndexScreen = () => {
         locations={[0, 0.5]}
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
       />
+
       <Pattern
         pattern={AvailablePatterns.CROSS}
         width={"100%"}
