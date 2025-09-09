@@ -384,9 +384,6 @@ function Cards() {
 }
 
 export default function TabOneScreen() {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [date, setDate] = useState(new Date());
-
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
@@ -406,10 +403,6 @@ export default function TabOneScreen() {
   const headerHeight = useHeaderHeight();
 
   const router = useRouter();
-
-  const toggleDatePicker = useCallback(() => {
-    setShowDatePicker((prev) => !prev);
-  }, []);
 
   const theme = useTheme();
   const { colors } = useTheme();

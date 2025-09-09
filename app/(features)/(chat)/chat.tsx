@@ -6,6 +6,7 @@ import Typography from "@/ui/components/Typography";
 import Stack from "@/ui/components/Stack";
 import { getInitials } from "@/utils/chats/initials";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 
 const DemoData = [
   {
@@ -47,6 +48,7 @@ const DemoData = [
 ];
 
 const Chat = () => {
+  const router = useRouter();
   const { t } = useTranslation();
 
   const decodeDate = (date: Date) => {
@@ -81,7 +83,9 @@ const Chat = () => {
     >
       <List>
         {DemoData.map((chat) => (
-          <Item>
+          <Item
+            onPress={() => router.navigate("/(features)/(chat)/conversation")}
+          >
             <Leading>
               <Avatar
                 initials={getInitials(chat.recipientName)}

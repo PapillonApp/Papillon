@@ -394,6 +394,15 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerLargeTitle: false,
                 }}
               />
+              <Stack.Screen
+                name="(features)/(chat)/conversation"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_Chat"),
+                  headerTransparent: true,
+                  headerLargeTitle: false,
+                }}
+              />
             </Stack>
           </AlertProvider>
         </ThemeProvider>
