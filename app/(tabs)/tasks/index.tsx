@@ -252,7 +252,7 @@ export default function TabOneScreen() {
         onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
       />
     )
-  }, [onProgressChange, homework]);
+  }, [onProgressChange, homeworksFromCache]);
 
   const keyExtractor = useCallback((item: Homework) => item.id, []);
 

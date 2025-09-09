@@ -69,6 +69,8 @@ function Tabs() {
       icon: TextBubble,
       title: t("Profile_Discussions_Title"),
       unread: discussion.length,
+      disabled: true,
+      beta: true,
       denominator: t("Profile_Discussions_Denominator_Single"),
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
@@ -143,10 +145,10 @@ function Tabs() {
             padding={16}
             height={58}
             radius={200}
-            backgroundColor={tab.unread > 0 ? adjust(tab.color, getTabBackground()) : colors.card}
+            backgroundColor={tab.disabled ? colors.text + 10 : tab.unread > 0 ? adjust(tab.color, getTabBackground()) : colors.card}
           >
             <Icon papicon
-              fill={tab.unread > 0 ? tab.color : colors.text}
+              fill={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
             >
               <tab.icon />
             </Icon>
@@ -157,12 +159,21 @@ function Tabs() {
             >
               <Typography inline
                 variant="title"
-                color={tab.unread > 0 ? tab.color : colors.text}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
               >{tab.title}</Typography>
               <Typography inline
                 variant="caption"
-                color={tab.unread > 0 ? tab.color : "secondary"}
-              >{tab.unread > 0 ? `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}` : "Ouvrir"}</Typography>
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : "secondary"}
+              >
+                {tab.beta ? (
+                  "Ça arrive !"
+                ) : tab.unread > 0 ? (
+                  `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}`
+                ) : (
+                  "Ouvrir"
+                )}
+
+              </Typography>
             </Stack>
           </Stack>
         </AnimatedPressable>

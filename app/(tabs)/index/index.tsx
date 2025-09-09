@@ -204,14 +204,26 @@ const IndexScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      date.setUTCHours(0, 0, 0, 0);
-      const currentTime = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
-      setCourses(dayCourse.filter(course => course.from.getTime() > currentTime.getTime()));
+      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+
+      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
+
+      if (dayCourse.length === 0) {
+        const nextDay = weeklyTimetable
+          .filter(day => day.date.getTime() > today.getTime())
+          .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
+
+        dayCourse = nextDay?.courses ?? [];
+      }
+
+      setCourses(dayCourse);
     };
     fetchData();
   }, [weeklyTimetable]);
+
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {
@@ -309,11 +321,6 @@ const IndexScreen = () => {
     ),
     <GradesWidget header accent={foreground} />,
   ];
-
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null;
-  }
 
   return (
     <>
@@ -436,13 +443,13 @@ const IndexScreen = () => {
             redirect: "/changelog",
             buttonLabel: "En savoir plus"
           },
-          courses.length > 0 && {
+          courses.filter(item => item.to.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                {courses.slice(0, 2).map(item => (
+                {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
                   <Course
                     key={item.id}
                     id={item.id}
@@ -473,8 +480,9 @@ const IndexScreen = () => {
           },
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
-            title: t("Home_Widget_NewHomeworks"),
-            redirect: "/(tabs)/tasks",
+            title: "Tâches",
+            redirect: "/(tabs)/task",
+            buttonLabel: `${(homeworks.length) - 3}+ autres tâches`,
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
@@ -490,12 +498,11 @@ const IndexScreen = () => {
                 contentContainerStyle={{
                   gap: 12
                 }}
-                data={homeworks}
+                data={homeworks.slice(0, 3)}
                 keyExtractor={(item, index) => item.id + index}
                 renderItem={({ item }) => (
                   <MagicTaskWrapper item={item} />
                 )}
-
               />
             )
           },

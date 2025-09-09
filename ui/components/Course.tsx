@@ -11,6 +11,7 @@ import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import AnimatedPressable from "./AnimatedPressable";
+import { truncatenateString } from "../utils/Truncatenate";
 
 type Variant = "primary" | "separator";
 

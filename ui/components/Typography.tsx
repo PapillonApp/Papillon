@@ -113,6 +113,7 @@ export interface TypographyProps extends TextProps {
   skeleton?: boolean;
   skeletonLines?: number;
   skeletonWidth?: DimensionValue;
+  italic?: boolean;
 }
 
 // Cache for computed color styles per theme
@@ -148,6 +149,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
     skeleton = false,
     skeletonLines = 1,
     skeletonWidth,
+    italic = false,
     ...rest
   }) => {
     const { colors } = useTheme();
@@ -221,7 +223,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
 
       // Only cache if no custom styles or custom colors to avoid memory leaks
       if (!hasCustomStyle && !isCustomColor) {
-        return `${variant}-${color}-${align}-${inline}-${colors.primary}-${colors.text}`;
+        return `${variant}-${color}-${align}-${inline}-${colors.primary}-${colors.text}-${weight}-${italic}`;
       }
       return null;
     }, [variant, color, align, inline, colors.primary, colors.text, style]);
@@ -237,6 +239,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       const variantStyle = VARIANTS[variant];
       const alignStyle = ALIGNMENT_STYLES[align];
       const weightStyle = WEIGHT_STYLES[weight] || null;
+      const italicStyle = italic ? { transform: [{ skewX: "-13deg" }] } : {};
 
       const inlineStyle: TextStyle = inline ? (() => {
         let fontSize: number | undefined;
@@ -269,6 +272,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...weightStyle, // Ensure weightStyle is merged here
           ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
           ...inlineStyle,
+          ...italicStyle
         };
       } else {
         // For common cases without custom styles, use optimized merging
@@ -278,6 +282,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ...colorStyle,
           ...weightStyle, // Ensure weightStyle is merged here
           ...inlineStyle,
+          ...italicStyle
         };
 
         // Cache only common cases
@@ -287,7 +292,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       }
 
       return finalStyle;
-    }, [colors, variant, color, align, style, cacheKey]);
+    }, [colors, variant, color, align, style, italic, cacheKey]);
 
     return <Text {...rest} style={computedStyle} numberOfLines={nowrap ? 1 : rest.numberOfLines} />;
   },
