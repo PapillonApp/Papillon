@@ -7,6 +7,7 @@
   "Tab_Tasks": "Tâches",
   "Tab_Grades": "Notes",
   "Tab_Profile": "Profil",
+  "Tab_Chat": "Mes discussions",
   "Tab_Custom_Profile": "Modifier mon profil",
   "Button_Change_ProfilePicture": "Changer la photo de profil",
   "Button_Change_ProfilePicture_TakePhoto": "Prendre une photo",
@@ -321,5 +322,10 @@
 
   "Tasks_Sorting_Methods_DueDate": "Date de rendu",
   "Tasks_Sorting_Methods_Subject": "Matières",
-  "Tasks_Sorting_Methods_Done": "Non terminé"
+  "Tasks_Sorting_Methods_Done": "Non terminé",
+
+  "Chat_JustNow": "À l'instant",
+  "Chat_MinutesAgo": "il y a {{count}} minute(s)",
+  "Chat_HoursAgo": "il y a {{count}} heure(s)",
+  "Chat_Yesterday": "Hier"
 }
