@@ -47,9 +47,9 @@ const RenderHTMLComponent = (child: ChildNode, index: number, parentProps: Typog
             weight: child.tagName === "a" ? "bold" : (child.name === "b" || child.name === "strong" ? "bold" : parentProps.weight),
             color: child.tagName === "a" ? colors.primary : (style.color as TypographyProps["color"] || parentProps.color),
             align: style["text-align"] as TypographyProps["align"] || parentProps.align,
+            italic: child.name === "i" || child.name === "em" ? true : parentProps.italic,
             style: {
               backgroundColor: style["background-color"] as ColorValue || parentProps.style?.backgroundColor,
-              fontStyle: child.name === "i" || child.name === "em" ? "italic" : parentProps.style?.fontStyle,
               textDecorationLine: child.name === "u" || style["text-decoration"] === "underline" ? "underline" : parentProps.style?.textDecorationLine,
               fontSize: style["font-size"] ? parseInt(style["font-size"].replace("px", "")) * 1.2307692308 : parentProps.style?.fontSize,
             },
@@ -61,7 +61,6 @@ const RenderHTMLComponent = (child: ChildNode, index: number, parentProps: Typog
     );
   };
 
-
   switch (child.type) {
     case ElementType.Text:
       return (
@@ -70,19 +69,18 @@ const RenderHTMLComponent = (child: ChildNode, index: number, parentProps: Typog
           weight={parentProps.weight}
           style={{
             fontWeight: parentProps.weight,
-            fontStyle: parentProps.style?.fontStyle,
             backgroundColor: parentProps.style?.backgroundColor,
             textDecorationLine: parentProps.style?.textDecorationLine,
             fontSize: parentProps.style?.fontSize,
           }}
           color={style.color as TypographyProps["color"] || parentProps.color}
           align={style["text-align"] as TypographyProps["align"] || parentProps.align}
+          italic={parentProps.italic}
         >
           { (listTag && isInLi ? "  - ":"") + child.data}
         </Typography>
       );
     case ElementType.Tag:
-
       return (
         <Typography
           key={index}
