@@ -198,7 +198,7 @@ export default function QRCodeAndCardsPage() {
                 <Papicons name="Cutlery" />
               </Icon>
               <Typography color="secondary">Repas restants</Typography>
-              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? Math.floor(wallet.amount / wallet.lunchPrice) : "Indéterminé"}</ContainedNumber>
+              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? String(Math.floor(wallet.amount / wallet.lunchPrice)) : "Indéterminé"}</ContainedNumber>
             </Stack>
           </Stack>
 

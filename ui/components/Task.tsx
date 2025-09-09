@@ -113,6 +113,7 @@ const Task: React.FC<TaskProps> = ({
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
       layout={Animation(LinearTransition, "list")}
+      style={{ overflow: "hidden" }}
     >
       {magic && (
         <Reanimated.View
@@ -247,84 +248,86 @@ const Task: React.FC<TaskProps> = ({
             </ScrollView>
           )}
           {(progress !== undefined || currentDate) && (
-            <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
-              {progress !== undefined && (
-                <AnimatedPressable
-                  onPressIn={() => setIsPressed(true)}
-                  onPressOut={() => setIsPressed(false)}
-                  onHoverIn={() => setIsHovered(true)}
-                  onHoverOut={() => setIsHovered(false)}
-                  disabled={fromCache}
-                  onPress={toggleProgress}
-                  layout={Animation(LinearTransition, "list")}
-                  style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
-                  pointerEvents={skeleton ? "none" : "auto"}
-                >
-                  {(notStarted || completed) && !skeleton && (
-                    <Dynamic
-                      animated
-                      layout={Animation(LinearTransition, "list")}
-                      entering={PapillonZoomIn}
-                      exiting={PapillonZoomOut}
-                      key={'progress-icon:' + (notStarted ? "a" : "b")}
-                    >
-                      {notStarted ? (
-                        <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
-                      ) : (
-                        <CheckCheck size={20} strokeWidth={2.5} opacity={1} color={color} />
-                      )}
-                    </Dynamic>
-                  )}
-
-                  {!notStarted && !completed && !skeleton && (
-                    <Dynamic animated>
-                      <Reanimated.View
+            <ScrollView horizontal style={{ overflow: "visible" }}>
+              <Stack style={{ marginTop: 12 }} direction="horizontal" gap={8}>
+                {progress !== undefined && (
+                  <AnimatedPressable
+                    onPressIn={() => setIsPressed(true)}
+                    onPressOut={() => setIsPressed(false)}
+                    onHoverIn={() => setIsHovered(true)}
+                    onHoverOut={() => setIsHovered(false)}
+                    disabled={fromCache}
+                    onPress={toggleProgress}
+                    layout={Animation(LinearTransition, "list")}
+                    style={[styles.chip, backgroundStyle, completed && { backgroundColor: color + '22', borderColor: color }, animatedChipStyle]}
+                    pointerEvents={skeleton ? "none" : "auto"}
+                  >
+                    {(notStarted || completed) && !skeleton && (
+                      <Dynamic
+                        animated
                         layout={Animation(LinearTransition, "list")}
-                        style={[
-                          styles.progressContainer,
-                          { backgroundColor: colors.text + '12' }
-                        ]}>
+                        entering={PapillonZoomIn}
+                        exiting={PapillonZoomOut}
+                        key={'progress-icon:' + (notStarted ? "a" : "b")}
+                      >
+                        {notStarted ? (
+                          <CircleDashed size={20} strokeWidth={2.5} opacity={0.7} color={colors.text} />
+                        ) : (
+                          <CheckCheck size={20} strokeWidth={2.5} opacity={1} color={color} />
+                        )}
+                      </Dynamic>
+                    )}
+
+                    {!notStarted && !completed && !skeleton && (
+                      <Dynamic animated>
                         <Reanimated.View
                           layout={Animation(LinearTransition, "list")}
-                          style={[styles.progress, { width: currentProgress * 70, backgroundColor: color }]} // Use numeric width
-                        />
-                      </Reanimated.View>
+                          style={[
+                            styles.progressContainer,
+                            { backgroundColor: colors.text + '12' }
+                          ]}>
+                          <Reanimated.View
+                            layout={Animation(LinearTransition, "list")}
+                            style={[styles.progress, { width: currentProgress * 70, backgroundColor: color }]} // Use numeric width
+                          />
+                        </Reanimated.View>
+                      </Dynamic>
+                    )}
+
+                    <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
+                      {!notStarted && !completed && (
+                        <Typography variant='body2' skeleton={skeleton} skeletonWidth={80}>
+                          {Math.ceil(currentProgress * 100)}%
+                        </Typography>
+                      )}
+
+                      {(notStarted || completed) && (
+                        <Typography variant='body2' color={!notStarted ? color : 'secondary'} skeleton={skeleton} skeletonWidth={80}>
+                          {notStarted ? t('Task_Start') : t('Task_Complete')}
+                        </Typography>
+                      )}
                     </Dynamic>
-                  )}
+                  </AnimatedPressable>
+                )}
 
-                  <Dynamic animated={true} layout={Animation(LinearTransition, "list")} key={'progress-text:' + currentProgress}>
-                    {!notStarted && !completed && (
-                      <Typography variant='body2' skeleton={skeleton} skeletonWidth={80}>
-                        {Math.ceil(currentProgress * 100)}%
-                      </Typography>
-                    )}
-
-                    {(notStarted || completed) && (
-                      <Typography variant='body2' color={!notStarted ? color : 'secondary'} skeleton={skeleton} skeletonWidth={80}>
-                        {notStarted ? t('Task_Start') : t('Task_Complete')}
-                      </Typography>
-                    )}
-                  </Dynamic>
-                </AnimatedPressable>
-              )}
-
-              {currentDate && (
-                <AnimatedPressable
-                  layout={Animation(LinearTransition, "list")}
-                  style={[styles.chip, backgroundStyle]}
-                >
-                  <Icon size={20} fill={colors.text} skeleton={skeleton}>
-                    <Papicons name={"Calendar"} />
-                  </Icon>
-                  <Typography variant='body2' color='text' skeleton={skeleton}>
-                    {formatDistanceToNow(currentDate, {
-                      addSuffix: true,
-                      locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
-                    })}
-                  </Typography>
-                </AnimatedPressable>
-              )}
-            </Stack>
+                {currentDate && (
+                  <AnimatedPressable
+                    layout={Animation(LinearTransition, "list")}
+                    style={[styles.chip, backgroundStyle]}
+                  >
+                    <Icon size={20} fill={colors.text} skeleton={skeleton}>
+                      <Papicons name={"Calendar"} />
+                    </Icon>
+                    <Typography variant='body2' color='text' skeleton={skeleton}>
+                      {formatDistanceToNow(currentDate, {
+                        addSuffix: true,
+                        locale: Localization.getLocales()[0].languageTag.split("-")[0] === 'fr' ? fr : undefined,
+                      })}
+                    </Typography>
+                  </AnimatedPressable>
+                )}
+              </Stack>
+            </ScrollView>
           )}
         </LayoutAnimationConfig>
       </AnimatedPressable>

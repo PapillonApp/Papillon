@@ -47,9 +47,9 @@ export async function GeographicReverse(lat: number, lon: number): Promise<GeoIn
   }
 }
 
-export async function GeographicQuerying(q: string): Promise<GeoInfo> {
+export async function GeographicQuerying(q: string, retry = 3): Promise<GeoInfo> {
   try {
-    let retries = 3;
+    let retries = retry;
     let res: Response = new Response();
 
     while (retries > 0) {

@@ -11,30 +11,38 @@ export async function fetchEDHomeworks(
   accountId: string,
   weekNumber: number
 ): Promise<Homework[]> {
-  try {
-    const weekdays = weekNumberToDaysList(weekNumber);
-    const allHomeworks = await Promise.all(
-      weekdays.map(day =>
-        studentHomeworks(session, account, day.toISOString().split("T")[0]).then(res =>
-          res.homeworks.map(hw => ({
-            id: String(hw.id),
-            subject: hw.subject,
-            content: hw.content,
-            dueDate: day,
-            isDone: hw.done,
-            attachments: mapEDAttachments(hw.attachments, accountId),
-            evaluation: hw.exam,
-            custom: false,
-            createdByAccount: accountId
-          }))
-        )
-      )
+  const weekdays = weekNumberToDaysList(weekNumber);
+  const response: Homework[] = [];
+  for (const date of weekdays) {
+    const formattedDate = formatDate(date);
+
+    const { homeworks } = await studentHomeworks(
+      session,
+      account,
+      formattedDate,
     );
-    return allHomeworks.flat();
-  } catch (error) {
-    warn(String(error))
-    return []
+
+    for (const homework of homeworks) {
+      response.push({
+        attachments: homework.attachments.map((att) => ({
+          url: `${att.name}\\${att.id}\\${att.kind}`,
+          type: AttachmentType.FILE,
+          name: att.name,
+          createdByAccount: accountId
+        })),
+        content: homework.content,
+        isDone: homework.done,
+        dueDate: date,
+        id: homework.id.toString(),
+        subject: homework.subject,
+        evaluation: homework.exam,
+        custom: false,
+        createdByAccount: accountId
+      });
+    }
   }
+
+  return response
 }
 
 function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
@@ -54,26 +62,25 @@ export async function setEDHomeworkAsDone(session: Session, account: Account, ho
   }
 }
 
+import { startOfISOWeek, addDays } from "date-fns";
+
 export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
   const currentYear = year || new Date().getFullYear();
   
-  const firstDayOfYear = new Date(currentYear, 0, 1);
+  // Trouver le premier jour ISO de l'année (lundi de la semaine 1)
+  const jan4 = new Date(currentYear, 0, 4); 
+  const firstWeekStart = startOfISOWeek(jan4);
   
-  const firstMonday = new Date(firstDayOfYear);
-  const dayOfWeek = firstDayOfYear.getDay();
-  const daysToAdd = dayOfWeek === 0 ? 1 : (8 - dayOfWeek);
-  firstMonday.setDate(firstDayOfYear.getDate() + daysToAdd);
-  
-  const weekStart = new Date(firstMonday);
-  weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
-  
-  const weekdays = [];
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(weekStart);
-    day.setDate(weekStart.getDate() + i);
-    weekdays.push(day);
-  }
-  
-  console.log(weekdays);
-  return weekdays;
+  // Calculer le lundi de la semaine demandée
+  const weekStart = new Date(firstWeekStart);
+  weekStart.setDate(firstWeekStart.getDate() + (weekNumber - 1) * 7);
+
+  // Construire la liste des jours
+  return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+};
+
+import { format } from "date-fns";
+
+export const formatDate = (date: Date): string => {
+  return format(date, "yyyy-MM-dd");
 };
