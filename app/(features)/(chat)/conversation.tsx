@@ -32,7 +32,7 @@ const Conversation = () => {
   return (
     <KeyboardAvoidingView
       style={{flex: 1, marginTop: insets.top, marginBottom: insets.bottom}}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={"padding"}
     >
       <ScrollView
         style={{flex: 1}}
