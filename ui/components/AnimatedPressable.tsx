@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, PressableProps } from "react-native";
+import { Platform, Pressable, PressableProps } from "react-native";
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -28,7 +28,7 @@ export default function AnimatedPressable({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacity.value,
+      opacity: Platform.OS === 'android' ? 1 : opacity.value,
     };
   }, []);
 

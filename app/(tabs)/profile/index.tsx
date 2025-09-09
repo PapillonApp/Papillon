@@ -325,7 +325,7 @@ function Cards() {
       entering={Platform.OS === "android" ? undefined : PapillonAppearIn}
       exiting={Platform.OS === "android" ? undefined : PapillonAppearOut}
     >
-      <Pressable onPress={() => {
+      <AnimatedPressable onPress={() => {
         router.push("/(features)/(cards)/cards");
       }}
       >
@@ -376,7 +376,7 @@ function Cards() {
             />
           </View>
         </Stack>
-      </Pressable>
+      </AnimatedPressable>
     </Reanimated.View>
   );
 }

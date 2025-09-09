@@ -19,6 +19,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { Attachment } from '@/services/shared/attachment';
 import { ScrollView } from 'react-native-gesture-handler';
 import HTMLTypography from "@/ui/components/HTMLTypography";
+import { formatHTML } from '@/utils/format/html';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -204,9 +205,9 @@ const Task: React.FC<TaskProps> = ({
             </Typography>
           )}
           {description && (
-            <HTMLTypography variant='body2' color='secondary' style={{ lineHeight: 20 }} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
-              {description}
-            </HTMLTypography>
+            <Typography variant='body2' color='secondary' style={{ lineHeight: 20 }} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
+              {formatHTML(description, true)}
+            </Typography>
           )}
           {attachments && attachments.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingTop: 15, gap: 5, flex: 1 }}>
