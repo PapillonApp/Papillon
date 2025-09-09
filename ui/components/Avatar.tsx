@@ -1,19 +1,13 @@
-import { Dimensions, Image, View, ViewProps } from "react-native";
+import { Image, ViewProps } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import Typography from "@/ui/components/Typography";
-import Reanimated, {
-  Easing,
-  StyleProps,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import { useEffect, useRef, useState } from "react";
+import { StyleProps } from "react-native-reanimated";
+import { useState } from "react";
 import SkeletonView from "@/ui/components/SkeletonView";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { RotateCcw } from "lucide-react-native";
+import { Colors } from "@/utils/subjects/colors";
 
 export interface AvatarProps extends ViewProps {
   size?: number;
@@ -22,6 +16,7 @@ export interface AvatarProps extends ViewProps {
   shape?: "circle" | "square";
   color?: string;
   skeleton?: boolean;
+  generateColor?: boolean;
 }
 
 const Avatar = ({
@@ -31,11 +26,20 @@ const Avatar = ({
   shape = "circle",
   color,
   skeleton = false,
+  generateColor = false,
   ...rest
 }: AvatarProps) => {
   const { colors, dark } = useTheme();
   const [hasFailed, setHasFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const generateColorFromInitials = (): string => {
+    if (!initials) return Colors[Math.floor(Math.random() * Colors.length)];
+    const index = initials.charCodeAt(initials.length - 1) % Colors.length;
+    return Colors[index];
+  }
+
+  const generatedColor = generateColor ? generateColorFromInitials() : colors.primary;
 
   const generateBodyStyle = (): StyleProps => {
     let baseStyle: StyleProps = {
@@ -50,10 +54,10 @@ const Avatar = ({
     if (hasFailed)
       baseStyle.backgroundColor = adjust("#DD0030", dark ? -0.6 : 0.9);
     else if (!imageUrl && !skeleton)
-      baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.85);
+      baseStyle.backgroundColor = adjust(color ?? generatedColor, dark ? -0.6 : 0.85);
 
     if (hasFailed)
-      baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
+      baseStyle.borderColor = adjust(color ?? generatedColor, dark ? -0.6 : 0.9);
     else if (imageUrl || skeleton)
       baseStyle.borderColor = colors.border;
     else
@@ -96,7 +100,7 @@ const Avatar = ({
       )}
       {(!imageUrl && !skeleton) && (
         <Typography
-          color={color ?? colors.primary}
+          color={color ?? generatedColor}
           weight={"bold"}
           style={{ textTransform: "uppercase", fontSize: size * 0.4, lineHeight: size * 0.95 }}
         >
