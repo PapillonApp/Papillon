@@ -2,7 +2,7 @@ import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
-import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
+import { AccessibilityIcon, HeartIcon, InfoIcon, RadioTowerIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
@@ -101,8 +101,7 @@ export default function SettingsIndex() {
       content: [
         {
           title: t('Settings_Telemetry_Title'),
-          icon: <InfoIcon />,
-          papicon: <Papicons name={"Check"} />,
+          icon: <RadioTowerIcon />,
           color: "#797979",
           onPress: () => router.navigate("../consent")
         },

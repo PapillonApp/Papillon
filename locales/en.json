@@ -231,8 +231,10 @@
   "Settings_MagicPlus_ExplanationLocal": "Fully local model, no data is transferred outside your device",
   "Settings_Donate_Title": "Donate",
   "Settings_Donate_Description": "Support the project",
+  "Settings_Telemetry_Title": "Telemetry and Privacy",
+  "Settings_Telemetry_Description": "Manage collected data",
   "Settings_About_Title": "About",
-  "Settings_About_Description": "version 8.0.0",
+  "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Log out",
   "Settings_Logout_Description": "Remove this account from Papillon",
   "Settings_Personalization_Title_Card": "Personalization",
@@ -310,5 +312,8 @@
   "Consent_PrivacyPolicy": "If in doubt, check our privacy policy",
   "Consent_Refuse": "Refuse",
   "Consent_Accept": "Accept",
-  "Consent_ChangeMind": "You can change your mind at any time from the app settings."
+  "Consent_ChangeMind": "You can change your mind at any time from the app settings.",
+  "Consent_Arg1": "Only used to improve the app",
+  "Consent_Arg2": "Anonymous & not linked to your identity",
+  "Consent_Arg3": "We don’t have access to your accounts"
 }
