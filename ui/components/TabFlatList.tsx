@@ -200,7 +200,7 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
 
           ListFooterComponent={
             <>
-              <View style={{ height: Platform.OS === 'ios' ? tabBarHeight + 12 : 220 }} />
+              <View style={{ height: Platform.OS === 'ios' ? tabBarHeight + 12 : 260 }} />
 
               {Platform.OS === 'ios' && (
                 <View
