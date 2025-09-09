@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Image, Platform, Pressable, View } from "react-native";
+import { Image, Platform, Pressable, View } from "react-native";
 import Reanimated, {
   FadeInUp,
   FadeOutUp,
@@ -69,13 +69,15 @@ function Tabs() {
       icon: TextBubble,
       title: t("Profile_Discussions_Title"),
       unread: discussion.length,
-      disabled: true,
+      disabled: false,
       beta: true,
       denominator: t("Profile_Discussions_Denominator_Single"),
       denominator_plural: t("Profile_Discussions_Denominator_Plural"),
       color: "#0094C5",
       onPress: () => {
-        Alert.alert("Ça arrive bientôt ! 😉", "On travaille activement pour vous apporter cette fonctionnalité.");
+        router.push({
+          pathname: "/(features)/(chat)/chat"
+        });
       },
     },
   ], [attendances]);

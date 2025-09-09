@@ -2,8 +2,6 @@
 import 'react-native-reanimated';
 import "@/utils/i18n";
 
-import { MMKV } from 'react-native-mmkv'
-
 import Countly from 'countly-sdk-react-native-bridge';
 import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
 
@@ -384,6 +382,16 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerTransparent: runsIOS26,
                   headerLargeTitle: true,
                   presentation: "modal"
+                }}
+              />
+
+              <Stack.Screen
+                name="(features)/(chat)/chat"
+                options={{
+                  headerShown: true,
+                  headerTitle: t("Tab_Chat"),
+                  headerTransparent: runsIOS26,
+                  headerLargeTitle: false,
                 }}
               />
             </Stack>
