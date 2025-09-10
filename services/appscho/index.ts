@@ -3,6 +3,8 @@ import { Auth, Services } from "@/stores/account/types";
 import { User } from "appscho";
 import { refreshAppSchoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
+import { CourseDay } from "@/services/shared/timetable";
+import { fetchAppschoTimetable } from "@/services/appscho/timetable";
 
 export class Appscho implements SchoolServicePlugin {
   displayName = "AppScho";
@@ -25,6 +27,16 @@ export class Appscho implements SchoolServicePlugin {
       error(`Failed to refresh AppScho account: ${refreshError}`, "Appscho.refreshAccount");
       throw refreshError;
     }
+  }
+
+  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+
+    if (this.session) {
+      const instanceId = String(this.authData.additionals?.["instanceId"]);
+      return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId);
+    }
+
+    error("Session is not valid", "Pronote.getWeeklyTimetable");
   }
 
 }

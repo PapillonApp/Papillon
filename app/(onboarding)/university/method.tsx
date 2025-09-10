@@ -93,11 +93,15 @@ export default function WelcomeScreen() {
                 ]}
               >
                 <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                    source={(item as SupportedUniversity).image}
-                    style={{ width: 32, height: 32 }}
-                    resizeMode="cover"
-                  />
+                  {(item as SupportedUniversity).image ? (
+                    <Image
+                      source={(item as SupportedUniversity).image}
+                      style={{ width: 32, height: 32 }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    (item as SupportedUniversity).icon || null
+                  )}
                 </View>
                 <Typography style={{ flex: 1 }} nowrap variant='title' color={(item as SupportedUniversity).type == "other" ? "white" : undefined}>{(item as SupportedUniversity).title}</Typography>
               </AnimatedPressable>

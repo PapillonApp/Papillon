@@ -1,50 +1,39 @@
 import { Auth } from "@/stores/account/types";
-import {
-  User,
-  refreshOAuthToken,
-  loginWithCredentials,
-  OAuthLogin,
-} from "appscho";
-// TODO : Refacto refresh with authtoken
-export async function refreshAppSchoAccount(accountId: string, credentials: Auth): Promise<{auth: Auth, session: User}> {
-  const instanceId = String(credentials.additionals?.["instanceId"]);
-  
-  const oauthCode = credentials.additionals?.["code"];
-  const refreshToken = credentials.additionals?.["refreshToken"];
-  const username = credentials.additionals?.["username"];
-  const password = credentials.additionals?.["password"];
+import { loginWithCredentials, refreshOAuthTokenWithUser, User } from "appscho";
 
-  let session: OAuthLogin | User;
-  let authData: Auth;
+export async function refreshAppSchoAccount(
+  accountId: string,
+  credentials: Auth
+): Promise<{ auth: Auth; session: User }> {
+  const additionals = credentials.additionals || {};
+  const instanceId = additionals["instanceId"];
+  const refreshToken = additionals["refreshToken"];
+  const username = additionals["username"];
+  const password = additionals["password"];
 
-  if (refreshToken) {
-    try {
-      const refreshed = await refreshOAuthToken(instanceId, String(refreshToken));
-      session = refreshed;
-
-    } catch (error) {
-      throw new Error(`Failed to refresh OAuth token: ${error}`);
-    }
-  } else if (username && password) {
-    try {
-      session = await loginWithCredentials(instanceId, String(username), String(password));
-      
-      authData = {
-        additionals: {
-          instanceId,
-          username: String(username),
-          password: String(password),
-        }
-      };
-    } catch (error) {
-      throw new Error(`Failed to refresh with credentials: ${error}`);
-    }
-  } else {
-    throw new Error("No refresh method available - missing both refresh token and credentials");
+  if (!instanceId) {
+    throw new Error("instanceId is required");
   }
 
-  return {
-    auth: authData,
-    session
-  };
+  let session: User;
+  const authData: Auth = { additionals: { instanceId } };
+
+  try {
+    if (refreshToken) {
+      session = await refreshOAuthTokenWithUser(String(instanceId), String(refreshToken));
+      authData.additionals!.refreshToken = refreshToken;
+    } else if (username && password) {
+      session = await loginWithCredentials(String(instanceId), String(username), String(password));
+      authData.additionals!.username = username;
+      authData.additionals!.password = password;
+    } else {
+      throw new Error("No refresh method available - missing both refresh token and credentials");
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to refresh AppScho session: ${error}`
+    );
+  }
+
+  return { auth: authData, session };
 }

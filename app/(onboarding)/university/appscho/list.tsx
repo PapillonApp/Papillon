@@ -1,20 +1,62 @@
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo, useState } from "react";
 import Reanimated, {
-  FadeInDown,
-  useSharedValue,
-  withTiming,
+  FadeInDown
 } from "react-native-reanimated";
-import LottieView from "lottie-react-native";
-import Stack from "@/ui/components/Stack";
+
 import Typography from "@/ui/components/Typography";
 import { useTranslation } from "react-i18next";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import { RelativePathString, router } from "expo-router";
 import { INSTANCES } from "appscho";
+
+const UNIVERSITY_LOGOS: { [key: string]: any } = {
+  alijia: require('@/assets/images/univ/alijia.webp'),
+  bsb: require('@/assets/images/univ/bsb.webp'),
+  digitalcampus: require('@/assets/images/univ/digitalcampus.webp'),
+  edhec: require('@/assets/images/univ/edhec.webp'),
+  eigsi: require('@/assets/images/univ/eigsi.webp'),
+  emstra: require('@/assets/images/univ/emstra.webp'),
+  epp: require('@/assets/images/univ/epp.webp'),
+  esaip: require('@/assets/images/univ/esaip.webp'),
+  esarc: require('@/assets/images/univ/esarc.webp'),
+  esg: require('@/assets/images/univ/esg.webp'),
+  esigelec: require('@/assets/images/univ/esigelec.webp'),
+  essca: require('@/assets/images/univ/essca.webp'),
+  essec: require('@/assets/images/univ/essec.webp'),
+  estp: require('@/assets/images/univ/estp.webp'),
+  hec: require('@/assets/images/univ/hec.webp'),
+  icp: require('@/assets/images/univ/icp.png'),
+  ieu: require('@/assets/images/univ/ieu.webp'),
+  iicp: require('@/assets/images/univ/iicp.webp'),
+  ipp: require('@/assets/images/univ/ipp.webp'),
+  iseg: require('@/assets/images/univ/iseg.webp'),
+  lisaa: require('@/assets/images/univ/lisaa.webp'),
+  macromedia: require('@/assets/images/univ/macromedia.webp'),
+  mbs: require('@/assets/images/univ/mbs.webp'),
+  merkure: require('@/assets/images/univ/merkure.webp'),
+  psb: require('@/assets/images/univ/psb.jpg'),
+  pstb: require('@/assets/images/univ/pstb.webp'),
+  regent: require('@/assets/images/univ/regent.webp'),
+  sciencespo: require('@/assets/images/univ/sciencepo.webp'),
+  scpoaix: require('@/assets/images/univ/scpoaix.webp'),
+  ubmont: require('@/assets/images/univ/ubmont.webp'),
+  uclouvain: require('@/assets/images/univ/uclouvain.webp'),
+  ucly: require('@/assets/images/univ/ucly.webp'),
+  ueve: require('@/assets/images/univ/ueve.webp'),
+  uniassas: require('@/assets/images/univ/uniassas.webp'),
+  unilyon3: require('@/assets/images/univ/unilyon3.webp'),
+  unimes: require('@/assets/images/univ/unimes.webp'),
+  unimons: require('@/assets/images/univ/unimons.webp'),
+  unitoulon: require('@/assets/images/univ/unitoulon.webp'),
+  univangers: require('@/assets/images/univ/univangers.webp'),
+  unieiffel: require('@/assets/images/univ/univeiffel.webp'),
+  univpoitiers: require('@/assets/images/univ/univpoitiers.webp'),
+  upjv: require('@/assets/images/univ/upjv.webp'),
+  wsfactory: require('@/assets/images/univ/wsfactory.png'),
+};
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 
@@ -87,18 +129,15 @@ export default function AppschoInstancesList() {
               }}
             >
               <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                <View
-                  style={{
-                    width: 32,
-                    height: 32,
-                    backgroundColor: colors.primary,
-                    borderRadius: 16,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant='title' color="white">{item.name.charAt(0).toUpperCase()}</Typography>
-                </View>
+                  {UNIVERSITY_LOGOS[item.id] ? (
+                    <Image
+                      source={UNIVERSITY_LOGOS[item.id]}
+                      style={{ width: 32, height: 32 }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={{ width: 32, height: 32, backgroundColor: colors.border, borderRadius: 16 }} />
+                  )}
               </View>
               <Typography style={{ flex: 1 }} nowrap variant='title'>{item.name}</Typography>
             </AnimatedPressable>

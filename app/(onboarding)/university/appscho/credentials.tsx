@@ -96,7 +96,6 @@ export default function AppSchoCredentials() {
     try {
 
       const response = await loginWithCredentials(instance.id, username, password);
-      console.log(response);
 
       const id = uuid();
       const service: ServiceAccount = {

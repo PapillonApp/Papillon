@@ -98,7 +98,8 @@ export interface SupportedUniversity {
     name: string;
     title: string;
     hasLimitedSupport: boolean;
-    image: any;
+    image?: any;
+    icon?: any;
     type: string;
     onPress: () => void;
 }
@@ -143,8 +144,8 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
           name: "appscho",
           title: "Autres universités",
           hasLimitedSupport: false,
-          image: require("@/assets/images/univ_lannion.png"),
-          type: "main",
+          icon: <Papicons name={"Star"} />,
+          type: "other",
           onPress: () => {redirect({ pathname: './appscho/list' }) }
         },
         {
