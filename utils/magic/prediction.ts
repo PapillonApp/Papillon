@@ -54,9 +54,25 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
 
   const prediction = await ModelManager.predict(label);
 
+  const beautifyLabel = (rawLabel: string): string => {
+    const labelMap: Record<string, string> = {
+      'evaluation': 'Évaluation',
+      'finaltask': 'Tâche finale',
+      'homework': 'Devoir',
+      'null': 'null',
+      'oral': 'Présentation orale',
+      'sheets': 'Fiche',
+    };
+    
+    return labelMap[rawLabel.toLowerCase()] || rawLabel
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const finalLabel =
     isModelPrediction(prediction) && prediction.predicted !== "null"
-      ? prediction.predicted
+      ? beautifyLabel(prediction.predicted)
       : "";
 
   store.addHomework({ id: homeworkId, label: finalLabel });
