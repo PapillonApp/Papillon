@@ -2,7 +2,16 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Platform,
+  Pressable,
+  RefreshControl,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
@@ -244,6 +253,8 @@ export default function TabOneScreen() {
 
   const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => {
     const inFresh = homework[item.id]
+    if (showUndoneOnly && item.isDone)
+      return null;
     return (
       <TaskItem
         item={item}
@@ -336,6 +347,7 @@ export default function TabOneScreen() {
   ]
 
   const [selectedMethod, setSelectedMethod] = useState(0);
+  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
 
   const sortedHomeworks = useMemo(() => {
     const sortingMethod = sortingMethods[selectedMethod].method;
@@ -534,21 +546,38 @@ export default function TabOneScreen() {
         </Reanimated.View>
       )}
 
-      <NativeHeaderSide side="Left" key={`header-left-hw:` + selectedMethod}>
+      <NativeHeaderSide side="Left" key={`header-left-hw:` + selectedMethod + ":" + showUndoneOnly}>
         <MenuView
           actions={[
-            ...sortingMethods.map((method, index) => ({
-              title: method.label,
-              id: index.toString(),
-              state: index === selectedMethod ? 'on' : 'off',
-              image: method.image ? method.image : undefined,
-              imageColor: colors.text,
-            })),
+            {
+              title: t('Task_Sorting_Title'),
+              subactions: sortingMethods.map((method, index) => ({
+                title: method.label,
+                id: "sort_" + index.toString(),
+                state: (selectedMethod === index ? 'on' : 'off'),
+                image: method.image ? method.image : undefined,
+                imageColor: colors.text,
+              })),
+
+            },
+            {
+              title: t('Task_OnlyShowUndone'),
+              id: 'only-undone',
+              state: (showUndoneOnly ? 'on' : 'off'),
+            }
           ]}
           onPressAction={({ nativeEvent }) => {
-            const selected = sortingMethods[parseInt(nativeEvent.event)];
-            if (selected) {
-              setSelectedMethod(parseInt(nativeEvent.event));
+            if (nativeEvent.event === 'only-undone') {
+              console.log("Toggling only undone");
+              setShowUndoneOnly((prev) => !prev);
+              console.log("Only undone is now", showUndoneOnly);
+            }
+            else if (nativeEvent.event.startsWith("sort_")) {
+              const withoutSort = nativeEvent.event.replace("sort_", "")
+              const selected = sortingMethods[parseInt(withoutSort)];
+              if (selected) {
+                setSelectedMethod(parseInt(withoutSort));
+              }
             }
           }}
         >
