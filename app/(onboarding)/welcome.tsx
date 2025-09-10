@@ -110,7 +110,7 @@ export default function WelcomeScreen() {
             title={t("ONBOARDING_START_BTN")}
             onPress={() => {
               requestAnimationFrame(() => {
-                router.push("/(onboarding)/serviceSelection");
+                router.navigate("/(onboarding)/serviceSelection");
               });
             }}
             style={{
