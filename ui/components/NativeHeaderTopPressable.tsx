@@ -58,6 +58,7 @@ const NativeHeaderTopPressable = React.memo(function NativeHeaderTopPressable({
       testID={testID}
       accessibilityRole="button"
       accessibilityState={{ disabled }}
+      hitSlop={32}
     >
       {children}
     </AnimatedPressable>

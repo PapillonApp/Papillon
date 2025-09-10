@@ -1,28 +1,22 @@
-import { CompactGrade } from "@/ui/components/CompactGrade";
 import TableFlatList from "@/ui/components/TableFlatList";
 import { useRoute, useTheme } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
-import React, { useMemo } from "react";
+import React from "react";
 import { View } from "react-native";
 
-import { formatDistanceToNow, formatDistance, formatDistanceStrict } from 'date-fns'
+import { formatDistanceToNow, formatDistanceStrict } from 'date-fns'
 import { fr } from 'date-fns/locale';
 
-import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
-import { Subject as SharedSubject } from "@/services/shared/grade";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 
 import { t } from "i18next";
 import Reanimated from 'react-native-reanimated';
 import * as Papicons from '@getpapillon/papicons';
-import ContainedNumber from "@/ui/components/ContainedNumber";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
 import { getStatusText } from "../(tabs)/calendar";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
 
 interface SubjectInfo {
   name: string;
@@ -143,7 +137,7 @@ export default function CourseModal() {
                         : t("Modal_Course_StartedAgo")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {formatDistanceToNow(startTime * 1000, { locale: fr })}
+                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime:endTime) * 1000, { locale: fr })}
                   </Typography>
                 </Stack>
                 <Stack

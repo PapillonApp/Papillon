@@ -1,6 +1,6 @@
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
@@ -29,6 +29,7 @@ import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsIndex() {
   const router = useRouter();
+  const navigation = useNavigation();
 
   const theme = useTheme();
   const { colors } = theme;
@@ -53,6 +54,7 @@ export default function SettingsIndex() {
   }, [account]);
 
   const logout = useCallback(() => {
+    router.replace("/(onboarding)/welcome");
     const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
     if (!account) {
       error("Unable to find the current account")
@@ -62,7 +64,6 @@ export default function SettingsIndex() {
     for (const service of account.services) {
       ClearDatabaseForAccount(service.id)
     }
-    router.push("/(onboarding)/welcome");
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [

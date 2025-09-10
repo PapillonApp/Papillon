@@ -11,21 +11,21 @@ export async function fetchIzlyHistory(accountId: string, session: Identificatio
       date: item.date,
       label: "Paiement",
       currency: "€",
-      amount: item.isCredit ? item.amount : -item.amount,
+      amount: (item.isCredit ? item.amount : -item.amount) * 100,
       createdByAccount: accountId
     })),
     ...topups.map(item => ({
       date: item.date,
       label: "Rechargement",
       currency: "€",
-      amount: item.isCredit ? item.amount : -item.amount,
+      amount: (item.isCredit ? item.amount : -item.amount) * 100,
       createdByAccount: accountId
     })),
     ...transfers.map(item => ({
       date: item.date,
       label: "Transfert",
       currency: "€",
-      amount: item.isCredit ? item.amount : -item.amount,
+      amount: (item.isCredit ? item.amount : -item.amount) * 100,
       createdByAccount: accountId
     }))
   ]
