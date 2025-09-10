@@ -1,22 +1,10 @@
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import Button from "@/ui/components/Button";
-import { useHeaderHeight } from "@react-navigation/elements";
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from "react-native";
-import i18n from "@/utils/i18n";
-const t = i18n.t.bind(i18n);
-import { MMKV } from "react-native-mmkv";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import React from "react";
+import { View, ScrollView, Image } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
-import { setConsent } from "@/utils/logger/consent";
 
 export default function ChangelogScreen() {
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
   const theme = useTheme();
   const { colors } = theme;
 
@@ -65,7 +53,7 @@ export default function ChangelogScreen() {
         Il manque (telle ou telle) fonctionnalité ?
       </Typography>
       <Typography variant="body1" color="secondary" align="center">
-        Pour vous permettre d'utiliser Papillon dés la rentrée, l'application est sortie plus lègere en fonctionnalités que prévu. Nous travaillons d'arrache-pied pour réintégrer les fonctionnalités manquantes au plus vite.
+        Pour vous permettre d'utiliser Papillon dès la rentrée, l'application est sortie plus lègere en fonctionnalités que prévu. Nous travaillons d'arrache-pied pour réintégrer les fonctionnalités manquantes au plus vite.
       </Typography>
 
       <View style={{ height: 16 }} />
