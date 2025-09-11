@@ -25,7 +25,7 @@ import { CompactGrade } from "@/ui/components/CompactGrade";
 import { log, warn } from "@/utils/logger/logger";
 
 import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
-import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
+import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getStatusText } from "../calendar";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
@@ -42,13 +42,8 @@ import { useTimetable } from "@/database/useTimetable";
 import { checkConsent } from "@/utils/logger/consent";
 import { useSettingsStore } from "@/stores/settings";
 import { Homework } from "@/services/shared/homework";
-import Task from "@/ui/components/Task";
 import { getSubjectName } from "@/utils/subjects/name";
-import { truncatenateString } from "@/ui/utils/Truncatenate";
-import { Sparkle } from "lucide-react-native";
-import { useMagicPrediction } from "../tasks";
 import { generateId } from "@/utils/generateId";
-import { formatHTML } from "@/utils/format/html";
 import CompactTask from "@/ui/components/CompactTask";
 
 const IndexScreen = () => {
@@ -482,8 +477,8 @@ const IndexScreen = () => {
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
             title: "Tâches",
-            redirect: "/(tabs)/task",
-            buttonLabel: `${(homeworks.length) - 3}+ autres tâches`,
+            redirect: "/(tabs)/tasks",
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches`:`Voir toutes les tâches`,
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
