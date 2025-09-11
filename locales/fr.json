@@ -142,6 +142,8 @@
   "Tasks_NoTasks_Nav": "Aucune tâche",
   "Task_Start": "À faire",
   "Task_Complete": "Terminé",
+  "Task_Sorting_Title": "Trier par",
+  "Task_OnlyShowUndone": "Afficher uniquement les tâches non terminées",
   "Settings_General": "Général",
 
   "Latest_Grades": "Nouvelles notes",

@@ -115,16 +115,23 @@ const Grade: React.FC<GradeProps> = React.memo(
                      style={styles.flexContainer}
                      gap={0}
               >
-                <Typography variant="title"
-                            skeleton={skeleton}
-                            skeletonWidth={150}
-                >{title}</Typography>
-                <Typography variant="body2"
-                            color="secondary"
-                            inline
-                            style={{ marginTop: skeleton ? 0 : 2, marginBottom: skeleton ? 0 : 2 }}
-                            skeleton={skeleton}
-                            skeletonWidth={100}
+                <Typography
+                  variant="title"
+                  skeleton={skeleton}
+                  skeletonWidth={150}
+                  numberOfLines={2}
+                  style={{ lineHeight: 20 }}
+                >
+                  {title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="secondary"
+                  inline
+                  style={{ marginTop: skeleton ? 0 : 2, marginBottom: skeleton ? 0 : 2 }}
+                  skeleton={skeleton}
+                  skeletonWidth={100}
+                  nowrap
                 >
                   {formattedDate}
                 </Typography>
@@ -144,8 +151,9 @@ const Grade: React.FC<GradeProps> = React.memo(
                 }}
               >
                 {skeleton ? (
-                  <Typography variant="h5"
-                              skeleton
+                  <Typography
+                    variant="h5"
+                    skeleton
                   />
                 ) : (
                   <>
