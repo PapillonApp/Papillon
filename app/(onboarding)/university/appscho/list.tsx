@@ -90,7 +90,7 @@ export default function AppschoInstancesList() {
           return (
             <View style={{ marginBottom: 15 }}>
               <OnboardingInput
-                placeholder={t("SEARCH_PLACEHOLDER", "Rechercher une instance...")}
+                placeholder={t("SEARCH_UNIV_PLACEHOLDER", "Rechercher une instance...")}
                 text={search}
                 setText={setSearch}
                 icon="Search"
