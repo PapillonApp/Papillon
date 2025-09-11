@@ -2,16 +2,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  FlatList,
-  Platform,
-  Pressable,
-  RefreshControl,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Alert, FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
@@ -19,7 +10,12 @@ import { Homework } from "@/services/shared/homework";
 import { useAlert } from "@/ui/components/AlertProvider";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import {
+  NativeHeaderHighlight,
+  NativeHeaderPressable,
+  NativeHeaderSide,
+  NativeHeaderTitle,
+} from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import Stack from "@/ui/components/Stack";
 import TabFlatList from "@/ui/components/TabFlatList";
@@ -32,7 +28,7 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
-import { Papicons } from '@getpapillon/papicons';
+import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { predictHomework } from "@/utils/magic/prediction";
@@ -41,6 +37,9 @@ import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from 
 import { generateId } from "@/utils/generateId";
 import { useAccountStore } from "@/stores/account";
 import { MenuView } from "@react-native-menu/menu";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { ImpactFeedbackStyle } from "expo-haptics";
 
 export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -130,6 +129,7 @@ const EmptyListComponent = memo(() => (
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
   const alert = useAlert()
   const windowDimensions = useWindowDimensions();
@@ -142,7 +142,7 @@ export default function TabOneScreen() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const store = useAccountStore.getState()
-  const account = store.accounts.find(account => store.lastUsedAccount);
+  const account = store.accounts.find(() => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
   const homeworksFromCache = useHomeworkForWeek(selectedWeek, refreshTrigger).filter(homework => services.includes(homework.createdByAccount));
   const [homework, setHomework] = useState<Record<string, Homework>>({});
@@ -420,6 +420,30 @@ export default function TabOneScreen() {
         keyExtractor={keyExtractor}
         ListEmptyComponent={<EmptyListComponent />}
       />
+
+      {/* FAB */}
+      <AnimatedPressable
+        opacityTo={1}
+        hapticFeedback={ImpactFeedbackStyle.Rigid}
+        style={{
+          position: "absolute",
+          bottom: Platform.OS === "ios" ? bottomTabBarHeight + 10 : 10,
+          right: 10,
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          backgroundColor: "#C54CB3",
+          zIndex: 10000,
+          alignItems: "center",
+          justifyContent: "center",
+          shadowOpacity: 0.1,
+          shadowRadius: 5,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 0 },
+        }}
+      >
+        <Papicons name={"Add"} size={24} color={"#FFF"} />
+      </AnimatedPressable>
 
       {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
