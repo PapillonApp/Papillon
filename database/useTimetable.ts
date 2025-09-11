@@ -31,13 +31,18 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   await db.write(async () => {
     for (const day of courses) {
       for (const item of day.courses) {
-        const id = generateId( item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.room + item.createdByAccount);
+        // MIGRATION TO AVOID DUPES, DO NOT DELETE
+        const oldId = generateId( item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.room + item.createdByAccount);
+        const id = generateId( item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.createdByAccount);
 
+        const oldExistingRecords = await db.get('courses')
+          .query(Q.where('courseId', oldId))
+          .fetch();
         const existingRecords = await db.get('courses')
           .query(Q.where('courseId', id))
           .fetch();
 
-        if (existingRecords.length === 0) {
+        if (oldExistingRecords.length === 0 && existingRecords.length === 0) {
           await db.get('courses').create((record: Model) => {
             const course = record as Course;
             Object.assign(course, {
