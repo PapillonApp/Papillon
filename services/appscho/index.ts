@@ -5,6 +5,8 @@ import { refreshAppSchoAccount } from "./refresh";
 import { error } from "@/utils/logger/logger";
 import { CourseDay } from "@/services/shared/timetable";
 import { fetchAppschoTimetable } from "@/services/appscho/timetable";
+import { News } from "@/services/shared/news";
+import { fetchAppschoNews } from "@/services/appscho/news";
 
 export class Appscho implements SchoolServicePlugin {
   displayName = "AppScho";
@@ -37,6 +39,16 @@ export class Appscho implements SchoolServicePlugin {
     }
 
     error("Session is not valid", "Pronote.getWeeklyTimetable");
+  }
+
+  async getNews(): Promise<News[]> {
+
+    if (this.session) {
+      const instanceId = String(this.authData.additionals?.["instanceId"]);
+      return fetchAppschoNews(this.session, this.accountId, instanceId);
+    }
+
+    error("Session is not valid", "Pronote.getNews");
   }
 
 }
