@@ -27,7 +27,6 @@ import { error, log, warn } from "@/utils/logger/logger";
 import { Kid } from "./kid";
 import { Balance } from "./balance";
 import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
-import module from "@/services/izly";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
