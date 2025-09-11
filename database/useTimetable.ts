@@ -34,7 +34,7 @@ async function deleteUnavailableCourses(day: SharedCourseDay) {
     .get<Course>('courses')
     .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
     .fetch();
-    
+
   const dayCourseIds = new Set(
     day.courses.map(item =>
       generateId(
@@ -78,7 +78,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           .query(Q.where('courseId', id))
           .fetch();
 
-        if (oldExistingRecords.length === 0 && existingRecords.length === 0) {
+        if (oldExistingRecords.length !== 0 && existingRecords.length !== 0) {
           await db.get('courses').create((record: Model) => {
             const course = record as Course;
             Object.assign(course, {
