@@ -7,7 +7,7 @@ export async function fetchIzlyBalances(accountId: string, session: Identificati
   
   const paysFullPrice = payments.filter((payment) => payment.amount === 3.30).length > 4;
 
-  const mealPrice = paysFullPrice ? 3.30 : 1;
+  const mealPrice = (paysFullPrice ? 3.30 : 1) * 100;
   const remainingMeal = Math.floor(fetchedBalance.value / (mealPrice));
   
   return [
