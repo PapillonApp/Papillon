@@ -25,11 +25,47 @@ export function useTimetable(refresh = 0, weekNumber = 0) {
   return timetable;
 }
 
+async function deleteUnavailableCourses(day: SharedCourseDay) {
+  const database = getDatabaseInstance();
+  const start = new Date(day.date.setUTCHours(0, 0, 0, 0));
+  const end = new Date(day.date.setUTCHours(23, 59, 59, 999));
+
+  const dbCourses = await database
+    .get<Course>('courses')
+    .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
+    .fetch();
+    
+  const dayCourseIds = new Set(
+    day.courses.map(item =>
+      generateId(
+        item.from.toISOString() +
+        item.to.toISOString() +
+        item.subject +
+        item.teacher +
+        item.createdByAccount
+      )
+    )
+  );
+
+  const coursesToDelete = dbCourses.filter(
+    dbCourse => !dayCourseIds.has(dbCourse.courseId)
+  );
+
+  if (coursesToDelete.length > 0) {
+    await database.write(async () => {
+      for (const course of coursesToDelete) {
+        await course.markAsDeleted();
+      }
+    });
+  }
+}
+
 export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   const db = getDatabaseInstance();
 
   await db.write(async () => {
     for (const day of courses) {
+      await deleteUnavailableCourses(day)
       for (const item of day.courses) {
         // MIGRATION TO AVOID DUPES, DO NOT DELETE
         const oldId = generateId( item.from.toISOString() + item.to.toISOString() + item.subject + item.teacher + item.room + item.createdByAccount);
