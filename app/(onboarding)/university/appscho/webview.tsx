@@ -18,7 +18,6 @@ export default function AppschoWebView() {
   const loginURL = getCASURL(instance?.id as string);
 
   const handleRequest = async (url: string) => {
-    console.log("URL intercepted:", url);
     
     const urlObj = new URL(url);
     const code = urlObj.searchParams.get('code');
@@ -27,9 +26,7 @@ export default function AppschoWebView() {
       setIsProcessing(true);
       
       try {
-        console.log("OAuth code found:", code);
         const response = await loginWithOAuth(instance.id, code);
-        console.log("OAuth login response:", response);
 
         const id = uuid();
         const service: ServiceAccount = {
