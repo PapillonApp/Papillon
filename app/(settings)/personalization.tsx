@@ -1,6 +1,5 @@
 import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
-import React from "react";
 import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
 import List from "@/ui/components/List";
@@ -17,8 +16,6 @@ import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
 import { useTranslation } from "react-i18next";
-import { t } from "i18next";
-import i18n from "@/utils/i18n";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -27,7 +24,7 @@ import { FadeIn, FadeOut } from "react-native-reanimated";
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
