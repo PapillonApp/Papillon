@@ -144,7 +144,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
           name: "appscho",
           title: "Autres universités",
           hasLimitedSupport: false,
-          icon: <Papicons name={"Star"} />,
+          icon: <Papicons name={"Star"} color={"white"}/>,
           type: "other",
           onPress: () => {redirect({ pathname: './appscho/list' }) }
         },
