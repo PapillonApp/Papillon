@@ -1,12 +1,9 @@
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import Button from "@/ui/components/Button";
-import { useHeaderHeight } from "@react-navigation/elements";
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from "react-native";
+import { View, StyleSheet, ScrollView, Image, Linking } from "react-native";
 import i18n from "@/utils/i18n";
 const t = i18n.t.bind(i18n);
-import { MMKV } from "react-native-mmkv";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";

@@ -4,11 +4,11 @@ import React from "react";
 import { View } from "react-native";
 
 import { formatDistanceToNow, formatDistanceStrict } from 'date-fns'
-import { fr } from 'date-fns/locale';
+import * as DateLocale from 'date-fns/locale';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 
-import { t } from "i18next";
+import i18n, { t } from "i18next";
 import Reanimated from 'react-native-reanimated';
 import * as Papicons from '@getpapillon/papicons';
 import Stack from "@/ui/components/Stack";
@@ -79,7 +79,7 @@ export default function CourseModal() {
               {
                 papicon: <Papicons.Clock />,
                 title: t("Modal_Course_Duration"),
-                description: formatDistanceStrict(startTime * 1000, endTime * 1000, { locale: fr })
+                description: formatDistanceStrict(startTime * 1000, endTime * 1000, {locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS})
               }
             ]
           }
@@ -137,7 +137,7 @@ export default function CourseModal() {
                         : t("Modal_Course_StartedAgo")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime:endTime) * 1000, { locale: fr })}
+                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime:endTime) * 1000, {locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS})}
                   </Typography>
                 </Stack>
                 <Stack
