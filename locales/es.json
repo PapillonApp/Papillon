@@ -228,7 +228,7 @@
   "Alert_Not_Supported": "Instance non supportée",
   "Alert_Security_Instance_HTTP": "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous te recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
   "Alert_NoDemo": "Papillon n'est pas fait pour fonctionner avec des instances de démonstration, merci d'utiliser une autre instance.",
-  "Alert_Invalid_Instance": "Papillon n'arrive pas à obtenir les informations de cette instance PRONOTE, est-elle encore valide ?",
+  "Alert_Invalid_Instance": "",
   "Alert_No_Pos": "Impossible de récupérer la position",
   "Alert_Connexion_Fail": "Connexion impossible",
   "Feature_Limited": "Fonctionnalités limitées",
