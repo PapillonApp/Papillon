@@ -16,12 +16,16 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Stack from "@/ui/components/Stack";
 import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
+import { useMagicStore } from "@/stores/magic";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
   const logsStore = useLogStore();
   const settingStore = useSettingsStore(state => state.personalization)
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
+  const magicStore = useMagicStore()
+
+  const magicStoreHomework = useMagicStore(state => state.processHomeworks)
 
   const { colors } = useTheme();
   const alert = useAlert();
@@ -217,6 +221,32 @@ export default function Devmode() {
               onValueChange={value => mutateProperty("personalization", { showAlertAtLogin: value })}
             />
           </Trailing>
+        </Item>
+      </List>
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Magic Store
+        </Typography>
+      </Stack>
+
+      <List>
+        <Item
+          onPress={() => magicStore.clear()}
+        >
+          <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => console.log(magicStoreHomework)}
+        >
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
       </List>
     </ScrollView >
