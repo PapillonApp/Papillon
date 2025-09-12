@@ -40,6 +40,7 @@ import { MenuView } from "@react-native-menu/menu";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { ImpactFeedbackStyle } from "expo-haptics";
+import { router } from "expo-router";
 
 export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -441,6 +442,7 @@ export default function TabOneScreen() {
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 0 },
         }}
+        onPress={() => router.push("/(new)/task")}
       >
         <Papicons name={"Add"} size={24} color={"#FFF"} />
       </AnimatedPressable>

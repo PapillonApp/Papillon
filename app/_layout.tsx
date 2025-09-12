@@ -273,7 +273,6 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
             <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-              <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="(settings)" options={{ headerShown: false }} />
               <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
               <Stack.Screen name="page" />
@@ -283,6 +282,19 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
               <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
               <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+
+              <Stack.Screen
+                name="(new)/task"
+                options={{
+                  headerShown: false,
+                  headerTitle: t("Tab_New_Task"),
+                  presentation: "modal",
+                  contentStyle: {
+                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
+                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                  },
+                }}
+              />
 
               <Stack.Screen
                 name="(modals)/grade"
