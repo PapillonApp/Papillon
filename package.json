@@ -65,6 +65,7 @@
     "fflate": "^0.8.2",
     "htmlparser2": "^10.0.0",
     "i18next": "^25.2.1",
+    "langdetect": "^0.2.1",
     "lottie-react-native": "^7.3.1",
     "lucide-react-native": "^0.511.0",
     "patch-package": "^8.0.0",

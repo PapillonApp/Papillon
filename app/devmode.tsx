@@ -25,6 +25,8 @@ export default function Devmode() {
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
   const magicStore = useMagicStore()
 
+  const magicStoreHomework = useMagicStore(state => state.processHomeworks)
+
   const { colors } = useTheme();
   const alert = useAlert();
 
@@ -240,6 +242,11 @@ export default function Devmode() {
           onPress={() => magicStore.clear()}
         >
           <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => console.log(magicStoreHomework)}
+        >
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
       </List>
     </ScrollView >
