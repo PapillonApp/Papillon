@@ -45,6 +45,7 @@ import { Homework } from "@/services/shared/homework";
 import { getSubjectName } from "@/utils/subjects/name";
 import { generateId } from "@/utils/generateId";
 import CompactTask from "@/ui/components/CompactTask";
+import { removeAllDuplicates } from "@/database/DatabaseProvider";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -260,6 +261,7 @@ const IndexScreen = () => {
   }, []);
 
   useEffect(() => {
+    removeAllDuplicates()
     if (accounts.length > 0) {
       checkConsent().then(consent => {
         if (!consent.given) {
