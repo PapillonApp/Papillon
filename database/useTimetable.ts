@@ -78,7 +78,13 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
           .query(Q.where('courseId', id))
           .fetch();
 
-        if (oldExistingRecords.length !== 0 && existingRecords.length !== 0) {
+        if (oldExistingRecords.length !== 0) {
+          for (const oldRecord of oldExistingRecords) {
+            await oldRecord.markAsDeleted();
+          }
+        }
+
+        if (existingRecords.length === 0) {
           await db.get('courses').create((record: Model) => {
             const course = record as Course;
             Object.assign(course, {
