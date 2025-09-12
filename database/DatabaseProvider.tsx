@@ -70,7 +70,6 @@ export async function removeAllDuplicates() {
       news: (r: News) => r.newsId,
       periods: (r: Period) => r.periodId,
       grades: (r: Grade) => r.gradeId,
-      periodgrades: (r: PeriodGrades) => r.periodId,
       attendance: (r: Attendance) => r.attendanceId,
       delays: (r: Delay) => `${r.attendanceId}-${r.givenAt}`,
       observations: (r: Observation) => `${r.attendanceId}-${r.givenAt}`,
