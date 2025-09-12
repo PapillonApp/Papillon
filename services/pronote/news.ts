@@ -20,11 +20,11 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
       title: item.title,
       createdAt: item.creationDate,
       acknowledged: item.read,
-      attachments: item.attachments.map((attachment) => ({
+      attachments: (item.attachments ?? []).map((attachment) => ({
         type: attachment.kind,
         name: attachment.name,
         url: attachment.url,
-        createdByAccount: accountId,
+        createdByAccount: accountId
       })),
       content: item.content,
       author: item.author,
@@ -33,7 +33,6 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
       createdByAccount: accountId,
     });
   }
-
   return result;
 }
 
