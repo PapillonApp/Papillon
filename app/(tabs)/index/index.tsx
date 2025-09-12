@@ -317,6 +317,11 @@ const IndexScreen = () => {
     <GradesWidget header accent={foreground} />,
   ];
 
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
+
   return (
     <>
       <LinearGradient
@@ -478,7 +483,7 @@ const IndexScreen = () => {
             icon: <Papicons name={"Tasks"} />,
             title: "Tâches",
             redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches`:`Voir toutes les tâches`,
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : `Voir toutes les tâches`,
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
