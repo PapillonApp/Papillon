@@ -165,15 +165,12 @@ const Course = React.memo(
           </GlassView>
         ) : (
           <View
-            style={{
-              flex: 1,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.15,
-              shadowRadius: 2,
-              elevation: 2,
-              overflow: "visible",
-            }}
+            style={[
+              {
+                flex: 1,
+                overflow: "visible",
+              }
+            ]}
           >
             <AnimatedPressable
               onPress={onPress}
@@ -280,10 +277,6 @@ const Course = React.memo(
                       } : {},
                       ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
                       {
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 0 },
-                        shadowOpacity: 0.15,
-                        shadowRadius: skeleton ? 0 : 3.3,
                         elevation: 2,
                       },
                       skeleton && {
