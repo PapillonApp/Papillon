@@ -19,6 +19,7 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.27.1",
     "@bottom-tabs/react-navigation": "^0.11.1",
+    "@eslint/js": "^9.35.0",
     "@expo/metro-config": "~54.0.2",
     "@expo/vector-icons": "^15.0.2",
     "@getpapillon/papicons": "^0.1.5",
@@ -96,7 +97,7 @@
     "react-native-worklets": "0.5.1",
     "skolengojs": "^1.1.10",
     "turboself-api": "^2.1.9",
-    "typescript-eslint": "^8.34.0",
+    "typescript-eslint": "^8.43.0",
     "victory-native": "^41.19.3",
     "zustand": "^5.0.4"
   },
