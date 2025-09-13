@@ -1,5 +1,6 @@
 import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
+import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
@@ -14,7 +15,7 @@ import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -23,6 +24,7 @@ import { FadeIn, FadeOut } from "react-native-reanimated";
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
+  const { t } = useTranslation()
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
