@@ -8,6 +8,8 @@ import { Platform, Pressable, View } from "react-native";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Reanimated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { runsIOS26 } from '../utils/IsLiquidGlass';
 
 export interface CalendarProps {
   date?: Date;
@@ -55,12 +57,14 @@ const Calendar: React.FC<CalendarProps> = ({
     )
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <Pressable
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: 0,
+        top: runsIOS26 ? insets.top + 46 : 0,
         left: 0,
         bottom: 0,
         right: 0,

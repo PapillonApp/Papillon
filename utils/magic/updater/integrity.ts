@@ -1,5 +1,5 @@
 import * as Crypto from "expo-crypto";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 export async function fileSha256Hex(uri: string): Promise<string> {
   const b64 = await FileSystem.readAsStringAsync(uri, {
