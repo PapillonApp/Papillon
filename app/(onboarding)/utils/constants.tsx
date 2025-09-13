@@ -67,7 +67,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
             variant: 'service' as const,
             color: 'light' as const,
         },
-        /*{
+        {
             name: "university",
             title: t("ONBOARDING_UNIVERSITY"),
             type: "other",
@@ -78,7 +78,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
             },
             variant: 'primary' as const,
             style: { backgroundColor: theme.dark ? colors.border : "black" },
-        }, */
+        },
         {
             name: "university",
             title: t("ONBOARDING_RESTAURANTS"),
@@ -98,7 +98,8 @@ export interface SupportedUniversity {
     name: string;
     title: string;
     hasLimitedSupport: boolean;
-    image: any;
+    image?: any;
+    icon?: any;
     type: string;
     onPress: () => void;
 }
@@ -138,6 +139,14 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
             image: require("@/assets/images/univ_lannion.png"),
             type: "main",
             onPress: () => { }
+        },
+        {
+          name: "appscho",
+          title: "Autres universités",
+          hasLimitedSupport: false,
+          icon: <Papicons name={"Star"} color={"white"}/>,
+          type: "other",
+          onPress: () => {redirect({ pathname: './appscho/list' }) }
         },
         {
             name: "limited-functions",

@@ -28,6 +28,8 @@ import { ARD } from "../ard";
 import { Balance } from "./balance";
 import { Izly } from "../izly";
 import { Identification } from "ezly";
+import { User } from "appscho";
+import { Appscho } from "@/services/appscho";
 
 /** Represents a plugin for a school service.
  *
@@ -46,12 +48,12 @@ export interface SchoolServicePlugin {
     | Session
     | TurboselfClient
     | ArdClient
-    | Identification
+    | Identification | User
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly | Appscho>;
   getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
