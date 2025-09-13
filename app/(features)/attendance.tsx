@@ -71,7 +71,9 @@ export default function AttendanceView() {
       <>
         {period && (
           <>
-            <ScrollView>
+            <ScrollView
+              contentInsetAdjustmentBehavior="automatic"
+            >
               <View
                 style={{
                   flex: 1,

@@ -558,12 +558,26 @@ export default function TabOneScreen() {
                 image: method.image ? method.image : undefined,
                 imageColor: colors.text,
               })),
-
+              image: Platform.select({
+                ios: "arrow.up.arrow.down"
+              }),
+              imageColor: colors.text,
+              displayInline: true
             },
             {
-              title: t('Task_OnlyShowUndone'),
-              id: 'only-undone',
-              state: (showUndoneOnly ? 'on' : 'off'),
+              title: t('Task_Show_Title'),
+              subactions: [
+                {
+                  title: t('Task_OnlyShowUndone'),
+                  id: 'only-undone',
+                  state: (!showUndoneOnly ? 'on' : 'off'),
+                  image: Platform.select({
+                    ios: "flag.pattern.checkered"
+                  }),
+                  imageColor: colors.text,
+                }
+              ],
+              displayInline: true
             }
           ]}
           onPressAction={({ nativeEvent }) => {
@@ -585,7 +599,7 @@ export default function TabOneScreen() {
             <Papicons name={"Filter"} color={"#C54CB3"} size={28} />
           </NativeHeaderPressable>
         </MenuView>
-      </NativeHeaderSide>
+      </NativeHeaderSide >
 
 
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>

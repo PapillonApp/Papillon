@@ -11,6 +11,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker"
@@ -74,101 +75,106 @@ export default function CustomProfileScreen() {
       keyboardVerticalOffset={-insets.top * 3.2}
       style={{ flex: 1 }}
     >
-      <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
-        <Avatar
-          size={117}
-          initials={getInitials(`${firstName} ${lastName}`)}
-          imageUrl={profilePictureUrl || undefined}
-        />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ height: "100%" }}
+      >
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
+          <Avatar
+            size={117}
+            initials={getInitials(`${firstName} ${lastName}`)}
+            imageUrl={profilePictureUrl || undefined}
+          />
 
-        <MenuView
-          actions={[
-            {
-              id: 'photo_library',
-              title: t("Button_Change_ProfilePicture_FromLibrary"),
-              image: Platform.select({
-                ios: 'photo',
-                android: 'ic_menu_gallery',
-              }),
-              imageColor: colors.text
-            },
-            {
-              id: 'from_service',
-              title: t("Button_Change_ProfilePicture_FromService"),
-              image: Platform.select({
-                ios: 'square.and.arrow.down',
-                android: 'ic_menu_save',
-              }),
-              imageColor: colors.text
-            },
-            {
-              id: 'remove_photo',
-              title: t("Button_Change_ProfilePicture_Remove"),
-              attributes: { destructive: true },
-              image: Platform.select({
-                ios: 'trash',
-                android: 'ic_menu_delete',
-              }),
-              imageColor: "#FF0000"
-            }
-          ]}
-          onPressAction={(e: NativeActionEvent) => {
-            switch (e.nativeEvent.event) {
-              case 'photo_library':
-                updateProfilePictureFromLibrary();
-                break;
-              case 'from_service':
-                updateProfilePictureFromService();
-                break;
-              case 'remove_photo':
-                store.setAccountProfilePicture(lastUsedAccount, "");
-                break;
-            }
-          }}
-        >
-          <Button
-            inline
-            variant="outline"
-            size="small"
-            icon={<Papicons name="Camera" />}
-            title={t("Button_Change_ProfilePicture")}
-          />
-        </MenuView>
-      </View>
-
-      <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
-        <View style={{ gap: 10 }}>
-          <Typography color="secondary">Prénom</Typography>
-          <OnboardingInput
-            placeholder={"Prénom"}
-            text={firstName}
-            setText={setFirstName}
-            icon={"Font"}
-            inputProps={{}}
-          />
-          <Typography color="secondary">Nom</Typography>
-          <OnboardingInput
-            placeholder={"Nom"}
-            text={lastName}
-            setText={setLastName}
-            icon={"Bold"}
-            inputProps={{}}
-          />
+          <MenuView
+            actions={[
+              {
+                id: 'photo_library',
+                title: t("Button_Change_ProfilePicture_FromLibrary"),
+                image: Platform.select({
+                  ios: 'photo',
+                  android: 'ic_menu_gallery',
+                }),
+                imageColor: colors.text
+              },
+              {
+                id: 'from_service',
+                title: t("Button_Change_ProfilePicture_FromService"),
+                image: Platform.select({
+                  ios: 'square.and.arrow.down',
+                  android: 'ic_menu_save',
+                }),
+                imageColor: colors.text
+              },
+              {
+                id: 'remove_photo',
+                title: t("Button_Change_ProfilePicture_Remove"),
+                attributes: { destructive: true },
+                image: Platform.select({
+                  ios: 'trash',
+                  android: 'ic_menu_delete',
+                }),
+                imageColor: "#FF0000"
+              }
+            ]}
+            onPressAction={(e: NativeActionEvent) => {
+              switch (e.nativeEvent.event) {
+                case 'photo_library':
+                  updateProfilePictureFromLibrary();
+                  break;
+                case 'from_service':
+                  updateProfilePictureFromService();
+                  break;
+                case 'remove_photo':
+                  store.setAccountProfilePicture(lastUsedAccount, "");
+                  break;
+              }
+            }}
+          >
+            <Button
+              inline
+              variant="outline"
+              size="small"
+              icon={<Papicons name="Camera" />}
+              title={t("Button_Change_ProfilePicture")}
+            />
+          </MenuView>
         </View>
-      </View>
-      <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
-        <NativeHeaderPressable
-          onPress={() => {
-            useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
-            router.back();
-          }}
-        >
-          <Icon papicon opacity={0.5}>
-            <Papicons name="ArrowLeft" />
-          </Icon>
-        </NativeHeaderPressable>
 
-      </NativeHeaderSide>
+        <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
+          <View style={{ gap: 10 }}>
+            <Typography color="secondary">Prénom</Typography>
+            <OnboardingInput
+              placeholder={"Prénom"}
+              text={firstName}
+              setText={setFirstName}
+              icon={"Font"}
+              inputProps={{}}
+            />
+            <Typography color="secondary">Nom</Typography>
+            <OnboardingInput
+              placeholder={"Nom"}
+              text={lastName}
+              setText={setLastName}
+              icon={"Bold"}
+              inputProps={{}}
+            />
+          </View>
+        </View>
+        <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
+          <NativeHeaderPressable
+            onPress={() => {
+              useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
+              router.back();
+            }}
+          >
+            <Icon papicon size={26}>
+              <Papicons name="ArrowLeft" />
+            </Icon>
+          </NativeHeaderPressable>
+
+        </NativeHeaderSide>
+      </ScrollView>
     </ KeyboardAvoidingView >
   );
 }

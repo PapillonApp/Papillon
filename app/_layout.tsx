@@ -289,6 +289,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Grades_Title"),
+                  headerLargeTitle: false,
                   presentation: "modal",
                   headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   contentStyle: {
@@ -302,6 +303,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 options={{
                   headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
                   headerTitle: t("Modal_Course_Title"),
+                  headerLargeTitle: false,
                   headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
                   presentation: "modal",
                   contentStyle: {
