@@ -230,7 +230,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
           handlePressOut();
           props.onPressOut?.(e);
         }}
-        hitSlop={32}
+        hitSlop={(runsIOS26 || Platform.OS === 'android') ? 32 : undefined}
       />
     );
   }
@@ -248,7 +248,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
         handlePressOut();
         props.onPressOut?.(e);
       }}
-      hitSlop={32}
+      hitSlop={(runsIOS26 || Platform.OS === 'android') ? 32 : undefined}
     />
   );
 });
