@@ -68,7 +68,7 @@ export default function TabOneScreen() {
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
-  const timetable = useTimetable(undefined, weekNumber).map(day => ({
+  const timetable = useTimetable(refresh, weekNumber).map(day => ({
     ...day,
     courses: day.courses.filter(course => services.includes(course.createdByAccount))
   })).filter(day => day.courses.length > 0);
@@ -101,6 +101,7 @@ export default function TabOneScreen() {
             weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
           );
 
+          setRefresh(prev => prev + 1);
           setFetchedWeeks((prevFetchedWeeks) => [
             ...prevFetchedWeeks,
             ...weeksToFetch,
