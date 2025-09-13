@@ -248,6 +248,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
         handlePressOut();
         props.onPressOut?.(e);
       }}
+      hitSlop={32}
     />
   );
 });

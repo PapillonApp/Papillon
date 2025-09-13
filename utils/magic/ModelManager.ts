@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 
 import packageJson from "@/package.json";

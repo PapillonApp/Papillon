@@ -1,8 +1,8 @@
 {
   "Global_Back": "Back",
-
+  "Global_DatePrefix": "on",
   "Tab_Home": "Home",
-  "Tab_Calendar": "Classes",
+  "Tab_Calendar": "Timetable",
   "Tab_Tasks": "Tasks",
   "Tab_Grades": "Grades",
   "Tab_Profile": "Profile",
@@ -15,7 +15,6 @@
   "Tab_Page": "Page",
   "Tab_Settings": "Settings",
   "Tab_News": "News",
-
   "ONBOARDING_MAIN_TITLE": "The app to manage your school life",
   "ONBOARDING_MAIN_DESCRIPTION": "Connect your school apps to access your grades, classes, homework and more in the Papillon interface!",
   "ONBOARDING_START_BTN": "Start",
@@ -46,9 +45,8 @@
   "ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION": "Choose a",
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "theme color",
   "ONBOARDING_LOGIN_PINCODE": "Enter your PRONOTE PIN code",
-  "INPUT_PIN": "PIN code",
   "Onboarding_Load_Webview_Description": "We are loading your school’s website",
-
+  "INPUT_PIN": "PIN code",
   "WAITING": "Waiting",
   "IZLY_SMS_SEND": "You just received a login link, click on it and follow the steps.",
   "STEP": "Step",
@@ -56,31 +54,24 @@
   "INPUT_USERNAME": "Username",
   "INPUT_MAIL": "Email address",
   "INPUT_MAIL_OR_USERNAME": "Email address or username",
-  "INPUT_PHONE_OR_MAIL": "Phone number or email adress",
+  "INPUT_PHONE_OR_MAIL": "Phone number or email address",
   "INPUT_PASSWORD": "Password",
   "INPUT_PASSWORD_CODE": "Access code",
   "INPUT_ETABID": "Your school ID",
   "LOGIN_BTN": "Log in",
   "CONFIRM_BTN": "Confirm",
   "CANCEL_BTN": "Cancel",
-
   "Tab_New_Event": "New event",
-
   "Tab_Calendar_Icals": "iCal management",
   "Tab_Calendar_Icals_Description": "Manage your iCal URLs",
-
   "Tab_Calendar_Icals_Add_URL": "Add an iCal URL",
   "Tab_Calendar_Icals_Manage_Title": "Manage {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Add or remove iCal URLs to sync with your calendar.",
-
   "TabUnderConstruction_Title": "This tab is under construction.",
   "TabUnderConstruction_Details": "Please check back later for updates.",
-
   "TabDevModeNotice_Title": "Development Mode",
   "TabDevModeNotice_Details": "Full testing environment for developers.",
-
   "Alert_TechnicalDetails": "Technical details",
-
   "Online_Course": "Online",
   "Evaluated_Course": "Evaluation",
   "Edited_Course": "Edited class",
@@ -88,45 +79,36 @@
   "No_Course_Room": "Unknown room",
   "Event_DeleteEvent": "Delete event",
   "Event_Confirm_DeleteEvent": "Are you sure you want to delete this event?",
-
   "Context_Delete": "Delete",
   "Context_Cancel": "Cancel",
   "Context_Edit": "Edit",
   "Context_Add": "Add",
-
   "Form_Title": "Title",
   "Form_Location": "Location",
   "Form_Organizer": "Organizer",
   "Form_Start": "Start",
   "Form_End": "End",
-
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
-
   "Home_Welcome_Name": "Hello, {{name}}!",
   "Home_Welcome": "Hello!",
   "Home_Planned_None": "You have no classes scheduled today",
   "Home_Planned_One": "You have one class left today",
   "Home_Planned_Number": "You have {{number}} classes scheduled today",
-
   "Home_Widget_NextCourses": "Upcoming classes",
   "Home_Widget_NewGrades": "New grades",
-
+  "Home_Widget_NewHomeworks": "To do",
   "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
-
   "Modal_Course_Title": "My class",
   "Modal_Course_StartsIn": "Starts in",
   "Modal_Course_StartedAgo": "Started ago",
   "Modal_Course_Ongoing": "Ongoing",
-
   "Modal_Course_Group": "Group",
   "Modal_Course_Group_Full": "Class",
-
   "Modal_Course_Details": "Class details",
   "Modal_Course_Teacher": "Teacher",
   "Modal_Course_Room": "Room",
   "Modal_Course_Duration": "Duration",
-
   "Tasks_LeftHomeworks_Title": "tasks left",
   "Tasks_LeftHomeworks_Time": "this week",
   "Tasks_Done_AllTasks": "All tasks",
@@ -141,50 +123,40 @@
   "Tasks_NoTasks_Nav": "No tasks",
   "Task_Start": "To do",
   "Task_Complete": "Completed",
+  "Task_Sorting_Title": "Sort by",
+  "Task_OnlyShowUndone": "Finished",
   "Settings_General": "General",
-
   "Latest_Grades": "New grades",
-
   "Grades_Avg_All_Title": "Overall average",
   "Grades_Avg_All_Short": "Overall avg",
   "Grades_Avg_Subject_Title": "Average of grades",
   "Grades_Avg_Subject_Short": "Grades avg",
   "Grades_Avg_Median_Title": "Median",
   "Grades_Avg_Median_Short": "Median",
-
   "Grades_Method_AllGrades": "All subjects",
   "Grades_Method_Weighted": "Weighting",
-
   "Grades_Sorting_Alphabetical": "Alphabetical",
   "Grades_Sorting_Averages": "Averages",
   "Grades_Sorting_Date": "Date",
-
   "Grades_Menu_SortBy": "Sort by",
   "Grades_Menu_AverageBy": "Average by",
-
+  "NoAverage": "No average",
   "Grades_Empty_Title": "No grades",
   "Grades_Empty_Description": "You haven’t been graded yet for this period.",
-
   "Grade_NoDescription": "{{subject}} assignment",
-
   "Profile_Attendance_Title": "Attendance",
   "Profile_Attendance_Denominator_Single": "absence",
   "Profile_Attendance_Denominator_Plural": "absences",
-
   "Profile_Discussions_Title": "Discussions",
   "Profile_Discussions_Denominator_Single": "unread",
   "Profile_Discussions_Denominator_Plural": "unread",
-
   "Profile_News_Title": "News",
   "Profile_News_Denominator_Single": "new",
   "Profile_News_Denominator_Plural": "news",
   "Profile_News_Open": "Open",
   "Profile_News_Loading_Title": "Loading news...",
-
   "Profile_Cards_Title": "QR-code and cards",
-
   "Modal_Grades_Title": "Grade details",
-
   "Grades_Details_Title": "Details",
   "Grades_HighestGrade_Title": "Highest grade",
   "Grades_HighestGrade_Description": "Highest grade obtained in the group",
@@ -194,13 +166,10 @@
   "Grades_Avg_Group_Title": "Group average",
   "Grades_Coefficient": "Coefficient",
   "Grades_Avg_Group_Short": "Group avg",
-
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "A soft and elegant theme",
-
   "News_Theme_Reading_Title": "Reading",
   "News_Theme_Reading_Description": "A theme designed for reading",
-
   "Attendance_Hours_Missed": "Hours missed",
   "Attendance_Hours_Unjustified": "Unjustified hours",
   "Attendance_Missing": "Absences",
@@ -208,7 +177,6 @@
   "Attendance_NoReason": "No reason",
   "Attendance_NoEvent_Title": "No event",
   "Attendance_NoEvent_Description": "No absences or delays recorded for this period.",
-
   "Settings_Account_Title": "My account",
   "Settings_Account_Description": "My account",
   "Settings_Services_Title": "Linked accounts",
@@ -231,12 +199,15 @@
   "Settings_MagicPlus_ExplanationLocal": "Fully local model, no data is transferred outside your device",
   "Settings_Donate_Title": "Donate",
   "Settings_Donate_Description": "Support the project",
+  "Settings_Telemetry_Title": "Telemetry & privacy",
+  "Settings_Telemetry_Description": "Manage collected data",
   "Settings_About_Title": "About",
-  "Settings_About_Description": "version 8.0.0",
+  "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Log out",
   "Settings_Logout_Description": "Remove this account from Papillon",
   "Settings_Personalization_Title_Card": "Personalization",
   "Settings_Personalization_Subtitle_Card": "Themes, subject...",
+  "Settings_SubjectPersonalization_Title": "Customize subjects",
   "Settings_Personalization_Accent": "Accent color",
   "Settings_Personalization_Accent_Description": "The color you choose here will apply to Papillon’s home page.",
   "Settings_Personalization_Theme": "Theme",
@@ -251,7 +222,6 @@
   "Settings_About_Github": "Github Project",
   "Settings_About_Github_Description": "Contribute to the project on GitHub",
   "Settings_About_Dependency_Version": "Dependency Version",
-
   "Alert_No_Technical": "No technical information available.",
   "Alert_Auth_Error": "Authentication error",
   "Alert_Auth_Bad_Creds": "The credentials you entered are incorrect or you are trying to log in with a parent account. This type of account is not yet supported by Papillon.",
@@ -261,52 +231,47 @@
   "Alert_Invalid_Instance": "Papillon cannot retrieve information from this PRONOTE instance. Is it still valid?",
   "Alert_No_Pos": "Unable to retrieve location",
   "Alert_Connexion_Fail": "Connection failed",
-
   "Feature_Limited": "Limited features",
   "Feature_Soon": "Coming soon!",
-  "Feature_Soon_Notification": "We work hard to offer you this functionality in a future update.",
+  "Feature_Soon_Notification": "We are working hard to offer you this functionality in a future update.",
   "Feature_Add_Card": "Add a new card from the Profile tab accessible in the navigation bar",
-
   "Webview_Wait": "Please wait...",
-
   "Profile_QRCards": "QR-code and cards",
-
   "Settings_Cards_Banner_Title": "Cards",
   "Settings_Cantineen_Subtitle_Card": "Canteen, access",
   "Settings_Cards_Banner_Description": "Add your cafeteria and transport cards to access them anywhere from your phone with Papillon",
   "Settings_Cards_None_Title": "No cards",
   "Settings_Cards_Add_Button": "Add",
-
   "Settings_Cards_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
   "Settings_Subjects_None_Title": "No subjects",
   "Settings_Subjects_None_Description": "Add one to access your cafeteria balance, scan your QR code and more",
-
   "Settings_Donator": "Donors",
   "Settings_Donator_Description": "View the list of donors",
   "Settings_App_Version": "App version",
-
   "Profile_Cards_Scan_Orientation": "Point the QR-code towards the terminal scanner",
   "Profile_Cards_No_Reservation": "No reservation",
   "Profile_Cards_No_Available_Reservation": "It looks like you can’t make a reservation today.",
   "Profile_Cards_History": "History",
   "Magic_Important": "May be important",
-
   "OnBoarding_Step": "Step ",
   "OnBoarding_Step_Of": "of ",
-
   "Consent_Advanced_Title": "I want to help Papillon",
   "Consent_Advanced_Description": "We collect more detailed information about your usage.",
-  "Consent_Optional_Title": "Important information",
-  "Consent_Optional_Description": "Basically, knowing someone used Papillon, if it went well, and which service they use.",
   "Consent_Required_Title": "Just the essentials",
-  "Consent_Required_Description": "We only know that someone used Papillon for a certain time.",
+  "Consent_Required_Description": "We just know that someone used Papillon, and how it went.",
   "Consent_None_Title": "Nothing at all",
   "Consent_None_Description": "We won't even know you exist.",
-  "Consent_Title": "Telemetry & privacy",
-  "Consent_Intro1": "We’d like to know how many of you there are and how your experience is going to improve the app.",
-  "Consent_Intro2": "All of this is always anonymous and you are completely free to say no.",
+  "Consent_Title": "Papillon & you",
+  "Consent_Intro1": "To help Papillon grow, you can choose to share usage data.",
   "Consent_PrivacyPolicy": "If in doubt, check our privacy policy",
   "Consent_Refuse": "Refuse",
   "Consent_Accept": "Accept",
-  "Consent_ChangeMind": "You can change your mind at any time from the app settings."
+  "Consent_ChangeMind": "You can change your mind at any time from the app settings.",
+  "Consent_Arg1": "Only used to improve the app",
+  "Consent_Arg2": "Private and not linked to your ID",
+  "Consent_Arg3": "We have no access to your accounts",
+  "Changelog_Title": "Release notes",
+  "Tasks_Sorting_Methods_DueDate": "Due date",
+  "Tasks_Sorting_Methods_Subject": "Subjects",
+  "Tasks_Sorting_Methods_Done": "Undone"
 }

@@ -187,6 +187,10 @@ function NewsSection() {
 
   const news = useNews();
 
+  const limitNews = useMemo(() => {
+    return news.slice(0, 3);
+  }, [news]);
+
   const fetchNews = useCallback(() => {
     try {
       const manager = getManager();
@@ -272,7 +276,7 @@ function NewsSection() {
               inline
               color={adjust("#7DBB00", -0.3)}
             >
-              {news.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
+              {limitNews.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
             </Typography>
             <Icon papicon
               size={20}
@@ -286,7 +290,7 @@ function NewsSection() {
       <List marginBottom={0}
         radius={24}
       >
-        {news.map((item, index) => (
+        {limitNews.map((item, index) => (
           <Item
             key={index}
             onPress={() => {
