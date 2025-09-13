@@ -2,7 +2,7 @@
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native"
 import { useRouter } from "expo-router";
-import { Image, ScrollView, View } from "react-native"
+import { Alert, Image, ScrollView, View } from "react-native"
 
 import { useAccountStore } from "@/stores/account"
 import { Services } from "@/stores/account/types"
@@ -54,7 +54,24 @@ export default function CardView() {
             <ScrollView scrollEnabled={false}>
               <List>
                 {selfCompatible?.map(service => (
-                  <Item key={service.id}>
+                  <Item
+                    key={service.id}
+                    onPress={() => {
+                      Alert.alert(getServiceName(service.serviceId), "Que souhaitez-vous faire ?", [
+                        {
+                          text: "Supprimer",
+                          style: "destructive",
+                          onPress: () => {
+                            useAccountStore.getState().removeAccount(service);
+                          }
+                        },
+                        {
+                          text: "Annuler",
+                          style: "cancel"
+                        }
+                      ])
+                    }}
+                  >
                     <Leading>
                       <Image source={getServiceBackground(service.serviceId)} style={{
                         width: 60,

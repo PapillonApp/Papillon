@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { loadTensorflowModel } from "react-native-fast-tflite";
 
 import { log } from "@/utils/logger/logger";
