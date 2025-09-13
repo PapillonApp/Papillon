@@ -10,6 +10,7 @@ import Reanimated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
+import { GlassView } from 'expo-glass-effect';
 
 export interface CalendarProps {
   date?: Date;
@@ -88,13 +89,13 @@ const Calendar: React.FC<CalendarProps> = ({
             borderWidth: 0.5,
             borderRadius: 16,
             top: 4,
-            backgroundColor: colors.background + "CF",
+            backgroundColor: runsIOS26 ? "transparent" : colors.background + "CF",
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
-          <BlurView
-            tint={"prominent"}
+          <GlassView
+            glassEffectStyle='regular'
             style={{
               position: "absolute",
               top: 0,
