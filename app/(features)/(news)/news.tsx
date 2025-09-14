@@ -20,7 +20,7 @@ export default function NewsPage() {
 
   return (
     <FlatList
-      data={news}
+      data={news.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <NewsItem news={item} />}
       contentInsetAdjustmentBehavior="automatic"
