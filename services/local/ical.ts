@@ -87,7 +87,7 @@ export function convertICalEventToSharedCourse(event: ICalEvent, icalId: string,
     group: 'Inconnu',
     backgroundColor: '#4CAF50',
     status: undefined,
-    customStatus: `📅 ${icalTitle}`,
+    customStatus: `${icalTitle}`,
     url: '',
     createdByAccount: `ical_${icalId}`
   };
