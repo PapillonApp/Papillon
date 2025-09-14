@@ -226,7 +226,15 @@ const Button: React.FC<ButtonProps> = React.memo(({
           gap: 5,
           opacity: disabled ? 0.5 : 1,
         }}
-        tintColor={(variant === 'outline' || variant === 'service') ? "transparent" : style.backgroundColor ?? backgroundColor}
+        tintColor={
+          (variant === 'outline' || variant === 'service')
+            ? "transparent"
+            : (
+              (style && typeof style === 'object' && !Array.isArray(style) && 'backgroundColor' in style)
+                ? (style as { backgroundColor?: string }).backgroundColor
+                : backgroundColor
+            )
+        }
         {...rest}
         glassEffectStyle="clear"
         isInteractive={true}
