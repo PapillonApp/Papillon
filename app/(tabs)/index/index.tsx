@@ -98,6 +98,7 @@ const IndexScreen = () => {
       }
 
     } catch (error) {
+      if (String(error).includes("Unable to find")) return;
       alert.showAlert({
         title: "Connexion impossible",
         description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",

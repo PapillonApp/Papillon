@@ -14,8 +14,8 @@ import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/se
 import { Papicons, Plus } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Image, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -40,10 +40,11 @@ export default function QRCodeAndCardsPage() {
     setLoadingWallets(false);
   }
 
-  useEffect(() => {
-    fetchWallets();
-  }, [accounts, account])
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchWallets();
+    }, [])
+  );
   const cardOffset = 60;
   const cardHeight = 170;
 
