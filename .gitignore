@@ -36,8 +36,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-ios/
+ios/**
 !ios/Papillon
+!ios/AppIcons
+!ios/AppIcons/*
 !ios/Papillon.xcodeproj/xcshareddata/xcschemes
 ios/Podfile
 android/**
