@@ -10,6 +10,8 @@ import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { useTheme } from "@react-navigation/native";
+import { Papicons } from "@getpapillon/papicons";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");
@@ -79,14 +81,9 @@ export default function TabOneScreen() {
           />
           {icalUrl.length > 0 && (
             <Trailing>
-              <Button
-                inline
-                size="small"
-                title={t("Context_Add")}
-                variant="primary"
-                onPress={handleAdd}
-                disabled={!isValidUrl(icalUrl)}
-              />
+            <AnimatedPressable>
+                <Papicons name={'Add'} onPress={handleAdd} size={24} color={'#D6502B'} disabled={!isValidUrl(icalUrl)} />
+            </AnimatedPressable>
             </Trailing>
           )}
         </Item>

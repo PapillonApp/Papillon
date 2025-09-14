@@ -66,7 +66,9 @@ const IndexScreen = () => {
   const weeklyTimetable = useMemo(() =>
     timetableData.map(day => ({
       ...day,
-      courses: day.courses.filter(course => services.includes(course.createdByAccount))
+      courses: day.courses.filter(course => 
+        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+      )
     })).filter(day => day.courses.length > 0),
     [timetableData, services]
   );

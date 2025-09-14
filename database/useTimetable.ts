@@ -9,6 +9,7 @@ import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { useEffect, useState } from "react";
+import { getICalEventsForWeek } from "@/services/local/ical";
 
 export function useTimetable(refresh = 0, weekNumber = 0) {
   const database = useDatabase();
@@ -146,6 +147,18 @@ export async function getCoursesFromCache(weekNumber: number): Promise<SharedCou
       const dayKey = new Date(course.from).toISOString().split("T")[0];
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(mapCourseToShared(course));
+    }
+
+    // retrieve iCal events for the week
+    try {
+      const icalEvents = await getICalEventsForWeek(start, end);
+      for (const event of icalEvents) {
+        const dayKey = new Date(event.from).toISOString().split("T")[0];
+        dayMap[dayKey] = dayMap[dayKey] || [];
+        dayMap[dayKey].push(event);
+      }
+    } catch (icalError) {
+      console.warn('Error loading iCal events:', icalError);
     }
 
     for (const day in dayMap) {
