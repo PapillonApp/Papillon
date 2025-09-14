@@ -22,6 +22,128 @@
     <string>8.0.2</string>
     <key>CFBundleSignature</key>
     <string>????</string>
+    <key>CFBundleIcons</key>
+    <dict>
+      <key>CFBundlePrimaryIcon</key>
+      <dict>
+        <key>CFBundleIconFiles</key>
+        <array>
+          <string>Green</string>
+        </array>
+        <key>UIPrerenderedIcon</key>
+        <false/>
+      </dict>
+
+      <key>CFBundleAlternateIcons</key>
+      <dict>
+
+        <!-- ===== GREEN ===== -->
+        <key>AppIcon-CircleGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CircleGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokeGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokeGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dGreen</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dGreen</string></array><key>UIPrerenderedIcon</key><false/></dict>
+
+        <!-- ===== PINK ===== -->
+        <key>AppIcon-CirclePink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CirclePink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysPink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysPink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientPink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientPink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokePink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokePink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedPink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedPink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatPink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatPink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-Pink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>Pink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dPink</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dPink</string></array><key>UIPrerenderedIcon</key><false/></dict>
+
+        <!-- ===== BLUE ===== -->
+        <key>AppIcon-CircleBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CircleBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokeBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokeBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-Blue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>Blue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dBlue</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dBlue</string></array><key>UIPrerenderedIcon</key><false/></dict>
+
+        <!-- ===== YELLOW ===== -->
+        <key>AppIcon-CircleYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CircleYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokeYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokeYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-Yellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>Yellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dYellow</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dYellow</string></array><key>UIPrerenderedIcon</key><false/></dict>
+
+        <!-- ===== PURPLE ===== -->
+        <key>AppIcon-CirclePurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CirclePurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysPurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysPurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientPurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientPurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokePurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokePurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedPurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedPurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatPurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatPurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-Purple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>Purple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dPurple</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dPurple</string></array><key>UIPrerenderedIcon</key><false/></dict>
+
+        <!-- ===== BLACK ===== -->
+        <key>AppIcon-CircleBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CircleBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-RaysBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>RaysBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-GradientBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>GradientBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-StrokeBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>StrokeBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-CuttedBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>CuttedBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-FlatBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>FlatBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-Black</key>
+        <dict><key>CFBundleIconFiles</key><array><string>Black</string></array><key>UIPrerenderedIcon</key><false/></dict>
+        <key>AppIcon-3dBlack</key>
+        <dict><key>CFBundleIconFiles</key><array><string>3dBlack</string></array><key>UIPrerenderedIcon</key><false/></dict>
+      </dict>
+    </dict>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
