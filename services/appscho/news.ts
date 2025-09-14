@@ -37,5 +37,5 @@ export async function fetchAppschoNews(_session: User, accountId: string, instan
       category: item.type,
       createdByAccount: accountId,
     };
-  });
+  }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 }

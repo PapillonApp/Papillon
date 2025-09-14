@@ -31,14 +31,13 @@ export class Appscho implements SchoolServicePlugin {
     }
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
-
+  async getWeeklyTimetable(weekNumber: number, forceRefresh?: boolean): Promise<CourseDay[]> {
     if (this.session) {
       const instanceId = String(this.authData.additionals?.["instanceId"]);
-      return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId);
+      return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId, forceRefresh);
     }
 
-    error("Session is not valid", "Pronote.getWeeklyTimetable");
+    error("Session is not valid", "Appscho.getWeeklyTimetable");
   }
 
   async getNews(): Promise<News[]> {
@@ -48,7 +47,7 @@ export class Appscho implements SchoolServicePlugin {
       return fetchAppschoNews(this.session, this.accountId, instanceId);
     }
 
-    error("Session is not valid", "Pronote.getNews");
+    error("Session is not valid", "Appscho.getNews");
   }
 
 }
