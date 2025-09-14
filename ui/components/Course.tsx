@@ -11,6 +11,8 @@ import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import AnimatedPressable from "./AnimatedPressable";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import { GlassView } from "expo-glass-effect";
 
 type Variant = "primary" | "separator";
 
@@ -43,25 +45,25 @@ interface CourseProps {
 
 const Course = React.memo(
   ({
-     id,
-     name,
-     teacher,
-     room,
-     color,
-     status,
-     variant = "primary",
-     start,
-     end,
-     compact,
-     readonly = false,
-     leading: Leading,
-     showTimes = true,
-     timesRendered = true,
-     magicInfo,
-     onPress,
-     containerStyle,
-     skeleton = false,
-   }: CourseProps) => {
+    id,
+    name,
+    teacher,
+    room,
+    color,
+    status,
+    variant = "primary",
+    start,
+    end,
+    compact,
+    readonly = false,
+    leading: Leading,
+    showTimes = true,
+    timesRendered = true,
+    magicInfo,
+    onPress,
+    containerStyle,
+    skeleton = false,
+  }: CourseProps) => {
     const duration = end - start;
     const { t } = useTranslation();
     const theme = useTheme();
@@ -79,15 +81,15 @@ const Course = React.memo(
       >
         {timesRendered &&
           <Stack style={{ width: 60, alignSelf: "center", paddingRight: 2, opacity: showTimes ? 1 : 0 }}
-                 hAlign="center"
-                 vAlign="center"
-                 gap={3}
+            hAlign="center"
+            vAlign="center"
+            gap={3}
           >
             <Typography nowrap
-                        variant="h5"
-                        align="center"
-                        style={{ lineHeight: 20, width: 60 }}
-                        skeleton={skeleton}
+              variant="h5"
+              align="center"
+              style={{ lineHeight: 20, width: 60 }}
+              skeleton={skeleton}
             >
               {fStart.toLocaleTimeString("fr-FR", {
                 hour: "2-digit",
@@ -95,11 +97,11 @@ const Course = React.memo(
               })}
             </Typography>
             <Typography nowrap
-                        variant="body2"
-                        color="secondary"
-                        align="center"
-                        style={{ width: 60 }}
-                        skeleton={skeleton}
+              variant="body2"
+              color="secondary"
+              align="center"
+              style={{ width: 60 }}
+              skeleton={skeleton}
             >
               {fEnd.toLocaleTimeString("fr-FR", {
                 hour: "2-digit",
@@ -109,65 +111,75 @@ const Course = React.memo(
           </Stack>
         }
         {variant === "separator" ? (
-          <Stack
-            card
-            direction="horizontal"
-            padding={[14, 8]}
-            radius={300}
-            vAlign="start"
-            gap={8}
-            hAlign="center"
+          <GlassView
             style={{
               flex: 1,
-              marginVertical: 0,
-              backgroundColor: skeleton ? colors.text + "05" : "00",
+              borderRadius: 300,
             }}
+            isInteractive={true}
+            glassEffectStyle="clear"
           >
-            <Icon papicon
-                  size={24}
-                  opacity={skeleton ? 0.1 : 0.6}
+            <Stack
+              card={!runsIOS26}
+              direction="horizontal"
+              padding={[14, 8]}
+              radius={300}
+              vAlign="start"
+              gap={8}
+              hAlign="center"
+              style={{
+                flex: 1,
+                marginVertical: 0,
+                backgroundColor: skeleton ? colors.text + "05" : "00",
+              }}
             >
-              {
-                hStart < 11 ? <Papicons name={"Sunrise"} /> :
-                  hStart < 14 ? <Papicons name={"Cutlery"} /> :
-                    <Papicons name={"Sun"} />
-              }
-            </Icon>
-            <Typography variant="h6"
-                        style={{ flex: 1, opacity: 0.6 }}
-                        nowrap
-                        color="text"
-                        skeleton={skeleton}
-            >
-              {
-                hStart < 11 ? "Pause matinale" :
-                  hStart < 14 ? "Pause méridienne" :
-                    hStart < 18 ? "Pause d'après-midi" : "Pause du soir"
-              }
-            </Typography>
-            <Typography variant="body1"
-                        color="secondary"
-                        skeleton={skeleton}
-            >
-              {formatDuration(duration)}
-            </Typography>
-          </Stack>
+              <Icon papicon
+                size={24}
+                opacity={skeleton ? 0.1 : 0.6}
+              >
+                {
+                  hStart < 11 ? <Papicons name={"Sunrise"} /> :
+                    hStart < 14 ? <Papicons name={"Cutlery"} /> :
+                      <Papicons name={"Sun"} />
+                }
+              </Icon>
+              <Typography variant="h6"
+                style={{ flex: 1, opacity: 0.6 }}
+                nowrap
+                color="text"
+                skeleton={skeleton}
+              >
+                {
+                  hStart < 11 ? "Pause matinale" :
+                    hStart < 14 ? "Pause méridienne" :
+                      hStart < 18 ? "Pause d'après-midi" : "Pause du soir"
+                }
+              </Typography>
+              <Typography variant="body1"
+                color="secondary"
+                skeleton={skeleton}
+              >
+                {formatDuration(duration)}
+              </Typography>
+            </Stack>
+          </GlassView>
         ) : (
           <View
-            style={{
-              flex: 1,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.15,
-              shadowRadius: 2,
-              elevation: 2,
-            }}
+            style={[
+              {
+                flex: 1,
+                overflow: "visible",
+              }
+            ]}
           >
             <AnimatedPressable
               onPress={onPress}
               style={{
                 flex: 1,
+                overflow: "visible",
               }}
+              scaleTo={runsIOS26 ? 1 : 0.97}
+              opacityTo={runsIOS26 ? 1 : 0.8}
             >
               <View style={[
                 status?.canceled && {
@@ -190,6 +202,9 @@ const Course = React.memo(
                 skeleton && {
                   backgroundColor: "#00000005",
                 },
+                runsIOS26 && {
+                  overflow: "visible",
+                },
               ]}
               >
                 {(status?.canceled) && (
@@ -200,8 +215,8 @@ const Course = React.memo(
                     gap={6}
                   >
                     <Icon papicon
-                          size={20}
-                          fill={skeleton ? colors.text + "10" : adjust("#DC1400", theme.dark ? 0.4 : -0.2)}
+                      size={20}
+                      fill={skeleton ? colors.text + "10" : adjust("#DC1400", theme.dark ? 0.4 : -0.2)}
                     >
                       <Papicons name={"Ghost"} />
                     </Icon>
@@ -219,9 +234,9 @@ const Course = React.memo(
                 )}
                 {(magicInfo?.label) && (
                   <Stack direction="horizontal"
-                         hAlign="center"
-                         style={{ paddingHorizontal: 15 }}
-                         gap={6}
+                    hAlign="center"
+                    style={{ paddingHorizontal: 15 }}
+                    gap={6}
                   >
                     {magicInfo.icon && <magicInfo.icon color={skeleton ? colors.text + "10" : color} />}
                     <Typography
@@ -236,158 +251,169 @@ const Course = React.memo(
                     </Typography>
                   </Stack>
                 )}
-                <Stack
-                  gap={2}
-                  direction="vertical"
-                  radius={compact ? 18 : 25}
+                <GlassView
+                  tintColor={status?.canceled ? undefined : color}
+                  glassEffectStyle="regular"
+                  isInteractive={true}
                   style={[
-                    styles.container,
-                    compact && styles.compactContainer,
-                    { backgroundColor: color },
-                    status?.canceled ? {
-                      backgroundColor: colors.card,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                    } : {},
-                    ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
-                    {
-                      shadowColor: "#000",
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: 0.15,
-                      shadowRadius: skeleton ? 0 : 3.3,
-                      elevation: 2,
-                    },
-                    skeleton && {
-                      backgroundColor: colors.text + "05",
-                    },
+                    runsIOS26 ? {
+                      borderRadius: compact ? 18 : 25,
+                      borderCurve: "continuous",
+                    } : null
                   ]}
                 >
-                  <Stack direction="horizontal"
-                         hAlign="center"
-                         vAlign="center"
-                         gap={10}
-                         style={{ justifyContent: "space-between", opacity: skeleton ? 0.5 : 1 }}
+                  <Stack
+                    gap={2}
+                    direction="vertical"
+                    radius={compact ? 18 : 25}
+                    style={[
+                      styles.container,
+                      compact && styles.compactContainer,
+                      { backgroundColor: color },
+                      status?.canceled ? {
+                        backgroundColor: colors.card,
+                        borderBottomLeftRadius: 0,
+                        borderBottomRightRadius: 0,
+                      } : {},
+                      ...(containerStyle ? [StyleSheet.flatten(containerStyle)] : []),
+                      {
+                        elevation: 2,
+                      },
+                      skeleton && {
+                        backgroundColor: colors.text + "05",
+                      },
+                      runsIOS26 && {
+                        backgroundColor: "transparent",
+                      },
+                    ]}
                   >
-                    <Typography
-                      color="light"
-                      variant="h5"
-                      numberOfLines={2}
-                      style={[
-                        styles.label,
-                        (status?.canceled) ? styles.canceled : {},
-                      ]}
-                      skeleton={skeleton}
-                    >
-                      {name}
-                    </Typography>
-                  </Stack>
-                  {variant !== "separator" && (
-                    <Stack
-                      direction="horizontal"
+                    <Stack direction="horizontal"
                       hAlign="center"
+                      vAlign="center"
                       gap={10}
-                      style={{
-                        marginTop: -2,
-                        overflow: "hidden",
+                      style={{ justifyContent: "space-between", opacity: skeleton ? 0.5 : 1 }}
+                    >
+                      <Typography
+                        color="light"
+                        variant="h5"
+                        numberOfLines={2}
+                        style={[
+                          styles.label,
+                          (status?.canceled) ? { color: colors.text + "90" } : {},
+                        ]}
+                        skeleton={skeleton}
+                      >
+                        {name}
+                      </Typography>
+                    </Stack>
+                    {variant !== "separator" && (
+                      <Stack
+                        direction="horizontal"
+                        hAlign="center"
+                        gap={10}
+                        style={{
+                          marginTop: -2,
+                          overflow: "hidden",
+                          opacity: skeleton ? 0.5 : 1,
+                          flex: 1,
+                        }}
+                      >
+                        <View style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 5,
+                          alignSelf: "flex-start",
+                          maxWidth: "50%",
+                        }}
+                        >
+                          <Icon
+                            papicon
+                            size={20}
+                            fill={skeleton ? colors.text + "20" : (status?.canceled ? colors.text + "90" : "white")}
+                          >
+                            <Papicons name={"MapPin"} />
+                          </Icon>
+                          <Typography
+                            nowrap
+                            color="light"
+                            variant="body1"
+                            style={[styles.room, { flexShrink: 1 }, ...(status?.canceled ? [{ color: colors.text + "90" }] : [])]}
+                            skeleton={skeleton}
+                          >
+                            {room || t("No_Course_Room")}
+                          </Typography>
+                        </View>
+                        <View
+                          style={[
+                            styles.separator,
+                            { backgroundColor: skeleton ? colors.text + "20" : (status?.canceled ? colors.text + "90" : "white") },
+                          ]}
+                        />
+                        <View style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 5,
+                          alignSelf: "flex-start",
+                          flexShrink: 1,
+                        }}
+                        >
+                          <Icon papicon
+                            size={20}
+                            fill={skeleton ? colors.text + "20" : (status?.canceled ? colors.text + "90" : "white")}
+                          >
+                            <Papicons name={"User"} />
+                          </Icon>
+                          <Typography nowrap
+                            color="light"
+                            variant="body1"
+                            style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [{ color: colors.text + "90" }] : [])]}
+                            skeleton={skeleton}
+                          >
+                            {teacher}
+                          </Typography>
+                        </View>
+                      </Stack>
+                    )}
+                    {status && !status.canceled && variant !== "separator" && (
+                      <View style={{
+                        alignSelf: "flex-start",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 7,
+                        marginTop: status.label && status.label !== "" ? 6 : 0,
                         opacity: skeleton ? 0.5 : 1,
                         flex: 1,
                       }}
-                    >
-                      <View style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 5,
-                        alignSelf: "flex-start",
-                        maxWidth: "50%",
-                      }}
                       >
-                        <Icon
-                          papicon
-                          size={20}
-                          fill={skeleton ? colors.text + "20" : (status?.canceled ? "#555555" : "white")}
-                        >
-                          <Papicons name={"MapPin"} />
-                        </Icon>
-                        <Typography
-                          nowrap
-                          color="light"
-                          variant="body1"
-                          style={[styles.room, {flexShrink: 1}, ...(status?.canceled ? [styles.canceled] : [])]}
+                        {!!(status.label && status.label !== "") &&
+                          <Stack radius={300}
+                            backgroundColor={skeleton ? colors.text + "09" : "#FFFFFF"}
+                            style={styles.statusLabelContainer}
+                          >
+                            <Typography color="light"
+                              variant="h4"
+                              style={[
+                                styles.statusLabel,
+                                { color: color },
+                              ]}
+                              skeleton={skeleton}
+                              numberOfLines={1}
+                            >
+                              {status.label}
+                            </Typography>
+                          </Stack>
+                        }
+                        <Typography color="light"
+                          variant="h4"
+                          style={[styles.statusDuration]}
                           skeleton={skeleton}
                         >
-                          {room || t("No_Course_Room")}
+                          {formatDuration(duration)}
                         </Typography>
                       </View>
-                      <View
-                        style={[
-                          styles.separator,
-                          { backgroundColor: skeleton ? colors.text + "20" : (status?.canceled ? "#606060" : "white") },
-                        ]}
-                      />
-                      <View style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 5,
-                        alignSelf: "flex-start",
-                        flexShrink: 1,
-                      }}
-                      >
-                        <Icon papicon
-                              size={20}
-                              fill={skeleton ? colors.text + "20" : (status?.canceled ? "#555555" : "white")}
-                        >
-                          <Papicons name={"User"} />
-                        </Icon>
-                        <Typography nowrap
-                                    color="light"
-                                    variant="body1"
-                                    style={[styles.teacher, { flex: 1 }, ...(status?.canceled ? [styles.canceled] : [])]}
-                                    skeleton={skeleton}
-                        >
-                          {teacher}
-                        </Typography>
-                      </View>
-                    </Stack>
-                  )}
-                  {status && !status.canceled && variant !== "separator" && (
-                    <View style={{
-                      alignSelf: "flex-start",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 7,
-                      marginTop: status.label && status.label !== "" ? 6 : 0,
-                      opacity: skeleton ? 0.5 : 1,
-                      flex: 1,
-                    }}
-                    >
-                      {!!(status.label && status.label !== "") &&
-                        <Stack radius={300}
-                               backgroundColor={skeleton ? colors.text + "09" : "#FFFFFF"}
-                               style={styles.statusLabelContainer}
-                        >
-                          <Typography color="light"
-                                      variant="h4"
-                                      style={[
-                                        styles.statusLabel,
-                                        { color: color },
-                                      ]}
-                                      skeleton={skeleton}
-                                      numberOfLines={1}
-                          >
-                            {status.label}
-                          </Typography>
-                        </Stack>
-                      }
-                      <Typography color="light"
-                                  variant="h4"
-                                  style={[styles.statusDuration]}
-                                  skeleton={skeleton}
-                      >
-                        {formatDuration(duration)}
-                      </Typography>
-                    </View>
-                  )}
-                </Stack>
+                    )}
+                  </Stack>
+                </GlassView>
               </View>
             </AnimatedPressable>
           </View>

@@ -7,6 +7,8 @@ import { Animation } from "../utils/Animation";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Typography from "./Typography";
 import * as ExpoHaptics from "expo-haptics";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+import { GlassView } from "expo-glass-effect";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -181,6 +183,73 @@ const Button: React.FC<ButtonProps> = React.memo(({
     return null;
   }, [icon, textColor]);
 
+  const ButtonContent = (
+    (rest.children && !title) ? rest.children : (
+      <>
+        {loading && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            <ActivityIndicator color={textColor} />
+          </Reanimated.View>
+        )}
+        {buttonIcon && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            {buttonIcon}
+          </Reanimated.View>
+        )}
+        <Reanimated.View layout={Animation(LinearTransition)}>
+          <Typography variant="button" color={textColor}>
+            {title || "Button"}
+          </Typography>
+        </Reanimated.View>
+        {rest.children && typeof rest.children !== "function" && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            {rest.children}
+          </Reanimated.View>
+        )}
+      </>
+    )
+  )
+
+  if (runsIOS26) {
+    return (
+      <GlassView
+        style={{
+          width: inline ? undefined : '100%',
+          height: 50,
+          borderRadius: 160,
+          borderCurve: 'continuous',
+          overflow: 'visible',
+          paddingHorizontal: 18,
+          justifyContent: justifyContent,
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: 5,
+          opacity: disabled ? 0.5 : 1,
+        }}
+        tintColor={(variant === 'outline' || variant === 'service') ? "transparent" : style.backgroundColor ?? backgroundColor}
+        {...rest}
+        glassEffectStyle="clear"
+        isInteractive={true}
+      >
+        <Pressable
+          onPress={onPress}
+          style={{
+            width: '100%',
+            height: '100%',
+            justifyContent: justifyContent,
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: 5,
+          }}
+          disabled={disabled}
+          {...rest}
+        >
+          {ButtonContent}
+        </Pressable>
+      </GlassView>
+    )
+  }
+
   return (
     <AnimatedPressable
       {...rest}
@@ -192,30 +261,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      {(rest.children && !title) ? rest.children : (
-        <>
-          {loading && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              <ActivityIndicator color={textColor} />
-            </Reanimated.View>
-          )}
-          {buttonIcon && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              {buttonIcon}
-            </Reanimated.View>
-          )}
-          <Reanimated.View layout={Animation(LinearTransition)}>
-            <Typography variant="button" color={textColor}>
-              {title || "Button"}
-            </Typography>
-          </Reanimated.View>
-          {rest.children && typeof rest.children !== "function" && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              {rest.children}
-            </Reanimated.View>
-          )}
-        </>
-      )}
+      {ButtonContent}
     </AnimatedPressable>
   );
 });
