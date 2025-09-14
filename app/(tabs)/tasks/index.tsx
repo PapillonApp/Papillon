@@ -649,7 +649,7 @@ export default function TabOneScreen() {
                       margin: 10,
                       borderRadius: 12,
                       borderCurve: "continuous",
-                      backgroundColor: colors.background,
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
                       borderColor: colors.text + "22",
                       borderWidth: 1,
                       alignItems: "center",
