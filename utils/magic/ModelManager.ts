@@ -4,6 +4,7 @@ import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 import packageJson from "@/package.json";
 import { useSettingsStore } from "@/stores/settings";
 
+import { MAGIC_URL } from "../endpoints";
 import { log } from "../logger/logger";
 import { checkAndUpdateModel, getCurrentPtr } from "./updater"; 
 
@@ -50,8 +51,8 @@ function normalizeText(text: string, config: any): string {
 
 let globalInitializationPromise: Promise<void> | null = null;
 
-export function getMagicURL(): string {
-  return useSettingsStore.getState().personalization.magicModelURL || "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json";
+function getMagicURL(): string {
+  return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
 }
 
 class ModelManager {

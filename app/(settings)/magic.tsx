@@ -17,9 +17,10 @@ import ModelManager from "@/utils/magic/ModelManager";
 import { getCurrentPtr, checkAndUpdateModel } from "@/utils/magic/updater";
 import packageJson from "@/package.json";
 import { Colors } from "@/utils/colors";
+import { MAGIC_URL } from "@/utils/endpoints";
 
 function getMagicURL(): string {
-  return useSettingsStore.getState().personalization.magicModelURL || "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json";
+  return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
 }
 
 export default function SettingsMagic() {

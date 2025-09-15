@@ -1,3 +1,4 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -7,16 +8,17 @@ import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
 import { useAccountStore } from '@/stores/account';
 import { useLogStore } from '@/stores/logs';
+import { useMagicStore } from "@/stores/magic";
+import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
-import Typography from "@/ui/components/Typography";
-import { useSettingsStore } from "@/stores/settings";
-import ModelManager from "@/utils/magic/ModelManager";
-import { useAlert } from "@/ui/components/AlertProvider";
 import Stack from "@/ui/components/Stack";
-import Icon from "@/ui/components/Icon";
-import { Papicons } from "@getpapillon/papicons";
-import { useMagicStore } from "@/stores/magic";
+import Typography from "@/ui/components/Typography";
+import { MAGIC_URL } from "@/utils/endpoints";
+import { log } from "@/utils/logger/logger";
+import ModelManager from "@/utils/magic/ModelManager";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -185,6 +187,63 @@ export default function Devmode() {
         >
           <Typography variant="title">Tester une prédiction</Typography>
         </Item>
+        <Item
+          onPress={() => {
+            const currentURL = settingStore.magicModelURL || MAGIC_URL;
+
+            Alert.prompt(
+              "URL Custom Magic Model",
+              `URL actuelle: ${currentURL}\n\nEntrez une nouvelle URL:`,
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel"
+                },
+                {
+                  text: "Valider",
+                  onPress: (newURL?: string) => {
+                    if (newURL && newURL.trim()) {
+                      mutateProperty("personalization", {
+                        magicModelURL: newURL.trim()
+                      });
+                      Alert.alert("Succès", "URL du modèle Magic mise à jour!");
+                    }
+                  }
+                }
+              ],
+              "plain-text",
+              currentURL
+            );
+          }}
+        >
+          <Typography variant="title">Changer l&apos;URL Custom Magic</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            Alert.alert(
+              "Reset URL Magic Model",
+              "Voulez-vous remettre l'URL du modèle Magic par défaut?",
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel"
+                },
+                {
+                  text: "Reset",
+                  style: "destructive",
+                  onPress: () => {
+                    mutateProperty("personalization", {
+                      magicModelURL: MAGIC_URL
+                    });
+                    Alert.alert("Succès", "URL du modèle Magic remise par défaut!");
+                  }
+                }
+              ]
+            );
+          }}
+        >
+          <Typography variant="title">Reset URL Magic Model</Typography>
+        </Item>
 
       </List>
       <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
@@ -244,11 +303,28 @@ export default function Devmode() {
           <Typography variant="title">Clear Magic Store</Typography>
         </Item>
         <Item
-          onPress={() => console.log(magicStoreHomework)}
+          onPress={() => log(JSON.stringify(magicStoreHomework))}
         >
           <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
       </List>
+
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Session
+        </Typography>
+      </Stack>
+
+
+
     </ScrollView >
   );
 }

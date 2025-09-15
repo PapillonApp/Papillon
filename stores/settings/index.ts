@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { Colors } from "@/utils/colors";
+import { MAGIC_URL } from "@/utils/endpoints";
 
 import { createMMKVStorage } from "../global";
 import { Personalization,SettingsState, SettingsStorage } from "./types";
@@ -13,7 +14,7 @@ const defaultPersonalization: Personalization = {
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,
-  magicModelURL: "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json",
+  magicModelURL: MAGIC_URL,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(
