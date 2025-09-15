@@ -204,7 +204,6 @@ export function Card({
         }}
       />
 
-      {/* Overlay pour l'effet de press */}
       {pressed && (
         <View style={{
           position: "absolute",
