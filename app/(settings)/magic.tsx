@@ -15,9 +15,13 @@ import { useSettingsStore } from "@/stores/settings";
 import { t } from "i18next";
 import ModelManager from "@/utils/magic/ModelManager";
 import { getCurrentPtr, checkAndUpdateModel } from "@/utils/magic/updater";
-import { MAGIC_URL } from "@/utils/endpoints";
 import packageJson from "@/package.json";
 import { Colors } from "@/utils/colors";
+import { MAGIC_URL } from "@/utils/endpoints";
+
+function getMagicURL(): string {
+  return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
+}
 
 export default function SettingsMagic() {
   const theme = useTheme()
@@ -83,7 +87,7 @@ export default function SettingsMagic() {
     setLastUpdateCheck(new Date());
 
     try {
-      const result = await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+      const result = await checkAndUpdateModel(packageJson.version, getMagicURL());
 
       if (result.updated) {
         await ModelManager.safeInit();
