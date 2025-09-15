@@ -50,7 +50,7 @@ function normalizeText(text: string, config: any): string {
 
 let globalInitializationPromise: Promise<void> | null = null;
 
-function getMagicURL(): string {
+export function getMagicURL(): string {
   return useSettingsStore.getState().personalization.magicModelURL || "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json";
 }
 
