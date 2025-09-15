@@ -12,7 +12,10 @@ import { useTheme } from "@react-navigation/native";
 import adjust from "@/utils/adjustColor";
 import AnimatedPressable from "./AnimatedPressable";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
-import { GlassView } from "expo-glass-effect";
+
+import {
+  LiquidGlassView
+} from '@callstack/liquid-glass';
 
 type Variant = "primary" | "separator";
 
@@ -111,13 +114,14 @@ const Course = React.memo(
           </Stack>
         }
         {variant === "separator" ? (
-          <GlassView
+          <LiquidGlassView
             style={{
               flex: 1,
               borderRadius: 300,
+              backgroundColor: theme.dark ? colors.text + "10" : colors.text + "30"
             }}
-            isInteractive={true}
-            glassEffectStyle="clear"
+            interactive={true}
+            effect="clear"
           >
             <Stack
               card={!runsIOS26}
@@ -162,7 +166,7 @@ const Course = React.memo(
                 {formatDuration(duration)}
               </Typography>
             </Stack>
-          </GlassView>
+          </LiquidGlassView>
         ) : (
           <View
             style={[
@@ -251,14 +255,15 @@ const Course = React.memo(
                     </Typography>
                   </Stack>
                 )}
-                <GlassView
-                  tintColor={status?.canceled ? undefined : color}
-                  glassEffectStyle="regular"
-                  isInteractive={true}
+                <LiquidGlassView
+                  key={"liquid-glass:course:" + id + ":" + compact ? "compact" : "full"}
+                  effect="clear"
+                  interactive={true}
                   style={[
                     runsIOS26 ? {
                       borderRadius: compact ? 18 : 25,
                       borderCurve: "continuous",
+                      backgroundColor: status?.canceled ? undefined : adjust(color, -0.1)
                     } : null
                   ]}
                 >
@@ -413,7 +418,7 @@ const Course = React.memo(
                       </View>
                     )}
                   </Stack>
-                </GlassView>
+                </LiquidGlassView>
               </View>
             </AnimatedPressable>
           </View>

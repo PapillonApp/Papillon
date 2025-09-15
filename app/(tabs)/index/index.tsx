@@ -377,7 +377,8 @@ const IndexScreen = () => {
               style={{
                 backgroundColor: "transparent",
                 borderCurve: "continuous",
-                paddingBottom: 12
+                paddingBottom: 12,
+                marginTop: -10,
               }}
               horizontal
               data={headerItems}
@@ -402,7 +403,8 @@ const IndexScreen = () => {
                     flex: 1,
                     overflow: "hidden",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    marginTop: 10,
                   }}
                 >
                   {item}
@@ -466,6 +468,7 @@ const IndexScreen = () => {
                     start={Math.floor(item.from.getTime() / 1000)}
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
+                    compact={true}
                     onPress={() => {
                       (navigation as any).navigate('(modals)/course', {
                         course: item,
