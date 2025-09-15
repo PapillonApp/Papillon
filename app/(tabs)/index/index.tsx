@@ -459,7 +459,7 @@ const IndexScreen = () => {
                   <Course
                     key={item.id}
                     id={item.id}
-                    name={item.subject}
+                    name={getSubjectName(item.subject)}
                     teacher={item.teacher}
                     room={item.room}
                     color={getSubjectColor(item.subject)}
