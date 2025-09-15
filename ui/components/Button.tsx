@@ -8,7 +8,10 @@ import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Typography from "./Typography";
 import * as ExpoHaptics from "expo-haptics";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
-import { GlassView } from "expo-glass-effect";
+
+import {
+  LiquidGlassView
+} from '@callstack/liquid-glass';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -210,14 +213,24 @@ const Button: React.FC<ButtonProps> = React.memo(({
     )
   )
 
+  const buttonTint = (variant === 'outline' || variant === 'service')
+    ? "transparent"
+    : (
+      (style && typeof style === 'object' && !Array.isArray(style) && 'backgroundColor' in style)
+        ? (style as { backgroundColor?: string }).backgroundColor
+        : backgroundColor
+    );
+
   if (runsIOS26) {
     return (
-      <GlassView
+      <LiquidGlassView
+        key="button:liquid-glass"
         style={{
           width: inline ? undefined : '100%',
           height: 50,
           borderRadius: 160,
           borderCurve: 'continuous',
+          backgroundColor: buttonTint,
           overflow: 'visible',
           paddingHorizontal: 18,
           justifyContent: justifyContent,
@@ -227,17 +240,11 @@ const Button: React.FC<ButtonProps> = React.memo(({
           opacity: disabled ? 0.5 : 1,
         }}
         tintColor={
-          (variant === 'outline' || variant === 'service')
-            ? "transparent"
-            : (
-              (style && typeof style === 'object' && !Array.isArray(style) && 'backgroundColor' in style)
-                ? (style as { backgroundColor?: string }).backgroundColor
-                : backgroundColor
-            )
+          buttonTint
         }
         {...rest}
-        glassEffectStyle="clear"
-        isInteractive={true}
+        effect="regular"
+        interactive={true}
       >
         <Pressable
           onPress={onPress}
@@ -254,7 +261,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
         >
           {ButtonContent}
         </Pressable>
-      </GlassView>
+      </LiquidGlassView>
     )
   }
 

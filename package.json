@@ -19,6 +19,7 @@
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.27.1",
     "@bottom-tabs/react-navigation": "^0.11.1",
+    "@callstack/liquid-glass": "^0.4.0",
     "@eslint/js": "^9.35.0",
     "@expo/metro-config": "~54.0.2",
     "@expo/vector-icons": "^15.0.2",
