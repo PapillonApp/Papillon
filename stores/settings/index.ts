@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { createMMKVStorage } from "../global";
-import { SettingsStorage, SettingsState, Personalization } from "./types";
 import { Colors } from "@/utils/colors";
+
+import { createMMKVStorage } from "../global";
+import { Personalization,SettingsState, SettingsStorage } from "./types";
 
 const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
@@ -12,6 +13,7 @@ const defaultPersonalization: Personalization = {
   hideNameOnHomeScreen: false,
   showAlertAtLogin: false,
   showDevMode: false,
+  magicModelURL: "https://raw.githubusercontent.com/PapillonApp/PapiAPI/refs/heads/main/magic/manifest.json",
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

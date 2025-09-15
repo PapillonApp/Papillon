@@ -1,9 +1,10 @@
-import { useMagicStore } from "@/stores/magic";
-import ModelManager, { ModelPrediction } from "./ModelManager";
-import { generateId } from "../generateId";
-import regexPatterns from "./regex/homeworks.json";
 import * as Battery from "expo-battery";
-import { useSettingsStore } from "@/stores/settings";
+
+import { useMagicStore } from "@/stores/magic";
+
+import { generateId } from "../generateId";
+import ModelManager, { ModelPrediction } from "./ModelManager";
+import regexPatterns from "./regex/homeworks.json";
 
 const compiledPatterns: Record<string, RegExp[]> = Object.fromEntries(
   Object.entries(regexPatterns).map(([category, patterns]) => [
@@ -27,7 +28,7 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
   const store = useMagicStore.getState();
   const homeworkId = generateId(label);
   const existingHomework = store.getHomework(homeworkId);
-  if (existingHomework) return existingHomework.label;
+  if (existingHomework) {return existingHomework.label;}
 
   if (!magicEnabled) {
     return "";
