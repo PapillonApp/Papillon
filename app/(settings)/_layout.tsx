@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -71,6 +71,15 @@ export default function Layout() {
           headerTitle: t("Settings_MagicPlus_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: false,
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="icons"
+        options={{
+          headerTitle: t("Settings_Personalization_Icon_Title"),
+          headerBackButtonDisplayMode: "generic",
+          headerTransparent: true,
           headerLargeTitle: false,
         }}
       />

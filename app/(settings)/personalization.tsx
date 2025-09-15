@@ -174,9 +174,8 @@ const PersonalizationSettings = () => {
               </Stack>
             </Trailing>
           </Item>
-          {/*
           <Item onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+            router.push("/(settings)/icons")
           }}
           >
             <Icon size={30}>
@@ -189,7 +188,6 @@ const PersonalizationSettings = () => {
               color={"secondary"}
             >{t("Settings_Personalization_Icon_Description")}</Typography>
           </Item>
-          */}
           <Item
             onPress={() => {
               router.push("/(settings)/subject_personalization");
