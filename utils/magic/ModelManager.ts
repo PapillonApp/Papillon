@@ -2,10 +2,11 @@ import * as FileSystem from "expo-file-system/legacy";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 
 import packageJson from "@/package.json";
+import { useSettingsStore } from "@/stores/settings";
 
 import { MAGIC_URL } from "../endpoints";
-import { checkAndUpdateModel, getCurrentPtr } from "./updater";
 import { log } from "../logger/logger";
+import { checkAndUpdateModel, getCurrentPtr } from "./updater"; 
 
 export type ModelPrediction = {
   scores: number[];
@@ -49,6 +50,10 @@ function normalizeText(text: string, config: any): string {
 }
 
 let globalInitializationPromise: Promise<void> | null = null;
+
+function getMagicURL(): string {
+  return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
+}
 
 class ModelManager {
   private static instance: ModelManager;
@@ -157,7 +162,7 @@ class ModelManager {
       }
 
       try {
-        await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+        await checkAndUpdateModel(packageJson.version, getMagicURL());
       } catch {
         log("Model update failed");
       }
@@ -191,7 +196,7 @@ class ModelManager {
       const before = await getCurrentPtr();
 
       try {
-        await checkAndUpdateModel(packageJson.version, MAGIC_URL);
+        await checkAndUpdateModel(packageJson.version, getMagicURL());
       } catch {
         log("Model refresh failed during update");
         return { success: false, updated: false, error: "Update failed" };
@@ -305,7 +310,7 @@ class ModelManager {
       globalPromiseActive: boolean;
       instanceExists: boolean;
     };
-  } {
+    } {
     return {
       hasModel: this.model !== null,
       maxLen: this.maxLen,

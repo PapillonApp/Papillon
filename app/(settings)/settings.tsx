@@ -64,6 +64,7 @@ export default function SettingsIndex() {
     for (const service of account.services) {
       ClearDatabaseForAccount(service.id)
     }
+
   }, [account, accountStore, router]);
 
   const MoreSettingsList = [

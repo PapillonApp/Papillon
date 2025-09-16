@@ -19,4 +19,5 @@ export interface Personalization {
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
+  magicModelURL?: string;
 }

@@ -22,9 +22,37 @@ export async function fetchManifest(
     );
   }
 
-  compatible.sort((a, b) => -cmp(a.version, b.version));
+  let mostRecent = compatible[0];
+  
+  for (let i = 1; i < compatible.length; i++) {
+    const current = compatible[i];
+    
+    const isMoreRecent = compareModels(current, mostRecent);
+    if (isMoreRecent > 0) {
+      mostRecent = current;
+    }
+  }
 
-  return compatible[0];
+  return mostRecent;
+}
+
+function compareModels(a: ApiModel, b: ApiModel): number {
+  if (a.date_created && b.date_created) {
+    const dateA = new Date(a.date_created);
+    const dateB = new Date(b.date_created);
+    const dateDiff = dateA.getTime() - dateB.getTime(); 
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+  }
+  else if (a.date_created && !b.date_created) {
+    return 1;
+  }
+  else if (!a.date_created && b.date_created) {
+    return -1;
+  }
+  
+  return cmp(a.version, b.version);
 }
 
 export function validateManifest(m: ApiModel): void {
