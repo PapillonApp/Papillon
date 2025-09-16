@@ -1,4 +1,5 @@
-import * as FileSystem from "expo-file-system/legacy";
+/* eslint-disable max-depth */
+import { Directory, File, Paths } from "expo-file-system";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 
 import packageJson from "@/package.json";
@@ -79,19 +80,11 @@ class ModelManager {
     try {
       const ptr = await getCurrentPtr();
       if (ptr) {
-        const modelUri = ptr.dir + "model/model.tflite";
-        const tokenizerUri = ptr.dir + "model/tokenizer.json";
-        const labelsUri = ptr.dir + "model/labels.json";
+        const modelFile = new File(ptr.dir + "model/model.tflite");
+        const tokenizerFile = new File(ptr.dir + "model/tokenizer.json");
+        const labelsFile = new File(ptr.dir + "model/labels.json");
 
-        const modelExists = await FileSystem.getInfoAsync(modelUri);
-        const tokenizerExists = await FileSystem.getInfoAsync(tokenizerUri);
-        const labelsExists = await FileSystem.getInfoAsync(labelsUri);
-
-        if (
-          !modelExists.exists ||
-          !tokenizerExists.exists ||
-          !labelsExists.exists
-        ) {
+        if (!modelFile.exists || !tokenizerFile.exists || !labelsFile.exists) {
           const resetResult = await this.reset();
           if (!resetResult.success) {
             log(`Cleanup failed: ${resetResult.error}`);
@@ -266,17 +259,15 @@ class ModelManager {
       this.hasInitialized = false;
       globalInitializationPromise = null;
 
-      const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
-      const CURRENT_PTR = MODELS_ROOT + "current.json";
+      const MODELS_ROOT = new Directory(Paths.document, "papillon-models");
+      const CURRENT_PTR = new File(MODELS_ROOT, "current.json");
 
-      const ptrInfo = await FileSystem.getInfoAsync(CURRENT_PTR);
-      if (ptrInfo.exists) {
-        await FileSystem.deleteAsync(CURRENT_PTR, { idempotent: true });
+      if (CURRENT_PTR.exists) {
+        CURRENT_PTR.delete();
       }
 
-      const modelsInfo = await FileSystem.getInfoAsync(MODELS_ROOT);
-      if (modelsInfo.exists) {
-        await FileSystem.deleteAsync(MODELS_ROOT, { idempotent: true });
+      if (MODELS_ROOT.exists) {
+        MODELS_ROOT.delete();
       }
 
       log("Model reset successfully");
@@ -345,15 +336,22 @@ class ModelManager {
     try {
       await this.loadFromDirectory(ptr.dir);
       return `dynamic:${ptr.version}`;
-    } catch (e) {
+    } catch (_e) {
       try {
-        const MODELS_ROOT = FileSystem.documentDirectory + "papillon-models/";
-        const CURRENT_PTR = MODELS_ROOT + "current.json";
+        const MODELS_ROOT = new Directory(Paths.document, "papillon-models");
+        const CURRENT_PTR = new File(MODELS_ROOT, "current.json");
 
-        await FileSystem.deleteAsync(CURRENT_PTR, { idempotent: true });
+        if (CURRENT_PTR.exists) {
+          CURRENT_PTR.delete();
+        }
 
-        await FileSystem.deleteAsync(ptr.dir, { idempotent: true });
-      } catch (cleanupError) {}
+        const modelDir = new Directory(ptr.dir);
+        if (modelDir.exists) {
+          modelDir.delete();
+        }
+      } catch (_cleanupError) {
+        // Ignore cleanup errors
+      }
 
       return null;
     }
@@ -362,27 +360,22 @@ class ModelManager {
   async loadFromDirectory(dirUri: string): Promise<void> {
     try {
       const modelUri = dirUri + "model/model.tflite";
-      const tokenizerUri = dirUri + "model/tokenizer.json";
-      const labelsUri = dirUri + "model/labels.json";
+      const tokenizerFile = new File(dirUri + "model/tokenizer.json");
+      const labelsFile = new File(dirUri + "model/labels.json");
 
       this.model = await loadTensorflowModel({ url: modelUri });
 
-      const tokenizerRaw = await FileSystem.readAsStringAsync(tokenizerUri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      const tokenizerRaw = await tokenizerFile.text();
       const tokenizerJson = JSON.parse(tokenizerRaw);
       const config = tokenizerJson.config;
       this.tokenizerConfig = config;
 
-      const wordIndexUri = dirUri + "model/word_index.json";
-      const wordIndexInfo = await FileSystem.getInfoAsync(wordIndexUri);
+      const wordIndexFile = new File(dirUri + "model/word_index.json");
 
       let wordIndex: Record<string, number> = {};
 
-      if (wordIndexInfo.exists) {
-        const wordIndexRaw = await FileSystem.readAsStringAsync(wordIndexUri, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
+      if (wordIndexFile.exists) {
+        const wordIndexRaw = await wordIndexFile.text();
         wordIndex = JSON.parse(wordIndexRaw);
       } else if (tokenizerJson.word_index) {
         wordIndex = tokenizerJson.word_index;
@@ -409,17 +402,12 @@ class ModelManager {
         this.oovIndex = 1;
       }
 
-      const labelsRaw = await FileSystem.readAsStringAsync(labelsUri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      const labelsRaw = await labelsFile.text();
       this.labels = JSON.parse(labelsRaw);
 
-      const labelToIdUri = dirUri + "model/label_to_id.json";
-      const labelToIdInfo = await FileSystem.getInfoAsync(labelToIdUri);
-      if (labelToIdInfo.exists) {
-        const labelToIdRaw = await FileSystem.readAsStringAsync(labelToIdUri, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
+      const labelToIdFile = new File(dirUri + "model/label_to_id.json");
+      if (labelToIdFile.exists) {
+        const labelToIdRaw = await labelToIdFile.text();
         this.labelToId = JSON.parse(labelToIdRaw);
       } else {
         this.labelToId = {};
