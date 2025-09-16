@@ -1,69 +1,149 @@
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import adjust from "@/utils/adjustColor";
-import { Papicons, Phone } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
+import { Phone } from "@getpapillon/papicons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Dimensions, View } from "react-native";
-import QRCode from 'react-native-qrcode-svg';
+import { Dimensions, Image, Platform, View } from "react-native";
+import React from "react";
+import Reanimated, {
+  FlipInEasyX,
+  runOnJS,
+  useSharedValue,
+  withSpring,
+  ZoomInDown,
+} from "react-native-reanimated";
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { BlurView } from "expo-blur";
+import Barcode, { Format } from "@aramir/react-native-barcode";
+import QRCode from "react-native-qrcode-svg";
+import { getServiceBackground } from "@/utils/services/helper";
+import { Services } from "@/stores/account/types";
 
 export default function QRCodePage() {
-  const theme = useTheme();
-  const { colors } = theme;
 
   const search = useLocalSearchParams();
-  const qr = String(search.qrcode)
+  const qr = String(search.qrcode);
+  const type = String(search.type || "QR");
+  const service = Number(search.service || Services.TURBOSELF);
 
   const { t } = useTranslation();
 
-  return (
-    <>
-      <View
-        style={{
-          backgroundColor: adjust(colors.primary, -0.6),
-          flex: 1,
-          padding: 100,
-          paddingTop: 200,
-          gap: 20
-        }}
-      >
-        <View
-          style={{
-            padding: 15,
-            borderRadius: 10,
-            backgroundColor: "white",
-            alignSelf: "center"
-          }}
-        >
-          <QRCode value={qr} size={Dimensions.get("window").width - 100} />
-        </View>
+  const translationY = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1);
 
-        <Stack style={{ width: "100%" }} hAlign="center">
-          <Phone fill={"#FFFFFF"} />
-          <Typography variant="body2" align="center" color="#FFFFFF">{t("Profile_Cards_Scan_Orientation")}</Typography>
-        </Stack>
-      </View>
-      <AnimatedPressable
-        onPress={() => {
-          router.back()
-        }}
-        style={{
-          position: "absolute",
-          top: 50,
-          right: 20
-        }}>
-        <View
+  const finalTranslation = Dimensions.get("window").height / 2;
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      translationY.value = e.translationY < 0 ? e.translationY / 10 : e.translationY;
+      if (e.translationY < 0) return;
+      opacity.value = 1 - Math.min(Math.abs(e.translationY) / 300, 0.7);
+      scale.value = 1 - Math.min(Math.abs(e.translationY) / 600, 0.4);
+    })
+    .onEnd((e) => {
+      if (e.translationY > 150) {
+        translationY.value = withSpring(finalTranslation, { damping: 150, stiffness: 1500 });
+        opacity.value = withSpring(0, { damping: 150, stiffness: 1500 });
+        scale.value = withSpring(0.6, { damping: 150, stiffness: 1500 });
+        setTimeout(() => {
+          runOnJS(router.back)();
+        }, 200);
+        return;
+      }
+      translationY.value = withSpring(0, { damping: 150, stiffness: 1500 });
+      opacity.value = withSpring(1, { damping: 150, stiffness: 1500 });
+      scale.value = withSpring(1, { damping: 150, stiffness: 1500 });
+    });
+
+
+  return (
+    <GestureDetector
+      gesture={panGesture}
+    >
+      <BlurView style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? undefined : "#000" }}
+                tint={"dark"}
+      >
+        <Reanimated.View
+          entering={ZoomInDown.springify()}
           style={{
-            backgroundColor: "#FFFFFF70",
-            padding: 10,
-            borderRadius: 500
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 20,
+            transform: [{ translateY: translationY }, { scale: scale }],
+            opacity: opacity,
+            padding: 20,
           }}
         >
-          <Papicons name={"Cross"} fill={"#FFFFFF"} />
-        </View>
-      </AnimatedPressable>
-    </>
-  )
+
+          <Reanimated.View
+            style={{
+              aspectRatio: 1.54,
+              width: "100%",
+              backgroundColor: "#FFF2",
+              position: "relative",
+              justifyContent: "center",
+              alignItems: "center",
+              shadowRadius: 20,
+              shadowColor: "#000",
+              shadowOpacity: 0.3,
+              borderRadius: 25,
+            }}
+            entering={FlipInEasyX.springify().delay(100)}
+          >
+            <Image
+              source={getServiceBackground(service)}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                borderRadius: 25,
+                overflow: "hidden",
+              }}
+              resizeMode="cover"
+              blurRadius={100}
+            />
+            <View
+              style={{
+                padding: 15,
+                backgroundColor: "#FFF",
+                borderRadius: type === "QR" ? 15:20,
+              }}
+            >
+              {type === "QR" ? (
+                <QRCode
+                  value={qr}
+                  size={Dimensions.get("window").width * 0.4}
+                  backgroundColor={"transparent"}
+                  color={"#000"}
+                />
+              ) : (
+                <Barcode
+                  value={qr}
+                  format={type as Format}
+                  background={"transparent"}
+                />
+              )}
+            </View>
+          </Reanimated.View>
+
+          <Stack
+            style={{ width: 240 }}
+            hAlign="center"
+          >
+            <Phone fill={"#FFFFFF"} />
+            <Typography variant="body2"
+                        align="center"
+                        color="#FFFFFF"
+            >{t("Profile_Cards_Scan_Orientation")}</Typography>
+          </Stack>
+        </Reanimated.View>
+        <OnboardingBackButton icon={"Cross"}
+                              position={"right"}
+        />
+      </BlurView>
+    </GestureDetector>
+  );
 }

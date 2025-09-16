@@ -370,9 +370,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                 name="(features)/(cards)/qrcode"
                 options={{
                   headerShown: false,
-                  presentation: "fullScreenModal",
+                  presentation: "transparentModal",
                   headerTitle: "QR-Code",
-                  headerTransparent: true,
+                  animation: "fade"
                 }}
               />
 
