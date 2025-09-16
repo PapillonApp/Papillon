@@ -17,6 +17,7 @@ import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
 import { getStatusText } from "../(tabs)/calendar";
+import { getSubjectName } from '@/utils/subjects/name';
 
 interface SubjectInfo {
   name: string;
@@ -96,7 +97,7 @@ export default function CourseModal() {
             <Reanimated.View>
               <Course
                 id={item.id}
-                name={item.subject}
+                name={getSubjectName(item.subject)}
                 teacher={item.teacher}
                 room={item.room}
                 color={subjectInfo.color}

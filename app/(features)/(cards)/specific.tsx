@@ -255,6 +255,8 @@ export default function QRCodeAndCardsPage() {
             </View>
           )}
 
+
+
           {history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
               <Stack direction="horizontal" style={{ flex: 1, borderRightWidth: 1, borderRightColor: colors.border }} gap={5}>
@@ -264,8 +266,8 @@ export default function QRCodeAndCardsPage() {
                 <Typography color="secondary">{t("Profile_Cards_History")}</Typography>
               </Stack>
               <List>
-                {history.slice(0, 10).map(c =>
-                  <Item key={c.label}>
+                {history.slice(0, 10).map((c, index) =>
+                  <Item key={`${c.label}-${c.date.getTime()}-${index}`}>
                     <Trailing>
                       <ContainedNumber color={adjust(c.amount < 0 ? "#C50000" : "#42C500", -0.1)}>
                         {c.amount > 0 ? "+" : ""}{(c.amount / 100).toFixed(2)} {c.currency}
