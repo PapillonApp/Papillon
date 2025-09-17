@@ -1,4 +1,3 @@
-import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -10,8 +9,6 @@ import { useAccountStore } from '@/stores/account';
 import { useLogStore } from '@/stores/logs';
 import { useMagicStore } from "@/stores/magic";
 import { useSettingsStore } from "@/stores/settings";
-import { useAlert } from "@/ui/components/AlertProvider";
-import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Stack from "@/ui/components/Stack";
@@ -19,6 +16,10 @@ import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
+import { Papicons } from "@getpapillon/papicons";
+import { database } from "@/database";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -325,6 +326,19 @@ export default function Devmode() {
 
 
 
+
+      <List>
+        <Item
+          onPress={async () => {
+            await database.unsafeResetDatabase()
+            await database.write(async () => {
+              await database.unsafeResetDatabase()
+            })
+          }}
+        >
+          <Typography variant="title">Réinitialiser la base de données</Typography>
+        </Item>
+      </List>
     </ScrollView >
   );
 }
