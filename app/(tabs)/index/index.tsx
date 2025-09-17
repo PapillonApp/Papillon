@@ -208,14 +208,6 @@ const IndexScreen = () => {
 
       dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
 
-      if (dayCourse.length === 0) {
-        const nextDay = weeklyTimetable
-          .filter(day => day.date.getTime() > today.getTime())
-          .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
-
-        dayCourse = nextDay?.courses ?? [];
-      }
-
       setCourses(dayCourse);
     };
     fetchData();
@@ -293,6 +285,22 @@ const IndexScreen = () => {
     );
   }, [freshHomeworks]);
 
+  const getScheduleMessage = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+
+    const remainingToday = courses.length;
+    if (remainingToday === 0) {
+      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
+    } else if (remainingToday === 1) {
+      return t("Home_Planned_One");
+    } else {
+      return t("Home_Planned_Number", { number: remainingToday });
+    }
+  };
+
   const headerItems = [
     (
       <Stack
@@ -311,9 +319,7 @@ const IndexScreen = () => {
           </Typography>
         </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
-          {courses.length == 0 ? t("Home_Planned_None")
-            : courses.length == 1 ? t("Home_Planned_One")
-              : t("Home_Planned_Number", { number: courses.length })}
+          {getScheduleMessage()}
         </Typography>
       </Stack>
     ),
