@@ -19,7 +19,6 @@ export async function safeWrite<T>(
       database.write(operation),
       timeoutPromise
     ]);
-    info(`🍉 Completed safe write operation: ${operationName}`);
     return result;
   } catch (err) {
     error(`🍉 Failed safe write operation "${operationName}":`, String(err));
