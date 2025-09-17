@@ -67,6 +67,9 @@ const ALERT_SCREEN_OPTIONS = {
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,
+  contentStyle: {
+    backgroundColor: runsIOS26 ? 'transparent' : undefined
+  }
 } as const;
 
 const DEVMODE_SCREEN_OPTIONS = {
@@ -339,6 +342,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   sheetGrabberVisible: true,
                   sheetAllowedDetents: [0.5, 0.75, 1],
                   sheetCornerRadius: runsIOS26 ? undefined : 30,
+                  contentStyle: {
+                    backgroundColor: runsIOS26 ? 'transparent' : undefined
+                  }
                 }}
               />
 
