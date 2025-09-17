@@ -44,7 +44,7 @@ export async function ClearDatabaseForAccount(accountId: string) {
     "canteentransactions",
   ];
 
-  await db.write(async () => {
+  await safeWrite(db, async () => {
     for (const table of tablesWithAccount) {
       try {
         const collection = db.get(table);
@@ -60,7 +60,7 @@ export async function ClearDatabaseForAccount(accountId: string) {
         error(String(err))
       }
     }
-  });
+  }, 10000, 'ClearDatabaseForAccount');
 }
 
 export async function removeAllDuplicates() {
