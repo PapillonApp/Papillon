@@ -68,6 +68,8 @@ class ModelManager {
   private oovIndex = 1;
   private isInitializing = false;
   private hasInitialized = false;
+  private predictionQueue: Array<() => Promise<any>> = [];
+  private isProcessingQueue = false;
 
   static getInstance(): ModelManager {
     if (!ModelManager.instance) {
@@ -484,7 +486,50 @@ class ModelManager {
     return sequence;
   }
 
+  private async processQueue(): Promise<void> {
+    if (this.isProcessingQueue || this.predictionQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessingQueue = true;
+
+    while (this.predictionQueue.length > 0) {
+      const task = this.predictionQueue.shift();
+      if (task) {
+        try {
+          await task();
+        } catch (error) {
+          log(`[QUEUE ERROR] Error processing prediction: ${String(error)}`);
+        }
+      }
+    }
+
+    this.isProcessingQueue = false;
+  }
+
+  private async queuePrediction<T>(task: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.predictionQueue.push(async () => {
+        try {
+          const result = await task();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      this.processQueue();
+    });
+  }
+
   async predict(
+    text: string,
+    verbose: boolean = false
+  ): Promise<ModelPrediction | { error: string; success: false }> {
+    return this.queuePrediction(() => this.predictInternal(text, verbose));
+  }
+
+  private async predictInternal(
     text: string,
     verbose: boolean = false
   ): Promise<ModelPrediction | { error: string; success: false }> {
