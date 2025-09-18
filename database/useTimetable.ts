@@ -9,7 +9,6 @@ import { getDatabaseInstance, useDatabase } from "./DatabaseProvider"
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
-import { useEffect, useState } from "react";
 import { getICalEventsForWeek } from "@/services/local/ical";
 import { safeWrite } from "./utils/safeTransaction";
 
