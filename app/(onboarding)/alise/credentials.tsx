@@ -133,7 +133,7 @@ export default function AliseLoginWithCredentials() {
             autoPlay
             loop={false}
             style={{ width: 230, height: 230 }}
-            source={require("@/assets/lotties/alise.json")}
+            source={require("@/assets/lotties/ard.json")}
           />
         </Reanimated.View>
         <Reanimated.View style={{
@@ -158,7 +158,7 @@ export default function AliseLoginWithCredentials() {
       <Stack padding={20} gap={10}>
         <OnboardingInput
           icon={"Link"}
-          placeholder={t("INPUT_SITEID")}
+          placeholder={t("INPUT_ETABID")}
           text={siteId}
           setText={setSiteId}
           isPassword={false}

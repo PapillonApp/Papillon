@@ -7,7 +7,7 @@ export async function fetchAliseHistory(session: Client, accountId: string): Pro
     date: event.date,
     label: event.label,
     currency: "€",
-    amount: event.amount,
+    amount: event.amount * 100,
     createdByAccount: accountId
   }));
 }
