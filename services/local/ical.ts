@@ -1,8 +1,9 @@
-import ICAL from 'ical.js'
-import { Course as SharedCourse, CourseType } from '@/services/shared/timetable';
-import { generateId } from '@/utils/generateId';
-import { getDatabaseInstance } from '@/database/DatabaseProvider';
-import Ical from '@/database/models/Ical';
+import { Course as SharedCourse } from '@/services/shared/timetable';
+import { parseICalString } from './parsers/ical-event-parser';
+import { detectProvider } from './ical-utils';
+import { getAllIcals, enhanceIcalIfNeeded, updateProviderIfUnknown } from './ical-database';
+import { convertMultipleEvents } from './event-converter';
+import { filterEventsByWeek } from './event-filter';
 
 export interface ICalEvent {
   uid: string;
@@ -18,100 +19,65 @@ export interface ICalEvent {
 export interface ParsedICalData {
   events: ICalEvent[];
   calendarName?: string;
+  isADE: boolean;
+  isHyperplanning: boolean;
+  provider?: string;
+  url?: string;
 }
 
-const icalCache = new Map<string, { data: ParsedICalData; timestamp: number }>();
-const CACHE_DURATION = 30 * 60 * 1000;
-
 export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
-  const cached = icalCache.get(url);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
-
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const icalString = await response.text();
-    const jcalData = ICAL.parse(icalString);
-    const comp = new ICAL.Component(jcalData);
-    
-    const events: ICalEvent[] = [];
-    const vevents = comp.getAllSubcomponents('vevent');
-    
-    for (const vevent of vevents) {
-      const event = new ICAL.Event(vevent);
-      
-      events.push({
-        uid: event.uid || generateId(event.summary + event.startDate?.toString()),
-        summary: event.summary,
-        description: event.description,
-        dtstart: event.startDate?.toJSDate(),
-        dtend: event.endDate?.toJSDate(),
-        location: event.location,
-        allday: event.startDate?.isDate || false,
-        organizer: event.organizer?.toString()
-      });
-    }
-
-    const parsedData: ParsedICalData = {
+    const { events, metadata } = parseICalString(icalString);
+    const { isADE, isHyperplanning, provider } = detectProvider(metadata.prodId);
+    return {
       events,
-      calendarName: (comp.getFirstPropertyValue('x-wr-calname') || comp.getFirstPropertyValue('name'))?.toString()
+      calendarName: metadata.calendarName,
+      isADE,
+      isHyperplanning,
+      provider,
+      url
     };
-
-    icalCache.set(url, {
-      data: parsedData,
-      timestamp: Date.now()
-    });
-
-    return parsedData;
   } catch (error) {
     console.error('Error fetching or parsing iCal:', error);
     throw error;
   }
 }
 
-export function convertICalEventToSharedCourse(event: ICalEvent, icalId: string, icalTitle: string): SharedCourse {
-  return {
-    id: event.uid,
-    subject: event.summary || 'Événement',
-    type: CourseType.ACTIVITY,
-    from: event.dtstart || new Date(),
-    to: event.dtend || (event.dtstart ? new Date(event.dtstart.getTime() + 60 * 60 * 1000) : new Date()),
-    additionalInfo: event.description,
-    room: event.location,
-    teacher: event.organizer ?? 'Inconnu',
-    group: 'Inconnu',
-    backgroundColor: '#4CAF50',
-    status: undefined,
-    customStatus: `${icalTitle}`,
-    url: '',
-    createdByAccount: `ical_${icalId}`
-  };
+async function processIcalData(ical: any): Promise<{ parsedData: ParsedICalData; shouldUpdateIcal: boolean }> {
+  const parsedData = await fetchAndParseICal(ical.url);
+  let shouldUpdateIcal = false;
+
+  if (!ical.provider || ical.provider === 'unknown') {
+    await updateProviderIfUnknown(ical, parsedData.provider || 'unknown');
+    shouldUpdateIcal = true;
+  }
+
+  await enhanceIcalIfNeeded(ical);
+
+  return { parsedData, shouldUpdateIcal };
 }
 
 export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Promise<SharedCourse[]> {
-  const database = getDatabaseInstance();
-  const icals = await database.get<Ical>('icals').query().fetch();
+  const icals = await getAllIcals();
   const allEvents: SharedCourse[] = [];
 
   for (const ical of icals) {
     try {
-      const parsedData = await fetchAndParseICal(ical.url);
-      
-      const weekEvents = parsedData.events.filter(event => {
-        if (!event.dtstart) return false;
-        
-        const eventStart = new Date(event.dtstart);
-        return eventStart >= weekStart && eventStart <= weekEnd;
+      const { parsedData } = await processIcalData(ical);
+      const weekEvents = filterEventsByWeek(parsedData.events, weekStart, weekEnd);
+      const convertedEvents = convertMultipleEvents(weekEvents, {
+        icalId: ical.id,
+        icalTitle: ical.title,
+        isADE: parsedData.isADE,
+        isHyperplanning: parsedData.isHyperplanning,
+        intelligentParsing: (ical as any).intelligentParsing || false
       });
-
-      const convertedEvents = weekEvents.map(event =>
-        convertICalEventToSharedCourse(event, ical.id, ical.title)
-      );
 
       allEvents.push(...convertedEvents);
     } catch (error) {
@@ -121,3 +87,4 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
 
   return allEvents;
 }
+
