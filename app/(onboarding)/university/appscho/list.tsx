@@ -9,8 +9,10 @@ import Typography from "@/ui/components/Typography";
 import { useTranslation } from "react-i18next";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { RelativePathString, router } from "expo-router";
 import { INSTANCES } from "appscho";
+
 
 const UNIVERSITY_LOGOS: { [key: string]: any } = {
   alijia: require('@/assets/images/univ/alijia.webp'),
@@ -57,7 +59,6 @@ const UNIVERSITY_LOGOS: { [key: string]: any } = {
   upjv: require('@/assets/images/univ/upjv.webp'),
   wsfactory: require('@/assets/images/univ/wsfactory.png'),
 };
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 
 export default function AppschoInstancesList() {
@@ -90,7 +91,7 @@ export default function AppschoInstancesList() {
           return (
             <View style={{ marginBottom: 15 }}>
               <OnboardingInput
-                placeholder={t("SEARCH_UNIV_PLACEHOLDER", "Rechercher une instance...")}
+                placeholder={t("SEARCH_UNIV_PLACEHOLDER")}
                 text={search}
                 setText={setSearch}
                 icon="Search"
@@ -108,9 +109,9 @@ export default function AppschoInstancesList() {
               onPress={() => {
                 requestAnimationFrame(() => {
                   if (item.casurl) {
-                    router.push(`./webview?instanceId=${item.id}` as RelativePathString);
+                    router.push({pathname: './webview', params: { instanceId: item.id }})
                   } else {
-                    router.push(`./credentials?instanceId=${item.id}` as RelativePathString);
+                    router.push({pathname: './credentials', params: { instanceId: item.id }})
                   }
                 });
               }}

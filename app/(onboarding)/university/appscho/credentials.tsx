@@ -72,7 +72,7 @@ export default function AppSchoCredentials() {
     if (!instance) {
       alert.showAlert({
         title: "Erreur",
-        description: "Instance non trouv�e",
+        description: "Instance non trouvée",
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,
@@ -94,7 +94,6 @@ export default function AppSchoCredentials() {
     setIsLoading(true);
 
     try {
-
       const response = await loginWithCredentials(instance.id, username, password);
 
       const id = uuid();
@@ -234,7 +233,7 @@ export default function AppSchoCredentials() {
               {t("WAITING")}
             </Typography>
             <Typography variant="body2" color="secondary" align="center">
-              Connexion en cours...
+              {t("ONBOARDING_LOADING_LOGIN")}
             </Typography>
           </View>
         </View>

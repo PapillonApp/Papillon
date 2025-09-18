@@ -49,5 +49,4 @@ export class Appscho implements SchoolServicePlugin {
 
     error("Session is not valid", "Appscho.getNews");
   }
-
 }

@@ -1,4 +1,4 @@
-import { getNewsFeed, User, NewsFeed } from "appscho";
+import { getNewsFeed, User, NewsFeed, INSTANCES } from "appscho";
 import { News } from "@/services/shared/news";
 import { AttachmentType } from "@/services/shared/attachment";
 
@@ -25,7 +25,6 @@ export async function fetchAppschoNews(_session: User, accountId: string, instan
         createdByAccount: accountId,
       });
     }
-
     return {
       id: item.url,
       title: item.title,
@@ -33,7 +32,7 @@ export async function fetchAppschoNews(_session: User, accountId: string, instan
       acknowledged: false,
       attachments: attachments.filter(attachment => attachment.url),
       content: item.content,
-      author: "",
+      author: INSTANCES.find(inst => inst.id === instanceId)?.name ?? "Auteur inconnu",
       category: item.type,
       createdByAccount: accountId,
     };

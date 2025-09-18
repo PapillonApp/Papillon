@@ -65,7 +65,7 @@ export default function AppschoWebView() {
           },
         });
       } catch (error) {
-        console.error("OAuth login error:", error);
+        Error(`OAuth login error: ${error}`);
         alert.showAlert({
           title: "Erreur d'authentification",
           description: "Une erreur est survenue lors de la connexion OAuth.",

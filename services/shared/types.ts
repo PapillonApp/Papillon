@@ -48,7 +48,8 @@ export interface SchoolServicePlugin {
     | Session
     | TurboselfClient
     | ArdClient
-    | Identification | User
+    | Identification
+    | User
     | undefined;
 
   refreshAccount: (
