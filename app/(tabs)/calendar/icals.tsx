@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Alert, ScrollView, StyleSheet, TextInput, Switch } from "react-native";
 
 import { useAddIcal, useIcals, useRemoveIcal, useUpdateIcalParsing } from "@/database/useIcals";
+import { isValidUrl, normalizeUrl } from "@/services/local/ical-utils";
+import { fetchAndParseICal } from "@/services/local/ical";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
@@ -28,11 +30,21 @@ export default function TabOneScreen() {
       Alert.alert(t("Tab_Calendar_Icals_Add_Title"), t("Tab_Calendar_Icals_Add_Description"));
       return;
     }
-    await addIcal(icalTitle, icalUrl, intelligentParsing);
-    setIcalUrl("");
-    setIcalTitle("");
-    setIntelligentParsing(false);
-    setRefresh(r => r + 1);
+
+    const normalizedUrl = normalizeUrl(icalUrl);
+
+    try {
+      const parsedData = await fetchAndParseICal(normalizedUrl);
+      const shouldEnableParsing = parsedData.isADE ? true : intelligentParsing;
+
+      await addIcal(icalTitle, normalizedUrl, shouldEnableParsing);
+      setIcalUrl("");
+      setIcalTitle("");
+      setIntelligentParsing(false);
+      setRefresh(r => r + 1);
+    } catch (error) {
+      Alert.alert("Erreur", "Impossible de traiter l'URL iCal. Vérifiez qu'elle est valide.");
+    }
   };
 
   const handleRemove = async (id: string) => {
@@ -40,14 +52,6 @@ export default function TabOneScreen() {
     setRefresh(r => r + 1);
   };
 
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
 
   const theme = useTheme();
   const { colors } = theme;
@@ -95,7 +99,6 @@ export default function TabOneScreen() {
       <List>
         {icals.flatMap((ical, index) => {
           const isADE = (ical as any).provider?.toUpperCase().includes('ADE');
-          console.log(ical)
           const items = [
             <Item
               key={`${ical.id}-main`}
@@ -125,7 +128,7 @@ export default function TabOneScreen() {
             </Item>
           ];
 
-          // For the moment, only ADE have Intelligent Parsing
+          // Only ADE calendars support intelligent parsing
           if (isADE) {
             items.push(
               <Item key={`${ical.id}-parsing`}>
