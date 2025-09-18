@@ -25,4 +25,5 @@
 
 This file exists to enforce strict separation between **human contributions** and **AI assistance**.  
 The agent is here to **assist humans**, not to replace them in authorship.  
-All project contributions must come **exclusively from human developers**.  
+All project contributions must come **exclusively from human developers**.
+

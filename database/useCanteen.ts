@@ -1,35 +1,56 @@
 import { Model, Q } from "@nozbe/watermelondb";
 
-import { CanteenMenu as SharedCanteenMenu, CanteenHistoryItem as SharedCanteenHistoryItem } from "@/services/shared/canteen";
+import { CanteenHistoryItem as SharedCanteenHistoryItem,CanteenMenu as SharedCanteenMenu } from "@/services/shared/canteen";
 import { generateId } from "@/utils/generateId";
-import { warn } from "@/utils/logger/logger";
+import { info,warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapCanteenMenuToShared, mapCanteenTransactionToShared } from "./mappers/canteen";
-import CanteenMenu from "./models/CanteenMenu";
 import CanteenHistoryItem from "./models/CanteenHistory";
+import CanteenMenu from "./models/CanteenMenu";
+import { safeWrite } from "./utils/safeTransaction";
 
 
 export async function addCanteenMenuToDatabase(menus: SharedCanteenMenu[]) {
   const db = getDatabaseInstance();
+
+  const menusToCreate: Array<{
+    id: string;
+    item: SharedCanteenMenu;
+  }> = [];
+
   for (const item of menus) {
-    const id = generateId(item.createdByAccount + item.date)
+    const id = generateId(item.createdByAccount + item.date);
     const existing = await db.get('canteenmenus').query(Q.where('menuId', id)).fetch();
 
     if (existing.length === 0) {
-      await db.write(async () => {
-        await db.get('canteenmenus').create((record: Model) => {
-          const menu = record as CanteenMenu;
-          Object.assign(menu, {
-            menuId: id,
-            date: item.date.getTime(),
-            lunch: JSON.stringify(item.lunch),
-            dinner: JSON.stringify(item.dinner),
-            createdByAccount: item.createdByAccount
-          });
-        });
-      });
+      menusToCreate.push({ id, item });
     }
+  }
+
+  if (menusToCreate.length > 0) {
+    await safeWrite(
+      db,
+      async () => {
+        const promises = menusToCreate.map(({ id, item }) =>
+          db.get('canteenmenus').create((record: Model) => {
+            const menu = record as CanteenMenu;
+            Object.assign(menu, {
+              menuId: id,
+              date: item.date.getTime(),
+              lunch: JSON.stringify(item.lunch),
+              dinner: JSON.stringify(item.dinner),
+              createdByAccount: item.createdByAccount
+            });
+          })
+        );
+        await Promise.all(promises);
+      },
+      10000,
+      `add_canteen_menus_${menusToCreate.length}_items`
+    );
+  } else {
+    info(`🍉 No new canteen menus to add (all ${menus.length} already exist)`);
   }
 }
 
@@ -54,27 +75,47 @@ export async function getCanteenMenuFromCache(startDate: Date): Promise<SharedCa
 
 export async function addCanteenTransactionToDatabase(transactions: SharedCanteenHistoryItem[]) {
   const db = getDatabaseInstance();
+
+  const transactionsToCreate: Array<{
+    id: string;
+    item: SharedCanteenHistoryItem;
+  }> = [];
+
   for (const item of transactions) {
-    const id = generateId(item.createdByAccount + item.date + item.amount + item.label + item.currency)
+    const id = generateId(item.createdByAccount + item.date + item.amount + item.label + item.currency);
     const existing = await db.get('canteentransactions').query(
       Q.where('transactionId', id)
     ).fetch();
 
-    if (existing.length > 0) {continue;}
-		
-    await db.write(async () => {
-      await db.get('canteentransactions').create((record: Model) => {
-        const menu = record as CanteenHistoryItem;
-        Object.assign(menu, {
-          createdByAccount: item.createdByAccount,
-          transactionId: id,
-          date: item.date,
-          label: item.label,
-          currency: item.currency,
-          amount: item.amount
-        });
-      });
-    });
+    if (existing.length === 0) {
+      transactionsToCreate.push({ id, item });
+    }
+  }
+
+  if (transactionsToCreate.length > 0) {
+    await safeWrite(
+      db,
+      async () => {
+        const promises = transactionsToCreate.map(({ id, item }) =>
+          db.get('canteentransactions').create((record: Model) => {
+            const transaction = record as CanteenHistoryItem;
+            Object.assign(transaction, {
+              createdByAccount: item.createdByAccount,
+              transactionId: id,
+              date: item.date,
+              label: item.label,
+              currency: item.currency,
+              amount: item.amount
+            });
+          })
+        );
+        await Promise.all(promises);
+      },
+      10000,
+      `add_canteen_transactions_${transactionsToCreate.length}_items`
+    );
+  } else {
+    info(`🍉 No new canteen transactions to add (all ${transactions.length} already exist)`);
   }
 }
 
