@@ -28,16 +28,19 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
   const store = useMagicStore.getState();
   const homeworkId = generateId(label);
   const existingHomework = store.getHomework(homeworkId);
-  if (existingHomework) {return existingHomework.label;}
+  
+  if (existingHomework) {
+    return existingHomework.label;
+  }
 
   if (!magicEnabled) {
     return "";
   }
 
-  let batteryLevel = 1;
+  let batteryLevel: number;
   try {
     batteryLevel = await Battery.getBatteryLevelAsync();
-  } catch (e) {
+  } catch {
     batteryLevel = 1;
   }
 
@@ -59,7 +62,7 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
     const labelMap: Record<string, string> = {
       'evaluation': 'Évaluation',
       'finaltask': 'Tâche finale',
-      'homework': 'Devoir',
+      'homework': 'Devoir Maison',
       'null': 'null',
       'oral': 'Présentation orale',
       'sheets': 'Fiche',

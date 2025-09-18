@@ -7,7 +7,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native-gesture-handler";
 
 import adjust from "@/utils/adjustColor";
-import { getServiceColor, getServiceName } from "@/utils/services/helper";
+import { getCodeType, getServiceColor } from "@/utils/services/helper";
 import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 
@@ -140,7 +140,6 @@ export default function QRCodeAndCardsPage() {
         key={`calendar-${date.toISOString()}`}
         date={date}
         onDateChange={handleDateChange}
-        topInset={48}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -159,7 +158,7 @@ export default function QRCodeAndCardsPage() {
 
           {qrcode && (
             <AnimatedPressable
-              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode } })}
+              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode, type: getCodeType(service), service } })}
               style={{
                 width: "100%",
                 backgroundColor: colors.background,

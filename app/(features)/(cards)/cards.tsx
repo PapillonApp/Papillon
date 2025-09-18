@@ -11,20 +11,17 @@ import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
 import { Papicons, Plus } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Image, Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-
-  const [loadingWallets, setLoadingWallets] = useState(true);
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -36,7 +33,6 @@ export default function QRCodeAndCardsPage() {
       result.push(balance)
     }
     setWallets(result);
-    setLoadingWallets(false);
   }
 
   useFocusEffect(
@@ -46,8 +42,6 @@ export default function QRCodeAndCardsPage() {
   );
 
   const { t } = useTranslation();
-
-  const { colors } = useTheme();
 
   return (
     <>
@@ -143,8 +137,6 @@ export function Card({
   wallet,
   service,
   disabled,
-  inSpecificView = false,
-  totalCards = 1
 }: {
   index: number;
   wallet: Balance;
@@ -174,6 +166,9 @@ export function Card({
         overflow: "hidden",
         marginTop: index === 0 ? 0 : -140,
         zIndex: 100 + index,
+        top: 0,
+        left: 0,
+        right: 0,
       }}
       disabled={disabled}
     >
