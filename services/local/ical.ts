@@ -19,6 +19,7 @@ export interface ParsedICalData {
   events: ICalEvent[];
   calendarName?: string;
   isADE: boolean;
+  provider?: string;
 }
 
 interface ParsedDescription {
@@ -49,7 +50,6 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
     const prodId = comp.getFirstPropertyValue('prodid')?.toString();
     const events: ICalEvent[] = [];
     const vevents = comp.getAllSubcomponents('vevent');
-    
     for (const vevent of vevents) {
       const event = new ICAL.Event(vevent);
       
@@ -68,7 +68,8 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
     const parsedData: ParsedICalData = {
       events,
       calendarName: (comp.getFirstPropertyValue('x-wr-calname') || comp.getFirstPropertyValue('name'))?.toString(),
-      isADE: Boolean(prodId?.toUpperCase().includes('ADE'))
+      isADE: Boolean(prodId?.toUpperCase().includes('ADE')),
+      provider: prodId || 'unknown'
     };
 
     icalCache.set(url, {
@@ -83,8 +84,8 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
   }
 }
 
-export function convertICalEventToSharedCourse(event: ICalEvent, icalId: string, icalTitle: string, isADE: boolean): SharedCourse {
-  const parsed = isADE ? parseDescription(event.description || '') : null;
+export function convertICalEventToSharedCourse(event: ICalEvent, icalId: string, icalTitle: string, isADE: boolean, intelligentParsing: boolean = false): SharedCourse {
+  const parsed = isADE && intelligentParsing ? parseDescription(event.description || '') : null;
   const {type, teacher, group, groups} = parsed ?? {type: 'Activité', teacher: 'Inconnu', group: 'Inconnu'};
   return {
     id: event.uid,
@@ -112,16 +113,25 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
   for (const ical of icals) {
     try {
       const parsedData = await fetchAndParseICal(ical.url);
-      
+
+      // Update provider info if missing
+      if (!(ical as any).provider && parsedData.provider) {
+        await database.write(async () => {
+          await ical.update((ical: any) => {
+            ical.provider = parsedData.provider;
+          });
+        });
+      }
+
       const weekEvents = parsedData.events.filter(event => {
         if (!event.dtstart) return false;
-        
+
         const eventStart = new Date(event.dtstart);
         return eventStart >= weekStart && eventStart <= weekEnd;
       });
 
       const convertedEvents = weekEvents.map(event =>
-        convertICalEventToSharedCourse(event, ical.id, ical.title, parsedData.isADE)
+        convertICalEventToSharedCourse(event, ical.id, ical.title, parsedData.isADE, (ical as any).intelligentParsing || false)
       );
 
       allEvents.push(...convertedEvents);
@@ -134,10 +144,7 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
 }
 
 function parseDescription(description: string): ParsedDescription | null {
-  let cleanDescription = description.replace(/^DESCRIPTION:\s*/, '');
-  cleanDescription = cleanDescription.replace(/\(Updated\s*:[^)]+\)/, '').trim();
-
-  const lines = cleanDescription.split('\n')
+  const lines = description.replace(/^DESCRIPTION:\s*/, '').replace(/\([^)]*\)/g, '').split('\n')
     .map(line => line.trim())
     .filter(line => line !== '');
 
