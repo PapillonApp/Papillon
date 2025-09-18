@@ -108,38 +108,38 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
     const { t } = useTranslation();
 
     return [
-        {
-            name: "univ-lorraine",
-            title: "Université de Lorraine",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_lorraine.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-nimes",
-            title: "Université de Nîmes",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_nimes.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-uphf",
-            title: "Université Polytechnique Hauts-de-France",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_uphf.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "iut-lannion",
-            title: "IUT de Lannion",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_lannion.png"),
-            type: "main",
-            onPress: () => { }
-        },
+        // {
+        //     name: "univ-lorraine",
+        //     title: "Université de Lorraine",
+        //     hasLimitedSupport: false,
+        //     image: require("@/assets/images/univ_lorraine.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-nimes",
+        //     title: "Université de Nîmes",
+        //     hasLimitedSupport: false,
+        //     image: require("@/assets/images/univ_nimes.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-uphf",
+        //     title: "Université Polytechnique Hauts-de-France",
+        //     hasLimitedSupport: false,
+        //     image: require("@/assets/images/univ_uphf.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "iut-lannion",
+        //     title: "IUT de Lannion",
+        //     hasLimitedSupport: false,
+        //     image: require("@/assets/images/univ_lannion.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
         {
           name: "appscho",
           title: "Autres universités",
@@ -147,46 +147,46 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
           type: "other",
           onPress: () => {redirect({ pathname: './appscho/list' }) }
         },
-        {
-            name: "limited-functions",
-            title: t("Feature_Limited"),
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_lannion.png"),
-            type: "separator",
-            onPress: () => { }
-        },
-        {
-            name: "univ-rennes-1",
-            title: "Université de Rennes 1",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_rennes1.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-rennes-2",
-            title: "Université de Rennes 2",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_rennes2.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-limoges",
-            title: "Université de Limoges",
-            type: "main",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_limoges.png"),
-            onPress: () => { }
-        },
-        {
-            name: "univ_paris_sorbonne",
-            title: "Université de Sorbonne Paris Nord",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_paris_sorbonne.png"),
-            type: "main",
-            onPress: () => { }
-        }
+        // {
+        //     name: "limited-functions",
+        //     title: t("Feature_Limited"),
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_lannion.png"),
+        //     type: "separator",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-rennes-1",
+        //     title: "Université de Rennes 1",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_rennes1.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-rennes-2",
+        //     title: "Université de Rennes 2",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_rennes2.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-limoges",
+        //     title: "Université de Limoges",
+        //     type: "main",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_limoges.png"),
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ_paris_sorbonne",
+        //     title: "Université de Sorbonne Paris Nord",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_paris_sorbonne.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // }
     ]
 }
 
