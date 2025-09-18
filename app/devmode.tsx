@@ -1,3 +1,4 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -5,10 +6,13 @@ import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
 
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
+import { database } from "@/database";
 import { useAccountStore } from '@/stores/account';
 import { useLogStore } from '@/stores/logs';
 import { useMagicStore } from "@/stores/magic";
 import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Stack from "@/ui/components/Stack";
@@ -16,10 +20,6 @@ import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
-import { useAlert } from "@/ui/components/AlertProvider";
-import Icon from "@/ui/components/Icon";
-import { Papicons } from "@getpapillon/papicons";
-import { database } from "@/database";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -172,7 +172,7 @@ export default function Devmode() {
         <Item
           onPress={async () => {
             try {
-              const result = await ModelManager.predict("IL Y A UNE EVALUATION DEMAIN ATTENTION UNE EVALUATION JE DIT BIEN UNE EVALUATIOOOOOOOON", true);
+              const result = await ModelManager.predict("ds analyse de doc", true);
               if ('error' in result) {
                 Alert.alert("Erreur de prédiction", result.error);
               } else {
@@ -187,6 +187,23 @@ export default function Devmode() {
           }}
         >
           <Typography variant="title">Tester une prédiction</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            try {
+              magicStore.clear();
+              Alert.alert("Cache vidé", "Le cache des prédictions Magic a été vidé avec succès !");
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du vidage du cache: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Vider le cache Magic</Typography>
+          <Trailing>
+            <Typography variant="caption">
+              {magicStoreHomework.length} devoirs
+            </Typography>
+          </Trailing>
         </Item>
         <Item
           onPress={() => {
@@ -307,6 +324,11 @@ export default function Devmode() {
           onPress={() => log(JSON.stringify(magicStoreHomework))}
         >
           <Typography variant="title">ConsoleLog Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => resetMagicCache()}
+        >
+          <Typography variant="title">Reset Magic Cache</Typography>
         </Item>
       </List>
 
