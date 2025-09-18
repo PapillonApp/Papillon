@@ -20,6 +20,7 @@ export interface ParsedICalData {
   events: ICalEvent[];
   calendarName?: string;
   isADE: boolean;
+  isHyperplanning: boolean;
   provider?: string;
   url?: string;
 }
@@ -33,12 +34,12 @@ export async function fetchAndParseICal(url: string): Promise<ParsedICalData> {
 
     const icalString = await response.text();
     const { events, metadata } = parseICalString(icalString);
-    const { isADE, provider } = detectProvider(metadata.prodId);
-
+    const { isADE, isHyperplanning, provider } = detectProvider(metadata.prodId);
     return {
       events,
       calendarName: metadata.calendarName,
       isADE,
+      isHyperplanning,
       provider,
       url
     };
@@ -69,13 +70,12 @@ export async function getICalEventsForWeek(weekStart: Date, weekEnd: Date): Prom
   for (const ical of icals) {
     try {
       const { parsedData } = await processIcalData(ical);
-
       const weekEvents = filterEventsByWeek(parsedData.events, weekStart, weekEnd);
-
       const convertedEvents = convertMultipleEvents(weekEvents, {
         icalId: ical.id,
         icalTitle: ical.title,
         isADE: parsedData.isADE,
+        isHyperplanning: parsedData.isHyperplanning,
         intelligentParsing: (ical as any).intelligentParsing || false
       });
 

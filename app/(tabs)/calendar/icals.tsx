@@ -35,7 +35,7 @@ export default function TabOneScreen() {
 
     try {
       const parsedData = await fetchAndParseICal(normalizedUrl);
-      const shouldEnableParsing = parsedData.isADE ? true : intelligentParsing;
+      const shouldEnableParsing = (parsedData.isADE || parsedData.isHyperplanning) ? true : intelligentParsing;
 
       await addIcal(icalTitle, normalizedUrl, shouldEnableParsing);
       setIcalUrl("");
@@ -70,6 +70,7 @@ export default function TabOneScreen() {
             </Icon>
             <TextInput
               placeholder={t("Form_Title")}
+              placeholderTextColor={colors.text + '80'}
               value={icalTitle}
               onChangeText={setIcalTitle}
               style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
@@ -82,6 +83,7 @@ export default function TabOneScreen() {
           </Icon>
           <TextInput
             placeholder={t("Tab_Calendar_Icals_Add_URL")}
+            placeholderTextColor={colors.text + '80'}
             value={icalUrl}
             onChangeText={setIcalUrl}
             style={{ flex: 1, paddingVertical: 8, fontSize: 16, fontFamily: "medium", color: colors.text }}
@@ -99,6 +101,8 @@ export default function TabOneScreen() {
       <List>
         {icals.flatMap((ical, index) => {
           const isADE = (ical as any).provider?.toUpperCase().includes('ADE');
+          const isHyperplanning = (ical as any).provider?.toUpperCase().includes('HYPERPLANNING');
+          const supportsIntelligentParsing = isADE || isHyperplanning;
           const items = [
             <Item
               key={`${ical.id}-main`}
@@ -128,8 +132,8 @@ export default function TabOneScreen() {
             </Item>
           ];
 
-          // Only ADE calendars support intelligent parsing
-          if (isADE) {
+          // only ADE and Hyperplanning calendars support intelligent parsing
+          if (supportsIntelligentParsing) {
             items.push(
               <Item key={`${ical.id}-parsing`}>
                 <Icon>

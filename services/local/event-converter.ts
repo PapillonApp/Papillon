@@ -1,11 +1,13 @@
 import { Course as SharedCourse, CourseType } from '@/services/shared/timetable';
 import { ICalEvent } from './ical';
 import { parseADEDescription } from './parsers/ade-parser';
+import { parseHyperplanningDescription, isHyperplanningDescription } from './parsers/hyperplanning-parser';
 
 interface ConversionContext {
   icalId: string;
   icalTitle: string;
   isADE: boolean;
+  isHyperplanning: boolean;
   intelligentParsing: boolean;
 }
 
@@ -21,21 +23,34 @@ const DEFAULT_EVENT_DATA: ParsedEventData = {
   group: 'Inconnu'
 };
 
-function parseEventData(event: ICalEvent, isADE: boolean, intelligentParsing: boolean): ParsedEventData {
-  if (!isADE || !intelligentParsing) {
+function parseEventData(event: ICalEvent, isADE: boolean, isHyperplanning: boolean, intelligentParsing: boolean): ParsedEventData {
+  if (!intelligentParsing) {
     return DEFAULT_EVENT_DATA;
   }
 
-  const parsed = parseADEDescription(event.description || '');
-  if (!parsed) {
-    return DEFAULT_EVENT_DATA;
+  if (isHyperplanning || isHyperplanningDescription(event.description || '')) {
+    const parsed = parseHyperplanningDescription(event.description || '');
+    if (parsed) {
+      return {
+        type: parsed.type || DEFAULT_EVENT_DATA.type,
+        teacher: parsed.teacher || event.organizer || DEFAULT_EVENT_DATA.teacher,
+        group: parsed.group || DEFAULT_EVENT_DATA.group
+      };
+    }
   }
 
-  return {
-    type: parsed.type || DEFAULT_EVENT_DATA.type,
-    teacher: parsed.teacher || event.organizer || DEFAULT_EVENT_DATA.teacher,
-    group: parsed.groups?.join(',') || parsed.group || DEFAULT_EVENT_DATA.group
-  };
+  if (isADE) {
+    const parsed = parseADEDescription(event.description || '');
+    if (parsed) {
+      return {
+        type: parsed.type || DEFAULT_EVENT_DATA.type,
+        teacher: parsed.teacher || event.organizer || DEFAULT_EVENT_DATA.teacher,
+        group: parsed.groups?.join(',') || parsed.group || DEFAULT_EVENT_DATA.group
+      };
+    }
+  }
+
+  return DEFAULT_EVENT_DATA;
 }
 
 function calculateEventEndTime(event: ICalEvent): Date {
@@ -54,6 +69,7 @@ export function convertICalEventToSharedCourse(
   const { type, teacher, group } = parseEventData(
     event,
     context.isADE,
+    context.isHyperplanning,
     context.intelligentParsing
   );
 
