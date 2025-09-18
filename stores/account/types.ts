@@ -92,5 +92,6 @@ export enum Services {
   ECOLEDIRECTE,
   TURBOSELF,
   ARD,
-  IZLY
+  IZLY,
+  ALISE
 }

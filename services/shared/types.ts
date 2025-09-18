@@ -28,6 +28,7 @@ import { ARD } from "../ard";
 import { Balance } from "./balance";
 import { Izly } from "../izly";
 import { Identification } from "ezly";
+import { Alise } from "../alise";
 
 /** Represents a plugin for a school service.
  *
@@ -51,7 +52,7 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly | Alise>;
   getKids?: () => Kid[];
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;

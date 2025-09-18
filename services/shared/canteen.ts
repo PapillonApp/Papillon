@@ -48,5 +48,5 @@ export interface Booking extends GenericInterface  {
 	label: string,
 	canBook: boolean,
 	booked: boolean,
-	ref?: TurboBookingDay
+	ref?: TurboBookingDay | import("alise-api").BookingDay
 }
