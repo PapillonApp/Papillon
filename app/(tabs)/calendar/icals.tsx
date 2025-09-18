@@ -6,6 +6,7 @@ import { Alert, ScrollView, StyleSheet, TextInput, Switch } from "react-native";
 import { useAddIcal, useIcals, useRemoveIcal, useUpdateIcalParsing } from "@/database/useIcals";
 import { isValidUrl, normalizeUrl } from "@/services/local/ical-utils";
 import { fetchAndParseICal } from "@/services/local/ical";
+import { enhanceADEUrl } from "@/services/local/parsers/ade-parser";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
@@ -37,7 +38,9 @@ export default function TabOneScreen() {
       const parsedData = await fetchAndParseICal(normalizedUrl);
       const shouldEnableParsing = (parsedData.isADE || parsedData.isHyperplanning) ? true : intelligentParsing;
 
-      await addIcal(icalTitle, normalizedUrl, shouldEnableParsing);
+      const finalUrl = parsedData.isADE ? enhanceADEUrl(normalizedUrl) : normalizedUrl;
+
+      await addIcal(icalTitle, finalUrl, shouldEnableParsing, parsedData.provider);
       setIcalUrl("");
       setIcalTitle("");
       setIntelligentParsing(false);

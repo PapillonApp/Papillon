@@ -24,6 +24,18 @@ export function useTimetable(refresh = 0, weekNumber = 0) {
     fetchTimetable();
   }, [refresh, database, weekNumber]);
 
+  useEffect(() => {
+    const icalQuery = database.get('icals').query();
+    const subscription = icalQuery.observe().subscribe(() => {
+      const fetchTimetable = async () => {
+        const timetableFetched = await getCoursesFromCache(weekNumber);
+        setTimetable(timetableFetched);
+      };
+      fetchTimetable();
+    });
+    return () => subscription.unsubscribe();
+  }, [database, weekNumber]);
+
   return timetable;
 }
 

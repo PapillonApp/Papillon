@@ -1,7 +1,7 @@
 import { Course as SharedCourse } from '@/services/shared/timetable';
 import { parseICalString } from './parsers/ical-event-parser';
 import { detectProvider } from './ical-utils';
-import { getAllIcals, enhanceIcalIfNeeded, updateProviderIfUnknown } from './ical-database';
+import { getAllIcals, updateProviderIfUnknown } from './ical-database';
 import { convertMultipleEvents } from './event-converter';
 import { filterEventsByWeek } from './event-filter';
 
@@ -57,8 +57,6 @@ async function processIcalData(ical: any): Promise<{ parsedData: ParsedICalData;
     await updateProviderIfUnknown(ical, parsedData.provider || 'unknown');
     shouldUpdateIcal = true;
   }
-
-  await enhanceIcalIfNeeded(ical);
 
   return { parsedData, shouldUpdateIcal };
 }
