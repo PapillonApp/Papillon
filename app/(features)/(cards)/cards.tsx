@@ -37,6 +37,7 @@ export default function QRCodeAndCardsPage() {
 
   useFocusEffect(
     useCallback(() => {
+      setWallets([])
       fetchWallets();
     }, [])
   );
