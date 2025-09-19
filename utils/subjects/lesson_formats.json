@@ -957,7 +957,7 @@
   },
   {
     "label": "athletisme",
-    "pretty": "Athletisme",
+    "pretty": "Athlétisme",
     "emoji": "🏃",
     "formats": [
       "ATHLETISM",
@@ -1091,26 +1091,28 @@
     ]
   },
   {
-    "label": "badmington",
-    "pretty": "Badmington",
+    "label": "badminton",
+    "pretty": "Badminton",
     "emoji": "🏸",
     "formats": [
-      "BADMINGTON",
-      "BADMINGTON (accompagnement)",
-      "BADMINGlTON",
+      "badminton",
+      "BADMINTON",
+      "BADMINTON",
+      "BADMINTON (accompagnement)",
+      "BADMINlTON",
       "BAkDMiNeTON",
-      "badmingtno",
-      "badmington",
-      "bqadmintgon",
+      "badmintno",
+      "badminton",
+      "bqadminton",
       "fADMINGTrN",
-      "ofadlington",
-      "padmdngton",
-      "xBADMINGTrN"
+      "ofadlinton",
+      "padmdnton",
+      "xBADMINTrN"
     ]
   },
   {
     "label": "basketball",
-    "pretty": "Basket Ball",
+    "pretty": "Basket-Ball",
     "emoji": "🏀",
     "formats": [
       "BASET-BALL",
@@ -4476,7 +4478,7 @@
   },
   {
     "label": "histoiregeo",
-    "pretty": "Histoire Géographie",
+    "pretty": "Histoire-Géographie",
     "emoji": "🌍",
     "formats": [
       "Histeirl-Géographie",
@@ -5132,6 +5134,7 @@
     "pretty": "Latin",
     "emoji": "🏛️",
     "formats": [
+      "LCA LATIN",
       "LATIN",
       "LATIN LV2",
       "LATNI",
@@ -6387,7 +6390,7 @@
   },
   {
     "label": "physiquechimie",
-    "pretty": "Physique Chimie",
+    "pretty": "Physique-Chimie",
     "emoji": "🧪",
     "formats": [
       "PbysiquemChimdie",
@@ -7112,6 +7115,7 @@
   {
     "label": "sciencesvieterre",
     "pretty": "Sciences De La Vie & De La Terre",
+    "pretty": "Sciences de la Vie & de la Terre",
     "emoji": "🌍",
     "formats": [
       "SVT",
@@ -8328,7 +8332,7 @@
   },
   {
     "label": "volleyball",
-    "pretty": "Volley Ball",
+    "pretty": "Volley-Ball",
     "emoji": "🏐",
     "formats": [
       "VOLEY BALL",
