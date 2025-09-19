@@ -533,6 +533,12 @@ export class AccountManager {
       return new module.Izly(service.id);
     }
 
+    if (service.serviceId === Services.APPSCHO) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/appscho/index");
+      return new module.Appscho(service.id);
+    }
+
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }
