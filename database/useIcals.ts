@@ -19,12 +19,14 @@ export function useIcals(refresh = 0) {
 
 export function useAddIcal() {
   const database = useDatabase();
-  return useCallback(async (title: string, url: string) => {
+  return useCallback(async (title: string, url: string, intelligentParsing: boolean = false, provider: string = 'unknown') => {
     await safeWrite(database, async () => {
       await database.get('icals').create((ical: any) => {
         ical.title = title;
         ical.url = url;
         ical.lastUpdated = Date.now();
+        ical.intelligentParsing = intelligentParsing;
+        ical.provider = provider;
       });
     }, 10000, 'useAddIcal');
   }, [database]);
@@ -37,5 +39,17 @@ export function useRemoveIcal() {
       const ical = await database.get('icals').find(id);
       await ical.destroyPermanently();
     }, 10000, 'useRemoveIcal');
+  }, [database]);
+}
+
+export function useUpdateIcalParsing() {
+  const database = useDatabase();
+  return useCallback(async (id: string, intelligentParsing: boolean) => {
+    await safeWrite(database,async () => {
+      const ical = await database.get('icals').find(id);
+      await ical.update((ical: any) => {
+        ical.intelligentParsing = intelligentParsing;
+      });
+    }, 1000, 'useUpdateIcalParsing');
   }, [database]);
 }

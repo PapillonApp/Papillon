@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 
 import { Course as SharedCourse,CourseDay as SharedCourseDay } from "@/services/shared/timetable"
 import { generateId } from "@/utils/generateId";
-import {warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider"
 import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
+import { getICalEventsForWeek } from "@/services/local/ical";
 
 export function useTimetable(refresh = 0, weekNumber = 0) {
   const database = useDatabase();
@@ -23,6 +24,18 @@ export function useTimetable(refresh = 0, weekNumber = 0) {
     fetchTimetable();
   }, [refresh, database, weekNumber]);
 
+  useEffect(() => {
+    const icalQuery = database.get('icals').query();
+    const subscription = icalQuery.observe().subscribe(() => {
+      const fetchTimetable = async () => {
+        const timetableFetched = await getCoursesFromCache(weekNumber);
+        setTimetable(timetableFetched);
+      };
+      fetchTimetable();
+    });
+    return () => subscription.unsubscribe();
+  }, [database, weekNumber]);
+
   return timetable;
 }
 
@@ -34,7 +47,7 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
       for (const day of courses) {
         const dayTimestamp = day.date.getTime();
         const oneDayMs = 24 * 60 * 60 * 1000;
-        
+
         const dbCourses = await db.get<Course>('courses')
           .query(
             Q.where('from', Q.between(dayTimestamp, dayTimestamp + oneDayMs))
@@ -138,6 +151,17 @@ export async function getCoursesFromCache(weekNumber: number): Promise<SharedCou
       const dayKey = new Date(course.from).toISOString().split("T")[0];
       dayMap[dayKey] = dayMap[dayKey] || [];
       dayMap[dayKey].push(mapCourseToShared(course));
+    }
+
+    try {
+      const icalEvents = await getICalEventsForWeek(start, end);
+      for (const event of icalEvents) {
+        const dayKey = new Date(event.from).toISOString().split("T")[0];
+        dayMap[dayKey] = dayMap[dayKey] || [];
+        dayMap[dayKey].push(event);
+      }
+    } catch (icalError) {
+      console.warn('Error loading iCal events:', icalError);
     }
 
     for (const day in dayMap) {
