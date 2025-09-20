@@ -7,7 +7,7 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
     const account = await session.getInformations();
     
     if (!account) {
-      console.warn("Aucune information de compte disponible");
+      console.warn("No account information available");
       return [];
     }
     
@@ -32,7 +32,7 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
         }
       }
     } catch (error) {
-      console.warn("Erreur lors de la détection du prix des repas:", error);
+      console.warn("Error while detecting meal prices:", error);
     }
     
     return [{
@@ -44,7 +44,7 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
       createdByAccount: accountId
     }];
   } catch (error) {
-    console.error("Erreur lors de la récupération du solde Alise:", error);
+    console.error("Error retrieving Alise balance:", error);
     return [];
   }
 }
