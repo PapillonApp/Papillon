@@ -15,7 +15,7 @@ export async function fetchMultiNews(
     createdAt: new Date(item.pubDate),
     acknowledged: true,
     content: item.content,
-    author: t("Author_Unknown"),
+    author: t("Profile_News_Author_Unknown"),
     category: "Actualités",
     attachments: [
       {
