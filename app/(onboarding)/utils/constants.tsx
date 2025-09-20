@@ -1,9 +1,9 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { Services } from '@/stores/account/types';
-import { useTranslation } from 'react-i18next';
 
 export interface SupportedService {
     name: string;
@@ -67,7 +67,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
             variant: 'service' as const,
             color: 'light' as const,
         },
-        /*{
+        {
             name: "university",
             title: t("ONBOARDING_UNIVERSITY"),
             type: "other",
@@ -78,7 +78,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
             },
             variant: 'primary' as const,
             style: { backgroundColor: theme.dark ? colors.border : "black" },
-        }, */
+        },
         {
             name: "university",
             title: t("ONBOARDING_RESTAURANTS"),
@@ -113,7 +113,10 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_lorraine.png"),
             type: "main",
-            onPress: () => { }
+            onPress: () => {
+                redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
+
+            },
         },
         {
             name: "univ-nimes",
@@ -121,7 +124,10 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_nimes.png"),
             type: "main",
-            onPress: () => { }
+            onPress: () => {
+                redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
+
+            },
         },
         {
             name: "univ-uphf",
@@ -129,56 +135,59 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
             hasLimitedSupport: false,
             image: require("@/assets/images/univ_uphf.png"),
             type: "main",
-            onPress: () => { }
+            onPress: () => {
+                redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+
+            },
         },
-        {
-            name: "iut-lannion",
-            title: "IUT de Lannion",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/univ_lannion.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "limited-functions",
-            title: t("Feature_Limited"),
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_lannion.png"),
-            type: "separator",
-            onPress: () => { }
-        },
-        {
-            name: "univ-rennes-1",
-            title: "Université de Rennes 1",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_rennes1.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-rennes-2",
-            title: "Université de Rennes 2",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_rennes2.png"),
-            type: "main",
-            onPress: () => { }
-        },
-        {
-            name: "univ-limoges",
-            title: "Université de Limoges",
-            type: "main",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_limoges.png"),
-            onPress: () => { }
-        },
-        {
-            name: "univ_paris_sorbonne",
-            title: "Université de Sorbonne Paris Nord",
-            hasLimitedSupport: true,
-            image: require("@/assets/images/univ_paris_sorbonne.png"),
-            type: "main",
-            onPress: () => { }
-        }
+        // {
+        //     name: "iut-lannion",
+        //     title: "IUT de Lannion",
+        //     hasLimitedSupport: false,
+        //     image: require("@/assets/images/univ_lannion.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "limited-functions",
+        //     title: t("Feature_Limited"),
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_lannion.png"),
+        //     type: "separator",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-rennes-1",
+        //     title: "Université de Rennes 1",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_rennes1.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-rennes-2",
+        //     title: "Université de Rennes 2",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_rennes2.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ-limoges",
+        //     title: "Université de Limoges",
+        //     type: "main",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_limoges.png"),
+        //     onPress: () => { }
+        // },
+        // {
+        //     name: "univ_paris_sorbonne",
+        //     title: "Université de Sorbonne Paris Nord",
+        //     hasLimitedSupport: true,
+        //     image: require("@/assets/images/univ_paris_sorbonne.png"),
+        //     type: "main",
+        //     onPress: () => { }
+        // }
     ]
 }
 

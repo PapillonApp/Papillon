@@ -59,6 +59,10 @@ export default function OnboardingLayout() {
                     options={{ ...newScreenOptions }}
                 />
                 <Stack.Screen
+                    name="university/multi/credentials"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
                     name="pronote/url"
                     options={{ ...newScreenOptions }}
                 />
