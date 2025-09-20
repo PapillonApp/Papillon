@@ -409,14 +409,14 @@ const Course = React.memo(
                             >
                               {!!(status.label && status.label !== "") &&
                                 <Stack radius={300}
-                                  backgroundColor={skeleton ? colors.text + "09" : "#FFFFFF"}
+                                  backgroundColor={skeleton ? colors.text + "09" : colors.background}
                                   style={[styles.statusLabelContainer, { flexShrink: 1, maxWidth: "70%" }]}
                                 >
                                   <Typography
                                     variant="h4"
                                     style={[
                                       styles.statusLabel,
-                                      { color: textColor },
+                                      { color: textColor, padding: 4 },
                                     ]}
                                     skeleton={skeleton}
                                     numberOfLines={1}
