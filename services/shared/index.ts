@@ -536,9 +536,6 @@ export class AccountManager {
 
       const availableClients = this.getAvailableClients(capability);
 
-      log(
-        `Available clients for capability ${capability}: ${availableClients.length}`
-      );
       if (availableClients.length === 0) {
         log(
           `No clients available for capability ${capability}, falling back to cache`
