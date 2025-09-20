@@ -15,11 +15,14 @@ import Typography from "@/ui/components/Typography";
 import SettingsHeader from "@/components/SettingsHeader";
 import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/utils/services/helper";
 import { useTranslation } from "react-i18next";
+import { removeBalanceFromDatabase } from "@/database/useBalance";
+import { getManager } from "@/services/shared";
 
 export default function CardView() {
   const router = useRouter();
-  const store = useAccountStore.getState();
-  const account = store.accounts.find(account => account.id === store.lastUsedAccount);
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const account = accounts.find((a) => a.id === lastUsedAccount);
   const selfCompatible = account?.services.filter(
     service => {
       if (service.serviceId === Services.ECOLEDIRECTE) {
@@ -73,7 +76,12 @@ export default function CardView() {
                             text: "Supprimer",
                             style: "destructive",
                             onPress: () => {
-                              useAccountStore.getState().removeAccount(service);
+                              useAccountStore.getState().removeServiceFromAccount(service.id);
+                              removeBalanceFromDatabase(service.id)
+                              const manager = getManager()
+                              if (manager) {
+                                manager.removeService(service.id)
+                              }
                             },
                           },
                           {
@@ -85,17 +93,17 @@ export default function CardView() {
                     >
                       <Leading>
                         <Image source={getServiceBackground(service.serviceId)}
-                               style={{
-                                 width: 60,
-                                 height: 40,
-                                 borderRadius: 4,
-                               }}
+                          style={{
+                            width: 60,
+                            height: 40,
+                            borderRadius: 4,
+                          }}
                         />
                       </Leading>
                       <Trailing>
                         <Papicons name={"ChevronRight"}
-                                  fill={colors.text}
-                                  opacity={0.5}
+                          fill={colors.text}
+                          opacity={0.5}
                         />
                       </Trailing>
                       <Typography>{getServiceName(service.serviceId)}</Typography>
@@ -109,21 +117,21 @@ export default function CardView() {
                 })}
               </List>
               <Button color="blue"
-                      title="Ajouter"
-                      icon={<Papicons name="Plus" />}
-                      onPress={() => {
-                        router.push({
-                          pathname: "/(onboarding)/restaurants/method",
-                          params: {
-                            action: "addService",
-                          },
-                        });
-                      }}
+                title="Ajouter"
+                icon={<Papicons name="Plus" />}
+                onPress={() => {
+                  router.push({
+                    pathname: "/(onboarding)/restaurants/method",
+                    params: {
+                      action: "addService",
+                    },
+                  });
+                }}
               />
             </ScrollView>
           </View>
           <Typography variant="caption"
-                      style={{ opacity: 0.5 }}
+            style={{ opacity: 0.5 }}
           >{t("Feature_Add_Card")}</Typography>
         </>
       ) : (
@@ -139,40 +147,36 @@ export default function CardView() {
             }}
           >
             <Icon papicon
-                  opacity={0.5}
-                  size={32}
-                  style={{ marginBottom: 3 }}
+              opacity={0.5}
+              size={32}
+              style={{ marginBottom: 3 }}
             >
               <Papicons name={"Card"} />
             </Icon>
             <Typography variant="h4"
-                        color="text"
-                        align="center"
+              color="text"
+              align="center"
             >
               {t("Settings_Cards_None_Title")}
             </Typography>
             <Typography variant="body2"
-                        color="secondary"
-                        align="center"
+              color="secondary"
+              align="center"
             >
               {t("Settings_Cards_None_Description")}
             </Typography>
           </View>
           <Button color="blue"
-                  title={t("Settings_Cards_Add_Button")}
-                  icon={<Papicons name={"Plus"} />}
-                  onPress={() => {
-                    console.log("Current services:");
-                    account.services.forEach(service => {
-                      console.log(service.additionals);
-                    });
-                    router.push({
-                      pathname: "/(onboarding)/restaurants/method",
-                      params: {
-                        action: "addService",
-                      },
-                    });
-                  }}
+            title={t("Settings_Cards_Add_Button")}
+            icon={<Papicons name={"Plus"} />}
+            onPress={() => {
+              router.push({
+                pathname: "/(onboarding)/restaurants/method",
+                params: {
+                  action: "addService",
+                },
+              });
+            }}
           />
         </Stack>
       )

@@ -1,11 +1,10 @@
-import { useAccountStore } from "@/stores/account";
-import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
 import { Papicons } from "@getpapillon/papicons";
+import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -14,13 +13,16 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
+
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { getInitials } from "@/utils/chats/initials";
+import { useAccountStore } from "@/stores/account";
 import Avatar from "@/ui/components/Avatar";
-import { useTheme } from "@react-navigation/native";
+import Button from "@/ui/components/Button";
+import Icon from "@/ui/components/Icon";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import Typography from "@/ui/components/Typography";
+import { getInitials } from "@/utils/chats/initials";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -45,7 +47,7 @@ export default function CustomProfileScreen() {
   const insets = useSafeAreaInsets()
 
   const updateProfilePictureFromLibrary = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images', 'videos'],
       allowsEditing: true,
       aspect: [4, 3],
@@ -68,6 +70,7 @@ export default function CustomProfileScreen() {
   }
 
   const { colors } = useTheme();
+  const height = useHeaderHeight();
 
   return (
     <KeyboardAvoidingView
@@ -79,7 +82,7 @@ export default function CustomProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
           <Avatar
             size={117}
             initials={getInitials(`${firstName} ${lastName}`)}

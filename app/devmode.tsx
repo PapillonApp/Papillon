@@ -352,7 +352,6 @@ export default function Devmode() {
       <List>
         <Item
           onPress={async () => {
-            await database.unsafeResetDatabase()
             await database.write(async () => {
               await database.unsafeResetDatabase()
             })
