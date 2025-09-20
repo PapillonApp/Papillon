@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { Alise } from "@/services/alise";
 import { authenticateWithCredentials } from "alise-api";
+import { initializeAccountManager } from "@/services/shared";
 
 const ANIMATION_DURATION = 100;
 
@@ -85,6 +86,7 @@ export default function AliseLoginWithCredentials() {
       };
       if (action === "addService") {
         store.addServiceToAccount(store.lastUsedAccount, service);
+        await initializeAccountManager()
         router.back();
         return router.back();
       }
