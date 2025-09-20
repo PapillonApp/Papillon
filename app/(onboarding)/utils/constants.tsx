@@ -61,9 +61,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       title: "separator",
       type: "separator",
       image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => {
-
-      },
+      onPress: () => {},
       variant: 'service' as const,
       color: 'light' as const,
     },
@@ -74,7 +72,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       icon: <Papicons name={"Star"} />,
       onPress: () => {
         redirect({ pathname: './university/method' });
-
       },
       variant: 'primary' as const,
       style: { backgroundColor: theme.dark ? colors.border : "black" },
@@ -86,7 +83,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       icon: <Papicons name={"Cutlery"} />,
       onPress: () => {
         redirect({ pathname: './restaurants/method' });
-
       },
       variant: 'primary' as const,
       color: 'light' as const
@@ -115,7 +111,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
       type: "main",
       onPress: () => {
         redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
-
       },
     },
     {
@@ -126,7 +121,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
       type: "main",
       onPress: () => {
         redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
-
       },
     },
     {
@@ -137,7 +131,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
       type: "main",
       onPress: () => {
         redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
-
       },
     },
     /*{
