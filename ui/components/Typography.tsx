@@ -2,8 +2,8 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
 
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
@@ -27,7 +27,6 @@ export const VARIANTS = StyleSheet.create({
   caption: {
     fontSize: 14,
     fontFamily: FONT_FAMILIES.regular,
-    lineHeight: 20,
     letterSpacing: 0.1,
   },
   button: {
@@ -38,7 +37,7 @@ export const VARIANTS = StyleSheet.create({
   title: {
     fontSize: 17,
     fontFamily: FONT_FAMILIES.semibold,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   navigation: {
     fontSize: screenOptions.headerTitleStyle.fontSize || 18,
@@ -63,7 +62,7 @@ export const VARIANTS = StyleSheet.create({
   h4: {
     fontSize: 20,
     fontFamily: FONT_FAMILIES.bold,
-    lineHeight: 26,
+    lineHeight: 18,
   },
   h5: {
     fontSize: 18,
@@ -196,7 +195,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return "100%";
     }
 
-    if (skeleton)
+    if (skeleton) {
       return (
         <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
           {Array.from({ length: skeletonLines }).map((_, index) => (
@@ -214,6 +213,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ))}
         </View>
       );
+    }
 
     // Generate cache key for this specific combination
     const cacheKey = React.useMemo(() => {

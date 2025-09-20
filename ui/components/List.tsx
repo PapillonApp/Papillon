@@ -43,7 +43,7 @@ const BASE_CONTAINER_STYLE: ViewStyle = Object.freeze({
   borderCurve: "continuous",
   shadowColor: "#000000",
   shadowOffset: { width: 0, height: 0 },
-  shadowOpacity: 0.16,
+  shadowOpacity: 0.10,
   shadowRadius: 1.5,
   elevation: 1,
 });

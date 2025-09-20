@@ -1,15 +1,16 @@
-import { LegendList, LegendListProps } from '@legendapp/list';
-import React from 'react';
-import { FlatList, FlatListProps, View, StyleProp, ViewStyle, PressableProps } from 'react-native';
-import Item, { Leading, Trailing } from './Item';
-import Typography from './Typography';
-import Icon from './Icon';
-import Reanimated from 'react-native-reanimated';
-import { useTheme } from '@react-navigation/native';
-import Stack from './Stack';
+import { LegendList } from '@legendapp/list';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { useTheme } from '@react-navigation/native';
+import { FlashList } from '@shopify/flash-list';
+import React from 'react';
+import { FlatList, FlatListProps, PressableProps, StyleProp, ViewStyle } from 'react-native';
+import Reanimated from 'react-native-reanimated';
+
 import { runsIOS26 } from '../utils/IsLiquidGlass';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
+import Icon from './Icon';
+import Item, { Leading, Trailing } from './Item';
+import Stack from './Stack';
+import Typography from './Typography';
 
 interface SectionItem {
   leading?: React.ReactNode;
