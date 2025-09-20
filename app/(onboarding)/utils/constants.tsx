@@ -273,6 +273,16 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
             onPress: () => {
                 redirect({ pathname: '../izly/credentials' });
             }
+        },
+        {
+            name: "alise",
+            title: "Alise",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/alise.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../alise/credentials' });
+            }
         }
     ]
 }

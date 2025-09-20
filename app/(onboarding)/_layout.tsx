@@ -107,6 +107,11 @@ export default function OnboardingLayout() {
                     initialParams={{ action: "addAccount" }}
                 />
                 <Stack.Screen
+                    name="alise/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ action: "addAccount" }}
+                />
+                <Stack.Screen
                     name="skolengo/webview"
                     options={{ ...newScreenOptions }}
                     initialParams={{ ref: {} }}
