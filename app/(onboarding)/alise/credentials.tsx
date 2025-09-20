@@ -17,6 +17,7 @@ import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { Alise } from "@/services/alise";
+import { authenticateWithCredentials } from "alise-api";
 
 const ANIMATION_DURATION = 100;
 
@@ -60,6 +61,9 @@ export default function AliseLoginWithCredentials() {
     try {
       const accountId = uuid();
       const store = useAccountStore.getState();
+
+      const client = await authenticateWithCredentials(username, password, siteId);
+
       const alise = new Alise(accountId);
       const auth = {
         additionals: {
@@ -68,7 +72,10 @@ export default function AliseLoginWithCredentials() {
           site: siteId
         }
       };
-      await alise.refreshAccount(auth);
+
+      alise.session = client;
+      alise.authData = auth;
+
       const service = {
         id: accountId,
         auth,
@@ -83,9 +90,9 @@ export default function AliseLoginWithCredentials() {
       }
       store.addAccount({
         id: accountId,
-        firstName: "",
-        lastName: "",
-        schoolName: "",
+        firstName: client.account?.firstName || "",
+        lastName: client.account?.lastName || "",
+        schoolName: client.account?.establishment || "",
         services: [service],
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),
