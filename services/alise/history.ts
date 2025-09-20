@@ -6,7 +6,7 @@ export async function fetchAliseHistory(session: Client, accountId: string): Pro
     const history = await session.getFinancialHistory();
     
     if (!history || !Array.isArray(history)) {
-      console.warn("Aucun historique financier disponible ou format invalide");
+      console.warn("No financial history available or invalid format");
       return [];
     }
     
@@ -33,7 +33,7 @@ export async function fetchAliseHistory(session: Client, accountId: string): Pro
     return uniqueHistory.sort((a, b) => b.date.getTime() - a.date.getTime());
     
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'historique Alise:", error);
+    console.error("Error while retrieving Alise history:", error);
     return [];
   }
 }
