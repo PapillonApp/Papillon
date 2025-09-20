@@ -140,7 +140,7 @@ export default function AliseLoginWithCredentials() {
             autoPlay
             loop={false}
             style={{ width: 230, height: 230 }}
-            source={require("@/assets/lotties/ard.json")}
+            source={require("@/assets/lotties/alise.json")}
           />
         </Reanimated.View>
         <Reanimated.View style={{
