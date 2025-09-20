@@ -2,12 +2,10 @@ import { Client } from "alise-api";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 import { Balance } from "../shared/balance";
-import { Booking, BookingDay, CanteenHistoryItem, QRCode } from "../shared/canteen";
+import { CanteenHistoryItem } from "../shared/canteen";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
 import { fetchAliseBalance } from "./balance";
-import { fetchAliseBookingsWeek, setAliseMealBookState } from "./booking";
 import { fetchAliseHistory } from "./history";
-import { fetchAliseQRCode } from "./qrcode";
 import { refreshAliseAccount } from "./refresh";
 
 export class Alise implements SchoolServicePlugin {
@@ -16,9 +14,7 @@ export class Alise implements SchoolServicePlugin {
   capabilities: Capabilities[] = [
     Capabilities.REFRESH,
     Capabilities.CANTEEN_BALANCE,
-    Capabilities.CANTEEN_BOOKINGS,
-    Capabilities.CANTEEN_HISTORY,
-    Capabilities.CANTEEN_QRCODE
+    Capabilities.CANTEEN_HISTORY
   ];
   session: any = undefined;
   authData: Auth = {};
@@ -32,45 +28,37 @@ export class Alise implements SchoolServicePlugin {
   checkTokenValidty = () => true;
 
   async refreshAccount(credentials: Auth): Promise<Alise> {
-    const refresh = await refreshAliseAccount(this.accountId, credentials);
-    this.authData = refresh.auth;
-    this.session = refresh.session;
-    return this;
+    try {
+      const refresh = await refreshAliseAccount(this.accountId, credentials);
+      this.authData = refresh.auth;
+      this.session = refresh.session;
+      return this;
+    } catch (refreshError) {
+      error("Failed to refresh Alise account", "Alise.refreshAccount");
+    }
   }
 
   async getCanteenBalances(): Promise<Balance[]> {
-    if (this.session) {
-      return fetchAliseBalance(this.session, this.accountId);
+    if (!this.session) {
+      error("Session is not valid", "Alise.getCanteenBalances");
     }
-    error("Session is not valid", "Alise.getCanteenBalances");
-    return [];
+    try {
+      return await fetchAliseBalance(this.session, this.accountId);
+    } catch (err) {
+      error("Failed to fetch canteen balances", "Alise.getCanteenBalances");
+    }
   }
 
   async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
-    if (this.session) {
-      return fetchAliseHistory(this.session, this.accountId);
+    if (!this.session) {
+      error("Session is not valid", "Alise.getCanteenTransactionsHistory");
     }
-    error("Session is not valid", "Alise.getCanteenTransactionsHistory");
-    return [];
+    try {
+      return await fetchAliseHistory(this.session, this.accountId);
+    } catch (err) {
+      error("Failed to fetch canteen history", "Alise.getCanteenTransactionsHistory");
+    }
   }
 
-  async getCanteenQRCodes(): Promise<QRCode> {
-    if (this.session) {
-      return fetchAliseQRCode(this.session, this.accountId);
-    }
-    error("Session is not valid", "Alise.getCanteenQRCodes");
-    return { type: 0, data: "", createdByAccount: this.accountId };
-  }
 
-  async getCanteenBookingWeek(weekNumber: number): Promise<BookingDay[]> {
-    if (this.session) {
-      return fetchAliseBookingsWeek(this.session, this.accountId, weekNumber);
-    }
-    error("Session is not valid", "Alise.getCanteenBookingWeek");
-    return [];
-  }
-
-  async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
-    return setAliseMealBookState(meal, booked);
-  }
 }
