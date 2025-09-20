@@ -24,7 +24,7 @@ module.exports = {
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
-      icon: "./assets/images/icon.png",
+      icon: "./assets/app.icon",
       minimumOSVersion: "17.6",
       infoPlist: {
         CFBundleURLTypes: [
@@ -47,7 +47,7 @@ module.exports = {
       },
       edgeToEdgeEnabled: true,
       splash: {
-        image: "./assets/images/splash.png",
+        image: "./assets/images/splash_android.png",
         resizeMode: "cover",
         backgroundColor: "#003A21",
       },

@@ -7,7 +7,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native-gesture-handler";
 
 import adjust from "@/utils/adjustColor";
-import { getServiceColor, getServiceName } from "@/utils/services/helper";
+import { getCodeType, getServiceColor } from "@/utils/services/helper";
 import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 
@@ -140,7 +140,6 @@ export default function QRCodeAndCardsPage() {
         key={`calendar-${date.toISOString()}`}
         date={date}
         onDateChange={handleDateChange}
-        topInset={48}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -159,7 +158,7 @@ export default function QRCodeAndCardsPage() {
 
           {qrcode && (
             <AnimatedPressable
-              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode } })}
+              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode, type: getCodeType(service), service } })}
               style={{
                 width: "100%",
                 backgroundColor: colors.background,
@@ -255,6 +254,8 @@ export default function QRCodeAndCardsPage() {
             </View>
           )}
 
+
+
           {history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
               <Stack direction="horizontal" style={{ flex: 1, borderRightWidth: 1, borderRightColor: colors.border }} gap={5}>
@@ -264,8 +265,8 @@ export default function QRCodeAndCardsPage() {
                 <Typography color="secondary">{t("Profile_Cards_History")}</Typography>
               </Stack>
               <List>
-                {history.slice(0, 10).map(c =>
-                  <Item key={c.label}>
+                {history.slice(0, 10).map((c, index) =>
+                  <Item key={`${c.label}-${c.date.getTime()}-${index}`}>
                     <Trailing>
                       <ContainedNumber color={adjust(c.amount < 0 ? "#C50000" : "#42C500", -0.1)}>
                         {c.amount > 0 ? "+" : ""}{(c.amount / 100).toFixed(2)} {c.currency}

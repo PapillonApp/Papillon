@@ -19,6 +19,7 @@ import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAlert } from '@/ui/components/AlertProvider';
 
 const ANIMATION_DURATION = 100;
 
@@ -33,6 +34,7 @@ export default function TurboSelfLoginWithCredentials() {
   const action = String(params.action);
 
   const opacity = useSharedValue(1);
+  const alert = useAlert();
   const scale = useSharedValue(1);
 
   const keyboardListeners = useMemo(() => ({
@@ -59,60 +61,71 @@ export default function TurboSelfLoginWithCredentials() {
   }, [keyboardListeners]);
 
   const loginTurboself = async () => {
-    const authentification = await authenticateWithCredentials(username, password, true, false)
-    const siblings = await authentification.getSiblings();
-    if (siblings.length === 0) {
-      const accountId = uuid()
-      const store = useAccountStore.getState()
-      const service = {
-        id: accountId,
-        auth: {
-          additionals: {
-            username,
-            password,
-            "hoteId": authentification.host?.id ?? "N/A"
+    try {
+      const authentification = await authenticateWithCredentials(username, password, true, false)
+      const siblings = await authentification.getSiblings();
+      if (siblings.length === 0) {
+        const accountId = uuid()
+        const store = useAccountStore.getState()
+        const service = {
+          id: accountId,
+          auth: {
+            additionals: {
+              username,
+              password,
+              "hoteId": authentification.host?.id ?? "N/A"
+            }
+          },
+          serviceId: Services.TURBOSELF,
+          createdAt: (new Date()).toISOString(),
+          updatedAt: (new Date()).toISOString()
+        }
+
+        if (action === "addService") {
+          store.addServiceToAccount(store.lastUsedAccount, service)
+          router.back();
+          router.back();
+          return router.back();
+        }
+
+        store.addAccount({
+          id: accountId,
+          firstName: authentification.host?.firstName ?? "N/A",
+          lastName: authentification.host?.lastName ?? "N/A",
+          schoolName: authentification.establishment?.name,
+          className: authentification.host?.division,
+          services: [service],
+          createdAt: (new Date()).toISOString(),
+          updatedAt: (new Date()).toISOString()
+        })
+
+        store.setLastUsedAccount(accountId)
+        return router.push({
+          pathname: "../end/color",
+          params: {
+            accountId
           }
-        },
-        serviceId: Services.TURBOSELF,
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
+        });
       }
 
-      if (action === "addService") {
-        store.addServiceToAccount(store.lastUsedAccount, service)
-        router.back();
-        router.back();
-        return router.back();
-      }
-
-      store.addAccount({
-        id: accountId,
-        firstName: authentification.host?.firstName ?? "N/A",
-        lastName: authentification.host?.lastName ?? "N/A",
-        schoolName: authentification.establishment?.name,
-        className: authentification.host?.division,
-        services: [service],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
-      })
-
-      store.setLastUsedAccount(accountId)
       return router.push({
-        pathname: "../end/color",
+        pathname: "./hostSelector",
         params: {
-          accountId
+          siblings: JSON.stringify(siblings),
+          username,
+          password
         }
       });
+    } catch (error) {
+      return alert.showAlert({
+        title: "Identifiants incorrects",
+        description: "Nous n’avons pas réussi à te connecter à ton compte TurboSelf. Vérifie ton identifiant et ton mot de passe puis essaie de nouveau.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(error),
+        withoutNavbar: true
+      })
     }
-
-    return router.push({
-      pathname: "./hostSelector",
-      params: {
-        siblings: JSON.stringify(siblings),
-        username,
-        password
-      }
-    });
   }
 
   return (
@@ -179,7 +192,7 @@ export default function TurboSelfLoginWithCredentials() {
           </Stack>
           <Typography
             variant="h1"
-            style={{ color:'#FFF', fontSize: 32, lineHeight: 34 }}
+            style={{ color: '#FFF', fontSize: 32, lineHeight: 34 }}
           >
             {t("ONBOARDING_LOGIN_CREDENTIALS")} TurboSelf
           </Typography>

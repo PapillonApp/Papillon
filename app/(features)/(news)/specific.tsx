@@ -13,6 +13,7 @@ import * as Papicons from '@getpapillon/papicons';
 import { VARIANTS } from "@/ui/components/Typography";
 
 import HTMLView from 'react-native-htmlview';
+import * as WebBrowser from 'expo-web-browser';
 import { useTheme } from "@react-navigation/native";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { MenuView } from "@react-native-menu/menu";
@@ -143,7 +144,15 @@ export default function NewsPage() {
             <List>
               {news.attachments.map((attachment, i) => (
                 <Item key={i}
-                  onPress={() => { Linking.openURL(attachment.url) }}
+                  onPress={() => {
+                    WebBrowser.openBrowserAsync(
+                      attachment.url,
+                      {
+                        controlsColor: colors.primary,
+                        dismissButtonStyle: 'done'
+                      }
+                    )
+                  }}
                 >
                   <Icon papicon>
                     {attachment.type === 0 ? (

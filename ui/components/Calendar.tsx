@@ -11,6 +11,11 @@ import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
+
 export interface CalendarProps {
   date?: Date;
   onDateChange?: (date: Date) => void;
@@ -88,13 +93,13 @@ const Calendar: React.FC<CalendarProps> = ({
             borderWidth: 0.5,
             borderRadius: 16,
             top: 4,
-            backgroundColor: colors.background + "CF",
+            backgroundColor: runsIOS26 ? "transparent" : colors.background + "CF",
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
-          <BlurView
-            tint={"prominent"}
+          <LiquidGlassView
+            effect='regular'
             style={{
               position: "absolute",
               top: 0,

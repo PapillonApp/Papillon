@@ -1,18 +1,28 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Dimensions,
   FlatList,
+  KeyboardAvoidingView,
+  Modal,
   Platform,
+  PlatformColor,
   Pressable,
   RefreshControl,
   Text,
+  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
+
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
@@ -41,6 +51,9 @@ import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from 
 import { generateId } from "@/utils/generateId";
 import { useAccountStore } from "@/stores/account";
 import { MenuView } from "@react-native-menu/menu";
+import { useNavigation } from "expo-router";
+import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -257,6 +270,7 @@ export default function TabOneScreen() {
       return null;
     return (
       <TaskItem
+        key={item.id}
         item={item}
         index={index}
         fromCache={!inFresh}
@@ -354,8 +368,121 @@ export default function TabOneScreen() {
     return [...homeworksFromCache].sort(sortingMethod);
   }, [homeworksFromCache, selectedMethod]);
 
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchTermState, setSearchTermState] = useState("");
+
+  const searchResult = useMemo(() => {
+    if (!showSearch || searchTermState.length === 0) return [];
+    return sortedHomeworks.filter(hw => {
+      const content = hw.content.toLowerCase();
+      const subject = hw.subject.toLowerCase();
+      const searchTerm = searchTermState.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
+      return content.includes(searchTerm) || subject.includes(searchTerm);
+    }).slice(0, 5); // limit to 5 results
+  }, [showSearch, sortedHomeworks, searchTermState]);
+
+  const insets = useSafeAreaInsets();
+
   return (
     <>
+      <Modal
+        visible={showSearch}
+        animationType="fade"
+        transparent={true}
+      >
+        <BlurView intensity={70} style={{ backgroundColor: "rgba(0, 0, 0, 0.1)", flex: 1, alignContent: "center", justifyContent: "flex-start" }} tint={theme.dark ? "dark" : "light"} experimentalBlurMethod="dimezisBlurView">
+          <KeyboardAvoidingView behavior="padding">
+            <LiquidGlassContainerView
+              style={{
+                position: "absolute",
+                top: insets.top + 10,
+                zIndex: 1000000,
+                flexDirection: "row",
+                width: Dimensions.get('window').width - 32,
+                left: 16,
+                paddingHorizontal: 0,
+                height: 46,
+                gap: 12,
+              }}
+            >
+              <LiquidGlassView
+                interactive
+                style={{
+                  flex: 1,
+                  borderRadius: 160,
+                  borderCurve: "continuous",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  paddingHorizontal: 16,
+                  gap: 10,
+                  flexDirection: "row",
+                  backgroundColor: runsIOS26 ? "transparent" : theme.colors.text + "11",
+                }}
+                effect="regular"
+                tintColor={"#00000000"}
+              >
+                <Papicons name={"Search"} color={colors.text} size={24} opacity={0.5} />
+                <TextInput
+                  placeholder={t('Tasks_Search_Placeholder')}
+                  placeholderTextColor={colors.text + "56"}
+                  style={{
+                    fontFamily: "medium",
+                    fontSize: 18,
+                    flex: 1,
+                    color: colors.text,
+                  }}
+                  value={searchTermState}
+                  onChangeText={setSearchTermState}
+                  autoFocus
+                />
+
+                {showSearch && searchTermState.length > 0 && (
+                  <Pressable onPress={() => setSearchTermState("")} hitSlop={16}>
+                    <Papicons name={"cross"} color={colors.text} size={18} opacity={0.5} />
+                  </Pressable>
+                )}
+              </LiquidGlassView>
+
+              <LiquidGlassView
+                interactive
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 160,
+                  borderCurve: "continuous",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                effect="regular"
+              >
+                <Pressable onPress={() => setShowSearch(false)} hitSlop={32}>
+                  <Papicons name={"cross"} color={PlatformColor('labelColor')} size={24} opacity={0.5} />
+                </Pressable>
+              </LiquidGlassView>
+            </LiquidGlassContainerView>
+
+            <LayoutAnimationConfig skipEntering skipExiting>
+              <Reanimated.FlatList
+                data={searchResult}
+                style={{
+                }}
+                contentContainerStyle={{
+                  paddingTop: insets.top + 72,
+                  paddingBottom: insets.bottom,
+                  paddingHorizontal: 20,
+                  gap: 16,
+                }}
+                itemLayoutAnimation={LinearTransition}
+                showsVerticalScrollIndicator={false}
+                renderItem={renderItem}
+                keyExtractor={keyExtractor}
+                ListEmptyComponent={<EmptyListComponent />}
+              />
+            </LayoutAnimationConfig>
+          </KeyboardAvoidingView>
+        </BlurView>
+      </Modal>
+
       <TabFlatList
         radius={36}
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
@@ -449,100 +576,108 @@ export default function TabOneScreen() {
       {/* Picker */}
       {showWeekPicker && (
         <Reanimated.View
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
           style={{
-            height: 60,
-            width: 300,
-            backgroundColor: colors.card,
-            borderRadius: 16,
-            boxShadow: "0px 0px 32px rgba(0, 0, 0, 0.25)",
             position: "absolute",
-            top: headerHeight - 6,
+            top: headerHeight,
             alignSelf: "center",
             zIndex: 1000000,
             transformOrigin: "center top",
           }}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
         >
-          <View
+          <LiquidGlassView
             style={{
-              position: "absolute",
-              alignSelf: "center",
-              top: 5,
-              height: 50,
-              width: 50,
-              borderRadius: 16,
-              borderCurve: "continuous",
-              borderWidth: 2,
-              borderColor: "#C54CB3",
-            }}
-          />
-
-          <FlatList
-            onLayout={() => {
-              layoutPicker();
-            }}
-            data={Array.from({ length: 56 }, (_, i) => i)}
-            initialScrollIndex={selectedWeek}
-            getItemLayout={(data, index) => (
-              { length: 60, offset: 60 * index, index }
-            )}
-            keyExtractor={(item) => "picker:" + item.toString()}
-            horizontal
-            removeClippedSubviews={true}
-            showsHorizontalScrollIndicator={false}
-            style={{
-              flexGrow: 0,
-              height: 100,
+              height: 60,
               width: 300,
+              backgroundColor: runsIOS26 ? "transparent" : colors.card,
+              borderRadius: 16,
+              boxShadow: runsIOS26 ? undefined : "0px 0px 32px rgba(0, 0, 0, 0.25)",
             }}
-            contentContainerStyle={{
-              alignItems: "center",
-              gap: 0,
-              paddingLeft: 300 / 2 - 30, // center the picker
-              paddingRight: 300 / 2 - 30, // center the picker
-            }}
-            snapToInterval={60}
-            decelerationRate="fast"
-            ref={WeekPickerRef}
-            onScroll={handleWeekScroll}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => {
-                  setSelectedWeek(item);
-                  setShowWeekPicker(false);
-                }}
-                style={[
-                  {
-                    width: 40,
-                    height: 40,
-                    margin: 10,
-                    borderRadius: 12,
-                    borderCurve: "continuous",
-                    backgroundColor: colors.background,
-                    borderColor: colors.text + "22",
-                    borderWidth: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  },
-                  item === selectedWeek && {
-                    backgroundColor: "#C54CB3",
-                    boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
-                  }
-                ]}
-              >
-                <Text
-                  style={{
-                    color: item === selectedWeek ? "#FFF" : colors.text,
-                    fontSize: 16,
-                    fontFamily: item === selectedWeek ? "bold" : "medium",
+            effect="regular"
+            interactive={true}
+          >
+            <View
+              style={{
+                position: "absolute",
+                alignSelf: "center",
+                top: 5,
+                height: 50,
+                width: 50,
+                borderRadius: 16,
+                borderCurve: "continuous",
+                borderWidth: 2,
+                borderColor: "#C54CB3",
+              }}
+            />
+
+            <FlatList
+              onLayout={() => {
+                layoutPicker();
+              }}
+              data={Array.from({ length: 56 }, (_, i) => i)}
+              initialScrollIndex={selectedWeek}
+              getItemLayout={(data, index) => (
+                { length: 60, offset: 60 * index, index }
+              )}
+              keyExtractor={(item) => "picker:" + item.toString()}
+              horizontal
+              removeClippedSubviews={true}
+              showsHorizontalScrollIndicator={false}
+              style={{
+                flexGrow: 0,
+                height: 100,
+                width: 300,
+              }}
+              contentContainerStyle={{
+                alignItems: "center",
+                gap: 0,
+                paddingLeft: 300 / 2 - 30, // center the picker
+                paddingRight: 300 / 2 - 30, // center the picker
+              }}
+              snapToInterval={60}
+              decelerationRate="fast"
+              ref={WeekPickerRef}
+              initialNumToRender={10}
+              onScroll={handleWeekScroll}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => {
+                    setSelectedWeek(item);
+                    setShowWeekPicker(false);
                   }}
+                  style={[
+                    {
+                      width: 40,
+                      height: 40,
+                      margin: 10,
+                      borderRadius: 12,
+                      borderCurve: "continuous",
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
+                      borderColor: colors.text + "22",
+                      borderWidth: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                    item === selectedWeek && {
+                      backgroundColor: "#C54CB3",
+                      boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
+                    }
+                  ]}
                 >
-                  {item}
-                </Text>
-              </Pressable>
-            )}
-          />
+                  <Text
+                    style={{
+                      color: item === selectedWeek ? "#FFF" : colors.text,
+                      fontSize: 16,
+                      fontFamily: item === selectedWeek ? "bold" : "medium",
+                    }}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </LiquidGlassView>
         </Reanimated.View>
       )}
 
@@ -558,12 +693,26 @@ export default function TabOneScreen() {
                 image: method.image ? method.image : undefined,
                 imageColor: colors.text,
               })),
-
+              image: Platform.select({
+                ios: "arrow.up.arrow.down"
+              }),
+              imageColor: colors.text,
+              displayInline: true
             },
             {
-              title: t('Task_OnlyShowUndone'),
-              id: 'only-undone',
-              state: (showUndoneOnly ? 'on' : 'off'),
+              title: t('Task_Show_Title'),
+              subactions: [
+                {
+                  title: t('Task_OnlyShowUndone'),
+                  id: 'only-undone',
+                  state: (!showUndoneOnly ? 'on' : 'off'),
+                  image: Platform.select({
+                    ios: "flag.pattern.checkered"
+                  }),
+                  imageColor: colors.text,
+                }
+              ],
+              displayInline: true
             }
           ]}
           onPressAction={({ nativeEvent }) => {
@@ -585,7 +734,7 @@ export default function TabOneScreen() {
             <Papicons name={"Filter"} color={"#C54CB3"} size={28} />
           </NativeHeaderPressable>
         </MenuView>
-      </NativeHeaderSide>
+      </NativeHeaderSide >
 
 
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
@@ -639,7 +788,8 @@ export default function TabOneScreen() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
           onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+            setSearchTermState("");
+            setShowSearch(true);
           }}
         >
           <Papicons name={"Search"} color={"#C54CB3"} size={26} />

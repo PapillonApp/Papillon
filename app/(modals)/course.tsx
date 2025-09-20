@@ -17,6 +17,7 @@ import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
 import { getStatusText } from "../(tabs)/calendar";
+import { getSubjectName } from '@/utils/subjects/name';
 
 interface SubjectInfo {
   name: string;
@@ -79,7 +80,7 @@ export default function CourseModal() {
               {
                 papicon: <Papicons.Clock />,
                 title: t("Modal_Course_Duration"),
-                description: formatDistanceStrict(startTime * 1000, endTime * 1000, {locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS})
+                description: formatDistanceStrict(startTime * 1000, endTime * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
               }
             ]
           }
@@ -96,7 +97,7 @@ export default function CourseModal() {
             <Reanimated.View>
               <Course
                 id={item.id}
-                name={item.subject}
+                name={getSubjectName(item.subject)}
                 teacher={item.teacher}
                 room={item.room}
                 color={subjectInfo.color}
@@ -137,7 +138,7 @@ export default function CourseModal() {
                         : t("Modal_Course_StartedAgo")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime:endTime) * 1000, {locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS})}
+                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime : endTime) * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })}
                   </Typography>
                 </Stack>
                 <Stack
@@ -154,7 +155,7 @@ export default function CourseModal() {
                     {t("Modal_Course_Group")}
                   </Typography>
                   <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {item.group || t("Modal_Course_Group_Full")}
+                    {item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")}
                   </Typography>
                 </Stack>
               </View>

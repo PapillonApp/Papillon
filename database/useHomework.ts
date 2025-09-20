@@ -9,6 +9,7 @@ import { warn } from "@/utils/logger/logger";
 
 import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
 import Homework from './models/Homework';
+import { safeWrite } from "./utils/safeTransaction";
 
 function mapHomeworkToShared(homework: Homework): SharedHomework {
   return {
@@ -68,7 +69,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
     const existing = await db.get('homework').query(Q.where('homeworkId', id)).fetch();
 
     if (existing.length === 0) {
-      await db.write(async () => {
+      await safeWrite(db, async () => {
         await db.get('homework').create((record: Model) => {
           const homework = record as Homework;
           Object.assign(homework, {
@@ -86,10 +87,10 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
             fromCache: true
           });
         });
-      });
+      }, 10000, 'addHomeworkToDatabase');
     } else {
       const recordToUpdate = existing[0];
-      await db.write(async () => {
+      await safeWrite(db, async () => {
         await recordToUpdate.update((record: Model) => {
           const homework = record as Homework;
           Object.assign(homework, {
@@ -106,7 +107,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
             fromCache: true,
           });
         });
-      });
+      }, 10000, 'updateHomeworkToDatabase');
     }
   }
 }
@@ -123,12 +124,12 @@ export async function updateHomeworkIsDone(homeworkId: string, isDone: boolean) 
 
   const recordToUpdate = existing[0];
 
-  await db.write(async () => {
+  await safeWrite(db, async () => {
     await recordToUpdate.update((record: Model) => {
       const homework = record as Homework;
       homework.isDone = isDone;
     });
-  });
+  }, 10000, 'updateHomeworkIsDone');
 }
 
 export function getDateRangeOfWeek(weekNumber: number, year = new Date().getFullYear()) {
