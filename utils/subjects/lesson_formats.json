@@ -553,7 +553,11 @@
       "anllaishlv1",
       "antlai dlv2",
       "arglaiv",
-      "aznglasi"
+      "aznglasi",
+      "AGL1",
+      "AGL L1",
+      "AGL LV1",
+      "AGL LV1"
     ]
   },
   {
@@ -2248,6 +2252,51 @@
     ]
   },
   {
+    "label": "ses",
+    "pretty": "Sciences Économiques Et Sociales",
+    "emoji": "📊",
+    "formats": [
+      "Sciences économiques et sociales",
+      "Sciences économiques et sociale",
+      "Sciences économqiues et sociales",
+      "Sciences economiques et sociales",
+      "Sciences écnoomiques et sociaules",
+      "Sciences éconmoiques et sociles",
+      "Sciences économiques et soiales",
+      "Sciences économiques gt sociales",
+      "Sciences économiques sociales",
+      "Sciences économiquese t sociales",
+      "Sciences écsonomiques et socieles",
+      "Sfiences économiqhes et sociales",
+      "cyiences économiques et socialex",
+      "Scienceséconomiquesetsociales",
+      "Sciences Économiques Et Sociales",
+      "sciences economiques et sociales",
+      "sciences economiques et sociale",
+      "cyiences economiques et socialex",
+      "sciences ecnoomiques et sociaules",
+      "sciences econmoiques et sociles",
+      "sciences economiques et soiales",
+      "sciences economiques gt sociales",
+      "sciences economiques sociales",
+      "sciences economiquese t sociales",
+      "sciences economqiues et sociales",
+      "sciences ecsonomiques et socieles",
+      "scienceseconomiquesetsociales",
+      "SES",
+      "SEs",
+      "SeS",
+      "sES",
+      "Ses",
+      "seS",
+      "sEs",
+      "S.E.S.",
+      "S.E.S",
+      "sfiences economiqhes et sociales",
+      "esciences economiques et sociales",
+    ]
+  },
+  {
     "label": "echecs",
     "pretty": "Echecs",
     "emoji": "♟️",
@@ -2889,7 +2938,8 @@
       "edphysiqueampsport",
       "eq phylique amp s port",
       "uD.HPoSIQUE &amp; SPORT.",
-      "ud hposique amp sport"
+      "ud hposique amp sport",
+      "ED.PHYSIQUE &amp SPORT."
     ]
   },
   {
