@@ -10,7 +10,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenKind, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -74,6 +74,18 @@ export class AccountManager {
         Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
+  }
+
+  async getCanteenKind(clientId: string): Promise<CanteenKind> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BALANCE,
+      async client =>
+        client.getCanteenKind ? client.getCanteenKind() : CanteenKind.ARGENT,
+      {
+        multiple: false,
+        clientId
+      }
+    );
   }
 
   async getKids(): Promise<Kid[]> {
