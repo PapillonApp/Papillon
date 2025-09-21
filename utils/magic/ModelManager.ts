@@ -68,6 +68,8 @@ class ModelManager {
   private oovIndex = 1;
   private isInitializing = false;
   private hasInitialized = false;
+  private predictionQueue: Array<() => Promise<any>> = [];
+  private isProcessingQueue = false;
 
   static getInstance(): ModelManager {
     if (!ModelManager.instance) {
@@ -336,7 +338,8 @@ class ModelManager {
     try {
       await this.loadFromDirectory(ptr.dir);
       return `dynamic:${ptr.version}`;
-    } catch (_e) {
+    } catch (e) {
+      log(`[MODELMANAGER] Échec du chargement du modèle: ${String(e)}`);
       try {
         const MODELS_ROOT = new Directory(Paths.document, "papillon-models");
         const CURRENT_PTR = new File(MODELS_ROOT, "current.json");
@@ -363,6 +366,18 @@ class ModelManager {
       const tokenizerFile = new File(dirUri + "model/tokenizer.json");
       const labelsFile = new File(dirUri + "model/labels.json");
 
+      // Vérifier que tous les fichiers requis existent
+      const modelFile = new File(modelUri);
+      if (!modelFile.exists) {
+        throw new Error(`Fichier modèle manquant: ${modelUri}`);
+      }
+      if (!tokenizerFile.exists) {
+        throw new Error(`Fichier tokenizer manquant: ${tokenizerFile.uri}`);
+      }
+      if (!labelsFile.exists) {
+        throw new Error(`Fichier labels manquant: ${labelsFile.uri}`);
+      }
+
       this.model = await loadTensorflowModel({ url: modelUri });
 
       const tokenizerRaw = await tokenizerFile.text();
@@ -371,12 +386,22 @@ class ModelManager {
       this.tokenizerConfig = config;
 
       const wordIndexFile = new File(dirUri + "model/word_index.json");
+      const indexWordFile = new File(dirUri + "model/index_word.json");
 
       let wordIndex: Record<string, number> = {};
 
       if (wordIndexFile.exists) {
         const wordIndexRaw = await wordIndexFile.text();
         wordIndex = JSON.parse(wordIndexRaw);
+      } else if (indexWordFile.exists) {
+        const indexWordRaw = await indexWordFile.text();
+        const indexWord = JSON.parse(indexWordRaw);
+        wordIndex = {};
+        for (const [index, word] of Object.entries(indexWord)) {
+          if (typeof word === "string") {
+            wordIndex[word] = parseInt(index, 10);
+          }
+        }
       } else if (tokenizerJson.word_index) {
         wordIndex = tokenizerJson.word_index;
       } else if (tokenizerJson.index_word) {
@@ -461,7 +486,50 @@ class ModelManager {
     return sequence;
   }
 
+  private async processQueue(): Promise<void> {
+    if (this.isProcessingQueue || this.predictionQueue.length === 0) {
+      return;
+    }
+
+    this.isProcessingQueue = true;
+
+    while (this.predictionQueue.length > 0) {
+      const task = this.predictionQueue.shift();
+      if (task) {
+        try {
+          await task();
+        } catch (error) {
+          log(`[QUEUE ERROR] Error processing prediction: ${String(error)}`);
+        }
+      }
+    }
+
+    this.isProcessingQueue = false;
+  }
+
+  private async queuePrediction<T>(task: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.predictionQueue.push(async () => {
+        try {
+          const result = await task();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      this.processQueue();
+    });
+  }
+
   async predict(
+    text: string,
+    verbose: boolean = false
+  ): Promise<ModelPrediction | { error: string; success: false }> {
+    return this.queuePrediction(() => this.predictInternal(text, verbose));
+  }
+
+  private async predictInternal(
     text: string,
     verbose: boolean = false
   ): Promise<ModelPrediction | { error: string; success: false }> {

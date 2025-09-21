@@ -12,22 +12,37 @@ import { satisfiesAll } from "./semver";
 import { CurrentPtr } from "./types";
 
 const MODELS_ROOT = new Directory(Paths.document, "papillon-models");
-const CURRENT_PTR = new File(MODELS_ROOT, "current.json");
 
 export async function getCurrentPtr(): Promise<CurrentPtr | null> {
-  log(`[MODELUPDATER] Lecture du pointeur actuel: ${CURRENT_PTR.uri}`);
-  if (!CURRENT_PTR.exists) {
+  const currentPtrFile = new File(MODELS_ROOT, "current.json");
+  log(`[MODELUPDATER] Lecture du pointeur actuel: ${currentPtrFile.uri}`);
+  
+  // Vérifier si le répertoire parent existe
+  if (!MODELS_ROOT.exists) {
+    log("[PTR] Répertoire papillon-models n'existe pas");
+    return null;
+  }
+  
+  if (!currentPtrFile.exists) {
     log("[PTR] Aucun pointeur trouvé.");
     return null;
   }
-  const ptr = await readJSON<CurrentPtr>(CURRENT_PTR.uri);
-  log(`[MODELUPDATER] Actuel: ${ptr.name} v${ptr.version}`);
-  return ptr;
+  
+  try {
+    const ptr = await readJSON<CurrentPtr>(currentPtrFile.uri);
+    log(`[MODELUPDATER] Actuel: ${ptr.name} v${ptr.version}`);
+    return ptr;
+  } catch (error) {
+    log(`[PTR] Erreur lecture pointeur: ${String(error)}`);
+    return null;
+  }
 }
 
 export async function setCurrentPtr(ptr: CurrentPtr) {
   log(`[PTR] Mise à jour du pointeur -> ${ptr.name} v${ptr.version}`);
-  await writeJSON(CURRENT_PTR.uri, ptr);
+  await ensureDir(MODELS_ROOT.uri);
+  const currentPtrFile = new File(MODELS_ROOT, "current.json");
+  await writeJSON(currentPtrFile.uri, ptr);
 }
 
 async function smokeTestModel(dirUri: string) {

@@ -22,6 +22,7 @@ export async function readJSON<T>(uri: string): Promise<T> {
 }
 
 export async function writeJSON(uri: string, data: unknown) {
+  await ensureParentDir(uri);
   const file = new File(uri);
   await file.write(JSON.stringify(data, null, 2));
 }
