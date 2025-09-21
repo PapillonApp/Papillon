@@ -26,9 +26,13 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
         }));
         
         const detectedPrice = detectMealPrice(mappedHistory);
+        
         if (detectedPrice && detectedPrice > 0) {
           mealPrice = detectedPrice;
           lunchRemaining = Math.floor((account.balance * 100) / mealPrice);
+        } else {
+          mealPrice = 0;
+          lunchRemaining = 0;
         }
       }
     } catch (error) {
