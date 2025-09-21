@@ -111,10 +111,11 @@ export default function TurboSelfLoginWithCredentials() {
         });
       }
 
+      const global = [authentification.host, ...siblings].flat()
       return router.push({
         pathname: "./hostSelector",
         params: {
-          siblings: JSON.stringify(siblings),
+          siblings: JSON.stringify(global),
           username,
           password
         }
