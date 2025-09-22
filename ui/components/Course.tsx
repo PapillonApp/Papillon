@@ -58,8 +58,6 @@ const Course = React.memo(
     start,
     end,
     compact,
-    readonly = false,
-    leading: Leading,
     showTimes = true,
     timesRendered = true,
     magicInfo,
@@ -73,10 +71,10 @@ const Course = React.memo(
     const { colors } = theme;
 
     const fStart = new Date(start * 1000);
+    const mStart = fStart.getMinutes();
     const fEnd = new Date(end * 1000);
 
     const hStart = fStart.getHours();
-    const hEnd = fEnd.getHours();
 
     return (
       <View
@@ -118,10 +116,10 @@ const Course = React.memo(
             style={{
               flex: 1,
               borderRadius: 300,
-              backgroundColor: theme.dark ? colors.text + "10" : colors.text + "30"
             }}
             interactive={true}
             effect="clear"
+            tintColor={theme.dark ? colors.text + "10" : colors.text + "20"}
           >
             <Stack
               card={!runsIOS26}
@@ -143,7 +141,7 @@ const Course = React.memo(
               >
                 {
                   hStart < 11 ? <Papicons name={"Sunrise"} /> :
-                    hStart < 14 ? <Papicons name={"Cutlery"} /> :
+                    (hStart < 13 && mStart < 30) ? <Papicons name={"Cutlery"} /> :
                       <Papicons name={"Sun"} />
                 }
               </Icon>
@@ -155,7 +153,7 @@ const Course = React.memo(
               >
                 {
                   hStart < 11 ? "Pause matinale" :
-                    hStart < 14 ? "Pause méridienne" :
+                    (hStart < 13 && mStart < 30) ? "Pause méridienne" :
                       hStart < 18 ? "Pause d'après-midi" : "Pause du soir"
                 }
               </Typography>
@@ -263,9 +261,10 @@ const Course = React.memo(
                     runsIOS26 ? {
                       borderRadius: compact ? 18 : 25,
                       borderCurve: "continuous",
-                      backgroundColor: status?.canceled ? undefined : adjust(color, -0.1)
+                      backgroundColor: skeleton ? colors.text + "35" : status?.canceled ? adjust(colors.background, -0.12) : adjust(color ?? colors.primary, -0.1)
                     } : null
                   ]}
+                  pointerEvents={skeleton ? "none" : "auto"}
                 >
                   <Stack
                     gap={2}
