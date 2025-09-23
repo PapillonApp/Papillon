@@ -1,6 +1,7 @@
 import * as Network from "expo-network";
 
 import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
+import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
 import { addCanteenMenuToDatabase, addCanteenTransactionToDatabase, getCanteenMenuFromCache, getCanteenTransactionsFromCache } from "@/database/useCanteen";
 import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
 import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
@@ -9,7 +10,7 @@ import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
 import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { Booking, BookingDay, CanteenHistoryItem, CanteenMenu, QRCode } from "@/services/shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenKind, CanteenMenu, QRCode } from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -24,18 +25,21 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
-import { Kid } from "./kid";
 import { Balance } from "./balance";
-import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
+import { Kid } from "./kid";
 
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
 
   constructor(readonly account: Account) {}
 
-	getAccount(): Account {
-		return this.account
-	}
+  removeService(id: string): void {
+    delete this.clients[id];
+  }
+
+  getAccount(): Account {
+    return this.account
+  }
 
   async refreshAllAccounts(): Promise<boolean> {
     log("We're refreshing all services for the account " + this.account.id);
@@ -70,6 +74,18 @@ export class AccountManager {
         Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
+  }
+
+  async getCanteenKind(clientId: string): Promise<CanteenKind> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BALANCE,
+      async client =>
+        client.getCanteenKind ? client.getCanteenKind() : CanteenKind.ARGENT,
+      {
+        multiple: false,
+        clientId
+      }
+    );
   }
 
   async getKids(): Promise<Kid[]> {
@@ -116,22 +132,21 @@ export class AccountManager {
     );
   }
 
-
-    async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
-      return await this.fetchData(
-        Capabilities.GRADES,
-        async client =>
-          client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
-        { 
-          multiple: false,
-          clientId,
-          fallback: async () => getGradePeriodsFromCache(period.name),
-          saveToCache: async (data: PeriodGrades) => {
-            await addPeriodGradesToDatabase(data, period.name);
-          }
+  async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
+    return await this.fetchData(
+      Capabilities.GRADES,
+      async client =>
+        client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
+      { 
+        multiple: false,
+        clientId,
+        fallback: async () => getGradePeriodsFromCache(period.name),
+        saveToCache: async (data: PeriodGrades) => {
+          await addPeriodGradesToDatabase(data, period.name);
         }
-      );
-    }
+      }
+    );
+  }
 
   async getGradesPeriods(): Promise<Period[]> {
     return await this.fetchData(
@@ -327,17 +342,17 @@ export class AccountManager {
     );
   }
 
-	async getCanteenBalances(): Promise<Balance[]> {
+  async getCanteenBalances(): Promise<Balance[]> {
     return await this.fetchData(
       Capabilities.CANTEEN_BALANCE,
       async client =>
         client.getCanteenBalances ? await client.getCanteenBalances() : [],
       {
         multiple: true,
-				fallback: async () => getBalancesFromCache(),
-				saveToCache: async (data: Balance[]) => {
-					await addBalancesToDatabase(data)
-				}
+        fallback: async () => getBalancesFromCache(),
+        saveToCache: async (data: Balance[]) => {
+          await addBalancesToDatabase(data)
+        }
       }
     );
   }
@@ -358,29 +373,29 @@ export class AccountManager {
     )
   }
 
-	async getCanteenQRCodes(clientId: string): Promise<QRCode> {
-		return await this.fetchData(
-			Capabilities.CANTEEN_QRCODE,
-			async client =>
-				client.getCanteenQRCodes ? await client.getCanteenQRCodes() : error("getCanteenQRCodes not found"),
-			{
-				multiple: false,
+  async getCanteenQRCodes(clientId: string): Promise<QRCode> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_QRCODE,
+      async client =>
+        client.getCanteenQRCodes ? await client.getCanteenQRCodes() : error("getCanteenQRCodes not found"),
+      {
+        multiple: false,
         clientId
-			}
-		)
-	}
+      }
+    )
+  }
 
-	async getCanteenBookingWeek(weekNumber: number, clientId: string): Promise<BookingDay[]> {
-		return await this.fetchData(
-			Capabilities.CANTEEN_BOOKINGS,
-			async client =>
-				client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
-			{
-				multiple: true,
+  async getCanteenBookingWeek(weekNumber: number, clientId: string): Promise<BookingDay[]> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BOOKINGS,
+      async client =>
+        client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
+      {
+        multiple: true,
         clientId
-			}
-		)
-	}
+      }
+    )
+  }
 
   async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
     return await this.fetchData(Capabilities.CANTEEN_BOOKINGS, async client =>
@@ -503,25 +518,25 @@ export class AccountManager {
       return new module.Pronote(service.id);
     }
 
-		if (service.serviceId === Services.SKOLENGO) {
+    if (service.serviceId === Services.SKOLENGO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/skolengo/index");
       return new module.Skolengo(service.id);
     }
 
-		if (service.serviceId === Services.ECOLEDIRECTE) {
+    if (service.serviceId === Services.ECOLEDIRECTE) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/ecoledirecte/index");
       return new module.EcoleDirecte(service.id);
     }
 
-		if (service.serviceId === Services.TURBOSELF) {
+    if (service.serviceId === Services.TURBOSELF) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/turboself/index");
       return new module.TurboSelf(service.id);
     }
 
-		if (service.serviceId === Services.ARD) {
+    if (service.serviceId === Services.ARD) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/ard/index");
       return new module.ARD(service.id);
@@ -543,10 +558,10 @@ const managerListeners: Array<(manager: AccountManager) => void> = [];
 
 export const subscribeManagerUpdate = (listener: (manager: AccountManager) => void) => {
   managerListeners.push(listener);
-  if (globalManager) listener(globalManager);
+  if (globalManager) {listener(globalManager);}
   return () => {
     const idx = managerListeners.indexOf(listener);
-    if (idx !== -1) managerListeners.splice(idx, 1);
+    if (idx !== -1) {managerListeners.splice(idx, 1);}
   };
 };
 

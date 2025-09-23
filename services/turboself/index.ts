@@ -4,7 +4,7 @@ import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
 import { Balance } from "../shared/balance";
-import { Booking, BookingDay, CanteenHistoryItem, QRCode } from "../shared/canteen";
+import { Booking, BookingDay, CanteenHistoryItem, CanteenKind, QRCode } from "../shared/canteen";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
 import { fetchTurboSelfBalance } from "./balance";
 import { fetchTurboSelfBookingsWeek, setTurboSelfMealBookState } from "./booking";
@@ -34,6 +34,18 @@ export class TurboSelf implements SchoolServicePlugin {
     this.session = refresh.session
 
     return this;
+  }
+
+  getCanteenKind(): CanteenKind {
+    if (!this.session) { return CanteenKind.ARGENT };
+
+    if (this.session.host?.permissions.bookWithNegativeBalance) { return CanteenKind.FORFAIT };
+
+    if (this.session?.host?.mode === "Argent") {
+      return CanteenKind.ARGENT;
+    }
+
+    return CanteenKind.FORFAIT;
   }
 
   async getCanteenBalances(): Promise<Balance[]> {

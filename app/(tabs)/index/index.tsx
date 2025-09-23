@@ -206,8 +206,16 @@ const IndexScreen = () => {
 
       let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
+      if (dayCourse.length === 0) {
+        const futureDays = weeklyTimetable
+          .filter(day => day.date.getTime() > today.getTime())
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
+        if (futureDays.length > 0) {
+          dayCourse = futureDays[0].courses;
+        }
+      }
 
+      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
       setCourses(dayCourse);
     };
     fetchData();
@@ -291,13 +299,12 @@ const IndexScreen = () => {
 
     const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-    const remainingToday = courses.length;
-    if (remainingToday === 0) {
+    if (todayAllCourses.length === 0) {
       return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
-    } else if (remainingToday === 1) {
+    } else if (todayAllCourses.length === 1) {
       return t("Home_Planned_One");
     } else {
-      return t("Home_Planned_Number", { number: remainingToday });
+      return t("Home_Planned_Number", { number: todayAllCourses.length });
     }
   };
 
