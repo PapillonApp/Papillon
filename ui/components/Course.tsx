@@ -157,7 +157,7 @@ const Course = React.memo((props: CourseProps) => {
   const renderStatus = () => {
     if (status?.canceled) {
       return (
-        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
+        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingTop: 2 }} gap={6}>
           <Icon papicon size={20} fill={skeleton ? colors.text + "10" : adjust("#DC1400", dark ? 0.4 : -0.2)}>
             <Papicons name="Ghost" />
           </Icon>
@@ -326,7 +326,7 @@ const Course = React.memo((props: CourseProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 14,
   },
   compactContainer: {
@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "bold",
     lineHeight: 24,
+    marginTop: -2,
   },
   room: {
     fontSize: 16,
