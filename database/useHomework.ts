@@ -68,8 +68,7 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
 
   const weekNumber = getWeekNumberFromDate(homeworks[0].dueDate);
   const { start, end } = getDateRangeOfWeek(weekNumber);
-  const dbHomeworks = await db
-    .get<Homework>("courses")
+  const dbHomeworks = await db.get<Homework>("homework")
     .query(Q.where("dueDate", Q.between(start.getTime(), end.getTime())))
     .fetch();
 
