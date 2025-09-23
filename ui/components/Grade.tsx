@@ -112,8 +112,8 @@ const Grade: React.FC<GradeProps> = React.memo(
               style={styles.stackPadding}
             >
               <Stack inline
-                     style={styles.flexContainer}
-                     gap={0}
+                style={styles.flexContainer}
+                gap={0}
               >
                 <Typography
                   variant="title"
