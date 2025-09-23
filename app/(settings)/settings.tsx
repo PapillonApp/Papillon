@@ -102,6 +102,7 @@ export default function SettingsIndex() {
       content: [
         {
           title: t('Settings_Telemetry_Title'),
+          description: t('Settings_Telemetry_Description'),
           icon: <InfoIcon />,
           papicon: <Papicons name={"Check"} />,
           color: "#797979",

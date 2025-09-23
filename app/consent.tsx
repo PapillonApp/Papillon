@@ -11,9 +11,7 @@ import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { checkConsent, setConsent } from "@/utils/logger/consent";
 import { LinearGradient } from "expo-linear-gradient";
-import List from "@/ui/components/List";
 import Icon from "@/ui/components/Icon";
-import Item from "@/ui/components/Item";
 import Button from "@/ui/components/Button";
 
 export default function ConsentScreen() {
@@ -21,7 +19,7 @@ export default function ConsentScreen() {
 
   const router = useRouter();
 
-  const [currentConsent, setCurrentConsent] = useState(null);
+  const [currentConsent, setCurrentConsent] = useState<string | null>(null);
 
   const theme = useTheme();
   const { colors } = theme;
@@ -96,7 +94,7 @@ export default function ConsentScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           padding: 16,
-          paddingTop: insets.top + 26,
+          paddingTop: insets.top + 40,
           gap: 16,
         }}
         showsVerticalScrollIndicator={false}
@@ -106,43 +104,13 @@ export default function ConsentScreen() {
             source={require("../assets/images/papillon_heart.png")}
             style={{ width: 98, height: 72, alignSelf: "center" }}
           />
-          <Typography variant="h3" color="text" align="center" style={{ width: "100%" }}>
+          <Typography variant="h2" color="text" align="center" style={{ width: "100%" }}>
             {t("Consent_Title")}
           </Typography>
-          <Typography variant="body2" color="secondary" align="center">
+          <Typography variant="body1" color="secondary" align="center">
             {t("Consent_Intro1")}
           </Typography>
-          <Typography onPress={() => Linking.openURL("https://docs.papillon.bzh/privacy-policy")} variant="caption" color={accent} align="center" style={{ textDecorationLine: "underline" }}>
-            {t("Consent_PrivacyPolicy")}
-          </Typography>
         </Stack>
-
-        <List>
-          <Item>
-            <Icon>
-              <Papicons name="check" />
-            </Icon>
-            <Typography variant="body2">
-              {t("Consent_Arg1")}
-            </Typography>
-          </Item>
-          <Item>
-            <Icon>
-              <Papicons name="link" size={24} color={colors.text} />
-            </Icon>
-            <Typography variant="body2">
-              {t("Consent_Arg2")}
-            </Typography>
-          </Item>
-          <Item>
-            <Icon>
-              <Papicons name="lock" size={24} color={colors.text} />
-            </Icon>
-            <Typography variant="body2">
-              {t("Consent_Arg3")}
-            </Typography>
-          </Item>
-        </List>
 
         <View
           style={{
@@ -160,13 +128,13 @@ export default function ConsentScreen() {
               <View
                 style={{
                   paddingHorizontal: 16,
-                  paddingVertical: 12,
+                  paddingVertical: 13,
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 16,
                   borderColor: currentConsent === consent.key ? consent.color : colors.border,
                   borderWidth: 1,
-                  borderRadius: 16,
+                  borderRadius: 25,
                   borderCurve: 'continuous',
                   backgroundColor: currentConsent === consent.key ? consent.color + "20" : colors.background,
                 }}
@@ -174,7 +142,7 @@ export default function ConsentScreen() {
                 <Papicons name={consent.icon} size={32} color={currentConsent !== consent.key ? colors.text + "50" : consent.color} />
                 <View
                   style={{
-                    gap: 4,
+                    gap: 1,
                     flex: 1,
                     width: "100%",
                   }}
@@ -190,6 +158,37 @@ export default function ConsentScreen() {
             </AnimatedPressable>
           ))}
         </View>
+
+        <Stack style={{ paddingLeft: 10, marginTop: 10 }} gap={15}>
+          <Stack direction="horizontal" gap={10} vAlign="center" hAlign="center">
+            <Icon>
+              <Papicons name="check" color={colors.text + "80"} />
+            </Icon>
+            <Typography variant="body1" style={{ flex: 1 }} color="secondary">
+              {t("Consent_Arg1")}
+            </Typography>
+          </Stack>
+          <Stack direction="horizontal" gap={10} vAlign="center" hAlign="center">
+            <Icon>
+              <Papicons name="link" size={24} color={colors.text + "80"} />
+            </Icon>
+            <Typography variant="body1" style={{ flex: 1 }} color="secondary">
+              {t("Consent_Arg2")}
+            </Typography>
+          </Stack>
+          <Stack direction="horizontal" gap={10} vAlign="center" hAlign="center">
+            <Icon>
+              <Papicons name="lock" size={24} color={colors.text + "80"} />
+            </Icon>
+            <Typography variant="body1" style={{ flex: 1 }} color="secondary">
+              {t("Consent_Arg3")}
+            </Typography>
+          </Stack>
+          <Typography onPress={() => Linking.openURL("https://docs.papillon.bzh/privacy-policy")} variant="caption" color={accent} align="center" style={{ textDecorationLine: "underline", marginTop: 10 }}>
+            {t("Consent_PrivacyPolicy")}
+          </Typography>
+        </Stack>
+
       </ScrollView>
       <View
         style={{
