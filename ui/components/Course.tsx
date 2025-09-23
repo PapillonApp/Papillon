@@ -215,8 +215,8 @@ const Course = React.memo((props: CourseProps) => {
     >
       <Stack direction="horizontal" gap={10}>
         {/* Barre colorée */}
-        <View style={{ width: 7, height: "100%", backgroundColor: textColor, borderRadius: 300 }} />
-        <Stack style={{ flex: 1 }}>
+        <View style={{ width: 6, height: "100%", backgroundColor: textColor, borderRadius: 300 }} />
+        <Stack style={{ flex: 1, marginTop: -2, marginBottom: -3 }}>
           {/* Nom du cours */}
           <Typography
             variant="h5"
@@ -229,7 +229,7 @@ const Course = React.memo((props: CourseProps) => {
 
           {/* Salle + Prof */}
           {variant === "primary" && (
-            <Stack direction="horizontal" style={{ marginTop: -2, opacity: skeleton ? 0.5 : 1 }}>
+            <Stack direction="horizontal" style={{ marginTop: 1, opacity: skeleton ? 0.5 : 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 5, minWidth: 0 }}>
                 <Icon papicon size={20} fill={skeleton ? colors.text + "20" : textColor}>
                   <Papicons name="MapPin" />
@@ -337,7 +337,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "bold",
     lineHeight: 24,
-    marginTop: -2,
   },
   room: {
     fontSize: 16,
