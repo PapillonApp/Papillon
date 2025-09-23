@@ -75,7 +75,7 @@ export const CompactGrade = ({
         >
           {skeleton ? (
             <SkeletonView style={{ width: 25, height: 25, borderRadius: 100 }} />
-          ):(
+          ) : (
             <Text>{emoji}</Text>
           )}
 
@@ -124,10 +124,12 @@ export const CompactGrade = ({
           backgroundColor: skeleton ? colors.text + "10" : color + "33",
         }}>
           {skeleton ? (
-            <Typography skeleton variant={"h4"} skeletonWidth={20} style={{borderRadius: 100, overflow: "hidden"}}/>
-            ):(
+            <Typography skeleton variant={"h4"} skeletonWidth={20} style={{ borderRadius: 100, overflow: "hidden" }} />
+          ) : (
             <>
-              <Typography variant="h4" color={color}>
+              <Typography variant="h4" color={color}
+                style={{ lineHeight: 24 }}
+              >
                 {disabled ? status : (score ?? 0).toFixed(2)}
               </Typography>
               <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
