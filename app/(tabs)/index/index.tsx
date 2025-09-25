@@ -132,7 +132,9 @@ const IndexScreen = () => {
     const result = [...current, ...next]
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setFreshHomeworks(newHomeworks);
@@ -141,7 +143,9 @@ const IndexScreen = () => {
 
   async function setHomeworkAsDone(homework: Homework) {
     const manager = getManager();
-    const id = generateId(homework.subject + homework.content + homework.createdByAccount);
+    const id = generateId(
+      homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+    );
     await manager.setHomeworkCompletion(homework, !homework.isDone);
     updateHomeworkIsDone(id, !homework.isDone)
     setRefreshTrigger(prev => prev + 1);

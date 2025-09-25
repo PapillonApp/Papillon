@@ -170,7 +170,9 @@ export default function TabOneScreen() {
     result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setHomework(newHomeworks);
@@ -198,7 +200,9 @@ export default function TabOneScreen() {
     const updateHomeworkCompletion = async (homeworkItem: Homework) => {
       try {
         const manager = getManager();
-        const id = generateId(item.subject + item.content + item.createdByAccount);
+        const id = generateId(
+          homeworkItem.subject + homeworkItem.content + homeworkItem.createdByAccount + homeworkItem.dueDate.toDateString()
+        );
         await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
         updateHomeworkIsDone(id, !homeworkItem.isDone)
         setRefreshTrigger(prev => prev + 1);
@@ -243,7 +247,9 @@ export default function TabOneScreen() {
         const result = await manager.getHomeworks(selectedWeek);
         const newHomeworks: Record<string, Homework> = {};
         for (const hw of result) {
-          const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+          const id = generateId(
+            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+          );
           newHomeworks[id] = hw;
         }
         setHomework(prev => ({ ...prev, ...newHomeworks }));
