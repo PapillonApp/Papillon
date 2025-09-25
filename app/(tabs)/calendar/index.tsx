@@ -64,7 +64,7 @@ export default function TabOneScreen() {
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const manager = getManager();
-
+  const now = new Date();
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
@@ -233,57 +233,36 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors }: { dayDate: Date, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors }: {
+    dayDate: Date,
+    isRefreshing: boolean,
+    onRefresh: () => void,
+    colors: { primary: string, background: string },
+    router: Router,
+    t: any
+  }) {
     const normalizedDayDate = new Date(dayDate);
     normalizedDayDate.setHours(0, 0, 0, 0);
-
     const rawDayEvents: SharedCourse[] = timetable.find(w => {
       const weekDate = new Date(w.date);
       weekDate.setHours(0, 0, 0, 0);
       return weekDate.getTime() === normalizedDayDate.getTime();
-    })?.courses ?? []
+    })?.courses ?? [];
 
-    // Cache to preserve event object identity by id
     const eventCache = React.useRef<{ [id: string]: any }>({});
-
-    // Shallow compare function
-    function shallowEqual(objA: any, objB: any) {
-      if (objA === objB) { return true; }
-      if (!objA || !objB) { return false; }
-      const keysA = Object.keys(objA);
-      const keysB = Object.keys(objB);
-      if (keysA.length !== keysB.length) { return false; }
-      for (const key of keysA) {
-        if (objA[key] !== objB[key]) { return false; }
-      }
-      return true;
-    }
 
     const dayEvents = useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
-      const result = (rawDayEvents ?? []).map(ev => {
+      return (rawDayEvents ?? []).map(ev => {
         if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
           next[ev.id] = cache[ev.id];
           return cache[ev.id];
         }
         next[ev.id] = ev;
         return ev;
-
       });
-      eventCache.current = next;
-      return result;
     }, [rawDayEvents]);
-
-    const threshold = 30;
-
-    for (const day of timetable) {
-      for (const course of day.courses) {
-        getSubjectColor(course.subject)
-        getSubjectEmoji(course.subject)
-        getSubjectName(course.subject)
-      }
-    }
 
     const separatedDayEvents = useMemo(() => {
       if (!dayEvents || dayEvents.length === 0) return dayEvents;
@@ -295,10 +274,10 @@ export default function TabOneScreen() {
           const next = dayEvents[i + 1];
           if (current.to && next.from) {
             const diffMinutes = (next.from.getTime() - current.to.getTime()) / (1000 * 60);
-            if (diffMinutes > threshold) {
+            if (diffMinutes > 30) {
               separated.push({
                 id: `separator-${current.id}-${next.id}`,
-                type: "separator" as any,
+                type: "separator",
                 from: new Date(current.to),
                 to: new Date(next.from),
               });
@@ -309,20 +288,19 @@ export default function TabOneScreen() {
       return separated;
     }, [dayEvents]);
 
+    const isCoursePast = (course: SharedCourse) => {
+      if (!course.to) return false;
+      return course.to < new Date();
+    };
+
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
         <FlatList
           data={separatedDayEvents}
           style={styles.container}
           showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior={"always"}
-          contentContainerStyle={
-            {
-              paddingHorizontal: 12,
-              paddingVertical: 12,
-              gap: 4,
-            }
-          }
+          contentInsetAdjustmentBehavior="always"
+          contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 12, gap: 4 }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -333,8 +311,8 @@ export default function TabOneScreen() {
           }
           keyExtractor={(item) => item.id}
           ListEmptyComponent={<EmptyListComponent />}
-          renderItem={({ item }: { item: SharedCourse }) => {
-            if ((item as any).type === 'separator') {
+          renderItem={({ item }) => {
+            if (item.type === 'separator') {
               return (
                 <Course
                   id={item.id}
@@ -343,8 +321,27 @@ export default function TabOneScreen() {
                   start={Math.floor(item.from.getTime() / 1000)}
                   end={Math.floor(item.to.getTime() / 1000)}
                   showTimes={false}
-                  onPress={() => {
-                    navigation.navigate('(modals)/course', {
+                />
+              );
+            } else {
+              const isPast = isCoursePast(item);
+              return (
+                <View style={isPast ? { opacity: 1 } : {}}>
+                  <Course
+                    id={item.id}
+                    name={getSubjectName(item.subject)}
+                    teacher={item.teacher}
+                    room={item.room}
+                    color={isPast ? '#cccccc' : (getSubjectColor(item.subject) || Colors[0])}
+                    status={{
+                      label: item.customStatus ? item.customStatus : getStatusText(item.status),
+                      canceled: item.status === CourseStatus.CANCELED
+                    }}
+                    variant="primary"
+                    start={Math.floor(item.from.getTime() / 1000)}
+                    end={Math.floor(item.to.getTime() / 1000)}
+                    readonly={!!item.createdByAccount}
+                    onPress={() => navigation.navigate('(modals)/course', {
                       course: item,
                       subjectInfo: {
                         id: item.subjectId,
@@ -352,49 +349,21 @@ export default function TabOneScreen() {
                         color: getSubjectColor(item.subject) || Colors[0],
                         emoji: getSubjectEmoji(item.subject),
                       }
-                    });
-                  }}
-                />
+                    })}
+                  />
+                </View>
               );
             }
-
-            return (
-              <Course
-                id={item.id}
-                name={getSubjectName(item.subject)}
-                teacher={item.teacher}
-                room={item.room}
-                color={getSubjectColor(item.subject) || Colors[0]}
-                status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                variant="primary"
-                start={Math.floor(item.from.getTime() / 1000)}
-                end={Math.floor(item.to.getTime() / 1000)}
-                readonly={!!item.createdByAccount}
-                onPress={() => {
-                  navigation.navigate('(modals)/course', {
-                    course: item,
-                    subjectInfo: {
-                      id: item.subjectId,
-                      name: getSubjectName(item.subject),
-                      color: getSubjectColor(item.subject) || Colors[0],
-                      emoji: getSubjectEmoji(item.subject),
-                    }
-                  });
-                }}
-              />
-            )
-          }
-          }
+          }}
         />
       </View>
     );
-  }, (prevProps, nextProps) => {
-    return (
-      prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
-      prevProps.isRefreshing === nextProps.isRefreshing &&
-      prevProps.onRefresh === nextProps.onRefresh
-    );
-  });
+  }, (prevProps, nextProps) => (
+    prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
+    prevProps.isRefreshing === nextProps.isRefreshing &&
+    prevProps.onRefresh === nextProps.onRefresh
+  ));
+
 
   // Stable renderItem function
   const renderDay = useCallback(({ index }: { index: number }) => {
