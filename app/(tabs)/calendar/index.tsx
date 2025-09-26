@@ -251,6 +251,19 @@ export default function TabOneScreen() {
 
     const eventCache = React.useRef<{ [id: string]: any }>({});
 
+    // Shallow compare function
+        function shallowEqual(objA: any, objB: any) {
+          if (objA === objB) { return true; }
+          if (!objA || !objB) { return false; }
+          const keysA = Object.keys(objA);
+          const keysB = Object.keys(objB);
+          if (keysA.length !== keysB.length) { return false; }
+          for (const key of keysA) {
+            if (objA[key] !== objB[key]) { return false; }
+          }
+          return true;
+        }
+
     const dayEvents = useMemo(() => {
       const cache = eventCache.current;
       const next: { [id: string]: any } = {};
@@ -262,7 +275,19 @@ export default function TabOneScreen() {
         next[ev.id] = ev;
         return ev;
       });
+        eventCache.current = next;
+        return result;
     }, [rawDayEvents]);
+
+const threshold = 30;
+
+    for (const day of timetable) {
+      for (const course of day.courses) {
+        getSubjectColor(course.subject)
+        getSubjectEmoji(course.subject)
+        getSubjectName(course.subject)
+      }
+    }
 
     const separatedDayEvents = useMemo(() => {
       if (!dayEvents || dayEvents.length === 0) return dayEvents;
