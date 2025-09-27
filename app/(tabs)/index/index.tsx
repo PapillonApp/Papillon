@@ -650,7 +650,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
@@ -674,7 +674,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => router.navigate("/(modals)/notifications")}
+          onPressIn={() => router.navigate("/(modals)/notifications")}
         >
           <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />

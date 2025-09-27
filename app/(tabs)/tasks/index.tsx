@@ -793,7 +793,7 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             setSearchTermState("");
             setShowSearch(true);
           }}

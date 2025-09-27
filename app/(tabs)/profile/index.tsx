@@ -430,7 +430,7 @@ export default function TabOneScreen() {
     <>
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             router.push("/(tabs)/profile/custom");
           }}
         >
@@ -475,7 +475,7 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             router.push("/(settings)/settings");
           }}
         >

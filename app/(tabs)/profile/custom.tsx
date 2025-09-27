@@ -166,7 +166,7 @@ export default function CustomProfileScreen() {
         </View>
         <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
           <NativeHeaderPressable
-            onPress={() => {
+            onPressIn={() => {
               useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
               router.back();
             }}
