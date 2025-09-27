@@ -44,7 +44,7 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
       currency: "€",
       lunchRemaining: lunchRemaining,
       lunchPrice: mealPrice,
-      label: account.establishment || "Établissement",
+      label: "Solde",
       createdByAccount: accountId
     }];
   } catch (error) {
