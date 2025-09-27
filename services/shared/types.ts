@@ -22,15 +22,13 @@ import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
 
+import { Alise } from "../alise";
 import { ARD } from "../ard";
 import { EcoleDirecte } from "../ecoledirecte";
 import { Izly } from "../izly";
 import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
-import { Izly } from "../izly";
-import { Identification } from "ezly";
-import { Alise } from "../alise";
 import { Kid } from "./kid";
 
 /** Represents a plugin for a school service.
