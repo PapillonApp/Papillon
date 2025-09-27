@@ -68,8 +68,12 @@ export class AccountManager {
 
   constructor(readonly account: Account) {}
 
+  removeService(id: string): void {
+    delete this.clients[id];
+  }
+
   getAccount(): Account {
-    return this.account;
+    return this.account
   }
 
   async refreshAllAccounts(): Promise<boolean> {
@@ -109,6 +113,18 @@ export class AccountManager {
         Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
+  }
+
+  async getCanteenKind(clientId: string): Promise<CanteenKind> {
+    return await this.fetchData(
+      Capabilities.CANTEEN_BALANCE,
+      async client =>
+        client.getCanteenKind ? client.getCanteenKind() : CanteenKind.ARGENT,
+      {
+        multiple: false,
+        clientId
+      }
+    );
   }
 
   async getKids(): Promise<Kid[]> {
@@ -154,18 +170,12 @@ export class AccountManager {
     );
   }
 
-  async getGradesForPeriod(
-    period: Period,
-    clientId: string,
-    kid?: Kid
-  ): Promise<PeriodGrades> {
+  async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
     return await this.fetchData(
       Capabilities.GRADES,
       async client =>
-        client.getGradesForPeriod
-          ? await client.getGradesForPeriod(period, kid)
-          : error("Bad Implementation"),
-      {
+        client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
+      { 
         multiple: false,
         clientId,
         fallback: async () => getGradePeriodsFromCache(period.name),
@@ -426,31 +436,24 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.CANTEEN_QRCODE,
       async client =>
-        client.getCanteenQRCodes
-          ? await client.getCanteenQRCodes()
-          : error("getCanteenQRCodes not found"),
+        client.getCanteenQRCodes ? await client.getCanteenQRCodes() : error("getCanteenQRCodes not found"),
       {
         multiple: false,
-        clientId,
+        clientId
       }
-    );
+    )
   }
 
-  async getCanteenBookingWeek(
-    weekNumber: number,
-    clientId: string
-  ): Promise<BookingDay[]> {
+  async getCanteenBookingWeek(weekNumber: number, clientId: string): Promise<BookingDay[]> {
     return await this.fetchData(
       Capabilities.CANTEEN_BOOKINGS,
       async client =>
-        client.getCanteenBookingWeek
-          ? await client.getCanteenBookingWeek(weekNumber)
-          : [],
+        client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
       {
         multiple: true,
-        clientId,
+        clientId
       }
-    );
+    )
   }
 
   async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
@@ -631,14 +634,10 @@ export const subscribeManagerUpdate = (
   listener: (manager: AccountManager) => void
 ) => {
   managerListeners.push(listener);
-  if (globalManager) {
-    listener(globalManager);
-  }
+  if (globalManager) {listener(globalManager);}
   return () => {
     const idx = managerListeners.indexOf(listener);
-    if (idx !== -1) {
-      managerListeners.splice(idx, 1);
-    }
+    if (idx !== -1) {managerListeners.splice(idx, 1);}
   };
 };
 

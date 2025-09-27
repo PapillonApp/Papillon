@@ -45,7 +45,7 @@ export default function WelcomeScreen() {
             borderBottomRightRadius: 42,
             borderCurve: "continuous",
             paddingTop: insets.top + 20,
-            paddingBottom: 34,
+            paddingBottom: 40,
           }}
         >
           <Stack
@@ -92,7 +92,7 @@ export default function WelcomeScreen() {
             </Typography>
             <Typography
               variant="h5"
-              style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
+              style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}
             >
               {t("ONBOARDING_MAIN_DESCRIPTION")}
             </Typography>
@@ -128,7 +128,7 @@ export default function WelcomeScreen() {
             variant="ghost"
             color="text"
             size="large"
-            style={{height: 40}}
+            style={{ height: 40 }}
           />
         </Stack>
       </View>

@@ -290,30 +290,33 @@ function NewsSection() {
       <List marginBottom={0}
         radius={24}
       >
-        {limitNews.map((item, index) => (
-          <Item
-            key={index}
-            onPress={() => {
-              router.push({
-                pathname: "/(features)/(news)/specific",
-                params: {
-                  news: JSON.stringify(item),
-                },
-              });
-            }}
-          >
-            <Typography variant="title"
-              color="text"
+        {limitNews
+          .slice()
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map((item, index) => (
+            <Item
+              key={index}
+              onPress={() => {
+                router.push({
+                  pathname: "/(features)/(news)/specific",
+                  params: {
+                    news: JSON.stringify(item),
+                  },
+                });
+              }}
             >
-              {item.title || "Aucun titre"}
-            </Typography>
-            <Typography variant="caption"
-              color="secondary"
-            >
-              {item.createdAt.toLocaleDateString()} · {item.author}
-            </Typography>
-          </Item>
-        ))}
+              <Typography variant="title"
+                color="text"
+              >
+                {item.title || "Aucun titre"}
+              </Typography>
+              <Typography variant="caption"
+                color="secondary"
+              >
+                {item.createdAt.toLocaleDateString()} · {item.author}
+              </Typography>
+            </Item>
+          ))}
       </List>
     </Reanimated.View>
   );
@@ -427,7 +430,7 @@ export default function TabOneScreen() {
     <>
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             router.push("/(tabs)/profile/custom");
           }}
         >
@@ -472,7 +475,7 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             router.push("/(settings)/settings");
           }}
         >

@@ -12,6 +12,7 @@ import {
   Booking,
   BookingDay,
   CanteenHistoryItem,
+  CanteenKind,
   CanteenMenu,
   QRCode,
 } from "@/services/shared/canteen";
@@ -58,6 +59,7 @@ export interface SchoolServicePlugin {
     Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly
   >;
   getKids?: () => Kid[];
+  getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: Period, kid?: Kid) => Promise<PeriodGrades>;

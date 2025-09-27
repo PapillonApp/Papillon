@@ -17,17 +17,17 @@ export const VARIANTS = StyleSheet.create({
   body1: {
     fontSize: 16,
     fontFamily: FONT_FAMILIES.medium,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   body2: {
     fontSize: 15,
     fontFamily: FONT_FAMILIES.semibold,
-    lineHeight: 22,
+    lineHeight: 19,
   },
   caption: {
     fontSize: 14,
     fontFamily: FONT_FAMILIES.regular,
-    lineHeight: 20,
+    lineHeight: 19,
     letterSpacing: 0.1,
   },
   button: {
@@ -38,7 +38,7 @@ export const VARIANTS = StyleSheet.create({
   title: {
     fontSize: 17,
     fontFamily: FONT_FAMILIES.semibold,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   navigation: {
     fontSize: screenOptions.headerTitleStyle.fontSize || 18,

@@ -132,7 +132,9 @@ const IndexScreen = () => {
     const result = [...current, ...next]
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setFreshHomeworks(newHomeworks);
@@ -141,7 +143,9 @@ const IndexScreen = () => {
 
   async function setHomeworkAsDone(homework: Homework) {
     const manager = getManager();
-    const id = generateId(homework.subject + homework.content + homework.createdByAccount);
+    const id = generateId(
+      homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+    );
     await manager.setHomeworkCompletion(homework, !homework.isDone);
     updateHomeworkIsDone(id, !homework.isDone)
     setRefreshTrigger(prev => prev + 1);
@@ -206,8 +210,16 @@ const IndexScreen = () => {
 
       let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
+      if (dayCourse.length === 0) {
+        const futureDays = weeklyTimetable
+          .filter(day => day.date.getTime() > today.getTime())
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
+        if (futureDays.length > 0) {
+          dayCourse = futureDays[0].courses;
+        }
+      }
 
+      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
       setCourses(dayCourse);
     };
     fetchData();
@@ -291,13 +303,12 @@ const IndexScreen = () => {
 
     const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-    const remainingToday = courses.length;
-    if (remainingToday === 0) {
+    if (todayAllCourses.length === 0) {
       return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
-    } else if (remainingToday === 1) {
+    } else if (todayAllCourses.length === 1) {
       return t("Home_Planned_One");
     } else {
-      return t("Home_Planned_Number", { number: remainingToday });
+      return t("Home_Planned_Number", { number: todayAllCourses.length });
     }
   };
 
@@ -639,7 +650,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
@@ -663,7 +674,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => router.navigate("/(modals)/notifications")}
+          onPressIn={() => router.navigate("/(modals)/notifications")}
         >
           <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />
