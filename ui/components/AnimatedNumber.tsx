@@ -85,7 +85,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
           const changedIndex = changedIndexArr[index];
           return (
             <Reanimated.View
-              key={"animated-number-" + digit + "-" + index}
+              key={"animated-number-" + digit + (digit != "." ? "-" + index : "")}
               layout={LinearTransition.springify()}
               entering={getNumberEntering(changedIndex, unchanged)}
               exiting={getNumberExiting(changedIndex, unchanged)}

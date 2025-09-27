@@ -1,25 +1,27 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authenticateWithCredentials } from 'turboself-api'
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
+import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import uuid from '@/utils/uuid/uuid';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useTheme } from "@react-navigation/native";
-import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAlert } from '@/ui/components/AlertProvider';
 
 const ANIMATION_DURATION = 100;
 
@@ -83,6 +85,7 @@ export default function TurboSelfLoginWithCredentials() {
 
         if (action === "addService") {
           store.addServiceToAccount(store.lastUsedAccount, service)
+          await initializeAccountManager()
           router.back();
           router.back();
           return router.back();
@@ -108,10 +111,11 @@ export default function TurboSelfLoginWithCredentials() {
         });
       }
 
+      const global = [authentification.host, ...siblings].flat()
       return router.push({
         pathname: "./hostSelector",
         params: {
-          siblings: JSON.stringify(siblings),
+          siblings: JSON.stringify(global),
           username,
           password
         }
