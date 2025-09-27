@@ -9,4 +9,6 @@ export default class Ical extends Model {
   @field('title') title!: string;
   @field('url') url!: string;
   @field('lastupdated') lastUpdated!: number;
+  @field('intelligent_parsing') intelligentParsing!: boolean;
+  @field('provider') provider!: string;
 }
