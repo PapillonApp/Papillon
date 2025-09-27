@@ -1,18 +1,17 @@
-import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 import { router, useFocusEffect } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Image,StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "@/ui/components/Button";
-import Typography from "@/ui/components/Typography";
 import Stack from "@/ui/components/Stack";
-
-import { Papicons } from "@getpapillon/papicons";
+import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
-import * as Linking from "expo-linking";
-import { useTranslation } from "react-i18next";
 
 export default function WelcomeScreen() {
   const theme = useTheme();
