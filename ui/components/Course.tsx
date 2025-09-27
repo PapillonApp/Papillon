@@ -1,7 +1,7 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LucideIcon } from "lucide-react-native";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
@@ -101,7 +101,7 @@ const Course = React.memo((props: CourseProps) => {
   if (status?.canceled) { textColor = colors.text + "80"; }
 
   /** Horaire */
-  const renderTimes = () =>
+  const renderTimes = useCallback(() => (
     timesRendered && (
       <Stack
         style={{
@@ -121,10 +121,11 @@ const Course = React.memo((props: CourseProps) => {
           {fEnd.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
         </Typography>
       </Stack>
-    );
+    )
+  ), [fEnd, fStart, showTimes, skeleton, timesRendered]);
 
   /** Séparateur */
-  const renderSeparator = () => (
+  const renderSeparator = useCallback(() => (
     <Stack
       card
       direction="horizontal"
@@ -151,13 +152,13 @@ const Course = React.memo((props: CourseProps) => {
         {formatDuration(duration)}
       </Typography>
     </Stack>
-  );
+  ), [colors.card, colors.text, duration, hStart, skeleton]);
 
   /** statut (cours annulé ou magicInfo) */
-  const renderStatus = () => {
+  const renderStatus = useCallback(() => {
     if (status?.canceled) {
       return (
-        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingTop: 2 }} gap={6}>
+        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingBottom: 5, paddingTop: 6 }} gap={6}>
           <Icon papicon size={20} fill={skeleton ? colors.text + "10" : adjust("#DC1400", dark ? 0.4 : -0.2)}>
             <Papicons name="Ghost" />
           </Icon>
@@ -165,7 +166,7 @@ const Course = React.memo((props: CourseProps) => {
             nowrap
             color={adjust("#DC1400", dark ? 0.4 : -0.2)}
             variant="h4"
-            style={[styles.room, { flex: 1, paddingVertical: 8, opacity: skeleton ? 0.5 : 1 }]}
+            style={[styles.room, { flex: 1, paddingVertical: 0, opacity: skeleton ? 0.5 : 1 }]}
             skeleton={skeleton}
             numberOfLines={1}
           >
@@ -176,12 +177,12 @@ const Course = React.memo((props: CourseProps) => {
     }
     if (magicInfo?.label) {
       return (
-        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15 }} gap={6}>
+        <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingBottom: 5, paddingTop: 6 }} gap={6}>
           {magicInfo.icon && <magicInfo.icon color={skeleton ? colors.text + "10" : color} />}
           <Typography
             color="primary"
             variant="h4"
-            style={[styles.room, { flex: 1, paddingVertical: 6, color, opacity: skeleton ? 0.5 : 1 }]}
+            style={[styles.room, { flex: 1, paddingVertical: 0, color, opacity: skeleton ? 0.5 : 1 }]}
             nowrap
             skeleton={skeleton}
             numberOfLines={1}
@@ -192,10 +193,10 @@ const Course = React.memo((props: CourseProps) => {
       );
     }
     return null;
-  };
+  }, [colors.text, dark, magicInfo, skeleton, status]);
 
   /** Bloc contenu principal */
-  const renderContent = () => (
+  const renderContent = useCallback(() => (
     <Stack
       gap={2}
       direction="vertical"
@@ -258,7 +259,7 @@ const Course = React.memo((props: CourseProps) => {
 
           {/* Statut du cours */}
           {status && !status.canceled && variant === "primary" && (
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label ? 6 : 0, opacity: skeleton ? 0.5 : 1 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label ? 4 : 0, opacity: skeleton ? 0.5 : 1 }}>
               {status.label && (
                 <Stack
                   radius={300}
@@ -267,7 +268,7 @@ const Course = React.memo((props: CourseProps) => {
                 >
                   <Typography
                     variant="h4"
-                    style={[styles.statusLabel, { color: textColor, padding: 4 }]}
+                    style={[styles.statusLabel, { color: textColor, padding: 0 }]}
                     skeleton={skeleton}
                     numberOfLines={1}
                   >
@@ -283,10 +284,10 @@ const Course = React.memo((props: CourseProps) => {
         </Stack>
       </Stack>
     </Stack>
-  );
+  ), [colors.border, colors.card, colors.text, compact, containerStyle, dark, duration, name, room, skeleton, status, textColor, t, teacher, variant, color]);
 
   /** Cours principale */
-  const renderCourseCard = () => (
+  const renderCourseCard = useCallback(() => (
     <View style={{ flex: 1 }}>
       <AnimatedPressable onPress={onPress} style={{ flex: 1 }}>
         <View
@@ -313,7 +314,7 @@ const Course = React.memo((props: CourseProps) => {
         </View>
       </AnimatedPressable>
     </View>
-  );
+  ), [color, compact, dark, onPress, renderContent, renderStatus, skeleton, status, colors.border]);
 
   return (
     <View style={{ flexDirection: "row", gap: 12, width: "100%", marginBottom: 6 }}>
