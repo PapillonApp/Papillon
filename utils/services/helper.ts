@@ -9,6 +9,8 @@ export function getServiceName(service: Services): string {
       return "ARD";
     case Services.IZLY:
       return "Izly";
+    case Services.ALISE:
+      return "Alise";
     case Services.ECOLEDIRECTE:
       return "ÉcoleDirecte";
     default:
@@ -26,6 +28,8 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
       return require("@/assets/images/izly.png")
     case Services.ECOLEDIRECTE:
       return require("@/assets/images/ecoledirecte.png")
+    case Services.ALISE:
+      return require("@/assets/images/alise.png")
     default: 
       return require("@/assets/images/turboself.png")
   }
@@ -41,6 +45,8 @@ export function getServiceBackground(service: Services): ImageSourcePropType {
       return require("@/assets/images/ard_background_card.png")
     case Services.ECOLEDIRECTE:
       return require("@/assets/images/card_background/ecoledirecte.png")
+    case Services.ALISE:
+      return require("@/assets/images/alise_background_card.png")
     default: 
       return require("@/assets/images/ard_background_card.png")
   }
@@ -53,6 +59,8 @@ export function getServiceColor(service: Services): string {
     case Services.ARD:
       return "#295888"
     case Services.ECOLEDIRECTE:
+      return "#108ED1"
+    case Services.ALISE:
       return "#108ED1"
     default:
       return "#E70026"
