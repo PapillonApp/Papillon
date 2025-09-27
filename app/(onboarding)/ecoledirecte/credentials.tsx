@@ -2,7 +2,7 @@
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
 import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session, setAccessToken } from "pawdirecte";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Keyboard,
@@ -49,6 +49,8 @@ export default function EDLoginWithCredentials() {
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -103,6 +105,7 @@ export default function EDLoginWithCredentials() {
             serviceId: Services.ECOLEDIRECTE,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            additionals: userAccount
           },
         ],
         createdAt: new Date().toISOString(),
@@ -145,8 +148,8 @@ export default function EDLoginWithCredentials() {
       else {
         alert.showAlert({
           title: "Erreur d'authentification",
-          description:
-            "Une erreur inconnue est survenue...",
+          description: "Une erreur inconnue est survenue...",
+          technical: String(err),
           icon: "TriangleAlert",
           color: "#D60046",
           withoutNavbar: true,
@@ -155,15 +158,23 @@ export default function EDLoginWithCredentials() {
     }
   }
 
-  const loginED = () => {
+  const loginED = async () => {
     if (!username.trim() || !password.trim()) { return; }
-    handleLogin(username, password);
+    setIsLoggingIn(true);
+    try {
+      Keyboard.dismiss();
+      await handleLogin(username, password);
+    } catch (e) {
+
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   async function handleChallenge(answer: string) {
     setChallengeModalVisible(false);
 
-    if (!session) { return };
+    if (!session) { return }
     const currentSession = { ...session };
     const correct = await checkDoubleAuth(currentSession, answer)
 
@@ -281,6 +292,7 @@ export default function EDLoginWithCredentials() {
             autoCorrect: false,
             spellCheck: false,
             textContentType: "username",
+            editable: !isLoggingIn,
           }}
         />
         <OnboardingInput
@@ -297,19 +309,22 @@ export default function EDLoginWithCredentials() {
             textContentType: "password",
             onSubmitEditing: () => {
               Keyboard.dismiss();
-              loginED();
+              if (!isLoggingIn && username.trim() && password.trim())
+                loginED();
             },
             returnKeyType: "done",
+            editable: !isLoggingIn,
           }}
         />
         <Button
-          title={t("LOGIN_BTN")}
+          title={isLoggingIn ? t("LOGIN_LOGINING") : t("LOGIN_BTN")}
           style={{
-            backgroundColor: theme.dark ? theme.colors.border : "black",
+            backgroundColor: (theme.dark ? theme.colors.border : "#000000") + (isLoggingIn ? "50" : "FF"),
           }}
           size="large"
-          disableAnimation
           onPress={loginED}
+          disabled={isLoggingIn}
+          loading={isLoggingIn}
         />
       </Stack>
 

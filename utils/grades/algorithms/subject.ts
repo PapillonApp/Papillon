@@ -2,8 +2,8 @@ import { Grade } from "@/services/shared/grade";
 
 const PapillonSubjectAvg = (grades: Grade[], prop: keyof Grade = "studentScore") => {
   const subjectAverages: Record<string, { addition: number; total: number }> = {};
-
-  grades.forEach((grade) => {
+  
+  grades.filter(grade => !grade.studentScore?.disabled).forEach((grade) => {
     if (!subjectAverages[grade.subjectId]) {
       subjectAverages[grade.subjectId] = { addition: 0, total: 0 };
     }
@@ -20,7 +20,7 @@ const PapillonSubjectAvg = (grades: Grade[], prop: keyof Grade = "studentScore")
   });
 
   // Return the average of all subjects
-  const overallAverage = subjectAvgValues.reduce((sum, avg) => sum + avg, 0) / subjectAvgValues.length;
+  const overallAverage = (subjectAvgValues.reduce((sum, avg) => sum + avg, 0) / subjectAvgValues.length);
 
   return overallAverage;
 };

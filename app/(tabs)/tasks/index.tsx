@@ -19,8 +19,10 @@ import {
 } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
-import { GlassContainer, GlassView } from 'expo-glass-effect';
-
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
@@ -168,7 +170,9 @@ export default function TabOneScreen() {
     result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setHomework(newHomeworks);
@@ -196,7 +200,9 @@ export default function TabOneScreen() {
     const updateHomeworkCompletion = async (homeworkItem: Homework) => {
       try {
         const manager = getManager();
-        const id = generateId(item.subject + item.content + item.createdByAccount);
+        const id = generateId(
+          homeworkItem.subject + homeworkItem.content + homeworkItem.createdByAccount + homeworkItem.dueDate.toDateString()
+        );
         await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
         updateHomeworkIsDone(id, !homeworkItem.isDone)
         setRefreshTrigger(prev => prev + 1);
@@ -241,7 +247,9 @@ export default function TabOneScreen() {
         const result = await manager.getHomeworks(selectedWeek);
         const newHomeworks: Record<string, Homework> = {};
         for (const hw of result) {
-          const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+          const id = generateId(
+            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+          );
           newHomeworks[id] = hw;
         }
         setHomework(prev => ({ ...prev, ...newHomeworks }));
@@ -390,20 +398,21 @@ export default function TabOneScreen() {
       >
         <BlurView intensity={70} style={{ backgroundColor: "rgba(0, 0, 0, 0.1)", flex: 1, alignContent: "center", justifyContent: "flex-start" }} tint={theme.dark ? "dark" : "light"} experimentalBlurMethod="dimezisBlurView">
           <KeyboardAvoidingView behavior="padding">
-            <GlassContainer
+            <LiquidGlassContainerView
               style={{
                 position: "absolute",
                 top: insets.top + 10,
                 zIndex: 1000000,
                 flexDirection: "row",
-                width: Dimensions.get('window').width,
-                paddingHorizontal: 20,
+                width: Dimensions.get('window').width - 32,
+                left: 16,
+                paddingHorizontal: 0,
                 height: 46,
                 gap: 12,
               }}
             >
-              <GlassView
-                isInteractive
+              <LiquidGlassView
+                interactive
                 style={{
                   flex: 1,
                   borderRadius: 160,
@@ -415,7 +424,8 @@ export default function TabOneScreen() {
                   flexDirection: "row",
                   backgroundColor: runsIOS26 ? "transparent" : theme.colors.text + "11",
                 }}
-                glassEffectStyle="clear"
+                effect="regular"
+                tintColor={"#00000000"}
               >
                 <Papicons name={"Search"} color={colors.text} size={24} opacity={0.5} />
                 <TextInput
@@ -437,10 +447,10 @@ export default function TabOneScreen() {
                     <Papicons name={"cross"} color={colors.text} size={18} opacity={0.5} />
                   </Pressable>
                 )}
-              </GlassView>
+              </LiquidGlassView>
 
-              <GlassView
-                isInteractive
+              <LiquidGlassView
+                interactive
                 style={{
                   width: 46,
                   height: 46,
@@ -449,13 +459,13 @@ export default function TabOneScreen() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}
-                glassEffectStyle="clear"
+                effect="regular"
               >
                 <Pressable onPress={() => setShowSearch(false)} hitSlop={32}>
                   <Papicons name={"cross"} color={PlatformColor('labelColor')} size={24} opacity={0.5} />
                 </Pressable>
-              </GlassView>
-            </GlassContainer>
+              </LiquidGlassView>
+            </LiquidGlassContainerView>
 
             <LayoutAnimationConfig skipEntering skipExiting>
               <Reanimated.FlatList
@@ -582,7 +592,7 @@ export default function TabOneScreen() {
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
-          <GlassView
+          <LiquidGlassView
             style={{
               height: 60,
               width: 300,
@@ -590,8 +600,8 @@ export default function TabOneScreen() {
               borderRadius: 16,
               boxShadow: runsIOS26 ? undefined : "0px 0px 32px rgba(0, 0, 0, 0.25)",
             }}
-            glassEffectStyle="regular"
-            isInteractive={true}
+            effect="regular"
+            interactive={true}
           >
             <View
               style={{
@@ -649,7 +659,7 @@ export default function TabOneScreen() {
                       margin: 10,
                       borderRadius: 12,
                       borderCurve: "continuous",
-                      backgroundColor: colors.background,
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
                       borderColor: colors.text + "22",
                       borderWidth: 1,
                       alignItems: "center",
@@ -673,7 +683,7 @@ export default function TabOneScreen() {
                 </Pressable>
               )}
             />
-          </GlassView>
+          </LiquidGlassView>
         </Reanimated.View>
       )}
 
@@ -783,7 +793,7 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             setSearchTermState("");
             setShowSearch(true);
           }}

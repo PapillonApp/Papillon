@@ -1,5 +1,4 @@
 import { Model, Q } from "@nozbe/watermelondb";
-import { useEffect, useState } from "react";
 
 import { Grade as SharedGrade, Period as SharedPeriod, PeriodGrades as SharedPeriodGrades } from "@/services/shared/grade";
 import { generateId } from "@/utils/generateId";
@@ -8,11 +7,12 @@ import { error, warn } from "@/utils/logger/logger";
 import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapPeriodGradesToShared,mapPeriodToShared } from "./mappers/grade";
 import { Grade, Period, PeriodGrades } from "./models/Grades";
+import { safeWrite } from "./utils/safeTransaction";
 
 export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
   const db = getDatabaseInstance();
 
-  await db.write(async () => {
+  await safeWrite(db, async () => {
     for (const item of periods) {
       const id = generateId(item.name + item.createdByAccount);
 
@@ -33,7 +33,7 @@ export async function addPeriodsToDatabase(periods: SharedPeriod[]) {
         });
       }
     }
-  });
+  }, 10000, 'addPeriodsToDatabase');
 }
 
 
@@ -63,7 +63,7 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
     const existing = await db.get('grades').query(Q.where('gradeId', id)).fetch();
 
     if(existing.length === 0) {
-      await db.write(async () => {
+      await safeWrite(db, async () => {
         await db.get('grades').create((record: Model) => {
           const grade = record as Grade
           Object.assign(grade, {
@@ -85,7 +85,7 @@ export async function addGradesToDatabase(grades: SharedGrade[], subject: string
             maxScore: JSON.stringify(item.maxScore)
           })
         })
-      })
+      }, 10000, 'addGradesToDatabase')
     }
   }
 }
@@ -98,7 +98,7 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
     Q.where("id", id)
   ).fetch();
 
-  await db.write(async () => {
+  await safeWrite(db, async () => {
     if (existing.length > 0) {
       await existing[0].update((record: Model) => {
         const periodGrade = record as PeriodGrades;
@@ -119,7 +119,7 @@ export async function addPeriodGradesToDatabase(item: SharedPeriodGrades, period
         });
       });
     }
-  });
+  }, 10000, 'addPeriodGradesToDatabase');
 }
 
 export async function getGradePeriodsFromCache(period: string): Promise<SharedPeriodGrades> {

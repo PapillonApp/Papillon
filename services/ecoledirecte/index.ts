@@ -17,6 +17,10 @@ import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
 import { refreshEDAccount } from "./refresh";
 import { fetchEDTimetable } from "./timetable";
+import { QRCode } from "@/services/shared/canteen";
+import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";
+import { Balance } from "@/services/shared/balance";
+import { fetchEDBalances } from "@/services/ecoledirecte/balance";
 
 export class EcoleDirecte implements SchoolServicePlugin {
   displayName = "EcoleDirecte";
@@ -28,7 +32,9 @@ export class EcoleDirecte implements SchoolServicePlugin {
     Capabilities.CHAT_READ,
     Capabilities.GRADES,
     Capabilities.HOMEWORK,
-    Capabilities.TIMETABLE
+    Capabilities.TIMETABLE,
+    Capabilities.CANTEEN_QRCODE,
+    Capabilities.CANTEEN_BALANCE,
   ];
   session: Session | undefined = undefined;
   account: Account | undefined = undefined;
@@ -115,5 +121,24 @@ export class EcoleDirecte implements SchoolServicePlugin {
     }
 
     error("Session or account is not valid", "EcoleDirecte.setHomeworkCompletion");
+  }
+
+  async getCanteenQRCodes(): Promise<QRCode> {
+    if (this.session && this.account) {
+      return fetchEDQRCode(this.account)
+    }
+
+    error("Session is not valid", "EcoleDirecte.getCanteenQRCodes")
+  }
+
+  async getCanteenBalances(): Promise<Balance[]> {
+    if (this.session && this.account) {
+      return (await fetchEDBalances(this.session)).map(balance => ({
+        ...balance,
+        createdByAccount: this.accountId,
+      }))
+    }
+
+    error("Session is not valid", "EcoleDirecte.getCanteenBalances")
   }
 }

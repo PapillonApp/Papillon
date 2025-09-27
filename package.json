@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "expo-router/entry",
-  "version": "8.0.3",
+  "version": "8.1.2",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -17,10 +17,13 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@aramir/react-native-barcode": "^1.0.1",
     "@babel/plugin-proposal-decorators": "^7.27.1",
     "@bottom-tabs/react-navigation": "^0.11.1",
+    "@callstack/liquid-glass": "^0.4.0",
     "@eslint/js": "^9.35.0",
     "@expo/metro-config": "~54.0.2",
+    "@expo/ngrok": "^4.1.3",
     "@expo/vector-icons": "^15.0.2",
     "@getpapillon/papicons": "^0.1.5",
     "@legendapp/list": "^2.0.0-beta.4",
@@ -40,7 +43,7 @@
     "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "expo": "^54.0.0",
+    "expo": "^54.0.7",
     "expo-battery": "~10.0.7",
     "expo-blur": "~15.0.7",
     "expo-build-properties": "~1.0.8",
@@ -58,7 +61,7 @@
     "expo-localization": "~17.0.7",
     "expo-location": "~19.0.7",
     "expo-network": "~8.0.7",
-    "expo-router": "~6.0.3",
+    "expo-router": "~6.0.4",
     "expo-secure-store": "~15.0.7",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
