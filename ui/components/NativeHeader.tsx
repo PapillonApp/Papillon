@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
   pressable: {
-    height: 36,
+    height: 42,
     minWidth: 36,
     alignItems: "center",
     justifyContent: "center",
@@ -230,7 +230,6 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
           handlePressOut();
           props.onPressOut?.(e);
         }}
-        hitSlop={(runsIOS26 || Platform.OS === 'android') ? 32 : undefined}
       />
     );
   }
@@ -248,7 +247,6 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
         handlePressOut();
         props.onPressOut?.(e);
       }}
-      hitSlop={(runsIOS26 || Platform.OS === 'android') ? 32 : undefined}
     />
   );
 });

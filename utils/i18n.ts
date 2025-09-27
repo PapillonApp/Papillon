@@ -6,12 +6,14 @@ import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
 import de from "@/locales/de.json";
 import es from "@/locales/es.json";
+import tr from "@/locales/tr.json";
 
 const resources = {
   fr: { translation: fr },
   en: { translation: en },
   de: { translation: de },
   es: { translation: es },
+  tr: { translation: tr },
 };
 
 const languageDetector = {

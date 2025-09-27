@@ -13,7 +13,7 @@ import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/se
 import { Papicons, Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -35,11 +35,10 @@ export default function QRCodeAndCardsPage() {
     setWallets(result);
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchWallets();
-    }, [])
-  );
+  useEffect(() => {
+    setWallets([])
+    fetchWallets();
+  }, [accounts])
 
   const { t } = useTranslation();
 

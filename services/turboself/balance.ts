@@ -6,7 +6,7 @@ export async function fetchTurboSelfBalance(session: Client, accountId: string):
   const balances = await session.getBalances()
   const lunchPrice = (session.host?.lunchPrice ?? 0)
   return balances.map(balance => ({
-    amount: balance.amount,
+    amount: balance.estimatedAmount,
     currency: session.establishment?.currencySymbol ?? "€",
     lunchRemaining: lunchPrice > 0 ? Math.floor(balance.estimatedAmount / lunchPrice) : 0,
     lunchPrice,

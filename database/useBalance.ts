@@ -9,6 +9,23 @@ import { mapBalancesToShared } from "./mappers/balances";
 import { Balance } from "./models/Balance";
 import { safeWrite } from "./utils/safeTransaction";
 
+export async function removeBalanceFromDatabase(serviceId: string) {
+  const db = getDatabaseInstance();
+  const dbBalances = await db.get<Balance>('balances')
+    .query(
+      Q.where('createdByAccount', serviceId)
+    )
+    .fetch();
+  
+  for (const balance of dbBalances) {
+    if (balance.createdByAccount === serviceId) {
+      await safeWrite(db, async () => {
+        balance.markAsDeleted()
+      })
+    }
+  }
+}
+
 export async function addBalancesToDatabase(balances: SharedBalance[]) {
   const db = getDatabaseInstance();
   for (const balance of balances) {
