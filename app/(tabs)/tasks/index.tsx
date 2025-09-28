@@ -275,13 +275,18 @@ export default function TabOneScreen() {
     if (showUndoneOnly && item.isDone)
       return null;
     return (
-      <TaskItem
-        key={item.id}
-        item={item}
-        index={index}
-        fromCache={!inFresh}
-        onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
-      />
+      <Reanimated.View
+        style={{ marginBottom: 16 }}
+        layout={Animation(LinearTransition, "list")}
+      >
+        <TaskItem
+          key={item.id}
+          item={item}
+          index={index}
+          fromCache={!inFresh}
+          onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
+        />
+      </Reanimated.View>
     )
   }, [onProgressChange, homeworksFromCache]);
 
@@ -496,6 +501,7 @@ export default function TabOneScreen() {
         key={sortedHomeworks.length}
         data={sortedHomeworks}
         initialNumToRender={2}
+        engine="FlashList"
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         refreshControl={
@@ -506,6 +512,7 @@ export default function TabOneScreen() {
           />
         }
         gap={16}
+        paddingTop={2}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <LayoutAnimationConfig skipEntering>

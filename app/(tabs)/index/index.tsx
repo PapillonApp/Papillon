@@ -390,6 +390,7 @@ const IndexScreen = () => {
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={200}
+        engine="LegendList"
         header={
           <>
             <FlatList
@@ -512,6 +513,7 @@ const IndexScreen = () => {
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
                 style={{
                   borderBottomLeftRadius: 26,
                   borderBottomRightRadius: 26,
