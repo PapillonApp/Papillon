@@ -388,6 +388,7 @@ const IndexScreen = () => {
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={200}
+        engine="LegendList"
         header={
           <>
             <FlatList
