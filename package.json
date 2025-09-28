@@ -37,6 +37,7 @@
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.2.12",
     "@types/uuid": "^10.0.0",
+    "alise-api": "^0.2.5",
     "buffer": "^6.0.3",
     "countly-sdk-react-native-bridge": "^25.4.0",
     "date-fns": "^4.1.0",

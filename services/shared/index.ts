@@ -548,6 +548,12 @@ export class AccountManager {
       return new module.Izly(service.id);
     }
 
+    if (service.serviceId === Services.ALISE) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/alise/index");
+      return new module.Alise(service.id);
+    }
+
     error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
   }
 }
