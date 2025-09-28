@@ -93,72 +93,80 @@ export default function TabOneScreen() {
           />
           {icalUrl.length > 0 && (
             <Trailing>
-            <AnimatedPressable>
+              <AnimatedPressable>
                 <Papicons name={'Add'} onPress={handleAdd} size={24} color={'#D6502B'} disabled={!isValidUrl(icalUrl)} />
-            </AnimatedPressable>
+              </AnimatedPressable>
             </Trailing>
           )}
         </Item>
       </List>
 
-      <List>
-        {icals.flatMap((ical, index) => {
-          const isADE = (ical as any).provider?.toUpperCase().includes('ADE');
-          const isHyperplanning = (ical as any).provider?.toUpperCase().includes('HYPERPLANNING');
-          const supportsIntelligentParsing = isADE || isHyperplanning;
-          const items = [
-            <Item
-              key={`${ical.id}-main`}
-              onPress={() => {
-                Alert.alert(
-                  t('Tab_Calendar_Icals_Manage_Title', { title: ical.title }),
-                  t('Tab_Calendar_Icals_Manage_Description'),
-                  [
-                    {
-                      text: t('Context_Cancel'),
-                      style: 'cancel',
-                    },
-                    {
-                      text: t('Context_Delete'),
-                      style: 'destructive',
-                      onPress: () => handleRemove(ical.id)
-                    }
-                  ]
-                );
-              }}
-            >
-              <Icon>
-                <Calendar />
-              </Icon>
-              <Typography variant="title">{ical.title}</Typography>
-              <Typography variant="caption" color="secondary">{ical.url}</Typography>
-            </Item>
-          ];
-
-          // only ADE and Hyperplanning calendars support intelligent parsing
-          if (supportsIntelligentParsing) {
-            items.push(
-              <Item key={`${ical.id}-parsing`}>
+      {icals.length > 0 && (
+        <List>
+          {icals.flatMap((ical, index) => {
+            const isADE = (ical as any).provider?.toUpperCase().includes('ADE');
+            const isHyperplanning = (ical as any).provider?.toUpperCase().includes('HYPERPLANNING');
+            const supportsIntelligentParsing = isADE || isHyperplanning;
+            const items = [
+              <Item
+                key={`${ical.id}-main`}
+                onPress={() => {
+                  Alert.alert(
+                    t('Tab_Calendar_Icals_Manage_Title', { title: ical.title }),
+                    t('Tab_Calendar_Icals_Manage_Description'),
+                    [
+                      {
+                        text: t('Context_Cancel'),
+                        style: 'cancel',
+                      },
+                      {
+                        text: t('Context_Delete'),
+                        style: 'destructive',
+                        onPress: () => handleRemove(ical.id)
+                      }
+                    ]
+                  );
+                }}
+              >
                 <Icon>
-                  <Brain opacity={(ical as any).intelligentParsing ? 1 : 0.5} />
+                  <Calendar />
                 </Icon>
-                <Typography variant="title">Parsing intelligent (Beta)</Typography>
-                <Trailing>
-                  <Switch
-                    value={(ical as any).intelligentParsing || false}
-                    onValueChange={async (value) => {
-                      await updateIcalParsing(ical.id, value);
-                      setRefresh(r => r + 1);
-                    }}
-                  />
-                </Trailing>
+                <Typography variant="title">{ical.title}</Typography>
+                <Typography variant="caption" color="secondary">{ical.url}</Typography>
               </Item>
-            );
-          }
+            ];
 
-          return items;
-        })}
-      </List>
+            // only ADE and Hyperplanning calendars support intelligent parsing
+            if (supportsIntelligentParsing) {
+              items.push(
+                <Item key={`${ical.id}-parsing`}>
+                  <Icon>
+                    <Brain opacity={(ical as any).intelligentParsing ? 1 : 0.5} />
+                  </Icon>
+                  <Typography variant="title">Parsing intelligent (Beta)</Typography>
+                  <Trailing>
+                    <Switch
+                      value={(ical as any).intelligentParsing || false}
+                      onValueChange={async (value) => {
+                        await updateIcalParsing(ical.id, value);
+                        setRefresh(r => r + 1);
+                      }}
+                    />
+                  </Trailing>
+                </Item>
+              );
+            }
+
+            return items;
+          })}
+        </List>
+      )}
+
+      {icals.length === 0 && (
+        <Typography variant="body1" style={{ marginTop: 32 }} color="secondary">
+          {t("Tab_Calendar_Icals_Empty")}
+        </Typography>
+      )}
     </ScrollView>
   );
 }

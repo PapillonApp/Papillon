@@ -74,8 +74,8 @@ export function parseADEDescription(description: string): ParsedDescription | nu
     case 3:
       return {
         type: extractValue(lines[0]),
-        group: extractValue(lines[1]),
-        teacher: extractValue(lines[2]),
+        group: extractValue(lines[2]),
+        teacher: extractValue(lines[1]),
       };
 
     default:
@@ -93,7 +93,7 @@ export function enhanceADEUrl(url: string): string {
     if (url.includes('nbWeeks')) {
       newUrl = newUrl.split('nbWeeks=')[0];
     }
-    newUrl += '&firstDate=2000-01-01&lastDate=2038-01-01';
+    // newUrl += '&firstDate=2000-01-01&lastDate=2038-01-01';
     return newUrl;
   }
   return url;
