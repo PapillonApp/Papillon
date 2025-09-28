@@ -95,4 +95,5 @@ export enum Services {
   ARD,
   IZLY,
   MULTI,
+  ALISE
 }

@@ -44,7 +44,7 @@ export default function QRCodeAndCardsPage() {
   const headerHeight = useHeaderHeight();
 
   const manager = getManager();
-  const hasBookingCapacity = manager.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
+  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");

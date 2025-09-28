@@ -73,6 +73,9 @@
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec ton calendrier.",
+  "Tab_Calendar_Icals_Add_Title": "Titre manquant",
+  "Tab_Calendar_Icals_Add_Description": "Donne un nom à cette URL iCal pour l'ajouter.",
+  "Tab_Calendar_Icals_Empty": "Aucune URL iCal ajoutée",
 
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
   "TabUnderConstruction_Details": "Reviens plus tard pour des mises à jour.",

@@ -245,36 +245,46 @@ export interface SupportedRestaurant {
 }
 
 export function GetSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
-  return [
-    {
-      name: "turboself",
-      title: "TurboSelf",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/turboself.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../turboself/credentials' });
-      }
-    },
-    {
-      name: "ard",
-      title: "ARD",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/ard.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../ard/credentials' });
-      }
-    },
-    {
-      name: "izly",
-      title: "Izly",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/izly.png"),
-      type: "main",
-      onPress: () => {
-        redirect({ pathname: '../izly/credentials' });
-      }
-    }
-  ]
+    return [
+        {
+            name: "turboself",
+            title: "TurboSelf",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/turboself.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../turboself/credentials' });
+            }
+        },
+        {
+            name: "ard",
+            title: "ARD",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/ard.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../ard/credentials' });
+            }
+        },
+        {
+            name: "izly",
+            title: "Izly",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/izly.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../izly/credentials' });
+            }
+        },
+        {
+            name: "alise",
+            title: "Alise",
+            hasLimitedSupport: false,
+            image: require("@/assets/images/alise.png"),
+            type: "main",
+            onPress: () => {
+                redirect({ pathname: '../alise/credentials' });
+            }
+        }
+    ]
 }

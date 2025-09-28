@@ -1,7 +1,7 @@
 import { LegendList } from "@legendapp/list";
 import { useTheme } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
-import React from "react";
+import React, { memo } from "react";
 import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,7 +26,7 @@ interface TabFlatListProps extends FlatListProps<any> {
   onFullyScrolled?: (isFullyScrolled: boolean) => void;
 }
 
-const TabFlatList: React.FC<TabFlatListProps> = ({
+const TabFlatList: React.FC<TabFlatListProps> = memo(({
   header,
   backgroundColor = "#F7E8F5",
   foregroundColor = "#29947A",
@@ -246,6 +246,6 @@ const TabFlatList: React.FC<TabFlatListProps> = ({
   catch (error) {
     return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
-};
+});
 
 export default TabFlatList;

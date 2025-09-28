@@ -17,7 +17,11 @@ export function getSubjectColor(subject: string): string {
   const ignoredColors = Object.values(subjects ?? {}).map(item => item.color)
 
   const color = getRandomColor(ignoredColors)
-  useAccountStore.getState().setSubjectColor(cleanedName, color)
+
+  setTimeout(() => {
+    useAccountStore.getState().setSubjectColor(cleanedName, color)
+  }, 0)
+
   return color;
 }
 

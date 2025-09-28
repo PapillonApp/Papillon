@@ -68,7 +68,7 @@ export default function QRCodeAndCardsPage() {
               })}
             </View>
 
-            <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 60 }}>
+            <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 30 }}>
               <Button
                 inline
                 title="Ajouter"
