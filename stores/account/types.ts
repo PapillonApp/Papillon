@@ -10,7 +10,7 @@ import { Skolengo } from "skolengojs";
  */
 export interface AccountsStorage {
   lastUsedAccount: string;
-  accounts : Account[]
+  accounts: Account[];
   removeAccount: (account: Account) => void;
   addAccount: (account: Account) => void;
   setLastUsedAccount: (accountId: string) => void;
@@ -94,5 +94,6 @@ export enum Services {
   TURBOSELF,
   ARD,
   IZLY,
+  MULTI,
   ALISE
 }

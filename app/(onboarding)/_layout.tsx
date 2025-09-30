@@ -6,17 +6,17 @@ import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
-    const newScreenOptions = React.useMemo(() => ({
-        ...screenOptions,
-        headerShown: false,
-        headerBackVisible: true,
-        headerTitle: '',
-        gestureEnabled: false,
-        headerTransparent: true,
-        headerTintColor: "#FFFFFF",
-        headerBackButtonDisplayMode: "minimal",
-        headerBackButtonMenuEnabled: false
-    }), []);
+  const newScreenOptions = React.useMemo(() => ({
+    ...screenOptions,
+    headerShown: false,
+    headerBackVisible: true,
+    headerTitle: '',
+    gestureEnabled: false,
+    headerTransparent: true,
+    headerTintColor: "#FFFFFF",
+    headerBackButtonDisplayMode: "minimal",
+    headerBackButtonMenuEnabled: false
+  }), []);
 
     return (
         <View style={{ flex: 1, backgroundColor: "black" }}>
@@ -56,6 +56,10 @@ export default function OnboardingLayout() {
                 />
                 <Stack.Screen
                     name="university/method"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
+                    name="university/multi/credentials"
                     options={{ ...newScreenOptions }}
                 />
                 <Stack.Screen
