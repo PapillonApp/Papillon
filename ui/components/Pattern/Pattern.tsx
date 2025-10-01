@@ -1,4 +1,5 @@
-import { DimensionValue, Platform, ViewProps } from "react-native";
+import { DimensionValue, ViewProps } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from "@react-native-masked-view/masked-view";
 import CrossPattern from "@/ui/components/Pattern/CrossPattern";
@@ -40,7 +41,7 @@ const Pattern = (props: PatternProps) => {
         zIndex: 0,
         width: props.width || "100%",
         height: props.height || "100%",
-        opacity: (props.opacity || 0.25) * (Platform.OS === "android" ? 0.3 : 1),
+        opacity: (props.opacity || 0.25) * (isAndroid ? 0.3 : 1),
       }}
     >
       {props.pattern === "cross" && (

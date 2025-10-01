@@ -8,7 +8,7 @@ import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/n
 import { withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
-import { Platform } from 'react-native';
+import { isAndroid, isIOS } from "@/utils/platform";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -21,7 +21,6 @@ const Tabs = withLayoutContext<
 
 // Static platform detection - computed once at module load
 const IS_IOS_WITH_PADDING = runsIOS26;
-const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
 const ICONS = {
@@ -37,7 +36,7 @@ const ICONS = {
 // Static style object to prevent recreation on every render
 const TAB_LABEL_STYLE = {
   fontFamily: 'medium',
-  fontSize: Platform.OS === 'ios' ? 13 : 13,
+  fontSize: isIOS ? 13 : 13,
 } as const;
 
 // Static icon functions to prevent recreation

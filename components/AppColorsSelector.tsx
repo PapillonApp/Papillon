@@ -8,7 +8,7 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useSettingsStore } from "@/stores/settings";
 import { Colors, AppColors } from "@/utils/colors";
 import adjust from "@/utils/adjustColor";
-import { ImpactFeedbackStyle } from "expo-haptics";
+import { ImpactFeedbackStyle } from "@/utils/haptics";
 
 export { Colors, AppColors };
 

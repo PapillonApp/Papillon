@@ -1,6 +1,7 @@
 import { useNavigation, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
+import React, { Alert, Dimensions, FlatList, View } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
@@ -373,10 +374,10 @@ const IndexScreen = () => {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === 'android' && {
+            isAndroid && {
               elevation: 4,
             },
-            Platform.OS === 'ios' && {
+            isIOS && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
             }

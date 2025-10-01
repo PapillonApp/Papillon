@@ -4,7 +4,8 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, useWindowDimensions, View } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -467,10 +468,10 @@ export default function TabOneScreen() {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === 'android' && {
+            isAndroid && {
               elevation: 4,
             },
-            Platform.OS === 'ios' && {
+            isIOS && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
             }
@@ -500,9 +501,7 @@ export default function TabOneScreen() {
                 year: "numeric",
               })}`,
               state: currentPeriod?.id === period.id ? "on" : "off",
-              image: Platform.select({
-                ios: (getPeriodNumber(period.name || "0")) + ".calendar"
-              }),
+              image: isIOS ? (getPeriodNumber(period.name || "0")) + ".calendar" : undefined,
               imageColor: colors.text,
             }))
           }
@@ -511,12 +510,12 @@ export default function TabOneScreen() {
             animated={true}
             style={{
               flexDirection: "column",
-              alignItems: Platform.OS === 'android' ? "left" : "center",
+              alignItems: isAndroid ? "left" : "center",
               justifyContent: "center",
               gap: 4,
               width: 200,
               height: 60,
-              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : isIOS ? -4 : -2,
             }}
           >
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
@@ -564,10 +563,7 @@ export default function TabOneScreen() {
               id: "sort:" + s.value,
               title: s.label,
               state: sorting === s.value ? "on" : "off",
-              image: Platform.select({
-                ios: s.icon.ios,
-                android: s.icon.android,
-              }),
+              image: isIOS ? s.icon.ios : (isAndroid ? s.icon.android : undefined),
               imageColor: colors.text,
             }))
           }

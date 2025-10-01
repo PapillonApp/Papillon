@@ -24,7 +24,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
+import { AppState, AppStateStatus, StatusBar, useColorScheme } from 'react-native';
+import { isIOS, isWindows } from '@/utils/platform';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
@@ -62,7 +63,7 @@ const STACK_SCREEN_OPTIONS = {
 const ALERT_SCREEN_OPTIONS = {
   headerShown: false,
   presentation: 'formSheet' as const,
-  sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' as const : [0.9],
+  sheetAllowedDetents: isIOS ? 'fitToContents' as const : [0.9],
   sheetCornerRadius: 32,
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
@@ -289,7 +290,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       <DatabaseProvider>
         <ThemeProvider value={theme}>
           <AlertProvider>
-            <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+            <Stack initialRouteName={isWindows ? '(desktop)' : '(tabs)'} screenOptions={stackScreenOptions}>
+              <Stack.Screen name="(desktop)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
               <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
@@ -306,28 +308,28 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                  headerShown: isIOS ? runsIOS26 : true,
                   headerTitle: t("Modal_Grades_Title"),
                   headerLargeTitle: false,
                   presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+                  headerTransparent: isIOS ? runsIOS26 : false,
                   contentStyle: {
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                    borderRadius: isIOS ? 30 : 0,
+                    overflow: isIOS ? "hidden" : "visible",
                   },
                 }}
               />
               <Stack.Screen
                 name="(modals)/course"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                  headerShown: isIOS ? runsIOS26 : true,
                   headerTitle: t("Modal_Course_Title"),
                   headerLargeTitle: false,
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+                  headerTransparent: isIOS ? runsIOS26 : false,
                   presentation: "modal",
                   contentStyle: {
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                    borderRadius: isIOS ? 30 : 0,
+                    overflow: isIOS ? "hidden" : "visible",
                   }
                 }}
               />

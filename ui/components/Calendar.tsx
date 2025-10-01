@@ -1,9 +1,10 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
-import * as Haptics from "expo-haptics";
+import { triggerImpactHaptic, ImpactFeedbackStyle } from "@/utils/haptics";
 import * as Localization from "expo-localization";
 import React, { useState } from "react";
-import { Platform, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { isAndroid } from "@/utils/platform";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Reanimated from "react-native-reanimated";
@@ -36,18 +37,18 @@ const Calendar: React.FC<CalendarProps> = ({
     const currentDate = selectedDate || date;
     setDate(currentDate);
     onDateChange?.(currentDate);
-    if (Platform.OS === "android") { setShowDatePicker(false); }
+    if (isAndroid) { setShowDatePicker(false); }
   };
 
   React.useEffect(() => {
     if (showDatePicker) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      triggerImpactHaptic(ImpactFeedbackStyle.Light);
     }
   }, [showDatePicker]);
 
   if (!showDatePicker) { return null; }
 
-  if (Platform.OS === "android") {
+  if (isAndroid) {
     return (
       <DateTimePicker
         value={date}

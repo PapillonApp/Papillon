@@ -11,7 +11,7 @@ module.exports = {
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "papillon",
-    platforms: ["ios", "android"],
+    platforms: ["ios", "android", "windows"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
@@ -77,7 +77,6 @@ module.exports = {
         },
       ],
       "react-native-bottom-tabs",
-      "expo-secure-store",
       [
         "expo-location",
         {

@@ -3,7 +3,8 @@ import Typography from "@/ui/components/Typography";
 import { Phone } from "@getpapillon/papicons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Image, Platform, View } from "react-native";
+import { Dimensions, Image, View } from "react-native";
+import { isIOS } from "@/utils/platform";
 import React from "react";
 import Reanimated, {
   FlipInEasyX,
@@ -62,7 +63,7 @@ export default function QRCodePage() {
     <GestureDetector
       gesture={panGesture}
     >
-      <BlurView style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? undefined : "#000" }}
+      <BlurView style={{ flex: 1, backgroundColor: isIOS ? undefined : "#000" }}
                 tint={"dark"}
       >
         <Reanimated.View

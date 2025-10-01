@@ -2,7 +2,8 @@ import Icon from "@/ui/components/Icon";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { router, useLocalSearchParams } from "expo-router";
-import { Platform, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -260,7 +261,7 @@ export default function AttendanceView() {
               </View>
             </ScrollView>
 
-            <NativeHeaderSide side="Left" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
+            <NativeHeaderSide side="Left" style={{ paddingTop: isAndroid ? 10 : 0 }}>
               <NativeHeaderPressable onPress={() => { router.back() }}>
                 <Icon papicon opacity={0.5}>
                   <Papicons name={"Cross"} />
@@ -268,7 +269,7 @@ export default function AttendanceView() {
               </NativeHeaderPressable>
             </NativeHeaderSide>
 
-            <NativeHeaderTitle style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }} key={"att:" + period?.name}>
+            <NativeHeaderTitle style={{ paddingTop: isAndroid ? 10 : 0 }} key={"att:" + period?.name}>
               <MenuView
                 key={String(period?.id ?? "")}
                 onPressAction={async ({ nativeEvent }) => {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
-import { Platform, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { isIOS } from "@/utils/platform";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -103,7 +104,7 @@ export default function QRCodeAndCardsPage() {
       setDate(newDate);
       const newWeek = getWeekNumberFromDate(newDate);
       if (newWeek !== weekNumber) setWeekNumber(newWeek);
-      if (Platform.OS === "ios") setShowDatePicker(false);
+      if (isIOS) setShowDatePicker(false);
     },
     [weekNumber]
   );

@@ -13,7 +13,7 @@ import * as Papicons from '@getpapillon/papicons';
 import { VARIANTS } from "@/ui/components/Typography";
 
 import HTMLView from 'react-native-htmlview';
-import * as WebBrowser from 'expo-web-browser';
+import * as WebBrowser from '@/utils/webBrowser';
 import { useTheme } from "@react-navigation/native";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import { MenuView } from "@react-native-menu/menu";

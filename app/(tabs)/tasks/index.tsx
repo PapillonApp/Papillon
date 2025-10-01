@@ -8,7 +8,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   PlatformColor,
   Pressable,
   RefreshControl,
@@ -17,6 +16,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
 import {
@@ -340,7 +340,7 @@ export default function TabOneScreen() {
       return 0
     }
 
-    if (Platform.OS === 'ios') {
+    if (isIOS) {
       return -4
     }
 
@@ -351,23 +351,17 @@ export default function TabOneScreen() {
     {
       label: t('Tasks_Sorting_Methods_DueDate'),
       method: (a: Homework, b: Homework) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-      image: Platform.select({
-        ios: "calendar"
-      }),
+      image: isIOS ? "calendar" : undefined,
     },
     {
       label: t('Tasks_Sorting_Methods_Subject'),
       method: (a: Homework, b: Homework) => a.subject.localeCompare(b.subject),
-      image: Platform.select({
-        ios: "character"
-      }),
+      image: isIOS ? "character" : undefined,
     },
     {
       label: t('Tasks_Sorting_Methods_Done'),
       method: (a: Homework, b: Homework) => Number(a.isDone) - Number(b.isDone),
-      image: Platform.select({
-        ios: "checkmark.circle"
-      }),
+      image: isIOS ? "checkmark.circle" : undefined,
     },
   ]
 
@@ -575,10 +569,10 @@ export default function TabOneScreen() {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === 'android' && {
+            isAndroid && {
               elevation: 4,
             },
-            Platform.OS === 'ios' && {
+            isIOS && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
             }
@@ -706,9 +700,7 @@ export default function TabOneScreen() {
                 image: method.image ? method.image : undefined,
                 imageColor: colors.text,
               })),
-              image: Platform.select({
-                ios: "arrow.up.arrow.down"
-              }),
+              image: isIOS ? "arrow.up.arrow.down" : undefined,
               imageColor: colors.text,
               displayInline: true
             },
@@ -719,9 +711,7 @@ export default function TabOneScreen() {
                   title: t('Task_OnlyShowUndone'),
                   id: 'only-undone',
                   state: (!showUndoneOnly ? 'on' : 'off'),
-                  image: Platform.select({
-                    ios: "flag.pattern.checkered"
-                  }),
+                  image: isIOS ? "flag.pattern.checkered" : undefined,
                   imageColor: colors.text,
                 }
               ],

@@ -4,7 +4,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useGlobalSearchParams } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import Reanimated, { FadeIn, FadeOut, ZoomIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg"
@@ -92,8 +93,8 @@ export default function ChooseColorScreen() {
         shadowRadius: 8,
         flex: 1,
       }}
-        entering={Platform.OS === "android" ? undefined : ZoomIn.springify().duration(300)}
-        exiting={Platform.OS === "android" ? undefined : FadeOut.duration(100)}
+        entering={isAndroid ? undefined : ZoomIn.springify().duration(300)}
+        exiting={isAndroid ? undefined : FadeOut.duration(100)}
         key={logoKey}
       >
         <PapillonLogo color={selectedColor} />

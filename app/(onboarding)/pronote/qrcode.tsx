@@ -1,8 +1,8 @@
 import { Papicons } from "@getpapillon/papicons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "@react-navigation/native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as Haptics from "expo-haptics";
+import { triggerNotificationHaptic, NotificationFeedbackType } from "@/utils/haptics";
+import { CameraView, useCameraPermissions } from '@/utils/camera';
 import { router, useGlobalSearchParams } from "expo-router";
 import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
 import React, { useEffect, useState } from "react";
@@ -150,7 +150,7 @@ export default function PronoteLoginWithQR() {
     data: string;
   }) => {
     setScanned(true);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    triggerNotificationHaptic(NotificationFeedbackType.Success);
     setQRData(data);
     setPinModalVisible(true);
   };

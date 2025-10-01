@@ -1,5 +1,7 @@
-import { Platform } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import { Easing, withTiming } from "react-native-reanimated";
+
+const IS_ANDROID = isAndroid;
 
 export const PapillonZoomIn = () => {
   "worklet";
@@ -53,11 +55,11 @@ export const PapillonAppearIn = () => {
   "worklet";
   return {
     initialValues: {
-      opacity: Platform.OS === 'android' ? 1 : 0,
+      opacity: IS_ANDROID ? 1 : 0,
       transform: [{ scale: 0.9 }],
     },
     animations: {
-      opacity: Platform.OS === 'android' ? 1 : withTiming(1, {
+      opacity: IS_ANDROID ? 1 : withTiming(1, {
         duration: 300,
         easing: Easing.bezier(0.3, 0.3, 0, 1),
       }),
@@ -78,14 +80,14 @@ export const PapillonAppearOut = () => {
   return {
     initialValues: {
       opacity: 1,
-      transform: Platform.OS === 'android' ? [] : [{ scale: 1 }],
+      transform: IS_ANDROID ? [] : [{ scale: 1 }],
     },
     animations: {
       opacity: withTiming(0, {
         duration: 300,
         easing: Easing.bezier(0.3, 0.3, 0, 1),
       }),
-      transform: Platform.OS === 'android' ? [] : [
+      transform: IS_ANDROID ? [] : [
         {
           scale: withTiming(0.9, {
             duration: 300,

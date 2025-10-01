@@ -4,7 +4,8 @@ import { useTheme } from "@react-navigation/native";
 import { router, useRouter } from "expo-router";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Image, Platform, Pressable, View } from "react-native";
+import { Alert, Image, Pressable, View } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 import Reanimated, {
   FadeInUp,
   FadeOutUp,
@@ -218,9 +219,9 @@ function NewsSection() {
 
   return (
     <Reanimated.View
-      layout={Platform.OS === "android" ? undefined : Animation(LinearTransition, "list")}
-      entering={Platform.OS === "android" ? undefined : PapillonAppearIn}
-      exiting={Platform.OS === "android" ? undefined : PapillonAppearOut}
+      layout={isAndroid ? undefined : Animation(LinearTransition, "list")}
+      entering={isAndroid ? undefined : PapillonAppearIn}
+      exiting={isAndroid ? undefined : PapillonAppearOut}
     >
       <Stack
         direction="horizontal"
@@ -328,9 +329,9 @@ function Cards() {
 
   return (
     <Reanimated.View
-      layout={Platform.OS === "android" ? undefined : Animation(LinearTransition, "list")}
-      entering={Platform.OS === "android" ? undefined : PapillonAppearIn}
-      exiting={Platform.OS === "android" ? undefined : PapillonAppearOut}
+      layout={isAndroid ? undefined : Animation(LinearTransition, "list")}
+      entering={isAndroid ? undefined : PapillonAppearIn}
+      exiting={isAndroid ? undefined : PapillonAppearOut}
     >
       <AnimatedPressable onPress={() => {
         router.push("/(features)/(cards)/cards");
@@ -584,10 +585,10 @@ export default function TabOneScreen() {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === "android" && {
+            isAndroid && {
               elevation: 4,
             },
-            Platform.OS === "ios" && {
+            isIOS && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
             },

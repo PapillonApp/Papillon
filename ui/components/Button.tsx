@@ -6,7 +6,7 @@ import Reanimated, { Easing, FadeIn, FadeOut, LinearTransition, useAnimatedStyle
 import { Animation } from "../utils/Animation";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Typography from "./Typography";
-import * as ExpoHaptics from "expo-haptics";
+import { triggerImpactHaptic, ImpactFeedbackStyle } from "@/utils/haptics";
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 
 import {
@@ -85,12 +85,16 @@ const Button: React.FC<ButtonProps> = React.memo(({
     opacity: opacity.value,
   }), []);
 
-  const handlePressIn = useCallback(() => {
-    ExpoHaptics.impactAsync(ExpoHaptics.ImpactFeedbackStyle.Soft)
+  const handlePressInAnimation = useCallback(() => {
     "use worklet";
     scale.value = withTiming(0.97, { duration: 100, easing: Easing.out(Easing.exp) });
     opacity.value = withTiming(0.7, { duration: 50, easing: Easing.out(Easing.exp) });
   }, [scale, opacity]);
+
+  const handlePressIn = useCallback(() => {
+    triggerImpactHaptic(ImpactFeedbackStyle.Soft);
+    handlePressInAnimation();
+  }, [handlePressInAnimation]);
 
   const handlePressOut = useCallback(() => {
     "use worklet";

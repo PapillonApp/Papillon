@@ -1,4 +1,5 @@
-import { Alert, Platform, ScrollView } from "react-native";
+import { Alert, ScrollView } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import Stack from "@/ui/components/Stack";
 import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
@@ -64,7 +65,7 @@ const PersonalizationSettings = () => {
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
-        style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
+        style={{ flex: 1, paddingTop: isAndroid ? height : 0 }}
       >
         <Stack direction="horizontal"
           gap={10}

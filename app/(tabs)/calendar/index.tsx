@@ -5,7 +5,8 @@ import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { ChevronDown } from "lucide-react-native";
 import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
-import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
+import { Dimensions, FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { isIOS, isAndroid } from "@/utils/platform";
 import { LinearTransition } from "react-native-reanimated";
 import Calendar from "@/ui/components/Calendar";
 import Course from "@/ui/components/Course";
@@ -427,7 +428,7 @@ export default function TabOneScreen() {
       setWeekNumber(newWeekNumber);
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
-    if (Platform.OS === 'ios') {
+    if (isIOS) {
       setShowDatePicker(false);
     }
   }, [fetchedWeeks, fetchWeeklyTimetable]);
@@ -451,10 +452,7 @@ export default function TabOneScreen() {
               title: t("Tab_Calendar_Icals"),
               subtitle: t("Tab_Calendar_Icals_Description"),
               imageColor: colors.text,
-              image: Platform.select({
-                ios: 'calendar',
-                android: 'ic_menu_add',
-              }),
+              image: isIOS ? 'calendar' : (isAndroid ? 'ic_menu_add' : undefined),
             }
           ]}
           onPressAction={({ nativeEvent }) => {

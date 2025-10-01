@@ -1,7 +1,8 @@
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
+import { Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
+import { isAndroid } from "@/utils/platform";
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
@@ -101,7 +102,7 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
     const renderComponent = () => (
       <View style={[
         styles.side,
-        Platform.OS === 'android' ? {
+        isAndroid ? {
           marginRight: side === 'Left' ? 16 : 0,
           marginLeft: side === 'Right' ? 16 : 0,
         } : {},
@@ -160,7 +161,7 @@ const NativeHeaderTitle = React.memo(function NativeHeaderTitle({
         <View style={[
           styles.title,
           { maxWidth: maxWidth ?? 200 },
-          Platform.OS === 'android' ? styles.titleAndroid : {},
+          isAndroid ? styles.titleAndroid : {},
         ]} {...propsRef.current}
           pointerEvents={ignoreTouch ? "none" : "auto"}
         >

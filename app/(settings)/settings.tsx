@@ -6,7 +6,8 @@ import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import { Alert, Image, Platform, View } from "react-native";
+import { Alert, Image, View } from "react-native";
+import { isIOS } from "@/utils/platform";
 
 import { Papicons } from '@getpapillon/papicons';
 
@@ -21,7 +22,7 @@ import { useAccountStore } from "@/stores/account";
 import { error } from "@/utils/logger/logger";
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import * as WebBrowser from "expo-web-browser";
+import * as WebBrowser from "@/utils/webBrowser";
 import packagejson from "../../package.json"
 import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
@@ -304,7 +305,7 @@ export default function SettingsIndex() {
         }))}
       />
       {
-        Platform.OS === 'ios' && (
+        isIOS && (
           <NativeHeaderSide side="Left">
             <HeaderBackButton
               tintColor={runsIOS26 ? colors.text : colors.primary}

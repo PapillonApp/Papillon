@@ -5,7 +5,8 @@ import { useRouter } from "expo-router";
 import { CalendarDays, Check, Clock4Icon, MapPinIcon, TypeIcon, User2Icon, X } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import React, { Platform, Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
+import React, { Pressable, ScrollView, StyleSheet, TextInput } from "react-native";
+import { isIOS } from "@/utils/platform";
 
 import { useDatabase } from "@/database/DatabaseProvider";
 import Icon from "@/ui/components/Icon";
@@ -180,7 +181,7 @@ export default function NewEventScreen() {
               {t("Form_Start")}
             </Typography>
             <Trailing>
-              {Platform.OS === "ios" ? (
+              {isIOS ? (
                 <DateTimePicker
                   value={inputStartDate}
                   mode="datetime"
@@ -263,7 +264,7 @@ export default function NewEventScreen() {
               {t("Form_End")}
             </Typography>
             <Trailing>
-              {Platform.OS === "ios" ? (
+              {isIOS ? (
                 <DateTimePicker
                   value={inputEndDate}
                   mode="time"

@@ -1,4 +1,6 @@
 import * as Location from "expo-location";
+import { isWindows } from "../platform";
+import { warn } from "../logger/logger";
 
 export interface CurrentPosition {
   longitude: number
@@ -6,6 +8,11 @@ export interface CurrentPosition {
 }
 
 export const getCurrentPosition = async (): Promise<CurrentPosition | null> => {
+  if (isWindows) {
+    warn("Location API is not available on Windows.");
+    return null;
+  }
+
   try {
     const permission = await Location.requestForegroundPermissionsAsync()
     if (!permission.granted) {

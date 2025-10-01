@@ -2,17 +2,17 @@ import { Papicons } from "@getpapillon/papicons";
 import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import * as ImagePicker from "expo-image-picker"
+import * as ImagePicker from "@/utils/imagePicker";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   View,
 } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
@@ -82,7 +82,7 @@ export default function CustomProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (isAndroid ? height : 0) }}>
           <Avatar
             size={117}
             initials={getInitials(`${firstName} ${lastName}`)}
@@ -94,29 +94,20 @@ export default function CustomProfileScreen() {
               {
                 id: 'photo_library',
                 title: t("Button_Change_ProfilePicture_FromLibrary"),
-                image: Platform.select({
-                  ios: 'photo',
-                  android: 'ic_menu_gallery',
-                }),
+                image: isIOS ? 'photo' : (isAndroid ? 'ic_menu_gallery' : undefined),
                 imageColor: colors.text
               },
               {
                 id: 'from_service',
                 title: t("Button_Change_ProfilePicture_FromService"),
-                image: Platform.select({
-                  ios: 'square.and.arrow.down',
-                  android: 'ic_menu_save',
-                }),
+                image: isIOS ? 'square.and.arrow.down' : (isAndroid ? 'ic_menu_save' : undefined),
                 imageColor: colors.text
               },
               {
                 id: 'remove_photo',
                 title: t("Button_Change_ProfilePicture_Remove"),
                 attributes: { destructive: true },
-                image: Platform.select({
-                  ios: 'trash',
-                  android: 'ic_menu_delete',
-                }),
+                image: isIOS ? 'trash' : (isAndroid ? 'ic_menu_delete' : undefined),
                 imageColor: "#FF0000"
               }
             ]}

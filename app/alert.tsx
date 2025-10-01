@@ -3,7 +3,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
 import { type ComponentType, useState } from "react";
 import { useTranslation } from "react-i18next";
-import React, { Platform, Pressable, Text, View } from "react-native";
+import React, { Pressable, Text, View } from "react-native";
+import { isIOS } from "@/utils/platform";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Button from "@/ui/components/Button";
@@ -81,7 +82,7 @@ export default function AlertModal() {
               gap: 8,
             }
           ]}
-          layout={Platform.OS === "ios" ? LinearTransition.duration(200).easing(Easing.inOut(Easing.quad)) : undefined}
+          layout={isIOS ? LinearTransition.duration(200).easing(Easing.inOut(Easing.quad)) : undefined}
         >
           <Pressable
             style={{
@@ -115,7 +116,7 @@ export default function AlertModal() {
                   color: "#FFF",
                   fontSize: 14,
                   lineHeight: 20,
-                  fontFamily: Platform.OS === 'ios' ? "Courier" : "monospace",
+                  fontFamily: isIOS ? "Courier" : "monospace",
                   textAlign: "left",
                 }}
                 selectable

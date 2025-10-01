@@ -2,7 +2,8 @@ import { LegendList } from "@legendapp/list";
 import { useTheme } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import React, { memo } from "react";
-import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";
+import { Dimensions, FlatList, FlatListProps, View } from "react-native";
+import { isAndroid, isIOS } from "@/utils/platform";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
@@ -200,9 +201,9 @@ const TabFlatList: React.FC<TabFlatListProps> = memo(({
 
           ListFooterComponent={
             <>
-              <View style={{ height: Platform.OS === 'ios' ? tabBarHeight + 12 : 260 }} />
+              <View style={{ height: isIOS ? tabBarHeight + 12 : 260 }} />
 
-              {Platform.OS === 'ios' && (
+              {isIOS && (
                 <View
                   style={{
                     position: 'absolute',
@@ -217,7 +218,7 @@ const TabFlatList: React.FC<TabFlatListProps> = memo(({
             </>
           }
 
-          showsVerticalScrollIndicator={Platform.OS === 'android' ? false : showScrollIndicator}
+          showsVerticalScrollIndicator={isAndroid ? false : showScrollIndicator}
           scrollIndicatorInsets={{
             top: 28
           }}

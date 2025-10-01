@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from "react-native";
+import { isIOS } from "@/utils/platform";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_About_Title"),
           headerBackButtonDisplayMode: "minimal",
-          headerTransparent: Platform.OS === "ios",
+          headerTransparent: isIOS,
           headerLargeTitle: false,
         }}
       />
@@ -91,7 +91,7 @@ export default function Layout() {
           headerShown: false,
           presentation: "modal",
           contentStyle: {
-            borderRadius: Platform.OS === 'ios' ? 30 : 0,
+            borderRadius: isIOS ? 30 : 0,
           }
         }}
       />
