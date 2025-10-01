@@ -1,6 +1,7 @@
 import { User, getPlanning, Lesson } from "appscho";
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Course, CourseDay, CourseType } from "../shared/timetable";
+import { parseADEDescription } from "../local/parsers/ade-parser";
 
 function parseAppschoDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
@@ -48,33 +49,15 @@ export async function fetchAppschoTimetable(
 }
 
 
-function parseAppschoDescription(description: string): { group?: string; teacher?: string; courseType?: string } {
-  if (!description) return {};
-  const lines = description.split('\n').map(line => line.trim()).filter(Boolean);
-  let group: string | undefined;
-  let teacher: string | undefined;
-  let courseType: string | undefined;
-  for (const line of lines) {
-    if (!line) continue;
-    if (line.match(/^(CM|TDA|TD|TP|TP\d+|TD\d+|CM\d+|projection film)$/i)) {
-      group = line;
-    }
-    else if (!teacher && line.split(' ').length <= 2 && line === line.toUpperCase() &&
-             !/^0_Enseignant-non-renseigné/i.test(line) &&
-             !line.match(/^(CM|TDA|TD|TP)/i)) {
-      teacher = line;
-    }
-    else if (!courseType && line.match(/^[A-Z0-9\-]+$/)) {
-      courseType = line;
-    }
-  }
-  return { group, teacher, courseType };
-}
 
 function mapAppschoCourses(lessons: Lesson[], accountId: string): Course[] {
   return lessons
     .map((lesson) => {
-      const { group, teacher, courseType } = parseAppschoDescription(lesson.description || '');
+      const parsed = parseADEDescription(lesson.description || '');
+      const group = parsed?.groups?.join(', ') || parsed?.group || undefined;
+      const teacher = parsed?.teacher || undefined;
+      const courseType = parsed?.type;
+
       let subjectName = lesson.summary || "Cours";
       if (courseType && !subjectName.includes(courseType)) {
         subjectName = `${subjectName} (${courseType})`;
