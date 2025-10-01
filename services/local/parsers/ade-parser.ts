@@ -5,10 +5,15 @@ interface ParsedDescription {
   teacher: string | null;
 }
 
-export function parseADEDescription(description: string): ParsedDescription | null {
-  const lines = description.replace(/^DESCRIPTION:\s*/, '').replace(/\([^)]*\)/g, '').split('\n')
+export function parseADEDescription(
+  description: string
+): ParsedDescription | null {
+  const lines = description
+    .replace(/^DESCRIPTION:\s*/, "")
+    .replace(/\([^)]*\)/g, "")
+    .split("\n")
     .map(line => line.trim())
-    .filter(line => line !== '');
+    .filter(line => line !== "");
 
   if (lines.length === 0) {
     return null;
@@ -17,7 +22,7 @@ export function parseADEDescription(description: string): ParsedDescription | nu
   const extractValue = (line: string | undefined): string | null => {
     if (!line) return null;
     const trimmed = line.trim();
-    return trimmed === '' ? null : trimmed;
+    return trimmed === "" ? null : trimmed;
   };
 
   const isGroupPattern = (line: string): boolean => {
@@ -88,13 +93,18 @@ export function parseADEDescription(description: string): ParsedDescription | nu
 }
 
 export function enhanceADEUrl(url: string): string {
-  if (!url.includes('firstDate') && !url.includes('lastDate')) {
-    let newUrl = url;
-    if (url.includes('nbWeeks')) {
-      newUrl = newUrl.split('nbWeeks=')[0];
+  if (!url.includes("firstDate") && !url.includes("lastDate")) {
+    const urlIcal = url.replace(
+      /&nbWeeks=[0-9]+/,
+      "&firstDate=2000-01-01&lastDate=2038-01-01"
+    );
+
+    try {
+      new URL(urlIcal);
+      return urlIcal;
+    } catch {
+      return url;
     }
-    // newUrl += '&firstDate=2000-01-01&lastDate=2038-01-01';
-    return newUrl;
   }
   return url;
 }
