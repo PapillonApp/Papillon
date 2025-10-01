@@ -7,26 +7,18 @@ function parseAppschoDate(dateStr: string): Date {
   return new Date(dateStr.replace(" ", "T").replace(" +0000", "Z"));
 }
 
-const appschoCache = new Map<string, { data: Lesson[]; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000;
-
 export async function fetchAppschoTimetable(
   session: User,
   accountId: string,
   weekNumber: number,
   instanceId: string,
-  forceRefresh?: boolean
+  _forceRefresh?: boolean
 ): Promise<CourseDay[]> {
   const { start, end } = getDateRangeOfWeek(weekNumber);
   try {
-    const cacheKey = `${instanceId}-${session.token}`;
-    const cached = appschoCache.get(cacheKey);
-    let planning: Lesson[];
-    if (!forceRefresh && cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      planning = cached.data;
-    } else {
-      planning = await getPlanning(instanceId, session.token);
-      appschoCache.set(cacheKey, { data: planning, timestamp: Date.now() });
+    const planning = await getPlanning(instanceId, session.token);
+    if(!planning || planning.length === 0) {
+      Error('Une erreur est survenue lors de la récupération de l\'emploi du temps. Veuillez réessayer ultérieurement.');
     }
     const weekEvents = planning.filter((lesson: Lesson) => {
       const lessonDate = parseAppschoDate(lesson.dtstart);
