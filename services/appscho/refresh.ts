@@ -1,4 +1,5 @@
 import { Auth } from "@/stores/account/types";
+import { useAccountStore } from "@/stores/account";
 import { loginWithCredentials, refreshOAuthTokenWithUser, User } from "appscho";
 
 export async function refreshAppSchoAccount(
@@ -34,6 +35,8 @@ export async function refreshAppSchoAccount(
       `Failed to refresh AppScho session: ${error}`
     );
   }
+
+  useAccountStore.getState().updateServiceAuthData(accountId, authData);
 
   return { auth: authData, session };
 }
