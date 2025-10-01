@@ -548,6 +548,12 @@ export class AccountManager {
       return new module.Izly(service.id);
     }
 
+    if (service.serviceId === Services.ALISE) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/alise/index");
+      return new module.Alise(service.id);
+    }
+
     if (service.serviceId === Services.APPSCHO) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/appscho/index");
