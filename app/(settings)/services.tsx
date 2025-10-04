@@ -46,7 +46,7 @@ export default function SettingsServices() {
             Aucun compte lié
           </Typography>
           <Typography variant="body1" color="secondary" align="center">
-            Ajoutez un compte en appuyant sur le bouton ci-dessus.
+            Ajoute un compte en appuyant sur le bouton ci-dessus.
           </Typography>
         </Stack>
       )}

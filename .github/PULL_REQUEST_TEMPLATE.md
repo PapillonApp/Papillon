@@ -2,7 +2,7 @@
 
 # Règles de contribution
 > [!CAUTION]
-> Afin de garantir une application stable et pérenne dans le temps, nous vous invitons à vérifier que vous avez bien respecté les règles de contribution. Sans cela, votre Pull Request ne pourra pas être examinée.
+> Afin de garantir une application stable et pérenne dans le temps, nous t'invitons à vérifier que tu as bien respecté les règles de contribution. Sans cela, ta Pull Request ne pourra pas être examinée.
 
 - [ ] Cette Pull Request porte sur une seule fonctionnalité ou un seul correctif.
 - [ ] Pour tout changement majeur, j’ai créé une issue afin d’échanger avec les mainteneurs de Papillon sur la meilleure façon de l’intégrer.
@@ -20,7 +20,7 @@
 # Capture(s) d'écran
 
 > [!NOTE]
-> Uniquement si vos changements concernent l'interface utilisateur, veuillez inclure des captures d'écran pour illustrer vos modifications.
+> Si tes changements concernent l'interface utilisateur, inclue des captures d'écran pour illustrer tes modifications.
 
 # Informations supplémentaires
 > [!NOTE]
