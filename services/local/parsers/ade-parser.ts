@@ -23,8 +23,8 @@ export function parseADEDescription(description: string): ParsedDescription | nu
   const isGroupPattern = (line: string): boolean => {
     const trimmed = line.trim().toUpperCase();
     return (
-      /^(TP|TD|CM|COURS|GROUPE)\s*\d*[A-Z]*$/i.test(trimmed) ||
-      /^GROUPE\s+[A-Z0-9]+$/i.test(trimmed) ||
+      /^(TP|TD|CM|COURS|GROUPE)\s*[0-9]*[A-ZÀ-ÖØ-Ý]*$/i.test(trimmed) ||
+      /^GROUPE\s+[A-Z0-9À-ÖØ-Ý]+$/i.test(trimmed) ||
       /^[A-Z]{2,3}\d*$/i.test(trimmed) ||
       /^[A-Z]\d*$/i.test(trimmed)
     );
@@ -32,7 +32,7 @@ export function parseADEDescription(description: string): ParsedDescription | nu
 
   const isTeacherName = (line: string): boolean => {
     const trimmed = line.trim().toUpperCase();
-    return /^[A-Z]+(?:-[A-Z]+)?(?:\s+[A-Z]+(?:-[A-Z]+)?)+$/.test(trimmed);
+    return /^[A-ZÀ-ÖØ-Ý]+(?:-[A-ZÀ-ÖØ-Ý]+)?(?:\s+[A-ZÀ-ÖØ-Ý]+(?:-[A-ZÀ-ÖØ-Ý]+)?)+$/.test(trimmed);
   };
 
   const allLinesAreGroups = lines.length > 1 && lines.every(isGroupPattern);
