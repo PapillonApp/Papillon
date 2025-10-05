@@ -160,6 +160,8 @@
   "Profile_Cards_Title": "QR-Code und Karten",
   "Modal_Grades_Title": "Notendetails",
   "Grades_Details_Title": "Details",
+  "Grades_NormalizedGrade_Title": "Auf 20 normalisierte Note",
+  "Grades_NormalizedGrade_Description": "Notenwert umgerechnet auf eine Skala von 20",
   "Grades_HighestGrade_Title": "Höchste Note",
   "Grades_HighestGrade_Description": "Höchste Note in der Gruppe erhalten",
   "Grades_LowestGrade_Title": "Niedrigste Note",

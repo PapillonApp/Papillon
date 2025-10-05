@@ -195,6 +195,8 @@
   "Modal_Grades_Title": "Détail de la note",
 
   "Grades_Details_Title": "Détails",
+  "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
+  "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
   "Grades_LowestGrade_Title": "Note la plus basse",

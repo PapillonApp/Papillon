@@ -72,6 +72,19 @@ export default function GradesModal() {
             title: t("Grades_Details_Title"),
             icon: <Papicons name={"Menu"} />,
             items: [
+              ...(grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? [{
+                icon: <Papicons name={"Star"} />,
+                title: t("Grades_NormalizedGrade_Title"),
+                description: t("Grades_NormalizedGrade_Description"),
+                trailing: (
+                  <ContainedNumber
+                    color="#757575"
+                    denominator="/20"
+                  >
+                    {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
+                  </ContainedNumber>
+                )
+              }] : []),
               {
                 icon: <Papicons name={"Plus"} />,
                 title: t("Grades_HighestGrade_Title"),

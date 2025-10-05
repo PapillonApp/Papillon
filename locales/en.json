@@ -160,6 +160,8 @@
   "Profile_Cards_Title": "QR-code and cards",
   "Modal_Grades_Title": "Grade details",
   "Grades_Details_Title": "Details",
+  "Grades_NormalizedGrade_Title": "Grade normalized to 20",
+  "Grades_NormalizedGrade_Description": "Grade value converted to a scale of 20",
   "Grades_HighestGrade_Title": "Highest grade",
   "Grades_HighestGrade_Description": "Highest grade obtained in the group",
   "Grades_LowestGrade_Title": "Lowest grade",

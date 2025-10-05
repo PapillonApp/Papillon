@@ -160,6 +160,8 @@
   "Profile_Cards_Title": "Código QR y tarjetas",
   "Modal_Grades_Title": "Detalle de la nota",
   "Grades_Details_Title": "Detalles",
+  "Grades_NormalizedGrade_Title": "Nota normalizada sobre 20",
+  "Grades_NormalizedGrade_Description": "Valor de la nota convertido a una escala de 20",
   "Grades_HighestGrade_Title": "Nota más alta",
   "Grades_HighestGrade_Description": "Nota máxima obtenida en el grupo",
   "Grades_LowestGrade_Title": "La nota más baja",
