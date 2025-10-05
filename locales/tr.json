@@ -160,6 +160,8 @@
   "Profile_Cards_Title": "QR kodu ve kartlar",
   "Modal_Grades_Title": "Not detayı",
   "Grades_Details_Title": "Detaylar",
+  "Grades_NormalizedGrade_Title": "20 üzerinden normalleştirilmiş not",
+  "Grades_NormalizedGrade_Description": "20'lik bir ölçeğe dönüştürülmüş not değeri",
   "Grades_HighestGrade_Title": "En yüksek not",
   "Grades_HighestGrade_Description": "Grupta alınan en yüksek not",
   "Grades_LowestGrade_Title": "En düşük not",

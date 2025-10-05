@@ -1,12 +1,19 @@
-import { LegendList } from "@legendapp/list";
+/* eslint-disable react/display-name */
+import { Papicons } from '@getpapillon/papicons';
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Platform, RefreshControl, useWindowDimensions, View } from "react-native";
+import { FlatList, Platform, RefreshControl, useWindowDimensions } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
+import { useAccountStore } from "@/stores/account";
+import { CompactGrade } from "@/ui/components/CompactGrade";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
 import Icon from "@/ui/components/Icon";
@@ -17,25 +24,16 @@ import TabFlatList from "@/ui/components/TabFlatList";
 import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-
-import { Papicons } from '@getpapillon/papicons';
-import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { useNavigation } from "expo-router";
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
+
 import GradesWidget from "../index/widgets/Grades";
-import { useAccountStore } from "@/stores/account";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { FlashList } from "@shopify/flash-list";
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -187,10 +185,16 @@ export default function TabOneScreen() {
     if (serviceAverage !== null && algorithm?.value === "subject") {
       return serviceAverage;
     }
-    const grades = newSubjects.flatMap(subject => subject.grades).filter(grade => grade.studentScore?.value !== undefined);
+    const grades = newSubjects
+      .flatMap(subject => subject.grades)
+      .filter(grade =>
+        grade.studentScore?.value !== undefined &&
+        !grade.studentScore.disabled &&
+        !isNaN(grade.studentScore.value)
+      );
     if (algorithm && grades.length > 0) {
       const result = algorithm.algorithm(grades);
-      return isNaN(result) ? 0 : result;
+      return isNaN(result) || result === -1 ? 0 : result;
     }
     return 0;
   }, [currentAlgorithm, newSubjects, serviceAverage]);

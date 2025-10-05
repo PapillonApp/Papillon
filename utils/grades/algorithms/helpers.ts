@@ -1,7 +1,10 @@
 import { Grade } from "@/services/shared/grade";
 
-const getSubjectAverage = (
+type ScoreProperty = "studentScore" | "averageScore" | "minScore" | "maxScore";
+
+const getSubjectAverageByProperty = (
   subject: Grade[],
+  property: ScoreProperty = "studentScore",
   loop: boolean = false
 ): number => {
   let calcGradesSum = 0;
@@ -9,15 +12,16 @@ const getSubjectAverage = (
 
   for (let i = 0; i < subject.length; i++) {
     const grade = subject[i];
+    const targetScore = grade[property];
 
     // Skip invalid grades
     if (
-      !grade.studentScore ||
-      grade.studentScore.disabled ||
-      grade.studentScore.value === null ||
-      grade.studentScore.value < 0 ||
+      !targetScore ||
+      targetScore.disabled ||
+      targetScore.value === null ||
+      targetScore.value < 0 ||
       grade.coefficient === 0 ||
-      typeof grade.studentScore.value !== "number" ||
+      typeof targetScore.value !== "number" ||
       !grade.outOf?.value
     ) {
       continue;
@@ -25,13 +29,13 @@ const getSubjectAverage = (
 
     const coefficient = grade.coefficient || 1;
     const outOfValue = grade.outOf.value;
-    const gradeValue = grade.studentScore.value;
+    const gradeValue = targetScore.value;
 
-    // Handle optional grades
-    if (grade.optional && !loop) {
+    // Handle optional grades (only for student scores)
+    if (property === "studentScore" && grade.optional && !loop) {
       const filteredSubject = subject.filter((_, idx) => idx !== i);
-      const avgWithout = getSubjectAverage(filteredSubject, true);
-      const avgWith = getSubjectAverage(subject, true);
+      const avgWithout = getSubjectAverageByProperty(filteredSubject, property, true);
+      const avgWith = getSubjectAverageByProperty(subject, property, true);
 
       // Only keep optional grade if it improves the average
       if (avgWithout > avgWith) {
@@ -39,8 +43,8 @@ const getSubjectAverage = (
       }
     }
 
-    // Handle bonus grades
-    if (grade.bonus) {
+    // Handle bonus grades (only for student scores)
+    if (property === "studentScore" && grade.bonus) {
       const averageMoy = outOfValue / 2;
       const newGradeValue = gradeValue - averageMoy;
 
@@ -70,7 +74,10 @@ const getSubjectAverage = (
   return -1;
 };
 
-const PapillonSubjectAvg = (grades: Grade[]): number => {
+export const PapillonSubjectAvgByProperty = (
+  grades: Grade[],
+  property: ScoreProperty = "studentScore"
+): number => {
   if (!grades?.length) {
     return 0;
   }
@@ -93,7 +100,7 @@ const PapillonSubjectAvg = (grades: Grade[]): number => {
 
   // Calculate average for each subject
   for (let i = 0; i < subjects.length; i++) {
-    const nAvg = getSubjectAverage(subjects[i]);
+    const nAvg = getSubjectAverageByProperty(subjects[i], property);
     if (nAvg !== -1) {
       countedSubjects++;
       totalAverage += nAvg;
@@ -102,5 +109,3 @@ const PapillonSubjectAvg = (grades: Grade[]): number => {
 
   return countedSubjects > 0 ? totalAverage / countedSubjects : 0;
 };
-
-export default PapillonSubjectAvg;
