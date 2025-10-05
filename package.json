@@ -43,6 +43,7 @@
     "date-fns": "^4.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "esup-multi.js": "^1.0.4",
     "expo": "^54.0.10",
     "expo-battery": "~10.0.7",
     "expo-blur": "~15.0.7",
