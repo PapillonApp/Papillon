@@ -185,10 +185,16 @@ export default function TabOneScreen() {
     if (serviceAverage !== null && algorithm?.value === "subject") {
       return serviceAverage;
     }
-    const grades = newSubjects.flatMap(subject => subject.grades).filter(grade => grade.studentScore?.value !== undefined);
+    const grades = newSubjects
+      .flatMap(subject => subject.grades)
+      .filter(grade =>
+        grade.studentScore?.value !== undefined &&
+        !grade.studentScore.disabled &&
+        !isNaN(grade.studentScore.value)
+      );
     if (algorithm && grades.length > 0) {
       const result = algorithm.algorithm(grades);
-      return isNaN(result) ? 0 : result;
+      return isNaN(result) || result === -1 ? 0 : result;
     }
     return 0;
   }, [currentAlgorithm, newSubjects, serviceAverage]);

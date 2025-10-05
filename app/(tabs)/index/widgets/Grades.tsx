@@ -74,7 +74,8 @@ const GradesWidget = (
       const validGrades = grades.filter(grade =>
         grade.studentScore?.value !== undefined &&
         grade.givenAt &&
-        !isNaN(grade.studentScore.value)
+        !isNaN(grade.studentScore.value) &&
+        !grade.studentScore.disabled
       );
 
       if (validGrades.length === 0) {
@@ -89,16 +90,33 @@ const GradesWidget = (
 
       // Find the algorithm once outside the loop
       const selectedAlgorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
-      if (!selectedAlgorithm) { return []; }
+      if (!selectedAlgorithm) {
+        return [];
+      }
 
-      // Iterate through the sorted grades and calculate the average progressively
-      sortedGrades.forEach((currentGrade, index) => {
-        const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
-        const currentAverage = selectedAlgorithm.algorithm(gradesUpToCurrent);
+      // Group grades by date to handle multiple grades on same day
+      const gradesByDate = new Map<number, SharedGrade[]>();
+      sortedGrades.forEach(grade => {
+        const dateKey = new Date(grade.givenAt).setHours(0, 0, 0, 0);
+        if (!gradesByDate.has(dateKey)) {
+          gradesByDate.set(dateKey, []);
+        }
+        gradesByDate.get(dateKey)!.push(grade);
+      });
 
-        if (!isNaN(currentAverage)) {
+      // Calculate average for each date
+      const sortedDates = Array.from(gradesByDate.keys()).sort((a, b) => a - b);
+      let cumulativeGrades: SharedGrade[] = [];
+
+      sortedDates.forEach(dateKey => {
+        const gradesOnThisDate = gradesByDate.get(dateKey)!;
+        cumulativeGrades = [...cumulativeGrades, ...gradesOnThisDate];
+
+        const currentAverage = selectedAlgorithm.algorithm(cumulativeGrades);
+
+        if (!isNaN(currentAverage) && currentAverage !== -1 && currentAverage > 0) {
           averageHistory.push({
-            date: currentGrade.givenAt.getTime(),
+            date: dateKey,
             average: currentAverage,
           });
         }
@@ -111,7 +129,8 @@ const GradesWidget = (
       return subjects.flatMap(subject => subject.grades).filter(grade =>
         grade.studentScore?.value !== undefined &&
         grade.givenAt &&
-        !isNaN(grade.studentScore.value)
+        !isNaN(grade.studentScore.value) &&
+        !grade.studentScore.disabled
       );
     }, [subjects]);
 
