@@ -1,11 +1,14 @@
+import { useTheme } from '@react-navigation/native';
 import { router, useLocalSearchParams } from "expo-router";
 import { AccountKind, createSessionHandle, loginCredentials, SecurityError, SessionHandle } from 'pawnote';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, KeyboardAvoidingView, Modal, View } from "react-native";
 import Reanimated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
@@ -15,11 +18,9 @@ import { useAlert } from '@/ui/components/AlertProvider';
 import Button from '@/ui/components/Button';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
-import uuid from '@/utils/uuid/uuid';
-import { useTheme } from '@react-navigation/native';
 import { customFetcher } from '@/utils/pronote/fetcher';
-import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import uuid from '@/utils/uuid/uuid';
+
 import { Pronote2FAModal } from "./2fa";
 
 const ANIMATION_DURATION = 170;
@@ -80,17 +81,15 @@ export default function PronoteLoginWithCredentials() {
         password: password.trim()
       })
 
-    }
-
-    if (!authentication) {
-      return alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur inattendue s'est produite. Réessaie plus tard.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        withoutNavbar: true
-      });
-    }
+      if (!authentication) {
+        return alert.showAlert({
+          title: "Erreur d'authentification",
+          description: "Une erreur inattendue s'est produite. Réessaie plus tard.",
+          icon: "TriangleAlert",
+          color: "#D60046",
+          withoutNavbar: true
+        });
+      }
 
       const splittedUsername = session.user.name.split(" ")
       const firstName = splittedUsername[splittedUsername.length - 1]
