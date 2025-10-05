@@ -272,7 +272,7 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
 
   return (
     <LayoutAnimationConfig skipEntering>
-      <View style={viewStyle} {...props}>
+      <View style={[viewStyle, { borderRadius: light ? 0 : styles.highlight.borderRadius }]} {...props}>
         {typeof children === 'string' ? (
           <AnimatedNumber variant="navigation" style={{ color }}>
             {children}
