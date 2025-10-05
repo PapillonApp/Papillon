@@ -1,49 +1,51 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
+import { t } from "i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
-
-import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
-import { useAccountStore } from "@/stores/account";
-import Stack from "@/ui/components/Stack";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import Typography from "@/ui/components/Typography";
-import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
-
-import { Papicons } from "@getpapillon/papicons";
-import Icon from "@/ui/components/Icon";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import Course from "@/ui/components/Course";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-import { Animation } from "@/ui/utils/Animation";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { useTheme } from "@react-navigation/native";
-import adjust from "@/utils/adjustColor";
-
-import Reanimated from "react-native-reanimated";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { log, warn } from "@/utils/logger/logger";
-
-import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
-import { getWeekNumberFromDate } from "@/database/useHomework";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getStatusText } from "../calendar";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { t } from "i18next";
-import { Grade, Period } from "@/services/shared/grade";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import GradesWidget from "./widgets/Grades";
-import { Pattern } from "@/ui/components/Pattern/Pattern";
+import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTimetable } from "@/database/useTimetable";
-import { on } from "events";
-import { checkConsent } from "@/utils/logger/consent";
 
-export default function TabOneScreen() {
+import { removeAllDuplicates } from "@/database/DatabaseProvider";
+import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
+import { useTimetable } from "@/database/useTimetable";
+import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
+import { Grade, Period } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import CompactTask from "@/ui/components/CompactTask";
+import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
+import Stack from "@/ui/components/Stack";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import adjust from "@/utils/adjustColor";
+import { generateId } from "@/utils/generateId";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { checkConsent } from "@/utils/logger/consent";
+import { log, warn } from "@/utils/logger/logger";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
+import { getStatusText } from "../calendar";
+import GradesWidget from "./widgets/Grades";
+
+const IndexScreen = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now)
   const [currentPage, setCurrentPage] = useState(0);
@@ -62,7 +64,9 @@ export default function TabOneScreen() {
   const weeklyTimetable = useMemo(() =>
     timetableData.map(day => ({
       ...day,
-      courses: day.courses.filter(course => services.includes(course.createdByAccount))
+      courses: day.courses.filter(course =>
+        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+      )
     })).filter(day => day.courses.length > 0),
     [timetableData, services]
   );
@@ -73,18 +77,28 @@ export default function TabOneScreen() {
   const navigation = useNavigation();
   const alert = useAlert();
 
-  useEffect(() => {
-    checkConsent().then(consent => {
-      if (!consent.given) {
-        router.push("../consent");
-      }
-    })
-  }, [])
+  const settingsStore = useSettingsStore(state => state.personalization)
 
   const Initialize = async () => {
     try {
       await initializeAccountManager()
+      log("Refreshed Manager received")
+
+      await Promise.all([fetchEDT(), fetchGrades()]);
+
+      if (settingsStore.showAlertAtLogin) {
+        alert.showAlert({
+          title: "Synchronisation réussie",
+          description: "Toutes vos données ont été mises à jour avec succès.",
+          icon: "CheckCircle",
+          color: "#00C851",
+          withoutNavbar: true,
+          delay: 1000
+        });
+      }
+
     } catch (error) {
+      if (String(error).includes("Unable to find")) { return; }
       alert.showAlert({
         title: "Connexion impossible",
         description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
@@ -93,7 +107,6 @@ export default function TabOneScreen() {
         technical: String(error)
       })
     }
-    log("Refreshed Manager received")
   };
 
   useMemo(() => {
@@ -107,6 +120,43 @@ export default function TabOneScreen() {
     const weekNumber = getWeekNumberFromDate(date)
     await manager.getWeeklyTimetable(weekNumber)
   }, []);
+
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [freshHomeworks, setFreshHomeworks] = useState<Record<string, Homework>>({});
+  const [homeworks, setHomeworks] = useState<Homework[]>([]);
+
+  const fetchHomeworks = useCallback(async () => {
+    const manager = getManager();
+    const current = await manager.getHomeworks(weekNumber);
+    const next = await manager.getHomeworks(weekNumber + 1);
+    const result = [...current, ...next]
+    const newHomeworks: Record<string, Homework> = {};
+    for (const hw of result) {
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
+      newHomeworks[id] = hw;
+    }
+    setFreshHomeworks(newHomeworks);
+    setRefreshTrigger(prev => prev + 1);
+  }, [weekNumber]);
+
+  async function setHomeworkAsDone(homework: Homework) {
+    const manager = getManager();
+    const id = generateId(
+      homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+    );
+    await manager.setHomeworkCompletion(homework, !homework.isDone);
+    updateHomeworkIsDone(id, !homework.isDone)
+    setRefreshTrigger(prev => prev + 1);
+    setFreshHomeworks(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        isDone: !homework.isDone,
+      }
+    }));
+  }
 
   const fetchGrades = useCallback(async () => {
     const manager = getManager();
@@ -137,16 +187,50 @@ export default function TabOneScreen() {
   }, [])
 
   useEffect(() => {
-    date.setUTCHours(0, 0, 0, 0);
+    const fetchHomeworksFromCache = async () => {
+      const currentWeekHomeworks = await getHomeworksFromCache(weekNumber);
+      const nextWeekHomeworks = await getHomeworksFromCache(weekNumber + 1);
+      const fullHomeworks = [...currentWeekHomeworks, ...nextWeekHomeworks];
 
-    const dayCourse = weeklyTimetable.find(day => day.date.getTime() === date.getTime())?.courses ?? [];
-    setCourses(dayCourse.filter(course => course.from.getTime() > date.getTime()));
+      // get the closest due date from now
+      const sortedHomeworks = fullHomeworks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      // Filter done homeworks
+      const filteredHomeworks = sortedHomeworks.filter(hw => !hw.isDone).length > 0 ? sortedHomeworks.filter(hw => !hw.isDone) : sortedHomeworks;
+      // Take the first 3 homeworks
+      const splicedHomeworks = filteredHomeworks.splice(0, 3);
+      setHomeworks(splicedHomeworks);
+    };
+    fetchHomeworksFromCache();
+  }, [refreshTrigger])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+
+      if (dayCourse.length === 0) {
+        const futureDays = weeklyTimetable
+          .filter(day => day.date.getTime() > today.getTime())
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
+        if (futureDays.length > 0) {
+          dayCourse = futureDays[0].courses;
+        }
+      }
+
+      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
+      setCourses(dayCourse);
+    };
+    fetchData();
   }, [weeklyTimetable]);
+
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((_) => {
       fetchEDT()
       fetchGrades()
+      fetchHomeworks()
     });
 
     return () => unsubscribe();
@@ -156,12 +240,12 @@ export default function TabOneScreen() {
   const { colors } = theme;
 
   const [firstName] = useMemo(() => {
-    if (!lastUsedAccount) return [null, null, null, null];
+    if (!lastUsedAccount) { return [null, null, null, null]; }
 
-    let firstName = account?.firstName;
-    let lastName = account?.lastName;
-    let level = account?.className;
-    let establishment = account?.schoolName;
+    const firstName = account?.firstName;
+    const lastName = account?.lastName;
+    const level = account?.className;
+    const establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account, accounts]);
@@ -181,10 +265,53 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null;
-  }
+  useEffect(() => {
+    removeAllDuplicates()
+    if (accounts.length > 0) {
+      checkConsent().then(consent => {
+        if (!consent.given) {
+          router.push("../consent");
+        }
+      });
+    }
+  }, []);
+
+  const MagicTaskWrapper = useCallback(({ item }: { item: Homework }) => {
+    const description = item.content.replace(/<[^>]*>/g, "");
+    const dueDate = new Date(item.dueDate);
+    const inFresh = freshHomeworks[item.id]
+
+    return (
+      <CompactTask
+        fromCache={false}
+        setHomeworkAsDone={() => setHomeworkAsDone(inFresh)}
+        ref={item}
+        subject={getSubjectName(item.subject)}
+        color={getSubjectColor(item.subject)}
+        description={description}
+        emoji={getSubjectEmoji(item.subject)}
+        dueDate={dueDate}
+        done={item.isDone}
+      />
+
+    );
+  }, [freshHomeworks]);
+
+  const getScheduleMessage = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+
+    if (todayAllCourses.length === 0) {
+      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
+    } else if (todayAllCourses.length === 1) {
+      return t("Home_Planned_One");
+    }
+    return t("Home_Planned_Number", { number: todayAllCourses.length });
+
+  };
+
   const headerItems = [
     (
       <Stack
@@ -203,14 +330,17 @@ export default function TabOneScreen() {
           </Typography>
         </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
-          {courses.length == 0 ? t("Home_Planned_None")
-            : courses.length == 1 ? t("Home_Planned_One")
-              : t("Home_Planned_Number", { number: courses.length })}
+          {getScheduleMessage()}
         </Typography>
       </Stack>
     ),
     <GradesWidget header accent={foreground} />,
   ];
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
 
   return (
     <>
@@ -219,14 +349,15 @@ export default function TabOneScreen() {
         locations={[0, 0.5]}
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
       />
+
       <Pattern
-        pattern={"cross"}
+        pattern={AvailablePatterns.CROSS}
         width={"100%"}
         height={250 + insets.top}
         color={foreground}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -257,13 +388,15 @@ export default function TabOneScreen() {
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={200}
+        engine="LegendList"
         header={
           <>
             <FlatList
               style={{
                 backgroundColor: "transparent",
                 borderCurve: "continuous",
-                paddingBottom: 12
+                paddingBottom: 12,
+                marginTop: -10,
               }}
               horizontal
               data={headerItems}
@@ -288,7 +421,8 @@ export default function TabOneScreen() {
                     flex: 1,
                     overflow: "hidden",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    marginTop: 10,
                   }}
                 >
                   {item}
@@ -333,17 +467,17 @@ export default function TabOneScreen() {
             redirect: "/changelog",
             buttonLabel: "En savoir plus"
           },
-          courses.length > 0 && {
+          courses.filter(item => item.to.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                {courses.slice(0, 2).map(item => (
+                {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
                   <Course
                     key={item.id}
                     id={item.id}
-                    name={item.subject}
+                    name={getSubjectName(item.subject)}
                     teacher={item.teacher}
                     room={item.room}
                     color={getSubjectColor(item.subject)}
@@ -352,6 +486,7 @@ export default function TabOneScreen() {
                     start={Math.floor(item.from.getTime() / 1000)}
                     end={Math.floor(item.to.getTime() / 1000)}
                     readonly={!!item.createdByAccount}
+                    compact={true}
                     onPress={() => {
                       (navigation as any).navigate('(modals)/course', {
                         course: item,
@@ -366,6 +501,35 @@ export default function TabOneScreen() {
                   />
                 ))}
               </Stack>
+            )
+          },
+          homeworks.length > 0 && {
+            icon: <Papicons name={"Tasks"} />,
+            title: "Tâches",
+            redirect: "/(tabs)/tasks",
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : `Voir toutes les tâches`,
+            render: () => (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+                style={{
+                  borderBottomLeftRadius: 26,
+                  borderBottomRightRadius: 26,
+                  overflow: "hidden",
+                  width: "100%",
+                  padding: 10,
+                  paddingHorizontal: 10,
+                  gap: 10
+                }}
+                contentContainerStyle={{
+                  gap: 12
+                }}
+                data={homeworks.slice(0, 3)}
+                keyExtractor={(item, index) => item.id + index}
+                renderItem={({ item }) => (
+                  <MagicTaskWrapper item={item} />
+                )}
+              />
             )
           },
           grades.length > 0 && {
@@ -421,6 +585,13 @@ export default function TabOneScreen() {
           },
           {
             icon: <Papicons name={"Butterfly"} />,
+            title: "Onboarding",
+            redirect: "/(onboarding)/welcome",
+            buttonLabel: "Aller",
+            dev: true
+          },
+          {
+            icon: <Papicons name={"Butterfly"} />,
             title: "Devmode",
             redirect: "/devmode",
             buttonLabel: "Aller",
@@ -447,7 +618,7 @@ export default function TabOneScreen() {
               layout={Animation(LinearTransition, "list")}
             >
               <Stack card radius={26}>
-                <Stack direction="horizontal" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                <Stack direction="horizontal" vAlign="center" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
                     {item.icon}
                   </Icon>
@@ -481,7 +652,7 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
@@ -505,7 +676,7 @@ export default function TabOneScreen() {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => router.navigate("/(modals)/notifications")}
+          onPressIn={() => router.navigate("/(modals)/notifications")}
         >
           <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />
@@ -515,3 +686,5 @@ export default function TabOneScreen() {
     </>
   );
 }
+
+export default IndexScreen;

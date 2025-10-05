@@ -14,6 +14,7 @@ import { Services } from "@/stores/account/types";
 import { useAccountStore } from "@/stores/account";
 import { router } from "expo-router";
 import { useAlert } from "@/ui/components/AlertProvider";
+import { ScrollView } from "react-native-gesture-handler";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string }) {
   const { t } = useTranslation();
@@ -29,10 +30,11 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       const error = doubleAuthError
       const session = doubleAuthSession
       const deviceName = Device.deviceName
-      await securitySource(session, "Papillon sur " + deviceName)
+      const source = "Papillon sur " + deviceName
+      await securitySource(session, source.length > 30 ? "Papillon" : "Papillon sur " + deviceName)
       await securitySave(session, error.handle, {
         pin: pinCode,
-        deviceName: "Papillon sur " + deviceName || "Papillon"
+        deviceName: source.length > 30 ? "Papillon" : "Papillon sur " + deviceName || "Papillon"
       })
 
       const context = error.handle.context;
@@ -159,7 +161,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
     },
     {
       name: "del",
-      icon: <Papicons name="ArrowLeft" />,
+      icon: <Papicons name="ArrowLeft" fill={colors.text} />,
       onPress: () => {
         setPinCode((prev) => prev.slice(0, -1));
       }
@@ -172,7 +174,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
     },
     {
       name: "check",
-      icon: <Papicons name="Check" />,
+      icon: <Papicons name="Check" fill={colors.text} />,
       onPress: () => {
         solveDoubleAuth(pinCode);
 
@@ -199,7 +201,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
   ), [data]);
 
   return (
-    <>
+    <View style={{ backgroundColor: colors.background, width: "100%", height: "100%" }}>
       <View
         style={{
           alignItems: "center",
@@ -232,52 +234,54 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
           </Typography>
         </Stack>
       </View>
-      <Stack flex direction="horizontal" style={{ paddingHorizontal: 50, paddingVertical: 30 }}>
-        <Stack
-          flex
-          direction="horizontal"
-          hAlign="center"
-          gap={10}
-          style={{
-            flex: 1,
-            padding: 20,
-            backgroundColor: colors.text + (dark ? "15" : "08"),
-            borderRadius: 300,
-            borderWidth: 1,
-            borderColor: colors.border
-          }}
-        >
-          <Icon
-            papicon
-            size={24}
-            fill={colors.text + "AF"}
+      <ScrollView>
+        <Stack flex direction="horizontal" style={{ paddingHorizontal: 50, paddingVertical: 30 }}>
+          <Stack
+            flex
+            direction="horizontal"
+            hAlign="center"
+            gap={10}
+            style={{
+              flex: 1,
+              padding: 20,
+              backgroundColor: colors.text + (dark ? "15" : "08"),
+              borderRadius: 300,
+              borderWidth: 1,
+              borderColor: colors.border
+            }}
           >
-            <Papicons name={"Password"} />
-          </Icon>
-          <Typography variant="h5" color={pinCode.trim() ? colors.text + "AF" : "secondary"}>{pinCode.trim() ? pinCode : t("INPUT_PIN")}</Typography>
+            <Icon
+              papicon
+              size={24}
+              fill={colors.text + "AF"}
+            >
+              <Papicons name={"Password"} />
+            </Icon>
+            <Typography variant="h5" color={pinCode.trim() ? colors.text + "AF" : "secondary"}>{pinCode.trim() ? pinCode : t("INPUT_PIN")}</Typography>
+          </Stack>
         </Stack>
-      </Stack>
-      <FlatList
-        scrollEnabled={false}
-        data={data}
-        numColumns={3}
-        renderItem={renderItem}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 50,
-          gap: 15
-        }}
-        columnWrapperStyle={{
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}
-        style={{
-          width: "100%",
-          overflow: "hidden"
-        }}
-        removeClippedSubviews
-        maxToRenderPerBatch={6}
-        windowSize={1}
-      />
-    </>)
+        <FlatList
+          scrollEnabled={false}
+          data={data}
+          numColumns={3}
+          renderItem={renderItem}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 50,
+            gap: 15
+          }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+          style={{
+            width: "100%",
+            overflow: "hidden"
+          }}
+          removeClippedSubviews
+          maxToRenderPerBatch={6}
+          windowSize={1}
+        />
+      </ScrollView>
+    </View>)
 }

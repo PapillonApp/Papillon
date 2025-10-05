@@ -1,6 +1,7 @@
 import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
-import React from "react";
+import { EarthIcon } from "lucide-react-native";
+import React, { useEffect } from "react";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
@@ -14,13 +15,16 @@ import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { FadeIn, FadeOut } from "react-native-reanimated";
 
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
+  const { t } = useTranslation()
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -32,18 +36,30 @@ const PersonalizationSettings = () => {
 
   const height = useHeaderHeight()
 
+  useEffect(() => {
+    if (settingsStore.theme) {
+      setSelectedTheme(settingsStore.theme);
+    }
+  }, []);
+
+  useEffect(() => {
+    mutateProperty('personalization', { theme: selectedTheme });
+  }, [selectedTheme]);
+
   return (
     <>
-      <LinearGradient
-        colors={[selectedColor + "50", selectedColor + "00"]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 400,
-        }}
-      />
+      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + selectedColor}>
+        <LinearGradient
+          colors={[selectedColor + "50", selectedColor + "00"]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 400,
+          }}
+        />
+      </Dynamic>
 
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
@@ -153,6 +169,7 @@ const PersonalizationSettings = () => {
               </Stack>
             </Trailing>
           </Item>
+          {/*
           <Item onPress={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
@@ -167,6 +184,7 @@ const PersonalizationSettings = () => {
               color={"secondary"}
             >{t("Settings_Personalization_Icon_Description")}</Typography>
           </Item>
+          */}
           <Item
             onPress={() => {
               router.push("/(settings)/subject_personalization");

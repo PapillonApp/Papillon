@@ -23,8 +23,9 @@ export default function Layout() {
           headerShown: true,
           headerTitle: t("Tab_Custom_Profile"),
           headerLargeTitle: false,
-          headerTransparent: false,
-          headerBackButtonDisplayMode: "minimal"
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          presentation: "modal",
         }}
       />
     </Stack>

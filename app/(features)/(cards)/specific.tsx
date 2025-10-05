@@ -7,13 +7,13 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Switch } from "react-native-gesture-handler";
 
 import adjust from "@/utils/adjustColor";
-import { getServiceColor, getServiceName } from "@/utils/services/helper";
+import { getCodeType, getServiceColor } from "@/utils/services/helper";
 import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 
 import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
-import { BookingDay, CanteenHistoryItem } from "@/services/shared/canteen";
+import { BookingDay, CanteenHistoryItem, CanteenKind } from "@/services/shared/canteen";
 
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
@@ -24,7 +24,6 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import Calendar from "@/ui/components/Calendar";
-import TableFlatList from "@/ui/components/TableFlatList";
 import { Card } from "./cards";
 
 import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
@@ -32,8 +31,6 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import { Services } from "@/stores/account/types";
 import { useTranslation } from "react-i18next";
 import { Capabilities } from "@/services/shared/types";
-
-export { getServiceName };
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -47,10 +44,11 @@ export default function QRCodeAndCardsPage() {
   const headerHeight = useHeaderHeight();
 
   const manager = getManager();
-  const hasBookingCapacity = manager.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
+  const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
 
   const [history, setHistory] = useState<CanteenHistoryItem[]>([]);
   const [qrcode, setQR] = useState("");
+  const [accountKind, setAccountKind] = useState<CanteenKind>(CanteenKind.ARGENT)
   const [date, setDate] = useState(new Date());
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
   const [bookingWeek, setBookingWeek] = useState<BookingDay[]>([]);
@@ -85,9 +83,15 @@ export default function QRCodeAndCardsPage() {
     setBookingWeek(bookings);
   }, [manager, weekNumber, wallet.createdByAccount]);
 
+  const fetchKind = useCallback(async () => {
+    const kind = await manager.getCanteenKind(wallet.createdByAccount);
+    setAccountKind(kind);
+  }, [manager, weekNumber, wallet.createdByAccount]);
+
   useEffect(() => {
     fetchQRCode();
     fetchHistory();
+    fetchKind();
   }, [fetchQRCode, fetchHistory]);
 
   useEffect(() => {
@@ -142,7 +146,6 @@ export default function QRCodeAndCardsPage() {
         key={`calendar-${date.toISOString()}`}
         date={date}
         onDateChange={handleDateChange}
-        topInset={48}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
       />
@@ -161,7 +164,7 @@ export default function QRCodeAndCardsPage() {
 
           {qrcode && (
             <AnimatedPressable
-              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode } })}
+              onPress={() => router.push({ pathname: "/(features)/(cards)/qrcode", params: { qrcode, type: getCodeType(service), service } })}
               style={{
                 width: "100%",
                 backgroundColor: colors.background,
@@ -200,62 +203,61 @@ export default function QRCodeAndCardsPage() {
                 <Papicons name="Cutlery" />
               </Icon>
               <Typography color="secondary">Repas restants</Typography>
-              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? Math.floor(wallet.amount / wallet.lunchPrice) : "Indéterminé"}</ContainedNumber>
+              <ContainedNumber color={serviceColor}>{wallet.lunchPrice > 0 ? String(Math.floor(wallet.amount / wallet.lunchPrice)) : "Indéterminé"}</ContainedNumber>
             </Stack>
           </Stack>
 
           {hasBookingCapacity && (
             <View>
               <AnimatedPressable onPress={() => setShowDatePicker(prev => !prev)}>
-                <Stack hAlign="center" vAlign="center">
-                  <Stack direction="horizontal" style={{ flex: 1 }} gap={5}>
-                    <Icon papicon opacity={0.5}>
-                      <CalendarIcon />
-                    </Icon>
+                <Stack hAlign="center" vAlign="center" style={{ padding: 20 }}>
+                  <Stack direction="horizontal" gap={5}>
                     <Typography color="secondary">Réserver mon repas</Typography>
                   </Stack>
-                  <Stack direction="horizontal" style={{ flex: 1 }} gap={5} hAlign="center" vAlign="center">
+                  <Stack direction="horizontal" gap={5} hAlign="center" vAlign="center">
                     <Typography color="secondary">
                       {date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
                     </Typography>
                     <ChevronDown opacity={0.5} size={18} />
                   </Stack>
+                  {bookingDay ? (
+                    <List style={{ marginTop: 10 }}>
+                      {bookingDay.available.map((item, index) => (
+                        <Item key={item.label}>
+                          <Typography>
+                            Borne {item.label}
+                          </Typography>
+                          <Trailing>
+                            <Switch
+                              disabled={accountKind === CanteenKind.FORFAIT ? false : !item.canBook || (wallet.lunchRemaining < 1 && wallet.lunchPrice !== 0)}
+                              value={item.booked}
+                              onValueChange={() => handleToggle(index)}
+                            />
+                          </Trailing>
+                        </Item>
+                      ))}
+                    </List>
+                  ) : (
+                    <Stack hAlign="center" vAlign="center" margin={16} gap={16}>
+                      <View style={{ alignItems: "center" }}>
+                        <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                          <Papicons name="Card" />
+                        </Icon>
+                        <Typography variant="h4" color="text" align="center">
+                          {t("Profile_Cards_No_Reservation")}
+                        </Typography>
+                        <Typography variant="body2" color="secondary" align="center">
+                          {t("Profile_Cards_No_Available_Reservation")}
+                        </Typography>
+                      </View>
+                    </Stack>
+                  )}
                 </Stack>
               </AnimatedPressable>
-              {bookingDay ? (
-                <TableFlatList
-                  sections={[
-                    {
-                      items: bookingDay.available.map((item, index) => ({
-                        title: "Borne Self",
-                        trailing: (
-                          <Switch
-                            disabled={!item.canBook || (wallet.lunchRemaining < 1 && wallet.lunchPrice !== 0)}
-                            value={item.booked}
-                            onValueChange={() => handleToggle(index)}
-                          />
-                        ),
-                      })),
-                    },
-                  ]}
-                />
-              ) : (
-                <Stack hAlign="center" vAlign="center" margin={16} gap={16}>
-                  <View style={{ alignItems: "center" }}>
-                    <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                      <Papicons name="Card" />
-                    </Icon>
-                    <Typography variant="h4" color="text" align="center">
-                      {t("Profile_Cards_No_Reservation")}
-                    </Typography>
-                    <Typography variant="body2" color="secondary" align="center">
-                      {t("Profile_Cards_No_Available_Reservation")}
-                    </Typography>
-                  </View>
-                </Stack>
-              )}
             </View>
           )}
+
+
 
           {history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
@@ -266,8 +268,8 @@ export default function QRCodeAndCardsPage() {
                 <Typography color="secondary">{t("Profile_Cards_History")}</Typography>
               </Stack>
               <List>
-                {history.slice(0, 10).map(c =>
-                  <Item key={c.label}>
+                {history.slice(0, 10).map((c, index) =>
+                  <Item key={`${c.label}-${c.date.getTime()}-${index}`}>
                     <Trailing>
                       <ContainedNumber color={adjust(c.amount < 0 ? "#C50000" : "#42C500", -0.1)}>
                         {c.amount > 0 ? "+" : ""}{(c.amount / 100).toFixed(2)} {c.currency}

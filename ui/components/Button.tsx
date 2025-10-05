@@ -6,6 +6,12 @@ import Reanimated, { Easing, FadeIn, FadeOut, LinearTransition, useAnimatedStyle
 import { Animation } from "../utils/Animation";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Typography from "./Typography";
+import * as ExpoHaptics from "expo-haptics";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
+
+import {
+  LiquidGlassView
+} from '@callstack/liquid-glass';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -26,7 +32,7 @@ interface ButtonProps extends PressableProps {
   disabled?: boolean;
   disableAnimation?: boolean;
   alignment?: Alignment;
-};
+}
 
 const defaultProps = {
   variant: 'primary' as Variant,
@@ -80,6 +86,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
   }), []);
 
   const handlePressIn = useCallback(() => {
+    ExpoHaptics.impactAsync(ExpoHaptics.ImpactFeedbackStyle.Soft)
     "use worklet";
     scale.value = withTiming(0.97, { duration: 100, easing: Easing.out(Easing.exp) });
     opacity.value = withTiming(0.7, { duration: 50, easing: Easing.out(Easing.exp) });
@@ -179,6 +186,85 @@ const Button: React.FC<ButtonProps> = React.memo(({
     return null;
   }, [icon, textColor]);
 
+  const ButtonContent = (
+    (rest.children && !title) ? rest.children : (
+      <>
+        {loading && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            <ActivityIndicator color={textColor} />
+          </Reanimated.View>
+        )}
+        {buttonIcon && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            {buttonIcon}
+          </Reanimated.View>
+        )}
+        <Reanimated.View layout={Animation(LinearTransition)}>
+          <Typography variant="button" color={textColor}>
+            {title || "Button"}
+          </Typography>
+        </Reanimated.View>
+        {rest.children && typeof rest.children !== "function" && (
+          <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
+            {rest.children}
+          </Reanimated.View>
+        )}
+      </>
+    )
+  )
+
+  const buttonTint = (variant === 'outline' || variant === 'service')
+    ? "transparent"
+    : (
+      (style && typeof style === 'object' && !Array.isArray(style) && 'backgroundColor' in style)
+        ? (style as { backgroundColor?: string }).backgroundColor
+        : backgroundColor
+    );
+
+  if (runsIOS26) {
+    return (
+      <LiquidGlassView
+        key="button:liquid-glass"
+        style={{
+          width: inline ? undefined : '100%',
+          height: 50,
+          borderRadius: 160,
+          borderCurve: 'continuous',
+          backgroundColor: buttonTint,
+          overflow: 'visible',
+          paddingHorizontal: 18,
+          justifyContent: justifyContent,
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: 5,
+          opacity: disabled ? 0.5 : 1,
+        }}
+        tintColor={
+          buttonTint
+        }
+        {...rest}
+        effect="regular"
+        interactive={true}
+      >
+        <Pressable
+          onPress={onPress}
+          style={{
+            width: '100%',
+            height: '100%',
+            justifyContent: justifyContent,
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: 5,
+          }}
+          disabled={disabled}
+          {...rest}
+        >
+          {ButtonContent}
+        </Pressable>
+      </LiquidGlassView>
+    )
+  }
+
   return (
     <AnimatedPressable
       {...rest}
@@ -190,30 +276,7 @@ const Button: React.FC<ButtonProps> = React.memo(({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      {(rest.children && !title) ? rest.children : (
-        <>
-          {loading && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              <ActivityIndicator color={textColor} />
-            </Reanimated.View>
-          )}
-          {buttonIcon && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              {buttonIcon}
-            </Reanimated.View>
-          )}
-          <Reanimated.View layout={Animation(LinearTransition)}>
-            <Typography variant="button" color={textColor}>
-              {title || "Button"}
-            </Typography>
-          </Reanimated.View>
-          {rest.children && typeof rest.children !== "function" && (
-            <Reanimated.View layout={Animation(LinearTransition)} entering={PapillonZoomIn} exiting={PapillonZoomOut}>
-              {rest.children}
-            </Reanimated.View>
-          )}
-        </>
-      )}
+      {ButtonContent}
     </AnimatedPressable>
   );
 });

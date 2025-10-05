@@ -4,7 +4,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import Typography from "@/ui/components/Typography";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, Dimensions, ScrollView, View } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
 import { useState } from "react";
@@ -25,6 +25,9 @@ export default function EditSubject() {
     "🧮",
     "🌍",
     "🎨",
+    "⚽",
+    "🎵",
+    "🧪",
     "custom",
   ];
 
@@ -172,7 +175,8 @@ export default function EditSubject() {
         </Stack>
         <ScrollView
           horizontal
-          contentContainerStyle={{ gap: 10, height: 60, alignItems: "center", paddingHorizontal: 16, width: "100%" }}
+          style={{ width: Dimensions.get("window").width }}
+          contentContainerStyle={{ gap: 10, height: 60, alignItems: "center", paddingHorizontal: 16 }}
           showsHorizontalScrollIndicator={false}
         >
           {!AvailableEmojis.includes(selectedEmoji) && (

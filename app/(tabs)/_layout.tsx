@@ -20,7 +20,7 @@ const Tabs = withLayoutContext<
 >(BottomTabNavigator);
 
 // Static platform detection - computed once at module load
-const IS_IOS_WITH_PADDING = runsIOS26();
+const IS_IOS_WITH_PADDING = runsIOS26;
 const IS_ANDROID = Platform.OS === 'android';
 
 // Pre-load all icons to avoid runtime require() calls
@@ -36,8 +36,8 @@ const ICONS = {
 
 // Static style object to prevent recreation on every render
 const TAB_LABEL_STYLE = {
-  fontFamily: 'semibold',
-  fontSize: Platform.OS === 'ios' ? 12 : 13,
+  fontFamily: 'medium',
+  fontSize: Platform.OS === 'ios' ? 13 : 13,
 } as const;
 
 // Static icon functions to prevent recreation

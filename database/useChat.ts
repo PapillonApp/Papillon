@@ -7,6 +7,7 @@ import { error } from "@/utils/logger/logger";
 import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapChatsToShared, mapMessagesToShared, mapRecipientsToShared } from "./mappers/chats";
 import { Chat, Message, Recipient } from "./models/Chat";
+import { safeWrite } from "./utils/safeTransaction";
 
 export async function addChatsToDatabase(chats: SharedChat[]) {
   const db = getDatabaseInstance();
@@ -15,7 +16,7 @@ export async function addChatsToDatabase(chats: SharedChat[]) {
     const existing = await db.get('chats').query(Q.where('chatId', id)).fetch();
 
     if (existing.length === 0) {
-      await db.write(async () => {
+      await safeWrite(db, async () => {
         await db.get('chats').create((record: Model) => {
           const chat = record as Chat;
           Object.assign(chat, {
@@ -27,7 +28,7 @@ export async function addChatsToDatabase(chats: SharedChat[]) {
             createdByAccount: item.createdByAccount
           })
         })
-      })
+      }, 10000, 'addChatsToDatabase')
     }
   }
 }
@@ -48,7 +49,7 @@ export async function addRecipientsToDatabase(chat: SharedChat, recipients: Shar
 
     if (existing.length > 0) {continue;}
 		
-    await db.write(async () => {
+    await safeWrite(db, async () => {
       await db.get('recipients').create((record: Model) => {
         const recipient = record as Recipient;
         Object.assign(recipient, {
@@ -58,7 +59,7 @@ export async function addRecipientsToDatabase(chat: SharedChat, recipients: Shar
           chatId: chatId
         })
       })
-    })
+    }, 10000, 'addRecipientsToDatabase')
   }
 }
 
@@ -78,7 +79,7 @@ export async function addMessagesToDatabase(chat: SharedChat, messages: SharedMe
 
     if (existing.length > 0) {continue;}
 		
-    await db.write(async () => {
+    await safeWrite(db, async () => {
       await db.get('messages').create((record: Model) => {
         const message = record as Message;
         Object.assign(message, {
@@ -91,7 +92,7 @@ export async function addMessagesToDatabase(chat: SharedChat, messages: SharedMe
           chatId: chatId
         })
       })
-    })
+    }, 10000, 'addMessagesToDatabase')
   }
 }
 

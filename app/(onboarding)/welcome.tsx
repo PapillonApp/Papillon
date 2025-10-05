@@ -1,18 +1,17 @@
-import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 import { router, useFocusEffect } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Image,StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "@/ui/components/Button";
-import Typography from "@/ui/components/Typography";
 import Stack from "@/ui/components/Stack";
-
-import { Papicons } from "@getpapillon/papicons";
+import Typography from "@/ui/components/Typography";
 import ViewContainer from "@/ui/components/ViewContainer";
-import * as Linking from "expo-linking";
-import { useTranslation } from "react-i18next";
 
 export default function WelcomeScreen() {
   const theme = useTheme();
@@ -46,7 +45,7 @@ export default function WelcomeScreen() {
             borderBottomRightRadius: 42,
             borderCurve: "continuous",
             paddingTop: insets.top + 20,
-            paddingBottom: 34,
+            paddingBottom: 40,
           }}
         >
           <Stack
@@ -93,7 +92,7 @@ export default function WelcomeScreen() {
             </Typography>
             <Typography
               variant="h5"
-              style={{ color: "#FFFFFF80", lineHeight: 22, fontSize: 18 }}
+              style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}
             >
               {t("ONBOARDING_MAIN_DESCRIPTION")}
             </Typography>
@@ -110,7 +109,7 @@ export default function WelcomeScreen() {
             title={t("ONBOARDING_START_BTN")}
             onPress={() => {
               requestAnimationFrame(() => {
-                router.push("/(onboarding)/serviceSelection");
+                router.navigate("/(onboarding)/serviceSelection");
               });
             }}
             style={{
@@ -129,7 +128,7 @@ export default function WelcomeScreen() {
             variant="ghost"
             color="text"
             size="large"
-            style={{height: 40}}
+            style={{ height: 40 }}
           />
         </Stack>
       </View>

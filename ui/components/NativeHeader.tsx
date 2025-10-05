@@ -30,13 +30,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   titleAndroid: {
-    marginHorizontal: 16,
     alignItems: "center",
     justifyContent: "flex-start",
     maxWidth: 300,
   },
   pressable: {
-    height: 36,
+    height: 42,
     minWidth: 36,
     alignItems: "center",
     justifyContent: "center",
@@ -101,7 +100,11 @@ const NativeHeaderSide = React.memo(function NativeHeaderSide({ children, side, 
     const headerKey = `header${side}`;
     const renderComponent = () => (
       <View style={[
-        styles.side
+        styles.side,
+        Platform.OS === 'android' ? {
+          marginRight: side === 'Left' ? 16 : 0,
+          marginLeft: side === 'Right' ? 16 : 0,
+        } : {},
       ]} {...propsRef.current}>
         {childrenRef.current}
       </View>
@@ -199,7 +202,7 @@ const NativeHeaderPressable = React.memo(function NativeHeaderPressable(props: P
   }));
 
   const handlePressIn = () => {
-    opacity.value = withTiming(runsIOS26() ? 0.5 : 0.3, { duration: 20 });
+    opacity.value = withTiming(runsIOS26 ? 0.5 : 0.3, { duration: 20 });
     scale.value = withTiming(0.9, { duration: 100 });
   };
 

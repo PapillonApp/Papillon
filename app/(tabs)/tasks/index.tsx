@@ -1,9 +1,28 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, FlatList, Platform, Pressable, RefreshControl, Text, useWindowDimensions, View } from "react-native";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  PlatformColor,
+  Pressable,
+  RefreshControl,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
+
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
 
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
@@ -26,12 +45,17 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { Papicons } from '@getpapillon/papicons';
 import Icon from "@/ui/components/Icon";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import { getDateWeek } from "@/utils/week";
 import { predictHomework } from "@/utils/magic/prediction";
 import { useSettingsStore } from "@/stores/settings";
-import { getWeekNumberFromDate } from "@/database/useHomework";
+import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
+import { generateId } from "@/utils/generateId";
+import { useAccountStore } from "@/stores/account";
+import { MenuView } from "@react-native-menu/menu";
+import { useNavigation } from "expo-router";
+import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const useMagicPrediction = (content: string) => {
+export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
 
@@ -64,10 +88,11 @@ const useMagicPrediction = (content: string) => {
   return magic;
 };
 
-const TaskItem = memo(({ item, index, onProgressChange }: {
+const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
   item: Homework;
+  fromCache: boolean;
   index: number;
-  onProgressChange: (index: number, newProgress: number) => void;
+  onProgressChange: (item: Homework, newProgress: number) => void;
 }) => {
   try {
     const cleanContent = item.content.replace(/<[^>]*>/g, "");
@@ -79,13 +104,13 @@ const TaskItem = memo(({ item, index, onProgressChange }: {
         emoji={getSubjectEmoji(item.subject)}
         title={""}
         color={getSubjectColor(item.subject)}
-        description={cleanContent}
+        description={item.content}
         date={new Date(item.dueDate)}
         progress={item.isDone ? 1 : 0}
         index={index}
         magic={magic}
-        fromCache={item.fromCache ?? false}
-        onProgressChange={(newProgress: number) => onProgressChange(index, newProgress)}
+        fromCache={fromCache ?? false}
+        onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
       />
     );
   } catch (error) {
@@ -122,12 +147,18 @@ export default function TabOneScreen() {
   const alert = useAlert()
   const windowDimensions = useWindowDimensions();
 
-  const currentDate = new Date();
-  const weekNumber = getWeekNumberFromDate(currentDate)
+  const currentDate = new Date()
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
-  const [selectedWeek, setSelectedWeek] = useState(weekNumber);
+  const [selectedWeek, setSelectedWeek] = useState<number>(getWeekNumberFromDate(currentDate));
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const store = useAccountStore.getState()
+  const account = store.accounts.find(account => store.lastUsedAccount);
+  const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
+  const homeworksFromCache = useHomeworkForWeek(selectedWeek, refreshTrigger).filter(homework => services.includes(homework.createdByAccount));
+  const [homework, setHomework] = useState<Record<string, Homework>>({});
 
   const manager = getManager();
 
@@ -136,7 +167,16 @@ export default function TabOneScreen() {
       return;
     }
     const result = await managerToUse.getHomeworks(selectedWeek);
-    setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+    result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    const newHomeworks: Record<string, Homework> = {};
+    for (const hw of result) {
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
+      newHomeworks[id] = hw;
+    }
+    setHomework(newHomeworks);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -155,22 +195,24 @@ export default function TabOneScreen() {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
-  const [homework, setHomework] = useState<Record<number, Homework[]>>({});
 
-  const currentHomework = React.useMemo(() => {
-    return homework[selectedWeek] || [];
-  }, [homework, selectedWeek]);
-
-  const onProgressChange = useCallback((index: number, newProgress: number) => {
-    const updateHomeworkCompletion = async (homeworkItem: Homework, index: number) => {
+  const onProgressChange = useCallback((item: Homework, newProgress: number) => {
+    const updateHomeworkCompletion = async (homeworkItem: Homework) => {
       try {
         const manager = getManager();
-        const updatedHomework = await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
-        setHomework((prev) => {
-          const updated = [...prev[selectedWeek]];
-          updated[index] = updatedHomework;
-          return { ...prev, [selectedWeek]: updated };
-        });
+        const id = generateId(
+          homeworkItem.subject + homeworkItem.content + homeworkItem.createdByAccount + homeworkItem.dueDate.toDateString()
+        );
+        await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
+        updateHomeworkIsDone(id, !homeworkItem.isDone)
+        setRefreshTrigger(prev => prev + 1);
+        setHomework(prev => ({
+          ...prev,
+          [id]: {
+            ...prev[id],
+            isDone: !homeworkItem.isDone,
+          }
+        }));
       } catch (error) {
         alert.showAlert({
           title: "Une erreur est survenue",
@@ -183,30 +225,16 @@ export default function TabOneScreen() {
       }
     };
 
-    setHomework((prev) => {
-      if (!prev[selectedWeek] || !prev[selectedWeek][index]) {
-        return prev;
-      }
-
-      if (prev[selectedWeek][index].progress === newProgress) {
-        return prev;
-      }
-
-      updateHomeworkCompletion(prev[selectedWeek][index], index);
-
-      const updated = [...prev[selectedWeek]];
-      updated[index] = { ...updated[index], progress: newProgress };
-      return { ...prev, [selectedWeek]: updated };
-    });
+    updateHomeworkCompletion(item);
   }, [selectedWeek]);
 
   const lengthHomeworks = React.useMemo(() => {
-    return currentHomework.length;
-  }, [currentHomework]);
+    return homeworksFromCache.length;
+  }, [homeworksFromCache]);
 
   const leftHomeworks = React.useMemo(() => {
-    return (currentHomework.filter((h) => !h.isDone).length);
-  }, [currentHomework]);
+    return (homeworksFromCache.filter((h) => !h.isDone).length);
+  }, [homeworksFromCache]);
 
   const percentageComplete = React.useMemo(() => {
     return ((lengthHomeworks - leftHomeworks) / lengthHomeworks * 100);
@@ -217,7 +245,14 @@ export default function TabOneScreen() {
     const fetchHomeworks = async () => {
       try {
         const result = await manager.getHomeworks(selectedWeek);
-        setHomework((prev) => ({ ...prev, [selectedWeek]: result }));
+        const newHomeworks: Record<string, Homework> = {};
+        for (const hw of result) {
+          const id = generateId(
+            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+          );
+          newHomeworks[id] = hw;
+        }
+        setHomework(prev => ({ ...prev, ...newHomeworks }));
       } catch (error) {
         alert.showAlert({
           title: "Erreur de chargement",
@@ -235,17 +270,27 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
-  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => (
-    <TaskItem
-      item={item}
-      index={index}
-      onProgressChange={onProgressChange}
-    />
-  ), [onProgressChange]);
+  const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => {
+    const inFresh = homework[item.id]
+    if (showUndoneOnly && item.isDone)
+      return null;
+    return (
+      <Reanimated.View
+        style={{ marginBottom: 16 }}
+        layout={Animation(LinearTransition, "list")}
+      >
+        <TaskItem
+          key={item.id}
+          item={item}
+          index={index}
+          fromCache={!inFresh}
+          onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
+        />
+      </Reanimated.View>
+    )
+  }, [onProgressChange, homeworksFromCache]);
 
   const keyExtractor = useCallback((item: Homework) => item.id, []);
-
-  const memoizedData = useMemo(() => currentHomework, [currentHomework]);
 
   const [showWeekPicker, setShowWeekPicker] = useState(false);
   const WeekPickerRef = useRef<FlatList>(null);
@@ -288,7 +333,7 @@ export default function TabOneScreen() {
   const statusText = useMemo(() => getStatusText(), [lengthHomeworks, leftHomeworks]);
 
   function marginTop(): number {
-    if (runsIOS26()) {
+    if (runsIOS26) {
       if (fullyScrolled) {
         return 6
       }
@@ -302,24 +347,172 @@ export default function TabOneScreen() {
     return -2
   }
 
+  const sortingMethods = [
+    {
+      label: t('Tasks_Sorting_Methods_DueDate'),
+      method: (a: Homework, b: Homework) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+      image: Platform.select({
+        ios: "calendar"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Subject'),
+      method: (a: Homework, b: Homework) => a.subject.localeCompare(b.subject),
+      image: Platform.select({
+        ios: "character"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Done'),
+      method: (a: Homework, b: Homework) => Number(a.isDone) - Number(b.isDone),
+      image: Platform.select({
+        ios: "checkmark.circle"
+      }),
+    },
+  ]
+
+  const [selectedMethod, setSelectedMethod] = useState(0);
+  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
+
+  const sortedHomeworks = useMemo(() => {
+    const sortingMethod = sortingMethods[selectedMethod].method;
+    return [...homeworksFromCache].sort(sortingMethod);
+  }, [homeworksFromCache, selectedMethod]);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchTermState, setSearchTermState] = useState("");
+
+  const searchResult = useMemo(() => {
+    if (!showSearch || searchTermState.length === 0) return [];
+    return sortedHomeworks.filter(hw => {
+      const content = hw.content.toLowerCase();
+      const subject = hw.subject.toLowerCase();
+      const searchTerm = searchTermState.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
+      return content.includes(searchTerm) || subject.includes(searchTerm);
+    }).slice(0, 5); // limit to 5 results
+  }, [showSearch, sortedHomeworks, searchTermState]);
+
+  const insets = useSafeAreaInsets();
+
   return (
     <>
+      <Modal
+        visible={showSearch}
+        animationType="fade"
+        transparent={true}
+      >
+        <BlurView intensity={70} style={{ backgroundColor: "rgba(0, 0, 0, 0.1)", flex: 1, alignContent: "center", justifyContent: "flex-start" }} tint={theme.dark ? "dark" : "light"} experimentalBlurMethod="dimezisBlurView">
+          <KeyboardAvoidingView behavior="padding">
+            <LiquidGlassContainerView
+              style={{
+                position: "absolute",
+                top: insets.top + 10,
+                zIndex: 1000000,
+                flexDirection: "row",
+                width: Dimensions.get('window').width - 32,
+                left: 16,
+                paddingHorizontal: 0,
+                height: 46,
+                gap: 12,
+              }}
+            >
+              <LiquidGlassView
+                interactive
+                style={{
+                  flex: 1,
+                  borderRadius: 160,
+                  borderCurve: "continuous",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  paddingHorizontal: 16,
+                  gap: 10,
+                  flexDirection: "row",
+                  backgroundColor: runsIOS26 ? "transparent" : theme.colors.text + "11",
+                }}
+                effect="regular"
+                tintColor={"#00000000"}
+              >
+                <Papicons name={"Search"} color={colors.text} size={24} opacity={0.5} />
+                <TextInput
+                  placeholder={t('Tasks_Search_Placeholder')}
+                  placeholderTextColor={colors.text + "56"}
+                  style={{
+                    fontFamily: "medium",
+                    fontSize: 18,
+                    flex: 1,
+                    color: colors.text,
+                  }}
+                  value={searchTermState}
+                  onChangeText={setSearchTermState}
+                  autoFocus
+                />
+
+                {showSearch && searchTermState.length > 0 && (
+                  <Pressable onPress={() => setSearchTermState("")} hitSlop={16}>
+                    <Papicons name={"cross"} color={colors.text} size={18} opacity={0.5} />
+                  </Pressable>
+                )}
+              </LiquidGlassView>
+
+              <LiquidGlassView
+                interactive
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 160,
+                  borderCurve: "continuous",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                effect="regular"
+              >
+                <Pressable onPress={() => setShowSearch(false)} hitSlop={32}>
+                  <Papicons name={"cross"} color={PlatformColor('labelColor')} size={24} opacity={0.5} />
+                </Pressable>
+              </LiquidGlassView>
+            </LiquidGlassContainerView>
+
+            <LayoutAnimationConfig skipEntering skipExiting>
+              <Reanimated.FlatList
+                data={searchResult}
+                style={{
+                }}
+                contentContainerStyle={{
+                  paddingTop: insets.top + 72,
+                  paddingBottom: insets.bottom,
+                  paddingHorizontal: 20,
+                  gap: 16,
+                }}
+                itemLayoutAnimation={LinearTransition}
+                showsVerticalScrollIndicator={false}
+                renderItem={renderItem}
+                keyExtractor={keyExtractor}
+                ListEmptyComponent={<EmptyListComponent />}
+              />
+            </LayoutAnimationConfig>
+          </KeyboardAvoidingView>
+        </BlurView>
+      </Modal>
+
       <TabFlatList
         radius={36}
         backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
         foregroundColor="#9E0086"
-        data={memoizedData}
+        key={sortedHomeworks.length}
+        data={sortedHomeworks}
         initialNumToRender={2}
+        engine="FlashList"
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            progressViewOffset={100}
+            progressViewOffset={200}
           />
         }
         gap={16}
+        paddingTop={2}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <LayoutAnimationConfig skipEntering>
@@ -368,7 +561,7 @@ export default function TabOneScreen() {
         ListEmptyComponent={<EmptyListComponent />}
       />
 
-      {!runsIOS26() && fullyScrolled && (
+      {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
           entering={Animation(FadeInUp, "list")}
           exiting={Animation(FadeOutUp, "default")}
@@ -396,112 +589,167 @@ export default function TabOneScreen() {
       {/* Picker */}
       {showWeekPicker && (
         <Reanimated.View
-          entering={PapillonAppearIn}
-          exiting={PapillonAppearOut}
           style={{
-            height: 60,
-            width: 300,
-            backgroundColor: colors.card,
-            borderRadius: 16,
-            boxShadow: "0px 0px 32px rgba(0, 0, 0, 0.25)",
             position: "absolute",
-            top: headerHeight - 6,
+            top: headerHeight,
             alignSelf: "center",
             zIndex: 1000000,
             transformOrigin: "center top",
           }}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
         >
-          <View
+          <LiquidGlassView
             style={{
-              position: "absolute",
-              alignSelf: "center",
-              top: 5,
-              height: 50,
-              width: 50,
-              borderRadius: 16,
-              borderCurve: "continuous",
-              borderWidth: 2,
-              borderColor: "#C54CB3",
-            }}
-          />
-
-          <FlatList
-            onLayout={() => {
-              layoutPicker();
-            }}
-            data={Array.from({ length: 56 }, (_, i) => i)}
-            initialScrollIndex={selectedWeek}
-            getItemLayout={(data, index) => (
-              { length: 60, offset: 60 * index, index }
-            )}
-            keyExtractor={(item) => "picker:" + item.toString()}
-            horizontal
-            removeClippedSubviews={true}
-            showsHorizontalScrollIndicator={false}
-            style={{
-              flexGrow: 0,
-              height: 100,
+              height: 60,
               width: 300,
+              backgroundColor: runsIOS26 ? "transparent" : colors.card,
+              borderRadius: 16,
+              boxShadow: runsIOS26 ? undefined : "0px 0px 32px rgba(0, 0, 0, 0.25)",
             }}
-            contentContainerStyle={{
-              alignItems: "center",
-              gap: 0,
-              paddingLeft: 300 / 2 - 30, // center the picker
-              paddingRight: 300 / 2 - 30, // center the picker
-            }}
-            snapToInterval={60}
-            decelerationRate="fast"
-            ref={WeekPickerRef}
-            onScroll={handleWeekScroll}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => {
-                  setSelectedWeek(item);
-                  setShowWeekPicker(false);
-                }}
-                style={[
-                  {
-                    width: 40,
-                    height: 40,
-                    margin: 10,
-                    borderRadius: 12,
-                    borderCurve: "continuous",
-                    backgroundColor: colors.background,
-                    borderColor: colors.text + "22",
-                    borderWidth: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  },
-                  item === selectedWeek && {
-                    backgroundColor: "#C54CB3",
-                    boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
-                  }
-                ]}
-              >
-                <Text
-                  style={{
-                    color: item === selectedWeek ? "#FFF" : colors.text,
-                    fontSize: 16,
-                    fontFamily: item === selectedWeek ? "bold" : "medium",
+            effect="regular"
+            interactive={true}
+          >
+            <View
+              style={{
+                position: "absolute",
+                alignSelf: "center",
+                top: 5,
+                height: 50,
+                width: 50,
+                borderRadius: 16,
+                borderCurve: "continuous",
+                borderWidth: 2,
+                borderColor: "#C54CB3",
+              }}
+            />
+
+            <FlatList
+              onLayout={() => {
+                layoutPicker();
+              }}
+              data={Array.from({ length: 56 }, (_, i) => i)}
+              initialScrollIndex={selectedWeek}
+              getItemLayout={(data, index) => (
+                { length: 60, offset: 60 * index, index }
+              )}
+              keyExtractor={(item) => "picker:" + item.toString()}
+              horizontal
+              removeClippedSubviews={true}
+              showsHorizontalScrollIndicator={false}
+              style={{
+                flexGrow: 0,
+                height: 100,
+                width: 300,
+              }}
+              contentContainerStyle={{
+                alignItems: "center",
+                gap: 0,
+                paddingLeft: 300 / 2 - 30, // center the picker
+                paddingRight: 300 / 2 - 30, // center the picker
+              }}
+              snapToInterval={60}
+              decelerationRate="fast"
+              ref={WeekPickerRef}
+              initialNumToRender={10}
+              onScroll={handleWeekScroll}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => {
+                    setSelectedWeek(item);
+                    setShowWeekPicker(false);
                   }}
+                  style={[
+                    {
+                      width: 40,
+                      height: 40,
+                      margin: 10,
+                      borderRadius: 12,
+                      borderCurve: "continuous",
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
+                      borderColor: colors.text + "22",
+                      borderWidth: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                    item === selectedWeek && {
+                      backgroundColor: "#C54CB3",
+                      boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
+                    }
+                  ]}
                 >
-                  {item}
-                </Text>
-              </Pressable>
-            )}
-          />
+                  <Text
+                    style={{
+                      color: item === selectedWeek ? "#FFF" : colors.text,
+                      fontSize: 16,
+                      fontFamily: item === selectedWeek ? "bold" : "medium",
+                    }}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </LiquidGlassView>
         </Reanimated.View>
       )}
 
-      <NativeHeaderSide side="Left">
-        <NativeHeaderPressable
-          onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+      <NativeHeaderSide side="Left" key={`header-left-hw:` + selectedMethod + ":" + showUndoneOnly}>
+        <MenuView
+          actions={[
+            {
+              title: t('Task_Sorting_Title'),
+              subactions: sortingMethods.map((method, index) => ({
+                title: method.label,
+                id: "sort_" + index.toString(),
+                state: (selectedMethod === index ? 'on' : 'off'),
+                image: method.image ? method.image : undefined,
+                imageColor: colors.text,
+              })),
+              image: Platform.select({
+                ios: "arrow.up.arrow.down"
+              }),
+              imageColor: colors.text,
+              displayInline: true
+            },
+            {
+              title: t('Task_Show_Title'),
+              subactions: [
+                {
+                  title: t('Task_OnlyShowUndone'),
+                  id: 'only-undone',
+                  state: (!showUndoneOnly ? 'on' : 'off'),
+                  image: Platform.select({
+                    ios: "flag.pattern.checkered"
+                  }),
+                  imageColor: colors.text,
+                }
+              ],
+              displayInline: true
+            }
+          ]}
+          onPressAction={({ nativeEvent }) => {
+            if (nativeEvent.event === 'only-undone') {
+              console.log("Toggling only undone");
+              setShowUndoneOnly((prev) => !prev);
+              console.log("Only undone is now", showUndoneOnly);
+            }
+            else if (nativeEvent.event.startsWith("sort_")) {
+              const withoutSort = nativeEvent.event.replace("sort_", "")
+              const selected = sortingMethods[parseInt(withoutSort)];
+              if (selected) {
+                setSelectedMethod(parseInt(withoutSort));
+              }
+            }
           }}
         >
-          <Papicons name={"Menu"} color={"#C54CB3"} size={28} />
-        </NativeHeaderPressable>
-      </NativeHeaderSide>
+          <NativeHeaderPressable>
+            <Papicons name={"Filter"} color={"#C54CB3"} size={28} />
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide >
+
+
       <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
         <NativeHeaderTopPressable layout={Animation(LinearTransition)} onPress={() => {
           toggleWeekPicker();
@@ -518,12 +766,12 @@ export default function TabOneScreen() {
               marginTop: marginTop(),
             }}
           >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26() && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
               </Dynamic>
               <Dynamic animated style={{ marginTop: -3 }}>
-                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26() && fullyScrolled}>
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26 && fullyScrolled}>
                   {selectedWeek.toString()}
                 </NativeHeaderHighlight>
               </Dynamic>
@@ -537,7 +785,7 @@ export default function TabOneScreen() {
                 style={{
                   width: 200,
                   alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
-                  marginTop: !runsIOS26() ? -4 : 0,
+                  marginTop: !runsIOS26 ? -4 : 0,
                 }}
                 key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
                 <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
@@ -552,8 +800,9 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+          onPressIn={() => {
+            setSearchTermState("");
+            setShowSearch(true);
           }}
         >
           <Papicons name={"Search"} color={"#C54CB3"} size={26} />

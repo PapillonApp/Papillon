@@ -1,28 +1,23 @@
-import { CompactGrade } from "@/ui/components/CompactGrade";
 import TableFlatList from "@/ui/components/TableFlatList";
 import { useRoute, useTheme } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
-import React, { useMemo } from "react";
+import React from "react";
 import { View } from "react-native";
 
-import { formatDistanceToNow, formatDistance, formatDistanceStrict } from 'date-fns'
-import { fr } from 'date-fns/locale';
+import { formatDistanceToNow, formatDistanceStrict } from 'date-fns'
+import * as DateLocale from 'date-fns/locale';
 
-import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
-import { Subject as SharedSubject } from "@/services/shared/grade";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 
-import { t } from "i18next";
+import i18n, { t } from "i18next";
 import Reanimated from 'react-native-reanimated';
 import * as Papicons from '@getpapillon/papicons';
-import ContainedNumber from "@/ui/components/ContainedNumber";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
 import { getStatusText } from "../(tabs)/calendar";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from '@/utils/subjects/name';
 
 interface SubjectInfo {
   name: string;
@@ -85,7 +80,7 @@ export default function CourseModal() {
               {
                 papicon: <Papicons.Clock />,
                 title: t("Modal_Course_Duration"),
-                description: formatDistanceStrict(startTime * 1000, endTime * 1000, { locale: fr })
+                description: formatDistanceStrict(startTime * 1000, endTime * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })
               }
             ]
           }
@@ -102,7 +97,7 @@ export default function CourseModal() {
             <Reanimated.View>
               <Course
                 id={item.id}
-                name={item.subject}
+                name={getSubjectName(item.subject)}
                 teacher={item.teacher}
                 room={item.room}
                 color={subjectInfo.color}
@@ -142,8 +137,8 @@ export default function CourseModal() {
                         ? t("Modal_Course_Ongoing")
                         : t("Modal_Course_StartedAgo")}
                   </Typography>
-                  <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {formatDistanceToNow(startTime * 1000, { locale: fr })}
+                  <Typography align="center" inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
+                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime : endTime) * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })}
                   </Typography>
                 </Stack>
                 <Stack
@@ -159,8 +154,8 @@ export default function CourseModal() {
                   <Typography color="secondary">
                     {t("Modal_Course_Group")}
                   </Typography>
-                  <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {item.group || t("Modal_Course_Group_Full")}
+                  <Typography align="center" inline variant={(item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")).length > 20 ? "body2" : "h5"} color={subjectInfo.color} style={{ marginTop: 4 }}>
+                    {item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")}
                   </Typography>
                 </Stack>
               </View>

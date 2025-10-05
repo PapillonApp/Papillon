@@ -1,14 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { createMMKVStorage } from "../global";
-import { SettingsStorage, SettingsState, Personalization } from "./types";
 import { Colors } from "@/utils/colors";
+import { MAGIC_URL } from "@/utils/endpoints";
+
+import { createMMKVStorage } from "../global";
+import { Personalization,SettingsState, SettingsStorage } from "./types";
 
 const defaultPersonalization: Personalization = {
   colorSelected: Colors.PINK,
+  theme: "auto",
   magicEnabled: true,
   hideNameOnHomeScreen: false,
+  showAlertAtLogin: false,
+  showDevMode: false,
+  magicModelURL: MAGIC_URL,
 };
 
 export const useSettingsStore = create<SettingsStorage>()(

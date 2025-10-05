@@ -1,9 +1,10 @@
-import { useMagicStore } from "@/stores/magic";
-import ModelManager, { ModelPrediction } from "./ModelManager";
-import { generateId } from "../generateId";
-import regexPatterns from "./regex/homeworks.json";
 import * as Battery from "expo-battery";
-import { useSettingsStore } from "@/stores/settings";
+
+import { useMagicStore } from "@/stores/magic";
+
+import { generateId } from "../generateId";
+import ModelManager, { ModelPrediction } from "./ModelManager";
+import regexPatterns from "./regex/homeworks.json";
 
 const compiledPatterns: Record<string, RegExp[]> = Object.fromEntries(
   Object.entries(regexPatterns).map(([category, patterns]) => [
@@ -27,16 +28,19 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
   const store = useMagicStore.getState();
   const homeworkId = generateId(label);
   const existingHomework = store.getHomework(homeworkId);
-  if (existingHomework) return existingHomework.label;
+  
+  if (existingHomework) {
+    return existingHomework.label;
+  }
 
   if (!magicEnabled) {
     return "";
   }
 
-  let batteryLevel = 1;
+  let batteryLevel: number;
   try {
     batteryLevel = await Battery.getBatteryLevelAsync();
-  } catch (e) {
+  } catch {
     batteryLevel = 1;
   }
 
@@ -54,9 +58,25 @@ export async function predictHomework(label: string, magicEnabled: boolean = tru
 
   const prediction = await ModelManager.predict(label);
 
+  const beautifyLabel = (rawLabel: string): string => {
+    const labelMap: Record<string, string> = {
+      'evaluation': 'Évaluation',
+      'finaltask': 'Tâche finale',
+      'homework': 'Devoir Maison',
+      'null': 'null',
+      'oral': 'Présentation orale',
+      'sheets': 'Fiche',
+    };
+    
+    return labelMap[rawLabel.toLowerCase()] || rawLabel
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   const finalLabel =
     isModelPrediction(prediction) && prediction.predicted !== "null"
-      ? prediction.predicted
+      ? beautifyLabel(prediction.predicted)
       : "";
 
   store.addHomework({ id: homeworkId, label: finalLabel });

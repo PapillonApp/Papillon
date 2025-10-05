@@ -63,14 +63,23 @@ export default function TabOneScreen() {
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
-  const manager = getManager();
+  
+  let manager;
+  try {
+    manager = getManager();
+  } catch (error) {
+    console.warn('Manager not initialized, iCal events will still work');
+    manager = null;
+  }
 
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
-  const timetable = useTimetable(undefined, weekNumber).map(day => ({
+  const timetable = useTimetable(refresh, weekNumber).map(day => ({
     ...day,
-    courses: day.courses.filter(course => services.includes(course.createdByAccount))
+    courses: day.courses.filter(course => 
+      services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+    )
   })).filter(day => day.courses.length > 0);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -101,6 +110,7 @@ export default function TabOneScreen() {
             weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
           );
 
+          setRefresh(prev => prev + 1);
           setFetchedWeeks((prevFetchedWeeks) => [
             ...prevFetchedWeeks,
             ...weeksToFetch,
@@ -342,6 +352,17 @@ export default function TabOneScreen() {
                   start={Math.floor(item.from.getTime() / 1000)}
                   end={Math.floor(item.to.getTime() / 1000)}
                   showTimes={false}
+                  onPress={() => {
+                    navigation.navigate('(modals)/course', {
+                      course: item,
+                      subjectInfo: {
+                        id: item.subjectId,
+                        name: getSubjectName(item.subject),
+                        color: getSubjectColor(item.subject) || Colors[0],
+                        emoji: getSubjectEmoji(item.subject),
+                      }
+                    });
+                  }}
                 />
               );
             }
@@ -421,7 +442,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-      {/*
+
       <NativeHeaderSide side="Right">
         <MenuView
           actions={[
@@ -450,7 +471,7 @@ export default function TabOneScreen() {
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
-      */}
+
 
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable

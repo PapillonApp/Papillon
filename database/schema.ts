@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const mySchema = appSchema({
-  version: 29,
+  version: 34,
   tables: [
     tableSchema({
       name: 'events',
@@ -24,6 +24,8 @@ export const mySchema = appSchema({
         { name: 'title', type: 'string' },
         { name: 'url', type: 'string' },
         { name: 'lastupdated', type: 'number' },
+        { name: 'intelligent_parsing', type: 'boolean', isOptional: true },
+        { name: 'provider', type: 'string', isOptional: true },
       ],
     }),
     tableSchema({
@@ -43,7 +45,7 @@ export const mySchema = appSchema({
       name: 'homework',
       columns: [
         { name: 'homeworkId', type: 'string' },
-        { name: 'subjectId', type: 'string' },
+        { name: 'subject', type: 'string' },
         { name: 'content', type: 'string' },
         { name: 'dueDate', type: 'number' },
         { name: 'isDone', type: 'boolean' },

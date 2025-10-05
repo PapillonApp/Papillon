@@ -1,22 +1,25 @@
 import React from "react";
-import { Pressable, PressableProps } from "react-native";
+import { Platform, Pressable, PressableProps } from "react-native";
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import * as ExpoHaptics from "expo-haptics";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 type AnimatedPressableProps = PressableProps & {
   scaleTo?: number;
   opacityTo?: number;
+  hapticFeedback?: ExpoHaptics.ImpactFeedbackStyle;
 };
 
 export default function AnimatedPressable({
   children,
   scaleTo = 0.95,
   opacityTo = 0.7,
+  hapticFeedback,
   ...props
 }: AnimatedPressableProps) {
   const scale = useSharedValue(1);
@@ -25,11 +28,13 @@ export default function AnimatedPressable({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacity.value,
+      opacity: Platform.OS === 'android' ? 1 : opacity.value,
     };
   }, []);
 
   const pressIn = () => {
+    if (hapticFeedback)
+      ExpoHaptics.impactAsync(hapticFeedback)
     "worklet";
     scale.value = withSpring(scaleTo, { duration: 30 });
     opacity.value = withSpring(opacityTo, { duration: 30 });

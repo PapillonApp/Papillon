@@ -23,7 +23,6 @@ import { Animation } from "../utils/Animation";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
-
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
@@ -40,6 +39,7 @@ type Alert = {
   icon?: string;
   color?: string;
   withoutNavbar?: boolean;
+  delay?: number;
 };
 
 type AlertContextType = {
@@ -78,7 +78,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     const timeout = setTimeout(() => {
       setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
-    }, 5000);
+    }, alert.delay || 5000);
 
     timeoutRefs.current.set(alertId, timeout);
   }, []);
@@ -134,23 +134,23 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
 
       <KeyboardAvoidingView
         behavior={"height"}
-        style={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000}}
+        style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000 }}
         pointerEvents={"box-none"}
       >
-      {alerts.length > 0 && (
-        <Reanimated.View
-          layout={Animation(LinearTransition)}
-          style={containerStyle}
-        >
-          {alerts.map((alert) => (
-            <AlertComponent
-              alert={alert}
-              key={alert.id}
-              onPress={() => handleAlertPress(alert, alert.id!)}
-            />
-          ))}
-        </Reanimated.View>
-      )}
+        {alerts.length > 0 && (
+          <Reanimated.View
+            layout={Animation(LinearTransition)}
+            style={containerStyle}
+          >
+            {alerts.map((alert) => (
+              <AlertComponent
+                alert={alert}
+                key={alert.id}
+                onPress={() => handleAlertPress(alert, alert.id!)}
+              />
+            ))}
+          </Reanimated.View>
+        )}
       </KeyboardAvoidingView>
     </AlertContext.Provider>
   );
@@ -186,31 +186,31 @@ const AlertComponent = React.memo(({ alert, onPress }: { alert: Alert, onPress?:
   }, [onPress]);
 
   return (
-      <AnimatedPressable
-        onPress={handlePress}
-        layout={Animation(LinearTransition)}
-        entering={PapillonAppearIn}
-        exiting={PapillonAppearOut}
-        style={containerStyle}
-      >
-        {IconComponent && (
-          <Reanimated.View style={styles.iconContainer}>
-            <IconComponent size={24}
-                           color={iconColor}
-            />
-          </Reanimated.View>
-        )}
-        <Reanimated.View style={styles.textContainer}>
-          <Typography variant="title"
-                      color="text"
-          >{alert.title}</Typography>
-          {alert.message && (
-            <Typography variant="body1"
-                        color="secondary"
-            >{alert.message}</Typography>
-          )}
+    <AnimatedPressable
+      onPress={handlePress}
+      layout={Animation(LinearTransition)}
+      entering={PapillonAppearIn}
+      exiting={PapillonAppearOut}
+      style={containerStyle}
+    >
+      {IconComponent && (
+        <Reanimated.View style={styles.iconContainer}>
+          <IconComponent size={24}
+            color={iconColor}
+          />
         </Reanimated.View>
-      </AnimatedPressable>
+      )}
+      <Reanimated.View style={styles.textContainer}>
+        <Typography variant="title"
+          color="text"
+        >{alert.title}</Typography>
+        {alert.message && (
+          <Typography variant="body1"
+            color="secondary"
+          >{alert.message}</Typography>
+        )}
+      </Reanimated.View>
+    </AnimatedPressable>
   );
 });
 
