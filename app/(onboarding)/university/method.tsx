@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, router } from 'expo-router';
+import { Papicons } from '@getpapillon/papicons';
 
 import Typography from '@/ui/components/Typography';
 import { GetSupportedUniversities, SupportedUniversity } from "../utils/constants";
@@ -93,13 +94,23 @@ export default function WelcomeScreen() {
                 ]}
               >
                 <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                    source={(item as SupportedUniversity).image}
-                    style={{ width: 32, height: 32 }}
-                    resizeMode="cover"
-                  />
+                  {(item as SupportedUniversity).image ? (
+                    <Image
+                      source={(item as SupportedUniversity).image}
+                      style={{ width: 32, height: 32 }}
+                      resizeMode="cover"
+                    />
+                  ) : (item as SupportedUniversity).type === "other" ? (
+                    <Papicons 
+                      name="Star" 
+                      size={24} 
+                      color={colors.background}
+                    />
+                  ) : (
+                    (item as SupportedUniversity).icon || null
+                  )}
                 </View>
-                <Typography style={{ flex: 1 }} nowrap variant='title' color={(item as SupportedUniversity).type == "other" ? "white" : undefined}>{(item as SupportedUniversity).title}</Typography>
+                <Typography style={{ flex: 1 }} nowrap variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>{(item as SupportedUniversity).title}</Typography>
               </AnimatedPressable>
             </Reanimated.View>
           )}

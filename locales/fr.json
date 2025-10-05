@@ -49,6 +49,8 @@
   "ONBOARDING_LOGIN_PINCODE": "Entre le Code PIN de ton PRONOTE",
   "Onboarding_Load_Webview_Description": "Nous chargeons le site de ton établissement",
   "INPUT_PIN": "Code PIN",
+  "SEARCH_UNIV_PLACEHOLDER": "Rechercher une instance...",
+  "ONBOARDING_LOADING_LOGIN": "Connexion en cours...",
 
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
