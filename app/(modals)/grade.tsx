@@ -1,20 +1,20 @@
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import TableFlatList from "@/ui/components/TableFlatList";
+import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
+import { t } from "i18next";
 import React, { useMemo } from "react";
 import { View } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import Reanimated from 'react-native-reanimated';
 
 import { Grade as SharedGrade } from "@/services/shared/grade";
-
-import { t } from "i18next";
-import Reanimated from 'react-native-reanimated';
-import { Papicons } from '@getpapillon/papicons';
+import { CompactGrade } from "@/ui/components/CompactGrade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
-import LinearGradient from "react-native-linear-gradient";
+import Stack from "@/ui/components/Stack";
+import TableFlatList from "@/ui/components/TableFlatList";
+import Typography from "@/ui/components/Typography";
+import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
+import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 
 interface SubjectInfo {
   name: string;
@@ -45,8 +45,8 @@ export default function GradesModal() {
   }, [allGrades, grade]);
 
   const avgClass = useMemo(() => {
-    const average = PapillonSubjectAvg(allGrades, "averageScore");
-    const averageWithoutGrade = PapillonSubjectAvg(allGrades.filter(g => g.id !== grade.id), "averageScore");
+    const average = PapillonSubjectAvgByProperty(allGrades, "averageScore");
+    const averageWithoutGrade = PapillonSubjectAvgByProperty(allGrades.filter(g => g.id !== grade.id), "averageScore");
     return Number((average - averageWithoutGrade).toFixed(2));
   }, [allGrades, grade]);
 
@@ -72,6 +72,19 @@ export default function GradesModal() {
             title: t("Grades_Details_Title"),
             icon: <Papicons name={"Menu"} />,
             items: [
+              ...(grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? [{
+                icon: <Papicons name={"Star"} />,
+                title: t("Grades_NormalizedGrade_Title"),
+                description: t("Grades_NormalizedGrade_Description"),
+                trailing: (
+                  <ContainedNumber
+                    color="#757575"
+                    denominator="/20"
+                  >
+                    {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
+                  </ContainedNumber>
+                )
+              }] : []),
               {
                 icon: <Papicons name={"Plus"} />,
                 title: t("Grades_HighestGrade_Title"),
@@ -175,7 +188,7 @@ export default function GradesModal() {
                   {t("Grades_Coefficient")}
                 </Typography>
                 <ContainedNumber color={subjectInfo.color}>
-                  x{(grade.coefficient || 1).toFixed(2)}
+                  x{(grade.coefficient ?? 1).toFixed(2)}
                 </ContainedNumber>
               </Stack>
               <Stack
