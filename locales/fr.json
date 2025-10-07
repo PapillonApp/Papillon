@@ -107,6 +107,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
