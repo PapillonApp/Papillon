@@ -4,14 +4,13 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import Typography from "@/ui/components/Typography";
 import { CompactGrade } from "@/ui/components/CompactGrade";
-import { Alert, Dimensions, ScrollView, View } from "react-native";
+import { Alert, Dimensions, ScrollView, View, Platform } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
 import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useAccountStore } from "@/stores/account";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform } from "react-native";
 
 export default function EditSubject() {
   const { colors } = useTheme();
