@@ -93,6 +93,7 @@
   "Form_End": "End",
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
   "Home_Welcome_Name": "Hello, {{name}}!",
+  "Home_See_All_Tasks": "View all tasks",
   "Home_Welcome": "Hello!",
   "Home_Planned_None": "You have no classes scheduled today",
   "Home_Planned_One": "You have one class left today",
