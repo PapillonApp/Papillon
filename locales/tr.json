@@ -93,6 +93,7 @@
   "Form_End": "Son",
   "Confirm_DeleteEvent": "Bu etkinliği silmeye emin misin ?",
   "Home_Welcome_Name": "Merhaba, {{name}} !",
+  "Home_See_All_Tasks": "Tüm görevleri görüntüle",
   "Home_Welcome": "Merhaba !",
   "Home_Planned_None": "Bugün için dersin kalmadı",
   "Home_Planned_One": "Bugün için bir dersin kaldı",

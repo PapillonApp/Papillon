@@ -505,9 +505,9 @@ const IndexScreen = () => {
           },
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
-            title: "Tâches",
+            title: t("Tab_Tasks"),
             redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : `Voir toutes les tâches`,
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
