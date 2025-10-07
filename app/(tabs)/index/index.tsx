@@ -299,10 +299,9 @@ const IndexScreen = () => {
 
   const getScheduleMessage = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
-
     if (todayAllCourses.length === 0) {
       return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
     } else if (todayAllCourses.length === 1) {
@@ -505,9 +504,9 @@ const IndexScreen = () => {
           },
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
-            title: "Tâches",
+            title: t("Tab_Tasks"),
             redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : `Voir toutes les tâches`,
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
