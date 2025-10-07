@@ -299,10 +299,9 @@ const IndexScreen = () => {
 
   const getScheduleMessage = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
-
     if (todayAllCourses.length === 0) {
       return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
     } else if (todayAllCourses.length === 1) {
