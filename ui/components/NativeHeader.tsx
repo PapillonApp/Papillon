@@ -268,7 +268,7 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   const backgroundColor = light ? 'transparent' : color === DEFAULT_COLOR ? DEFAULT_BACKGROUND_COLOR : getBackgroundColor(color);
 
   // Pre-compute style array once
-  const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, light ? { padding: 0 } : {}];
+  const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, { borderRadius: light ? 0 : styles.highlight.borderRadius }, light ? { padding: 0 } : {}];
 
   return (
     <LayoutAnimationConfig skipEntering>
