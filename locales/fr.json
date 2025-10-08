@@ -250,6 +250,8 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
