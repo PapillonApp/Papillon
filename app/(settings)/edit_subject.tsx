@@ -38,7 +38,7 @@ export default function EditSubject() {
     <View
       style={{
         flex: 1,
-        paddingTop: Platform.OS === "android" ? insets.top : 0,
+        paddingTop: Platform.OS === 'android' ? insets.top : 0,
        }}
     >
       <Stack
