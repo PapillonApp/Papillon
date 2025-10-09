@@ -183,6 +183,7 @@
   "Attendance_Hours_Unjustified": "Unentschuldigte Stunden",
   "Attendance_Missing": "Abwesenheiten",
   "Attendance_Delays": "Verspätungen",
+  "Attendance_Observations": "Kommentare",
   "Attendance_NoReason": "Kein Grund",
   "Attendance_NoEvent_Title": "Kein Event",
   "Attendance_NoEvent_Description": "Keine Abwesenheiten oder Verspätungen für diese Stunde festgestellt.",

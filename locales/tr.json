@@ -182,6 +182,7 @@
   "Attendance_Hours_Unjustified": "Doğrulanmamış saatler",
   "Attendance_Missing": "Yokluklar",
   "Attendance_Delays": "Geç kalmalar",
+  "Attendance_Observations": "gözlemler",
   "Attendance_NoReason": "Neden yok",
   "Attendance_NoEvent_Title": "Etkinlik yok",
   "Attendance_NoEvent_Description": "Bu dönem için yokluklar yada geç kalmalar yok",

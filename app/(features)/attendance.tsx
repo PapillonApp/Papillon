@@ -1,25 +1,26 @@
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Typography from "@/ui/components/Typography";
-import { router, useLocalSearchParams } from "expo-router";
-import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
-import { useTheme } from "@react-navigation/native";
-import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
-import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
-import { useMemo, useState } from "react";
-import { Attendance } from "@/services/shared/attendance";
-import Stack from "@/ui/components/Stack";
 import { useHeaderHeight } from "@react-navigation/elements";
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import adjust from "@/utils/adjustColor";
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
-import { error } from "@/utils/logger/logger";
-import { getManager } from "@/services/shared";
+import { useTheme } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
 import { t } from "i18next";
+import React, { useMemo, useState } from "react";
+import { Platform, ScrollView, View } from "react-native";
+
+import { getManager } from "@/services/shared";
+import { Attendance } from "@/services/shared/attendance";
+import { Period } from "@/services/shared/grade";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
+import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import { error } from "@/utils/logger/logger";
+import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 
 export default function AttendanceView() {
   try {
@@ -35,32 +36,32 @@ export default function AttendanceView() {
     const [attendances, setAttendances] = useState<Attendance[]>(attendancesFromSearch);
     const [period, setPeriod] = useState<Period>(currentPeriod);
 
-    const { missedTime, missedTimeUnjustified, unjustifiedAbsenceCount, unjustifiedDelayCount, absenceCount, delayCount } = useMemo(() => {
+    const { missedTime, missedTimeUnjustified, absenceCount, delayCount, obsCount } = useMemo(() => {
       let missed = 0;
       let unjustified = 0;
-      let unjustifiedAbs = 0;
-      let unjustifiedDelays = 0;
       let Abs = 0
       let Delays = 0
+      let Obs = 0
       for (const attendance of attendances) {
         for (const absence of attendance.absences) {
           Abs += 1;
           missed += absence.timeMissed;
           if (!absence.justified) {
             unjustified += absence.timeMissed;
-            unjustifiedAbs += 1;
           }
         }
         for (const delay of attendance.delays) {
           Delays += 1;
           if (!delay.justified) {
-            unjustifiedDelays += 1;
             unjustified += delay.duration
           }
           missed += delay.duration
         }
+        for (const _ of attendance.observations) {
+          Obs += 1;
+        }
       }
-      return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays, absenceCount: Abs, delayCount: Delays };
+      return { missedTime: missed, missedTimeUnjustified: unjustified, absenceCount: Abs, delayCount: Delays, obsCount: Obs };
     }, [period, attendances]);
 
     const dangerColor = useMemo(() => adjust("#C50000", -0.15), []);
@@ -77,7 +78,7 @@ export default function AttendanceView() {
               <View
                 style={{
                   flex: 1,
-                  gap: 23.5,
+                  gap: 13.5,
                   paddingHorizontal: 20
                 }}
               >
@@ -91,6 +92,7 @@ export default function AttendanceView() {
                     vAlign="center"
                     hAlign="center"
                     padding={12}
+                    gap={0}
                     style={{ width: '50%' }}
                   >
                     <Icon papicon opacity={0.5}>
@@ -114,6 +116,7 @@ export default function AttendanceView() {
                   <Stack
                     vAlign="center"
                     hAlign="center"
+                    gap={0}
                     padding={12}
                     style={{ flex: 1, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderLeftWidth: 1, borderLeftColor: colors.border }}
                     backgroundColor={adjust("#C50000", theme.dark ? -0.8 : 0.8)}
@@ -162,7 +165,7 @@ export default function AttendanceView() {
                       }}
                     >
                       <Stack direction="horizontal" hAlign="center">
-                        <Icon papicon opacity={0.5}>
+                        <Icon papicon opacity={0.5} size={18}>
                           <Papicons name={"Ghost"} />
                         </Icon>
                         <Typography variant="h5" style={{ opacity: 0.5 }}>{t("Attendance_Missing")}</Typography>
@@ -205,6 +208,56 @@ export default function AttendanceView() {
                   </>
                 )}
 
+                {attendances.some(attendance => attendance.observations.length > 0) && (
+                  <>
+                    <Stack
+                      direction="horizontal"
+                      hAlign="center"
+                      style={{
+                        justifyContent: "space-between"
+                      }}
+                    >
+                      <Stack direction="horizontal" hAlign="center">
+                        <Icon papicon opacity={0.5} size={18}>
+                          <Papicons name={"Password"} />
+                        </Icon>
+                        <Typography variant="h5" style={{ opacity: 0.5 }}>{t("Attendance_Observations")}</Typography>
+                      </Stack>
+                      <Typography variant="h5" style={{ opacity: 0.5 }}>x{obsCount}</Typography>
+                    </Stack>
+                    <View style={{ flex: 1 }}>
+                      <List>
+                        {attendances.map((attendance, index) =>
+                          attendance.observations.map((delay, absenceIndex) => {
+                            const fromDate = new Date(delay.givenAt);
+                            const day = fromDate.getDate().toString().padStart(2, '0');
+                            const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
+                            return (
+                              <Item key={`${index}-${absenceIndex}`}>
+                                <Trailing>
+                                  <Stack direction="horizontal" hAlign="center">
+                                    {!delay.shouldParentsJustify && (
+                                      <Icon papicon fill={dangerColor}>
+                                        <Papicons name={"Minus"} />
+                                      </Icon>
+                                    )}
+                                  </Stack>
+                                </Trailing>
+                                <Typography>
+                                  {delay.reason || t("Attendance_NoReason")}
+                                </Typography>
+                                <Typography color="#7F7F7F">
+                                  {day}/{month}
+                                </Typography>
+                              </Item>
+                            );
+                          })
+                        )}
+                      </List>
+                    </View>
+                  </>
+                )}
+
                 {attendances.some(attendance => attendance.delays.length > 0) && (
                   <>
                     <Stack
@@ -215,7 +268,7 @@ export default function AttendanceView() {
                       }}
                     >
                       <Stack direction="horizontal" hAlign="center">
-                        <Icon papicon opacity={0.5}>
+                        <Icon papicon opacity={0.5} size={18}>
                           <Papicons name={"Clock"} />
                         </Icon>
                         <Typography variant="h5" style={{ opacity: 0.5 }}>{t("Attendance_Delays")}</Typography>

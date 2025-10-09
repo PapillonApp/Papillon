@@ -183,6 +183,7 @@
   "Attendance_Hours_Unjustified": "Horas no justificadas",
   "Attendance_Missing": "Ausencias",
   "Attendance_Delays": "Retrasos",
+  "Attendance_Observations": "Comentarios",
   "Attendance_NoReason": "Sin motivo",
   "Attendance_NoEvent_Title": "Ningún evento",
   "Attendance_NoEvent_Description": "No hay ausencias ni retrasos registrados para este período.",
