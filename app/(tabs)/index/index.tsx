@@ -13,7 +13,7 @@ import { removeAllDuplicates } from "@/database/DatabaseProvider";
 import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
-import { Grade, Period } from "@/services/shared/grade";
+import { Grade } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
@@ -165,16 +165,8 @@ const IndexScreen = () => {
       return;
     }
     const gradePeriods = await manager.getGradesPeriods()
-    const validPeriods: Period[] = []
-    const date = new Date().getTime()
-    for (const period of gradePeriods) {
-      if (period.start.getTime() > date && period.end.getTime() > date) {
-        validPeriods.push(period);
-      }
-    }
-
     const grades: Grade[] = []
-    const currentPeriod = getCurrentPeriod(validPeriods)
+    const currentPeriod = getCurrentPeriod(gradePeriods)
 
     const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount)
     periodGrades.subjects.forEach(subject => {
@@ -298,17 +290,22 @@ const IndexScreen = () => {
   }, [freshHomeworks]);
 
   const getScheduleMessage = () => {
+    const now = new Date();
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
-    if (todayAllCourses.length === 0) {
-      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
-    } else if (todayAllCourses.length === 1) {
+    const todayAllCourses = weeklyTimetable.find(day =>
+      day.date.getTime() === today.getTime()
+    )?.courses ?? [];
+
+    const upcomingCourses = todayAllCourses.filter(course => course.to.getTime() > now.getTime());
+
+    if (upcomingCourses.length === 0) {
+      return t("Home_Planned_None");
+    } else if (upcomingCourses.length === 1) {
       return t("Home_Planned_One");
     }
-    return t("Home_Planned_Number", { number: todayAllCourses.length });
-
+    return t("Home_Planned_Number", { number: upcomingCourses.length });
   };
 
   const headerItems = [
@@ -460,12 +457,6 @@ const IndexScreen = () => {
         }
         gap={12}
         data={[
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Papillon 8 est là !",
-            redirect: "/changelog",
-            buttonLabel: "En savoir plus"
-          },
           courses.filter(item => item.to.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
@@ -500,35 +491,6 @@ const IndexScreen = () => {
                   />
                 ))}
               </Stack>
-            )
-          },
-          homeworks.length > 0 && {
-            icon: <Papicons name={"Tasks"} />,
-            title: t("Tab_Tasks"),
-            redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
-            render: () => (
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                scrollEnabled={false}
-                style={{
-                  borderBottomLeftRadius: 26,
-                  borderBottomRightRadius: 26,
-                  overflow: "hidden",
-                  width: "100%",
-                  padding: 10,
-                  paddingHorizontal: 10,
-                  gap: 10
-                }}
-                contentContainerStyle={{
-                  gap: 12
-                }}
-                data={homeworks.slice(0, 3)}
-                keyExtractor={(item, index) => item.id + index}
-                renderItem={({ item }) => (
-                  <MagicTaskWrapper item={item} />
-                )}
-              />
             )
           },
           grades.length > 0 && {
@@ -578,6 +540,35 @@ const IndexScreen = () => {
                       });
                     }}
                   />
+                )}
+              />
+            )
+          },
+          homeworks.length > 0 && {
+            icon: <Papicons name={"Tasks"} />,
+            title: t("Tab_Tasks"),
+            redirect: "/(tabs)/tasks",
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
+            render: () => (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+                style={{
+                  borderBottomLeftRadius: 26,
+                  borderBottomRightRadius: 26,
+                  overflow: "hidden",
+                  width: "100%",
+                  padding: 10,
+                  paddingHorizontal: 10,
+                  gap: 10
+                }}
+                contentContainerStyle={{
+                  gap: 12
+                }}
+                data={homeworks.slice(0, 3)}
+                keyExtractor={(item, index) => item.id + index}
+                renderItem={({ item }) => (
+                  <MagicTaskWrapper item={item} />
                 )}
               />
             )
