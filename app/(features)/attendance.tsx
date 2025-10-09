@@ -85,23 +85,25 @@ export default function AttendanceView() {
                 <Stack
                   card
                   direction="horizontal"
+                  vAlign="center"
+                  hAlign="center"
                   width={"100%"}
                   style={{ marginTop: 20 }}
                 >
                   <Stack
                     vAlign="center"
                     hAlign="center"
-                    padding={12}
+                    padding={14}
                     gap={0}
                     style={{ width: '50%' }}
                   >
                     <Icon papicon opacity={0.5}>
                       <Papicons name={"Ghost"} />
                     </Icon>
-                    <Typography color="secondary">
+                    <Typography color="secondary" style={{ paddingTop: 5 }}>
                       {t("Attendance_Hours_Missed")}
                     </Typography>
-                    <Stack direction="horizontal" gap={0}>
+                    <Stack direction="horizontal" gap={0} style={{ marginTop: -2 }}>
                       <AnimatedNumber variant="h5">
                         {String(Math.floor((missedTime % 3600) / 60)).padStart(2, '0')}
                       </AnimatedNumber>
@@ -117,17 +119,17 @@ export default function AttendanceView() {
                     vAlign="center"
                     hAlign="center"
                     gap={0}
-                    padding={12}
+                    padding={14}
                     style={{ flex: 1, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderLeftWidth: 1, borderLeftColor: colors.border }}
                     backgroundColor={adjust("#C50000", theme.dark ? -0.8 : 0.8)}
                   >
                     <Icon papicon fill={adjust("#C50000", -0.15)}>
                       <Papicons name={"Minus"} />
                     </Icon>
-                    <Typography style={{ color: adjust("#C50000", -0.15) }}>
+                    <Typography style={{ color: adjust("#C50000", -0.15), paddingTop: 5 }}>
                       {t("Attendance_Hours_Unjustified")}
                     </Typography>
-                    <Stack direction="horizontal" gap={0}>
+                    <Stack direction="horizontal" gap={0} style={{ marginTop: -2 }}>
                       <AnimatedNumber variant="h5" color={adjust("#C50000", -0.15)}>
                         {String(Math.floor((missedTimeUnjustified % 3600) / 60)).padStart(2, '0')}
                       </AnimatedNumber>
@@ -383,7 +385,8 @@ export default function AttendanceView() {
               </MenuView>
             </NativeHeaderTitle >
           </>
-        )}
+        )
+        }
       </>
     )
   } catch (err) {
