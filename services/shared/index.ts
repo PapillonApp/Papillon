@@ -43,6 +43,7 @@ import {
   Booking,
   BookingDay,
   CanteenHistoryItem,
+  CanteenKind,
   CanteenMenu,
   QRCode,
 } from "@/services/shared/canteen";
