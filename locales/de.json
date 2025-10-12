@@ -214,6 +214,8 @@
   "Settings_About_Description": "Version 8.0.0",
   "Settings_Logout_Title": "Abmelden",
   "Settings_Logout_Description": "Diesen Account von Papillon entfernen",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
   "Settings_Personalization_Title_Card": "Personalisierung",
   "Settings_Personalization_Subtitle_Card": "Themen, fächer...",
   "Settings_SubjectPersonalization_Title": "Personalisieren der fächer",
