@@ -44,6 +44,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
 import GradesWidget from "./widgets/Grades";
+import i18n from "@/utils/i18n";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -657,13 +658,13 @@ const IndexScreen = () => {
 
       <NativeHeaderTitle style={{ flexDirection: "row", alignItems: "center", gap: 4 }} ignoreTouch={true}>
         <Typography variant="navigation" color={foreground}>
-          {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+          {date.toLocaleDateString(i18n.language, { weekday: "long" })}
         </Typography>
         <NativeHeaderHighlight color={foreground} style={{ marginBottom: 0 }}>
-          {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+          {date.toLocaleDateString(i18n.language, { day: "numeric" })}
         </NativeHeaderHighlight>
         <Typography variant="navigation" color={foreground}>
-          {date.toLocaleDateString("fr-FR", { month: "long" })}
+          {date.toLocaleDateString(i18n.language, { month: "long" })}
         </Typography>
       </NativeHeaderTitle>
 

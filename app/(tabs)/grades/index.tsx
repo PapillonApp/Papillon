@@ -35,6 +35,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import GradesWidget from "../index/widgets/Grades";
 import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
+import i18n from '@/utils/i18n';
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -498,10 +499,10 @@ export default function TabOneScreen() {
               periods.map((period) => ({
                 id: "period:" + period.id,
                 title: period.name,
-                subtitle: `${period.start.toLocaleDateString("fr-FR", {
+                subtitle: `${period.start.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
-                })} - ${period.end.toLocaleDateString("fr-FR", {
+                })} - ${period.end.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
                 })}`,

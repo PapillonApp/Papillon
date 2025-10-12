@@ -27,6 +27,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import HTMLTypography from "@/ui/components/HTMLTypography";
 import { formatHTML } from "@/utils/format/html";
 import { LinearGradient } from "expo-linear-gradient";
+import i18n from "@/utils/i18n";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -48,23 +49,23 @@ interface TaskProps {
 }
 
 const Task: React.FC<TaskProps> = ({
-                                     title,
-                                     description,
-                                     fromCache,
-                                     attachments,
-                                     color = "#888888",
-                                     emoji,
-                                     subject,
-                                     date,
-                                     progress,
-                                     index,
-                                     magic,
-                                     onPress = () => {
-                                     },
-                                     onProgressChange = () => {
-                                     },
-                                     skeleton = false,
-                                   }) => {
+  title,
+  description,
+  fromCache,
+  attachments,
+  color = "#888888",
+  emoji,
+  subject,
+  date,
+  progress,
+  index,
+  magic,
+  onPress = () => {
+  },
+  onProgressChange = () => {
+  },
+  skeleton = false,
+}) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -156,17 +157,17 @@ const Task: React.FC<TaskProps> = ({
             }}
           >
             <Icon size={14}
-                  skeleton={skeleton}
+              skeleton={skeleton}
             >
               <Sparkle fill={color}
-                       stroke={color}
-                       strokeWidth={2}
+                stroke={color}
+                strokeWidth={2}
               />
             </Icon>
             <Typography color={color}
-                        weight="semibold"
-                        skeleton={skeleton}
-                        skeletonWidth={200}
+              weight="semibold"
+              skeleton={skeleton}
+              skeletonWidth={200}
             >
               {magic}
             </Typography>
@@ -192,13 +193,13 @@ const Task: React.FC<TaskProps> = ({
       >
 
         <LayoutAnimationConfig skipEntering
-                               skipExiting
+          skipExiting
         >
           <Stack direction="horizontal"
-                 gap={8}
-                 vAlign="start"
-                 hAlign="center"
-                 style={{ marginBottom: 10 }}
+            gap={8}
+            vAlign="start"
+            hAlign="center"
+            style={{ marginBottom: 10 }}
           >
             {emoji && (
               <>
@@ -206,11 +207,11 @@ const Task: React.FC<TaskProps> = ({
                   <SkeletonView style={{ width: 26, height: 26, borderRadius: 80 }} />
                 ) : (
                   <Stack backgroundColor={color + "32"}
-                         inline
-                         radius={80}
-                         vAlign="center"
-                         hAlign="center"
-                         style={{ width: 26, height: 26 }}
+                    inline
+                    radius={80}
+                    vAlign="center"
+                    hAlign="center"
+                    style={{ width: 26, height: 26 }}
                   >
                     <Text style={{ fontSize: 12 }}>
                       {emoji}
@@ -221,22 +222,22 @@ const Task: React.FC<TaskProps> = ({
             )}
             {subject && (
               <Typography variant="body1"
-                          weight="semibold"
-                          color={color}
-                          style={{ flex: 1 }}
-                          skeleton={skeleton}
-                          skeletonWidth={150}
+                weight="semibold"
+                color={color}
+                style={{ flex: 1 }}
+                skeleton={skeleton}
+                skeletonWidth={150}
               >
                 {subject}
               </Typography>
             )}
             {currentDate && (
               <Typography variant="body2"
-                          weight="medium"
-                          color="secondary"
-                          skeleton={skeleton}
+                weight="medium"
+                color="secondary"
+                skeleton={skeleton}
               >
-                {currentDate.toLocaleDateString("fr-FR", {
+                {currentDate.toLocaleDateString(i18n.language, {
                   day: "numeric",
                   month: "short",
                 })}
@@ -245,21 +246,21 @@ const Task: React.FC<TaskProps> = ({
           </Stack>
           {title && (
             <Typography variant="h5"
-                        weight="bold"
-                        style={{ marginBottom: 4, lineHeight: 24 }}
-                        skeleton={skeleton}
-                        skeletonWidth={250}
+              weight="bold"
+              style={{ marginBottom: 4, lineHeight: 24 }}
+              skeleton={skeleton}
+              skeletonWidth={250}
             >
               {title}
             </Typography>
           )}
           {description && (
             <Typography variant="body2"
-                        color="secondary"
-                        style={{ lineHeight: 20 }}
-                        skeleton={skeleton}
-                        skeletonLines={2}
-                        skeletonWidth={230}
+              color="secondary"
+              style={{ lineHeight: 20 }}
+              skeleton={skeleton}
+              skeletonLines={2}
+              skeletonWidth={230}
             >
               {formatHTML(description, true)}
             </Typography>
@@ -302,14 +303,14 @@ const Task: React.FC<TaskProps> = ({
                   style={[styles.chip, backgroundStyle]}
                 >
                   <Icon size={20}
-                        fill={"#D60046" + 80}
-                        skeleton={skeleton}
+                    fill={"#D60046" + 80}
+                    skeleton={skeleton}
                   >
                     <Papicons name={"Cross"} />
                   </Icon>
                   <Typography variant="body2"
-                              color={"#D60046" + 80}
-                              skeleton={skeleton}
+                    color={"#D60046" + 80}
+                    skeleton={skeleton}
                   >
                     Impossible de récupérer la pièce jointe
                   </Typography>
@@ -327,14 +328,14 @@ const Task: React.FC<TaskProps> = ({
                         style={[styles.chip, backgroundStyle]}
                       >
                         <Icon size={20}
-                              fill={colors.text}
-                              skeleton={skeleton}
+                          fill={colors.text}
+                          skeleton={skeleton}
                         >
                           <Papicons name={"Paper"} />
                         </Icon>
                         <Typography variant="body2"
-                                    color="text"
-                                    skeleton={skeleton}
+                          color="text"
+                          skeleton={skeleton}
                         >
                           {attachment.name}
                         </Typography>
@@ -348,12 +349,12 @@ const Task: React.FC<TaskProps> = ({
           {(progress !== undefined || currentDate) && (
             <>
               <ScrollView horizontal
-                          style={{ overflow: "visible" }}
-                          showsHorizontalScrollIndicator={false}
+                style={{ overflow: "visible" }}
+                showsHorizontalScrollIndicator={false}
               >
                 <Stack style={{ marginTop: 12 }}
-                       direction="horizontal"
-                       gap={8}
+                  direction="horizontal"
+                  gap={8}
                 >
                   {progress !== undefined && (
                     <AnimatedPressable
@@ -380,15 +381,15 @@ const Task: React.FC<TaskProps> = ({
                         >
                           {notStarted ? (
                             <CircleDashed size={20}
-                                          strokeWidth={2.5}
-                                          opacity={0.7}
-                                          color={colors.text}
+                              strokeWidth={2.5}
+                              opacity={0.7}
+                              color={colors.text}
                             />
                           ) : (
                             <CheckCheck size={20}
-                                        strokeWidth={2.5}
-                                        opacity={1}
-                                        color={color}
+                              strokeWidth={2.5}
+                              opacity={1}
+                              color={color}
                             />
                           )}
                         </Dynamic>
@@ -415,13 +416,13 @@ const Task: React.FC<TaskProps> = ({
                       )}
 
                       <Dynamic animated={true}
-                               layout={Animation(LinearTransition, "list")}
-                               key={"progress-text:" + currentProgress}
+                        layout={Animation(LinearTransition, "list")}
+                        key={"progress-text:" + currentProgress}
                       >
                         {!notStarted && !completed && (
                           <Typography variant="body2"
-                                      skeleton={skeleton}
-                                      skeletonWidth={80}
+                            skeleton={skeleton}
+                            skeletonWidth={80}
                           >
                             {Math.ceil(currentProgress * 100)}%
                           </Typography>
@@ -429,9 +430,9 @@ const Task: React.FC<TaskProps> = ({
 
                         {(notStarted || completed) && (
                           <Typography variant="body2"
-                                      color={!notStarted ? color : "secondary"}
-                                      skeleton={skeleton}
-                                      skeletonWidth={80}
+                            color={!notStarted ? color : "secondary"}
+                            skeleton={skeleton}
+                            skeletonWidth={80}
                           >
                             {notStarted ? t("Task_Start") : t("Task_Complete")}
                           </Typography>
@@ -446,14 +447,14 @@ const Task: React.FC<TaskProps> = ({
                       style={[styles.chip, backgroundStyle]}
                     >
                       <Icon size={20}
-                            fill={colors.text}
-                            skeleton={skeleton}
+                        fill={colors.text}
+                        skeleton={skeleton}
                       >
                         <Papicons name={"Calendar"} />
                       </Icon>
                       <Typography variant="body2"
-                                  color="text"
-                                  skeleton={skeleton}
+                        color="text"
+                        skeleton={skeleton}
                       >
                         {formatDistanceToNow(currentDate, {
                           addSuffix: true,

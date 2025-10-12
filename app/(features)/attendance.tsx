@@ -20,6 +20,7 @@ import Item, { Trailing } from "@/ui/components/Item";
 import { error } from "@/utils/logger/logger";
 import { getManager } from "@/services/shared";
 import { t } from "i18next";
+import i18n from "@/utils/i18n";
 
 export default function AttendanceView() {
   try {
@@ -293,10 +294,10 @@ export default function AttendanceView() {
                   periods.map((item) => ({
                     id: "period:" + item.id,
                     title: item.name,
-                    subtitle: `${new Date(item.start).toLocaleDateString("fr-FR", {
+                    subtitle: `${new Date(item.start).toLocaleDateString(i18n.language, {
                       month: "short",
                       year: "numeric",
-                    })} - ${new Date(item.end).toLocaleDateString("fr-FR", {
+                    })} - ${new Date(item.end).toLocaleDateString(i18n.language, {
                       month: "short",
                       year: "numeric",
                     })}`,

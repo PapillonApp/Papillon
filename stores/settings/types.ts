@@ -20,4 +20,5 @@ export interface Personalization {
   showAlertAtLogin?: boolean;
   showDevMode?: boolean;
   magicModelURL?: string;
+  language?: string | null;
 }
