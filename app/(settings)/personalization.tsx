@@ -207,6 +207,8 @@ const PersonalizationSettings = () => {
               color={"secondary"}
             >{t("Settings_Personalization_Subject_Description")}</Typography>
           </Item>
+        </List>
+        <List>
           <Item
             onPress={() => {
               router.push("/(settings)/language");

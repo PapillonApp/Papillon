@@ -10,16 +10,26 @@ import List from "@/ui/components/List";
 import { t } from "i18next";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { resources } from "@/utils/i18n";
+import { useSettingsStore } from "@/stores/settings";
 
 const LanguagePersonalization = () => {
     const { i18n } = useTranslation();
     const { colors } = useTheme();
 
-    const languages = [
-        { id: "fr", name: "Français", emoji: "🇫🇷", color: "#0055A4" },
-        { id: "en", name: "English", emoji: "🇬🇧", color: "#1E90FF" },
-        { id: "de", name: "Deutsch", emoji: "🇩🇪", color: "#FFCE00" },
-    ];
+    const settingStore = useSettingsStore(state => state.personalization);
+    const mutateProperty = useSettingsStore(state => state.mutateProperty);
+
+    const languages = Object.keys(resources).map((key) => ({
+        id: key,
+        name: resources[key].label,
+        emoji: resources[key].emoji
+    }));
+
+    const setLanguage = (lang: string) => {
+        i18n.changeLanguage(lang);
+        mutateProperty("personalization", { ...settingStore, language: lang });
+    };
 
     return (
         <ScrollView
@@ -35,7 +45,7 @@ const LanguagePersonalization = () => {
                         <Item
                             key={lang.id}
                             onPress={() => {
-                                i18n.changeLanguage(lang.id);
+                                setLanguage(lang.id);
                             }}
                         >
                             <Leading>
