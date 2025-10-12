@@ -8,7 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
@@ -293,7 +293,7 @@ export default function AttendanceView() {
                 actions={
                   periods.map((item) => ({
                     id: "period:" + item.id,
-                    title: item.name,
+                    title: (getPeriodName(item.name || "") + " " + (isPeriodWithNumber(item.name || "") ? getPeriodNumber(item.name || "0") : "")).trim(),
                     subtitle: `${new Date(item.start).toLocaleDateString(i18n.language, {
                       month: "short",
                       year: "numeric",
