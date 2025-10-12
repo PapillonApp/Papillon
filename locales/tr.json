@@ -214,6 +214,8 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Çıkış yap",
   "Settings_Logout_Description": "Bu hesabı Papillon'dan sil",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
   "Settings_Personalization_Title_Card": "Özelleştirme",
   "Settings_Personalization_Subtitle_Card": "Temalar, Konular...",
   "Settings_SubjectPersonalization_Title": "Konuları düzenle",
