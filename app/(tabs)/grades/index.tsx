@@ -28,7 +28,7 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
@@ -498,7 +498,7 @@ export default function TabOneScreen() {
             actions={
               periods.map((period) => ({
                 id: "period:" + period.id,
-                title: period.name,
+                title: (getPeriodName(period.name || "") + " " + (isPeriodWithNumber(period.name || "") ? getPeriodNumber(period.name || "0") : "")).trim(),
                 subtitle: `${period.start.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
