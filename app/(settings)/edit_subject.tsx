@@ -217,7 +217,7 @@ export default function EditSubject() {
               }}
               onPress={() => {
                 if (emoji === "custom") {
-                  Alert.prompt("Emoji personnalisé", "Entrez un emoji personnalisé pour cette matière (ex: 🧪)", (text) => {
+                  Alert.prompt("Emoji personnalisé", "Entre un emoji personnalisé pour cette matière (ex: 🧪)", (text) => {
                     var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
                     const emojiMatch = text.match(regexp);
                     if (emojiMatch) {

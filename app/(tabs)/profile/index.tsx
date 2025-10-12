@@ -11,11 +11,15 @@ import Reanimated, {
   LinearTransition,
 } from "react-native-reanimated";
 
+import { useNews } from "@/database/useNews";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Attendance } from "@/services/shared/attendance";
 import { Chat } from "@/services/shared/chat";
 import { Period } from "@/services/shared/grade";
+import { Capabilities } from "@/services/shared/types";
+import { useAccountStore } from "@/stores/account";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Avatar from "@/ui/components/Avatar";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";
@@ -29,13 +33,9 @@ import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
+import { getInitials } from "@/utils/chats/initials";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
-import { useAccountStore } from "@/stores/account";
-import { Capabilities } from "@/services/shared/types";
-import { useNews } from "@/database/useNews";
-import Avatar from "@/ui/components/Avatar";
-import { getInitials } from "@/utils/chats/initials";
 
 
 function Tabs() {
@@ -54,7 +54,7 @@ function Tabs() {
       color: "#C50066",
       disabled: !(availableClientsAttendance),
       onPress: () => {
-        if (attendances.length === 0 || attendancePeriods.length === 0) return;
+        if (attendances.length === 0 || attendancePeriods.length === 0) { return; }
         router.push({
           pathname: "/(features)/attendance",
           params: {
@@ -188,7 +188,7 @@ function NewsSection() {
   const news = useNews();
 
   const limitNews = useMemo(() => {
-    return news.slice(0, 3);
+    return news.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 3);
   }, [news]);
 
   const fetchNews = useCallback(() => {
@@ -398,12 +398,12 @@ export default function TabOneScreen() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!lastUsedAccount) return [null, null, null, null];
+    if (!lastUsedAccount) { return [null, null, null, null]; }
 
-    let firstName = account?.firstName;
-    let lastName = account?.lastName;
-    let level = account?.className;
-    let establishment = account?.schoolName;
+    const firstName = account?.firstName;
+    const lastName = account?.lastName;
+    const level = account?.className;
+    const establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [lastUsedAccount, accounts]);

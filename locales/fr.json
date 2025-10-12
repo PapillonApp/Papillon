@@ -109,6 +109,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
@@ -191,12 +192,15 @@
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
   "Profile_News_Loading_Title": "Chargement des actualités...",
+  "Profile_News_Author_Unknown": "Auteur inconnu",
 
   "Profile_Cards_Title": "QR-Code et cartes",
 
   "Modal_Grades_Title": "Détail de la note",
 
   "Grades_Details_Title": "Détails",
+  "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
+  "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
   "Grades_LowestGrade_Title": "Note la plus basse",
