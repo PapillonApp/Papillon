@@ -34,6 +34,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import GradesWidget from "../index/widgets/Grades";
+import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -483,72 +484,74 @@ export default function TabOneScreen() {
       )}
 
       <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled + ":" + currentPeriod?.id}>
-        <MenuView
-          onPressAction={({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
+        <NativeHeaderTopPressable>
+          <MenuView
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
 
-            if (actionId.startsWith("period:")) {
-              const selectedPeriodId = actionId.replace("period:", "");
-              setCurrentPeriod(periods.find(period => period.id === selectedPeriodId));
-            }
-          }}
-          actions={
-            periods.map((period) => ({
-              id: "period:" + period.id,
-              title: period.name,
-              subtitle: `${period.start.toLocaleDateString("fr-FR", {
-                month: "short",
-                year: "numeric",
-              })} - ${period.end.toLocaleDateString("fr-FR", {
-                month: "short",
-                year: "numeric",
-              })}`,
-              state: currentPeriod?.id === period.id ? "on" : "off",
-              image: Platform.select({
-                ios: (getPeriodNumber(period.name || "0")) + ".calendar"
-              }),
-              imageColor: colors.text,
-            }))
-          }
-        >
-          <Dynamic
-            animated={true}
-            style={{
-              flexDirection: "column",
-              alignItems: Platform.OS === 'android' ? "left" : "center",
-              justifyContent: "center",
-              gap: 4,
-              width: 200,
-              height: 60,
-              marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
-            }}
-          >
-            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
-              <Dynamic animated>
-                <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
-              </Dynamic>
-              {currentPeriod?.name &&
-                <Dynamic animated style={{ marginTop: -3 }}>
-                  <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
-                    {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
-                  </NativeHeaderHighlight>
-                </Dynamic>
+              if (actionId.startsWith("period:")) {
+                const selectedPeriodId = actionId.replace("period:", "");
+                setCurrentPeriod(periods.find(period => period.id === selectedPeriodId));
               }
-              {periods.length > 0 && (
+            }}
+            actions={
+              periods.map((period) => ({
+                id: "period:" + period.id,
+                title: period.name,
+                subtitle: `${period.start.toLocaleDateString("fr-FR", {
+                  month: "short",
+                  year: "numeric",
+                })} - ${period.end.toLocaleDateString("fr-FR", {
+                  month: "short",
+                  year: "numeric",
+                })}`,
+                state: currentPeriod?.id === period.id ? "on" : "off",
+                image: Platform.select({
+                  ios: (getPeriodNumber(period.name || "0")) + ".calendar"
+                }),
+                imageColor: colors.text,
+              }))
+            }
+          >
+            <Dynamic
+              animated={true}
+              style={{
+                flexDirection: "column",
+                alignItems: Platform.OS === 'android' ? "left" : "center",
+                justifyContent: "center",
+                gap: 4,
+                width: 200,
+                height: 60,
+                marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
+              }}
+            >
+              <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
                 <Dynamic animated>
-                  <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
+                  <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
+                </Dynamic>
+                {currentPeriod?.name &&
+                  <Dynamic animated style={{ marginTop: -3 }}>
+                    <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
+                      {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
+                    </NativeHeaderHighlight>
+                  </Dynamic>
+                }
+                {periods.length > 0 && (
+                  <Dynamic animated>
+                    <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
+                  </Dynamic>
+                )}
+              </Dynamic>
+              {fullyScrolled && (
+                <Dynamic animated>
+                  <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
+                    {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {(shownAverage ?? 0).toFixed(2)}/20
+                  </Typography>
                 </Dynamic>
               )}
             </Dynamic>
-            {fullyScrolled && (
-              <Dynamic animated>
-                <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
-                  {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {(shownAverage ?? 0).toFixed(2)}/20
-                </Typography>
-              </Dynamic>
-            )}
-          </Dynamic>
-        </MenuView>
+          </MenuView>
+        </NativeHeaderTopPressable>
       </NativeHeaderTitle >
 
       <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting}>
