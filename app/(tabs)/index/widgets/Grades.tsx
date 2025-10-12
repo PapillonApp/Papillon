@@ -1,25 +1,23 @@
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
-import Typography from "@/ui/components/Typography"
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Dimensions, useWindowDimensions, View } from "react-native"
-import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
+/* eslint-disable unused-imports/no-unused-imports */
+import { t } from "i18next";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useWindowDimensions, View } from "react-native"
+import { LineGraph } from 'react-native-graph';
+import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
+import { Dynamic } from "@/ui/components/Dynamic";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography"
+import { Animation } from "@/ui/utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import { t } from "i18next";
-import { LineGraph } from 'react-native-graph';
-
-import { LineChart } from "react-native-gifted-charts";
-import Stack from "@/ui/components/Stack";
-import { Dynamic } from "@/ui/components/Dynamic";
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import { Animation } from "@/ui/utils/Animation";
-import { FadeIn, FadeOut } from "react-native-reanimated";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-
-import Reanimated from "react-native-reanimated";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { error, log } from "@/utils/logger/logger";
 
 const avgAlgorithms = [
   {
@@ -76,7 +74,8 @@ const GradesWidget = (
       const validGrades = grades.filter(grade =>
         grade.studentScore?.value !== undefined &&
         grade.givenAt &&
-        !isNaN(grade.studentScore.value)
+        !isNaN(grade.studentScore.value) &&
+        !grade.studentScore.disabled
       );
 
       if (validGrades.length === 0) {
@@ -91,16 +90,33 @@ const GradesWidget = (
 
       // Find the algorithm once outside the loop
       const selectedAlgorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
-      if (!selectedAlgorithm) return [];
+      if (!selectedAlgorithm) {
+        return [];
+      }
 
-      // Iterate through the sorted grades and calculate the average progressively
-      sortedGrades.forEach((currentGrade, index) => {
-        const gradesUpToCurrent = sortedGrades.slice(0, index + 1);
-        const currentAverage = selectedAlgorithm.algorithm(gradesUpToCurrent);
+      // Group grades by date to handle multiple grades on same day
+      const gradesByDate = new Map<number, SharedGrade[]>();
+      sortedGrades.forEach(grade => {
+        const dateKey = new Date(grade.givenAt).setHours(0, 0, 0, 0);
+        if (!gradesByDate.has(dateKey)) {
+          gradesByDate.set(dateKey, []);
+        }
+        gradesByDate.get(dateKey)!.push(grade);
+      });
 
-        if (!isNaN(currentAverage)) {
+      // Calculate average for each date
+      const sortedDates = Array.from(gradesByDate.keys()).sort((a, b) => a - b);
+      let cumulativeGrades: SharedGrade[] = [];
+
+      sortedDates.forEach(dateKey => {
+        const gradesOnThisDate = gradesByDate.get(dateKey)!;
+        cumulativeGrades = [...cumulativeGrades, ...gradesOnThisDate];
+
+        const currentAverage = selectedAlgorithm.algorithm(cumulativeGrades);
+
+        if (!isNaN(currentAverage) && currentAverage !== -1 && currentAverage > 0) {
           averageHistory.push({
-            date: currentGrade.givenAt.getTime(),
+            date: dateKey,
             average: currentAverage,
           });
         }
@@ -113,7 +129,8 @@ const GradesWidget = (
       return subjects.flatMap(subject => subject.grades).filter(grade =>
         grade.studentScore?.value !== undefined &&
         grade.givenAt &&
-        !isNaN(grade.studentScore.value)
+        !isNaN(grade.studentScore.value) &&
+        !grade.studentScore.disabled
       );
     }, [subjects]);
 
@@ -140,8 +157,8 @@ const GradesWidget = (
         setPeriods(result);
         const currentPeriodFound = getCurrentPeriod(result);
         setCurrentPeriod(currentPeriodFound);
-      } catch (error) {
-        console.error("Failed to fetch periods:", error);
+      } catch (err) {
+        error(`Failed to fetch periods: ${err}`);
       }
     }, [period, currentPeriod, manager]);
 
@@ -162,8 +179,8 @@ const GradesWidget = (
           if (grades.studentOverall.value) {
             setServiceAverage(grades.studentOverall.value)
           }
-        } catch (error) {
-          console.error("Failed to fetch grades:", error);
+        } catch (err) {
+          error(`Failed to fetch grades: ${err}`);
         }
       }
     }, [manager]);
@@ -230,6 +247,7 @@ const GradesWidget = (
         style={{
           width: "100%",
           height: "100%",
+          marginTop: header ? -20 : 0,
         }}
       >
         <View
@@ -281,7 +299,7 @@ const GradesWidget = (
           <View
             style={{
               padding: 28,
-              marginTop: (-32 * 2) + (header ? -16 : 0),
+              marginTop: (-32 * 2) + (header ? -4 : 0),
               paddingLeft: 36
             }}
           >
@@ -297,12 +315,12 @@ const GradesWidget = (
                 </Typography>
               </Dynamic>
             </Stack>
-            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`currentAlgorithm:${currentAlgorithm}`} style={{ width: "100%" }}>
+            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`currentAlgorithm:${selectedAlgorithm?.label}`} style={{ width: "100%" }}>
               <Typography variant="title" color={accent} align={header ? "center" : "left"} style={{ width: "100%" }}>
                 {selectedAlgorithm?.label || t("NoAverage")}
               </Typography>
             </Dynamic>
-            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`selectionDate:${selectionDate?.getTime()}:${currentAlgorithm}`} style={{ width: "100%" }}>
+            <Dynamic animated entering={Animation(FadeIn, "default").duration(100)} exiting={Animation(FadeOut, "default").duration(100)} key={`selectionDate:${selectionDate?.getTime()}:${selectedAlgorithm?.label}`} style={{ width: "100%" }}>
               <Typography variant="body1" color="secondary" align={header ? "center" : "left"} inline style={{ marginTop: 3, width: "100%" }}>
                 {selectionDate ?
                   t("Global_DatePrefix") + " " + selectionDate.toLocaleDateString("fr-FR", {
@@ -317,8 +335,8 @@ const GradesWidget = (
         </View>
       </View>
     )
-  } catch (error) {
-    console.error("Error in GradesWidget:", error);
+  } catch (err) {
+    error(`Error in GradesWidget: ${err}`);
     return null;
   }
 }

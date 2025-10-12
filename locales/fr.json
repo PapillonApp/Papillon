@@ -73,6 +73,9 @@
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec ton calendrier.",
+  "Tab_Calendar_Icals_Add_Title": "Titre manquant",
+  "Tab_Calendar_Icals_Add_Description": "Donne un nom à cette URL iCal pour l'ajouter.",
+  "Tab_Calendar_Icals_Empty": "Aucune URL iCal ajoutée",
 
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
   "TabUnderConstruction_Details": "Reviens plus tard pour des mises à jour.",
@@ -104,6 +107,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
@@ -186,12 +190,15 @@
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
   "Profile_News_Loading_Title": "Chargement des actualités...",
+  "Profile_News_Author_Unknown": "Auteur inconnu",
 
   "Profile_Cards_Title": "QR-Code et cartes",
 
   "Modal_Grades_Title": "Détail de la note",
 
   "Grades_Details_Title": "Détails",
+  "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
+  "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
   "Grades_LowestGrade_Title": "Note la plus basse",

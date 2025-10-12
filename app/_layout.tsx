@@ -10,7 +10,7 @@ let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
 try {
   secrets = require('../secrets.json') ?? { APP_KEY: "", SALT: "", SERVER_URL: "" };
 } catch {
-  console.warn("No secrets.json file found, Countly will not be initialized properly.");
+  warn("No secrets.json file found, Countly will not be initialized properly.");
 }
 
 const APP_KEY = secrets.APP_KEY;
@@ -22,19 +22,19 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
+import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
+import { useSettingsStore } from '@/stores/settings';
 import { AlertProvider } from '@/ui/components/AlertProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
-import { screenOptions } from '@/utils/theme/ScreenOptions';
-import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
-import { t } from 'i18next';
-import { useSettingsStore } from '@/stores/settings';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
+import { screenOptions } from '@/utils/theme/ScreenOptions';
+import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -67,6 +67,9 @@ const ALERT_SCREEN_OPTIONS = {
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,
+  contentStyle: {
+    backgroundColor: runsIOS26 ? 'transparent' : undefined
+  }
 } as const;
 
 const DEVMODE_SCREEN_OPTIONS = {
@@ -126,9 +129,12 @@ export default function RootLayout() {
 }
 
 import { Buffer } from 'buffer';
-import { checkConsent } from '@/utils/logger/consent';
+
+import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
 import i18n from '@/utils/i18n';
+import { checkConsent } from '@/utils/logger/consent';
+import { log, warn } from '@/utils/logger/logger';
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
   global.Buffer = Buffer
@@ -156,9 +162,22 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   }, [customLanguage]);
 
   const color = useMemo(() => {
-    const color = selectedColorEnum != null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
+    const color = selectedColorEnum !== null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;
     return color || AppColors[0]; // Fallback vers la première couleur si aucune n'est trouvée
   }, [selectedColorEnum]);
+
+  // Initialise la base de données au démarrage de l’application 
+  useEffect(() => {
+    async function initDatabase() {
+      try {
+        await initializeDatabaseOnStartup();
+      } catch (err) {
+        warn(`Database initialization failed: ${err}`);
+      }
+    }
+
+    initDatabase();
+  }, []);
 
   const appState = useRef<AppStateStatus>(AppState.currentState);
   const [lastBackground, setLastBackground] = useState<Date | null>(null);
@@ -207,7 +226,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
     async function initializeCountly() {
       const consent = await checkConsent();
-      console.log("Countly Consent:", consent);
+      log(`Countly Consent: ${JSON.stringify(consent)}`);
 
       const countlyConfig = new CountlyConfig(SERVER_URL, APP_KEY);
       countlyConfig.setRequiresConsent(true);
@@ -334,6 +353,9 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   sheetGrabberVisible: true,
                   sheetAllowedDetents: [0.5, 0.75, 1],
                   sheetCornerRadius: runsIOS26 ? undefined : 30,
+                  contentStyle: {
+                    backgroundColor: runsIOS26 ? 'transparent' : undefined
+                  }
                 }}
               />
 

@@ -170,7 +170,9 @@ export default function TabOneScreen() {
     result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setHomework(newHomeworks);
@@ -198,7 +200,9 @@ export default function TabOneScreen() {
     const updateHomeworkCompletion = async (homeworkItem: Homework) => {
       try {
         const manager = getManager();
-        const id = generateId(item.subject + item.content + item.createdByAccount);
+        const id = generateId(
+          homeworkItem.subject + homeworkItem.content + homeworkItem.createdByAccount + homeworkItem.dueDate.toDateString()
+        );
         await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
         updateHomeworkIsDone(id, !homeworkItem.isDone)
         setRefreshTrigger(prev => prev + 1);
@@ -243,7 +247,9 @@ export default function TabOneScreen() {
         const result = await manager.getHomeworks(selectedWeek);
         const newHomeworks: Record<string, Homework> = {};
         for (const hw of result) {
-          const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+          const id = generateId(
+            hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+          );
           newHomeworks[id] = hw;
         }
         setHomework(prev => ({ ...prev, ...newHomeworks }));
@@ -251,7 +257,7 @@ export default function TabOneScreen() {
         alert.showAlert({
           title: "Erreur de chargement",
           message: "Impossible de charger les devoirs",
-          description: "Veuillez vérifier votre connexion internet et réessayer.",
+          description: "Vérifie ta connexion internet et réessaie.",
           color: "#D60046",
           icon: "TriangleAlert",
           technical: String(error)
@@ -269,13 +275,18 @@ export default function TabOneScreen() {
     if (showUndoneOnly && item.isDone)
       return null;
     return (
-      <TaskItem
-        key={item.id}
-        item={item}
-        index={index}
-        fromCache={!inFresh}
-        onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
-      />
+      <Reanimated.View
+        style={{ marginBottom: 16 }}
+        layout={Animation(LinearTransition, "list")}
+      >
+        <TaskItem
+          key={item.id}
+          item={item}
+          index={index}
+          fromCache={!inFresh}
+          onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
+        />
+      </Reanimated.View>
     )
   }, [onProgressChange, homeworksFromCache]);
 
@@ -490,6 +501,7 @@ export default function TabOneScreen() {
         key={sortedHomeworks.length}
         data={sortedHomeworks}
         initialNumToRender={2}
+        engine="FlashList"
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         refreshControl={
@@ -500,6 +512,7 @@ export default function TabOneScreen() {
           />
         }
         gap={16}
+        paddingTop={2}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <LayoutAnimationConfig skipEntering>
@@ -787,7 +800,7 @@ export default function TabOneScreen() {
       </NativeHeaderTitle>
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             setSearchTermState("");
             setShowSearch(true);
           }}

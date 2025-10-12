@@ -43,14 +43,7 @@ const PersonalizationSettings = () => {
   }, []);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        // change theme in store
-        mutateProperty('personalization', {
-          theme: selectedTheme
-        });
-      }, 100);
-    });
+    mutateProperty('personalization', { theme: selectedTheme });
   }, [selectedTheme]);
 
   return (

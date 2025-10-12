@@ -1,51 +1,49 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
+import { t } from "i18next";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
-
-import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
-import { useAccountStore } from "@/stores/account";
-import Stack from "@/ui/components/Stack";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import Typography from "@/ui/components/Typography";
-import TabFlatList from "@/ui/components/TabFlatList";
 import LinearGradient from "react-native-linear-gradient";
-
-import { Papicons } from "@getpapillon/papicons";
-import Icon from "@/ui/components/Icon";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import Course from "@/ui/components/Course";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
-import { Animation } from "@/ui/utils/Animation";
-import { Dynamic } from "@/ui/components/Dynamic";
-import { useTheme } from "@react-navigation/native";
-import adjust from "@/utils/adjustColor";
-
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { log, warn } from "@/utils/logger/logger";
-
-import { CourseStatus, Course as SharedCourse } from "@/services/shared/timetable";
-import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
-import { getSubjectColor } from "@/utils/subjects/colors";
-import { getStatusText } from "../calendar";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { t } from "i18next";
-import { Grade, Period } from "@/services/shared/grade";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import GradesWidget from "./widgets/Grades";
-import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTimetable } from "@/database/useTimetable";
-import { checkConsent } from "@/utils/logger/consent";
-import { useSettingsStore } from "@/stores/settings";
-import { Homework } from "@/services/shared/homework";
-import { getSubjectName } from "@/utils/subjects/name";
-import { generateId } from "@/utils/generateId";
-import CompactTask from "@/ui/components/CompactTask";
+
 import { removeAllDuplicates } from "@/database/DatabaseProvider";
+import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
+import { useTimetable } from "@/database/useTimetable";
+import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
+import { Grade, Period } from "@/services/shared/grade";
+import { Homework } from "@/services/shared/homework";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import CompactTask from "@/ui/components/CompactTask";
+import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
+import Stack from "@/ui/components/Stack";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
+import adjust from "@/utils/adjustColor";
+import { generateId } from "@/utils/generateId";
+import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { checkConsent } from "@/utils/logger/consent";
+import { log, warn } from "@/utils/logger/logger";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
+import { getStatusText } from "../calendar";
+import GradesWidget from "./widgets/Grades";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -66,7 +64,9 @@ const IndexScreen = () => {
   const weeklyTimetable = useMemo(() =>
     timetableData.map(day => ({
       ...day,
-      courses: day.courses.filter(course => services.includes(course.createdByAccount))
+      courses: day.courses.filter(course =>
+        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+      )
     })).filter(day => day.courses.length > 0),
     [timetableData, services]
   );
@@ -98,7 +98,7 @@ const IndexScreen = () => {
       }
 
     } catch (error) {
-      if (String(error).includes("Unable to find")) return;
+      if (String(error).includes("Unable to find")) { return; }
       alert.showAlert({
         title: "Connexion impossible",
         description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
@@ -132,7 +132,9 @@ const IndexScreen = () => {
     const result = [...current, ...next]
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
-      const id = generateId(hw.subject + hw.content + hw.createdByAccount);
+      const id = generateId(
+        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+      );
       newHomeworks[id] = hw;
     }
     setFreshHomeworks(newHomeworks);
@@ -141,7 +143,9 @@ const IndexScreen = () => {
 
   async function setHomeworkAsDone(homework: Homework) {
     const manager = getManager();
-    const id = generateId(homework.subject + homework.content + homework.createdByAccount);
+    const id = generateId(
+      homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+    );
     await manager.setHomeworkCompletion(homework, !homework.isDone);
     updateHomeworkIsDone(id, !homework.isDone)
     setRefreshTrigger(prev => prev + 1);
@@ -206,16 +210,16 @@ const IndexScreen = () => {
 
       let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
-
       if (dayCourse.length === 0) {
-        const nextDay = weeklyTimetable
+        const futureDays = weeklyTimetable
           .filter(day => day.date.getTime() > today.getTime())
-          .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
-
-        dayCourse = nextDay?.courses ?? [];
+          .sort((a, b) => a.date.getTime() - b.date.getTime());
+        if (futureDays.length > 0) {
+          dayCourse = futureDays[0].courses;
+        }
       }
 
+      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
       setCourses(dayCourse);
     };
     fetchData();
@@ -236,12 +240,12 @@ const IndexScreen = () => {
   const { colors } = theme;
 
   const [firstName] = useMemo(() => {
-    if (!lastUsedAccount) return [null, null, null, null];
+    if (!lastUsedAccount) { return [null, null, null, null]; }
 
-    let firstName = account?.firstName;
-    let lastName = account?.lastName;
-    let level = account?.className;
-    let establishment = account?.schoolName;
+    const firstName = account?.firstName;
+    const lastName = account?.lastName;
+    const level = account?.className;
+    const establishment = account?.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account, accounts]);
@@ -293,6 +297,20 @@ const IndexScreen = () => {
     );
   }, [freshHomeworks]);
 
+  const getScheduleMessage = () => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+    if (todayAllCourses.length === 0) {
+      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
+    } else if (todayAllCourses.length === 1) {
+      return t("Home_Planned_One");
+    }
+    return t("Home_Planned_Number", { number: todayAllCourses.length });
+
+  };
+
   const headerItems = [
     (
       <Stack
@@ -302,7 +320,7 @@ const IndexScreen = () => {
         gap={2}
         padding={20}
       >
-        <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
+        <Typography variant="h1" style={{ marginTop: -12, marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
           👋
         </Typography>
         <Dynamic animated key={"welcome:" + firstName}>
@@ -311,9 +329,7 @@ const IndexScreen = () => {
           </Typography>
         </Dynamic>
         <Typography variant="body1" color={foregroundSecondary}>
-          {courses.length == 0 ? t("Home_Planned_None")
-            : courses.length == 1 ? t("Home_Planned_One")
-              : t("Home_Planned_Number", { number: courses.length })}
+          {getScheduleMessage()}
         </Typography>
       </Stack>
     ),
@@ -371,6 +387,7 @@ const IndexScreen = () => {
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={200}
+        engine="LegendList"
         header={
           <>
             <FlatList
@@ -443,12 +460,6 @@ const IndexScreen = () => {
         }
         gap={12}
         data={[
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Papillon 8 est là !",
-            redirect: "/changelog",
-            buttonLabel: "En savoir plus"
-          },
           courses.filter(item => item.to.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
@@ -487,12 +498,13 @@ const IndexScreen = () => {
           },
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
-            title: "Tâches",
+            title: t("Tab_Tasks"),
             redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : `Voir toutes les tâches`,
+            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
                 style={{
                   borderBottomLeftRadius: 26,
                   borderBottomRightRadius: 26,
@@ -633,7 +645,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
-          onPress={() => {
+          onPressIn={() => {
             Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
           }}
         >
@@ -657,7 +669,7 @@ const IndexScreen = () => {
 
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable
-          onPress={() => router.navigate("/(modals)/notifications")}
+          onPressIn={() => router.navigate("/(modals)/notifications")}
         >
           <Icon size={28}>
             <Papicons name={"Bell"} color={foreground} />
