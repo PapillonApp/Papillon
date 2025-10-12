@@ -165,6 +165,8 @@
   "Grades_Trimester": "Trimestre",
   "Grades_OutPeriod": "Hors période",
   "Grades_Year": "Année",
+  "Grades_MockExamBac": "Bac blanc",
+  "Grades_MockExamBrevet": "Brevet blanc",
 
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",

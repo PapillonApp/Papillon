@@ -13,6 +13,10 @@ export const getPeriodName = (name: string) => {
       return t("Grades_Semester");
     case "hors période":
       return t("Grades_OutPeriod");
+    case "bac blanc":
+      return t("Grades_MockExamBac");
+    case "brevet blanc":
+      return t("Grades_MockExamBrevet");
     case "année":
       return t("Grades_Year");
     default:
