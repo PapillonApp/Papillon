@@ -4,6 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import AnimatedPressable from "./AnimatedPressable";
 import SkeletonView from "@/ui/components/SkeletonView";
+import i18n from "@/utils/i18n";
 
 interface CompactGradeProps {
   emoji: string;
@@ -87,7 +88,7 @@ export const CompactGrade = ({
         }
         {date &&
           <Typography variant="body1" color={variant === "home" ? "secondary" : color} nowrap skeleton={skeleton}>
-            {date.toLocaleDateString("fr-FR", {
+            {date.toLocaleDateString(i18n.language, {
               day: "2-digit",
               month: "short",
             })}

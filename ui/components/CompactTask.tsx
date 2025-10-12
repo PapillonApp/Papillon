@@ -7,6 +7,7 @@ import AnimatedPressable from "./AnimatedPressable";
 import { View } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
 import { formatHTML } from "@/utils/format/html";
+import i18n from "@/utils/i18n";
 
 function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, description, emoji, dueDate, done, magic }: { fromCache: boolean, setHomeworkAsDone: (ref: Homework) => void, ref: Homework, subject: string, color: string, description: string, emoji: string, dueDate: Date, done: boolean, magic?: string }) {
   const { colors } = useTheme();
@@ -59,7 +60,7 @@ function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, descri
           <Typography variant="body2">{subject}</Typography>
           <Typography variant="body2" color={colors.text + "95"} numberOfLines={2}>{formatHTML(description)}</Typography>
           <Typography variant="caption" color="secondary">
-            {dueDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })}
+            {dueDate.toLocaleDateString(i18n.language, { day: "2-digit", month: "2-digit" })}
           </Typography>
         </Stack>
 
