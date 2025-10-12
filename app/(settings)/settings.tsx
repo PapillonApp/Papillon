@@ -119,7 +119,7 @@ export default function SettingsIndex() {
               t('Settings_Logout_Description'),
               [
                 {
-                  text: t('Cancel'),
+                  text: t('CANCEL_BTN'),
                   style: 'cancel',
                 },
                 {
