@@ -205,7 +205,7 @@ const Course = React.memo((props: CourseProps) => {
         styles.container,
         compact && styles.compactContainer,
         {
-          backgroundColor: adjust(color ?? "#FFFFFF", dark ? -0.8 : 0.8),
+          backgroundColor: adjust(color ?? "#FFFFFF", dark ? -0.85 : 0.85),
           borderWidth: 1,
           borderColor: colors.border,
         },

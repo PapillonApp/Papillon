@@ -320,7 +320,7 @@ const IndexScreen = () => {
         gap={2}
         padding={20}
       >
-        <Typography variant="h1" style={{ marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
+        <Typography variant="h1" style={{ marginTop: -12, marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
           👋
         </Typography>
         <Dynamic animated key={"welcome:" + firstName}>
@@ -460,12 +460,6 @@ const IndexScreen = () => {
         }
         gap={12}
         data={[
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Papillon 8 est là !",
-            redirect: "/changelog",
-            buttonLabel: "En savoir plus"
-          },
           courses.filter(item => item.to.getTime() > Date.now()).length > 0 && {
             icon: <Papicons name={"Calendar"} />,
             title: t("Home_Widget_NextCourses"),
