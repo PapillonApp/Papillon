@@ -214,6 +214,8 @@
   "Settings_About_Description": "Versión",
   "Settings_Logout_Title": "Desconectarse",
   "Settings_Logout_Description": "Eliminar esta cuenta de Mariposa",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
   "Settings_Personalization_Title_Card": "Personalización",
   "Settings_Personalization_Subtitle_Card": "Temas, materias...",
   "Settings_SubjectPersonalization_Title": "Personalizar las materias",
