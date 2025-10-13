@@ -238,6 +238,7 @@ const Task: React.FC<TaskProps> = ({
                 skeleton={skeleton}
               >
                 {currentDate.toLocaleDateString(i18n.language, {
+                  weekday: "short",
                   day: "numeric",
                   month: "short",
                 })}
