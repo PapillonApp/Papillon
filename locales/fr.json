@@ -107,6 +107,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
@@ -160,6 +161,13 @@
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
 
+  "Grades_Semester": "Semestre",
+  "Grades_Trimester": "Trimestre",
+  "Grades_OutPeriod": "Hors période",
+  "Grades_Year": "Année",
+  "Grades_MockExamBac": "Bac blanc",
+  "Grades_MockExamBrevet": "Brevet blanc",
+
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
@@ -189,12 +197,15 @@
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
   "Profile_News_Loading_Title": "Chargement des actualités...",
+  "Profile_News_Author_Unknown": "Auteur inconnu",
 
   "Profile_Cards_Title": "QR-Code et cartes",
 
   "Modal_Grades_Title": "Détail de la note",
 
   "Grades_Details_Title": "Détails",
+  "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
+  "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
   "Grades_LowestGrade_Title": "Note la plus basse",
@@ -246,6 +257,8 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",

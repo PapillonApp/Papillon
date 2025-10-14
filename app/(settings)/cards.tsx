@@ -17,6 +17,7 @@ import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/u
 import { useTranslation } from "react-i18next";
 import { removeBalanceFromDatabase } from "@/database/useBalance";
 import { getManager } from "@/services/shared";
+import i18n from "@/utils/i18n";
 
 export default function CardView() {
   const router = useRouter();
@@ -108,7 +109,7 @@ export default function CardView() {
                       </Trailing>
                       <Typography>{getServiceName(service.serviceId)}</Typography>
                       <Typography style={{ opacity: 0.5 }}>Ajoutée
-                        le {new Date(service.createdAt).toLocaleDateString("fr-FR", {
+                        le {new Date(service.createdAt).toLocaleDateString(i18n.language, {
                           day: "2-digit",
                           month: "2-digit",
                         })}</Typography>

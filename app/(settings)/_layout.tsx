@@ -95,6 +95,15 @@ export default function Layout() {
           }
         }}
       />
+      <Stack.Screen
+        name="language"
+        options={{
+          headerTitle: t("Settings_Language_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: false,
+          headerLargeTitle: false,
+        }}
+      />
     </Stack>
   );
 }

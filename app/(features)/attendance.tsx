@@ -8,7 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";
 import { Attendance } from "@/services/shared/attendance";
 import Stack from "@/ui/components/Stack";
@@ -20,6 +20,7 @@ import Item, { Trailing } from "@/ui/components/Item";
 import { error } from "@/utils/logger/logger";
 import { getManager } from "@/services/shared";
 import { t } from "i18next";
+import i18n from "@/utils/i18n";
 
 export default function AttendanceView() {
   try {
@@ -292,11 +293,11 @@ export default function AttendanceView() {
                 actions={
                   periods.map((item) => ({
                     id: "period:" + item.id,
-                    title: item.name,
-                    subtitle: `${new Date(item.start).toLocaleDateString("fr-FR", {
+                    title: (getPeriodName(item.name || "") + " " + (isPeriodWithNumber(item.name || "") ? getPeriodNumber(item.name || "0") : "")).trim(),
+                    subtitle: `${new Date(item.start).toLocaleDateString(i18n.language, {
                       month: "short",
                       year: "numeric",
-                    })} - ${new Date(item.end).toLocaleDateString("fr-FR", {
+                    })} - ${new Date(item.end).toLocaleDateString(i18n.language, {
                       month: "short",
                       year: "numeric",
                     })}`,

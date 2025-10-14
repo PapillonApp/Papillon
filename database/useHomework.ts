@@ -1,5 +1,4 @@
 import { Model, Q } from "@nozbe/watermelondb";
-import { parseJson } from "ajv/lib/runtime/parseJson";
 import { useEffect, useState } from "react";
 
 import { Attachment } from "@/services/shared/attachment";
@@ -175,7 +174,7 @@ export async function updateHomeworkIsDone(
     .fetch();
 
   if (existing.length === 0) {
-    console.warn(`Homework with ID ${homeworkId} not found`);
+    warn(`Homework with ID ${homeworkId} not found`);
     return;
   }
 
@@ -211,9 +210,13 @@ export function getDateRangeOfWeek(
   return { start, end };
 }
 
-export function parseJsonArray(s: string, pos = 0): unknown[] {
-  const result = parseJson(s, pos);
-  return Array.isArray(result) ? result : [];
+export function parseJsonArray(s: string): unknown[] {
+  try {
+    const result = JSON.parse(s);
+    return Array.isArray(result) ? result : [];
+  } catch {
+    return [];
+  }
 }
 
 export function getWeekNumberFromDate(date: Date): number {

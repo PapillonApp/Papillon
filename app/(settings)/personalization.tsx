@@ -201,6 +201,26 @@ const PersonalizationSettings = () => {
             >{t("Settings_Personalization_Subject_Description")}</Typography>
           </Item>
         </List>
+        <List>
+          <Item
+            onPress={() => {
+              router.push("/(settings)/language");
+            }}
+          >
+            <Icon size={30}>
+              <EarthIcon width={25} height={25} stroke="#818181" />
+            </Icon>
+            <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Language_Description")}</Typography>
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" color="#818181" />
+              </Icon>
+            </Trailing>
+          </Item>
+        </List>
       </ScrollView>
     </>
   );

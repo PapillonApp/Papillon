@@ -1,16 +1,51 @@
 import * as Network from "expo-network";
 
-import { addAttendanceToDatabase, getAttendanceFromCache } from "@/database/useAttendance";
-import { addBalancesToDatabase, getBalancesFromCache } from "@/database/useBalance";
-import { addCanteenMenuToDatabase, addCanteenTransactionToDatabase, getCanteenMenuFromCache, getCanteenTransactionsFromCache } from "@/database/useCanteen";
-import { addChatsToDatabase, addMessagesToDatabase, addRecipientsToDatabase, getChatsFromCache, getMessagesFromCache, getRecipientsFromCache } from "@/database/useChat";
-import { addPeriodGradesToDatabase, addPeriodsToDatabase, getGradePeriodsFromCache, getPeriodsFromCache } from "@/database/useGrades";
-import { addHomeworkToDatabase, getHomeworksFromCache } from "@/database/useHomework";
+import {
+  addAttendanceToDatabase,
+  getAttendanceFromCache,
+} from "@/database/useAttendance";
+import {
+  addBalancesToDatabase,
+  getBalancesFromCache,
+} from "@/database/useBalance";
+import {
+  addCanteenMenuToDatabase,
+  addCanteenTransactionToDatabase,
+  getCanteenMenuFromCache,
+  getCanteenTransactionsFromCache,
+} from "@/database/useCanteen";
+import {
+  addChatsToDatabase,
+  addMessagesToDatabase,
+  addRecipientsToDatabase,
+  getChatsFromCache,
+  getMessagesFromCache,
+  getRecipientsFromCache,
+} from "@/database/useChat";
+import {
+  addPeriodGradesToDatabase,
+  addPeriodsToDatabase,
+  getGradePeriodsFromCache,
+  getPeriodsFromCache,
+} from "@/database/useGrades";
+import {
+  addHomeworkToDatabase,
+  getHomeworksFromCache,
+} from "@/database/useHomework";
 import { addKidToDatabase, getKidsFromCache } from "@/database/useKids";
 import { addNewsToDatabase, getNewsFromCache } from "@/database/useNews";
-import { addCourseDayToDatabase, getCoursesFromCache } from "@/database/useTimetable";
+import {
+  addCourseDayToDatabase,
+  getCoursesFromCache,
+} from "@/database/useTimetable";
 import { Attendance } from "@/services/shared/attendance";
-import { Booking, BookingDay, CanteenHistoryItem, CanteenKind, CanteenMenu, QRCode } from "@/services/shared/canteen";
+import {
+  Booking,
+  BookingDay,
+  CanteenHistoryItem,
+  CanteenMenu,
+  QRCode,
+} from "@/services/shared/canteen";
 import { Chat, Message, Recipient } from "@/services/shared/chat";
 import { Period, PeriodGrades } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -59,7 +94,11 @@ export class AccountManager {
           log("Successfully refreshed " + service.id);
         } else {
           this.clients[service.id] = plugin;
-          log("Plugin for " + service.id + " doesn't support refresh but is available for other capabilities");
+          log(
+            "Plugin for " +
+              service.id +
+              " doesn't support refresh but is available for other capabilities"
+          );
         }
       } catch (e) {
         error(
@@ -91,14 +130,13 @@ export class AccountManager {
   async getKids(): Promise<Kid[]> {
     return await this.fetchData(
       Capabilities.HAVE_KIDS,
-      async client =>
-        client.getKids ? client.getKids() : [],
+      async client => (client.getKids ? client.getKids() : []),
       {
         multiple: true,
         fallback: async () => getKidsFromCache(),
-        saveToCache: async(data: Kid[]) => {
+        saveToCache: async (data: Kid[]) => {
           await addKidToDatabase(data);
-        }
+        },
       }
     );
   }
@@ -122,12 +160,12 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.NEWS,
       async client => (client.getNews ? await client.getNews() : []),
-      { 
+      {
         multiple: true,
         fallback: async () => getNewsFromCache(),
         saveToCache: async (data: News[]) => {
           await addNewsToDatabase(data);
-        }
+        },
       }
     );
   }
@@ -143,7 +181,7 @@ export class AccountManager {
         fallback: async () => getGradePeriodsFromCache(period.name),
         saveToCache: async (data: PeriodGrades) => {
           await addPeriodGradesToDatabase(data, period.name);
-        }
+        },
       }
     );
   }
@@ -153,19 +191,20 @@ export class AccountManager {
       Capabilities.GRADES,
       async client =>
         client.getGradesPeriods ? await client.getGradesPeriods() : [],
-      { 
+      {
         multiple: true,
         fallback: async () => getPeriodsFromCache(),
         saveToCache: async (data: Period[]) => {
           await addPeriodsToDatabase(data);
-        }
+        },
       }
     );
   }
 
   async getAttendanceForPeriod(period: string): Promise<Attendance[]> {
     return await this.fetchData(
-      Capabilities.ATTENDANCE, async client => {
+      Capabilities.ATTENDANCE,
+      async client => {
         if (!client.getAttendanceForPeriod) {
           throw new Error(
             "getAttendanceForPeriod not implemented but the capability is set."
@@ -179,8 +218,9 @@ export class AccountManager {
         fallback: async () => [await getAttendanceFromCache(period)],
         saveToCache: async (data: Attendance[]) => {
           await addAttendanceToDatabase(data, period);
-        }
-      });
+        },
+      }
+    );
   }
 
   async getAttendancePeriods(): Promise<Period[]> {
@@ -188,12 +228,12 @@ export class AccountManager {
       Capabilities.ATTENDANCE_PERIODS,
       async client =>
         client.getAttendancePeriods ? await client.getAttendancePeriods() : [],
-      { 
+      {
         multiple: true,
         fallback: async () => getPeriodsFromCache(),
-        saveToCache: async (data: Period[]) =>  {
-          await addPeriodsToDatabase(data)
-        }
+        saveToCache: async (data: Period[]) => {
+          await addPeriodsToDatabase(data);
+        },
       }
     );
   }
@@ -205,12 +245,12 @@ export class AccountManager {
         client.getWeeklyCanteenMenu
           ? await client.getWeeklyCanteenMenu(startDate)
           : [],
-      { 
+      {
         multiple: true,
         fallback: async () => getCanteenMenuFromCache(startDate),
         saveToCache: async (data: CanteenMenu[]) => {
           await addCanteenMenuToDatabase(data);
-        }
+        },
       }
     );
   }
@@ -223,8 +263,8 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getChatsFromCache(),
         saveToCache: async (data: Chat[]) => {
-          await addChatsToDatabase(data)
-        }
+          await addChatsToDatabase(data);
+        },
       }
     );
   }
@@ -234,13 +274,13 @@ export class AccountManager {
       Capabilities.CHAT_READ,
       async client =>
         client.getChatRecipients ? await client.getChatRecipients(chat) : [],
-      { 
-        multiple: true, 
+      {
+        multiple: true,
         clientId: chat.createdByAccount,
         fallback: async () => getRecipientsFromCache(chat),
         saveToCache: async (data: Recipient[]) => {
-          await addRecipientsToDatabase(chat, data)
-        }
+          await addRecipientsToDatabase(chat, data);
+        },
       }
     );
   }
@@ -250,13 +290,13 @@ export class AccountManager {
       Capabilities.CHAT_READ,
       async client =>
         client.getChatMessages ? await client.getChatMessages(chat) : [],
-      { 
-        multiple: true, 
+      {
+        multiple: true,
         clientId: chat.createdByAccount,
         fallback: async () => getMessagesFromCache(chat),
         saveToCache: async (data: Message[]) => {
-          await addMessagesToDatabase(chat, data)
-        }
+          await addMessagesToDatabase(chat, data);
+        },
       }
     );
   }
@@ -276,13 +316,15 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
-        client.getWeeklyTimetable ? await client.getWeeklyTimetable(weekNumber) : [],
+        client.getWeeklyTimetable
+          ? await client.getWeeklyTimetable(weekNumber)
+          : [],
       {
         multiple: true,
         fallback: async () => getCoursesFromCache(weekNumber),
         saveToCache: async (data: CourseDay[]) => {
-          addCourseDayToDatabase(data)
-        }
+          addCourseDayToDatabase(data);
+        },
       }
     );
   }
@@ -311,32 +353,45 @@ export class AccountManager {
   }
 
   async setNewsAsDone(news: News): Promise<News> {
-    return await this.fetchData(Capabilities.NEWS, async client =>
-      client.setNewsAsAcknowledged
-        ? await client.setNewsAsAcknowledged(news)
-        : news,
-    { multiple: false, clientId: news.createdByAccount }
+    return await this.fetchData(
+      Capabilities.NEWS,
+      async client =>
+        client.setNewsAsAcknowledged
+          ? await client.setNewsAsAcknowledged(news)
+          : news,
+      { multiple: false, clientId: news.createdByAccount }
     );
   }
 
-  async setHomeworkCompletion(homework: Homework, state?: boolean): Promise<Homework> {
-    return await this.fetchData(Capabilities.HOMEWORK, async client =>
-      client.setHomeworkCompletion
-        ? await client.setHomeworkCompletion(homework, state)
-        : homework,
-    { multiple: false, clientId: homework.createdByAccount }
+  async setHomeworkCompletion(
+    homework: Homework,
+    state?: boolean
+  ): Promise<Homework> {
+    return await this.fetchData(
+      Capabilities.HOMEWORK,
+      async client =>
+        client.setHomeworkCompletion
+          ? await client.setHomeworkCompletion(homework, state)
+          : homework,
+      { multiple: false, clientId: homework.createdByAccount }
     );
   }
 
-  async createMail(accountId: string, subject: string, content: string, recipients: Recipient[], cc?: Recipient[], bcc?: Recipient[]): Promise<Chat> {
+  async createMail(
+    accountId: string,
+    subject: string,
+    content: string,
+    recipients: Recipient[],
+    cc?: Recipient[],
+    bcc?: Recipient[]
+  ): Promise<Chat> {
     return await this.fetchData(
       Capabilities.CHAT_CREATE,
       async client => {
         if (client.createMail) {
-          return await client.createMail(subject, content, recipients, cc, bcc)
-        } 
-        throw new Error("createMail not implemented")
-        
+          return await client.createMail(subject, content, recipients, cc, bcc);
+        }
+        throw new Error("createMail not implemented");
       },
       { multiple: false, clientId: accountId }
     );
@@ -351,26 +406,30 @@ export class AccountManager {
         multiple: true,
         fallback: async () => getBalancesFromCache(),
         saveToCache: async (data: Balance[]) => {
-          await addBalancesToDatabase(data)
-        }
+          await addBalancesToDatabase(data);
+        },
       }
     );
   }
 
-  async getCanteenTransactionsHistory(clientId: string): Promise<CanteenHistoryItem[]> {
+  async getCanteenTransactionsHistory(
+    clientId: string
+  ): Promise<CanteenHistoryItem[]> {
     return await this.fetchData(
       Capabilities.CANTEEN_HISTORY,
       async client =>
-        client.getCanteenTransactionsHistory ? await client.getCanteenTransactionsHistory() : [],
+        client.getCanteenTransactionsHistory
+          ? await client.getCanteenTransactionsHistory()
+          : [],
       {
         multiple: true,
         clientId,
         fallback: async () => getCanteenTransactionsFromCache(),
         saveToCache: async (data: CanteenHistoryItem[]) => {
-          await addCanteenTransactionToDatabase(data)
-        }
+          await addCanteenTransactionToDatabase(data);
+        },
       }
-    )
+    );
   }
 
   async getCanteenQRCodes(clientId: string): Promise<QRCode> {
@@ -398,16 +457,18 @@ export class AccountManager {
   }
 
   async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
-    return await this.fetchData(Capabilities.CANTEEN_BOOKINGS, async client =>
-      client.setMealAsBooked
-        ? await client.setMealAsBooked(meal, booked)
-        : meal,
-    	{ multiple: false, clientId: meal.createdByAccount }
+    return await this.fetchData(
+      Capabilities.CANTEEN_BOOKINGS,
+      async client =>
+        client.setMealAsBooked
+          ? await client.setMealAsBooked(meal, booked)
+          : meal,
+      { multiple: false, clientId: meal.createdByAccount }
     );
   }
 
   clientHasCapatibility(capatibility: Capabilities, clientId: string): boolean {
-    const client = this.clients[clientId]
+    const client = this.clients[clientId];
     if (client?.capabilities.includes(capatibility)) {
       return true;
     }
@@ -420,7 +481,9 @@ export class AccountManager {
     );
   }
 
-  private async handleHasInternet<T>(options?: FetchOptions<T | T[]>): Promise<T | T[] | void> {
+  private async handleHasInternet<T>(
+    options?: FetchOptions<T | T[]>
+  ): Promise<T | T[] | void> {
     const networkState = await Network.getNetworkStateAsync();
     const hasInternet = networkState.isInternetReachable ?? false;
     if (!hasInternet) {
@@ -431,7 +494,7 @@ export class AccountManager {
       throw new Error("Internet not reachable and no fallback provided.");
     }
   }
-  
+
   private async fetchData<T>(
     capability: Capabilities,
     callback: (client: SchoolServicePlugin) => Promise<T[]>,
@@ -475,10 +538,11 @@ export class AccountManager {
       }
 
       const availableClients = this.getAvailableClients(capability);
-      
-      log(`Available clients for capability ${capability}: ${availableClients.length}`);
+
       if (availableClients.length === 0) {
-        log(`No clients available for capability ${capability}, falling back to cache`);
+        log(
+          `No clients available for capability ${capability}, falling back to cache`
+        );
         if (options?.fallback) {
           return await options.fallback();
         }
@@ -530,6 +594,12 @@ export class AccountManager {
       return new module.EcoleDirecte(service.id);
     }
 
+    if (service.serviceId === Services.MULTI) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/multi/index");
+      return new module.Multi(service.id);
+    }
+
     if (service.serviceId === Services.TURBOSELF) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/turboself/index");
@@ -558,11 +628,12 @@ export class AccountManager {
   }
 }
 
-
 let globalManager: AccountManager | null = null;
 const managerListeners: Array<(manager: AccountManager) => void> = [];
 
-export const subscribeManagerUpdate = (listener: (manager: AccountManager) => void) => {
+export const subscribeManagerUpdate = (
+  listener: (manager: AccountManager) => void
+) => {
   managerListeners.push(listener);
   if (globalManager) {listener(globalManager);}
   return () => {
@@ -575,7 +646,9 @@ const notifyManagerListeners = (manager: AccountManager) => {
   managerListeners.forEach(listener => listener(manager));
 };
 
-export const initializeAccountManager = async (accountId?: string): Promise<AccountManager> => {
+export const initializeAccountManager = async (
+  accountId?: string
+): Promise<AccountManager> => {
   if (!accountId) {
     const lastUsedAccount = useAccountStore.getState().lastUsedAccount;
     if (!lastUsedAccount) {
@@ -583,8 +656,10 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
     }
     accountId = lastUsedAccount;
   }
-  const account = useAccountStore.getState().accounts.find(acc => acc.id === accountId);
-  
+  const account = useAccountStore
+    .getState()
+    .accounts.find(acc => acc.id === accountId);
+
   if (!account) {
     error("Account not found for ID: " + accountId);
   }
@@ -598,7 +673,9 @@ export const initializeAccountManager = async (accountId?: string): Promise<Acco
 
 export const getManager = (): AccountManager => {
   if (!globalManager) {
-    warn("Account manager not initialized. Call initializeAccountManager first.");
+    warn(
+      "Account manager not initialized. Call initializeAccountManager first."
+    );
   }
   return globalManager;
 };
