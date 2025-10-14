@@ -98,8 +98,6 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
     const cleanContent = item.content.replace(/<[^>]*>/g, "");
     const magic = useMagicPrediction(cleanContent);
 
-    // La variable 'inFresh' n'est pas définie ici.
-    // On utilise directement 'item' qui est la donnée correcte pour ce composant.
     const handleProgressChange = useCallback((newProgress: number) => {
       onProgressChange(item, newProgress);
     }, [item, onProgressChange]);
@@ -116,7 +114,6 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
         index={index}
         magic={magic}
         fromCache={fromCache ?? false}
-        // 👇 LA LIGNE CRUCIALE EST ICI 👇
         attachments={item.attachments}
         onProgressChange={handleProgressChange}
       />
@@ -176,9 +173,7 @@ export default function TabOneScreen() {
     }
     const result = await managerToUse.getHomeworks(selectedWeek);
 
-  // --- AJOUTEZ CETTE LIGNE DE DÉBOGAGE ---
   console.log(JSON.stringify(result, null, 2)); 
-  // -----------------------------------------
     
     result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
