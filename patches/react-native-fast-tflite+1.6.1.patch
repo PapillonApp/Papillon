@@ -1,0 +1,45 @@
+diff --git a/src/expo-plugin/withCoreMLDelegate.ts b/src/expo-plugin/withCoreMLDelegate.ts
+index eec86aa..9b7e91f 100644
+--- a/src/expo-plugin/withCoreMLDelegate.ts
++++ b/src/expo-plugin/withCoreMLDelegate.ts
+@@ -19,14 +19,34 @@ export const withCoreMLDelegate: ConfigPlugin = (config) =>
+     [
+       'ios',
+       (currentConfig: ExportedConfigWithProps<unknown>) => {
+         const podfilePath = path.join(
+           currentConfig.modRequest.platformProjectRoot,
+           'Podfile'
+         )
+
+-        const prevPodfileContent = fs.readFileSync(podfilePath, 'utf-8')
+-        const newPodfileContent = insertContentsAtOffset(
+-          prevPodfileContent,
+-          '$EnableCoreMLDelegate=true\n',
+-          0
+-        )
+-
+-        fs.writeFileSync(podfilePath, newPodfileContent)
++        const lineToAdd = '$EnableCoreMLDelegate=true'
++        const podfileContent = fs.readFileSync(podfilePath, 'utf-8')
++
++        // Vérifie si la ligne existe déjà dans le Podfile
++        const alreadyExists = podfileContent
++          .split('\n')
++          .some((line) => line.trim() === lineToAdd)
++
++        if (!alreadyExists) {
++          const newPodfileContent = insertContentsAtOffset(
++            podfileContent,
++            `${lineToAdd}\n`,
++            0
++          )
++
++          fs.writeFileSync(podfilePath, newPodfileContent)
++          console.log(`Ajout de "${lineToAdd}" au Podfile`)
++        } else {
++          console.log(`"${lineToAdd}" déjà présent dans le Podfile, pas de modification.`)
++        }
++
+         return currentConfig
+       },
+     ],
