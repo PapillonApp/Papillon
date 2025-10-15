@@ -27,6 +27,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { useTimetable } from '@/database/useTimetable';
 import { getSubjectName } from '@/utils/subjects/name';
 import { useAccountStore } from '@/stores/account';
+import i18n from '@/utils/i18n';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -63,14 +64,23 @@ export default function TabOneScreen() {
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
-  const manager = getManager();
+
+  let manager;
+  try {
+    manager = getManager();
+  } catch (error) {
+    console.warn('Manager not initialized, iCal events will still work');
+    manager = null;
+  }
 
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
   const timetable = useTimetable(refresh, weekNumber).map(day => ({
     ...day,
-    courses: day.courses.filter(course => services.includes(course.createdByAccount))
+    courses: day.courses.filter(course =>
+      services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+    )
   })).filter(day => day.courses.length > 0);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -433,7 +443,7 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-      {/*
+
       <NativeHeaderSide side="Right">
         <MenuView
           actions={[
@@ -462,7 +472,7 @@ export default function TabOneScreen() {
           </NativeHeaderPressable>
         </MenuView>
       </NativeHeaderSide>
-      */}
+
 
       <NativeHeaderTitle key={"header-" + date.toISOString()}>
         <NativeHeaderTopPressable
@@ -472,19 +482,19 @@ export default function TabOneScreen() {
           <Dynamic
             style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
           >
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { weekday: "long" })}>
+            <Dynamic animated key={date.toLocaleDateString(i18n.language, { weekday: "long" })}>
               <Typography variant="navigation">
-                {date.toLocaleDateString("fr-FR", { weekday: "long" })}
+                {date.toLocaleDateString(i18n.language, { weekday: "long" })}
               </Typography>
             </Dynamic>
             <Dynamic animated>
               <NativeHeaderHighlight color="#D6502B" style={{ marginBottom: 0 }}>
-                {date.toLocaleDateString("fr-FR", { day: "numeric" })}
+                {date.toLocaleDateString(i18n.language, { day: "numeric" })}
               </NativeHeaderHighlight>
             </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString("fr-FR", { month: "long" })}>
+            <Dynamic animated key={date.toLocaleDateString(i18n.language, { month: "long" })}>
               <Typography variant="navigation">
-                {date.toLocaleDateString("fr-FR", { month: "long" })}
+                {date.toLocaleDateString(i18n.language, { month: "long" })}
               </Typography>
             </Dynamic>
           </Dynamic>

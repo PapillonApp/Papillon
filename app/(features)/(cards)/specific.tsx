@@ -31,6 +31,7 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import { Services } from "@/stores/account/types";
 import { useTranslation } from "react-i18next";
 import { Capabilities } from "@/services/shared/types";
+import i18n from "@/utils/i18n";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -216,7 +217,7 @@ export default function QRCodeAndCardsPage() {
                   </Stack>
                   <Stack direction="horizontal" gap={5} hAlign="center" vAlign="center">
                     <Typography color="secondary">
-                      {date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
+                      {date.toLocaleDateString(i18n.language, { weekday: "long", day: "numeric", month: "long" })}
                     </Typography>
                     <ChevronDown opacity={0.5} size={18} />
                   </Stack>
@@ -277,10 +278,10 @@ export default function QRCodeAndCardsPage() {
                     </Trailing>
                     <Typography>{c.label}</Typography>
                     <Stack direction="horizontal" hAlign="center">
-                      <Typography color="secondary">{c.date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}</Typography>
+                      <Typography color="secondary">{c.date.toLocaleDateString(i18n.language, { day: "2-digit", month: "2-digit", year: "numeric" })}</Typography>
                       <View style={{ height: 4, width: 4, borderRadius: 2, backgroundColor: colors.text + 80 }} />
                       <Typography color="secondary">
-                        {c.date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+                        {c.date.toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit", hour12: false })}
                       </Typography>
                     </Stack>
                   </Item>)}
