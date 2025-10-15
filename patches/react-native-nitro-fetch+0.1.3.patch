@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-nitro-fetch/lib/module/fetch.js b/node_modules/react-native-nitro-fetch/lib/module/fetch.js
+index 8f57d2a..d6e4ab9 100644
+--- a/node_modules/react-native-nitro-fetch/lib/module/fetch.js
++++ b/node_modules/react-native-nitro-fetch/lib/module/fetch.js
+@@ -146,7 +146,7 @@ async function nitroFetchRaw(input, init) {
+     }; // bleee
+   }
+   const req = buildNitroRequest(input, init);
+-  ensureClient();
++  client = ensureClient();
+   if (!client || typeof client.request !== 'function') throw new Error('NitroFetch client not available');
+   const res = await client.request(req);
+   return res;
+@@ -207,7 +207,7 @@ export async function prefetch(input, init) {
+   }
+ 
+   // Ensure client and call native prefetch
+-  ensureClient();
++  client = ensureClient();
+   if (!client || typeof client.prefetch !== 'function') return;
+   await client.prefetch(req);
+ }
