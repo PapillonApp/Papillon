@@ -22,7 +22,7 @@ index eec86aa..9b7e91f 100644
 +        const lineToAdd = '$EnableCoreMLDelegate=true'
 +        const podfileContent = fs.readFileSync(podfilePath, 'utf-8')
 +
-+        // Vérifie si la ligne existe déjà dans le Podfile
++        // Check if the line already exists
 +        const alreadyExists = podfileContent
 +          .split('\n')
 +          .some((line) => line.trim() === lineToAdd)
@@ -35,9 +35,8 @@ index eec86aa..9b7e91f 100644
 +          )
 +
 +          fs.writeFileSync(podfilePath, newPodfileContent)
-+          console.log(`Ajout de "${lineToAdd}" au Podfile`)
 +        } else {
-+          console.log(`"${lineToAdd}" déjà présent dans le Podfile, pas de modification.`)
++          console.log(`"${lineToAdd}" already exists in Podfile, skipping addition.`)
 +        }
 +
          return currentConfig

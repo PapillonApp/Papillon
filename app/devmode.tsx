@@ -3,6 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
+import { fetch } from 'react-native-nitro-fetch'
 
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
@@ -360,6 +361,36 @@ export default function Devmode() {
           <Typography variant="title">Réinitialiser la base de données</Typography>
         </Item>
       </List>
+
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Lannion Developpement SARL
+        </Typography>
+      </Stack>
+
+      <List>
+        <Item
+          onPress={async () => {
+            try {
+              const res = await fetch('https://httpbin.org/get')
+              Alert.alert("Succès", `Statut de la réponse: ${res.status}`);
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors de la requête: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography>Test la Connexion a lannion</Typography>
+        </Item>
+      </List>
+
     </ScrollView >
   );
 }
