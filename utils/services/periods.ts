@@ -2,9 +2,9 @@ import { t } from "i18next";
 
 
 export const getPeriodName = (name: string) => {
-  // return only name
-  let digits = name.replace(/[^0-9]/g, '').trim();
-  let newName = name.replace(digits, '').trim();
+  // Clean up the string: remove digits and trim
+  // Remove common prefixes that might be leftover (like "er" from "1er") 
+  let newName = name.replace(/^\d{1,4}[a-zÀ-ù]{0,4}/, '').trim();
 
   switch (newName.toLowerCase()) {
     case "trimestre":
@@ -26,18 +26,18 @@ export const getPeriodName = (name: string) => {
 
 export const isPeriodWithNumber = (name: string) => {
   // return only digits
-  let newName = name.replace(/[^0-9]/g, '').trim();
+  let newName = name.replace(/\D/g, '').trim();
 
   return newName.length > 0;
 }
 
 export const getPeriodNumber = (name: string) => {
   // return only digits
-  let newName = name.replace(/[^0-9]/g, '').trim();
+  let newName = name.replace(/\D/g, '').trim();
 
   if (newName.length === 0) {
     newName = name[0].toUpperCase();
   }
 
-  return newName.toString()[0];
+  return newName;
 }
