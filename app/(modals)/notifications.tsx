@@ -22,7 +22,7 @@ export default function NotificationsModal() {
         backgroundColor: colors.background
       }}
     >
-      <Papicons name={"Clock"} size={80} style={{ marginBottom: 10 }} opacity={1} color={colors.text} />
+      <Papicons name={"Clock"} size={80} style={{ marginBottom: 10 }} opacity={0.5} color={colors.text} />
       <Typography variant="h2" align={"center"}>
         {t("Feature_Soon")}
       </Typography>
