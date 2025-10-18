@@ -72,7 +72,8 @@
       "kccowpagnement personnalise",
       "kccowpagnement personnalisé",
       "qccomapgnement personndlise",
-      "qccomapgnement personndlisé"
+      "qccomapgnement personndlisé",
+      "consacperchorien"
     ]
   },
   {
@@ -3030,7 +3031,9 @@
       "Éducation pyhysque & sportive",
       "Éducationphysique&sportive",
       "Éducrtion hyxique & sportive",
-      "Éudcation physiqu & sportive"
+      "Éudcation physiqu & sportive",
+      "ED.PHYSIQUE & SPORT.",
+      "edphysique  sport"
     ]
   },
   {
@@ -8397,6 +8400,30 @@
       "volleyball",
       "vollye bal",
       "vowley ball"
+    ]
+  },
+  {
+    "label": "maths expertes",
+    "pretty": "Maths-Expertes",
+    "emoji": "🧩",
+    "formats": [
+      "math expertes",
+      "maths experte",
+      "maths expertes tle",
+      "tle maths expertes",
+      "mathsexpertes"
+    ]
+  },
+  {
+    "label": "philosophie",
+    "pretty": "Philosophie",
+    "emoji": "🧠",
+    "formats": [
+      "philo",
+      "philo tle",
+      "philosophie tle",
+      "tle philo",
+      "tle philosophie"
     ]
   }
 ]
