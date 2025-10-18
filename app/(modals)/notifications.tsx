@@ -1,9 +1,9 @@
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { Dimensions } from "react-native";
+
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 export default function NotificationsModal() {
   const { colors } = useTheme();
@@ -12,9 +12,15 @@ export default function NotificationsModal() {
   return (
     <Stack
       hAlign={"center"}
-      vAlign={"center"}
-      padding={20}
-      style={{ width: "100%", height: Dimensions.get("window").height * 0.45 }}
+      vAlign={"top"}
+      paddingTop={150}
+      paddingHorizontal={20}
+      paddingBottom={20}
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: colors.background
+      }}
     >
       <Papicons name={"Clock"} size={80} style={{ marginBottom: 10 }} opacity={0.5} color={colors.text} />
       <Typography variant="h2" align={"center"}>
