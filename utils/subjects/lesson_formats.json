@@ -3033,7 +3033,8 @@
       "Éducrtion hyxique & sportive",
       "Éudcation physiqu & sportive",
       "ED.PHYSIQUE & SPORT.",
-      "edphysique  sport"
+      "edphysique  sport",
+      "Éudcation physiqu & sportive",
     ]
   },
   {
@@ -7250,7 +7251,8 @@
       "svp",
       "svt cap",
       "svte",
-      "svwt"
+      "svwt",
+      "SCIENCES VIE & TERRE"
     ]
   },
   {
@@ -8424,6 +8426,18 @@
       "philosophie tle",
       "tle philo",
       "tle philosophie"
+    ]
+  },
+  {
+    "label": "EMC",
+    "pretty": "EMC",
+    "emoji": "🏛️",
+    "formats": [
+      "ENS. MORAL & CIVIQUE",
+      "enseignement moral et civique",
+      "enseignement moral & civique",
+      "emc",
+      "EMC"
     ]
   }
 ]
