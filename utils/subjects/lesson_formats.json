@@ -2294,7 +2294,7 @@
       "S.E.S.",
       "S.E.S",
       "sfiences economiqhes et sociales",
-      "esciences economiques et sociales",
+      "esciences economiques et sociales"
     ]
   },
   {
@@ -3034,7 +3034,7 @@
       "Éudcation physiqu & sportive",
       "ED.PHYSIQUE & SPORT.",
       "edphysique  sport",
-      "Éudcation physiqu & sportive",
+      "Éudcation physiqu & sportive"
     ]
   },
   {
@@ -7169,7 +7169,6 @@
   {
     "label": "sciencesvieterre",
     "pretty": "Sciences De La Vie & De La Terre",
-    "pretty": "Sciences de la Vie & de la Terre",
     "emoji": "🌍",
     "formats": [
       "SVT",
