@@ -7168,7 +7168,7 @@
   },
   {
     "label": "sciencesvieterre",
-    "pretty": "Sciences De La Vie & De La Terre",
+    "pretty": "Sciences de la Vie & de la Terre",
     "emoji": "🌍",
     "formats": [
       "SVT",
@@ -8439,4 +8439,5 @@
       "EMC"
     ]
   }
+
 ]
