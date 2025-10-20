@@ -32,6 +32,8 @@ import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
+import { User } from "appscho";
+import { Appscho } from "@/services/appscho";
 
 /** Represents a plugin for a school service.
  *
@@ -52,11 +54,12 @@ export interface SchoolServicePlugin {
     | SkolengoSession
     | Session
     | TurboselfClient
+    | User
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho>;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;

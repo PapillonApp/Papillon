@@ -120,6 +120,21 @@ export default function OnboardingLayout() {
                     options={{ ...newScreenOptions }}
                     initialParams={{ ref: {} }}
                 />
+                <Stack.Screen
+                  name="university/appscho/list"
+                  options={{ ...newScreenOptions }}
+                  initialParams={{ url: "", previousPage: "map" }}
+                />
+                <Stack.Screen
+                  name="university/appscho/webview"
+                  options={{ ...newScreenOptions }}
+                  initialParams={{ instanceId: "" }}
+                />
+                <Stack.Screen
+                  name="university/appscho/credentials"
+                  options={{ ...newScreenOptions }}
+                  initialParams={{ instanceId: "" }}
+                />
             </Stack>
         </View>
     );
