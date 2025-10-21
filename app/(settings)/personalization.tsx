@@ -1,4 +1,5 @@
-import { Alert, Platform, ScrollView } from "react-native";
+import { Alert, Platform, ScrollView, View, Switch } from "react-native";
+
 import Stack from "@/ui/components/Stack";
 import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
@@ -28,6 +29,8 @@ const PersonalizationSettings = () => {
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
+  const customLanguage = useSettingsStore(state => state.personalization.timezoneAdaptation);
+
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
@@ -221,6 +224,33 @@ const PersonalizationSettings = () => {
             </Trailing>
           </Item>
         </List>
+
+        <List>
+          <Item>
+            <Icon size={30}>
+              <Papicons name={"Clock"}
+                opacity={0.7}
+              />
+            </Icon>
+
+            <Typography variant={"title"}>{t("Settings_Timezone_Adaptation_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Timezone_Adaptation_Description")}</Typography>
+            <Trailing>
+              <Switch
+                value={settingsStore.timezoneAdaptation}
+                onValueChange={(newValue) => {
+                  mutateProperty("personalization", { timezoneAdaptation: newValue });
+                }}
+                trackColor={{ false: '#767577', true: theme.colors.primary }}
+                thumbColor={settingsStore.timezoneAdaptation ? '#FFFFFF' : '#f4f3f4'}
+              />
+            </Trailing>
+          </Item>
+        </List>
+
+
       </ScrollView>
     </>
   );

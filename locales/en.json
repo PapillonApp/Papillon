@@ -223,6 +223,8 @@
   "Settings_Logout_Description": "Remove this account from Papillon",
   "Settings_Language_Title": "Language",
   "Settings_Language_Description": "Change language",
+  "Settings_Timezone_Adaptation_Title": "Class schedule time zone adjustment",
+  "Settings_Timezone_Adaptation_Description": "Automatically adjust class times according to the device's time zone",
   "Settings_Personalization_Title_Card": "Personalization",
   "Settings_Personalization_Subtitle_Card": "Themes, subject...",
   "Settings_SubjectPersonalization_Title": "Customize subjects",

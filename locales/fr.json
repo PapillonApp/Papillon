@@ -259,6 +259,8 @@
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
   "Settings_Language_Title": "Langue",
   "Settings_Language_Description": "Changer la langue",
+  "Settings_Timezone_Adaptation_Title": "Ajustement des heures de cours",
+  "Settings_Timezone_Adaptation_Description": "Ajuster automatiquement les horaires des cours en fonction du fuseau horaire de l'appareil",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
