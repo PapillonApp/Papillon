@@ -7,15 +7,15 @@ import { Balance } from "../shared/balance";
 export async function fetchAliseBalance(session: Client, accountId: string): Promise<Balance[]> {
   try {
     const account = await session.getInformations();
-    
+
     if (!account) {
       console.warn("No account information available");
       return [];
     }
-    
+
     let mealPrice = 0;
     let lunchRemaining = 0;
-    
+
     try {
       const history = await session.getFinancialHistory();
       if (history && Array.isArray(history)) {
@@ -26,9 +26,9 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
           amount: event.amount * 100,
           createdByAccount: accountId
         }));
-        
+
         const detectedPrice = detectMealPrice(mappedHistory);
-        
+
         if (detectedPrice && detectedPrice > 0) {
           mealPrice = detectedPrice;
           lunchRemaining = Math.floor((account.balance * 100) / mealPrice);
@@ -40,7 +40,7 @@ export async function fetchAliseBalance(session: Client, accountId: string): Pro
     } catch (error) {
       console.warn("Error while detecting meal prices:", error);
     }
-    
+
     return [{
       amount: account.balance * 100,
       currency: "€",
