@@ -43,7 +43,6 @@ import {
   Booking,
   BookingDay,
   CanteenHistoryItem,
-  CanteenKind,
   CanteenMenu,
   QRCode,
 } from "@/services/shared/canteen";
@@ -67,7 +66,7 @@ import { Kid } from "./kid";
 export class AccountManager {
   private clients: Record<string, SchoolServicePlugin> = {};
 
-  constructor(readonly account: Account) { }
+  constructor(readonly account: Account) {}
 
   removeService(id: string): void {
     delete this.clients[id];
@@ -97,8 +96,8 @@ export class AccountManager {
           this.clients[service.id] = plugin;
           log(
             "Plugin for " +
-            service.id +
-            " doesn't support refresh but is available for other capabilities"
+              service.id +
+              " doesn't support refresh but is available for other capabilities"
           );
         }
       } catch (e) {
@@ -111,7 +110,7 @@ export class AccountManager {
 
     log(
       "Finished refreshing process for all services, services refreshed: " +
-      Object.keys(this.clients).length
+        Object.keys(this.clients).length
     );
     return refreshedAtLeastOne;
   }
@@ -176,7 +175,7 @@ export class AccountManager {
       Capabilities.GRADES,
       async client =>
         client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
-      {
+      { 
         multiple: false,
         clientId,
         fallback: async () => getGradePeriodsFromCache(period.name),
@@ -523,23 +522,14 @@ export class AccountManager {
         if (!client) {
           error("Client ID missing");
         }
-
         if (!client.capabilities.includes(capability)) {
           error(
             "Capability " +
-            capability +
-            " not supported by client " +
-            options.clientId +
-            ". Using fallback if available."
+              capability +
+              " not supported by client " +
+              options.clientId
           );
-
-          if (options.fallback) {
-            return await options.fallback();
-          }
-
-          throw new Error(`Capability ${capability} not supported by client ${options.clientId}`);
         }
-
         const result = await callback(client);
         if (options.saveToCache) {
           await options.saveToCache(result);
@@ -651,10 +641,10 @@ export const subscribeManagerUpdate = (
   listener: (manager: AccountManager) => void
 ) => {
   managerListeners.push(listener);
-  if (globalManager) { listener(globalManager); }
+  if (globalManager) {listener(globalManager);}
   return () => {
     const idx = managerListeners.indexOf(listener);
-    if (idx !== -1) { managerListeners.splice(idx, 1); }
+    if (idx !== -1) {managerListeners.splice(idx, 1);}
   };
 };
 

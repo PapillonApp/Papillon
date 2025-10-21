@@ -29,6 +29,8 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="papillon"/>
+        <data android:scheme="izly"/>
+        <data android:scheme="skoapp-prod"/>
         <data android:scheme="exp+papillon"/>
       </intent-filter>
     </activity>
