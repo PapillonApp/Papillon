@@ -418,7 +418,7 @@ export default function TabOneScreen() {
           <Papicons name={"Grades"} size={18} />
         </Icon>
         <Typography>
-          Mes notes
+          {t("Latest_Notes")}
         </Typography>
       </Stack>
     </Reanimated.View>
@@ -546,7 +546,7 @@ export default function TabOneScreen() {
               {fullyScrolled && (
                 <Dynamic animated>
                   <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
-                    {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {(shownAverage ?? 0).toFixed(2)}/20
+                    {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || t("NoAverage")} : {(shownAverage ?? 0).toFixed(2)}/20
                   </Typography>
                 </Dynamic>
               )}

@@ -71,7 +71,7 @@ export default function QRCodeAndCardsPage() {
             <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 30 }}>
               <Button
                 inline
-                title="Ajouter"
+                title={t("Settings_Cards_Add_Button")}
                 icon={<Plus />}
                 onPress={() => {
                   router.dismiss();
@@ -105,7 +105,7 @@ export default function QRCodeAndCardsPage() {
                 {t("Settings_Cards_None_Description")}
               </Typography>
             </View>
-            <Button title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
+            <Button title={t("Settings_Cards_Add_Button")} icon={<Papicons name={"Plus"} />} onPress={() => {
               router.dismiss();
               router.push({
                 pathname: "/(onboarding)/restaurants/method",

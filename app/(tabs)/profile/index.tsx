@@ -171,7 +171,7 @@ function Tabs() {
                 ) : tab.unread > 0 ? (
                   `${tab.unread} ${tab.unread > 1 ? tab.denominator_plural : tab.denominator}`
                 ) : (
-                  "Ouvrir"
+                  t("Profile_Attendance_Open")
                 )}
 
               </Typography>

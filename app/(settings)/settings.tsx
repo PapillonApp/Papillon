@@ -184,7 +184,7 @@ export default function SettingsIndex() {
       },
       {
         icon: <Papicons name={"Sparkles"} />,
-        title: "Magic+",
+        title: t("Settings_MagicPlus_Title"),
         description: t('Settings_MagicPlus_Description_Card'),
         color: "#DD007D",
         onPress: () => {

@@ -1,18 +1,19 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { FlatList, Image, View } from "react-native";
+
 import { News } from "@/services/shared/news";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { Variant } from "@/ui/components/Typography"
 import adjust from "@/utils/adjustColor";
 import { getProfileColorByName } from "@/utils/chats/colors";
 import { getInitials } from "@/utils/chats/initials";
 import { formatRelativeTime } from "@/utils/date";
-import { useTheme } from "@react-navigation/native";
-import { router, useLocalSearchParams } from "expo-router";
-import { View, FlatList, Image } from "react-native";
-import { Papicons } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { Variant } from "@/ui/components/Typography"
-import { useTranslation } from "react-i18next";
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();
@@ -80,7 +81,7 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
           <Avatar author={author} />
           <Stack direction="vertical" style={{ flex: 1 }}>
             <Typography color={`${colors.text}80`}>{author}</Typography>
-            <Typography variant="title">{title || "Aucun titre"}</Typography>
+            <Typography variant="title">{title || t("Profile_News_NoTitle")}</Typography>
             <Typography
               variant="body1"
               numberOfLines={2}
@@ -89,7 +90,7 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
               {cleanContent(content)}
             </Typography>
             <Typography color={`${colors.text}80`}>
-              {formatRelativeTime(createdAt)} {attachments.length > 0 && ` • (${attachments.length} pièce(s) jointe(s))`}
+              {formatRelativeTime(createdAt)} {attachments.length > 0 && ` • ${attachments.length} ${t("Profile_News_Attachment")}`}
             </Typography>
           </Stack>
         </View>
@@ -99,12 +100,12 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
 }
 
 export function Avatar({ author, dark = false, squared = false, size = 35, variant = "button", imageURL }: { author: string, dark?: boolean, squared?: boolean, size?: number, variant?: Variant, imageURL?: string }) {
-  const backgroundColor = `${getProfileColorByName(author)}20`;
-  const textColor = adjust(getProfileColorByName(author), -0.6);
-  const initials = getInitials(author)
-
   const theme = useTheme();
   const { colors } = theme;
+
+  const backgroundColor = `${getProfileColorByName(author)}20`;
+  const textColor = adjust(getProfileColorByName(author), theme.dark ? 0.3 : -0.3);
+  const initials = getInitials(author)
 
   return (
     <View
