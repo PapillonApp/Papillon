@@ -212,7 +212,7 @@
   "Settings_MagicPlus_Enable": "Activer Magic+",
   "Settings_MagicPlus_Description_Optimization": "Optimise automatiquement l’organisation de tes tâches pour améliorer ta productivité",
   "Settings_MagicPlus_ExplanationLocal": "Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil",
-  "Settings_MagicPlus_Unloading": "Déchargement de Magic+",
+  "Settings_MagicPlus_Unloading": "Désactivation de Magic+",
   "Settings_MagicPlus_UnloadingNextReload": "Papillon Magic+ sera désactivé au prochain redémarrage.",
   "Settings_MagicPlus_ModelStatus": "État du modèle",
   "Settings_MagicPlus_Loaded": "Chargé",
