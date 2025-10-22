@@ -90,7 +90,8 @@ function NewsItem({ news, important }: { news: News; important?: boolean }) {
               {cleanContent(content)}
             </Typography>
             <Typography color={`${colors.text}80`}>
-              {formatRelativeTime(createdAt)} {attachments.length > 0 && ` • ${attachments.length} ${t("Profile_News_Attachment")}`}
+              {formatRelativeTime(createdAt)}
+              {attachments.length > 0 && (<> • {attachments.length} {t("Profile_News_Attachment")}{attachments.length > 1 && "s"}</>)}
             </Typography>
           </Stack>
         </View>
