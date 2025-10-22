@@ -33,6 +33,7 @@ import { AlertProvider } from '@/ui/components/AlertProvider';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { AppColors } from "@/utils/colors";
 import ModelManager from '@/utils/magic/ModelManager';
+import { registerQRCodeNotificationRouting } from '@/utils/restaurant/qrcode-notification';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
 
@@ -155,8 +156,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   useEffect(() => {
     if (customLanguage) {
       // Changing language is asynchronous, so we don't await it
-      i18n.changeLanguage(customLanguage).catch((error) => {
-        console.error("Error changing language:", error);
+      i18n.changeLanguage(customLanguage).catch((error: unknown) => {
+        // Error changing language
       });
     }
   }, [customLanguage]);
@@ -212,6 +213,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       ModelManager.safeInit();
     }
   }, [magicEnabled]);
+
+  useEffect(() => {
+    void registerQRCodeNotificationRouting();
+  }, []);
 
   useEffect(() => {
     /*

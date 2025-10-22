@@ -20,9 +20,10 @@ import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
+import { sendSmartQRCodeNotification, testQRCodeNotification } from "@/utils/restaurant/qrcode-notification";
 
 export default function Devmode() {
-  const accountStore = useAccountStore();
+  const _accountStore = useAccountStore();
   const logsStore = useLogStore();
   const settingStore = useSettingsStore(state => state.personalization)
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
@@ -33,8 +34,10 @@ export default function Devmode() {
   const { colors } = useTheme();
   const alert = useAlert();
 
-  const [showAccountStore, setShowAccountStore] = useState(false);
+  const [_showAccountStore, _setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
+  const [isTestNotificationLoading, setIsTestNotificationLoading] = useState(false);
+  const [isSmartNotificationLoading, setIsSmartNotificationLoading] = useState(false);
 
   const [visibleLogsCount, setVisibleLogsCount] = useState(20);
 
@@ -271,6 +274,80 @@ export default function Devmode() {
         opacity: 0.5,
       }}>
         <Icon>
+          <Papicons name={"QrCode"} size={18} />
+        </Icon>
+        <Typography>
+          QR Code
+        </Typography>
+      </Stack>
+
+      <List>
+        <Item
+          onPress={async () => {
+            if (isTestNotificationLoading) { return; } // Éviter les clics multiples
+
+            try {
+              setIsTestNotificationLoading(true);
+              await testQRCodeNotification();
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors de l'envoi de la notification: ${String(error)}`);
+            } finally {
+              setTimeout(() => {
+                setIsTestNotificationLoading(false);
+              }, 3000);
+            }
+          }}
+        >
+          <Typography variant="title">
+            {isTestNotificationLoading ? "Envoi en cours..." : "Tester notification QR Code"}
+          </Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            if (isSmartNotificationLoading) { return; } // Éviter les clics multiples
+
+            try {
+              setIsSmartNotificationLoading(true);
+
+              // Vérifier d'abord si un service compatible est disponible
+              const { hasMealBookedToday } = await import("@/utils/restaurant/qrcode-notification");
+              const bookingInfo = await hasMealBookedToday();
+
+              // Priorité 1: Vérifier si un service compatible existe
+              if (!bookingInfo.serviceId || !bookingInfo.serviceType) {
+                Alert.alert("Aucun service compatible", "L'utilisateur n'a pas de service compatible (Turboself ou Izly)");
+                return;
+              }
+
+              // Priorité 2: Vérifier si une réservation existe
+              if (!bookingInfo.hasBooked) {
+                const serviceName = bookingInfo.serviceType === 1 ? "Turboself" : "Izly";
+                Alert.alert("Aucune réservation", `L'utilisateur n'a pas réservé de repas mais utilise ${serviceName}`);
+                return;
+              }
+
+              await sendSmartQRCodeNotification();
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors de l'envoi de la notification intelligente: ${String(error)}`);
+            } finally {
+              setTimeout(() => {
+                setIsSmartNotificationLoading(false);
+              }, 3000);
+            }
+          }}
+        >
+          <Typography variant="title">
+            {isSmartNotificationLoading ? "Envoi en cours..." : "Tester notification intelligente"}
+          </Typography>
+        </Item>
+      </List>
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
           <Papicons name={"Star"} size={18} />
         </Icon>
         <Typography>
@@ -326,7 +403,14 @@ export default function Devmode() {
           <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
         <Item
-          onPress={() => resetMagicCache()}
+          onPress={() => {
+            try {
+              magicStore.clear();
+              Alert.alert("Cache vidé", "Le cache des prédictions Magic a été vidé avec succès !");
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du vidage du cache: ${String(error)}`);
+            }
+          }}
         >
           <Typography variant="title">Reset Magic Cache</Typography>
         </Item>
