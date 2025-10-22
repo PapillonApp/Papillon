@@ -38,7 +38,6 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
 import i18n from "@/utils/i18n";
 
-
 function Tabs() {
   const [availableClientsAttendance, setAvailableClientsAttendance] = useState<number>(0);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -275,13 +274,13 @@ function NewsSection() {
           >
             <Typography style={{ marginBottom: -3 }}
               inline
-              color={adjust("#7DBB00", -0.3)}
+              color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
             >
               {limitNews.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
             </Typography>
             <Icon papicon
               size={20}
-              fill={adjust("#7DBB00", -0.3)}
+              fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
             >
               <Papicons name={"ArrowRightUp"} />
             </Icon>
