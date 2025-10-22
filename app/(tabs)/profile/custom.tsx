@@ -98,7 +98,7 @@ export default function CustomProfileScreen() {
                   ios: 'photo',
                   android: 'ic_menu_gallery',
                 }),
-                imageColor: colors.text
+                imageColor: "black"
               },
               {
                 id: 'from_service',
@@ -107,7 +107,7 @@ export default function CustomProfileScreen() {
                   ios: 'square.and.arrow.down',
                   android: 'ic_menu_save',
                 }),
-                imageColor: colors.text
+                imageColor: "black"
               },
               {
                 id: 'remove_photo',
