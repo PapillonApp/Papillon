@@ -219,7 +219,7 @@
   "Settings_MagicPlus_Enable": "Enable Magic+",
   "Settings_MagicPlus_Description_Optimization": "Automatically optimize your task organization to improve your productivity",
   "Settings_MagicPlus_ExplanationLocal": "Fully local model, no data is transferred outside your device",
-  "Settings_MagicPlus_Unloading": "Unloading of Magic+",
+  "Settings_MagicPlus_Unloading": "Disabling Magic+",
   "Settings_MagicPlus_UnloadingNextReload": "Papillon Magic+ will be deactivated upon the next restart.",
   "Settings_MagicPlus_ModelStatus": "Model status",
   "Settings_MagicPlus_Loaded": "Loaded",
