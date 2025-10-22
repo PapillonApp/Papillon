@@ -322,7 +322,7 @@ export default function AttendanceView() {
                     <Typography inline variant="navigation">{getPeriodName(period?.name ?? "")}</Typography>
                   </Dynamic>
                   <Dynamic animated>
-                    <NativeHeaderHighlight v>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
+                    <NativeHeaderHighlight color={colors.primary}>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
                   </Dynamic>
                   <Dynamic animated>
                     <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
