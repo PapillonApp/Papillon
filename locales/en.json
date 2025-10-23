@@ -41,6 +41,7 @@
   "ONBOARDING_QRCODE_WAIT": "This may take a few moments...",
   "ONBOARDING_URL": "Enter your school’s URL",
   "ONBOARDING_URL_PLACEHOLDER": "URL of your PRONOTE instance",
+  "ONBOARDING_VALIDATE": "Validate",
   "ONBOARDING_COLOR_TITLE": "Before finishing",
   "ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION": "Choose a",
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "theme color",
