@@ -73,6 +73,8 @@ export default function TabOneScreen() {
     manager = null;
   }
 
+  const now = new Date();
+
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
@@ -319,6 +321,11 @@ export default function TabOneScreen() {
       return separated;
     }, [dayEvents]);
 
+    const isCoursePast = (course: SharedCourse) => {
+      if (!course.to) return false;
+      return course.to < new Date();
+    };
+
     return (
       <View style={{ width: Dimensions.get("window").width, flex: 1 }} key={"day-events-" + dayDate.toISOString()}>
         <FlatList
@@ -353,58 +360,48 @@ export default function TabOneScreen() {
                   start={Math.floor(item.from.getTime() / 1000)}
                   end={Math.floor(item.to.getTime() / 1000)}
                   showTimes={false}
-                  onPress={() => {
-                    navigation.navigate('(modals)/course', {
-                      course: item,
-                      subjectInfo: {
-                        id: item.subjectId,
-                        name: getSubjectName(item.subject),
-                        color: getSubjectColor(item.subject) || Colors[0],
-                        emoji: getSubjectEmoji(item.subject),
-                      }
-                    });
-                  }}
-                />
-              );
-            }
-
-            return (
-              <Course
-                id={item.id}
-                name={getSubjectName(item.subject)}
-                teacher={item.teacher}
-                room={item.room}
-                color={getSubjectColor(item.subject) || Colors[0]}
-                status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                variant="primary"
-                start={Math.floor(item.from.getTime() / 1000)}
-                end={Math.floor(item.to.getTime() / 1000)}
-                readonly={!!item.createdByAccount}
-                onPress={() => {
-                  navigation.navigate('(modals)/course', {
-                    course: item,
-                    subjectInfo: {
-                      id: item.subjectId,
-                      name: getSubjectName(item.subject),
-                      color: getSubjectColor(item.subject) || Colors[0],
-                      emoji: getSubjectEmoji(item.subject),
-                    }
-                  });
-                }}
-              />
-            )
-          }
-          }
-        />
-      </View>
-    );
-  }, (prevProps, nextProps) => {
-    return (
-      prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
-      prevProps.isRefreshing === nextProps.isRefreshing &&
-      prevProps.onRefresh === nextProps.onRefresh
-    );
-  });
+                                  />
+                                );
+                              } else {
+                                const isPast = isCoursePast(item);
+                                return (
+                                  <View style={isPast ? { opacity: 1 } : {}}>
+                                    <Course
+                                      id={item.id}
+                                      name={getSubjectName(item.subject)}
+                                      teacher={item.teacher}
+                                      room={item.room}
+                                      color={isPast ? '#cccccc' : (getSubjectColor(item.subject) || Colors[0])}
+                                      status={{
+                                        label: item.customStatus ? item.customStatus : getStatusText(item.status),
+                                        canceled: item.status === CourseStatus.CANCELED
+                                      }}
+                                      variant="primary"
+                                      start={Math.floor(item.from.getTime() / 1000)}
+                                      end={Math.floor(item.to.getTime() / 1000)}
+                                      readonly={!!item.createdByAccount}
+                                      onPress={() => navigation.navigate('(modals)/course', {
+                                        course: item,
+                                        subjectInfo: {
+                                          id: item.subjectId,
+                                          name: getSubjectName(item.subject),
+                                          color: getSubjectColor(item.subject) || Colors[0],
+                                          emoji: getSubjectEmoji(item.subject),
+                                        }
+                                      })}
+                                    />
+                                  </View>
+                                );
+                              }
+                            }}
+                          />
+                        </View>
+                      );
+                    }, (prevProps, nextProps) => (
+                      prevProps.dayDate.getTime() === nextProps.dayDate.getTime() &&
+                      prevProps.isRefreshing === nextProps.isRefreshing &&
+                      prevProps.onRefresh === nextProps.onRefresh
+                    ));
 
   // Stable renderItem function
   const renderDay = useCallback(({ index }: { index: number }) => {
