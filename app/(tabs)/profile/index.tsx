@@ -487,7 +487,7 @@ export default function TabOneScreen() {
 
       <TabFlatList
         backgroundColor={theme.dark ? colors.primary + "20" : colors.primary + "30"}
-        foregroundColor={colors.text + "80"}
+        foregroundColor={theme.dark ? "#ffffff" + "80" : "#000000" + "80"}
         pattern={"cross"}
         onFullyScrolled={handleFullyScrolled}
         height={200}

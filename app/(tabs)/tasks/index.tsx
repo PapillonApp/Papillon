@@ -497,8 +497,9 @@ export default function TabOneScreen() {
 
       <TabFlatList
         radius={36}
-        backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
-        foregroundColor="#9E0086"
+        backgroundColor={theme.dark ? "#C54CB3" + "20" : "#C54CB3" + "30"}
+        foregroundColor={theme.dark ? "#ffffff" + "80" : "#000000" + "80"}
+        pattern={"cross"}
         key={sortedHomeworks.length}
         data={sortedHomeworks}
         initialNumToRender={2}

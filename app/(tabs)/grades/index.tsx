@@ -431,8 +431,8 @@ export default function TabOneScreen() {
       <TabFlatList
         radius={36}
         engine="FlatList"
-        backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
-        foregroundColor="#29947A"
+        backgroundColor={theme.dark ? "#29947A" + "20" : "#29947A" + "30"}
+        foregroundColor={theme.dark ? "#ffffff" + "80" : "#000000" + "80"}
         pattern={"cross"}
         initialNumToRender={2}
         removeClippedSubviews={true}
