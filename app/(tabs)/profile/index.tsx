@@ -486,9 +486,11 @@ export default function TabOneScreen() {
       </NativeHeaderSide>
 
       <TabFlatList
-        backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}
-        height={200}
+        backgroundColor={theme.dark ? colors.primary + "20" : colors.primary + "30"}
+        foregroundColor={colors.text + "80"}
+        pattern={"cross"}
         onFullyScrolled={handleFullyScrolled}
+        height={200}
         data={["tabs", "news", "cards", "apps"]}
         gap={16}
         radius={42}
