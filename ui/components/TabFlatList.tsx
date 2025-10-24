@@ -28,8 +28,8 @@ interface TabFlatListProps extends FlatListProps<any> {
 
 const TabFlatList: React.FC<TabFlatListProps> = memo(({
   header,
-  backgroundColor = "#F7E8F5",
-  foregroundColor = "#29947A",
+  backgroundColor = "#ffffff",
+  foregroundColor = "#000000",
   pattern,
   height = 120,
   padding = 16,

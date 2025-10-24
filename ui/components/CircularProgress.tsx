@@ -15,6 +15,7 @@ type CircularProgressProps = {
   backgroundColor: string;
   fill: string;
   percentageComplete: number;
+  animated?: boolean;
 };
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -25,6 +26,7 @@ const CircularProgress: FC<CircularProgressProps> = ({
   backgroundColor,
   fill,
   percentageComplete,
+  animated = true,
 }) => {
   // return (<></>);
 
@@ -47,8 +49,8 @@ const CircularProgress: FC<CircularProgressProps> = ({
 
   return (
     <Animated.View
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
+      entering={animated ? PapillonAppearIn : undefined}
+      exiting={animated ? PapillonAppearOut : undefined}
       style={[styles.container, { width: radius * 2, height: radius * 2 }]}
       key={`circular-progress-${radius}`}
     >

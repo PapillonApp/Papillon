@@ -141,9 +141,83 @@ const EmptyListComponent = memo(() => (
   </LayoutAnimationConfig>
 ));
 
+const WeekHomeworksPage = memo(({
+  weekNumber,
+  isRefreshing,
+  onRefresh,
+  colors,
+  theme,
+  onProgressChange,
+  homework,
+  showUndoneOnly,
+  renderItem,
+  keyExtractor,
+  windowWidth,
+  refreshTrigger,
+  services,
+  selectedMethod,
+  sortingMethods,
+  insets
+}: {
+  weekNumber: number;
+  isRefreshing: boolean;
+  onRefresh: () => void;
+  colors: any;
+  theme: any;
+  onProgressChange: (item: Homework, newProgress: number) => void;
+  homework: Record<string, Homework>;
+  showUndoneOnly: boolean;
+  renderItem: ({ item, index }: { item: Homework; index: number }) => React.ReactElement | null;
+  keyExtractor: (item: Homework) => string;
+  windowWidth: number;
+  refreshTrigger: number;
+  services: string[];
+  selectedMethod: number;
+  sortingMethods: any[];
+  insets: any;
+}) => {
+  const weekHomeworks = useHomeworkForWeek(weekNumber, refreshTrigger).filter(homework => services.includes(homework.createdByAccount));
+
+  const weekSortedHomeworks = useMemo(() => {
+    const sortingMethod = sortingMethods[selectedMethod].method;
+    return [...weekHomeworks].sort(sortingMethod);
+  }, [weekHomeworks, selectedMethod, sortingMethods]);
+
+  const weekLengthHomeworks = weekSortedHomeworks.length;
+  const weekLeftHomeworks = weekSortedHomeworks.filter((h) => !h.isDone).length;
+  const weekPercentageComplete = weekLengthHomeworks === 0 ? 100 : ((weekLengthHomeworks - weekLeftHomeworks) / weekLengthHomeworks * 100);
+
+  return (
+    <View style={{ width: windowWidth, flex: 1 }}>
+      <TabFlatList
+        radius={36}
+        backgroundColor={"#C54CB3" + 20}
+        foregroundColor="#000000"
+        height={80 + insets.top}
+        data={weekSortedHomeworks}
+        numColumns={windowWidth > 1050 ? 3 : windowWidth < 800 ? 1 : 2}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            progressViewOffset={200}
+          />
+        }
+        gap={16}
+        paddingTop={20}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={<EmptyListComponent />}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+});
+
 export default function TabOneScreen() {
   const theme = useTheme();
   const colors = theme.colors;
+  const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const alert = useAlert()
   const windowDimensions = useWindowDimensions();
@@ -155,6 +229,13 @@ export default function TabOneScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([]);
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(10000);
+  const INITIAL_WEEK_INDEX = 10000;
+  const weekFlatListRef = useRef<FlatList>(null);
+  const windowWidth = Dimensions.get("window").width;
+  const baseWeekRef = useRef<number>(getWeekNumberFromDate(currentDate));
+
   const store = useAccountStore.getState()
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
@@ -163,11 +244,19 @@ export default function TabOneScreen() {
 
   const manager = getManager();
 
-  const fetchHomeworks = async (managerToUse = manager) => {
+  const getWeekFromIndex = useCallback((index: number) => {
+    return baseWeekRef.current + (index - INITIAL_WEEK_INDEX);
+  }, [INITIAL_WEEK_INDEX]);
+
+  const getIndexFromWeek = useCallback((week: number) => {
+    return INITIAL_WEEK_INDEX + (week - baseWeekRef.current);
+  }, [INITIAL_WEEK_INDEX]);
+
+  const fetchHomeworks = async (managerToUse = manager, targetWeek = selectedWeek) => {
     if (!managerToUse) {
       return;
     }
-    const result = await managerToUse.getHomeworks(selectedWeek);
+    const result = await managerToUse.getHomeworks(targetWeek);
     result.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
@@ -180,6 +269,32 @@ export default function TabOneScreen() {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  const fetchWeeklyHomeworks = useCallback(async (targetWeek: number, forceRefresh = false) => {
+    try {
+      if (!manager) {
+        return;
+      }
+
+      const weeksToFetch = [targetWeek - 1, targetWeek, targetWeek + 1].filter(
+        (week) => !fetchedWeeks.includes(week)
+      );
+
+      if (weeksToFetch.length > 0) {
+        await Promise.all(
+          weeksToFetch.map((week) => manager.getHomeworks(week))
+        );
+
+        setRefreshTrigger(prev => prev + 1);
+        setFetchedWeeks((prevFetchedWeeks) => [
+          ...prevFetchedWeeks,
+          ...weeksToFetch,
+        ]);
+      }
+    } catch (error) {
+      console.error('Error fetching weekly homeworks:', error);
+    }
+  }, [fetchedWeeks, manager]);
+
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
       fetchHomeworks(updatedManager);
@@ -190,7 +305,41 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     fetchHomeworks();
-  }, [selectedWeek]);
+    fetchWeeklyHomeworks(selectedWeek);
+  }, [selectedWeek, fetchWeeklyHomeworks]);
+
+  useEffect(() => {
+    const newIndex = getIndexFromWeek(selectedWeek);
+    if (newIndex !== currentWeekIndex && weekFlatListRef.current) {
+      setCurrentWeekIndex(newIndex);
+      weekFlatListRef.current.scrollToIndex({
+        index: newIndex,
+        animated: false,
+      });
+    }
+  }, [selectedWeek, getIndexFromWeek, currentWeekIndex]);
+
+
+  const onWeekScroll = useCallback((e: any) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(offsetX / windowWidth);
+    if (newIndex !== currentWeekIndex) {
+      setCurrentWeekIndex(newIndex);
+      const newWeek = getWeekFromIndex(newIndex);
+      if (newWeek !== selectedWeek) {
+        setSelectedWeek(newWeek);
+      }
+    }
+  }, [windowWidth, currentWeekIndex, getWeekFromIndex, selectedWeek]);
+
+  const onWeekMomentumScrollEnd = useCallback((e: any) => {
+    const newIndex = Math.round(e.nativeEvent.contentOffset.x / windowWidth);
+    if (newIndex !== currentWeekIndex) {
+      setCurrentWeekIndex(newIndex);
+      const newWeek = getWeekFromIndex(newIndex);
+      setSelectedWeek(newWeek);
+    }
+  }, [windowWidth, currentWeekIndex, getWeekFromIndex]);
 
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
@@ -271,6 +420,35 @@ export default function TabOneScreen() {
     fetchHomeworks();
   }, [selectedWeek, manager, alert]);
 
+  const keyExtractor = useCallback((item: Homework) => item.id, []);
+
+  const sortingMethods = [
+    {
+      label: t('Tasks_Sorting_Methods_DueDate'),
+      method: (a: Homework, b: Homework) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
+      image: Platform.select({
+        ios: "calendar"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Subject'),
+      method: (a: Homework, b: Homework) => a.subject.localeCompare(b.subject),
+      image: Platform.select({
+        ios: "character"
+      }),
+    },
+    {
+      label: t('Tasks_Sorting_Methods_Done'),
+      method: (a: Homework, b: Homework) => Number(a.isDone) - Number(b.isDone),
+      image: Platform.select({
+        ios: "checkmark.circle"
+      }),
+    },
+  ]
+
+  const [selectedMethod, setSelectedMethod] = useState(0);
+  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
+
   const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => {
     const inFresh = homework[item.id]
     if (showUndoneOnly && item.isDone)
@@ -289,9 +467,32 @@ export default function TabOneScreen() {
         />
       </Reanimated.View>
     )
-  }, [onProgressChange, homeworksFromCache]);
+  }, [onProgressChange, homework, showUndoneOnly]);
 
-  const keyExtractor = useCallback((item: Homework) => item.id, []);
+  const renderWeek = useCallback(({ index }: { index: number }) => {
+    const weekNumber = getWeekFromIndex(index);
+
+    return (
+      <WeekHomeworksPage
+        weekNumber={weekNumber}
+        isRefreshing={isRefreshing}
+        onRefresh={handleRefresh}
+        colors={colors}
+        theme={theme}
+        onProgressChange={onProgressChange}
+        homework={homework}
+        showUndoneOnly={showUndoneOnly}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        windowWidth={windowWidth}
+        refreshTrigger={refreshTrigger}
+        services={services}
+        selectedMethod={selectedMethod}
+        sortingMethods={sortingMethods}
+        insets={insets}
+      />
+    );
+  }, [getWeekFromIndex, isRefreshing, handleRefresh, colors, onProgressChange, homework, showUndoneOnly, renderItem, keyExtractor, windowWidth, refreshTrigger, services, selectedMethod, insets]);
 
   const [showWeekPicker, setShowWeekPicker] = useState(false);
   const WeekPickerRef = useRef<FlatList>(null);
@@ -308,9 +509,9 @@ export default function TabOneScreen() {
 
   const handleWeekScroll = useCallback((event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const itemWidth = 60; // width of each item in the picker
+    const itemWidth = 60;
     const index = Math.round(contentOffsetX / itemWidth);
-    if (index < 0 || index >= 56) { return; } // prevent out of bounds
+    if (index < 0 || index >= 56) { return; }
     requestAnimationFrame(() => {
       setSelectedWeek(index);
     });
@@ -348,33 +549,6 @@ export default function TabOneScreen() {
     return -2
   }
 
-  const sortingMethods = [
-    {
-      label: t('Tasks_Sorting_Methods_DueDate'),
-      method: (a: Homework, b: Homework) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-      image: Platform.select({
-        ios: "calendar"
-      }),
-    },
-    {
-      label: t('Tasks_Sorting_Methods_Subject'),
-      method: (a: Homework, b: Homework) => a.subject.localeCompare(b.subject),
-      image: Platform.select({
-        ios: "character"
-      }),
-    },
-    {
-      label: t('Tasks_Sorting_Methods_Done'),
-      method: (a: Homework, b: Homework) => Number(a.isDone) - Number(b.isDone),
-      image: Platform.select({
-        ios: "checkmark.circle"
-      }),
-    },
-  ]
-
-  const [selectedMethod, setSelectedMethod] = useState(0);
-  const [showUndoneOnly, setShowUndoneOnly] = useState(false);
-
   const sortedHomeworks = useMemo(() => {
     const sortingMethod = sortingMethods[selectedMethod].method;
     return [...homeworksFromCache].sort(sortingMethod);
@@ -388,12 +562,10 @@ export default function TabOneScreen() {
     return sortedHomeworks.filter(hw => {
       const content = hw.content.toLowerCase();
       const subject = hw.subject.toLowerCase();
-      const searchTerm = searchTermState.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove accents
+      const searchTerm = searchTermState.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       return content.includes(searchTerm) || subject.includes(searchTerm);
-    }).slice(0, 5); // limit to 5 results
+    }).slice(0, 5);
   }, [showSearch, sortedHomeworks, searchTermState]);
-
-  const insets = useSafeAreaInsets();
 
   return (
     <>
@@ -468,7 +640,7 @@ export default function TabOneScreen() {
                 effect="regular"
               >
                 <Pressable onPress={() => setShowSearch(false)} hitSlop={32}>
-                  <Papicons name={"cross"} color={PlatformColor('labelColor')} size={24} opacity={0.5} />
+                  <Papicons name={"cross"} color={colors.text} size={24} opacity={0.5} />
                 </Pressable>
               </LiquidGlassView>
             </LiquidGlassContainerView>
@@ -495,97 +667,88 @@ export default function TabOneScreen() {
         </BlurView>
       </Modal>
 
-      <TabFlatList
-        radius={36}
-        backgroundColor={theme.dark ? "#2e0928" : "#F7E8F5"}
-        foregroundColor="#9E0086"
-        key={sortedHomeworks.length}
-        data={sortedHomeworks}
-        initialNumToRender={2}
-        engine="FlashList"
-        numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
-        onFullyScrolled={handleFullyScrolled}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            progressViewOffset={200}
-          />
-        }
-        gap={16}
-        paddingTop={2}
-        header={(
-          <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
-            <LayoutAnimationConfig skipEntering>
-              <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
-                {lengthHomeworks === 0 ? (
-                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
-                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                      {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
-                    </Typography>
-                  </Stack>
-                ) : (leftHomeworks > 0 ? (
-                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
-                      <AnimatedNumber inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
-                        {leftHomeworks}
-                      </AnimatedNumber>
-                    </Dynamic>
-                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                      {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
-                    </Typography>
-                  </Stack>
-                ) : (
-                  <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
-                    <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
-                    <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
-                      {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
-                    </Typography>
-                  </Stack>
-                ))}
-              </Dynamic>
-            </LayoutAnimationConfig>
-            <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center" }} key={`circular-progress-week-ct:${selectedWeek}`}>
-              <CircularProgress
-                backgroundColor={colors.text + "22"}
-                percentageComplete={lengthHomeworks === 0 ? 100 : percentageComplete}
-                radius={35}
-                strokeWidth={7}
-                fill={"#C54CB3"}
-              />
-            </View>
-          </Stack>
-        )}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={<EmptyListComponent />}
-      />
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          paddingHorizontal: 20,
+          paddingTop: insets.top + 60,
+          paddingBottom: 20,
+          zIndex: 10,
+        }}
+      >
+        <Stack direction={"horizontal"} hAlign={"end"}>
+          <LayoutAnimationConfig skipEntering>
+            <Dynamic animated style={{ flex: 1 }} key={`left-homeworks:${leftHomeworks > 0 ? "undone" : "done"}`}>
+              {lengthHomeworks === 0 ? (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_NoTasks_Title')} {"\n"}{t('Tasks_NoTasks_ForWeek', { week: selectedWeek })}
+                  </Typography>
+                </Stack>
+              ) : (leftHomeworks > 0 ? (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <Dynamic animated key={`left-homeworks-count:${leftHomeworks}`} entering={PapillonZoomIn} exiting={PapillonAppearOut}>
+                    <AnimatedNumber inline variant={"h1"} style={{ fontSize: 36, marginBottom: 4 }} color={"#C54CB3"}>
+                      {leftHomeworks}
+                    </AnimatedNumber>
+                  </Dynamic>
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_LeftHomeworks_Title')} {"\n"}{t('Tasks_LeftHomeworks_Time')}
+                  </Typography>
+                </Stack>
+              ) : (
+                <Stack direction={"vertical"} gap={2} style={{ flex: 1 }}>
+                  <Papicons name={"Check"} color={"#C54CB3"} size={36} style={{ marginBottom: 4 }} />
+                  <Typography inline variant={"title"} color={"secondary"} style={{ lineHeight: 19 }}>
+                    {t('Tasks_Done_AllTasks')} {"\n"}{t('Tasks_Done_CompletedTasks')}
+                  </Typography>
+                </Stack>
+              ))}
+            </Dynamic>
+          </LayoutAnimationConfig>
+          <View style={{ width: 80, height: 80, alignItems: "center", justifyContent: "center", marginRight: -10 }} key={`circular-progress-week-ct:${selectedWeek}`}>
+            <CircularProgress
+              backgroundColor={colors.text + "22"}
+              percentageComplete={lengthHomeworks === 0 ? 100 : percentageComplete}
+              radius={35}
+              strokeWidth={7}
+              fill={"#C54CB3"}
+              animated={false}
+            />
+          </View>
+        </Stack>
+      </View>
 
-      {!runsIOS26 && fullyScrolled && (
-        <Reanimated.View
-          entering={Animation(FadeInUp, "list")}
-          exiting={Animation(FadeOutUp, "default")}
-          style={[
-            {
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: headerHeight + 1,
-              backgroundColor: colors.card,
-              zIndex: 1000000,
-            },
-            Platform.OS === 'android' && {
-              elevation: 4,
-            },
-            Platform.OS === 'ios' && {
-              borderBottomWidth: 0.5,
-              borderBottomColor: colors.border,
-            }
-          ]}
+      <View style={{ flex: 1, zIndex: 20 }}>
+        <FlatList
+          ref={weekFlatListRef}
+          data={Array.from({ length: 20001 })}
+          horizontal
+          pagingEnabled={false}
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={INITIAL_WEEK_INDEX}
+          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+          renderItem={renderWeek}
+          keyExtractor={(_, index) => String(index)}
+          onScroll={onWeekScroll}
+          decelerationRate={0.9}
+          disableIntervalMomentum={true}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={onWeekMomentumScrollEnd}
+          snapToInterval={windowWidth}
+          bounces={false}
+          windowSize={3}
+          maxToRenderPerBatch={2}
+          initialNumToRender={1}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews
+          extraData={{ refreshTrigger, selectedWeek, homework, showUndoneOnly, selectedMethod }}
         />
-      )}
+      </View>
 
       {/* Picker */}
       {showWeekPicker && (
