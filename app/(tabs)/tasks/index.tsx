@@ -203,7 +203,6 @@ const WeekHomeworksPage = memo(({
             progressViewOffset={200}
           />
         }
-        gap={16}
         paddingTop={20}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -924,7 +923,7 @@ export default function TabOneScreen() {
               flexDirection: "column",
               alignItems: Platform.OS === 'android' ? "left" : "center",
               justifyContent: "center",
-              gap: 4,
+              gap: 10,
               width: 200,
               height: 60,
               marginTop: marginTop(),
