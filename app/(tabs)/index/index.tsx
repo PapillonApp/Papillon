@@ -598,6 +598,54 @@ const IndexScreen = () => {
             buttonLabel: "Aller",
             dev: true
           },
+
+      ...(courses.filter(item => item.to.getTime() > Date.now()).length === 0 &&
+        homeworks.length === 0 &&
+        grades.length === 0
+        ? (() => {
+            const today = new Date();
+            const day = today.getDay();
+
+            let message = "Repose-toi bien !";
+            if (day === 0 || day === 6) {
+              message = "Profite de ton temps libre !";
+            } else {
+              message = "Pas de devoir aujourd'hui !";
+            }
+
+            return [{
+              icon: <Papicons name={"holiday"} />,
+              title: "Tu n’as rien de prévu !",
+              render: () => (
+                <Stack
+                  padding={32}
+                  hAlign="center"
+                  vAlign="center"
+                  style={{
+                    minHeight: 100,
+                    width: "100%"
+                  }}
+                >
+                  <Icon size={44} style={{ marginBottom: 12, opacity: 0.6 }}>
+                    <Papicons name={"holiday"} color={foreground} />
+                  </Icon>
+                  <Typography
+                    variant="h4"
+                    color="text"
+                    style={{
+                       textAlign: "center",
+                       opacity: 0.8,
+                    }}
+                  >
+                    {message}
+                  </Typography>
+                </Stack>
+              ),
+            }];
+          })()
+        : []),
+
+
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => {
