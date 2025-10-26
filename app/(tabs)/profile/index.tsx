@@ -163,7 +163,7 @@ function Tabs() {
               >{tab.title}</Typography>
               <Typography inline
                 variant="caption"
-                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? -0.2 : 0.2)}
               >
                 {tab.beta ? (
                   "Ça arrive !"
@@ -237,10 +237,10 @@ function NewsSection() {
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
         }}
-        backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
+        backgroundColor={adjust("#31ce1c", theme.dark ? -0.85 : 0.85)}
       >
         <Icon
-          fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          fill={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
           size={24}
           style={{ marginLeft: 8, marginRight: 0 }}
           papicon
@@ -248,7 +248,7 @@ function NewsSection() {
           <Papicons name={"Newspaper"} />
         </Icon>
         <Typography
-          color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          color={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
           style={{ flex: 1 }}
           variant="h5"
         >
@@ -271,17 +271,17 @@ function NewsSection() {
             padding={[12, 6]}
             radius={100}
             height={32}
-            backgroundColor={"#7DBB0040"}
+            backgroundColor={"#31ce1c40"}
           >
             <Typography style={{ marginBottom: -3 }}
               inline
-              color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+              color={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
             >
               {limitNews.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
             </Typography>
             <Icon papicon
               size={20}
-              fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+              fill={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
             >
               <Papicons name={"ArrowRightUp"} />
             </Icon>
