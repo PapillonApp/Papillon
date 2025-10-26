@@ -52,7 +52,7 @@ function Tabs() {
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
-      disabled: !(availableClientsAttendance),
+      disabled: false,
       onPress: () => {
         if (attendances.length === 0 || attendancePeriods.length === 0) { return; }
         router.push({
@@ -145,10 +145,10 @@ function Tabs() {
             padding={16}
             height={58}
             radius={200}
-            backgroundColor={tab.disabled ? colors.text + 10 : tab.unread > 0 ? adjust(tab.color, getTabBackground()) : colors.card}
+            backgroundColor={tab.disabled ? colors.text + 10 : tab.unread > 0 ? adjust(tab.color, getTabBackground()) : adjust(tab.color, theme.dark ? -0.85 : 0.85)}
           >
             <Icon papicon
-              fill={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
+              fill={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
             >
               <tab.icon />
             </Icon>
@@ -159,11 +159,11 @@ function Tabs() {
             >
               <Typography inline
                 variant="title"
-                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
               >{tab.title}</Typography>
               <Typography inline
                 variant="caption"
-                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : "secondary"}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
               >
                 {tab.beta ? (
                   "Ça arrive !"
@@ -177,8 +177,9 @@ function Tabs() {
             </Stack>
           </Stack>
         </AnimatedPressable>
-      ))}
-    </Stack>
+      ))
+      }
+    </Stack >
   );
 }
 

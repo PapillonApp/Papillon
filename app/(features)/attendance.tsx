@@ -64,8 +64,8 @@ export default function AttendanceView() {
       return { missedTime: missed, missedTimeUnjustified: unjustified, unjustifiedAbsenceCount: unjustifiedAbs, unjustifiedDelayCount: unjustifiedDelays, absenceCount: Abs, delayCount: Delays };
     }, [period, attendances]);
 
-    const dangerColor = useMemo(() => adjust("#C50000", -0.15), []);
-    const dangerBg = "#C5000030";
+    const dangerColor = useMemo(() => adjust("#C50066", -0.15), []);
+    const dangerBg = "#C5006630";
     const dangerBorder = "#0000000D";
 
     return (
@@ -117,22 +117,22 @@ export default function AttendanceView() {
                     hAlign="center"
                     padding={12}
                     style={{ flex: 1, borderTopRightRadius: 20, borderBottomRightRadius: 20, borderLeftWidth: 1, borderLeftColor: colors.border }}
-                    backgroundColor={adjust("#C50000", theme.dark ? -0.8 : 0.8)}
+                    backgroundColor={adjust("#C50066", theme.dark ? -0.8 : 0.8)}
                   >
-                    <Icon papicon fill={adjust("#C50000", -0.15)}>
+                    <Icon papicon fill={adjust("#C50066", -0.15)}>
                       <Papicons name={"Minus"} />
                     </Icon>
-                    <Typography style={{ color: adjust("#C50000", -0.15) }}>
+                    <Typography style={{ color: adjust("#C50066", -0.15) }}>
                       {t("Attendance_Hours_Unjustified")}
                     </Typography>
                     <Stack direction="horizontal" gap={0}>
-                      <AnimatedNumber variant="h5" color={adjust("#C50000", -0.15)}>
+                      <AnimatedNumber variant="h5" color={adjust("#C50066", -0.15)}>
                         {String(Math.floor((missedTimeUnjustified % 3600) / 60)).padStart(2, '0')}
                       </AnimatedNumber>
-                      <Typography variant="h5" color={adjust("#C50000", -0.15)}>
+                      <Typography variant="h5" color={adjust("#C50066", -0.15)}>
                         h
                       </Typography>
-                      <AnimatedNumber variant="h5" color={adjust("#C50000", -0.15)}>
+                      <AnimatedNumber variant="h5" color={adjust("#C50066", -0.15)}>
                         {String(missedTimeUnjustified % 60).padStart(2, '0')}
                       </AnimatedNumber>
                     </Stack>
@@ -322,7 +322,7 @@ export default function AttendanceView() {
                     <Typography inline variant="navigation">{getPeriodName(period?.name ?? "")}</Typography>
                   </Dynamic>
                   <Dynamic animated>
-                    <NativeHeaderHighlight color={colors.primary}>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
+                    <NativeHeaderHighlight color={"#C50066"}>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
                   </Dynamic>
                   <Dynamic animated>
                     <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
