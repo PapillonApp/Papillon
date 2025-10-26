@@ -29,7 +29,6 @@ const PersonalizationSettings = () => {
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
-  const customLanguage = useSettingsStore(state => state.personalization.timezoneAdaptation);
 
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
