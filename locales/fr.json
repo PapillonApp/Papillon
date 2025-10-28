@@ -38,7 +38,6 @@
   "ONBOARDING_TURBOSELF_SELECTHOST": "Choisis l'hôte assigné au compte",
   "ONBOARDING_PRONOTE_PIN": "Indique le code à 4 chiffres que tu viens de créer sur PRONOTE",
   "ONBOARDING_LOGIN_TO": "Connexion à",
-  "LOGIN_LOGINING": "Connexion en cours",
   "ONBOARDING_SCAN_QRCODE": "Scanne le QR-Code de ton établissement pour te connecter.",
   "ONBOARDING_QRCODE_VALIDATION": "Validation du QR-Code",
   "ONBOARDING_QRCODE_WAIT": "Cela peut prendre quelques instants...",
