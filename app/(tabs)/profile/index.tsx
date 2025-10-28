@@ -36,6 +36,7 @@ import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
+import i18n from "@/utils/i18n";
 
 
 function Tabs() {
@@ -313,7 +314,7 @@ function NewsSection() {
               <Typography variant="caption"
                 color="secondary"
               >
-                {item.createdAt.toLocaleDateString()} · {item.author}
+                {item.createdAt.toLocaleDateString(i18n.language)} · {item.author}
               </Typography>
             </Item>
           ))}

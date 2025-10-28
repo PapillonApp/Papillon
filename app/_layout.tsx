@@ -132,6 +132,7 @@ import { Buffer } from 'buffer';
 
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
+import i18n from '@/utils/i18n';
 import { checkConsent } from '@/utils/logger/consent';
 import { log, warn } from '@/utils/logger/logger';
 
@@ -149,6 +150,16 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
 
   const selectedColorEnum = useSettingsStore(state => state.personalization.colorSelected);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
+  const customLanguage = useSettingsStore(state => state.personalization.language);
+
+  useEffect(() => {
+    if (customLanguage) {
+      // Changing language is asynchronous, so we don't await it
+      i18n.changeLanguage(customLanguage).catch((error) => {
+        console.error("Error changing language:", error);
+      });
+    }
+  }, [customLanguage]);
 
   const color = useMemo(() => {
     const color = selectedColorEnum !== null ? AppColors.find(appColor => appColor.colorEnum === selectedColorEnum) : null;

@@ -28,13 +28,14 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
+import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import GradesWidget from "../index/widgets/Grades";
 import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
+import i18n from '@/utils/i18n';
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -497,11 +498,11 @@ export default function TabOneScreen() {
             actions={
               periods.map((period) => ({
                 id: "period:" + period.id,
-                title: period.name,
-                subtitle: `${period.start.toLocaleDateString("fr-FR", {
+                title: (getPeriodName(period.name || "") + " " + (isPeriodWithNumber(period.name || "") ? getPeriodNumber(period.name || "0") : "")).trim(),
+                subtitle: `${period.start.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
-                })} - ${period.end.toLocaleDateString("fr-FR", {
+                })} - ${period.end.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
                 })}`,
