@@ -36,6 +36,7 @@
   "ONBOARDING_TURBOSELF_SELECTHOST": "Hesaba atanan ana bilgisayarı seçin",
   "ONBOARDING_PRONOTE_PIN": "Pronote üzerinde oluşturduğun 4 haneli kodu yaz",
   "ONBOARDING_LOGIN_TO": "Giriş yapın",
+  "LOGIN_LOGINING": "Bağlanılıyor...",
   "ONBOARDING_SCAN_QRCODE": "Giriş yapmak için okulunun QR kodunu okut",
   "ONBOARDING_QRCODE_VALIDATION": "QR kodu doğrula",
   "ONBOARDING_QRCODE_WAIT": "Bu işlem biraz zaman alabilir...",

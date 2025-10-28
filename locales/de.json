@@ -36,6 +36,7 @@
   "ONBOARDING_TURBOSELF_SELECTHOST": "Wähle den deinem Account zugewiesenen Host",
   "ONBOARDING_PRONOTE_PIN": "Gebe den 4-Ziffern Code den du eben bei PRONOTE erstellt hast",
   "ONBOARDING_LOGIN_TO": "Anmelden in",
+  "LOGIN_LOGINING": "Anmeldung läuft...",
   "ONBOARDING_SCAN_QRCODE": "Scanne den QR-Code deiner Schule zum Anmelden.",
   "ONBOARDING_QRCODE_VALIDATION": "QR-Code Validierung",
   "ONBOARDING_QRCODE_WAIT": "Dies könnte ein paar Augenblicke dauern...",
