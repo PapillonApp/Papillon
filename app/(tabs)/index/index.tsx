@@ -347,7 +347,7 @@ const IndexScreen = () => {
       <LinearGradient
         colors={[accent + "77", accent + "00"]}
         locations={[0, 0.5]}
-        style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, height: "90%" }}
       />
 
       <Pattern
