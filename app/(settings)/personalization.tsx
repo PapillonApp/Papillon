@@ -127,9 +127,9 @@ const PersonalizationSettings = () => {
                 vAlign={"center"}
               >
                 <AnimatedPressable onPress={() => setSelectedTheme("light")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
@@ -142,9 +142,9 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("dark")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
@@ -157,9 +157,9 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("auto")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}

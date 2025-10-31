@@ -72,7 +72,8 @@
       "kccowpagnement personnalise",
       "kccowpagnement personnalisé",
       "qccomapgnement personndlise",
-      "qccomapgnement personndlisé"
+      "qccomapgnement personndlisé",
+      "consacperchorien"
     ]
   },
   {
@@ -2293,7 +2294,7 @@
       "S.E.S.",
       "S.E.S",
       "sfiences economiqhes et sociales",
-      "esciences economiques et sociales",
+      "esciences economiques et sociales"
     ]
   },
   {
@@ -3030,6 +3031,9 @@
       "Éducation pyhysque & sportive",
       "Éducationphysique&sportive",
       "Éducrtion hyxique & sportive",
+      "Éudcation physiqu & sportive",
+      "ED.PHYSIQUE & SPORT.",
+      "edphysique  sport",
       "Éudcation physiqu & sportive"
     ]
   },
@@ -7164,7 +7168,6 @@
   },
   {
     "label": "sciencesvieterre",
-    "pretty": "Sciences De La Vie & De La Terre",
     "pretty": "Sciences de la Vie & de la Terre",
     "emoji": "🌍",
     "formats": [
@@ -7247,7 +7250,8 @@
       "svp",
       "svt cap",
       "svte",
-      "svwt"
+      "svwt",
+      "SCIENCES VIE & TERRE"
     ]
   },
   {
@@ -8398,5 +8402,43 @@
       "vollye bal",
       "vowley ball"
     ]
+  },
+  {
+    "label": "maths expertes",
+    "pretty": "Maths-Expertes",
+    "emoji": "🧩",
+    "formats": [
+      "math expertes",
+      "maths experte",
+      "maths expertes tle",
+      "tle maths expertes",
+      "mathsexpertes"
+    ]
+  },
+  {
+    "label": "philosophie",
+    "pretty": "Philosophie",
+    "emoji": "🧠",
+    "formats": [
+      "philo",
+      "philo tle",
+      "philosophie tle",
+      "tle philo",
+      "tle philosophie"
+    ]
+  },
+  {
+    "label": "EMC",
+    "pretty": "Enseignement moral & civique",
+    "emoji": "🏛️",
+    "formats": [
+      "ENS. MORAL & CIVIQUE",
+      "enseignement moral et civique",
+      "enseignement moral & civique",
+      "emc",
+      "EMC"
+    ]
   }
+
 ]
+
