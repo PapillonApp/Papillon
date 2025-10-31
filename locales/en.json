@@ -47,6 +47,8 @@
   "ONBOARDING_LOGIN_PINCODE": "Enter your PRONOTE PIN code",
   "Onboarding_Load_Webview_Description": "We are loading your school’s website",
   "INPUT_PIN": "PIN code",
+  "SEARCH_UNIV_PLACEHOLDER": "Search an instance...",
+  "ONBOARDING_LOADING_LOGIN": "Connecting...",
   "WAITING": "Waiting",
   "IZLY_SMS_SEND": "You just received a login link, click on it and follow the steps.",
   "STEP": "Step",
