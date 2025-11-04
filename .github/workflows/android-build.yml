@@ -1,0 +1,139 @@
+name: Build Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Telegram Notification
+        run: |
+          MESSAGE="🔨 *Build Android démarré*
+          
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Déclenché par: ${{ github.actor }}
+          🔗 [Voir le workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps || true
+
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Setup keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+
+      - name: Configure Gradle
+        run: |
+          chmod +x android/gradlew
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+
+      - name: Build APK and AAB
+        run: |
+          cd android
+          echo "🔨 Building APK..."
+          ./gradlew assembleRelease --no-daemon
+          echo "🔨 Building AAB..."
+          ./gradlew bundleRelease --no-daemon
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      
+      - name: List APK files
+        run: |
+          echo "Listing APK files..."
+          ls -la android/app/build/outputs/apk/release/
+          
+      - name: Sign APK with jarsigner
+        run: |
+          echo "Signing APK..."
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore android/app/release.keystore \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            android/app/build/outputs/apk/release/app-release.apk \
+            ${{ secrets.KEY_ALIAS }}
+          
+          echo "Verifying signature..."
+          jarsigner -verify -verbose -certs android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Sign AAB with jarsigner
+        run: |
+          echo "Signing AAB..."
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore android/app/release.keystore \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            android/app/build/outputs/bundle/release/app-release.aab \
+            ${{ secrets.KEY_ALIAS }}
+          
+          echo "Verifying AAB signature..."
+          jarsigner -verify -verbose -certs android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: Telegram Notification
+        if: success()
+        run: |
+          MESSAGE="✅ *Build Android réussi !*
+          
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Par: ${{ github.actor }}
+          
+          📱 APK et AAB signés disponibles
+          🔗 [Télécharger les artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: Telegram Notification
+        if: failure()
+        run: |
+          MESSAGE="❌ *Build Android échoué*
+          
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Par: ${{ github.actor }}
+          
+          🔗 [Voir les logs d'erreur](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
