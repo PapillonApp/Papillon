@@ -226,7 +226,7 @@
   "Settings_Language_Title": "Language",
   "Settings_Language_Description": "Change language",
   "Settings_Personalization_Title_Card": "Personalization",
-  "Settings_Personalization_Subtitle_Card": "Themes, subject...",
+  "Settings_Personalization_Subtitle_Card": "Themes, subjects...",
   "Settings_SubjectPersonalization_Title": "Customize subjects",
   "Settings_Personalization_Accent": "Accent color",
   "Settings_Personalization_Accent_Description": "The color you choose here will apply to Papillon’s home page.",
@@ -295,3 +295,4 @@
   "Tasks_Sorting_Methods_Subject": "Subjects",
   "Tasks_Sorting_Methods_Done": "Undone"
 }
+
