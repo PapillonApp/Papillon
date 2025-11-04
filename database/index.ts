@@ -12,10 +12,10 @@ import News from '@/database/models/News';
 import Subject from '@/database/models/Subject';
 import Course from '@/database/models/Timetable';
 
-import Kid from './models/Kid';
-import { mySchema } from './schema';
 import { Balance } from './models/Balance';
 import CanteenHistoryItem from './models/CanteenHistory';
+import Kid from './models/Kid';
+import { mySchema } from './schema';
 
 const adapter = new SQLiteAdapter({
   schema: mySchema,

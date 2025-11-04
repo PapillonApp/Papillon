@@ -7,6 +7,7 @@ export type ApiModel = {
   sha256: string;
   size_bytes?: number;
   compatible_versions: string[];
+  date_created?: string;
 };
 
 export type ApiResponse = { model: ApiModel };

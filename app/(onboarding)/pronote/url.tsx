@@ -77,7 +77,7 @@ export default function URLInputScreen() {
     if (instanceURL.includes("http") && !instanceURL.includes("https")) {
       return alert.showAlert({
         title: "Instance non supportée",
-        description: "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous vous recommandons d’informer le chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
+        description: "Pour des raisons de sécurité, Papillon n'accepte pas les instances utilisant encore le protocole HTTP. Nous te recommandons d’informer ton chef d’établissement afin qu’il procède à la mise à jour de cette instance et préserve ainsi sa sécurité.",
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,

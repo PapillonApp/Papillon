@@ -8,6 +8,13 @@ import { Platform, Pressable, View } from "react-native";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Reanimated from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { runsIOS26 } from '../utils/IsLiquidGlass';
+
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
 
 export interface CalendarProps {
   date?: Date;
@@ -55,12 +62,14 @@ const Calendar: React.FC<CalendarProps> = ({
     )
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <Pressable
       onPress={() => setShowDatePicker(false)}
       style={{
         position: "absolute",
-        top: 0,
+        top: runsIOS26 ? insets.top + 46 : 0,
         left: 0,
         bottom: 0,
         right: 0,
@@ -84,13 +93,13 @@ const Calendar: React.FC<CalendarProps> = ({
             borderWidth: 0.5,
             borderRadius: 16,
             top: 4,
-            backgroundColor: colors.background + "CF",
+            backgroundColor: runsIOS26 ? "transparent" : colors.background + "CF",
           }}
           entering={PapillonAppearIn}
           exiting={PapillonAppearOut}
         >
-          <BlurView
-            tint={"prominent"}
+          <LiquidGlassView
+            effect='regular'
             style={{
               position: "absolute",
               top: 0,

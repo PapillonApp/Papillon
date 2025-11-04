@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { unzipSync } from "fflate";
 
 import { log } from "@/utils/logger/logger";
@@ -59,12 +59,15 @@ async function normalizeStagingLayout(stagingDir: string) {
     to: dstModelDir + "model.tflite",
   });
 
-  const maybe = ["tokenizer.json", "labels.json"];
+  const maybe = ["tokenizer.json", "labels.json", "word_index.json", "index_word.json"];
   for (const f of maybe) {
     const src = srcDirUri + f;
     const info = await FileSystem.getInfoAsync(src);
     if (info.exists) {
+      log(`[EXTRACT] Déplacement ${f}: ${src} -> ${dstModelDir + f}`);
       await FileSystem.moveAsync({ from: src, to: dstModelDir + f });
+    } else {
+      log(`[EXTRACT] Fichier manquant: ${f} (cherché dans ${src})`);
     }
   }
 }

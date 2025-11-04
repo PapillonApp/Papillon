@@ -36,8 +36,8 @@ const ICONS = {
 
 // Static style object to prevent recreation on every render
 const TAB_LABEL_STYLE = {
-  fontFamily: 'semibold',
-  fontSize: Platform.OS === 'ios' ? 12 : 13,
+  fontFamily: 'medium',
+  fontSize: Platform.OS === 'ios' ? 13 : 13,
 } as const;
 
 // Static icon functions to prevent recreation

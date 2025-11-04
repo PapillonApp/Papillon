@@ -44,6 +44,17 @@ export const useAccountStore = create<AccountsStorage>()(
           return account;
         }),
       }),
+      removeServiceFromAccount: (serviceId) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.services.find(service => service.id === serviceId)) {
+            return {
+              ...account,
+              services: account.services.filter(service => service.id !== serviceId),
+            };
+          }
+          return account;
+        }),
+      }),
       setAccountProfilePicture: (accountId, profilePicture) => set({
         accounts: get().accounts.map((account) => {
           if (account.id === accountId) {

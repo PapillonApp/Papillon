@@ -1,3 +1,4 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -5,23 +6,29 @@ import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
 
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
+import { database } from "@/database";
 import { useAccountStore } from '@/stores/account';
 import { useLogStore } from '@/stores/logs';
+import { useMagicStore } from "@/stores/magic";
+import { useSettingsStore } from "@/stores/settings";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
-import Typography from "@/ui/components/Typography";
-import { useSettingsStore } from "@/stores/settings";
-import ModelManager from "@/utils/magic/ModelManager";
-import { useAlert } from "@/ui/components/AlertProvider";
 import Stack from "@/ui/components/Stack";
-import Icon from "@/ui/components/Icon";
-import { Papicons } from "@getpapillon/papicons";
+import Typography from "@/ui/components/Typography";
+import { MAGIC_URL } from "@/utils/endpoints";
+import { log } from "@/utils/logger/logger";
+import ModelManager from "@/utils/magic/ModelManager";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
   const logsStore = useLogStore();
   const settingStore = useSettingsStore(state => state.personalization)
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
+  const magicStore = useMagicStore()
+
+  const magicStoreHomework = useMagicStore(state => state.processHomeworks)
 
   const { colors } = useTheme();
   const alert = useAlert();
@@ -165,7 +172,7 @@ export default function Devmode() {
         <Item
           onPress={async () => {
             try {
-              const result = await ModelManager.predict("IL Y A UNE EVALUATION DEMAIN ATTENTION UNE EVALUATION JE DIT BIEN UNE EVALUATIOOOOOOOON", true);
+              const result = await ModelManager.predict("ds analyse de doc", true);
               if ('error' in result) {
                 Alert.alert("Erreur de prédiction", result.error);
               } else {
@@ -180,6 +187,80 @@ export default function Devmode() {
           }}
         >
           <Typography variant="title">Tester une prédiction</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            try {
+              magicStore.clear();
+              Alert.alert("Cache vidé", "Le cache des prédictions Magic a été vidé avec succès !");
+            } catch (error) {
+              Alert.alert("Erreur", `Erreur lors du vidage du cache: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Vider le cache Magic</Typography>
+          <Trailing>
+            <Typography variant="caption">
+              {magicStoreHomework.length} devoirs
+            </Typography>
+          </Trailing>
+        </Item>
+        <Item
+          onPress={() => {
+            const currentURL = settingStore.magicModelURL || MAGIC_URL;
+
+            Alert.prompt(
+              "URL Custom Magic Model",
+              `URL actuelle: ${currentURL}\n\nEntrez une nouvelle URL:`,
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel"
+                },
+                {
+                  text: "Valider",
+                  onPress: (newURL?: string) => {
+                    if (newURL && newURL.trim()) {
+                      mutateProperty("personalization", {
+                        magicModelURL: newURL.trim()
+                      });
+                      Alert.alert("Succès", "URL du modèle Magic mise à jour!");
+                    }
+                  }
+                }
+              ],
+              "plain-text",
+              currentURL
+            );
+          }}
+        >
+          <Typography variant="title">Changer l&apos;URL Custom Magic</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            Alert.alert(
+              "Reset URL Magic Model",
+              "Voulez-vous remettre l'URL du modèle Magic par défaut?",
+              [
+                {
+                  text: "Annuler",
+                  style: "cancel"
+                },
+                {
+                  text: "Reset",
+                  style: "destructive",
+                  onPress: () => {
+                    mutateProperty("personalization", {
+                      magicModelURL: MAGIC_URL
+                    });
+                    Alert.alert("Succès", "URL du modèle Magic remise par défaut!");
+                  }
+                }
+              ]
+            );
+          }}
+        >
+          <Typography variant="title">Reset URL Magic Model</Typography>
         </Item>
 
       </List>
@@ -217,6 +298,66 @@ export default function Devmode() {
               onValueChange={value => mutateProperty("personalization", { showAlertAtLogin: value })}
             />
           </Trailing>
+        </Item>
+      </List>
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Magic Store
+        </Typography>
+      </Stack>
+
+      <List>
+        <Item
+          onPress={() => magicStore.clear()}
+        >
+          <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => log(JSON.stringify(magicStoreHomework))}
+        >
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => resetMagicCache()}
+        >
+          <Typography variant="title">Reset Magic Cache</Typography>
+        </Item>
+      </List>
+
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Star"} size={18} />
+        </Icon>
+        <Typography>
+          Session
+        </Typography>
+      </Stack>
+
+
+
+
+      <List>
+        <Item
+          onPress={async () => {
+            await database.write(async () => {
+              await database.unsafeResetDatabase()
+            })
+          }}
+        >
+          <Typography variant="title">Réinitialiser la base de données</Typography>
         </Item>
       </List>
     </ScrollView >

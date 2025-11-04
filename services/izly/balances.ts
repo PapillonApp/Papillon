@@ -1,13 +1,13 @@
-import { balance, Identification, OperationKind, operations } from "ezly";
+import { balance, Identification, TransactionGroup, operations } from "ezly";
 import { Balance } from "../shared/balance";
 
 export async function fetchIzlyBalances(accountId: string, session: Identification): Promise<Balance[]> {
   const fetchedBalance = await balance(session);
-  const payments = await operations(session, OperationKind.Payment)
+  const payments = await operations(session, TransactionGroup.Payments)
   
   const paysFullPrice = payments.filter((payment) => payment.amount === 3.30).length > 4;
 
-  const mealPrice = paysFullPrice ? 3.30 : 1;
+  const mealPrice = (paysFullPrice ? 3.30 : 1) * 100;
   const remainingMeal = Math.floor(fetchedBalance.value / (mealPrice));
   
   return [

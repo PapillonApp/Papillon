@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
+import { login, tokenize } from "ezly";
 import LottieView from "lottie-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Keyboard,
@@ -12,21 +16,19 @@ import Reanimated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { initializeAccountManager } from "@/services/shared";
+import { useAccountStore } from "@/stores/account";
+import { ServiceAccount, Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { login, tokenize } from "ezly";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { useAccountStore } from "@/stores/account";
-import { ServiceAccount, Services } from "@/stores/account/types";
-import uuid from "@/utils/uuid/uuid";
 import { log } from "@/utils/logger/logger";
-import { useTranslation } from "react-i18next";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
+import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 100;
 
@@ -90,6 +92,7 @@ export default function TurboSelfLoginWithCredentials() {
 
     if (action === "addService") {
       store.addServiceToAccount(store.lastUsedAccount, service);
+      await initializeAccountManager()
       router.back();
       return router.back();
     }

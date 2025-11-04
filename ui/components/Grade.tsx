@@ -5,6 +5,7 @@ import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
 import Stack from "./Stack";
 import Typography from "./Typography";
+import i18n from "@/utils/i18n";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 
@@ -29,7 +30,7 @@ const Grade: React.FC<GradeProps> = React.memo(
     const { colors } = theme;
 
     const formattedDate = useMemo(
-      () => new Date(date).toLocaleDateString("fr-FR", {
+      () => new Date(date).toLocaleDateString(i18n.language, {
         day: "2-digit",
         month: "long",
         year: "numeric",
@@ -112,8 +113,8 @@ const Grade: React.FC<GradeProps> = React.memo(
               style={styles.stackPadding}
             >
               <Stack inline
-                     style={styles.flexContainer}
-                     gap={0}
+                style={styles.flexContainer}
+                gap={0}
               >
                 <Typography
                   variant="title"

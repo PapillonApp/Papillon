@@ -79,7 +79,7 @@ export default function SettingsAbout() {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
       leading: <Papicons name="PiggyBank" />,
-      onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible."),
+      onPress: () => Linking.openURL('https://ko-fi.com/thepapillonapp/leaderboard'),
     },
     {
       title: t("Settings_About_Discord"),
@@ -190,7 +190,7 @@ export default function SettingsAbout() {
       </List>
       <List>
         {contributors.map(item => (
-          <Item key={item.login}>
+          <Item key={item.login} onPress={() => Linking.openURL(item.html_url)}>
             <Leading>
               <Avatar size={40} squared author={item.login} imageURL={item.avatar_url} />
             </Leading>

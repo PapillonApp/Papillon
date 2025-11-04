@@ -1,5 +1,6 @@
 import { Alert, Platform, ScrollView } from "react-native";
 import Stack from "@/ui/components/Stack";
+import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
 import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
@@ -14,7 +15,7 @@ import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -23,6 +24,7 @@ import { FadeIn, FadeOut } from "react-native-reanimated";
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
+  const { t } = useTranslation()
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -41,14 +43,7 @@ const PersonalizationSettings = () => {
   }, []);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        // change theme in store
-        mutateProperty('personalization', {
-          theme: selectedTheme
-        });
-      }, 100);
-    });
+    mutateProperty('personalization', { theme: selectedTheme });
   }, [selectedTheme]);
 
   return (
@@ -130,9 +125,9 @@ const PersonalizationSettings = () => {
                 vAlign={"center"}
               >
                 <AnimatedPressable onPress={() => setSelectedTheme("light")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
@@ -145,9 +140,9 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("dark")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
@@ -160,9 +155,9 @@ const PersonalizationSettings = () => {
                   </Stack>
                 </AnimatedPressable>
                 <AnimatedPressable onPress={() => setSelectedTheme("auto")}
-                  style={{ height: "100%" }}
+                  style={{ overflow: "hidden", height: "100%" }}
                 >
-                  <Stack style={{ paddingHorizontal: 15, height: "100%" }}
+                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
                     backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}
@@ -204,6 +199,26 @@ const PersonalizationSettings = () => {
             <Typography variant={"caption"}
               color={"secondary"}
             >{t("Settings_Personalization_Subject_Description")}</Typography>
+          </Item>
+        </List>
+        <List>
+          <Item
+            onPress={() => {
+              router.push("/(settings)/language");
+            }}
+          >
+            <Icon size={30}>
+              <EarthIcon width={25} height={25} stroke="#818181" />
+            </Icon>
+            <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Language_Description")}</Typography>
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" color="#818181" />
+              </Icon>
+            </Trailing>
           </Item>
         </List>
       </ScrollView>

@@ -6,6 +6,7 @@ import { warn } from "@/utils/logger/logger";
 import { getDatabaseInstance } from "./DatabaseProvider";
 import { mapKidsToShared } from "./mappers/kids";
 import Kid from "./models/Kid";
+import { safeWrite } from "./utils/safeTransaction";
 
 export async function addKidToDatabase(kids: SharedKid[]) {
   const db = getDatabaseInstance()
@@ -13,7 +14,7 @@ export async function addKidToDatabase(kids: SharedKid[]) {
     const existing = await db.get('kids').query(Q.where('kidId', kid.id)).fetch();
 
     if (existing.length === 0) {
-      await db.write(async () => {
+      await safeWrite(db, async () => {
         await db.get('kids').create((record: Model) => {
           const kidsModel = record as Kid
           Object.assign(kidsModel, {
@@ -25,7 +26,7 @@ export async function addKidToDatabase(kids: SharedKid[]) {
             dateOfBirth: kid.dateOfBirth.getTime()
           })
         })
-      })
+      }, 10000, 'addKidToDatabase')
     }
   }
 }

@@ -30,7 +30,7 @@ function mapBookings(data: TurboBooking[], accountId: string): BookingDay[] {
   }
 
   return Object.entries(toReturn).map(([day, bookings]) => ({
-    date: new Date(day),
+    date: new Date(new Date(day).setDate(new Date(day).getDate() - 1)),
     available: bookings
   }));
 }

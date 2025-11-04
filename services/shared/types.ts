@@ -1,6 +1,10 @@
+import { Multi as MultiClient } from "esup-multi.js";
+import { Identification } from "ezly";
 import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
+import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
+import { Client as TurboselfClient } from "turboself-api";
 
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
@@ -8,6 +12,7 @@ import {
   Booking,
   BookingDay,
   CanteenHistoryItem,
+  CanteenKind,
   CanteenMenu,
   QRCode,
 } from "@/services/shared/canteen";
@@ -18,16 +23,17 @@ import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
 
-import { EcoleDirecte } from "../ecoledirecte";
-import { Skolengo } from "../skolengo";
-import { Kid } from "./kid";
-import { Client as TurboselfClient } from "turboself-api";
-import { Client as ArdClient } from "pawrd";
-import { TurboSelf } from "../turboself";
+import { Alise } from "../alise";
 import { ARD } from "../ard";
-import { Balance } from "./balance";
+import { EcoleDirecte } from "../ecoledirecte";
 import { Izly } from "../izly";
-import { Identification } from "ezly";
+import { Multi } from "../multi";
+import { Skolengo } from "../skolengo";
+import { TurboSelf } from "../turboself";
+import { Balance } from "./balance";
+import { Kid } from "./kid";
+import { User } from "appscho";
+import { Appscho } from "@/services/appscho";
 
 /** Represents a plugin for a school service.
  *
@@ -41,18 +47,21 @@ export interface SchoolServicePlugin {
   capabilities: Capabilities[];
   authData: Auth;
   session:
+    | ArdClient
+    | Identification
+    | MultiClient
     | SessionHandle
     | SkolengoSession
     | Session
     | TurboselfClient
-    | ArdClient
-    | Identification
+    | User
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho>;
   getKids?: () => Kid[];
+  getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
   getNews?: () => Promise<News[]>;
   getGradesForPeriod?: (period: Period, kid?: Kid) => Promise<PeriodGrades>;
@@ -107,7 +116,7 @@ export enum Capabilities {
   CANTEEN_BALANCE,
   CANTEEN_HISTORY,
   CANTEEN_BOOKINGS,
-  CANTEEN_QRCODE
+  CANTEEN_QRCODE,
 }
 
 /**
