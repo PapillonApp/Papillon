@@ -19,6 +19,12 @@ jobs:
       - name: Check version
         run: echo "Current version in package.json -> $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
 
+      - name: Validate version update
+        if: ${{ !inputs.version_updated }}
+        run: |
+          echo "❌ Version not confirmed as updated. Please update package.json and try again."
+          exit 1
+
       - name: Send build start notification
         run: |
           MESSAGE="🔨 *Android Build Started*
