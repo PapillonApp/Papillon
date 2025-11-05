@@ -12,30 +12,39 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check version
-        run: echo "Current version in package.json -> $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
-
-      - name: Auto-increment version
         run: |
           current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
-          IFS='.' read -r major minor patch <<< "$current"
-          if [ "$patch" -eq 9 ]; then
-            new_minor=$((minor + 1))
-            new_patch=0
-            new_version="$major.$new_minor.$new_patch"
-          else
-            new_patch=$((patch + 1))
-            new_version="$major.$minor.$new_patch"
-          fi
-          sed -i "s/\"version\": \"$current\"/\"version\": \"$new_version\"/" package.json
-          clean_version=$(echo $new_version | tr -d '.')
-          if [ ${#clean_version} -eq 3 ]; then
-            version_code=$((clean_version * 100))
-          else
-            version_code=$((clean_version * 10))
-          fi
-          echo "Version auto-incremented from $current to $new_version (code: $version_code)"
-          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "Current version in package.json -> $current"
+          echo "NEW_VERSION=$current" >> $GITHUB_ENV
+          clean_version=$(echo $current | tr -d '.')
+          base_code=$((clean_version * 100))
+          run_suffix=$(( ${{ github.run_number }} % 100 ))
+          version_code=$((base_code + run_suffix))
           echo "VERSION_CODE=$version_code" >> $GITHUB_ENV
+
+      - name: Sync iOS version with package.json
+        run: |
+          package_version=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
+          plist_version=$(grep -A 1 'CFBundleShortVersionString' ios/Papillon/Info.plist | tail -1 | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+          if [ "$package_version" != "$plist_version" ]; then
+            echo "Versions differ: package.json=$package_version, Info.plist=$plist_version. Updating Info.plist..."
+            sed -i "/CFBundleShortVersionString/{n;s|<string>.*</string>|<string>$package_version</string>|;}" ios/Papillon/Info.plist
+            echo "Info.plist updated to $package_version"
+          else
+            echo "Versions are already in sync: $package_version"
+          fi
+
+      - name: Commit version update
+        run: |
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add ios/Papillon/Info.plist
+            git commit -m "Sync iOS version to ${{ env.NEW_VERSION }}"
+            git push origin ${{ github.ref_name }}
+          fi
 
       - name: Send build start notification
         run: |
@@ -55,7 +64,7 @@ jobs:
 
       - name: Create Release and Trigger iOS Build
         run: |
-          gh release create "v${{ env.NEW_VERSION }}" --title "Release v${{ env.NEW_VERSION }}" --notes "Auto-release for new version ${{ env.NEW_VERSION }}, triggering iOS build via Xcode Cloud."
+          gh release create "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" --title "Release v${{ env.NEW_VERSION }} (run ${{ github.run_number }})" --notes "Auto-release for new version ${{ env.NEW_VERSION }}, run ${{ github.run_number }}, triggering iOS build via Xcode Cloud."
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -85,7 +94,10 @@ jobs:
           # Set signing config for release build type
           sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/' android/app/build.gradle
           
-          echo "Signing config configured in build.gradle"
+          # Set version code for unique uploads
+          sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" android/app/build.gradle
+          
+          echo "Signing config and version code configured in build.gradle"
 
       - name: Configure Gradle properties
         run: |
@@ -159,15 +171,6 @@ jobs:
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d parse_mode=Markdown \
             -d text="$MESSAGE"
-
-      - name: Commit version update
-        if: success()
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add package.json
-          git commit -m "Auto-increment version to ${{ env.NEW_VERSION }}"
-          git push origin ${{ github.ref_name }}
 
       - name: Send failure notification
         if: failure()
