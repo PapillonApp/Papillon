@@ -266,7 +266,7 @@ export default function SettingsIndex() {
                       </Stack>
                     }
                     {establishment &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flex: 1 }}>
                         <Typography
                           variant={"body1"}
                           color="secondary"
