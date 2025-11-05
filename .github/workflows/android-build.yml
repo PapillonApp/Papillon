@@ -2,6 +2,11 @@ name: Build Android
 
 on:
   workflow_dispatch:
+    inputs:
+      version_updated:
+        description: 'Have you updated the version in package.json?'
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -10,6 +15,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Check version
+        run: echo "Current version in package.json: $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
 
       - name: Send build start notification
         run: |
