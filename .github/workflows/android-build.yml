@@ -2,11 +2,6 @@ name: Build Android
 
 on:
   workflow_dispatch:
-    inputs:
-      version_updated:
-        description: 'Have you updated the version in package.json? (Will fail at Play Store upload if not incremented)'
-        required: true
-        type: boolean
 
 jobs:
   build:
@@ -19,11 +14,28 @@ jobs:
       - name: Check version
         run: echo "Current version in package.json -> $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
 
-      - name: Validate version update
-        if: ${{ !inputs.version_updated }}
+      - name: Auto-increment version
         run: |
-          echo "❌ Version not confirmed as updated. Please update package.json and try again."
-          exit 1
+          current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
+          IFS='.' read -r major minor patch <<< "$current"
+          if [ "$patch" -eq 9 ]; then
+            new_minor=$((minor + 1))
+            new_patch=0
+            new_version="$major.$new_minor.$new_patch"
+          else
+            new_patch=$((patch + 1))
+            new_version="$major.$minor.$new_patch"
+          fi
+          sed -i "s/\"version\": \"$current\"/\"version\": \"$new_version\"/" package.json
+          clean_version=$(echo $new_version | tr -d '.')
+          if [ ${#clean_version} -eq 3 ]; then
+            version_code=$((clean_version * 100))
+          else
+            version_code=$((clean_version * 10))
+          fi
+          echo "Version auto-incremented from $current to $new_version (code: $version_code)"
+          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "VERSION_CODE=$version_code" >> $GITHUB_ENV
 
       - name: Send build start notification
         run: |
@@ -133,7 +145,7 @@ jobs:
           👤 Triggered by: ${{ github.actor }}
           🔢 Run: #${{ github.run_number }}
           ⏱️ Duration: ~${DURATION}s
-          📱 Version: 8.2.2 (82100)
+          📱 Version: ${{ env.NEW_VERSION }} (${{ env.VERSION_CODE }})
           🏪 AAB uploaded to Play Store (Internal Testing)
           🔗 [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
@@ -142,6 +154,15 @@ jobs:
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d parse_mode=Markdown \
             -d text="$MESSAGE"
+
+      - name: Commit version update
+        if: success()
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add package.json
+          git commit -m "Auto-increment version to ${{ env.NEW_VERSION }}"
+          git push origin ${{ github.ref_name }}
 
       - name: Send failure notification
         if: failure()
