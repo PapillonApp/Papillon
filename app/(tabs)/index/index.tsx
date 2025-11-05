@@ -205,23 +205,28 @@ const IndexScreen = () => {
   }, [refreshTrigger])
 
   useEffect(() => {
-    const fetchData = async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    const fetchData = () => {
+      const now = new Date();
+      const today = new Date(now.getTime());
+      today.setUTCHours(0, 0, 0, 0);
 
-      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+      const todayCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
 
-      if (dayCourse.length === 0) {
+      const remainingTodayCourses = todayCourses.filter(course => course.to.getTime() > now.getTime());
+
+      if (remainingTodayCourses.length > 0) {
+        setCourses(remainingTodayCourses);
+      } else {
         const futureDays = weeklyTimetable
           .filter(day => day.date.getTime() > today.getTime())
           .sort((a, b) => a.date.getTime() - b.date.getTime());
+
         if (futureDays.length > 0) {
-          dayCourse = futureDays[0].courses;
+          setCourses(futureDays[0].courses);
+        } else {
+          setCourses([]);
         }
       }
-
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
-      setCourses(dayCourse);
     };
     fetchData();
   }, [weeklyTimetable]);
@@ -299,17 +304,26 @@ const IndexScreen = () => {
   }, [freshHomeworks]);
 
   const getScheduleMessage = () => {
-    const today = new Date();
+    const now = new Date();
+    const today = new Date(now.getTime());
     today.setUTCHours(0, 0, 0, 0);
 
     const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+
     if (todayAllCourses.length === 0) {
-      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
-    } else if (todayAllCourses.length === 1) {
+      return t("Home_Planned_None");
+    }
+
+    const remainingCount = todayAllCourses.filter(course => course.to.getTime() > now.getTime()).length;
+
+    if (remainingCount > 1) {
+      return t("Home_Planned_Number", { number: remainingCount });
+    }
+    if (remainingCount === 1) {
       return t("Home_Planned_One");
     }
-    return t("Home_Planned_Number", { number: todayAllCourses.length });
 
+    return t("Home_Planned_None");
   };
 
   const headerItems = [
