@@ -1,0 +1,187 @@
+name: Release Apps
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check version
+        run: echo "Current version in package.json -> $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
+
+      - name: Auto-increment version
+        run: |
+          current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
+          IFS='.' read -r major minor patch <<< "$current"
+          if [ "$patch" -eq 9 ]; then
+            new_minor=$((minor + 1))
+            new_patch=0
+            new_version="$major.$new_minor.$new_patch"
+          else
+            new_patch=$((patch + 1))
+            new_version="$major.$minor.$new_patch"
+          fi
+          sed -i "s/\"version\": \"$current\"/\"version\": \"$new_version\"/" package.json
+          clean_version=$(echo $new_version | tr -d '.')
+          if [ ${#clean_version} -eq 3 ]; then
+            version_code=$((clean_version * 100))
+          else
+            version_code=$((clean_version * 10))
+          fi
+          echo "Version auto-incremented from $current to $new_version (code: $version_code)"
+          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "VERSION_CODE=$version_code" >> $GITHUB_ENV
+
+      - name: Send build start notification
+        run: |
+          MESSAGE="🔨 *App Release Started*
+
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+          📅 Date: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: Create Release and Trigger iOS Build
+        run: |
+          gh release create "v${{ env.NEW_VERSION }}" --title "Release v${{ env.NEW_VERSION }}" --notes "Auto-release for new version ${{ env.NEW_VERSION }}, triggering iOS build via Xcode Cloud."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps || true
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+
+      - name: Configure release signing
+        run: |
+          # Add release signing config to build.gradle
+          sed -i '/signingConfigs {/a\        release {\n            storeFile file('\''release.keystore'\'')\n            storePassword '\''${{ secrets.KEYSTORE_PASSWORD }}'\''\n            keyAlias '\''${{ secrets.KEY_ALIAS }}'\''\n            keyPassword '\''${{ secrets.KEY_PASSWORD }}'\''\n        }' android/app/build.gradle
+          
+          # Set signing config for release build type
+          sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/' android/app/build.gradle
+          
+          echo "Signing config configured in build.gradle"
+
+      - name: Configure Gradle properties
+        run: |
+          chmod +x android/gradlew
+          echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+
+      - name: Build release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Build release AAB
+        run: |
+          cd android
+          ./gradlew bundleRelease --no-daemon
+      
+      - name: Sign APK with keystore
+        run: |
+          echo "Signing APK..."
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore android/app/release.keystore \
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+            -keypass ${{ secrets.KEY_PASSWORD }} \
+            android/app/build/outputs/apk/release/app-release.apk \
+            ${{ secrets.KEY_ALIAS }}
+          
+          echo "Verifying signature..."
+          jarsigner -verify -verbose -certs android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: Publish to Google Play Store
+        if: success()
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_KEY }}
+          packageName: xyz.getpapillon.app
+          releaseFiles: android/app/build/outputs/bundle/release/*.aab
+          track: internal
+          inAppUpdatePriority: 3
+          status: draft
+
+      - name: Send success notification
+        if: success()
+        run: |
+          DURATION=$((SECONDS - 0))  # Approximate, since SECONDS starts from 0
+          MESSAGE="✅ *App Release Successful!*
+
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+          ⏱️ Duration: ~${DURATION}s
+          📱 Version: ${{ env.NEW_VERSION }} (${{ env.VERSION_CODE }})
+          🤖 Android: APK & AAB signed + uploaded on Play Store
+          🍎 iOS: Build triggered via Xcode Cloud
+          🔗 [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: Commit version update
+        if: success()
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add package.json
+          git commit -m "Auto-increment version to ${{ env.NEW_VERSION }}"
+          git push origin ${{ github.ref_name }}
+
+      - name: Send failure notification
+        if: failure()
+        run: |
+          MESSAGE="❌ *App Release Failed*
+
+          📦 Repository: \`${{ github.repository }}\`
+          🌿 Branch: \`${{ github.ref_name }}\`
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+
+          🔗 [View error logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
