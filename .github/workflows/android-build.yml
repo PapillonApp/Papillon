@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check version
-        run: echo "Current version in package.json: $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
+        run: echo "Current version in package.json -> $(grep '"version"' package.json | head -1 | cut -d'"' -f4)"
 
       - name: Send build start notification
         run: |
