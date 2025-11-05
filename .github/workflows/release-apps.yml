@@ -1,4 +1,4 @@
-name: Build Android
+name: Release Apps
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Send build start notification
         run: |
-          MESSAGE="🔨 *Android Build Started*
+          MESSAGE="🔨 *App Release Started*
 
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
@@ -52,6 +52,10 @@ jobs:
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d parse_mode=Markdown \
             -d text="$MESSAGE"
+
+      - name: Create Release and Trigger iOS Build
+        run: |
+          gh release create "v${{ env.NEW_VERSION }}" --title "Release v${{ env.NEW_VERSION }}" --notes "Auto-release for new version ${{ env.NEW_VERSION }}, triggering iOS build via Xcode Cloud."
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -138,7 +142,7 @@ jobs:
         if: success()
         run: |
           DURATION=$((SECONDS - 0))  # Approximate, since SECONDS starts from 0
-          MESSAGE="✅ *Android Build Successful!*
+          MESSAGE="✅ *App Release Successful!*
 
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
@@ -146,7 +150,8 @@ jobs:
           🔢 Run: #${{ github.run_number }}
           ⏱️ Duration: ~${DURATION}s
           📱 Version: ${{ env.NEW_VERSION }} (${{ env.VERSION_CODE }})
-          🏪 AAB uploaded to Play Store (Internal Testing)
+          🤖 Android: APK & AAB signed + uploaded on Play Store
+          🍎 iOS: Build triggered via Xcode Cloud
           🔗 [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           
@@ -167,7 +172,7 @@ jobs:
       - name: Send failure notification
         if: failure()
         run: |
-          MESSAGE="❌ *Android Build Failed*
+          MESSAGE="❌ *App Release Failed*
 
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
