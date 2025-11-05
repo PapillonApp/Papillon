@@ -63,6 +63,8 @@ jobs:
             -d text="$MESSAGE"
 
       - name: Create Release and Trigger iOS Build
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" --title "Release v${{ env.NEW_VERSION }} (run ${{ github.run_number }})" --notes "Auto-release for new version ${{ env.NEW_VERSION }}, run ${{ github.run_number }}, triggering iOS build via Xcode Cloud."
 
