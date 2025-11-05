@@ -2,6 +2,15 @@ name: Release Apps
 
 on:
   workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Type de version'
+        required: true
+        default: 'mineur'
+        type: choice
+        options:
+        - majeur
+        - mineur
 
 jobs:
   build:
@@ -18,13 +27,19 @@ jobs:
         run: |
           current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
           IFS='.' read -r major minor patch <<< "$current"
-          if [ "$patch" -eq 9 ]; then
+          if [ "${{ github.event.inputs.version_type }}" = "majeur" ]; then
             new_minor=$((minor + 1))
             new_patch=0
             new_version="$major.$new_minor.$new_patch"
           else
-            new_patch=$((patch + 1))
-            new_version="$major.$minor.$new_patch"
+            if [ "$patch" -eq 9 ]; then
+              new_minor=$((minor + 1))
+              new_patch=0
+              new_version="$major.$new_minor.$new_patch"
+            else
+              new_patch=$((patch + 1))
+              new_version="$major.$minor.$new_patch"
+            fi
           fi
           sed -i "s/\"version\": \"$current\"/\"version\": \"$new_version\"/" package.json
           clean_version=$(echo $new_version | tr -d '.')
