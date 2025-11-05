@@ -9,7 +9,7 @@ on:
         default: 'mineur'
         type: choice
         options:
-        - majeur
+        - mineur
         - mineur
 
 jobs:
