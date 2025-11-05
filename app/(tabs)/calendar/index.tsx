@@ -163,22 +163,24 @@ export default function TabOneScreen() {
   // Store the reference date for index 10000
   const referenceDate = useRef(new Date());
   useEffect(() => {
-    referenceDate.current.setHours(0, 0, 0, 0);
+    referenceDate.current.setUTCHours(0, 0, 0, 0);
   }, []);
 
   // Helper to get date from index
   const getDateFromIndex = useCallback((index: number) => {
     const d = new Date(referenceDate.current);
-    d.setDate(referenceDate.current.getDate() + (index - INITIAL_INDEX));
+    d.setUTCDate(referenceDate.current.getUTCDate() + (index - INITIAL_INDEX));
     return d;
   }, [INITIAL_INDEX]);
 
   // Helper to get index from date
   const getIndexFromDate = useCallback((d: Date) => {
     const base = new Date(referenceDate.current);
-    base.setHours(0, 0, 0, 0);
-    const diff = Math.floor((d.setHours(0, 0, 0, 0) - base.getTime()) / (1000 * 60 * 60 * 24));
-    return INITIAL_INDEX + diff;
+    const targetDate = new Date(d);
+    targetDate.setUTCHours(0, 0, 0, 0);
+    const diffTime = targetDate.getTime() - base.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    return INITIAL_INDEX + diffDays;
   }, [INITIAL_INDEX]);
 
   // FlatList ref for programmatic scroll
@@ -245,11 +247,11 @@ export default function TabOneScreen() {
 
   const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors }: { dayDate: Date, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
     const normalizedDayDate = new Date(dayDate);
-    normalizedDayDate.setHours(0, 0, 0, 0);
+    normalizedDayDate.setUTCHours(0, 0, 0, 0);
 
     const rawDayEvents: SharedCourse[] = timetable.find(w => {
       const weekDate = new Date(w.date);
-      weekDate.setHours(0, 0, 0, 0);
+      weekDate.setUTCHours(0, 0, 0, 0);
       return weekDate.getTime() === normalizedDayDate.getTime();
     })?.courses ?? []
 
