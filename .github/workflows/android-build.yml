@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_updated:
-        description: 'Have you updated the version in package.json?'
+        description: 'Have you updated the version in package.json? (Will fail at Play Store upload if not incremented)'
         required: true
         type: boolean
 
