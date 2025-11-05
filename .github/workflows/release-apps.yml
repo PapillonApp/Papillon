@@ -10,7 +10,7 @@ on:
         type: choice
         options:
         - mineur
-        - mineur
+        - patch
 
 jobs:
   build:
