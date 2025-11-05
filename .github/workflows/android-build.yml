@@ -2,12 +2,6 @@ name: Build Android
 
 on:
   workflow_dispatch:
-    inputs:
-      send_telegram:
-        description: 'Send Telegram notifications?'
-        required: false
-        default: true
-        type: boolean
 
 jobs:
   build:
@@ -18,14 +12,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Send build start notification
-        if: ${{ inputs.send_telegram }}
         run: |
-          MESSAGE="🔨 *Build Android démarré*
-          
+          MESSAGE="🔨 *Android Build Started*
+
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
-          👤 Déclenché par: ${{ github.actor }}
-          🔗 [Voir le workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+          📅 Date: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
@@ -114,17 +109,20 @@ jobs:
           status: draft
 
       - name: Send success notification
-        if: ${{ success() && inputs.send_telegram }}
+        if: success()
         run: |
-          MESSAGE="✅ *Build Android réussi !*
-          
+          DURATION=$((SECONDS - 0))  # Approximate, since SECONDS starts from 0
+          MESSAGE="✅ *Android Build Successful!*
+
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
-          👤 Déclenché par: ${{ github.actor }}
-          
-          📱 APK et AAB signés disponibles
-          🏪 AAB uploadé sur le Play Store (Test interne)
-          🔗 [Télécharger les artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+          ⏱️ Duration: ~${DURATION}s
+          📱 Version: 8.2.2 (82100)
+          🏪 AAB uploaded to Play Store (Internal Testing)
+          🔗 [Download artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          🔗 [View workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
@@ -132,16 +130,17 @@ jobs:
             -d text="$MESSAGE"
 
       - name: Send failure notification
-        if: ${{ failure() && inputs.send_telegram }}
+        if: failure()
         run: |
-          MESSAGE="❌ *Build Android échoué*
-          
+          MESSAGE="❌ *Android Build Failed*
+
           📦 Repository: \`${{ github.repository }}\`
           🌿 Branch: \`${{ github.ref_name }}\`
-          👤 Déclenché par: ${{ github.actor }}
-          
-          🔗 [Voir les logs d'erreur](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          
+          👤 Triggered by: ${{ github.actor }}
+          🔢 Run: #${{ github.run_number }}
+
+          🔗 [View error logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d parse_mode=Markdown \
