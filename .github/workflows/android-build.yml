@@ -53,23 +53,31 @@ jobs:
           echo "Aligning and signing APK..."
           ZIPALIGN=$(find $ANDROID_HOME/build-tools -name zipalign | sort -V | tail -n 1)
           APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -V | tail -n 1)
+          UNALIGNED_APK=android/app/build/outputs/apk/release/app-release.apk
           ALIGNED_APK=android/app/build/outputs/apk/release/app-release-aligned.apk
           FINAL_APK=android/app/build/outputs/apk/release/app-release-final.apk
 
           echo "Using zipalign at: $ZIPALIGN"
           echo "Using apksigner at: $APKSIGNER"
 
-          $ZIPALIGN -v -p 4 android/app/build/outputs/apk/release/app-release.apk $ALIGNED_APK
+          # Align APK
+          $ZIPALIGN -v -p 4 $UNALIGNED_APK $ALIGNED_APK
 
+          # Sign aligned APK
           $APKSIGNER sign --ks android/app/release.keystore \
             --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
             --key-pass pass:${{ secrets.KEY_PASSWORD }} \
             --out $FINAL_APK \
             $ALIGNED_APK
 
+          # Verify signature
           $APKSIGNER verify --verbose --print-certs $FINAL_APK
 
-          mv $FINAL_APK android/app/build/outputs/apk/release/app-release.apk
+          # Replace unaligned APK by final signed & aligned APK
+          mv $FINAL_APK $UNALIGNED_APK
+
+          # Clean intermediate aligned APK
+          rm -f $ALIGNED_APK
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
