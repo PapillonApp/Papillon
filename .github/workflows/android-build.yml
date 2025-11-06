@@ -1,0 +1,86 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps || true
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+
+      - name: Configure release signing
+        run: |
+          sed -i '/signingConfigs {/a\        release {\n            storeFile file('\''release.keystore'\'')\n            storePassword '\''${{ secrets.KEYSTORE_PASSWORD }}'\''\n            keyAlias '\''${{ secrets.KEY_ALIAS }}'\''\n            keyPassword '\''${{ secrets.KEY_PASSWORD }}'\''\n        }' android/app/build.gradle
+          sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/' android/app/build.gradle
+          sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" android/app/build.gradle
+          echo "Signing config and version code configured in build.gradle"
+
+      - name: Configure Gradle properties
+        run: |
+          chmod +x android/gradlew
+          echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+
+      - name: Build release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Align and Sign APK
+        run: |
+          echo "Aligning and signing APK..."
+          ZIPALIGN=$(find $ANDROID_HOME/build-tools -name zipalign | sort -V | tail -n 1)
+          APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -V | tail -n 1)
+          UNALIGNED_APK=android/app/build/outputs/apk/release/app-release.apk
+          ALIGNED_APK=android/app/build/outputs/apk/release/app-release-aligned.apk
+          FINAL_APK=android/app/build/outputs/apk/release/app-release-final.apk
+
+          echo "Using zipalign at: $ZIPALIGN"
+          echo "Using apksigner at: $APKSIGNER"
+
+          # Align APK
+          $ZIPALIGN -v -p 4 $UNALIGNED_APK $ALIGNED_APK
+
+          # Sign aligned APK
+          $APKSIGNER sign --ks android/app/release.keystore \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out $FINAL_APK \
+            $ALIGNED_APK
+
+          # Verify signature
+          $APKSIGNER verify --verbose --print-certs $FINAL_APK
+
+          # Replace unaligned APK by final signed & aligned APK
+          mv $FINAL_APK $UNALIGNED_APK
+
+          # Clean intermediate aligned APK
+          rm -f $ALIGNED_APK
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
