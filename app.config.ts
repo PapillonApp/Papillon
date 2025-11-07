@@ -64,6 +64,14 @@ module.exports = {
       "expo-font",
       "expo-localization",
       [
+        "expo-notifications",
+        {
+          icon: "./assets/images/icon.png",
+          color: "#003A21",
+          defaultChannel: "default",
+        },
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "Papillon utilise ta galerie pour te permettre de personnaliser ta photo de profil"
