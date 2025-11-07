@@ -67,8 +67,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" \
-            --title "Release v${{ env.NEW_VERSION }} (run ${{ github.run_number }})" \
-            --notes "Auto-release for new version ${{ env.NEW_VERSION }}, run ${{ github.run_number }}, triggering iOS build via Xcode Cloud."
+            --title "v${{ env.NEW_VERSION }} (${{ github.run_number }})" \
+            --notes "Release ${{ env.NEW_VERSION }} (run ${{ github.run_number }})."
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -162,9 +162,9 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_KEY }}
           packageName: xyz.getpapillon.app
           releaseFiles: android/app/build/outputs/bundle/release/*.aab
-          track: internal
+          track: beta
           inAppUpdatePriority: 3
-          status: draft
+          status: completed
 
       - name: Send success notification
         if: success()
