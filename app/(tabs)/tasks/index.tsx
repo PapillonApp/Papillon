@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  PlatformColor,
   Pressable,
   RefreshControl,
   Text,
@@ -468,7 +467,7 @@ export default function TabOneScreen() {
                 effect="regular"
               >
                 <Pressable onPress={() => setShowSearch(false)} hitSlop={32}>
-                  <Papicons name={"cross"} color={PlatformColor('labelColor')} size={24} opacity={0.5} />
+                  <Papicons name={"cross"} color={colors.text} size={24} opacity={0.5} />
                 </Pressable>
               </LiquidGlassView>
             </LiquidGlassContainerView>
