@@ -68,6 +68,26 @@ jobs:
             --title "v${{ env.NEW_VERSION }} (${{ github.run_number }})" \
             --generate-notes
 
+      - name: 📢 Notify Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANGELOG=$(gh release view "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" --json body -q .body)
+          JSON=$(jq -n --arg desc "$CHANGELOG" --arg version "${{ env.NEW_VERSION }}" --arg run "${{ github.run_number }}" --arg repo "${{ github.repository }}" '{
+            embeds: [
+              {
+                title: "Nouvelle bêta : v\($version)",
+                description: $desc,
+                url: "https://github.com/\($repo)/releases/tag/v\($version)-run\($run)",
+                color: 8701061
+              }
+            ]
+          }')
+          
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d "$JSON"
+
       - name: 🟢 Setup Node
         uses: actions/setup-node@v4
         with:
@@ -180,7 +200,7 @@ jobs:
           👤 ${{ github.actor }} | Run #${{ github.run_number }}
           ⏱️ ${DURATION}s | v${{ env.NEW_VERSION }} (${{ env.VERSION_CODE }})
           🤖 Android: APK/AAB → Play Store (beta)
-          🍎 iOS: Build triggered
+          🍎 iOS: IPA → TestFlight (beta)
           🔗 [Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
