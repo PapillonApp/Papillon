@@ -388,7 +388,7 @@ const IndexScreen = () => {
         backgroundColor="transparent"
         onFullyScrolled={handleFullyScrolled}
         height={200}
-        engine="LegendList"
+        engine="FlatList"
         header={
           <>
             <FlatList
@@ -577,27 +577,27 @@ const IndexScreen = () => {
               />
             )
           },
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Onboarding",
-            redirect: "/(onboarding)/welcome",
-            buttonLabel: "Aller",
-            dev: true
-          },
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Devmode",
-            redirect: "/devmode",
-            buttonLabel: "Aller",
-            dev: true
-          },
-          {
-            icon: <Papicons name={"Butterfly"} />,
-            title: "Demo components",
-            redirect: "/demo",
-            buttonLabel: "Aller",
-            dev: true
-          },
+          // {
+          //   icon: <Papicons name={"Butterfly"} />,
+          //   title: "Onboarding",
+          //   redirect: "/(onboarding)/welcome",
+          //   buttonLabel: "Aller",
+          //   dev: true
+          // },
+          // {
+          //   icon: <Papicons name={"Butterfly"} />,
+          //   title: "Devmode",
+          //   redirect: "/devmode",
+          //   buttonLabel: "Aller",
+          //   dev: true
+          // },
+          // {
+          //   icon: <Papicons name={"Butterfly"} />,
+          //   title: "Demo components",
+          //   redirect: "/demo",
+          //   buttonLabel: "Aller",
+          //   dev: true
+          // },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => {

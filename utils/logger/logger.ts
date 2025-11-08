@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
-import { LogType } from '@/stores/logs/types';
-
 // Reporting (if consent has been given)
 import Countly from 'countly-sdk-react-native-bridge';
 
-import { useLogStore } from '../../stores/logs/index'
+import { useLogStore } from '@/stores/logs/index';
+import { LogType } from '@/stores/logs/types';
 const format = "[%DATE%][%FROM%] %MESSAGE%";
 
 const typeList = ["LOG", "ERROR", "WARN", "INFO"];
@@ -56,15 +55,13 @@ function log(message: string, from?: string): void {
   console.log(entry);
 }
 
-function error(message: string, from?: string): never {
+function error(message: string, from?: string): void {
   const date = getIsoDate()
   const functionName = obtainFunctionName(from)
   const entry = getMessage(1, date, functionName, message);
   saveLog(date, message, LogType.ERROR, functionName);
   console.error(message);
   Countly.logException(message, true, JSON.parse(JSON.stringify(entry)));
-  throw new Error(entry);
-
 }
 
 function warn(message: string, from?: string): void {
