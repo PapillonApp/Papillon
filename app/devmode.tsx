@@ -3,6 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
+import { useRouter } from "expo-router";
 
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
@@ -32,6 +33,7 @@ export default function Devmode() {
 
   const { colors } = useTheme();
   const alert = useAlert();
+  const router = useRouter();
 
   const [showAccountStore, setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
@@ -58,7 +60,32 @@ export default function Devmode() {
     >
       <DevModeNotice />
 
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"UserCheck"} size={18} />
+        </Icon>
+        <Typography>
+          Diagnostic du compte
+        </Typography>
+      </Stack>
+
       <List>
+        <Item
+          onPress={() => {
+            router.push("/(settings)/services");
+          }}
+        >
+          <Typography variant="title">Gérer les services</Typography>
+          <Typography variant="caption" color="secondary">
+            Voir l'état de santé de tous les comptes et services
+          </Typography>
+        </Item>
+      </List>      <List>
         <Item>
           <Trailing>
             <Switch
@@ -324,11 +351,6 @@ export default function Devmode() {
           onPress={() => log(JSON.stringify(magicStoreHomework))}
         >
           <Typography variant="title">ConsoleLog Magic Store</Typography>
-        </Item>
-        <Item
-          onPress={() => resetMagicCache()}
-        >
-          <Typography variant="title">Reset Magic Cache</Typography>
         </Item>
       </List>
 

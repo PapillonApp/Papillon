@@ -419,6 +419,16 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   presentation: "modal"
                 }}
               />
+              <Stack.Screen
+                name="(modals)/reconnect-service"
+                options={{
+                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                  headerTitle: "Reconnect Service",
+                  headerLargeTitle: false,
+                  headerTransparent: false,
+                  presentation: "modal",
+                }}
+              />
             </Stack>
           </AlertProvider>
         </ThemeProvider>

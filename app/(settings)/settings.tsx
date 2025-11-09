@@ -169,9 +169,8 @@ export default function SettingsIndex() {
         title: "Services",
         description: t('Settings_Services_Title'),
         color: "#DD9B00",
-        disabled: true,
         onPress: () => {
-          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+          router.navigate("/(settings)/services")
         }
       },
       {

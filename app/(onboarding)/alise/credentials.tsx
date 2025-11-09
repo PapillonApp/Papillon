@@ -32,6 +32,10 @@ export default function AliseLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
+  // Reconnect mode
+  const isReconnect = (params.reconnect as string) === "true";
+  const serviceAccountId = params.serviceAccountId as string;
+
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
   const alert = useAlert();
@@ -66,7 +70,7 @@ export default function AliseLoginWithCredentials() {
       const client = await authenticateWithCredentials(username, password, siteId);
 
       const alise = new Alise(accountId);
-      const auth = {
+      const authData = {
         additionals: {
           username,
           password,
@@ -75,11 +79,29 @@ export default function AliseLoginWithCredentials() {
       };
 
       alise.session = client;
-      alise.authData = auth;
+      alise.authData = authData;
+
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        store.updateServiceAuthData(serviceAccountId, authData);
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service Alise a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+        return;
+      }
 
       const service = {
         id: accountId,
-        auth,
+        auth: authData,
         serviceId: Services.ALISE,
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),

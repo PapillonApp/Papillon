@@ -35,6 +35,10 @@ export default function TurboSelfLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
+  // Reconnect mode
+  const isReconnect = (params.reconnect as string) === "true";
+  const serviceAccountId = params.serviceAccountId as string;
+
   const opacity = useSharedValue(1);
   const alert = useAlert();
   const scale = useSharedValue(1);
@@ -69,15 +73,35 @@ export default function TurboSelfLoginWithCredentials() {
       if (siblings.length === 0) {
         const accountId = uuid()
         const store = useAccountStore.getState()
+        const authData = {
+          additionals: {
+            username,
+            password,
+            "hoteId": authentification.host?.id ?? "N/A"
+          }
+        };
+
+        if (isReconnect) {
+          // Mode reconnexion: mettre à jour le service existant
+          store.updateServiceAuthData(serviceAccountId, authData);
+
+          alert.showAlert({
+            title: "Reconnexion réussie",
+            description: `Le service TurboSelf a été reconnecté avec succès.`,
+            icon: "Check",
+            color: "#4CAF50",
+            withoutNavbar: true,
+          });
+
+          queueMicrotask(() => {
+            router.back();
+          });
+          return;
+        }
+
         const service = {
           id: accountId,
-          auth: {
-            additionals: {
-              username,
-              password,
-              "hoteId": authentification.host?.id ?? "N/A"
-            }
-          },
+          auth: authData,
           serviceId: Services.TURBOSELF,
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()

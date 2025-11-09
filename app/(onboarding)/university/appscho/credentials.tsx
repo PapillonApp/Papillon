@@ -31,13 +31,18 @@ const ANIMATION_DURATION = 100;
 export default function AppSchoCredentials() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const { instanceId } = useLocalSearchParams<{ instanceId: string }>();
+  const params = useLocalSearchParams<{ instanceId: string; reconnect?: string; serviceAccountId?: string }>();
+  const { instanceId, reconnect, serviceAccountId } = params;
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const instance = INSTANCES.find(inst => inst.id === instanceId);
+
+  // Reconnect mode
+  const isReconnect = reconnect === "true";
+  const reconnectServiceAccountId = serviceAccountId as string;
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -96,22 +101,42 @@ export default function AppSchoCredentials() {
     try {
       const response = await loginWithCredentials(instance.id, username, password);
 
+      const authData = {
+        additionals: {
+          instanceId: instance.id,
+          username: username,
+          password: password,
+        },
+      };
+
+      const store = useAccountStore.getState();
+
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        store.updateServiceAuthData(reconnectServiceAccountId, authData);
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service ${instance?.name || "AppScho"} a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+        return;
+      }
+
       const id = uuid();
       const service: ServiceAccount = {
         id,
-        auth: {
-          additionals: {
-            instanceId: instance.id,
-            username: username,
-            password: password,
-          },
-        },
+        auth: authData,
         serviceId: Services.APPSCHO,
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),
       };
-
-      const store = useAccountStore.getState();
 
       store.addAccount({
         id,
@@ -281,7 +306,7 @@ export default function AppSchoCredentials() {
           />
         </Stack>
       )}
-      
+
       <OnboardingBackButton />
     </KeyboardAvoidingView>
   );

@@ -47,6 +47,10 @@ export default function MultiLoginWithCredentials() {
   const university = String(param.university);
   const color = String(param.color);
 
+  // Reconnect mode
+  const isReconnect = (param.reconnect as string) === "true";
+  const serviceAccountId = param.serviceAccountId as string;
+
   const keyboardListeners = useMemo(() => ({
     show: () => {
       "worklet";
@@ -77,6 +81,30 @@ export default function MultiLoginWithCredentials() {
       const MultiAccount = await authWithCredentials(instanceUrl, { username, password });
       const accountUUID = String(uuid());
 
+      const authData = {
+        refreshToken: MultiAccount.userData.refreshAuthToken,
+        additionals: { instanceUrl: instanceUrl },
+      };
+
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        store.updateServiceAuthData(serviceAccountId, authData);
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service ${university} a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+        setIsLoggingIn(false);
+        return;
+      }
+
       const account: Account = {
         id: accountUUID,
         firstName: MultiAccount?.userData.firstname ?? "",
@@ -85,10 +113,7 @@ export default function MultiLoginWithCredentials() {
         services: [
           {
             id: uuid(),
-            auth: {
-              refreshToken: MultiAccount.userData.refreshAuthToken,
-              additionals: { instanceUrl: instanceUrl },
-            },
+            auth: authData,
             serviceId: Services.MULTI,
             createdAt: (new Date()).toISOString(),
             updatedAt: (new Date()).toISOString()

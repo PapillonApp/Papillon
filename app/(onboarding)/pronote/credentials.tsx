@@ -37,6 +37,10 @@ export default function PronoteLoginWithCredentials() {
   const scale = useSharedValue(1);
   const local = useLocalSearchParams();
 
+  // Reconnect mode
+  const isReconnect = (local.reconnect as string) === "true";
+  const serviceAccountId = local.serviceAccountId as string;
+
   const keyboardListeners = useMemo(() => ({
     show: () => {
       "worklet";
@@ -97,42 +101,63 @@ export default function PronoteLoginWithCredentials() {
       const schoolName = session.user.resources[0].establishmentName
       const className = session.user.resources[0].className
 
-      const account = {
-        id: device,
-        firstName,
-        lastName,
-        schoolName,
-        className,
-        services: [{
+      const authData = {
+        accessToken: authentication.token,
+        refreshToken: authentication.token,
+        additionals: {
+          instanceURL: authentication.url,
+          kind: authentication.kind,
+          username: authentication.username,
+          deviceUUID: device
+        }
+      };
+
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        const store = useAccountStore.getState()
+        store.updateServiceAuthData(serviceAccountId, authData);
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service PRONOTE a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+      } else {
+        // Mode création: créer un nouveau compte
+        const account = {
           id: device,
-          auth: {
-            accessToken: authentication.token,
-            refreshToken: authentication.token,
-            additionals: {
-              instanceURL: authentication.url,
-              kind: authentication.kind,
-              username: authentication.username,
-              deviceUUID: device
-            }
-          },
-          serviceId: Services.PRONOTE,
+          firstName,
+          lastName,
+          schoolName,
+          className,
+          services: [{
+            id: device,
+            auth: authData,
+            serviceId: Services.PRONOTE,
+            createdAt: (new Date()).toISOString(),
+            updatedAt: (new Date()).toISOString()
+          }],
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()
-        }],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
-      }
-
-      const store = useAccountStore.getState()
-      store.addAccount(account)
-      store.setLastUsedAccount(device)
-
-      router.push({
-        pathname: "../end/color",
-        params: {
-          accountId: device
         }
-      });
+
+        const store = useAccountStore.getState()
+        store.addAccount(account)
+        store.setLastUsedAccount(device)
+
+        router.push({
+          pathname: "../end/color",
+          params: {
+            accountId: device
+          }
+        });
+      }
     } catch (error) {
       if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
         setDoubleAuthError(error)

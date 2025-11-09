@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { useTheme } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session, setAccessToken } from "pawdirecte";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,9 +37,14 @@ export default function EDLoginWithCredentials() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { colors } = theme;
+  const params = useLocalSearchParams();
 
   const alert = useAlert();
   const { t } = useTranslation();
+
+  // Déterminer si c'est une reconnexion
+  const isReconnect = params.reconnect === "true";
+  const serviceAccountId = params.serviceAccountId as string;
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
   const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthChallenge | null>(null);
@@ -83,7 +88,7 @@ export default function EDLoginWithCredentials() {
       const store = useAccountStore.getState();
 
       if (currentSession === null) {
-        const accountID = uuid();
+        const accountID = isReconnect ? serviceAccountId : uuid();
         currentSession = { username, device_uuid: accountID };
         setCachedPassword(password);
       }
@@ -92,35 +97,72 @@ export default function EDLoginWithCredentials() {
       const userAccount = accounts[0];
 
       setAccessToken(currentSession, userAccount);
-      const account: Account = {
-        id: currentSession.device_uuid,
-        firstName: userAccount.firstName,
-        lastName: userAccount.lastName,
-        schoolName: userAccount.schoolName,
-        className: userAccount.class.short,
-        services: [
-          {
-            id: currentSession.device_uuid,
-            auth: { session: currentSession },
-            serviceId: Services.ECOLEDIRECTE,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            additionals: userAccount
-          },
-        ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
 
-      store.addAccount(account);
-      store.setLastUsedAccount(currentSession.device_uuid);
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        // Convert userAccount to string-only additionals for storage
+        const additionals: Record<string, string> = {};
+        for (const [key, value] of Object.entries(userAccount)) {
+          if (value !== null && value !== undefined) {
+            additionals[key] = String(value);
+          }
+        }
 
-      queueMicrotask(() => {
-        router.push({
-          pathname: "../end/color",
-          params: { accountId: currentSession!.device_uuid },
+        store.updateServiceAuthData(serviceAccountId, {
+          session: currentSession,
+          additionals: additionals
         });
-      });
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service EcoleDirecte a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+      } else {
+        // Mode création: créer un nouveau compte
+        const additionals: Record<string, string> = {};
+        for (const [key, value] of Object.entries(userAccount)) {
+          if (value !== null && value !== undefined) {
+            additionals[key] = String(value);
+          }
+        }
+
+        const account: Account = {
+          id: currentSession.device_uuid,
+          firstName: userAccount.firstName,
+          lastName: userAccount.lastName,
+          schoolName: userAccount.schoolName,
+          className: userAccount.class.short,
+          services: [
+            {
+              id: currentSession.device_uuid,
+              auth: { session: currentSession },
+              serviceId: Services.ECOLEDIRECTE,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              additionals: additionals
+            },
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        store.addAccount(account);
+        store.setLastUsedAccount(currentSession.device_uuid);
+
+        queueMicrotask(() => {
+          router.push({
+            pathname: "../end/color",
+            params: { accountId: currentSession!.device_uuid },
+          });
+        });
+      }
     } catch (err) {
       if (err instanceof DoubleAuthRequired) {
         const challenge = await initDoubleAuth(currentSession!).catch((e) => {

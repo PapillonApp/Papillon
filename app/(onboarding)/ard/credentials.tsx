@@ -37,6 +37,10 @@ export default function TurboSelfLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
+  // Reconnect mode
+  const isReconnect = (params.reconnect as string) === "true";
+  const serviceAccountId = params.serviceAccountId as string;
+
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
   const alert = useAlert();
@@ -75,16 +79,36 @@ export default function TurboSelfLoginWithCredentials() {
       const history = await fetchARDHistory(authentification, "")
       const mealPrice = detectMealPrice(history)
 
+      const authData = {
+        additionals: {
+          schoolId: siteId,
+          password,
+          username,
+          mealPrice: String(mealPrice)
+        },
+      };
+
+      if (isReconnect) {
+        // Mode reconnexion: mettre à jour le service existant
+        store.updateServiceAuthData(serviceAccountId, authData);
+
+        alert.showAlert({
+          title: "Reconnexion réussie",
+          description: `Le service ARD a été reconnecté avec succès.`,
+          icon: "Check",
+          color: "#4CAF50",
+          withoutNavbar: true,
+        });
+
+        queueMicrotask(() => {
+          router.back();
+        });
+        return;
+      }
+
       const service = {
         id: accountId,
-        auth: {
-          additionals: {
-            schoolId: siteId,
-            password,
-            username,
-            mealPrice: String(mealPrice)
-          },
-        },
+        auth: authData,
         serviceId: Services.ARD,
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString(),

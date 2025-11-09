@@ -43,6 +43,10 @@ export default function TurboSelfLoginWithCredentials() {
   const params = useLocalSearchParams();
   const action = String(params.action);
 
+  // Reconnect mode
+  const isReconnect = (params.reconnect as string) === "true";
+  const serviceAccountId = params.serviceAccountId as string;
+
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
 
@@ -75,20 +79,40 @@ export default function TurboSelfLoginWithCredentials() {
   const handleActivation = useCallback(async (url: string) => {
     const id = uuid();
     const { identification, profile } = await tokenize(url);
+    const authData = {
+      session: identification,
+      additionals: {
+        secret: password,
+      },
+    };
+
+    const store = useAccountStore.getState();
+
+    if (isReconnect) {
+      // Mode reconnexion: mettre à jour le service existant
+      store.updateServiceAuthData(serviceAccountId, authData);
+
+      alert.showAlert({
+        title: "Reconnexion réussie",
+        description: `Le service Izly a été reconnecté avec succès.`,
+        icon: "Check",
+        color: "#4CAF50",
+        withoutNavbar: true,
+      });
+
+      queueMicrotask(() => {
+        router.back();
+      });
+      return;
+    }
+
     const service: ServiceAccount = {
       id,
-      auth: {
-        session: identification,
-        additionals: {
-          secret: password,
-        },
-      },
+      auth: authData,
       serviceId: Services.IZLY,
       createdAt: (new Date()).toISOString(),
       updatedAt: (new Date()).toISOString(),
     };
-
-    const store = useAccountStore.getState();
 
     if (action === "addService") {
       store.addServiceToAccount(store.lastUsedAccount, service);
@@ -113,7 +137,7 @@ export default function TurboSelfLoginWithCredentials() {
         accountId: id,
       },
     });
-  }, [password, action]);
+  }, [password, action, isReconnect, serviceAccountId]);
 
   useEffect(() => {
     const handleDeepLink = (event: { url: string }) => {
