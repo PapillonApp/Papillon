@@ -1,6 +1,8 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from "react";
+import { StyleSheet, View } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
+
+import { warn } from "./logger/logger";
 
 export type HttpRequest = {
   url: string;
@@ -26,6 +28,9 @@ export type HttpResponse = {
 export type WebViewHttpClientHandle = {
   request(req: HttpRequest): Promise<HttpResponse>;
 };
+
+// Constants for performance
+const ORIGIN_WHITELIST = ["*"];
 
 const INJECTED_BOOT = `
 (function() {
@@ -81,15 +86,16 @@ const INJECTED_BOOT = `
 true;
 `;
 
-export const WebViewHttpClient = forwardRef<WebViewHttpClientHandle>((_props, ref) => {
+
+export const WebViewHttpClient = React.memo(forwardRef<WebViewHttpClientHandle>((_props, ref) => {
   const wvRef = useRef<WebView>(null);
-  const [pending, setPending] = useState<{ resolve?: (r: HttpResponse) => void; reject?: (e: any) => void; }>({});
+  const pendingRef = useRef<{ resolve: (r: HttpResponse) => void; reject: (e: unknown) => void; } | null>(null);
 
   useImperativeHandle(ref, () => ({
     request: (req: HttpRequest) => new Promise((resolve, reject) => {
-      setPending({ resolve, reject });
+      pendingRef.current = { resolve, reject };
       const msg = {
-        t: req.preNavigate ? "pre" : "fetch",
+        t: "fetch",
         url: req.url,
         method: req.method || "GET",
         headers: req.headers || {},
@@ -98,18 +104,18 @@ export const WebViewHttpClient = forwardRef<WebViewHttpClientHandle>((_props, re
       };
       if (req.preNavigate) {
         wvRef.current?.postMessage(JSON.stringify({ t: "pre", url: req.url }));
-        setTimeout(() => wvRef.current?.postMessage(JSON.stringify({ t: "fetch", ...msg })), 300);
+        setTimeout(() => wvRef.current?.postMessage(JSON.stringify(msg)), 300);
       } else {
-        wvRef.current?.postMessage(JSON.stringify({ t: "fetch", ...msg }));
+        wvRef.current?.postMessage(JSON.stringify(msg));
       }
     }),
-  }));
+  }), []);
 
-  const onMessage = (e: WebViewMessageEvent) => {
+  const onMessage = useCallback((e: WebViewMessageEvent) => {
     try {
       const data = JSON.parse(e.nativeEvent.data);
       if (data.t === "result") {
-        pending.resolve?.({
+        pendingRef.current?.resolve?.({
           ok: !!data.ok,
           status: data.status,
           statusText: data.statusText,
@@ -120,34 +126,72 @@ export const WebViewHttpClient = forwardRef<WebViewHttpClientHandle>((_props, re
           cookies: data.cookies || {},
           notes: data.notes || [],
         });
-        setPending({});
+        pendingRef.current = null;
       } else if (data.t === "error") {
-        pending.reject?.(new Error(data.message || "WebView request error"));
-        setPending({});
+        pendingRef.current?.reject?.(new Error(data.message || "WebView request error"));
+        pendingRef.current = null;
       }
-    } catch { }
-  };
+    } catch (err) {
+      warn(`WebView message parse error: ${String(err)}`);
+    }
+  }, []);
+
+  const htmlSource = useMemo(() => ({
+    html: "<!DOCTYPE html><html><head><meta name='viewport' content='width=1,initial-scale=1'><style>*{margin:0;padding:0}body{background:transparent}</style></head><body></body></html>"
+  }), []);
+
+  const handleLoadRequest = useCallback((req: { url: string }) => {
+    const scheme = req.url.split(":")[0]?.toLowerCase();
+    return scheme === "http" || scheme === "https" || req.url === "about:blank";
+  }, []);
 
   return (
-    <WebView
-      ref={wvRef}
-      source={{ uri: "about:blank" }}
-      style={styles.wv}
-      originWhitelist={["*"]}
-      javaScriptEnabled
-      sharedCookiesEnabled
-      thirdPartyCookiesEnabled
-      injectedJavaScript={INJECTED_BOOT}
-      onMessage={onMessage}
-      onShouldStartLoadWithRequest={(req) => {
-        const scheme = req.url.split(":")[0]?.toLowerCase();
-        if (scheme !== "http" && scheme !== "https" && req.url !== "about:blank") return false;
-        return true;
-      }}
-    />
+    <View style={styles.container} pointerEvents="none" collapsable={false}>
+      <WebView
+        ref={wvRef}
+        source={htmlSource}
+        style={styles.wv}
+        originWhitelist={ORIGIN_WHITELIST}
+        javaScriptEnabled
+        sharedCookiesEnabled
+        thirdPartyCookiesEnabled
+        injectedJavaScript={INJECTED_BOOT}
+        onMessage={onMessage}
+        allowsInlineMediaPlayback={false}
+        mediaPlaybackRequiresUserAction
+        onShouldStartLoadWithRequest={handleLoadRequest}
+        // Performance optimizations
+        cacheEnabled={false}
+        incognito={false}
+        androidLayerType="hardware"
+        nestedScrollEnabled={false}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={false}
+        bounces={false}
+        overScrollMode="never"
+      />
+    </View>
   );
-});
+}));
+
+WebViewHttpClient.displayName = "WebViewHttpClient";
 
 const styles = StyleSheet.create({
-  wv: { position: "absolute", width: 1, height: 1, opacity: 0 },
+  container: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+    opacity: 0,
+    zIndex: -9999,
+    overflow: "hidden"
+  },
+  wv: {
+    width: 0,
+    height: 0,
+    opacity: 0,
+    backgroundColor: "transparent"
+  },
 });

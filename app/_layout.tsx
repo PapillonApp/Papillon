@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import 'react-native-reanimated';
-import "@/utils/i18n";
+
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
 
 import Countly from 'countly-sdk-react-native-bridge';
 import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
+
+import i18n from "@/utils/i18n";
 
 let secrets = { APP_KEY: "", SALT: "", SERVER_URL: "" };
 
@@ -128,16 +132,15 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-import { Buffer } from 'buffer';
-
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
-import i18n from '@/utils/i18n';
 import { checkConsent } from '@/utils/logger/consent';
 import { log, warn } from '@/utils/logger/logger';
+import { WebViewHttpClient, WebViewHttpClientHandle } from '@/utils/WebViewHttpClient';
+
+export const globalWebViewRef = React.createRef<WebViewHttpClientHandle>();
 
 const RootLayoutNav = React.memo(function RootLayoutNav() {
-  global.Buffer = Buffer
   const colorScheme = useColorScheme();
   const selectedTheme = useSettingsStore(state => state.personalization.theme);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
@@ -155,8 +158,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   useEffect(() => {
     if (customLanguage) {
       // Changing language is asynchronous, so we don't await it
-      i18n.changeLanguage(customLanguage).catch((error) => {
-        console.error("Error changing language:", error);
+      i18n.changeLanguage(customLanguage).catch((error: unknown) => {
+        warn(`Error changing language: ${String(error)}`);
       });
     }
   }, [customLanguage]);
@@ -296,133 +299,136 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
   }, [backgroundColor, statusBarStyle]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
-      <DatabaseProvider>
-        <ThemeProvider value={theme}>
-          <AlertProvider>
-            <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
-              <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
-              <Stack.Screen name="(settings)" options={{ headerShown: false }} />
-              <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
-              <Stack.Screen name="page" />
-              <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
-              <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
-              <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
-              <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
-              <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
-              <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+    <>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
+        <DatabaseProvider>
+          <ThemeProvider value={theme}>
+            <AlertProvider>
+              <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+                <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
+                <Stack.Screen name="(settings)" options={{ headerShown: false }} />
+                <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
+                <Stack.Screen name="page" />
+                <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+                <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
+                <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
+                <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
+                <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
+                <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
-              <Stack.Screen
-                name="(modals)/grade"
-                options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
-                  headerTitle: t("Modal_Grades_Title"),
-                  headerLargeTitle: false,
-                  presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
-                  contentStyle: {
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
-                  },
-                }}
-              />
-              <Stack.Screen
-                name="(modals)/course"
-                options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
-                  headerTitle: t("Modal_Course_Title"),
-                  headerLargeTitle: false,
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
-                  presentation: "modal",
-                  contentStyle: {
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
-                  }
-                }}
-              />
-              <Stack.Screen
-                name="(modals)/notifications"
-                options={{
-                  headerShown: false,
-                  headerTitle: "Notifications",
-                  headerTransparent: runsIOS26,
-                  headerLargeTitle: false,
-                  presentation: "formSheet",
-                  sheetGrabberVisible: true,
-                  sheetAllowedDetents: [0.5, 0.75, 1],
-                  sheetCornerRadius: runsIOS26 ? undefined : 30,
-                  contentStyle: {
-                    backgroundColor: runsIOS26 ? 'transparent' : undefined
-                  }
-                }}
-              />
+                <Stack.Screen
+                  name="(modals)/grade"
+                  options={{
+                    headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                    headerTitle: t("Modal_Grades_Title"),
+                    headerLargeTitle: false,
+                    presentation: "modal",
+                    headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+                    contentStyle: {
+                      borderRadius: Platform.OS === 'ios' ? 30 : 0,
+                      overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                    },
+                  }}
+                />
+                <Stack.Screen
+                  name="(modals)/course"
+                  options={{
+                    headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                    headerTitle: t("Modal_Course_Title"),
+                    headerLargeTitle: false,
+                    headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+                    presentation: "modal",
+                    contentStyle: {
+                      borderRadius: Platform.OS === 'ios' ? 30 : 0,
+                      overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+                    }
+                  }}
+                />
+                <Stack.Screen
+                  name="(modals)/notifications"
+                  options={{
+                    headerShown: false,
+                    headerTitle: "Notifications",
+                    headerTransparent: runsIOS26,
+                    headerLargeTitle: false,
+                    presentation: "formSheet",
+                    sheetGrabberVisible: true,
+                    sheetAllowedDetents: [0.5, 0.75, 1],
+                    sheetCornerRadius: runsIOS26 ? undefined : 30,
+                    contentStyle: {
+                      backgroundColor: runsIOS26 ? 'transparent' : undefined
+                    }
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/(news)/news"
-                options={{
-                  headerShown: true,
-                  headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26,
-                  headerLargeTitle: false,
-                }}
-              />
+                <Stack.Screen
+                  name="(features)/(news)/news"
+                  options={{
+                    headerShown: true,
+                    headerTitle: t("Tab_News"),
+                    headerTransparent: runsIOS26,
+                    headerLargeTitle: false,
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/(news)/specific"
-                options={{
-                  headerShown: true,
-                  headerTitle: t("Tab_News"),
-                  headerTransparent: runsIOS26,
-                  headerLargeTitle: false,
-                }}
-              />
+                <Stack.Screen
+                  name="(features)/(news)/specific"
+                  options={{
+                    headerShown: true,
+                    headerTitle: t("Tab_News"),
+                    headerTransparent: runsIOS26,
+                    headerLargeTitle: false,
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/(cards)/cards"
-                options={{
-                  headerShown: true,
-                  presentation: "modal",
-                  headerTitle: t("Profile_QRCards"),
-                  headerTransparent: false,
-                }}
-              />
+                <Stack.Screen
+                  name="(features)/(cards)/cards"
+                  options={{
+                    headerShown: true,
+                    presentation: "modal",
+                    headerTitle: t("Profile_QRCards"),
+                    headerTransparent: false,
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/(cards)/specific"
-                options={{
-                  headerShown: true,
-                  presentation: "modal",
-                  headerTitle: t("Profile_QRCards"),
-                  headerTransparent: true,
-                }}
-              />
+                <Stack.Screen
+                  name="(features)/(cards)/specific"
+                  options={{
+                    headerShown: true,
+                    presentation: "modal",
+                    headerTitle: t("Profile_QRCards"),
+                    headerTransparent: true,
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/(cards)/qrcode"
-                options={{
-                  headerShown: false,
-                  presentation: "transparentModal",
-                  headerTitle: "QR-Code",
-                  animation: "fade"
-                }}
-              />
+                <Stack.Screen
+                  name="(features)/(cards)/qrcode"
+                  options={{
+                    headerShown: false,
+                    presentation: "transparentModal",
+                    headerTitle: "QR-Code",
+                    animation: "fade"
+                  }}
+                />
 
-              <Stack.Screen
-                name="(features)/attendance"
-                options={{
-                  headerShown: true,
-                  headerTitle: t("Tab_Attendance"),
-                  headerTransparent: runsIOS26,
-                  headerLargeTitle: true,
-                  presentation: "modal"
-                }}
-              />
-            </Stack>
-          </AlertProvider>
-        </ThemeProvider>
-      </DatabaseProvider>
-    </GestureHandlerRootView>
+                <Stack.Screen
+                  name="(features)/attendance"
+                  options={{
+                    headerShown: true,
+                    headerTitle: t("Tab_Attendance"),
+                    headerTransparent: runsIOS26,
+                    headerLargeTitle: true,
+                    presentation: "modal"
+                  }}
+                />
+              </Stack>
+            </AlertProvider>
+          </ThemeProvider>
+        </DatabaseProvider>
+      </GestureHandlerRootView>
+      <WebViewHttpClient ref={globalWebViewRef} />
+    </>
   );
 });

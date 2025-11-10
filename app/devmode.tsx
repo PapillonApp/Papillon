@@ -4,6 +4,7 @@ import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
 
+import { globalWebViewRef } from "@/app/_layout";
 import DevModeNotice from "@/components/DevModeNotice";
 import LogIcon from "@/components/Log/LogIcon";
 import { database } from "@/database";
@@ -22,7 +23,6 @@ import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
 
 export default function Devmode() {
-  const accountStore = useAccountStore();
   const logsStore = useLogStore();
   const settingStore = useSettingsStore(state => state.personalization)
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
@@ -33,7 +33,6 @@ export default function Devmode() {
   const { colors } = useTheme();
   const alert = useAlert();
 
-  const [showAccountStore, setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
 
   const [visibleLogsCount, setVisibleLogsCount] = useState(20);
@@ -325,10 +324,130 @@ export default function Devmode() {
         >
           <Typography variant="title">ConsoleLog Magic Store</Typography>
         </Item>
+      </List>
+
+      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
+        paddingHorizontal: 6,
+        paddingVertical: 0,
+        marginBottom: 14,
+        opacity: 0.5,
+      }}>
+        <Icon>
+          <Papicons name={"Globe"} size={18} />
+        </Icon>
+        <Typography>
+          WebView HTTP Client
+        </Typography>
+      </Stack>
+
+      <List>
         <Item
-          onPress={() => resetMagicCache()}
+          onPress={async () => {
+            try {
+              if (!globalWebViewRef.current) {
+                Alert.alert("Erreur", "WebView non disponible");
+                return;
+              }
+
+              const response = await globalWebViewRef.current.request({
+                url: "https://httpbin.org/get",
+                method: "GET",
+              });
+
+              Alert.alert(
+                "Test GET réussi",
+                `Status: ${response.status}\nURL: ${response.url}\nBody length: ${response.body.length} chars`
+              );
+            } catch (error) {
+              Alert.alert("Erreur", `Test GET échoué: ${String(error)}`);
+            }
+          }}
         >
-          <Typography variant="title">Reset Magic Cache</Typography>
+          <Typography variant="title">Test WebView GET Request</Typography>
+        </Item>
+
+        <Item
+          onPress={async () => {
+            try {
+              if (!globalWebViewRef.current) {
+                Alert.alert("Erreur", "WebView non disponible");
+                return;
+              }
+
+              const response = await globalWebViewRef.current.request({
+                url: "https://httpbin.org/post",
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ test: "data", timestamp: Date.now() }),
+              });
+
+              Alert.alert(
+                "Test POST réussi",
+                `Status: ${response.status}\nURL: ${response.url}\nBody: ${response.body.substring(0, 200)}...`
+              );
+            } catch (error) {
+              Alert.alert("Erreur", `Test POST échoué: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Test WebView POST Request</Typography>
+        </Item>
+
+        <Item
+          onPress={async () => {
+            try {
+              if (!globalWebViewRef.current) {
+                Alert.alert("Erreur", "WebView non disponible");
+                return;
+              }
+
+              const response = await globalWebViewRef.current.request({
+                url: "https://httpbin.org/cookies/set?testcookie=testvalue",
+                method: "GET",
+              });
+
+              const cookies = Object.keys(response.cookies).length;
+              Alert.alert(
+                "Test Cookies réussi",
+                `Status: ${response.status}\nCookies trouvés: ${cookies}\nCookies: ${JSON.stringify(response.cookies, null, 2)}`
+              );
+            } catch (error) {
+              Alert.alert("Erreur", `Test Cookies échoué: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Test WebView Cookies</Typography>
+        </Item>
+
+        <Item
+          onPress={async () => {
+            try {
+              if (!globalWebViewRef.current) {
+                Alert.alert("Erreur", "WebView non disponible");
+                return;
+              }
+
+              const response = await globalWebViewRef.current.request({
+                url: "https://httpbin.org/headers",
+                method: "GET",
+                headers: {
+                  "X-Custom-Header": "Papillon-Test",
+                  "User-Agent": "PapillonApp/8.0",
+                },
+              });
+
+              Alert.alert(
+                "Test Headers réussi",
+                `Status: ${response.status}\nHeaders count: ${Object.keys(response.headers).length}\nBody: ${response.body.substring(0, 300)}...`
+              );
+            } catch (error) {
+              Alert.alert("Erreur", `Test Headers échoué: ${String(error)}`);
+            }
+          }}
+        >
+          <Typography variant="title">Test WebView Custom Headers</Typography>
         </Item>
       </List>
 
