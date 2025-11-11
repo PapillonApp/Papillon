@@ -1,31 +1,28 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Pressable, TextInput, Keyboard, View, FlatList } from 'react-native';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import LottieView from 'lottie-react-native';
-
-import Typography from '@/ui/components/Typography';
-import Stack from '@/ui/components/Stack';
-
 import { Papicons } from '@getpapillon/papicons';
-import { authenticateWithCredentials, Host } from 'turboself-api'
-import Icon from '@/ui/components/Icon';
-import ViewContainer from '@/ui/components/ViewContainer';
+import { useTheme } from '@react-navigation/native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import React, { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FlatList,Keyboard, Pressable, StyleSheet } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
-  useSharedValue,
-  withTiming
+  useSharedValue
 } from 'react-native-reanimated';
-import Button from '@/ui/components/Button';
-import uuid from '@/utils/uuid/uuid';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { authenticateWithCredentials, Host } from 'turboself-api'
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useTranslation } from 'react-i18next';
+import Icon from '@/ui/components/Icon';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
+import ViewContainer from '@/ui/components/ViewContainer';
+import uuid from '@/utils/uuid/uuid';
 
 const INITIAL_HEIGHT = 570;
 const COLLAPSED_HEIGHT = 270;

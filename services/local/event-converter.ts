@@ -1,7 +1,8 @@
 import { Course as SharedCourse, CourseType } from '@/services/shared/timetable';
+
 import { ICalEvent } from './ical';
 import { parseADEDescription } from './parsers/ade-parser';
-import { parseHyperplanningDescription, isHyperplanningDescription } from './parsers/hyperplanning-parser';
+import { isHyperplanningDescription,parseHyperplanningDescription } from './parsers/hyperplanning-parser';
 
 interface ConversionContext {
   icalId: string;

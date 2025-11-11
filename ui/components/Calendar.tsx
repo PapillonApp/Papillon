@@ -1,20 +1,17 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  LiquidGlassView,
+} from '@callstack/liquid-glass';
+import DateTimePicker, { AndroidNativeProps, DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import * as Localization from "expo-localization";
 import React, { useState } from "react";
 import { Platform, Pressable, View } from "react-native";
-
-import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Reanimated from "react-native-reanimated";
-import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { runsIOS26 } from '../utils/IsLiquidGlass';
 
-import {
-  LiquidGlassView,
-  LiquidGlassContainerView,
-} from '@callstack/liquid-glass';
+import { runsIOS26 } from '../utils/IsLiquidGlass';
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 export interface CalendarProps {
   date?: Date;
@@ -32,7 +29,7 @@ const Calendar: React.FC<CalendarProps> = ({
   const [date, setDate] = useState(initialDate);
   const { colors } = useTheme();
 
-  const handleChange = (event: any, selectedDate?: Date) => {
+  const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);
     onDateChange?.(currentDate);
@@ -52,14 +49,14 @@ const Calendar: React.FC<CalendarProps> = ({
       <DateTimePicker
         value={date}
         mode="date"
-        design="material"
         display="inline"
         accentColor={colors.primary}
         locale={Localization.getLocales()[0].languageTag}
         onChange={handleChange}
         style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
+        {...{ design: 'material' } as Pick<AndroidNativeProps, 'design'>}
       />
-    )
+    );
   }
 
   const insets = useSafeAreaInsets();

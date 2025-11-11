@@ -1,18 +1,19 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { FlatList, Image,View } from "react-native";
+
 import { News } from "@/services/shared/news";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { Variant } from "@/ui/components/Typography"
 import adjust from "@/utils/adjustColor";
 import { getProfileColorByName } from "@/utils/chats/colors";
 import { getInitials } from "@/utils/chats/initials";
 import { formatRelativeTime } from "@/utils/date";
-import { useTheme } from "@react-navigation/native";
-import { router, useLocalSearchParams } from "expo-router";
-import { View, FlatList, Image } from "react-native";
-import { Papicons } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { Variant } from "@/ui/components/Typography"
-import { useTranslation } from "react-i18next";
 
 export default function NewsPage() {
   const { news: newsParam } = useLocalSearchParams();

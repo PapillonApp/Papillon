@@ -13,14 +13,16 @@ const compiledPatterns: Record<string, RegExp[]> = Object.fromEntries(
   ])
 );
 
+type Magic = { scores: number, predicted: string, labelScores: object }
+
 export function isModelPrediction(object: unknown): object is ModelPrediction {
   return (
     typeof object === "object" &&
     object !== null &&
-    Array.isArray((object as any).scores) &&
-    typeof (object as any).predicted === "string" &&
-    typeof (object as any).labelScores === "object" &&
-    (object as any).labelScores !== null
+    Array.isArray((object as Magic).scores) &&
+    typeof (object as Magic).predicted === "string" &&
+    typeof (object as Magic).labelScores === "object" &&
+    (object as Magic).labelScores !== null
   );
 }
 

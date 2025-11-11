@@ -1,4 +1,3 @@
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
@@ -9,6 +8,8 @@ import { withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
+
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 

@@ -1,23 +1,22 @@
-import TableFlatList from "@/ui/components/TableFlatList";
+import * as Papicons from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
+import { formatDistanceStrict,formatDistanceToNow } from 'date-fns'
+import * as DateLocale from 'date-fns/locale';
+import i18n, { t } from "i18next";
 import React from "react";
 import { View } from "react-native";
-
-import { formatDistanceToNow, formatDistanceStrict } from 'date-fns'
-import * as DateLocale from 'date-fns/locale';
+import LinearGradient from "react-native-linear-gradient";
+import Reanimated from 'react-native-reanimated';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
-
-import i18n, { t } from "i18next";
-import Reanimated from 'react-native-reanimated';
-import * as Papicons from '@getpapillon/papicons';
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import Icon from "@/ui/components/Icon";
-import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
-import { getStatusText } from "../(tabs)/calendar";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import TableFlatList from "@/ui/components/TableFlatList";
+import Typography from "@/ui/components/Typography";
 import { getSubjectName } from '@/utils/subjects/name';
+
+import { getStatusText } from "../(tabs)/calendar";
 
 interface SubjectInfo {
   name: string;

@@ -1,5 +1,6 @@
-import { QRCode, QRType } from "@/services/shared/canteen";
 import { Account } from "pawdirecte";
+
+import { QRCode, QRType } from "@/services/shared/canteen";
 
 export function fetchEDQRCode(account: Account): QRCode {
   for (const module of account.modules) {

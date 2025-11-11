@@ -1,12 +1,13 @@
-import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { getCASURL, INSTANCES, loginWithOAuth } from "appscho";
 import { router, useLocalSearchParams } from "expo-router";
-import { INSTANCES, getCASURL, loginWithOAuth } from "appscho";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAlert } from "@/ui/components/AlertProvider";
+
+import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
 import { useAccountStore } from "@/stores/account";
 import { ServiceAccount, Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
 import uuid from "@/utils/uuid/uuid";
-import { useState } from "react";
 
 export default function AppschoWebView() {
   const { instanceId } = useLocalSearchParams<{ instanceId: string }>();

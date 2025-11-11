@@ -1,4 +1,4 @@
-
+import { error } from "../logger/logger";
 export interface Contributor {
   login: string;
   avatar_url: string;
@@ -12,8 +12,8 @@ export async function getContributors (): Promise<Contributor[]> {
     const allContributors: Contributor[] = await response.json();
 
     return allContributors
-  } catch (error) {
-    console.error("Erreur lors de la récupération des contributeurs:", error);
+  } catch (err) {
+    error("Erreur lors de la récupération des contributeurs:", String(err));
     return [];
   }
 }

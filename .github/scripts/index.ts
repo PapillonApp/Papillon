@@ -1,17 +1,18 @@
+import * as github from '@actions/github';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from "@octokit/rest";
 import { OctokitResponse } from "@octokit/types"
-import * as github from '@actions/github';
+
 import autoLabel, { editInvalidLabel } from './utils/auto-label';
-import fileChecks from './utils/file-related';
 import checkDescription from './utils/check-description';
+import fileChecks from './utils/file-related';
 
 (async () => {
   const appId = Number(process.env.APP_ID);
   const installationId = Number(process.env.INSTALL_ID);
   const privateKey = process.env.PRIVATE_KEY;
 
-  if (!appId || !installationId || !privateKey) throw new Error("You misconfigured your action.");
+  if (!appId || !installationId || !privateKey) {throw new Error("You misconfigured your action.");}
 
   const appAuth = createAppAuth({ appId, installationId, privateKey });
   const appAuthentication = await appAuth({ type: "installation" });
@@ -27,7 +28,7 @@ import checkDescription from './utils/check-description';
   const issue = context.payload.issue;
   const issueNumber = pull?.number ?? issue?.number;
 
-  if (!issueNumber) return;
+  if (!issueNumber) {return;}
 
   const messages = await octokit.rest.issues.listComments({
     owner: context.repo.owner,

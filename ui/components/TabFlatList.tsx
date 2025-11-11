@@ -1,3 +1,5 @@
+/* eslint-disable react/display-name */
+/* eslint-disable react/prop-types */
 import { LegendList } from "@legendapp/list";
 import { useTheme } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
@@ -5,13 +7,14 @@ import React, { memo } from "react";
 import { Dimensions, FlatList, FlatListProps, Platform, View } from "react-native";
 import Reanimated, { Extrapolate, interpolate, runOnJS, useAnimatedReaction, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 
 const AnimatedLegendList = Reanimated.createAnimatedComponent(LegendList);
 const AnimatedFlatList = Reanimated.createAnimatedComponent(FlatList);
 const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList);
 
-interface TabFlatListProps extends FlatListProps<any> {
+interface TabFlatListProps extends FlatListProps<unknown> {
   header?: React.ReactNode;
   backgroundColor?: string;
   foregroundColor?: string;
@@ -40,20 +43,14 @@ const TabFlatList: React.FC<TabFlatListProps> = memo(({
   translucent = false,
   onFullyScrolled,
   ...rest
-}) => {
+}: TabFlatListProps) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   const screenHeight = Dimensions.get('window').height;
   const headerInset = insets.top + 40;
   const finalHeight = height + headerInset;
-  let tabBarHeight = 0;
-  try {
-    tabBarHeight = 80;
-    if (isNaN(tabBarHeight)) tabBarHeight = 0;
-  } catch {
-    tabBarHeight = 0;
-  }
+  const tabBarHeight = 80;
 
   // Memoize shared values for scroll position and threshold
   const scrollY = React.useRef(useSharedValue(0)).current;
@@ -243,7 +240,7 @@ const TabFlatList: React.FC<TabFlatListProps> = memo(({
       </>
     )
   }
-  catch (error) {
+  catch {
     return <View style={{ flex: 1, backgroundColor: colors.background }} />;
   }
 });

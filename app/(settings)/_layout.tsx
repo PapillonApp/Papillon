@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();

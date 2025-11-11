@@ -3,9 +3,10 @@ import React, { useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
+import i18n from "@/utils/i18n";
+
 import Stack from "./Stack";
 import Typography from "./Typography";
-import i18n from "@/utils/i18n";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 

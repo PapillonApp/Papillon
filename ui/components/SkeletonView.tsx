@@ -1,22 +1,21 @@
-import { Dimensions, View, ViewProps } from "react-native";
-import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useMemo } from "react";
+import React, { Dimensions, View, ViewProps } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import Reanimated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
-export interface SkeletonViewProps extends ViewProps {
-}
+export type SkeletonViewProps = ViewProps
 
 const SkeletonView = (props: SkeletonViewProps) => {
   const { colors } = useTheme();
 
   const translationX = useSharedValue(-200);
 
-  const window_width = Dimensions.get("window").width;
+  const windowWidth = Dimensions.get("window").width;
 
   useEffect(() => {
     translationX.value = withRepeat(
-      withTiming(window_width, {
+      withTiming(windowWidth, {
         duration: 2000,
         easing: Easing.linear,
       }),

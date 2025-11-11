@@ -1,6 +1,9 @@
+import { useTheme } from "@react-navigation/native";
+import { INSTANCES, loginWithCredentials } from "appscho";
 import { router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Keyboard,
@@ -11,20 +14,17 @@ import Reanimated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useAccountStore } from "@/stores/account";
+import { ServiceAccount, Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { useAccountStore } from "@/stores/account";
-import { ServiceAccount, Services } from "@/stores/account/types";
 import uuid from "@/utils/uuid/uuid";
-import { useTranslation } from "react-i18next";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
-import { INSTANCES, loginWithCredentials } from "appscho";
 
 const ANIMATION_DURATION = 100;
 

@@ -1,7 +1,5 @@
 import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
 
-import { warn } from "@/utils/logger/logger";
-
 import { Attachment, AttachmentType } from "../shared/attachment";
 import { Homework } from "../shared/homework";
 
@@ -62,7 +60,7 @@ export async function setEDHomeworkAsDone(session: Session, account: Account, ho
   }
 }
 
-import { startOfISOWeek, addDays } from "date-fns";
+import { addDays,startOfISOWeek } from "date-fns";
 
 export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
   const currentYear = year || new Date().getFullYear();

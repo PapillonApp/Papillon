@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import Typography from './Typography';
 
 interface ContainedNumberProps {
@@ -8,7 +9,7 @@ interface ContainedNumberProps {
   color?: string;
 }
 
-const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children, ...rest }) => {
+const ContainedNumber: React.FC<ContainedNumberProps> = ({ denominator, color, children }) => {
   return (
     <View
       style={{

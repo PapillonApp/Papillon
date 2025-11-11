@@ -1,5 +1,7 @@
 import ICAL from 'ical.js';
+
 import { generateId } from '@/utils/generateId';
+
 import { ICalEvent } from '../ical';
 
 export interface ParsedCalendarMetadata {

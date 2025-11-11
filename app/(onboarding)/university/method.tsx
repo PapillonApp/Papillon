@@ -1,15 +1,15 @@
+import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, router, UnknownInputParams } from 'expo-router';
-import { Papicons } from '@getpapillon/papicons';
-
-import Typography from '@/ui/components/Typography';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, View } from 'react-native';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
 
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Typography from '@/ui/components/Typography';
+
 import { GetSupportedUniversities, SupportedUniversity } from "../utils/constants";
 
 export default function WelcomeScreen() {

@@ -1,10 +1,12 @@
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import Barcode, { Format } from "@aramir/react-native-barcode";
 import { Phone } from "@getpapillon/papicons";
+import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, Platform, View } from "react-native";
-import React from "react";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import QRCode from "react-native-qrcode-svg";
 import Reanimated, {
   FlipInEasyX,
   runOnJS,
@@ -12,13 +14,12 @@ import Reanimated, {
   withSpring,
   ZoomInDown,
 } from "react-native-reanimated";
+
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { BlurView } from "expo-blur";
-import Barcode, { Format } from "@aramir/react-native-barcode";
-import QRCode from "react-native-qrcode-svg";
-import { getServiceBackground } from "@/utils/services/helper";
 import { Services } from "@/stores/account/types";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import { getServiceBackground } from "@/utils/services/helper";
 
 export default function QRCodePage() {
 
@@ -38,7 +39,7 @@ export default function QRCodePage() {
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       translationY.value = e.translationY < 0 ? e.translationY / 10 : e.translationY;
-      if (e.translationY < 0) return;
+      if (e.translationY < 0) {return;}
       opacity.value = 1 - Math.min(Math.abs(e.translationY) / 300, 0.7);
       scale.value = 1 - Math.min(Math.abs(e.translationY) / 600, 0.4);
     })

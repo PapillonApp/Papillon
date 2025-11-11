@@ -1,7 +1,8 @@
 import { UserX2Icon } from "lucide-react-native";
 import React from "react";
-import { ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
+import { ScrollView } from "react-native";
+
 import { useAccountStore } from "@/stores/account";
 import Icon from "@/ui/components/Icon";
 import Item from "@/ui/components/Item";

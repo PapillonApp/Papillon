@@ -1,4 +1,3 @@
-import { t } from "i18next";
 
 export enum Colors {
   PINK,

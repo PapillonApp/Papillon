@@ -1,17 +1,15 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
+import { ScrollView } from "react-native";
 
+import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import { t } from "i18next";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { resources } from "@/utils/i18n";
-import { useSettingsStore } from "@/stores/settings";
 
 const LanguagePersonalization = () => {
     const { i18n } = useTranslation();

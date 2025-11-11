@@ -2,8 +2,9 @@ import { useTheme } from "@react-navigation/native";
 import React, { useMemo } from "react";
 import { View, ViewProps } from "react-native";
 
-import { LEADING_TYPE } from "./Item";
 import SkeletonView from "@/ui/components/SkeletonView";
+
+import { LEADING_TYPE } from "./Item";
 
 interface IconProps extends ViewProps {
   children?: React.ReactNode;
@@ -46,13 +47,11 @@ const enhanceChildrenOptimized = (
     const injected: any = {};
     const effectiveColor = fill !== undefined ? fill : childColor;
     if (papicon) {
-      if (childProps.fill === undefined) injected.fill = effectiveColor;
-    } else {
-      if (childProps.color === undefined) injected.color = effectiveColor;
-    }
-    if (childProps.size === undefined) injected.size = size;
-    if (childProps.width === undefined) injected.width = size;
-    if (childProps.height === undefined) injected.height = size;
+      if (childProps.fill === undefined) {injected.fill = effectiveColor;}
+    } else if (childProps.color === undefined) {injected.color = effectiveColor;}
+    if (childProps.size === undefined) {injected.size = size;}
+    if (childProps.width === undefined) {injected.width = size;}
+    if (childProps.height === undefined) {injected.height = size;}
     return Object.keys(injected).length > 0 ? React.cloneElement(child, injected) : child;
   };
 
@@ -83,13 +82,13 @@ const Icon = React.memo<IconProps>(({
   const { colors } = useTheme();
 
   if (skeleton)
-    return <SkeletonView
+    {return <SkeletonView
       style={{
         width: size,
         height: size,
         borderRadius: size * 0.5,
       }}
-    />
+    />}
 
   // Ultra-fast memoization with optimized dependencies
   const { containerStyle, childColor, enhancedChildren } = useMemo(() => {

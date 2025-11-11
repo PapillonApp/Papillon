@@ -1,6 +1,8 @@
-import { Auth } from "@/stores/account/types";
-import { Balance } from "../shared/balance";
 import { Client } from "pawrd";
+
+import { Auth } from "@/stores/account/types";
+
+import { Balance } from "../shared/balance";
 
 export async function fetchArdBalance(
   session: Client,

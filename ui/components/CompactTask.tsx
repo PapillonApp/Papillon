@@ -1,13 +1,15 @@
-import { useTheme } from "@react-navigation/native";
-import Stack from "./Stack";
-import Icon from "./Icon";
-import { Sparkle } from "lucide-react-native";
-import Typography from "./Typography";
-import AnimatedPressable from "./AnimatedPressable";
-import { View } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { Sparkle } from "lucide-react-native";
+import React, { View } from "react-native";
+
 import { formatHTML } from "@/utils/format/html";
 import i18n from "@/utils/i18n";
+
+import AnimatedPressable from "./AnimatedPressable";
+import Icon from "./Icon";
+import Stack from "./Stack";
+import Typography from "./Typography";
 
 function CompactTask({ fromCache, setHomeworkAsDone, ref, subject, color, description, emoji, dueDate, done, magic }: { fromCache: boolean, setHomeworkAsDone: (ref: Homework) => void, ref: Homework, subject: string, color: string, description: string, emoji: string, dueDate: Date, done: boolean, magic?: string }) {
   const { colors } = useTheme();

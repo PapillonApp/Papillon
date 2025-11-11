@@ -1,21 +1,22 @@
-import { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import React, { useEffect } from "react";
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
+import Animated, { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { WebView, WebViewProps } from "react-native-webview";
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import React, { useEffect } from "react";
 import ViewContainer from "@/ui/components/ViewContainer";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { WebView, WebViewProps } from "react-native-webview";
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-import Animated from "react-native-reanimated";
-import { t } from "i18next";
 
-const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webViewRef }: {
+const OnboardingWebview = ({ title, color, step, totalSteps, waitForLogin = false, webviewProps, webViewRef }: {
   title: string
   color: string
   step: number
   totalSteps: number
+  waitForLogin?: boolean
   webviewProps: WebViewProps
   webViewRef?: React.RefObject<WebView<{}> | null>
 }) => {
@@ -122,28 +123,29 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
             >
               <ActivityIndicator size={"large"} />
-              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>{t("Webview_Wait")}</Typography>
-              <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>{t("Onboarding_Load_Webview_Description")}</Typography>
+              <Typography variant={"h3"} align={"center"} color={colors.text + "90"} style={{ marginTop: 10 }}>{waitForLogin ? t("Webview_Wait") : t("Webview_Wait")}</Typography>
+              <Typography variant={"caption"} align={"center"} color={colors.text + "50"}>{waitForLogin ? t("ONBOARDING_LOADING_LOGIN") : t("Onboarding_Load_Webview_Description")}</Typography>
             </View>
-            <WebView
-              ref={webViewRef}
-              {...webviewProps}
-              style={{
-                flex: 1,
-                opacity: totallyLoaded ? 1 : 0,
-              }}
-              onLoadEnd={(e) => {
-                webviewProps.onLoadEnd?.(e);
-                console.log(e.nativeEvent.url)
-                if (e.nativeEvent.url.includes("pronote")) {
-                  if (e.nativeEvent.url !== webviewProps.source?.uri) {
+            {!waitForLogin && (
+              <WebView
+                ref={webViewRef}
+                {...webviewProps}
+                style={{
+                  flex: 1,
+                  opacity: totallyLoaded ? 1 : 0,
+                }}
+                onLoadEnd={(e) => {
+                  webviewProps.onLoadEnd?.(e);
+                  if (e.nativeEvent.url.includes("pronote")) {
+                    if (e.nativeEvent.url !== webviewProps.source?.uri) {
+                      setTotallyLoaded(true);
+                    }
+                  } else if (e.nativeEvent.url.includes("https://")) {
                     setTotallyLoaded(true);
                   }
-                } else if (e.nativeEvent.url.includes("https://")) {
-                  setTotallyLoaded(true);
-                }
-              }}
-            />
+                }}
+              />
+            )}
           </View>
         </View>
         <OnboardingBackButton />

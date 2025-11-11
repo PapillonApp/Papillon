@@ -1,5 +1,7 @@
-import { Services } from "@/stores/account/types";
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { ImageSourcePropType } from "react-native";
+
+import { Services } from "@/stores/account/types";
 
 export function getServiceName(service: Services): string {
   switch(service) {
@@ -76,12 +78,13 @@ export function getCodeType(service: Services): string {
   }
 }
 
-export function isSelfModuleEnabledED(additionals?: Record<string, any>): boolean {
-  if (!additionals) return false;
-  for (const module of additionals["modules"] as Array<{badge: number, code: string, enable: true, ordre: number, params: Array<any>}>) {
+export function isSelfModuleEnabledED(additionals?: Record<string, unknown>): boolean {
+  if (!additionals) {return false;}
+  for (const module of additionals["modules"] as Array<{badge: number, code: string, enable?: boolean, ordre: number, params?: { numeroBadge?: string }}>) {
     if (module.code === "CANTINE_BARCODE" && module.enable) {
-      if (module.params && module.params.numeroBadge)
+      if (module.params && module.params.numeroBadge) {
         return true;
+      }
     }
   }
   return false;

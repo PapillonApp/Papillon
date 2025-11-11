@@ -1,17 +1,17 @@
-import { Image, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { INSTANCES } from "appscho";
+import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Image, View } from "react-native";
 import Reanimated, {
   FadeInDown
 } from "react-native-reanimated";
 
-import Typography from "@/ui/components/Typography";
-import { useTranslation } from "react-i18next";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { RelativePathString, router } from "expo-router";
-import { INSTANCES } from "appscho";
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Typography from "@/ui/components/Typography";
 
 
 const UNIVERSITY_LOGOS: { [key: string]: any } = {
@@ -69,7 +69,7 @@ export default function AppschoInstancesList() {
   const { t } = useTranslation();
 
   const filteredInstances = useMemo(() => {
-    if (!search.trim()) return INSTANCES;
+    if (!search.trim()) {return INSTANCES;}
     return INSTANCES.filter(instance => 
       instance.name.toLowerCase().includes(search.toLowerCase())
     );

@@ -1,9 +1,10 @@
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native"
-import { Image, ImageSourcePropType, View, Switch } from "react-native"
+import React, { Image, ImageSourcePropType, Switch, View } from "react-native"
+
+import Icon from "@/ui/components/Icon"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import Icon from "@/ui/components/Icon"
 
 interface SettingsHeaderProps {
   color: string

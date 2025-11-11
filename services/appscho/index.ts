@@ -1,12 +1,14 @@
-import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
-import { Auth, Services } from "@/stores/account/types";
 import { User } from "appscho";
-import { refreshAppSchoAccount } from "./refresh";
-import { error } from "@/utils/logger/logger";
-import { CourseDay } from "@/services/shared/timetable";
+
+import { fetchAppschoNews } from "@/services/appscho/news";
 import { fetchAppschoTimetable } from "@/services/appscho/timetable";
 import { News } from "@/services/shared/news";
-import { fetchAppschoNews } from "@/services/appscho/news";
+import { CourseDay } from "@/services/shared/timetable";
+import { Capabilities, SchoolServicePlugin } from "@/services/shared/types";
+import { Auth, Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
+
+import { refreshAppSchoAccount } from "./refresh";
 
 export class Appscho implements SchoolServicePlugin {
   displayName = "AppScho";

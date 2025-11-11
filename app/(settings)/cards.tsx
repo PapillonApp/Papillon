@@ -2,8 +2,12 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { Alert, Image, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import React, { Alert, Image, ScrollView, View } from "react-native";
 
+import SettingsHeader from "@/components/SettingsHeader";
+import { removeBalanceFromDatabase } from "@/database/useBalance";
+import { getManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
@@ -12,12 +16,8 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import SettingsHeader from "@/components/SettingsHeader";
-import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/utils/services/helper";
-import { useTranslation } from "react-i18next";
-import { removeBalanceFromDatabase } from "@/database/useBalance";
-import { getManager } from "@/services/shared";
 import i18n from "@/utils/i18n";
+import { getServiceBackground, getServiceName, isSelfModuleEnabledED } from "@/utils/services/helper";
 
 export default function CardView() {
   const router = useRouter();

@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
+import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from "react-native";
 
-import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
+import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 // Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
@@ -183,7 +184,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return (flattenedStyle.lineHeight || VARIANTS[variant].lineHeight) - (getFontSize() || 16);
     }
 
-    const calculateSkeletonWidth = (index: number) => {
+    const calculateSkeletonWidth = (index: number): DimensionValue => {
       if (typeof skeletonWidth === "number") {
         return (skeletonWidth as number) * (1 - (index / 5));
       } else if (typeof skeletonWidth === "string" && skeletonWidth.endsWith("%")) {
@@ -196,9 +197,9 @@ const Typography: React.FC<TypographyProps> = React.memo(
       return "100%";
     }
 
-    if (skeleton)
+    if (skeleton) {
       return (
-        <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
+        <View style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style as ViewStyle]}>
           {Array.from({ length: skeletonLines }).map((_, index) => (
             <SkeletonView
               key={index}
@@ -214,10 +215,11 @@ const Typography: React.FC<TypographyProps> = React.memo(
           ))}
         </View>
       );
+    }
 
     // Generate cache key for this specific combination
     const cacheKey = React.useMemo(() => {
-      const hasCustomStyle = style != null;
+      const hasCustomStyle = style !== null;
       const isCustomColor = typeof color === "string" && !(color in STATIC_COLORS) &&
         !["primary", "text", "secondary"].includes(color);
 
@@ -238,7 +240,7 @@ const Typography: React.FC<TypographyProps> = React.memo(
       const colorStyles = getColorsStyles(colors);
       const variantStyle = VARIANTS[variant];
       const alignStyle = ALIGNMENT_STYLES[align];
-      const weightStyle = WEIGHT_STYLES[weight] || null;
+      const weightStyle = weight ? WEIGHT_STYLES[weight] : null;
       const italicStyle = italic ? { transform: [{ skewX: "-13deg" }] } : {};
 
       const inlineStyle: TextStyle = inline ? (() => {

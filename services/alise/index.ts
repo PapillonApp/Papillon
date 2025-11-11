@@ -1,6 +1,6 @@
-import { Client } from "alise-api";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
+
 import { Balance } from "../shared/balance";
 import { CanteenHistoryItem } from "../shared/canteen";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";

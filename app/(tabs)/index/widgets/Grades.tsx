@@ -17,8 +17,8 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { error, log } from "@/utils/logger/logger";
 import i18n from "@/utils/i18n";
+import { error, log } from "@/utils/logger/logger";
 
 const avgAlgorithms = [
   {

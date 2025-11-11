@@ -1,19 +1,15 @@
-import { Dimensions, Image, View, ViewProps } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import adjust from "@/utils/adjustColor";
-import Typography from "@/ui/components/Typography";
-import Reanimated, {
-  Easing,
-  StyleProps,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import { useEffect, useRef, useState } from "react";
-import SkeletonView from "@/ui/components/SkeletonView";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { RotateCcw } from "lucide-react-native";
+import React, { useState } from "react";
+import { Image, ViewProps } from "react-native";
+import {
+  StyleProps,
+} from "react-native-reanimated";
+
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import SkeletonView from "@/ui/components/SkeletonView";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
 
 export interface AvatarProps extends ViewProps {
   size?: number;
@@ -38,7 +34,7 @@ const Avatar = ({
   const [reloadKey, setReloadKey] = useState(0);
 
   const generateBodyStyle = (): StyleProps => {
-    let baseStyle: StyleProps = {
+    const baseStyle: StyleProps = {
       width: size,
       height: size,
       borderRadius: shape === "circle" ? size / 2 : size * 0.2,
@@ -47,17 +43,12 @@ const Avatar = ({
       overflow: "hidden",
     };
 
-    if (hasFailed)
-      baseStyle.backgroundColor = adjust("#DD0030", dark ? -0.6 : 0.9);
-    else if (!imageUrl && !skeleton)
-      baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.85);
+    if (hasFailed) { baseStyle.backgroundColor = adjust("#DD0030", dark ? -0.6 : 0.9); }
+    else if (!imageUrl && !skeleton) { baseStyle.backgroundColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.85); }
 
-    if (hasFailed)
-      baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9);
-    else if (imageUrl || skeleton)
-      baseStyle.borderColor = colors.border;
-    else
-      baseStyle.borderColor = colors.border
+    if (hasFailed) { baseStyle.borderColor = adjust(color ?? colors.primary, dark ? -0.6 : 0.9); }
+    else if (imageUrl || skeleton) { baseStyle.borderColor = colors.border; }
+    else { baseStyle.borderColor = colors.border }
 
     return baseStyle;
   }

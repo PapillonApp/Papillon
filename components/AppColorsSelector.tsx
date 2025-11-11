@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { FlatList, View } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { t } from "i18next";
-
-import Typography from "@/ui/components/Typography";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useSettingsStore } from "@/stores/settings";
-import { Colors, AppColors } from "@/utils/colors";
-import adjust from "@/utils/adjustColor";
 import { ImpactFeedbackStyle } from "expo-haptics";
+import { t } from "i18next";
+import React, { useCallback,useEffect, useMemo, useState } from "react";
+import { FlatList, View } from "react-native";
 
-export { Colors, AppColors };
+import { useSettingsStore } from "@/stores/settings";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import { AppColors,Colors } from "@/utils/colors";
+
+export { AppColors,Colors };
 
 interface ColorSelectorProps {
   mainColor: string;
@@ -98,7 +98,7 @@ const AppColorsSelector = React.memo<AppColorsSelectorProps>(function AppColorsS
   const [color, setColor] = useState<Colors>(settingsStore.colorSelected || Colors.PINK);
 
   const itemWidth = useMemo(() => {
-    if (containerWidth === 0) return 100;
+    if (containerWidth === 0) {return 100;}
     return (containerWidth - 36) / 3;
   }, [containerWidth]);
 

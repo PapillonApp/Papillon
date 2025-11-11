@@ -20,7 +20,7 @@ export function parseADEDescription(
   }
 
   const extractValue = (line: string | undefined): string | null => {
-    if (!line) return null;
+    if (!line) {return null;}
     const trimmed = line.trim();
     return trimmed === "" ? null : trimmed;
   };

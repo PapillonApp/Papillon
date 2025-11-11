@@ -35,8 +35,8 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
-import { warn } from "@/utils/logger/logger";
 import i18n from "@/utils/i18n";
+import { warn } from "@/utils/logger/logger";
 
 
 function Tabs() {
@@ -50,7 +50,7 @@ function Tabs() {
       icon: Chair,
       title: t("Profile_Attendance_Title"),
       unread: attendances.reduce((count, attendance) => {
-        if (!attendance || !attendance.absences) return count;
+        if (!attendance || !attendance.absences) {return count;}
         return count + attendance.absences.filter(absence => !absence.justified).length;
       }, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),

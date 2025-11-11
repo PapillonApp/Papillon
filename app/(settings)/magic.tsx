@@ -1,23 +1,19 @@
-import { UserX2Icon } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, Alert } from "react-native";
+import { Alert,ScrollView, Text } from "react-native";
 
-import { useAccountStore } from "@/stores/account";
+import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json";
+import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import SettingsHeader from "@/components/SettingsHeader";
-import { useSettingsStore } from "@/stores/settings";
-import { t } from "i18next";
-import ModelManager from "@/utils/magic/ModelManager";
-import { getCurrentPtr, checkAndUpdateModel } from "@/utils/magic/updater";
-import packageJson from "@/package.json";
-import { Colors } from "@/utils/colors";
 import { MAGIC_URL } from "@/utils/endpoints";
+import ModelManager from "@/utils/magic/ModelManager";
+import { checkAndUpdateModel,getCurrentPtr } from "@/utils/magic/updater";
 
 function getMagicURL(): string {
   return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
@@ -64,7 +60,7 @@ export default function SettingsMagic() {
   };
 
   const showDetailedStatus = () => {
-    if (!modelStatus) return;
+    if (!modelStatus) {return;}
 
     console.log("Statut détaillé du modèle:", {
       hasModel: modelStatus.hasModel,
@@ -81,7 +77,7 @@ export default function SettingsMagic() {
   };
 
   const checkForUpdates = async () => {
-    if (isUpdating) return;
+    if (isUpdating) {return;}
 
     setIsUpdating(true);
     setLastUpdateCheck(new Date());

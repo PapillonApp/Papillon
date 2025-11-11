@@ -1,33 +1,33 @@
+import { Papicons } from '@getpapillon/papicons';
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from "@react-navigation/native";
 import { Router, useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { ChevronDown } from "lucide-react-native";
-import React, { memo, useRef, useCallback, useEffect, useState, useMemo } from "react";
+import React, { memo, useCallback, useEffect, useMemo,useRef, useState } from "react";
 import { Dimensions, FlatList, Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { LinearTransition } from "react-native-reanimated";
+
+import { getWeekNumberFromDate } from "@/database/useHomework";
+import { useTimetable } from '@/database/useTimetable';
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import { useAccountStore } from '@/stores/account';
 import Calendar from "@/ui/components/Calendar";
 import Course from "@/ui/components/Course";
 import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
-
-import { Papicons } from '@getpapillon/papicons';
-import Stack from "@/ui/components/Stack";
-import Icon from "@/ui/components/Icon";
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
-import { Course as SharedCourse, CourseDay, CourseStatus } from "@/services/shared/timetable";
-import { Colors, getSubjectColor } from "@/utils/subjects/colors";
-import { getWeekNumberFromDate } from "@/database/useHomework";
-import { log, warn } from "@/utils/logger/logger";
-import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import { useTimetable } from '@/database/useTimetable';
-import { getSubjectName } from '@/utils/subjects/name';
-import { useAccountStore } from '@/stores/account';
 import i18n from '@/utils/i18n';
+import { log, warn } from "@/utils/logger/logger";
+import { Colors, getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from '@/utils/subjects/name';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -296,7 +296,7 @@ export default function TabOneScreen() {
     }
 
     const separatedDayEvents = useMemo(() => {
-      if (!dayEvents || dayEvents.length === 0) return dayEvents;
+      if (!dayEvents || dayEvents.length === 0) {return dayEvents;}
       const separated: any[] = [];
       for (let i = 0; i < dayEvents.length; i++) {
         separated.push(dayEvents[i]);

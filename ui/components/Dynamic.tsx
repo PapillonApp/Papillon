@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import Reanimated, { EntryExitAnimationFunction, LayoutAnimation, LinearTransition } from "react-native-reanimated";
+import Reanimated, { BaseAnimationBuilder, EntryExitAnimationFunction, LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
@@ -9,7 +9,7 @@ type DynamicProps = {
   animated?: boolean;
   style?: React.CSSProperties;
   origin?: "left" | "right" | "top" | "bottom" | "center";
-  layout?: LayoutAnimation;
+  layout?: BaseAnimationBuilder;
   entering?: EntryExitAnimationFunction;
   exiting?: EntryExitAnimationFunction;
   key?: string;
@@ -20,12 +20,12 @@ const APPEAR_IN = PapillonAppearIn;
 const APPEAR_OUT = PapillonAppearOut;
 
 // Pre-compute animated layout to avoid conditional computation
-const ANIMATED_LAYOUT = Animation(LinearTransition);
+const ANIMATED_LAYOUT = Animation(new LinearTransition());
 
 // Base style object to avoid recreation
 const BASE_STYLE = { flexDirection: "row" as const };
 
-export const Dynamic = React.memo<DynamicProps>(({
+const DynamicComponent = React.memo<DynamicProps>(({
   children,
   animated,
   style,
@@ -34,7 +34,7 @@ export const Dynamic = React.memo<DynamicProps>(({
   entering = APPEAR_IN,
   exiting = APPEAR_OUT,
   ...rest
-}) => {
+}: DynamicProps) => {
   // Memoize the computed style to prevent object recreation
   const computedStyle = useMemo(() => {
     if (!style) {
@@ -61,7 +61,7 @@ export const Dynamic = React.memo<DynamicProps>(({
     <Reanimated.View
       entering={animated ? entering : undefined}
       exiting={animated ? exiting : undefined}
-      layout={animated && (layout ?? layoutProp)}
+      layout={animated ? (layout ?? layoutProp) : undefined}
       // @ts-expect-error - Reanimated types are not fully compatible with React Native types
       style={computedStyle}
       {...rest}
@@ -70,3 +70,7 @@ export const Dynamic = React.memo<DynamicProps>(({
     </Reanimated.View>
   );
 });
+
+DynamicComponent.displayName = "Dynamic";
+
+export const Dynamic = DynamicComponent;

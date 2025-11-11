@@ -1,37 +1,35 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
-import { Platform, ScrollView, View } from "react-native";
+import { ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import React, { Platform, ScrollView, View } from "react-native";
 import { Switch } from "react-native-gesture-handler";
 
-import adjust from "@/utils/adjustColor";
-import { getCodeType, getServiceColor } from "@/utils/services/helper";
-import { warn } from "@/utils/logger/logger";
 import { getWeekNumberFromDate } from "@/database/useHomework";
-
 import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { BookingDay, CanteenHistoryItem, CanteenKind } from "@/services/shared/canteen";
-
+import { Capabilities } from "@/services/shared/types";
+import { Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Calendar from "@/ui/components/Calendar";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
-import Calendar from "@/ui/components/Calendar";
-import { Card } from "./cards";
-
-import { Calendar as CalendarIcon, ChevronDown, Clock, Papicons, QrCode } from "@getpapillon/papicons";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { Services } from "@/stores/account/types";
-import { useTranslation } from "react-i18next";
-import { Capabilities } from "@/services/shared/types";
+import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
+import { warn } from "@/utils/logger/logger";
+import { getCodeType, getServiceColor } from "@/utils/services/helper";
+
+import { Card } from "./cards";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -103,8 +101,8 @@ export default function QRCodeAndCardsPage() {
     (newDate: Date) => {
       setDate(newDate);
       const newWeek = getWeekNumberFromDate(newDate);
-      if (newWeek !== weekNumber) setWeekNumber(newWeek);
-      if (Platform.OS === "ios") setShowDatePicker(false);
+      if (newWeek !== weekNumber) { setWeekNumber(newWeek); }
+      if (Platform.OS === "ios") { setShowDatePicker(false); }
     },
     [weekNumber]
   );
@@ -112,7 +110,7 @@ export default function QRCodeAndCardsPage() {
   const serviceColor = useMemo(() => adjust(getServiceColor(service), -0.1), [service]);
 
   const handleToggle = async (index: number) => {
-    if (!bookingDay) return;
+    if (!bookingDay) { return; }
     const updatedBookingDay = { ...bookingDay };
     const item = updatedBookingDay.available[index];
     const previous = item.booked;
@@ -144,7 +142,6 @@ export default function QRCodeAndCardsPage() {
   return (
     <>
       <Calendar
-        key={`calendar-${date.toISOString()}`}
         date={date}
         onDateChange={handleDateChange}
         showDatePicker={showDatePicker}

@@ -14,7 +14,7 @@ export const formatHTML = (html: string, nobreak: boolean = false) => {
     // Add more entities as needed
   };
   text = text.replace(/&[a-zA-Z0-9#]+;/g, (entity) => {
-    if (entities[entity]) return entities[entity];
+    if (entities[entity]) {return entities[entity];}
     // Handle numeric entities
     if (/^&#\d+;/.test(entity)) {
       return String.fromCharCode(Number(entity.replace(/[^0-9]/g, '')));

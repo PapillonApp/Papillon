@@ -1,4 +1,5 @@
 import { Session } from "pawdirecte";
+
 import { Balance } from "@/services/shared/balance";
 
 interface EDBalanceElement {

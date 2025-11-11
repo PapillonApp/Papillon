@@ -1,9 +1,15 @@
+import {
+  LiquidGlassContainerView,
+  LiquidGlassView,
+} from '@callstack/liquid-glass';
+import { Papicons } from '@getpapillon/papicons';
+import { MenuView } from "@react-native-menu/menu";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 import { t } from "i18next";
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Alert,
   Dimensions,
   FlatList,
   KeyboardAvoidingView,
@@ -18,17 +24,18 @@ import {
   View,
 } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-  LiquidGlassView,
-  LiquidGlassContainerView,
-} from '@callstack/liquid-glass';
-
+import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { Homework } from "@/services/shared/homework";
+import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
 import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { CircularProgress } from "@/ui/components/CircularProgress";
 import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
 import Stack from "@/ui/components/Stack";
@@ -38,22 +45,11 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
+import { generateId } from "@/utils/generateId";
+import { predictHomework } from "@/utils/magic/prediction";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-
-import { Papicons } from '@getpapillon/papicons';
-import Icon from "@/ui/components/Icon";
-import AnimatedNumber from "@/ui/components/AnimatedNumber";
-import { predictHomework } from "@/utils/magic/prediction";
-import { useSettingsStore } from "@/stores/settings";
-import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
-import { generateId } from "@/utils/generateId";
-import { useAccountStore } from "@/stores/account";
-import { MenuView } from "@react-native-menu/menu";
-import { useNavigation } from "expo-router";
-import { BlurView } from "expo-blur";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
@@ -274,7 +270,7 @@ export default function TabOneScreen() {
   const renderItem = useCallback(({ item, index }: { item: Homework; index: number }) => {
     const inFresh = homework[item.id]
     if (showUndoneOnly && item.isDone)
-      return null;
+      {return null;}
     return (
       <Reanimated.View
         style={{ marginBottom: 16 }}
@@ -384,7 +380,7 @@ export default function TabOneScreen() {
   const [searchTermState, setSearchTermState] = useState("");
 
   const searchResult = useMemo(() => {
-    if (!showSearch || searchTermState.length === 0) return [];
+    if (!showSearch || searchTermState.length === 0) {return [];}
     return sortedHomeworks.filter(hw => {
       const content = hw.content.toLowerCase();
       const subject = hw.subject.toLowerCase();

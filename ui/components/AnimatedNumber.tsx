@@ -1,7 +1,10 @@
 
-import React, { useRef, useMemo } from 'react';
-import Typography, { TypographyProps } from './Typography';
+import React, { useMemo, useRef } from 'react';
 import Reanimated, { LinearTransition, withDelay, withSpring } from 'react-native-reanimated';
+
+import { error } from '@/utils/logger/logger';
+
+import Typography, { TypographyProps } from './Typography';
 
 interface AnimatedNumberProps extends TypographyProps {
   distance?: number; // Distance to translate the number
@@ -85,7 +88,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
           const changedIndex = changedIndexArr[index];
           return (
             <Reanimated.View
-              key={"animated-number-" + digit + (digit != "." ? "-" + index : "")}
+              key={"animated-number-" + digit + (digit !== "." ? "-" + index : "")}
               layout={LinearTransition.springify()}
               entering={getNumberEntering(changedIndex, unchanged)}
               exiting={getNumberExiting(changedIndex, unchanged)}
@@ -97,8 +100,8 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
       </Reanimated.View>
     );
   }
-  catch (error) {
-    console.error("Error in AnimatedNumber:", error);
+  catch (err) {
+    error("Error in AnimatedNumber:", String(err));
     return <Typography {...rest}>{children}</Typography>;
   }
 }

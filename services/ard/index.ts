@@ -1,12 +1,14 @@
-import { Auth, Services } from "@/stores/account/types";
-import { Capabilities, SchoolServicePlugin } from "../shared/types";
 import { Client } from "pawrd";
-import { refreshArdAccount } from "./refresh";
-import { Balance } from "../shared/balance";
+
+import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
-import { fetchArdBalance } from "./balance";
+
+import { Balance } from "../shared/balance";
 import { CanteenHistoryItem } from "../shared/canteen";
+import { Capabilities, SchoolServicePlugin } from "../shared/types";
+import { fetchArdBalance } from "./balance";
 import { fetchARDHistory } from "./history";
+import { refreshArdAccount } from "./refresh";
 
 export class ARD implements SchoolServicePlugin {
   displayName = "ARD";

@@ -1,7 +1,8 @@
 import { getDatabaseInstance } from '@/database/DatabaseProvider';
 import Ical from '@/database/models/Ical';
-import { enhanceADEUrl } from './parsers/ade-parser';
+
 import { isADEProvider } from './ical-utils';
+import { enhanceADEUrl } from './parsers/ade-parser';
 
 export async function getAllIcals(): Promise<Ical[]> {
   const database = getDatabaseInstance();

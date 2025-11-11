@@ -1,21 +1,21 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { Hamburger } from "lucide-react-native";
 import React, { ScrollView, StyleSheet, View } from "react-native";
 
-import { Papicons } from "@getpapillon/papicons";
+import Avatar from "@/ui/components/Avatar";
+import { CompactGrade } from "@/ui/components/CompactGrade";
 import Course from "@/ui/components/Course";
+import Grade from "@/ui/components/Grade";
+import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
+import SkeletonView from "@/ui/components/SkeletonView";
+import Stack from "@/ui/components/Stack";
+import Subject from "@/ui/components/Subject";
+import Task from "@/ui/components/Task";
 import Typography from "@/ui/components/Typography";
 import { log } from "@/utils/logger/logger";
-import Icon from "@/ui/components/Icon";
-import SkeletonView from "@/ui/components/SkeletonView";
-import Avatar from "@/ui/components/Avatar";
-import Stack from "@/ui/components/Stack";
-import Grade from "@/ui/components/Grade";
-import Subject from "@/ui/components/Subject";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import Task from "@/ui/components/Task";
 
 
 export default function TabOneScreen() {

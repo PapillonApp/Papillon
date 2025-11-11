@@ -1,17 +1,17 @@
+/* eslint-disable react/prop-types */
+import {
+  LiquidGlassView
+} from '@callstack/liquid-glass';
 import { useTheme } from "@react-navigation/native";
+import * as ExpoHaptics from "expo-haptics";
 import React, { useCallback, useMemo } from "react";
 import { ActivityIndicator, Pressable, PressableProps } from "react-native";
 import Reanimated, { Easing, FadeIn, FadeOut, LinearTransition, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
+import { runsIOS26 } from "../utils/IsLiquidGlass";
 import { PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Typography from "./Typography";
-import * as ExpoHaptics from "expo-haptics";
-import { runsIOS26 } from "../utils/IsLiquidGlass";
-
-import {
-  LiquidGlassView
-} from '@callstack/liquid-glass';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
