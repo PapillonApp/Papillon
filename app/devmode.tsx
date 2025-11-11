@@ -1,6 +1,7 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { Plus } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Compass, Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
 
@@ -32,6 +33,8 @@ export default function Devmode() {
 
   const { colors } = useTheme();
   const alert = useAlert();
+
+  const router = useRouter();
 
   const [showAccountStore, setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
@@ -319,6 +322,25 @@ export default function Devmode() {
           }}
         >
           <Typography variant="title">Réinitialiser la base de données</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Navigation"
+        leading={
+          <Icon>
+            <Compass size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={async () => {
+            router.push("/(onboarding)/accountSelector")
+          }}
+        >
+          <Typography variant="title">AccountSelector</Typography>
         </Item>
       </List>
     </ScrollView >
