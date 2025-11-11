@@ -319,7 +319,6 @@
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important",
 
-
   "OnBoarding_Step": "Étape ",
   "OnBoarding_Step_Of": "sur ",
 
@@ -343,5 +342,10 @@
 
   "Tasks_Sorting_Methods_DueDate": "Date de rendu",
   "Tasks_Sorting_Methods_Subject": "Matières",
-  "Tasks_Sorting_Methods_Done": "Non terminé"
+  "Tasks_Sorting_Methods_Done": "Non terminé",
+
+  "AccountSelector_Title": "Sélectionnez un compte",
+  "AccountSelector_Subtitle": "Choisissez le compte avec lequel vous souhaitez continuer",
+  "AccountSelector_AddAccount": "Ajouter un compte",
+  "AccountSelector_NoSchool": "Pas d'école"
 }

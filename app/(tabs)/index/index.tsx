@@ -82,24 +82,39 @@ const IndexScreen = () => {
 
   const Initialize = async () => {
     try {
-      await initializeAccountManager()
-      log("Refreshed Manager received")
+      const manager = await initializeAccountManager();
 
-      await Promise.all([fetchEDT(), fetchGrades()]);
+      if (!manager) {
+        warn('Manager initialization returned null, redirecting to account selector');
+        router.replace("/(onboarding)/accountSelector");
+        return;
+      }
 
-      if (settingsStore.showAlertAtLogin) {
-        alert.showAlert({
-          title: "Synchronisation réussie",
-          description: "Toutes vos données ont été mises à jour avec succès.",
-          icon: "CheckCircle",
-          color: "#00C851",
-          withoutNavbar: true,
-          delay: 1000
-        });
+      log("Manager initialized successfully")
+
+      try {
+        await Promise.all([fetchEDT(), fetchGrades()]);
+
+        if (settingsStore.showAlertAtLogin) {
+          alert.showAlert({
+            title: "Synchronisation réussie",
+            description: "Toutes vos données ont été mises à jour avec succès.",
+            icon: "CheckCircle",
+            color: "#00C851",
+            withoutNavbar: true,
+            delay: 1000
+          });
+        }
+      } catch (fetchError) {
+        warn('Failed to fetch data: ' + String(fetchError));
       }
 
     } catch (error) {
-      if (String(error).includes("Unable to find")) { return; }
+      warn('Manager initialization failed: ' + String(error));
+      if (String(error).includes("Unable to find")) {
+        return;
+      }
+      router.replace("/(onboarding)/accountSelector");
       alert.showAlert({
         title: "Connexion impossible",
         description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
@@ -110,13 +125,21 @@ const IndexScreen = () => {
     }
   };
 
-  useMemo(() => {
-    Initialize();
-  }, []);
+  useEffect(() => {
+    if (lastUsedAccount) {
+      Initialize();
+    } else {
+      router.replace("/(onboarding)/accountSelector");
+    }
+  }, [lastUsedAccount]);
 
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping EDC fetch');
+      return;
+    }
     const date = new Date();
     const weekNumber = getWeekNumberFromDate(date)
     await manager.getWeeklyTimetable(weekNumber)
@@ -128,6 +151,10 @@ const IndexScreen = () => {
 
   const fetchHomeworks = useCallback(async () => {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping homeworks fetch');
+      return;
+    }
     const current = await manager.getHomeworks(weekNumber);
     const next = await manager.getHomeworks(weekNumber + 1);
     const result = [...current, ...next]
@@ -144,6 +171,10 @@ const IndexScreen = () => {
 
   async function setHomeworkAsDone(homework: Homework) {
     const manager = getManager();
+    if (!manager) {
+      warn('Manager is null, skipping homework completion');
+      return;
+    }
     const id = generateId(
       homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
     );
@@ -160,31 +191,66 @@ const IndexScreen = () => {
   }
 
   const fetchGrades = useCallback(async () => {
-    const manager = getManager();
-    if (!manager) {
-      warn('Manager is null, skipping grades fetch');
-      return;
-    }
-    const gradePeriods = await manager.getGradesPeriods()
-    const validPeriods: Period[] = []
-    const date = new Date().getTime()
-    for (const period of gradePeriods) {
-      if (period.start.getTime() > date && period.end.getTime() > date) {
-        validPeriods.push(period);
+    try {
+      const manager = getManager();
+      if (!manager) {
+        warn('Manager is null, skipping grades fetch');
+        return;
       }
-    }
 
-    const grades: Grade[] = []
-    const currentPeriod = getCurrentPeriod(validPeriods)
+      const gradePeriods = await manager.getGradesPeriods();
+      if (!gradePeriods || gradePeriods.length === 0) {
+        warn('No grade periods found');
+        return;
+      }
 
-    const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount)
-    periodGrades.subjects.forEach(subject => {
-      subject.grades.forEach(grade => {
-        grades.push(grade);
+      const validPeriods: Period[] = []
+      const date = new Date().getTime()
+      for (const period of gradePeriods) {
+        if (period.start.getTime() > date && period.end.getTime() > date) {
+          validPeriods.push(period);
+        }
+      }
+
+      if (validPeriods.length === 0) {
+        warn('No valid periods found');
+        return;
+      }
+
+      const grades: Grade[] = []
+      const currentPeriod = getCurrentPeriod(validPeriods);
+
+      if (!currentPeriod) {
+        warn('No current period found');
+        return;
+      }
+
+      // Get the first available service ID for this account
+      const firstServiceId = account?.services?.[0]?.id;
+      if (!firstServiceId) {
+        warn('No service ID found for account');
+        return;
+      }
+
+      const periodGrades = await manager.getGradesForPeriod(currentPeriod, firstServiceId);
+
+      if (!periodGrades || !periodGrades.subjects) {
+        warn('No period grades or subjects found');
+        return;
+      }
+
+      periodGrades.subjects.forEach(subject => {
+        if (subject && subject.grades) {
+          subject.grades.forEach(grade => {
+            grades.push(grade);
+          });
+        }
       });
-    });
 
-    setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
+      setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10));
+    } catch (error) {
+      warn('Failed to fetch grades: ' + String(error));
+    }
   }, [])
 
   useEffect(() => {

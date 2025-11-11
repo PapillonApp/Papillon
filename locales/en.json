@@ -293,5 +293,10 @@
   "Changelog_Title": "Release notes",
   "Tasks_Sorting_Methods_DueDate": "Due date",
   "Tasks_Sorting_Methods_Subject": "Subjects",
-  "Tasks_Sorting_Methods_Done": "Undone"
+  "Tasks_Sorting_Methods_Done": "Undone",
+
+  "AccountSelector_Title": "Select an account",
+  "AccountSelector_Subtitle": "Choose the account you want to continue with",
+  "AccountSelector_AddAccount": "Add an account",
+  "AccountSelector_NoSchool": "No school"
 }
