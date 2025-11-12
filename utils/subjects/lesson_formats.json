@@ -8428,8 +8428,8 @@
     ]
   },
   {
-    "label": "EMC",
-    "pretty": "Enseignement moral & civique",
+    "label": "enseignementmoralcivique",
+    "pretty": "Enseignement Moral & Civique",
     "emoji": "🏛️",
     "formats": [
       "ENS. MORAL & CIVIQUE",

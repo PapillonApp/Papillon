@@ -63,7 +63,7 @@ const ALERT_SCREEN_OPTIONS = {
   headerShown: false,
   presentation: 'formSheet' as const,
   sheetAllowedDetents: Platform.OS === 'ios' ? 'fitToContents' as const : [0.9],
-  sheetCornerRadius: 32,
+  sheetCornerRadius: Platform.OS === 'ios' ? undefined : 32,
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,

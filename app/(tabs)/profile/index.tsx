@@ -49,7 +49,10 @@ function Tabs() {
     {
       icon: Chair,
       title: t("Profile_Attendance_Title"),
-      unread: attendances.reduce((count, attendance) => count + attendance.absences.filter(absence => !absence.justified).length, 0),
+      unread: attendances.reduce((count, attendance) => {
+        if (!attendance || !attendance.absences) return count;
+        return count + attendance.absences.filter(absence => !absence.justified).length;
+      }, 0),
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
