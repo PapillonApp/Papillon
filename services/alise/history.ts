@@ -1,4 +1,5 @@
 import { Client } from "alise-api";
+
 import { CanteenHistoryItem } from "../shared/canteen";
 
 export async function fetchAliseHistory(session: Client, accountId: string): Promise<CanteenHistoryItem[]> {

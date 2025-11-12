@@ -1,5 +1,4 @@
 import { BookingDay as TurboBookingDay } from "turboself-api";
-import { BookingDay as AliseBookingDay } from "alise-api";
 
 import { GenericInterface } from "./types";
 

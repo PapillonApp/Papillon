@@ -35,7 +35,9 @@ function compactSpaces(text: string): string {
   return text.trim().replace(/\s+/g, " ");
 }
 
-function normalizeText(text: string, config: any): string {
+type TokenizerConfig = { filters?: string, lower?: boolean, oov_token?: string }
+
+function normalizeText(text: string, config: TokenizerConfig): string {
   let normalized = text;
   normalized = removeAccents(normalized);
 
@@ -64,11 +66,11 @@ class ModelManager {
   private labels: string[] = [];
   private labelToId: Record<string, number> = {};
   private wordIndex: Record<string, number> = {};
-  private tokenizerConfig: any = {};
+  private tokenizerConfig: TokenizerConfig = {};
   private oovIndex = 1;
   private isInitializing = false;
   private hasInitialized = false;
-  private predictionQueue: Array<() => Promise<any>> = [];
+  private predictionQueue: Array<() => Promise<unknown>> = [];
   private isProcessingQueue = false;
 
   static getInstance(): ModelManager {
@@ -352,7 +354,7 @@ class ModelManager {
         if (modelDir.exists) {
           modelDir.delete();
         }
-      } catch (_cleanupError) {
+      } catch {
         // Ignore cleanup errors
       }
 
@@ -445,7 +447,7 @@ class ModelManager {
     }
   }
 
-  tokenize(text: string, verbose: boolean = false): number[] {
+  tokenize(text: string): number[] {
     const normalizedText = normalizeText(text, this.tokenizerConfig);
 
     if (!normalizedText.trim()) {
@@ -524,14 +526,12 @@ class ModelManager {
 
   async predict(
     text: string,
-    verbose: boolean = false
   ): Promise<ModelPrediction | { error: string; success: false }> {
-    return this.queuePrediction(() => this.predictInternal(text, verbose));
+    return this.queuePrediction(() => this.predictInternal(text));
   }
 
   private async predictInternal(
     text: string,
-    verbose: boolean = false
   ): Promise<ModelPrediction | { error: string; success: false }> {
     try {
       if (!this.model) {
@@ -541,7 +541,7 @@ class ModelManager {
         return { error: errorMsg, success: false };
       }
 
-      const seq = this.tokenize(text, verbose);
+      const seq = this.tokenize(text);
       const inputArr = new Int32Array(this.batchSize * this.maxLen);
 
       for (let i = 0; i < seq.length && i < this.maxLen; i++) {

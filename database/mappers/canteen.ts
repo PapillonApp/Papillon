@@ -1,5 +1,6 @@
 import CanteenMenu from "@/database/models/CanteenMenu";
-import { CanteenMenu as SharedCanteenMenu, CanteenHistoryItem as SharedCanteenHistoryItem } from "@/services/shared/canteen";
+import { CanteenHistoryItem as SharedCanteenHistoryItem,CanteenMenu as SharedCanteenMenu } from "@/services/shared/canteen";
+
 import CanteenHistoryItem from "../models/CanteenHistory";
 
 export function mapCanteenMenuToShared(menu: CanteenMenu): SharedCanteenMenu {

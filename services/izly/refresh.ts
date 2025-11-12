@@ -1,6 +1,7 @@
-import { Auth } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
 import { Identification, refresh } from "ezly";
+
+import { useAccountStore } from "@/stores/account";
+import { Auth } from "@/stores/account/types";
 
 export async function refreshIzlyAccount(accountId: string, credentials: Auth): Promise<{ auth: Auth; session: Identification }> {
   const session = credentials.session as Identification;

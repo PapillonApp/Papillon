@@ -1,13 +1,15 @@
-import { Auth, Services } from "@/stores/account/types";
-import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { refreshIzlyAccount } from "./refresh";
 import { Identification } from "ezly";
-import { Balance } from "../shared/balance";
-import { fetchIzlyBalances } from "./balances";
+
+import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
+
+import { Balance } from "../shared/balance";
 import { CanteenHistoryItem, QRCode } from "../shared/canteen";
+import { Capabilities, SchoolServicePlugin } from "../shared/types";
+import { fetchIzlyBalances } from "./balances";
 import { fetchIzlyHistory } from "./history";
 import { fetchIzlyQRCode } from "./qrcode";
+import { refreshIzlyAccount } from "./refresh";
 
 export class Izly implements SchoolServicePlugin {
   displayName = "Izly";

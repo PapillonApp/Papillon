@@ -1,31 +1,31 @@
+import { Papicons } from '@getpapillon/papicons';
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import { AccessibilityIcon, HeartIcon, InfoIcon } from "lucide-react-native";
+import { HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
-import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
 import { Alert, Image, Platform, View } from "react-native";
 
-import { Papicons } from '@getpapillon/papicons';
-
+import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
+import { useAccountStore } from "@/stores/account";
+import { useSettingsStore } from "@/stores/settings";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Avatar from "@/ui/components/Avatar";
+import Icon from "@/ui/components/Icon";
+import Item, { Leading } from "@/ui/components/Item";
+import List from "@/ui/components/List";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import adjust from "@/utils/adjustColor";
-import List from "@/ui/components/List";
-import Item, { Leading } from "@/ui/components/Item";
-import { useAccountStore } from "@/stores/account";
-import { error } from "@/utils/logger/logger";
-import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import * as WebBrowser from "expo-web-browser";
-import packagejson from "../../package.json"
-import Avatar from "@/ui/components/Avatar";
 import { getInitials } from "@/utils/chats/initials";
-import { useSettingsStore } from "@/stores/settings";
+import { error } from "@/utils/logger/logger";
+
+import packagejson from "../../package.json"
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -43,12 +43,12 @@ export default function SettingsIndex() {
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
   const [firstName, lastName, level, establishment] = useMemo(() => {
-    if (!account) return [null, null, null, null];
+    if (!account) {return [null, null, null, null];}
 
-    let firstName = account.firstName;
-    let lastName = account.lastName;
-    let level = account.className;
-    let establishment = account.schoolName;
+    const firstName = account.firstName;
+    const lastName = account.lastName;
+    const level = account.className;
+    const establishment = account.schoolName;
 
     return [firstName, lastName, level, establishment];
   }, [account]);

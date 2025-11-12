@@ -1,3 +1,11 @@
+import { Papicons, Plus } from "@getpapillon/papicons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Image, Pressable, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+
 import { getManager } from "@/services/shared";
 import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
@@ -10,13 +18,6 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
-import { Papicons, Plus } from "@getpapillon/papicons";
-import { LinearGradient } from "expo-linear-gradient";
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Image, Pressable, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
   const [wallets, setWallets] = useState<Balance[]>([]);

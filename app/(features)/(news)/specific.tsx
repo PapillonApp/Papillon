@@ -1,26 +1,24 @@
+import * as Papicons from '@getpapillon/papicons';
+import { MenuView } from "@react-native-menu/menu";
+import { useTheme } from "@react-navigation/native";
+import { useLocalSearchParams, useNavigation } from "expo-router"
+import * as WebBrowser from 'expo-web-browser';
+import { t } from "i18next";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import HTMLView from 'react-native-htmlview';
+import { Attachment, News as SkolengoNews } from "skolengojs"
+
 import { getManager } from "@/services/shared";
 import { News } from "@/services/shared/news";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import { useLocalSearchParams, useNavigation } from "expo-router"
-import { useEffect, useState } from "react";
-import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { Attachment, News as SkolengoNews } from "skolengojs"
-import * as Papicons from '@getpapillon/papicons';
-
-import { VARIANTS } from "@/ui/components/Typography";
-
-import HTMLView from 'react-native-htmlview';
-import * as WebBrowser from 'expo-web-browser';
-import { useTheme } from "@react-navigation/native";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { MenuView } from "@react-native-menu/menu";
 import Icon from "@/ui/components/Icon";
-import { t } from "i18next";
-import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
+import Typography from "@/ui/components/Typography";
+import { VARIANTS } from "@/ui/components/Typography";
 
 export default function NewsPage() {
   const search = useLocalSearchParams();

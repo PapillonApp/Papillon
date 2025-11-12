@@ -1,10 +1,10 @@
 import { useAccountStore } from "@/stores/account";
 
-import { cleanSubjectName } from "./name";
 import lessonFormats from "./lesson_formats.json";
+import { cleanSubjectName } from "./name";
 
 function normalizeSubjectName(subject: string): string {
-  if (!subject) return "";
+  if (!subject) {return "";}
   return subject
     .split(/\s*[>|]\s*/)[0]
     .toLowerCase()

@@ -1,3 +1,4 @@
+import * as ExpoHaptics from "expo-haptics";
 import React from "react";
 import { Platform, Pressable, PressableProps } from "react-native";
 import Reanimated, {
@@ -5,7 +6,6 @@ import Reanimated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import * as ExpoHaptics from "expo-haptics";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -34,7 +34,7 @@ export default function AnimatedPressable({
 
   const pressIn = () => {
     if (hapticFeedback)
-      ExpoHaptics.impactAsync(hapticFeedback)
+      {ExpoHaptics.impactAsync(hapticFeedback)}
     "worklet";
     scale.value = withSpring(scaleTo, { duration: 30 });
     opacity.value = withSpring(opacityTo, { duration: 30 });

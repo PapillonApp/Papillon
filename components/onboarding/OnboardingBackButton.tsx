@@ -1,8 +1,9 @@
-import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { useRouter } from "expo-router";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 const OnboardingBackButton = (props: {
   icon?: string;

@@ -6,6 +6,7 @@ import * as Haptics from "expo-haptics";
 import { router, useGlobalSearchParams } from "expo-router";
 import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,10 +18,9 @@ import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
-import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
-import { useTranslation } from "react-i18next";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();

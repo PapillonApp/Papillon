@@ -3,9 +3,10 @@ import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
 
+import SkeletonView from "@/ui/components/SkeletonView";
+
 import Stack from "./Stack";
 import Typography from "./Typography";
-import SkeletonView from "@/ui/components/SkeletonView";
 
 const ListGradesLayoutTransition = LinearTransition.easing(Easing.inOut(Easing.circle)).duration(300);
 

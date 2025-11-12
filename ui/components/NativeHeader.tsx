@@ -5,7 +5,6 @@ import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleS
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
-import Typography from "./Typography";
 import AnimatedNumber from "./AnimatedNumber";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 

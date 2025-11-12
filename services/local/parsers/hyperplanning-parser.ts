@@ -8,7 +8,7 @@ interface ParsedDescription {
 }
 
 export function parseHyperplanningDescription(description: string): ParsedDescription | null {
-  if (!description) return null;
+  if (!description) {return null;}
 
   // Clean the description from HTML tags and DESCRIPTION prefix
   const cleanedDescription = description
@@ -74,9 +74,9 @@ export function parseHyperplanningDescription(description: string): ParsedDescri
     const teacherMatch = cleanedDescription.match(/Enseignant\s*:\s*([^\n]+)/i);
     const groupMatch = cleanedDescription.match(/Promotion\s*:\s*([^\n]+)/i);
 
-    if (subjectMatch) type = subjectMatch[1].trim();
-    if (teacherMatch) teacher = teacherMatch[1].trim();
-    if (groupMatch) group = groupMatch[1].trim();
+    if (subjectMatch) {type = subjectMatch[1].trim();}
+    if (teacherMatch) {teacher = teacherMatch[1].trim();}
+    if (groupMatch) {group = groupMatch[1].trim();}
   }
 
   return {
@@ -89,7 +89,7 @@ export function parseHyperplanningDescription(description: string): ParsedDescri
 }
 
 export function isHyperplanningDescription(description: string): boolean {
-  if (!description) return false;
+  if (!description) {return false;}
 
   return description.includes('Matière :') ||
          description.includes('Enseignant :') ||

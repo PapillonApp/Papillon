@@ -1,8 +1,9 @@
 import { useAccountStore } from "@/stores/account";
+
 import lessonFormats from "./lesson_formats.json";
 
 function normalizeSubjectName(subject: string): string {
-  if (!subject) return "";
+  if (!subject) {return "";}
   return subject
     .split(/\s*[>|]\s*/)[0]
     .toLowerCase()
@@ -45,7 +46,7 @@ export function getSubjectName(subject: string): string {
 }
 
 export function cleanSubjectName(subject: string): string {
-  if (!subject) return subject;
+  if (!subject) {return subject;}
   return subject
     .toLocaleLowerCase()
     .trim()

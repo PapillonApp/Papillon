@@ -1,11 +1,14 @@
+import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Localization from "expo-localization";
 import { t } from "i18next";
 import { CheckCheck, CircleDashed, Sparkle } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
 import { Linking, Pressable, StyleSheet, Text } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Reanimated, {
   LayoutAnimationConfig,
   LinearTransition,
@@ -14,20 +17,17 @@ import Reanimated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Attachment } from "@/services/shared/attachment";
+import Icon from "@/ui/components/Icon";
+import SkeletonView from "@/ui/components/SkeletonView";
+import { formatHTML } from "@/utils/format/html";
+import i18n from "@/utils/i18n";
+
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
 import Stack from "./Stack";
 import Typography from "./Typography";
-import Icon from "@/ui/components/Icon";
-import SkeletonView from "@/ui/components/SkeletonView";
-import { Papicons } from "@getpapillon/papicons";
-import { Attachment } from "@/services/shared/attachment";
-import { ScrollView } from "react-native-gesture-handler";
-import HTMLTypography from "@/ui/components/HTMLTypography";
-import { formatHTML } from "@/utils/format/html";
-import { LinearGradient } from "expo-linear-gradient";
-import i18n from "@/utils/i18n";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -58,12 +58,9 @@ const Task: React.FC<TaskProps> = ({
   subject,
   date,
   progress,
-  index,
   magic,
-  onPress = () => {
-  },
-  onProgressChange = () => {
-  },
+  onPress = () => { /* empty */ },
+  onProgressChange = () => { /* empty */ },
   skeleton = false,
 }) => {
   const theme = useTheme();
@@ -90,12 +87,6 @@ const Task: React.FC<TaskProps> = ({
       onProgressChange(newProgress);
     }
   }, [currentProgress, onProgressChange]);
-
-  const resetProgress = useCallback(() => {
-    if (onProgressChange) {
-      onProgressChange(0);
-    }
-  }, []);
 
   const [isPressed, setIsPressed] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);

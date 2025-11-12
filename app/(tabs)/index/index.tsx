@@ -36,6 +36,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { generateId } from "@/utils/generateId";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import i18n from "@/utils/i18n";
 import { checkConsent } from "@/utils/logger/consent";
 import { log, warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -44,7 +45,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
 import GradesWidget from "./widgets/Grades";
-import i18n from "@/utils/i18n";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -300,9 +300,8 @@ const IndexScreen = () => {
 
   const getScheduleMessage = () => {
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
 
-    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+    const todayAllCourses = weeklyTimetable.find(day => day.date.getDay() === today.getDay())?.courses ?? [];
     if (todayAllCourses.length === 0) {
       return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
     } else if (todayAllCourses.length === 1) {
@@ -314,6 +313,7 @@ const IndexScreen = () => {
 
   const headerItems = [
     (
+      // eslint-disable-next-line react/jsx-key
       <Stack
         direction="vertical"
         hAlign="center"

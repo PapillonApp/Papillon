@@ -1,24 +1,24 @@
+import { useTheme } from "@react-navigation/native";
+import { authenticateWithCredentials } from "alise-api";
 import { router, useLocalSearchParams } from "expo-router";
+import { t } from "i18next";
 import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import Reanimated, { useSharedValue, withTiming } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { Alise } from "@/services/alise";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { t } from "i18next";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@react-navigation/native";
-import { Alise } from "@/services/alise";
-import { authenticateWithCredentials } from "alise-api";
-import { initializeAccountManager } from "@/services/shared";
 
 const ANIMATION_DURATION = 100;
 

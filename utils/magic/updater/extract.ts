@@ -48,7 +48,6 @@ async function normalizeStagingLayout(stagingDir: string) {
   }
 
   const tfliteDirRel = tfliteRel.split("/").slice(0, -1).join("/");
-  const tfliteName = tfliteRel.split("/").pop()!;
   const srcDirUri = tfliteDirRel ? stagingDir + tfliteDirRel + "/" : stagingDir;
 
   const dstModelDir = stagingDir + "model/";

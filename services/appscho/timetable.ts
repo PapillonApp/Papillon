@@ -1,10 +1,12 @@
-import { User, getPlanning, Lesson } from "appscho";
+import { getPlanning, Lesson,User } from "appscho";
+
 import { getDateRangeOfWeek } from "@/database/useHomework";
-import { Course, CourseDay, CourseType } from "../shared/timetable";
+
 import { parseADEDescription } from "../local/parsers/ade-parser";
+import { Course, CourseDay, CourseType } from "../shared/timetable";
 
 function parseAppschoDate(dateStr: string): Date {
-  if (!dateStr) return new Date(NaN);
+  if (!dateStr) {return new Date(NaN);}
   return new Date(dateStr.replace(" ", "T").replace(" +0000", "Z"));
 }
 

@@ -1,6 +1,7 @@
-import { Auth } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
 import { loginWithCredentials, refreshOAuthTokenWithUser, User } from "appscho";
+
+import { useAccountStore } from "@/stores/account";
+import { Auth } from "@/stores/account/types";
 
 export async function refreshAppSchoAccount(
   accountId: string,

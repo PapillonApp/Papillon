@@ -1,10 +1,12 @@
-import { Pressable, Text, View } from "react-native";
-import Typography from "./Typography";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import AnimatedPressable from "./AnimatedPressable";
+import React, { Text, View } from "react-native";
+
 import SkeletonView from "@/ui/components/SkeletonView";
 import i18n from "@/utils/i18n";
+
+import AnimatedPressable from "./AnimatedPressable";
+import Typography from "./Typography";
 
 interface CompactGradeProps {
   emoji: string;

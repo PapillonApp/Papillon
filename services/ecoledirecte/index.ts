@@ -1,5 +1,9 @@
 import { Account, Session } from "pawdirecte";
 
+import { fetchEDBalances } from "@/services/ecoledirecte/balance";
+import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";
+import { Balance } from "@/services/shared/balance";
+import { QRCode } from "@/services/shared/canteen";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
@@ -17,10 +21,6 @@ import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
 import { refreshEDAccount } from "./refresh";
 import { fetchEDTimetable } from "./timetable";
-import { QRCode } from "@/services/shared/canteen";
-import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";
-import { Balance } from "@/services/shared/balance";
-import { fetchEDBalances } from "@/services/ecoledirecte/balance";
 
 export class EcoleDirecte implements SchoolServicePlugin {
   displayName = "EcoleDirecte";

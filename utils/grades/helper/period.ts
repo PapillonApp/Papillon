@@ -5,7 +5,7 @@ export function getCurrentPeriod(periods: Period[]): Period {
   const now = new Date().getTime()
   periods = periods.sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  let currentPeriodFound = false;
+  const currentPeriodFound = false;
   for (const period of periods) {
     if (period.start.getTime() < now && period.end.getTime() > now) {
       return period;

@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import { Code } from "lucide-react-native";
-import React, { memo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import List from "@/ui/components/List";

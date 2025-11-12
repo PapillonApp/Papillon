@@ -310,7 +310,7 @@ export default function EDLoginWithCredentials() {
             onSubmitEditing: () => {
               Keyboard.dismiss();
               if (!isLoggingIn && username.trim() && password.trim())
-                loginED();
+                {loginED();}
             },
             returnKeyType: "done",
             editable: !isLoggingIn,

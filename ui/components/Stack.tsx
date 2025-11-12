@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
+import { DimensionValue, FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 
 // Types pour la direction et l'alignement
 type Direction = "vertical" | "horizontal";
@@ -39,7 +39,7 @@ const JUSTIFY_CONTENT_MAP: Record<Alignment, ViewStyle["justifyContent"]> = {
 } as const;
 
 // Pre-computed style cache to avoid object creation
-const STYLE_CACHE = new Map<string, (ViewStyle | any)[]>();
+const STYLE_CACHE = new Map<string, ViewStyle[]>();
 
 // Cache cleanup to prevent memory leaks (runs when cache gets too large)
 const MAX_CACHE_SIZE = 100;
@@ -115,7 +115,7 @@ const Stack: React.FC<StackProps> = ({
       paddingHorizontal: padding instanceof Array ? padding[0] : undefined,
       paddingVertical: padding instanceof Array ? padding[1] : undefined,
       margin,
-      width: width,
+      width: width as DimensionValue,
       height: height,
       alignItems: ALIGN_ITEMS_MAP[hAlign],
       justifyContent: JUSTIFY_CONTENT_MAP[vAlign],
@@ -134,7 +134,7 @@ const Stack: React.FC<StackProps> = ({
     // Handle inline with React Native compatible values
     if (inline) {
       dynamicStyle.alignSelf = "center";
-      dynamicStyle.width = width !== undefined ? width : "auto";
+      dynamicStyle.width = width !== undefined ? width as DimensionValue : "auto";
       dynamicStyle.flex = flex ? 1 : 0;
     }
 
@@ -160,7 +160,7 @@ const Stack: React.FC<StackProps> = ({
       dynamicStyle.backgroundColor = backgroundColor || colors.card;
     }
 
-    const finalStyle = [baseStyle, dynamicStyle];
+    const finalStyle: ViewStyle[] = [baseStyle, dynamicStyle];
 
     // Cache the result
     STYLE_CACHE.set(cacheKey, finalStyle);

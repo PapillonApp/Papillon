@@ -3,7 +3,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
-import { FlatList, FlatListProps, PressableProps, StyleProp, ViewStyle } from 'react-native';
+import { FlatList, FlatListProps, ListRenderItemInfo, PressableProps, StyleProp, ViewStyle } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 
 import { runsIOS26 } from '../utils/IsLiquidGlass';
@@ -28,7 +28,7 @@ interface SectionItem {
   ui?: {
     first?: boolean;
     last?: boolean;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -46,10 +46,10 @@ interface TableFlatListProps extends FlatListProps<SectionItem> {
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  listProps?: any;
-  renderItem?: (item: SectionItem) => React.ReactNode;
-  data?: Array<SectionItem>;
-  [key: string]: any;
+  listProps?: unknown;
+  renderItem: (info: ListRenderItemInfo<SectionItem>) => React.ReactElement | null;
+  data: Array<SectionItem>;
+  [key: string]: unknown;
 }
 
 const TableFlatList: React.FC<TableFlatListProps> = ({
@@ -58,6 +58,8 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   contentInsetAdjustmentBehavior = 'never',
   style = {},
   contentContainerStyle = {},
+  data: _data,
+  renderItem: _renderItem,
   ...rest
 }) => {
   const theme = useTheme();
@@ -87,7 +89,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
 
   const ListComponent = engine === 'LegendList' ? LegendList : engine === 'FlashList' ? FlashList : FlatList;
 
-  const renderItemComponent = ({ item, index }: any) => (
+  const renderItemComponent = ({ item, index }: ListRenderItemInfo<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>) => (
     item.type === 'item' ? (
       <Reanimated.View
         key={index}
@@ -144,7 +146,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
           )}
           {item.tags && (
             <Stack direction={"horizontal"} gap={6}>
-              {item.tags.map((tag: string, tagIndex: number) => (
+              {item.tags.map((tag: string) => (
                 <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat key={tag}>
                   <Typography variant={"body1"} color="secondary">
                     {tag}

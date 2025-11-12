@@ -1,6 +1,8 @@
 import { Client } from "pawrd";
-import { CanteenHistoryItem } from "../shared/canteen";
+
 import { error } from "@/utils/logger/logger";
+
+import { CanteenHistoryItem } from "../shared/canteen";
 
 export async function fetchARDHistory(
   session: Client,
@@ -11,7 +13,7 @@ export async function fetchARDHistory(
     error("An error occured during UID retrieving")
   }
 
-  let [financialHistory, ordersHistory, consumptionsHistory] = await Promise.all([
+  const [financialHistory, ordersHistory, consumptionsHistory] = await Promise.all([
     session.getFinancialHistory(uid),
     session.getOrdersHistory(uid),
     session.getConsumptionsHistory(uid)

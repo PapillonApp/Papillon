@@ -1,20 +1,19 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import { Calendar, Link2Icon, TypeIcon, Brain } from "lucide-react-native";
+import { Brain,Calendar, Link2Icon, TypeIcon } from "lucide-react-native";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, TextInput, Switch } from "react-native";
+import { Alert, ScrollView, StyleSheet, Switch,TextInput } from "react-native";
 
 import { useAddIcal, useIcals, useRemoveIcal, useUpdateIcalParsing } from "@/database/useIcals";
-import { isValidUrl, normalizeUrl } from "@/services/local/ical-utils";
 import { fetchAndParseICal } from "@/services/local/ical";
+import { isValidUrl, normalizeUrl } from "@/services/local/ical-utils";
 import { enhanceADEUrl } from "@/services/local/parsers/ade-parser";
-import Button from "@/ui/components/Button";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 
 export default function TabOneScreen() {
   const [icalUrl, setIcalUrl] = useState("");

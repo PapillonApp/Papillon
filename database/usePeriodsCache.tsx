@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from "react"
-import { Grade, Period } from "./models/Grades"
-import { getDatabaseInstance, useDatabase } from "./DatabaseProvider";
-import { useAccountStore } from "@/stores/account";
 import { Q } from "@nozbe/watermelondb";
+import { useEffect, useState } from "react"
+
+import { useAccountStore } from "@/stores/account";
+
+import { useDatabase } from "./DatabaseProvider";
+import { Period } from "./models/Grades"
 
 export function usePeriods() {
   const database = useDatabase()

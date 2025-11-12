@@ -1,6 +1,6 @@
-import * as github from '@actions/github';
 import { Context } from '@actions/github/lib/context';
 import { Octokit } from '@octokit/rest';
+
 import { labelResponse } from '..';
 
 const commitLabelMap: Record<string, string> = {
@@ -39,7 +39,7 @@ export default async function autoLabel(
   const errors: string[] = [];
 
   const issue_number = pull?.number ?? issue?.number;
-  if (!issue_number) return { errors, labels: [...labels] };
+  if (!issue_number) {return { errors, labels: [...labels] };}
 
   if (pull) {
     const [commitsResp, filesResp] = await Promise.all([
@@ -59,7 +59,7 @@ export default async function autoLabel(
 
       if (prefix && commitLabelMap[prefix]) {
         const label = commitLabelMap[prefix];
-        if (label) labels.add(label);
+        if (label) {labels.add(label);}
       } else {
         labels.add("status: invalid");
         errors.push(
@@ -82,7 +82,7 @@ export default async function autoLabel(
 
   if (labels.has("status: invalid")) {
     for (const label of [...labels]) {
-      if (!["status: needs triage", "status: invalid"].includes(label)) labels.delete(label);
+      if (!["status: needs triage", "status: invalid"].includes(label)) {labels.delete(label);}
     }
   }
 
@@ -106,7 +106,7 @@ export async function editInvalidLabel(
   const issue = context.payload.issue;
   const issueNumber = pull?.number ?? issue?.number;
 
-  if (!issueNumber) return false;
+  if (!issueNumber) {return false;}
 
   const addInvalid = async () => {
     await octokit.rest.issues.addLabels({
@@ -125,7 +125,7 @@ export async function editInvalidLabel(
           name: "status: needs review",
         });
       } catch (err: any) {
-        if (err.status !== 404) throw err;
+        if (err.status !== 404) {throw err;}
       }
     }
   };
@@ -139,7 +139,7 @@ export async function editInvalidLabel(
         name: "status: invalid",
       });
     } catch (err: any) {
-      if (err.status !== 404) throw err;
+      if (err.status !== 404) {throw err;}
     }
 
     if (pull) {
@@ -152,8 +152,8 @@ export async function editInvalidLabel(
     }
   };
 
-  if (type === "add") await addInvalid();
-  if (type === "remove") await removeInvalid();
+  if (type === "add") {await addInvalid();}
+  if (type === "remove") {await removeInvalid();}
 
   return true;
 }

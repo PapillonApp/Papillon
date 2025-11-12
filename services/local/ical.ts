@@ -1,9 +1,10 @@
 import { Course as SharedCourse } from '@/services/shared/timetable';
-import { parseICalString } from './parsers/ical-event-parser';
-import { detectProvider } from './ical-utils';
-import { getAllIcals, updateProviderIfUnknown } from './ical-database';
+
 import { convertMultipleEvents } from './event-converter';
 import { filterEventsByWeek } from './event-filter';
+import { getAllIcals, updateProviderIfUnknown } from './ical-database';
+import { detectProvider } from './ical-utils';
+import { parseICalString } from './parsers/ical-event-parser';
 
 export interface ICalEvent {
   uid: string;

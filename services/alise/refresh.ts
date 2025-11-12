@@ -1,4 +1,5 @@
 import { authenticateWithCredentials, Client } from "alise-api";
+
 import { Auth } from "@/stores/account/types";
 
 export async function refreshAliseAccount(accountId: string, credentials: Auth): Promise<{auth: Auth, session: Client}> {

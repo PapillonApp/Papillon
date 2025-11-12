@@ -1,6 +1,7 @@
-import { getNewsFeed, User, NewsFeed, INSTANCES } from "appscho";
-import { News } from "@/services/shared/news";
+import { getNewsFeed, INSTANCES,NewsFeed, User } from "appscho";
+
 import { AttachmentType } from "@/services/shared/attachment";
+import { News } from "@/services/shared/news";
 
 export async function fetchAppschoNews(_session: User, accountId: string, instanceId: string): Promise<News[]> {
   const newsItems = await getNewsFeed(instanceId) as NewsFeed[];

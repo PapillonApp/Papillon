@@ -2,15 +2,15 @@ import { useTheme } from "@react-navigation/native";
 import { RelativePathString, router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image } from "react-native";
 import Reanimated, { FadeInDown } from "react-native-reanimated";
 
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Typography from "@/ui/components/Typography";
 
 import { GetSupportedRestaurants, SupportedRestaurant } from "../utils/constants";
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
-import { useTranslation } from "react-i18next";
 
 export default function WelcomeScreen() {
   const theme = useTheme();

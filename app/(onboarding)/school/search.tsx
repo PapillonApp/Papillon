@@ -1,25 +1,25 @@
+import { router, useLocalSearchParams } from "expo-router";
+import LottieView from "lottie-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Keyboard,
-  View,
   KeyboardAvoidingView,
+  View,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import LottieView from "lottie-react-native";
-
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
-
 import Reanimated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 const ANIMATION_DURATION = 250;
 
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { useTranslation } from "react-i18next";
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 export default function SelectSchoolOnMap() {

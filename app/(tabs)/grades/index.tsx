@@ -18,6 +18,7 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import Grade from "@/ui/components/Grade";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
 import Stack from "@/ui/components/Stack";
 import Subject from "@/ui/components/Subject";
 import TabFlatList from "@/ui/components/TabFlatList";
@@ -28,14 +29,13 @@ import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import GradesWidget from "../index/widgets/Grades";
-import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
-import i18n from '@/utils/i18n';
 
 const EmptyListComponent = memo(() => (
   <Dynamic animated key={'empty-list:warn'}>
@@ -461,8 +461,8 @@ export default function TabOneScreen() {
 
       {!runsIOS26 && fullyScrolled && (
         <Reanimated.View
-          entering={Animation(FadeInUp, "list")}
-          exiting={Animation(FadeOutUp, "default")}
+          entering={Animation(new FadeInUp(), "list")}
+          exiting={Animation(new FadeOutUp(), "default")}
           style={[
             {
               position: "absolute",

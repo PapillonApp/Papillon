@@ -1,13 +1,14 @@
-import { Easing, FadeInUp, FadeOut } from "react-native-reanimated";
+import { Easing, FadeInUp, FadeOut, FadeOutUp, LinearTransition } from "react-native-reanimated";
 
 const SPRING_CONFIG = { mass: 1, damping: 20, stiffness: 300 };
 
 type AnimationStyle = "default" | "spring" | "list" | "fade";
+type AcceptedAnimation = FadeInUp | FadeOutUp | LinearTransition;
 
-const PapillonSpring = (a: any) =>
+const PapillonSpring = (a?: AcceptedAnimation) =>
   a?.springify().mass(SPRING_CONFIG.mass).damping(SPRING_CONFIG.damping).stiffness(SPRING_CONFIG.stiffness);
 
-const PapillonList = (a: any) =>
+const PapillonList = (a?: AcceptedAnimation) =>
   a?.duration(300).easing(Easing.out(Easing.exp));
 
 const PapillonFade = {
@@ -17,7 +18,7 @@ const PapillonFade = {
   out: FadeOut.duration(150).easing(Easing.in(Easing.ease)),
 };
 
-export const Animation = (animation?: any, style?: AnimationStyle) => {
+export const Animation = (animation?: AcceptedAnimation, style?: AnimationStyle) => {
   switch (style) {
   case "spring":
     return PapillonSpring(animation);

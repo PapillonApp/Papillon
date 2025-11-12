@@ -1,14 +1,15 @@
-import { DimensionValue, Platform, ViewProps } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from "@react-native-masked-view/masked-view";
-import CrossPattern from "@/ui/components/Pattern/CrossPattern";
 import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { DimensionValue, Platform, ViewProps } from "react-native";
+
+import CrossPattern from "@/ui/components/Pattern/CrossPattern";
 
 enum AvailablePatterns {
   CROSS = "cross",
 }
 
-interface PatternProps extends ViewProps{
+interface PatternProps extends ViewProps {
   pattern: AvailablePatterns;
   width?: DimensionValue
   height?: DimensionValue;
@@ -44,7 +45,7 @@ const Pattern = (props: PatternProps) => {
       }}
     >
       {props.pattern === "cross" && (
-        <CrossPattern color={props.color || colors.text}/>
+        <CrossPattern color={props.color || colors.text} />
       )}
     </MaskedView>
   );

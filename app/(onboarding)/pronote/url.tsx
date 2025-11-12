@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Keyboard, View, KeyboardAvoidingView } from "react-native";
 import { RelativePathString, router } from "expo-router";
-
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
+import { cleanURL, instance } from "pawnote";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Keyboard, KeyboardAvoidingView,View } from "react-native";
 import Reanimated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import { cleanURL, instance } from "pawnote";
-import { useAlert } from "@/ui/components/AlertProvider";
+
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 const ANIMATION_DURATION = 250;
 

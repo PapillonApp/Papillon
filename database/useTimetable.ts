@@ -1,6 +1,7 @@
 import { Model, Q } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
+import { getICalEventsForWeek } from "@/services/local/ical";
 import { Course as SharedCourse,CourseDay as SharedCourseDay } from "@/services/shared/timetable"
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
@@ -10,7 +11,6 @@ import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
-import { getICalEventsForWeek } from "@/services/local/ical";
 
 export function useTimetable(refresh = 0, weekNumber = 0) {
   const database = useDatabase();

@@ -1,20 +1,18 @@
-import { UserX2Icon } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Linking, ScrollView, Text } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Alert, Linking, ScrollView } from "react-native";
 
-import { useAccountStore } from "@/stores/account";
+import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json"
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import SettingsHeader from "@/components/SettingsHeader";
-import packageJson from "@/package.json"
-import { useTranslation } from "react-i18next";
-import { Avatar } from "../(features)/(news)/news";
 import { Contributor, getContributors } from "@/utils/github/contributors";
+
+import { Avatar } from "../(features)/(news)/news";
 
 export const Teams = [
   {
