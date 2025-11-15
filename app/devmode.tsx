@@ -16,7 +16,7 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
-import Stack from "@/ui/components/Stack";
+import SectionHeader from "@/ui/components/SectionHeader";
 import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
@@ -111,20 +111,14 @@ export default function Devmode() {
         </Item>
       </List>
 
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Sparkles"} size={18} />
-        </Icon>
-        <Typography>
-          Magic+
-        </Typography>
-      </Stack>
-
+      <SectionHeader
+        title="Magic+"
+        leading={
+          <Icon>
+            <Papicons name="Sparkles" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item>
@@ -261,21 +255,27 @@ export default function Devmode() {
         >
           <Typography variant="title">Reset URL Magic Model</Typography>
         </Item>
+        <Item
+          onPress={() => magicStore.clear()}
+        >
+          <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => log(JSON.stringify(magicStoreHomework))}
+        >
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
+        </Item>
 
       </List>
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Star"} size={18} />
-        </Icon>
-        <Typography>
-          Alert
-        </Typography>
-      </Stack>
+
+      <SectionHeader
+        title="Alert"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item
@@ -467,6 +467,14 @@ export default function Devmode() {
 
 
 
+      <SectionHeader
+        title="Session"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item
