@@ -1,7 +1,7 @@
 import * as github from '@actions/github';
 import { Context } from '@actions/github/lib/context';
 import { Octokit } from '@octokit/rest';
-import { descriptionSize } from '..';
+import { descriptionSize } from './types';
 
 const MIN_DESCRIPTION = 10;
 
