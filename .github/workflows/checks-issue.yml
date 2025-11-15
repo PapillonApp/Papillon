@@ -1,11 +1,6 @@
-name: Analyse automatique de la Pull Request/Issue
+name: Analyse automatique de l'Issue
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
   issues:
     types:
       - opened
@@ -14,7 +9,6 @@ on:
 
 jobs:
   run-analysis:
-    if: github.event.pull_request.user.association != 'MEMBER' && github.event.pull_request.user.association != 'OWNER'
     runs-on: ubuntu-latest
 
     permissions:
@@ -26,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -37,7 +31,7 @@ jobs:
         run: |
           npm init -y
           npm install @octokit/auth-app @octokit/rest @actions/github typescript @types/node --save-dev
-      
+
       - name: Build TypeScript
         working-directory: .github/scripts
         run: npx tsc ./index.ts ./utils/file-related.ts ./utils/auto-label.ts ./utils/check-description.ts --outDir dist --module commonjs --target ES2020 --esModuleInterop
