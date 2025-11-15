@@ -39,12 +39,12 @@ export default async function fileChecks(
   const { owner, repo } = context.repo;
   const pull = context.payload.pull_request;
 
-  const errors: string[] = [];
+  const errors = new Set<string>();
   const warnings: string[] = [];
 
   if (!pull) {
     return {
-      errors: [],
+      errors: new Set(),
       warnings: [],
       files: {
         status: 200,

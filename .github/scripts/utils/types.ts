@@ -1,12 +1,12 @@
 import { OctokitResponse } from "@octokit/types";
 
 export interface labelResponse {
-  errors: string[]
+  errors: Set<string>
   labels: string[]
 }
 
 export interface sizeResponse {
-  errors: string[]
+  errors: Set<string>
   warnings: string[]
   files: OctokitResponse<{
     sha: string;
@@ -25,5 +25,5 @@ export interface sizeResponse {
 }
 
 export interface descriptionSize {
-  errors: string[]
+  errors: Set<string>
 }
