@@ -27,7 +27,9 @@ const issueLabelMap: Record<string, string[]> = {
   "type: enhancement": ["feature", "ajouter"],
 };
 
-function checkConventionalCommits(commits: any[], labels: Set<string>, errors: string[]): void {
+function checkConventionalCommits(commits: any[], labels: Set<string>, errors: Set<string>): void {
+  const conventionalError = "Afin d'améliorer nos processus d'automatisation et de garantir une meilleure lisibilité de l'historique Git, nous demandons à tous nos contributeurs de suivre la convention [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).";
+
   for (const commit of commits) {
     const match = commit.commit.message.match(/^(\w+)(\(.+\))?:/);
     const prefix = match?.[1].toLowerCase();
@@ -37,9 +39,7 @@ function checkConventionalCommits(commits: any[], labels: Set<string>, errors: s
       if (label) labels.add(label);
     } else {
       labels.add("status: invalid");
-      errors.push(
-        "Afin d'améliorer nos processus d'automatisation et de garantir une meilleure lisibilité de l'historique Git, nous demandons à tous nos contributeurs de suivre la convention [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)."
-      );
+      errors.add(conventionalError);
     }
   }
 }
@@ -77,7 +77,7 @@ export default async function autoLabel(
   const issue = context.payload.issue;
   const isNew = context.payload.action === "opened" || context.payload.action === "reopened";
   const labels = new Set<string>(isNew ? ["status: needs triage"] : []);
-  const errors: string[] = [];
+  const errors = new Set<string>();
 
   const issue_number = pull?.number ?? issue?.number;
   if (!issue_number) return { errors, labels: [...labels] };
