@@ -77,7 +77,7 @@ function buildMessage(
     issue_number: issueNumber,
   });
 
-  const hasErrors = (labels.errors.length > 0) || (isPR && size.errors.length > 0) || (description.errors.length > 0);
+  const hasErrors = (labels.errors.size > 0) || (isPR && size.errors.size > 0) || (description.errors.size > 0);
 
   if (hasErrors && isPR) {
     await editInvalidLabel(context, octokit, "add");
