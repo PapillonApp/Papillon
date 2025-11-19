@@ -10,7 +10,6 @@ import i18n from "@/utils/i18n";
 import adjust from "@/utils/adjustColor";
 import { LinearGradient } from "expo-linear-gradient";
 import Stack from "./Stack";
->>>>>>> Stashed changes
 
 interface CompactGradeProps {
   emoji: string;
@@ -110,62 +109,58 @@ export const CompactGrade = ({
           </Typography>
         }
         {date &&
-<<<<<<< Updated upstream
-          <Typography variant="body1" color={variant === "home" ? "secondary" : color} nowrap skeleton={skeleton}>
-            {date.toLocaleDateString("fr-FR", {
-=======
           <Typography variant="body1" color={variant === "home" ? "secondary" : adjust(color, theme.dark ? 0.2 : -0.4)} nowrap skeleton={skeleton}>
             {date.toLocaleDateString(i18n.language, {
 >>>>>>> Stashed changes
-              day: "2-digit",
-              month: "short",
+day: "2-digit",
+  month: "short",
             })}
-          </Typography>
+          </Typography >
         }
-      </View>
-      <View
-        style={{
-          paddingHorizontal: 12,
-          paddingVertical: 2,
-          paddingBottom: 12,
-          flexDirection: "column",
-          gap: 8,
-          flex: 1,
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <Typography variant="navigation" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
-          {description ? description : t('Grade_NoDescription', { subject: title })}
-        </Typography>
-        <View style={{
-          flexDirection: "row",
-          alignSelf: "flex-start",
-          justifyContent: "flex-start",
-          alignItems: "flex-end",
-          gap: 2,
-          borderRadius: 120,
-          paddingHorizontal: 7,
-          paddingVertical: 3,
-          backgroundColor: skeleton ? colors.text + "10" : color + "33",
-        }}>
-          {skeleton ? (
-            <Typography skeleton variant={"h4"} skeletonWidth={20} style={{ borderRadius: 100, overflow: "hidden" }} />
-          ) : (
-            <>
-              <Typography variant="h4" color={adjust(color, theme.dark ? 0.2 : -0.4)}
-                style={{ lineHeight: 24 }}
-              >
-                {disabled ? status : (score ?? 0).toFixed(2)}
-              </Typography>
-              <Typography variant="body2" inline color={adjust(color, theme.dark ? 0.2 : -0.4)} style={{ marginBottom: 1 }}>
-                /{outOf ?? 20}
-              </Typography>
-            </>
-          )}
-        </View>
-      </View>
-    </AnimatedPressable>
+      </View >
+  <View
+    style={{
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      paddingBottom: 12,
+      flexDirection: "column",
+      gap: 8,
+      flex: 1,
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+    }}
+  >
+    <Typography variant="navigation" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
+      {description ? description : t('Grade_NoDescription', { subject: title })}
+    </Typography>
+    <View style={{
+      flexDirection: "row",
+      alignSelf: "flex-start",
+      justifyContent: "flex-start",
+      alignItems: "flex-end",
+      gap: 2,
+      borderRadius: 120,
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      backgroundColor: skeleton ? colors.text + "10" : color + "33",
+    }}>
+      {skeleton ? (
+        <Typography skeleton variant={"h4"} skeletonWidth={20} style={{ borderRadius: 100, overflow: "hidden" }} />
+      ) : (
+        <>
+          <Typography variant="h4" color={adjust(color, theme.dark ? 0.2 : -0.4)}
+            style={{ lineHeight: 24 }}
+          >
+            {disabled ? status : (score ?? 0).toFixed(2)}
+          </Typography>
+          <Typography variant="body2" inline color={adjust(color, theme.dark ? 0.2 : -0.4)} style={{ marginBottom: 1 }}>
+            /{outOf ?? 20}
+          </Typography>
+        </>
+      )}
+    </View>
+  </View>
+    </AnimatedPressable >
   );
 };
 
