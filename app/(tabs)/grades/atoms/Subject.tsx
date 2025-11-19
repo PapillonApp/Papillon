@@ -13,27 +13,48 @@ import { getSubjectName } from '@/utils/subjects/name';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
-export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = ({ subject, grades }) => {
+export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = React.memo(({ subject, grades }) => {
   const theme = useTheme();
-  const subjectAdjustedColor = adjust(getSubjectColor(subject.name), theme.dark ? 0.2 : -0.4);
-
   const navigation = useNavigation();
+
+  // Memoize derived values
+  const subjectAdjustedColor = useMemo(
+    () => adjust(getSubjectColor(subject.name), theme.dark ? 0.2 : -0.4),
+    [subject.name, theme.dark]
+  );
+
+  const handlePressSubject = useCallback(() => {
+    Alert.alert(
+      'Ça arrive bientôt !',
+      "La vue détaillée des matières est en cours de développement et sera disponible dans une future mise à jour de Papillon. 🦋",
+      [{ text: 'OK' }]
+    );
+  }, []);
+
+  const handlePressGrade = useCallback(
+    (grade: Grade) => {
+      // @ts-expect-error navigation types
+      navigation.navigate('(modals)/grade', {
+        grade: grade,
+        subjectInfo: {
+          name: getSubjectName(subject.name),
+          color: subjectAdjustedColor,
+          emoji: getSubjectEmoji(subject.name),
+          originalName: subject.name
+        },
+        allGrades: grades
+      });
+    },
+    [navigation, subject.name, subjectAdjustedColor, grades]
+  );
 
   return (
     <Dynamic animated style={{ width: "100%" }} entering={PapillonAppearIn} exiting={PapillonAppearOut} key={subject.id}>
       <Stack style={{ width: "100%" }}>
-        <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5}
-          onPress={() => {
-            Alert.alert(
-              'Ça arrive bientôt !',
-              "La vue détaillée des matières est en cours de développement et sera disponible dans une future mise à jour de Papillon. 🦋",
-              [{ text: 'OK' }]
-            );
-          }}
-        >
+        <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
           <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
             <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
               <Text style={{ fontSize: 15 }}>
@@ -60,21 +81,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = ({ s
 
         <List style={{ marginTop: 6 }}>
           {subject.grades.map((grade) => (
-            <Item
-              onPress={() => {
-                // @ts-expect-error navigation types
-                navigation.navigate('(modals)/grade', {
-                  grade: grade,
-                  subjectInfo: {
-                    name: getSubjectName(subject.name),
-                    color: subjectAdjustedColor,
-                    emoji: getSubjectEmoji(subject.name),
-                    originalName: subject.name
-                  },
-                  allGrades: grades
-                });
-              }}
-            >
+            <Item key={grade.id} onPress={() => handlePressGrade(grade)}>
               <Typography variant='title'>
                 {grade.description ? grade.description : t('Grade_NoDescription', { subject: getSubjectName(subject.name) })}
               </Typography>
@@ -98,4 +105,4 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = ({ s
       </Stack>
     </Dynamic>
   );
-};
+});

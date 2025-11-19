@@ -69,13 +69,13 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         }, backgroundAnimatedStyle]}
       >
         {runsIOS26 ? (
-          <LiquidGlassView
-            effect={"regular"}
+          <BlurView
+            intensity={90}
             style={{
               position: 'absolute',
-              top: -10,
-              left: -10,
-              right: -10,
+              top: 0,
+              left: 0,
+              right: 0,
               bottom: 0,
             }}
           />

@@ -33,6 +33,7 @@ import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
+import { LegendList } from '@legendapp/list';
 
 const GradesView: React.FC = () => {
   // Layout du header
@@ -318,6 +319,7 @@ const GradesView: React.FC = () => {
         keyExtractor={(item) => item.id}
         itemLayoutAnimation={LinearTransition.springify()}
         maxToRenderPerBatch={3}
+        removeClippedSubviews={true}
 
         refreshControl={
           <RefreshControl
@@ -341,10 +343,10 @@ const GradesView: React.FC = () => {
             </Dynamic>
 
             <Dynamic animated key={'header:grades'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Reanimated.FlatList
+              <LegendList
                 horizontal
-                data={sortedGrades}
-                style={{ overflow: 'visible' }}
+                data={sortedGrades.slice(0, 10)}
+                style={{ overflow: 'visible', height: 140 + 24 }}
                 contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 0, gap: 12 }}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
