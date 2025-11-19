@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
-import Reanimated, { LayoutAnimationConfig, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 import Typography from "./Typography";
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+    overflow: "hidden",
   },
 });
 
@@ -255,12 +256,14 @@ interface NativeHeaderHighlightProps extends ViewProps {
   children?: React.ReactNode;
   color?: string;
   light?: boolean;
+  variant?: "navigation" | "header";
 }
 
 const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   children,
   color = DEFAULT_COLOR,
   light = false,
+  variant = "navigation",
   style,
   ...props
 }: NativeHeaderHighlightProps) {
@@ -272,15 +275,15 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
 
   return (
     <LayoutAnimationConfig skipEntering>
-      <View style={viewStyle} {...props}>
+      <Reanimated.View style={viewStyle} {...props} layout={LinearTransition.springify()}>
         {typeof children === 'string' ? (
-          <AnimatedNumber variant="navigation" style={{ color }}>
+          <AnimatedNumber variant={variant} style={{ color }}>
             {children}
           </AnimatedNumber>
         ) : (
           children
         )}
-      </View>
+      </Reanimated.View>
     </LayoutAnimationConfig>
   );
 });

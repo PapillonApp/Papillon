@@ -1,18 +1,60 @@
-import React, { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  PlatformColor,
+  Pressable,
+  RefreshControl,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Reanimated, { FadeInUp, FadeOutUp, LayoutAnimationConfig, LinearTransition } from "react-native-reanimated";
 
-import Reanimated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import ChipButton from '@/ui/components/ChipButton';
+import {
+  LiquidGlassView,
+  LiquidGlassContainerView,
+} from '@callstack/liquid-glass';
 
-import Search from '@/ui/components/Search';
-import TabHeader from '@/ui/components/TabHeader';
-import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
-import Typography from '@/ui/components/Typography';
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { Homework } from "@/services/shared/homework";
+import { useAlert } from "@/ui/components/AlertProvider";
+import { CircularProgress } from "@/ui/components/CircularProgress";
+import { Dynamic } from "@/ui/components/Dynamic";
+import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import NativeHeaderTopPressable from "@/ui/components/NativeHeaderTopPressable";
+import Stack from "@/ui/components/Stack";
+import TabFlatList from "@/ui/components/TabFlatList";
+import Task from "@/ui/components/Task";
+import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn } from "@/ui/utils/Transition";
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
 
-const TasksView: React.FC = () => {
-  const [headerHeight, setHeaderHeight] = useState(0);
+import { Papicons } from '@getpapillon/papicons';
+import Icon from "@/ui/components/Icon";
+import AnimatedNumber from "@/ui/components/AnimatedNumber";
+import { predictHomework } from "@/utils/magic/prediction";
+import { useSettingsStore } from "@/stores/settings";
+import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
+import { generateId } from "@/utils/generateId";
+import { useAccountStore } from "@/stores/account";
+import { MenuView } from "@react-native-menu/menu";
+import { useNavigation } from "expo-router";
+import { BlurView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-<<<<<<< Updated upstream
 export const useMagicPrediction = (content: string) => {
   const [magic, setMagic] = useState<any>(undefined);
   const magicEnabled = useSettingsStore(state => state.personalization.magicEnabled);
@@ -68,6 +110,7 @@ const TaskItem = memo(({ item, fromCache = false, index, onProgressChange }: {
         index={index}
         magic={magic}
         fromCache={fromCache ?? false}
+        attachments={item.attachments}
         onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
       />
     );
@@ -215,7 +258,7 @@ export default function TabOneScreen() {
         alert.showAlert({
           title: "Erreur de chargement",
           message: "Impossible de charger les devoirs",
-          description: "Veuillez vérifier votre connexion internet et réessayer.",
+          description: "Vérifie ta connexion internet et réessaie.",
           color: "#D60046",
           icon: "TriangleAlert",
           technical: String(error)
@@ -233,13 +276,18 @@ export default function TabOneScreen() {
     if (showUndoneOnly && item.isDone)
       return null;
     return (
-      <TaskItem
-        key={item.id}
-        item={item}
-        index={index}
-        fromCache={!inFresh}
-        onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
-      />
+      <Reanimated.View
+        style={{ marginBottom: 16 }}
+        layout={Animation(LinearTransition, "list")}
+      >
+        <TaskItem
+          key={item.id}
+          item={item}
+          index={index}
+          fromCache={!inFresh}
+          onProgressChange={(item, newProgress) => onProgressChange(inFresh, newProgress)}
+        />
+      </Reanimated.View>
     )
   }, [onProgressChange, homeworksFromCache]);
 
@@ -454,6 +502,7 @@ export default function TabOneScreen() {
         key={sortedHomeworks.length}
         data={sortedHomeworks}
         initialNumToRender={2}
+        engine="FlashList"
         numColumns={windowDimensions.width > 1050 ? 3 : windowDimensions.width < 800 ? 1 : 2}
         onFullyScrolled={handleFullyScrolled}
         refreshControl={
@@ -464,6 +513,7 @@ export default function TabOneScreen() {
           />
         }
         gap={16}
+        paddingTop={2}
         header={(
           <Stack direction={"horizontal"} hAlign={"end"} style={{ padding: 20 }}>
             <LayoutAnimationConfig skipEntering>
@@ -510,34 +560,255 @@ export default function TabOneScreen() {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={<EmptyListComponent />}
-=======
-  const offsetY = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    offsetY.value = event.contentOffset.y;
-  });
-
-  return (
-    <View
-      style={{ flex: 1 }}
-    >
-      <TabHeader
-        onHeightChanged={setHeaderHeight}
-        title={<TabHeaderTitle leading="Semaine" number={"51"} color='#C54CB3' />}
-        bottom={<Search placeholder='Rechercher une note' color='#C54CB3' />}
-        scrollHandlerOffset={offsetY}
->>>>>>> Stashed changes
       />
 
-      <Reanimated.ScrollView
-        style={{ flex: 1, height: '100%' }}
-        contentContainerStyle={{ padding: 16, paddingTop: headerHeight + 16 }}
-        onScroll={scrollHandler}
-      >
-        <Typography>aaa</Typography>
-        <Typography variant='h1'>aaa</Typography>
-      </Reanimated.ScrollView>
-    </View>
-  )
-};
+      {!runsIOS26 && fullyScrolled && (
+        <Reanimated.View
+          entering={Animation(FadeInUp, "list")}
+          exiting={Animation(FadeOutUp, "default")}
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: headerHeight + 1,
+              backgroundColor: colors.card,
+              zIndex: 1000000,
+            },
+            Platform.OS === 'android' && {
+              elevation: 4,
+            },
+            Platform.OS === 'ios' && {
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors.border,
+            }
+          ]}
+        />
+      )}
 
-export default TasksView;
+      {/* Picker */}
+      {showWeekPicker && (
+        <Reanimated.View
+          style={{
+            position: "absolute",
+            top: headerHeight,
+            alignSelf: "center",
+            zIndex: 1000000,
+            transformOrigin: "center top",
+          }}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+        >
+          <LiquidGlassView
+            style={{
+              height: 60,
+              width: 300,
+              backgroundColor: runsIOS26 ? "transparent" : colors.card,
+              borderRadius: 16,
+              boxShadow: runsIOS26 ? undefined : "0px 0px 32px rgba(0, 0, 0, 0.25)",
+            }}
+            effect="regular"
+            interactive={true}
+          >
+            <View
+              style={{
+                position: "absolute",
+                alignSelf: "center",
+                top: 5,
+                height: 50,
+                width: 50,
+                borderRadius: 16,
+                borderCurve: "continuous",
+                borderWidth: 2,
+                borderColor: "#C54CB3",
+              }}
+            />
+
+            <FlatList
+              onLayout={() => {
+                layoutPicker();
+              }}
+              data={Array.from({ length: 56 }, (_, i) => i)}
+              initialScrollIndex={selectedWeek}
+              getItemLayout={(data, index) => (
+                { length: 60, offset: 60 * index, index }
+              )}
+              keyExtractor={(item) => "picker:" + item.toString()}
+              horizontal
+              removeClippedSubviews={true}
+              showsHorizontalScrollIndicator={false}
+              style={{
+                flexGrow: 0,
+                height: 100,
+                width: 300,
+              }}
+              contentContainerStyle={{
+                alignItems: "center",
+                gap: 0,
+                paddingLeft: 300 / 2 - 30, // center the picker
+                paddingRight: 300 / 2 - 30, // center the picker
+              }}
+              snapToInterval={60}
+              decelerationRate="fast"
+              ref={WeekPickerRef}
+              initialNumToRender={10}
+              onScroll={handleWeekScroll}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => {
+                    setSelectedWeek(item);
+                    setShowWeekPicker(false);
+                  }}
+                  style={[
+                    {
+                      width: 40,
+                      height: 40,
+                      margin: 10,
+                      borderRadius: 12,
+                      borderCurve: "continuous",
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
+                      borderColor: colors.text + "22",
+                      borderWidth: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                    item === selectedWeek && {
+                      backgroundColor: "#C54CB3",
+                      boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
+                    }
+                  ]}
+                >
+                  <Text
+                    style={{
+                      color: item === selectedWeek ? "#FFF" : colors.text,
+                      fontSize: 16,
+                      fontFamily: item === selectedWeek ? "bold" : "medium",
+                    }}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </LiquidGlassView>
+        </Reanimated.View>
+      )}
+
+      <NativeHeaderSide side="Left" key={`header-left-hw:` + selectedMethod + ":" + showUndoneOnly}>
+        <MenuView
+          actions={[
+            {
+              title: t('Task_Sorting_Title'),
+              subactions: sortingMethods.map((method, index) => ({
+                title: method.label,
+                id: "sort_" + index.toString(),
+                state: (selectedMethod === index ? 'on' : 'off'),
+                image: method.image ? method.image : undefined,
+                imageColor: colors.text,
+              })),
+              image: Platform.select({
+                ios: "arrow.up.arrow.down"
+              }),
+              imageColor: colors.text,
+              displayInline: true
+            },
+            {
+              title: t('Task_Show_Title'),
+              subactions: [
+                {
+                  title: t('Task_OnlyShowUndone'),
+                  id: 'only-undone',
+                  state: (!showUndoneOnly ? 'on' : 'off'),
+                  image: Platform.select({
+                    ios: "flag.pattern.checkered"
+                  }),
+                  imageColor: colors.text,
+                }
+              ],
+              displayInline: true
+            }
+          ]}
+          onPressAction={({ nativeEvent }) => {
+            if (nativeEvent.event === 'only-undone') {
+              console.log("Toggling only undone");
+              setShowUndoneOnly((prev) => !prev);
+              console.log("Only undone is now", showUndoneOnly);
+            }
+            else if (nativeEvent.event.startsWith("sort_")) {
+              const withoutSort = nativeEvent.event.replace("sort_", "")
+              const selected = sortingMethods[parseInt(withoutSort)];
+              if (selected) {
+                setSelectedMethod(parseInt(withoutSort));
+              }
+            }
+          }}
+        >
+          <NativeHeaderPressable>
+            <Papicons name={"Filter"} color={"#C54CB3"} size={28} />
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide >
+
+
+      <NativeHeaderTitle key={`header-title:` + fullyScrolled + ":" + leftHomeworks + ":" + selectedWeek}>
+        <NativeHeaderTopPressable layout={Animation(LinearTransition)} onPress={() => {
+          toggleWeekPicker();
+        }}>
+          <Dynamic
+            animated={true}
+            style={{
+              flexDirection: "column",
+              alignItems: Platform.OS === 'android' ? "left" : "center",
+              justifyContent: "center",
+              gap: 4,
+              width: 200,
+              height: 60,
+              marginTop: marginTop(),
+            }}
+          >
+            <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
+              <Dynamic animated>
+                <Typography inline variant="navigation">{t('Tasks_Week')}</Typography>
+              </Dynamic>
+              <Dynamic animated style={{ marginTop: -3 }}>
+                <NativeHeaderHighlight color="#C54CB3" light={!runsIOS26 && fullyScrolled}>
+                  {selectedWeek.toString()}
+                </NativeHeaderHighlight>
+              </Dynamic>
+
+              <Dynamic animated>
+                <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
+              </Dynamic>
+            </Dynamic>
+            {fullyScrolled && (
+              <Reanimated.View
+                style={{
+                  width: 200,
+                  alignItems: Platform.OS === 'android' ? "flex-start" : 'center',
+                  marginTop: !runsIOS26 ? -4 : 0,
+                }}
+                key="tasks-visible" entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+                <Dynamic animated key={`tasks-visible:${leftHomeworks}`}>
+                  <Typography inline variant={"body2"} style={{ color: "#C54CB3" }} align="center">
+                    {statusText}
+                  </Typography>
+                </Dynamic>
+              </Reanimated.View>
+            )}
+          </Dynamic>
+        </NativeHeaderTopPressable>
+      </NativeHeaderTitle>
+      <NativeHeaderSide side="Right">
+        <NativeHeaderPressable
+          onPressIn={() => {
+            setSearchTermState("");
+            setShowSearch(true);
+          }}
+        >
+          <Papicons name={"Search"} color={"#C54CB3"} size={26} />
+        </NativeHeaderPressable>
+      </NativeHeaderSide>
+    </>
+  );
+}

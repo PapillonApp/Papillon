@@ -1,11 +1,13 @@
 import React from "react";
 import { Platform, Pressable, PressableProps } from "react-native";
 import Reanimated, {
+  LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 import * as ExpoHaptics from "expo-haptics";
+import { Animation } from "../utils/Animation";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -13,6 +15,7 @@ type AnimatedPressableProps = PressableProps & {
   scaleTo?: number;
   opacityTo?: number;
   hapticFeedback?: ExpoHaptics.ImpactFeedbackStyle;
+  animated?: boolean;
 };
 
 export default function AnimatedPressable({
@@ -20,6 +23,7 @@ export default function AnimatedPressable({
   scaleTo = 0.95,
   opacityTo = 0.7,
   hapticFeedback,
+  animated = false,
   ...props
 }: AnimatedPressableProps) {
   const scale = useSharedValue(1);
@@ -49,6 +53,7 @@ export default function AnimatedPressable({
   return (
     <ReanimatedPressable
       {...props}
+      layout={animated ? Animation(LinearTransition) : undefined}
       style={[animatedStyle, props.style]}
       onPressIn={(e) => {
         pressIn(); // animation on UI thread
