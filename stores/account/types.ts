@@ -96,5 +96,6 @@ export enum Services {
   IZLY,
   MULTI,
   ALISE,
-  APPSCHO
+  APPSCHO,
+  LANNION,
 }
