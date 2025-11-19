@@ -18,3 +18,8 @@ export const getPeriodNumber = (name: string) => {
 
   return newName.toString()[0];
 }
+
+export const isPeriodWithNumber = (name: string) => {
+  let digits = name.replace(/[^0-9]/g, '').trim();
+  return digits.length > 0;
+}
