@@ -45,12 +45,6 @@ export const VARIANTS = StyleSheet.create({
     fontFamily: FONT_FAMILIES.semibold,
     lineHeight: 24,
   },
-  header: {
-    fontSize: 19,
-    fontFamily: FONT_FAMILIES.bold,
-    letterSpacing: 0.08,
-    lineHeight: 22,
-  },
   h1: {
     fontSize: 32,
     fontFamily: FONT_FAMILIES.bold,

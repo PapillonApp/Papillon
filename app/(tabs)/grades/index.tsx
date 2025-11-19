@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import { LegendList } from "@legendapp/list";
 import { MenuView } from '@react-native-menu/menu';
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -19,22 +18,6 @@ import Typography from "@/ui/components/Typography";
 import { Animation } from "@/ui/utils/Animation";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-=======
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, View, FlatList, RefreshControl } from 'react-native';
-
-import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
-import ChipButton from '@/ui/components/ChipButton';
-
-import Search from '@/ui/components/Search';
-import TabHeader from '@/ui/components/TabHeader';
-import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
-import Typography from '@/ui/components/Typography';
-import { useTheme } from '@react-navigation/native';
-
-import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Grade as SharedGrade, Period, Subject as SharedSubject, Subject } from "@/services/shared/grade";
->>>>>>> Stashed changes
 import PapillonMedian from "@/utils/grades/algorithms/median";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
@@ -45,7 +28,6 @@ import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-<<<<<<< Updated upstream
 import { CompactGrade } from "@/ui/components/CompactGrade";
 import { useNavigation } from "expo-router";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
@@ -54,39 +36,35 @@ import { useAccountStore } from "@/stores/account";
 import { getPeriodName, getPeriodNumber } from "@/utils/services/periods";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FlashList } from "@shopify/flash-list";
-=======
-import { MenuView } from '@react-native-menu/menu';
-import i18n from '@/utils/i18n';
-import Stack from '@/ui/components/Stack';
-import { SubjectItem } from './atoms/Subject';
-import { t } from 'i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
-import Icon from '@/ui/components/Icon';
-import { Papicons } from '@getpapillon/papicons';
-import { Dynamic } from '@/ui/components/Dynamic';
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { CompactGrade } from '@/ui/components/CompactGrade';
->>>>>>> Stashed changes
 
-const GradesView: React.FC = () => {
-  // Layout du header
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const bottomTabBarHeight = useBottomTabBarHeight();
+const EmptyListComponent = memo(() => (
+  <Dynamic animated key={'empty-list:warn'}>
+    <Stack
+      hAlign="center"
+      vAlign="center"
+      flex
+      style={{ width: "100%" }}
+    >
+      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+        <Papicons name={"Grades"} />
+      </Icon>
+      <Typography variant="h4" color="text" align="center">
+        {t('Grades_Empty_Title')}
+      </Typography>
+      <Typography variant="body2" color="secondary" align="center">
+        {t('Grades_Empty_Description')}
+      </Typography>
+    </Stack>
+  </Dynamic>
+));
 
-  // Thème
-  const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
+export default function TabOneScreen() {
+  const theme = useTheme();
+  const { colors } = theme;
+  const headerHeight = useHeaderHeight();
+  const windowDimensions = useWindowDimensions();
 
-  // Chargement
-  const [periodsLoading, setPeriodsLoading] = useState(false);
-  const [gradesLoading, setGradesLoading] = useState(false);
-  const loading = periodsLoading || gradesLoading;
-
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Sortings
-  const [sortMethod, setSortMethod] = useState<string>("date");
+  const [fullyScrolled, setFullyScrolled] = useState(false);
   const sortings = [
     {
       label: t("Grades_Sorting_Alphabetical"),
@@ -94,7 +72,6 @@ const GradesView: React.FC = () => {
       icon: {
         ios: "character",
         android: "ic_alphabetical",
-        papicon: "font",
       }
     },
     {
@@ -103,7 +80,6 @@ const GradesView: React.FC = () => {
       icon: {
         ios: "chart.xyaxis.line",
         android: "ic_averages",
-        papicon: "grades",
       }
     },
     {
@@ -112,34 +88,64 @@ const GradesView: React.FC = () => {
       icon: {
         ios: "calendar",
         android: "ic_date",
-        papicon: "calendar",
       }
     },
   ];
 
-  // Gestion du scroll
-  const offsetY = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    offsetY.value = event.contentOffset.y;
-  });
+  const avgAlgorithms = [
+    {
+      label: t("Grades_Avg_All_Title"),
+      short: t("Grades_Avg_All_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "subject",
+      algorithm: (grades: SharedGrade[]) => PapillonSubjectAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Subject_Title"),
+      short: t("Grades_Avg_Subject_Short"),
+      subtitle: t("Grades_Method_Weighted"),
+      value: "weighted",
+      algorithm: (grades: SharedGrade[]) => PapillonWeightedAvg(grades)
+    },
+    {
+      label: t("Grades_Avg_Median_Title"),
+      short: t("Grades_Avg_Median_Short"),
+      subtitle: t("Grades_Method_AllGrades"),
+      value: "median",
+      algorithm: (grades: SharedGrade[]) => PapillonMedian(grades)
+    },
+  ]
 
-  // Manager
+  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
+    setFullyScrolled(isFullyScrolled);
+  }, []);
+
+  const [sorting, setSorting] = useState("alphabetical");
+  const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
+
+  const [periods, setPeriods] = useState<Period[]>([]);
+  const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
+  const [currentPeriod, setCurrentPeriod] = useState<Period>();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
+
   const manager = getManager();
 
-  // Obtention des périodes
-  const [periods, setPeriods] = useState<Period[]>([]);
-  const [currentPeriod, setCurrentPeriod] = useState<Period>();
-
   const fetchPeriods = async (managerToUse = manager) => {
-    if (currentPeriod || !managerToUse) return;
-    setPeriodsLoading(true);
+    if (currentPeriod) {
+      return;
+    }
 
-    const result = await managerToUse.getGradesPeriods();
-    const currentPeriodFound = getCurrentPeriod(result);
+    if (!managerToUse) {
+      return;
+    }
 
+    const result = await managerToUse.getGradesPeriods()
     setPeriods(result);
-    setCurrentPeriod(currentPeriodFound);
-    setPeriodsLoading(false);
+
+    const currentPeriodFound = getCurrentPeriod(result)
+    setCurrentPeriod(currentPeriodFound)
   };
 
   useEffect(() => {
@@ -150,12 +156,7 @@ const GradesView: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Obtention des notes
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
-
   const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
-    setGradesLoading(true);
     if (period && managerToUse) {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
       setSubjects(grades.subjects);
@@ -165,7 +166,6 @@ const GradesView: React.FC = () => {
 
       requestAnimationFrame(() => {
         setTimeout(() => {
-          setGradesLoading(false);
           setIsRefreshing(false);
         }, 200);
       });
@@ -177,93 +177,11 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
-  const grades = useMemo(() => {
-    return subjects.flatMap((subject) => subject.grades);
-  }, [subjects]);
-
-  const getSubjectById = useCallback((id: string) => {
-    return subjects.find((subject) => subject.id === id);
-  }, [subjects]);
-
-  // Sort
-  // Sort grades in subjects by date descending then sort subjects by latest grade descending
-  const sortedSubjects = useMemo(() => {
-    const subjectsCopy = [...subjects];
-    subjectsCopy.forEach((subject) => {
-      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    });
-
-    switch (sortMethod) {
-      case "alphabetical":
-        subjectsCopy.sort((a, b) => {
-          const nameA = getSubjectName(a.name).toLowerCase();
-          const nameB = getSubjectName(b.name).toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
-        break;
-
-      case "averages":
-        subjectsCopy.sort((a, b) => {
-          const aAvg = a.studentAverage.value;
-          const bAvg = b.studentAverage.value;
-          return bAvg - aAvg;
-        });
-        break;
-
-      default:
-        subjectsCopy.sort((a, b) => {
-          const aLatestGrade = a.grades[0];
-          const bLatestGrade = b.grades[0];
-
-          if (!aLatestGrade && !bLatestGrade) return 0;
-          if (!aLatestGrade) return 1;
-          if (!bLatestGrade) return -1;
-
-          return bLatestGrade.givenAt.getTime() - aLatestGrade.givenAt.getTime();
-        });
-        break;
-    }
-
-    return subjectsCopy;
-  }, [subjects, sortMethod]);
-
-  const sortedGrades = useMemo(() => {
-    const gradesCopy = [...grades];
-    gradesCopy.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    return gradesCopy;
-  }, [grades]);
-
-  // Search
-  const [searchText, setSearchText] = useState<string>("");
-  const filteredSubjects = useMemo(() => {
-    if (searchText.trim() === "") {
-      return sortedSubjects;
-    }
-
-    const lowerSearchText = searchText.toLowerCase();
-
-    return sortedSubjects.filter((subject) => {
-      const subjectName = getSubjectName(subject.name).toLowerCase();
-      if (subjectName.includes(lowerSearchText)) {
-        return true;
-      }
-
-      // Also search in grades descriptions
-      const matchingGrades = subject.grades.filter((grade) => {
-        return grade.description?.toLowerCase().includes(lowerSearchText);
-      });
-
-      return matchingGrades.length > 0;
-    });
-  }, [searchText, sortedSubjects]);
-
-  // Refresh
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
-<<<<<<< Updated upstream
   const average = useMemo(() => {
     const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
     if (serviceAverage !== null && algorithm?.value === "subject") {
@@ -564,20 +482,6 @@ const GradesView: React.FC = () => {
         <MenuView
           onPressAction={({ nativeEvent }) => {
             const actionId = nativeEvent.event;
-=======
-  return (
-    <View
-      style={{ flex: 1 }}
-    >
-      {/* Header */}
-      <TabHeader
-        onHeightChanged={setHeaderHeight}
-        /* Nom de la période */
-        title={
-          <MenuView
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
->>>>>>> Stashed changes
 
             if (actionId.startsWith("period:")) {
               const selectedPeriodId = actionId.replace("period:", "");
@@ -615,7 +519,6 @@ const GradesView: React.FC = () => {
               marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
             }}
           >
-<<<<<<< Updated upstream
             <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
               <Dynamic animated>
                 <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
@@ -654,151 +557,55 @@ const GradesView: React.FC = () => {
             } else if (actionId.startsWith("algorithm:")) {
               const selectedAlgorithm = actionId.replace("algorithm:", "");
               setCurrentAlgorithm(selectedAlgorithm);
-=======
-            <TabHeaderTitle
-              color='#2B7ED6'
-              leading={getPeriodName(currentPeriod?.name || '')}
-              number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
-              loading={loading}
-            />
-          </MenuView>
-        }
-        /* Filtres */
-        trailing={
-          <MenuView
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
-              if (actionId.startsWith("sort:")) {
-                const selectedSorting = actionId.replace("sort:", "");
-                setSortMethod(selectedSorting);
-              }
-            }}
-            actions={
-              sortings.map((s) => ({
-                id: "sort:" + s.value,
-                title: s.label,
-                state: sortMethod === s.value ? "on" : "off",
-                image: Platform.select({
-                  ios: s.icon.ios,
-                  android: s.icon.android,
-                }),
-                imageColor: colors.text,
-              }))
->>>>>>> Stashed changes
             }
-          >
-            <View style={{ width: 200, alignItems: 'flex-end' }} >
-              <ChipButton icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron onPress={() => { }}>
-                {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
-              </ChipButton>
-            </View>
-          </MenuView>
-        }
-        /* Recherche */
-        bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
-        scrollHandlerOffset={offsetY}
-      />
+          }}
+          actions={
+            sortings.map((s) => ({
+              id: "sort:" + s.value,
+              title: s.label,
+              state: sorting === s.value ? "on" : "off",
+              image: Platform.select({
+                ios: s.icon.ios,
+                android: s.icon.android,
+              }),
+              imageColor: colors.text,
+            }))
+          }
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <Icon size={28}>
+              <Papicons name={"Filter"} color={"#29947A"} />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide>
 
-
-      <Reanimated.FlatList
-        style={{ flex: 1, height: '100%' }}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight, gap: 16, paddingBottom: bottomTabBarHeight }}
-        onScroll={scrollHandler}
-        scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-        layout={LinearTransition.springify()}
-        keyExtractor={(item) => item.id}
-        itemLayoutAnimation={LinearTransition.springify()}
-        maxToRenderPerBatch={3}
-
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            progressViewOffset={headerHeight}
-          />
-        }
-
-        ListHeaderComponent={(sortedGrades.length > 0 && searchText.length === 0) ?
-          <View>
-            <Dynamic animated key={'header:grades_label'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-                <Icon size={20}>
-                  <Papicons name='star' />
-                </Icon>
-                <Typography variant='h6' color='text'>
-                  {t('Grades_Tab_Latest')}
-                </Typography>
-              </Stack>
-            </Dynamic>
-
-            <Dynamic animated key={'header:grades'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Reanimated.FlatList
-                horizontal
-                data={sortedGrades}
-                style={{ overflow: 'visible' }}
-                contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 0, gap: 12 }}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item: grade }) =>
-                  <CompactGrade
-                    key={grade.id + "_compactGrade_header"}
-                    emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                    title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                    description={grade.description}
-                    score={grade.studentScore?.value || 0}
-                    outOf={grade.outOf?.value || 20}
-                    disabled={grade.studentScore?.disabled}
-                    status={grade.studentScore?.status}
-                    color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                    date={grade.givenAt}
-                  />
-                }
-              />
-            </Dynamic>
-
-            <Dynamic animated key={'header:subjects_label'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-                <Icon size={20}>
-                  <Papicons name='grades' />
-                </Icon>
-                <Typography variant='h6' color='text'>
-                  {t('Grades_Tab_Subjects')}
-                </Typography>
-              </Stack>
-            </Dynamic>
-          </View>
-          : null}
-
-        ListEmptyComponent={loading ? undefined :
-          <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-            <Stack
-              hAlign="center"
-              vAlign="center"
-              flex
-              style={{ width: "100%" }}
-            >
-              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                <Papicons name={"Grades"} />
-              </Icon>
-              <Typography variant="h4" color="text" align="center">
-                {t('Grades_Empty_Title')}
-              </Typography>
-              <Typography variant="body2" color="secondary" align="center">
-                {t('Grades_Empty_Description')}
-              </Typography>
-            </Stack>
-          </Dynamic>
-        }
-
-        data={filteredSubjects}
-        renderItem={({ item: subject }) => {
-          return (
-            <SubjectItem subject={subject} grades={grades} />
-          )
-        }}
-      />
-    </View>
-  )
-};
-
-export default GradesView;
+      <NativeHeaderSide side="Right" key={"right-side-grades:" + currentAlgorithm}>
+        <MenuView
+          onPressAction={({ nativeEvent }) => {
+            const actionId = nativeEvent.event;
+            if (actionId.startsWith("sort:")) {
+              const selectedSorting = actionId.replace("sort:", "");
+              setSorting(selectedSorting);
+            } else if (actionId.startsWith("algorithm:")) {
+              const selectedAlgorithm = actionId.replace("algorithm:", "");
+              setCurrentAlgorithm(selectedAlgorithm);
+            }
+          }}
+          actions={avgAlgorithms.map((a) => ({
+            id: "algorithm:" + a.value,
+            title: a.label,
+            subtitle: a.subtitle,
+            state: currentAlgorithm === a.value ? "on" : "off",
+          }))}
+        >
+          <NativeHeaderPressable onPress={() => { }}>
+            <Icon size={28}>
+              <Papicons name={"Pie"} color={"#29947A"} />
+            </Icon>
+          </NativeHeaderPressable>
+        </MenuView>
+      </NativeHeaderSide >
+    </>
+  );
+}
