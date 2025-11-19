@@ -34,6 +34,7 @@ import { CompactGrade } from '@/ui/components/CompactGrade';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { LegendList } from '@legendapp/list';
+import { useNavigation } from 'expo-router';
 
 const GradesView: React.FC = () => {
   // Layout du header
@@ -43,6 +44,7 @@ const GradesView: React.FC = () => {
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   // Chargement
   const [periodsLoading, setPeriodsLoading] = useState(false);
@@ -362,6 +364,19 @@ const GradesView: React.FC = () => {
                     status={grade.studentScore?.status}
                     color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                     date={grade.givenAt}
+                    onPress={() => {
+                      // @ts-expect-error navigation types
+                      navigation.navigate('(modals)/grade', {
+                        grade: grade,
+                        subjectInfo: {
+                          name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
+                          color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
+                          emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
+                          originalName: getSubjectById(grade.subjectId)?.name || ""
+                        },
+                        allGrades: grades
+                      })
+                    }}
                   />
                 }
               />
@@ -404,6 +419,7 @@ const GradesView: React.FC = () => {
         data={filteredSubjects}
         renderItem={({ item: subject }) => {
           return (
+            // @ts-expect-error navigation types
             <SubjectItem subject={subject} grades={grades} />
           )
         }}

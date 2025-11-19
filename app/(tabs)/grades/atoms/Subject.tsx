@@ -86,6 +86,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
                 {grade.description ? grade.description : t('Grade_NoDescription', { subject: getSubjectName(subject.name) })}
               </Typography>
               <Typography variant='body2' color='secondary'>
+                {/* @ts-expect-error date type */}
                 {grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}
               </Typography>
 

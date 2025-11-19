@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
@@ -64,8 +64,8 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           left: 0,
           right: 0,
           height: height,
-          zIndex: 999,
-          overflow: 'hidden',
+          zIndex: 99,
+          overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }, backgroundAnimatedStyle]}
       >
         {runsIOS26 ? (
@@ -90,7 +90,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 1000,
+          zIndex: 1001,
           gap: 10,
           alignItems: 'center',
           justifyContent: 'center',

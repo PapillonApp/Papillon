@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { Platform, TextInput, TouchableOpacity, View } from "react-native";
 import Stack from "./Stack";
 import { useTheme } from "@react-navigation/native";
 import Icon from "./Icon";
@@ -55,7 +55,6 @@ const Search: React.FC<SearchProps> = ({
         cursorColor={color}
         selectionColor={color}
         selectionHandleColor={color}
-        underlineColorAndroid={color}
         placeholderTextColor={colors.text + "77"}
         style={{
           flex: 1,
@@ -63,6 +62,7 @@ const Search: React.FC<SearchProps> = ({
           fontSize: 17,
           color: colors.text,
           fontFamily: "semibold",
+          marginTop: Platform.OS === 'android' ? 2 : 0,
         }}
       />
 
