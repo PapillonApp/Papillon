@@ -16,6 +16,39 @@ import { t } from 'i18next';
 import React, { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
+const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void }) => {
+  const dateString = useMemo(() => {
+    // @ts-expect-error date type
+    return grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
+  }, [grade.givenAt]);
+
+  const handlePress = useCallback(() => {
+    requestAnimationFrame(() => onPress(grade));
+  }, [grade, onPress]);
+
+  return (
+    <Item isLast disablePadding onPress={handlePress}>
+      <Typography variant='title'>
+        {grade.description ? grade.description : t('Grade_NoDescription', { subject: subjectName })}
+      </Typography>
+      <Typography variant='body2' color='secondary'>
+        {dateString}
+      </Typography>
+
+      <Trailing>
+        <Stack direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={subjectColor + "15"} >
+          <Typography color={subjectColor} variant='navigation'>
+            {grade.studentScore.value.toFixed(2)}
+          </Typography>
+          <Typography color={subjectColor + "99"} variant='body2'>
+            /{grade.outOf.value}
+          </Typography>
+        </Stack>
+      </Trailing>
+    </Item>
+  );
+});
+
 export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = React.memo(({ subject, grades }) => {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -25,6 +58,9 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
     () => adjust(getSubjectColor(subject.name), theme.dark ? 0.2 : -0.4),
     [subject.name, theme.dark]
   );
+
+  const subjectName = useMemo(() => getSubjectName(subject.name), [subject.name]);
+  const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
 
   const handlePressSubject = useCallback(() => {
     Alert.alert(
@@ -40,15 +76,15 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
       navigation.navigate('(modals)/grade', {
         grade: grade,
         subjectInfo: {
-          name: getSubjectName(subject.name),
+          name: subjectName,
           color: subjectAdjustedColor,
-          emoji: getSubjectEmoji(subject.name),
+          emoji: subjectEmoji,
           originalName: subject.name
         },
         allGrades: grades
       });
     },
-    [navigation, subject.name, subjectAdjustedColor, grades]
+    [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, grades]
   );
 
   return (
@@ -58,21 +94,21 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
           <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
             <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
               <Text style={{ fontSize: 15 }}>
-                {getSubjectEmoji(subject.name)}
+                {subjectEmoji}
               </Text>
             </Stack>
 
             <Stack flex inline>
               <Typography variant='title' color={subjectAdjustedColor}>
-                {getSubjectName(subject.name)}
+                {subjectName}
               </Typography>
             </Stack>
 
-            <Stack inline direction='horizontal' gap={2} hAlign='end' vAlign='end'>
+            <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
               <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
                 {subject.studentAverage.value.toFixed(2)}
               </Typography>
-              <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 0 }}>
+              <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
                 /{subject.outOf.value}
               </Typography>
             </Stack>
@@ -81,28 +117,13 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
 
         <List style={{ marginTop: 6 }}>
           {subject.grades.map((grade) => (
-            <Item key={grade.id} onPress={() => {
-              requestAnimationFrame(() => handlePressGrade(grade));
-            }}>
-              <Typography variant='title'>
-                {grade.description ? grade.description : t('Grade_NoDescription', { subject: getSubjectName(subject.name) })}
-              </Typography>
-              <Typography variant='body2' color='secondary'>
-                {/* @ts-expect-error date type */}
-                {grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}
-              </Typography>
-
-              <Trailing>
-                <Stack direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={subjectAdjustedColor + "15"} >
-                  <Typography color={subjectAdjustedColor} variant='navigation'>
-                    {grade.studentScore.value.toFixed(2)}
-                  </Typography>
-                  <Typography color={subjectAdjustedColor + "99"} variant='body2'>
-                    /{grade.outOf.value}
-                  </Typography>
-                </Stack>
-              </Trailing>
-            </Item>
+            <GradeItem
+              key={grade.id}
+              grade={grade}
+              subjectName={subjectName}
+              subjectColor={subjectAdjustedColor}
+              onPress={handlePressGrade}
+            />
           ))}
         </List>
       </Stack>

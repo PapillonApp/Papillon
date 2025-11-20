@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, View, FlatList, RefreshControl, Dimensions } from 'react-native';
 
-import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Reanimated, { createAnimatedComponent, LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import ChipButton from '@/ui/components/ChipButton';
 
 import Search from '@/ui/components/Search';
@@ -37,10 +37,14 @@ import { LegendList } from '@legendapp/list';
 import { useNavigation } from 'expo-router';
 import ActivityIndicator from '@/ui/components/ActivityIndicator';
 
+const MemoizedSubjectItem = React.memo(SubjectItem);
+
 const GradesView: React.FC = () => {
   // Layout du header
   const [headerHeight, setHeaderHeight] = useState(0);
   const bottomTabBarHeight = useBottomTabBarHeight();
+
+  const ReanimatedLegendList = createAnimatedComponent(LegendList);
 
   // Thème
   const { colors } = useTheme();
@@ -232,6 +236,13 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
+  const renderItem = useCallback(({ item: subject }: { item: Subject }) => {
+    return (
+      // @ts-expect-error navigation types
+      <MemoizedSubjectItem subject={subject} grades={grades} />
+    )
+  }, [grades]);
+
   return (
     <View
       style={{ flex: 1 }}
@@ -317,11 +328,15 @@ const GradesView: React.FC = () => {
         style={{ flex: 1, height: '100%' }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight, gap: 16, paddingBottom: bottomTabBarHeight }}
         onScroll={scrollHandler}
+        scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
         layout={LinearTransition.springify()}
         keyExtractor={(item) => item.id}
         itemLayoutAnimation={LinearTransition.springify()}
-        maxToRenderPerBatch={3}
+        initialNumToRender={3}
+        windowSize={5}
+        maxToRenderPerBatch={2}
+        updateCellsBatchingPeriod={50}
         removeClippedSubviews={true}
 
         refreshControl={
@@ -418,12 +433,7 @@ const GradesView: React.FC = () => {
         }
 
         data={filteredSubjects}
-        renderItem={({ item: subject }) => {
-          return (
-            // @ts-expect-error navigation types
-            <SubjectItem subject={subject} grades={grades} />
-          )
-        }}
+        renderItem={renderItem}
       />
     </View>
   )
