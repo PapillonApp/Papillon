@@ -1,4 +1,8 @@
-import { fetch } from "expo-fetcher";
+import {
+  fetch,
+  RequestInit as ExpoRequestInit,
+  RequestMethod,
+} from "expo-fetcher";
 
 let cookies: Record<string, string> = {};
 
@@ -55,10 +59,19 @@ export async function makeRequest(
     headers["Cookie"] = cookieHeader;
   }
 
-  const fetchOptions: RequestInit = {
+  const fetchOptions: ExpoRequestInit = {
     ...options,
+    method: options.method as RequestMethod | undefined,
     headers,
     redirect: "manual",
+    body:
+      options.body === null
+        ? undefined
+        : typeof options.body === "string" ||
+            options.body instanceof ArrayBuffer ||
+            options.body instanceof Uint8Array
+          ? options.body
+          : undefined,
   };
 
   const response = await fetch(url, fetchOptions);
