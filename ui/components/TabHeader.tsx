@@ -56,9 +56,9 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: colors.background,
+          backgroundColor: runsIOS26 ? 'transparent' : colors.background,
           borderColor: colors.border,
-          borderBottomWidth: 1,
+          borderBottomWidth: 0.5,
           position: 'absolute',
           top: 0,
           left: 0,
@@ -68,6 +68,16 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }, backgroundAnimatedStyle]}
       >
+        <LiquidGlassView
+          style={{
+            position: 'absolute',
+            top: -10,
+            left: -10,
+            right: -10,
+            bottom: 0,
+          }}
+          effect={'regular'}
+        />
       </Reanimated.View>
 
       <View

@@ -55,26 +55,29 @@ const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({
 
   return (
     <Animated.View
-      style={[
-        { width: size, height: size, justifyContent: 'center', alignItems: 'center' },
-        animatedStyle,
-        style,
-      ]}
       entering={PapillonAppearIn}
       exiting={PapillonAppearOut}
     >
-      <Svg width={size} height={size}>
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={finalColor}
-          strokeWidth={strokeWidth}
-          strokeDasharray={strokeDasharray}
-          strokeLinecap="round"
-          fill="transparent"
-        />
-      </Svg>
+      <Animated.View
+        style={[
+          { width: size, height: size, justifyContent: 'center', alignItems: 'center' },
+          animatedStyle,
+          style,
+        ]}
+      >
+        <Svg width={size} height={size}>
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={finalColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={strokeDasharray}
+            strokeLinecap="round"
+            fill="transparent"
+          />
+        </Svg>
+      </Animated.View>
     </Animated.View>
   );
 };

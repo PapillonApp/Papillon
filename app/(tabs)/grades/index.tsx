@@ -245,7 +245,11 @@ const GradesView: React.FC = () => {
 
   return (
     <View
-      style={{ flex: 1 }}
+      style={{
+        flex: 1,
+        /* @ts-expect-error colors
+        backgroundColor: colors.overground */
+      }}
     >
       {/* Header */}
       <TabHeader
@@ -367,6 +371,7 @@ const GradesView: React.FC = () => {
                 style={{ overflow: 'visible', height: 140 + 24 }}
                 contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 0, gap: 12 }}
                 showsHorizontalScrollIndicator={false}
+                recycleItems={true}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item: grade }) =>
                   <CompactGrade
