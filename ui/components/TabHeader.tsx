@@ -56,7 +56,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: runsIOS26 ? "transparent" : colors.background,
+          backgroundColor: colors.background,
           borderColor: colors.border,
           borderBottomWidth: 1,
           position: 'absolute',
@@ -68,18 +68,6 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }, backgroundAnimatedStyle]}
       >
-        {runsIOS26 ? (
-          <BlurView
-            intensity={90}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            }}
-          />
-        ) : undefined}
       </Reanimated.View>
 
       <View

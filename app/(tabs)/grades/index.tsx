@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, View, FlatList, RefreshControl } from 'react-native';
+import { Platform, ScrollView, View, FlatList, RefreshControl, Dimensions } from 'react-native';
 
 import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import ChipButton from '@/ui/components/ChipButton';

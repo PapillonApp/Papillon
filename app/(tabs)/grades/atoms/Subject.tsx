@@ -81,7 +81,9 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
 
         <List style={{ marginTop: 6 }}>
           {subject.grades.map((grade) => (
-            <Item key={grade.id} onPress={() => handlePressGrade(grade)}>
+            <Item key={grade.id} onPress={() => {
+              requestAnimationFrame(() => handlePressGrade(grade));
+            }}>
               <Typography variant='title'>
                 {grade.description ? grade.description : t('Grade_NoDescription', { subject: getSubjectName(subject.name) })}
               </Typography>
