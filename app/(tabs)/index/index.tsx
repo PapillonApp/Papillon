@@ -177,6 +177,11 @@ const IndexScreen = () => {
     const grades: Grade[] = []
     const currentPeriod = getCurrentPeriod(validPeriods)
 
+    if (!currentPeriod) {
+      warn("No grade period found, your account may not support this capability.");
+      return;
+    }
+
     const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount)
     periodGrades.subjects.forEach(subject => {
       subject.grades.forEach(grade => {

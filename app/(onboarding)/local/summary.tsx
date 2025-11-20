@@ -113,7 +113,7 @@ export default function LocalAccountSummary() {
                         variant="h1"
                         style={{ color: "#FFF", fontSize: 32, lineHeight: 34 }}
                     >
-                        {t("ONBOARDING_LOCAL_ASKVERIFY")}
+                        {t("ONBOARDING_LOCAL_VERIFY")}
                     </Typography>
                 </Stack>
             </View>
@@ -140,7 +140,7 @@ export default function LocalAccountSummary() {
                             style={{ borderWidth: 1, borderColor: theme.colors.border }}
                         >
                             <Typography variant="body1" color="secondary">
-                                {t("ONBOARDING_LOCAL_VERIFY")}
+                                {t("ONBOARDING_LOCAL")}
                             </Typography>
                         </Stack>
                     </Stack>
