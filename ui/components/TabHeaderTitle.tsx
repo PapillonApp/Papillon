@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
@@ -13,6 +13,7 @@ import Stack from './Stack';
 import { Dynamic } from './Dynamic';
 import { LayoutAnimationConfig } from 'react-native-reanimated';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import ActivityIndicator from './ActivityIndicator';
 
 export interface TabHeaderTitleProps {
   leading?: string,
@@ -84,7 +85,7 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
 
           {loading && (
             <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <ActivityIndicator style={{ marginLeft: 8 }} />
+              <ActivityIndicator size={22} strokeWidth={3} color={color} style={{ marginLeft: 8 }} />
             </Dynamic>
           )}
         </Stack>

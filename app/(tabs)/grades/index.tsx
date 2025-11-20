@@ -35,6 +35,7 @@ import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { LegendList } from '@legendapp/list';
 import { useNavigation } from 'expo-router';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 
 const GradesView: React.FC = () => {
   // Layout du header
