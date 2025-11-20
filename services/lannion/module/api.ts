@@ -1,5 +1,5 @@
-import { CAS_CONFIG } from "../config";
-import { getPhpSessionId, makeRequest, resetCookies } from "../httpClient";
+import { CAS_CONFIG } from "@/services/lannion/module/config";
+import { getPhpSessionId, makeRequest, resetCookies } from "@/services/lannion/module/httpClient";
 
 export async function authLannion(
   username: string,
