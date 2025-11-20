@@ -642,6 +642,9 @@ const IndexScreen = () => {
           )
         }}
         paddingTop={0}
+        ListEmptyComponent={
+          <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+        }
       />
 
       <NativeHeaderSide side="Left">
