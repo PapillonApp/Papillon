@@ -97,6 +97,17 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       },
       variant: 'primary' as const,
       color: 'light' as const
+    },
+    {
+      name: "local",
+      title: t("ONBOARDING_LOCAL"),
+      type: "other",
+      icon: <Papicons name={"User"} />,
+      onPress: () => {
+        redirect({ pathname: './local/name' });
+      },
+      variant: 'primary' as const,
+      color: 'light' as const
     }
   ]
 }
