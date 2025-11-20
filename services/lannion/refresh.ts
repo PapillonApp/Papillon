@@ -1,25 +1,50 @@
+// services/lannion/refresh.ts
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 
-export async function refreshMultiSession(
+import { loginAndFetchLannionData } from "./module/api";
+
+export interface LannionSession {
+  userInfo: any;
+  grades: any | null;
+}
+
+export async function refreshLannionAccount(
   accountId: string,
   credentials: Auth
-): Promise<{ auth: Auth; session: Multi }> {
+): Promise<{ auth: Auth; session: LannionSession }> {
+  const username = String(credentials.additionals?.["username"] || "");
+  const password = String(credentials.additionals?.["password"] || "");
 
-  const instanceUrl = credentials.additionals?.["instanceUrl"] as string;
-  const session = await authWithRefreshToken(instanceUrl, {
-    refreshAuthToken: credentials.refreshToken,
-  });
+  if (!username || !password) {
+    error(
+      "Lannion: username/password manquants dans credentials.",
+      "Lannion.refresh"
+    );
+    throw new Error("Identifiants Lannion manquants (username/password).");
+  }
+
+  const { userInfo, grades } = await loginAndFetchLannionData(
+    username,
+    password
+  );
 
   const authData: Auth = {
-    accessToken: credentials.accessToken,
-    refreshToken: credentials.refreshToken,
+    ...credentials,
     additionals: {
-      instanceUrl: instanceUrl,
+      ...credentials.additionals,
+      username,
+      password,
     },
   };
 
   useAccountStore.getState().updateServiceAuthData(accountId, authData);
+
+  const session: LannionSession = {
+    userInfo,
+    grades,
+  };
 
   return { auth: authData, session };
 }
