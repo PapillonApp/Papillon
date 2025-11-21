@@ -11,9 +11,10 @@ import Icon from './Icon';
 import { TouchableOpacity } from 'react-native';
 import Stack from './Stack';
 import { Dynamic } from './Dynamic';
-import { LayoutAnimationConfig } from 'react-native-reanimated';
+import { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import ActivityIndicator from './ActivityIndicator';
+import { Animation } from '../utils/Animation';
 
 export interface TabHeaderTitleProps {
   leading?: string,
@@ -34,8 +35,6 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
   loading = false,
   onPress = () => { }
 }) => {
-  const insets = useSafeAreaInsets();
-
   return (
     <LayoutAnimationConfig skipEntering>
       <TouchableOpacity
@@ -53,7 +52,7 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
         >
           {leading &&
             typeof leading === 'string' ? (
-            <Dynamic animated>
+            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut} key={"leading:" + leading.toString()}>
               <Typography variant="header">{leading}</Typography>
             </Dynamic>
           ) : (
@@ -61,14 +60,14 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
           )}
 
           {number && (
-            <Dynamic animated>
+            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <NativeHeaderHighlight variant='navigation' color={color}>{number}</NativeHeaderHighlight>
             </Dynamic>
           )}
 
           {trailing &&
             typeof trailing === 'string' ? (
-            <Dynamic animated>
+            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut} key={"trailing:" + trailing.toString()}>
               <Typography variant="header">{trailing}</Typography>
             </Dynamic>
           ) : (
@@ -76,7 +75,7 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
           )}
 
           {chevron && (
-            <Dynamic animated>
+            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut}>
               <Icon size={20} opacity={0.5}>
                 <Papicons name="chevrondown" />
               </Icon>
@@ -84,7 +83,7 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
           )}
 
           {loading && (
-            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+            <Dynamic animated layout={Animation(LinearTransition, "list")}>
               <ActivityIndicator size={22} strokeWidth={3} color={color} style={{ marginLeft: 8 }} />
             </Dynamic>
           )}
