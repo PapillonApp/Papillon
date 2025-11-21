@@ -13,9 +13,8 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTitle: t("Tab_Grades"),
-          headerTransparent: true,
         }}
       />
     </Stack>

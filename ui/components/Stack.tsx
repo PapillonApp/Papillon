@@ -2,6 +2,9 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 
+import Reanimated, { LinearTransition } from "react-native-reanimated";
+import { Animation } from "../utils/Animation";
+
 // Types pour la direction et l'alignement
 type Direction = "vertical" | "horizontal";
 type Alignment = "start" | "center" | "end";
@@ -22,6 +25,7 @@ interface StackProps extends ViewProps {
   flat?: boolean; // Utilisé pour les listes plates
   bordered?: boolean; // Utilisé pour les listes avec bordures
   radius?: number;
+  animated?: boolean;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -88,6 +92,7 @@ const Stack: React.FC<StackProps> = ({
   bordered = false,
   style,
   children,
+  animated = false,
   ...rest
 }) => {
   const theme = useTheme();
@@ -95,8 +100,8 @@ const Stack: React.FC<StackProps> = ({
 
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
-    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}-${animated}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card, animated]
   );
 
   // Ultra-optimized style computation with caching
@@ -172,9 +177,9 @@ const Stack: React.FC<StackProps> = ({
   }, [cacheKey, direction, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]);
 
   return (
-    <View {...rest} style={[computedStyle, style]}>
+    <Reanimated.View style={[computedStyle, style]} layout={animated ? Animation(LinearTransition) : undefined} {...rest}>
       {children}
-    </View>
+    </Reanimated.View>
   );
 };
 

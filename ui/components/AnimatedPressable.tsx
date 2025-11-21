@@ -1,65 +1,88 @@
-import React from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Platform, Pressable, PressableProps } from "react-native";
 import Reanimated, {
+  LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 import * as ExpoHaptics from "expo-haptics";
+import { Animation } from "../utils/Animation";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
+
+const IS_ANDROID = Platform.OS === "android";
+const SPRING_IN_CONFIG = { duration: 30 };
+const SPRING_OUT_CONFIG = { duration: 200 };
 
 type AnimatedPressableProps = PressableProps & {
   scaleTo?: number;
   opacityTo?: number;
   hapticFeedback?: ExpoHaptics.ImpactFeedbackStyle;
+  animated?: boolean;
 };
 
-export default function AnimatedPressable({
+function AnimatedPressable({
   children,
   scaleTo = 0.95,
   opacityTo = 0.7,
   hapticFeedback,
+  animated = false,
+  style,
+  onPressIn,
+  onPressOut,
   ...props
 }: AnimatedPressableProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-      opacity: Platform.OS === 'android' ? 1 : opacity.value,
-    };
-  }, []);
+  const pressInRef = useRef(onPressIn);
+  const pressOutRef = useRef(onPressOut);
+  pressInRef.current = onPressIn;
+  pressOutRef.current = onPressOut;
 
-  const pressIn = () => {
-    if (hapticFeedback)
-      ExpoHaptics.impactAsync(hapticFeedback)
-    "worklet";
-    scale.value = withSpring(scaleTo, { duration: 30 });
-    opacity.value = withSpring(opacityTo, { duration: 30 });
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: IS_ANDROID ? 1 : opacity.value,
+  }));
 
-  const pressOut = () => {
-    "worklet";
-    scale.value = withSpring(1, { duration: 200 });
-    opacity.value = withSpring(1, { duration: 200 });
-  };
+  const handlePressIn = useCallback(
+    (e: any) => {
+      if (hapticFeedback) {
+        ExpoHaptics.impactAsync(hapticFeedback);
+      }
+      scale.value = withSpring(scaleTo, SPRING_IN_CONFIG);
+      opacity.value = withSpring(opacityTo, SPRING_IN_CONFIG);
+      pressInRef.current?.(e);
+    },
+    [hapticFeedback, scaleTo, opacityTo, scale, opacity]
+  );
+
+  const handlePressOut = useCallback(
+    (e: any) => {
+      scale.value = withSpring(1, SPRING_OUT_CONFIG);
+      opacity.value = withSpring(1, SPRING_OUT_CONFIG);
+      pressOutRef.current?.(e);
+    },
+    [scale, opacity]
+  );
+
+  const layoutAnim = useMemo(
+    () => (animated ? Animation(LinearTransition) : undefined),
+    [animated]
+  );
 
   return (
     <ReanimatedPressable
       {...props}
-      style={[animatedStyle, props.style]}
-      onPressIn={(e) => {
-        pressIn(); // animation on UI thread
-        props.onPressIn?.(e);
-      }}
-      onPressOut={(e) => {
-        pressOut(); // animation on UI thread
-        props.onPressOut?.(e);
-      }}
+      layout={layoutAnim}
+      style={[style, animatedStyle]}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
     >
       {children}
     </ReanimatedPressable>
   );
 }
+
+export default React.memo(AnimatedPressable);
