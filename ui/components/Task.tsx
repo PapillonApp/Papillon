@@ -1,12 +1,14 @@
+import { Check, Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
-import * as Localization from "expo-localization";
+import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
-import { CheckCheck, CircleDashed, Sparkle } from "lucide-react-native";
-import React, { useCallback, useMemo } from "react";
-import { Linking, Pressable, StyleSheet, Text } from "react-native";
+import { CheckCheck } from "lucide-react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Reanimated, {
+  FadeIn,
+  FadeOut,
   LayoutAnimationConfig,
   LinearTransition,
   useAnimatedStyle,
@@ -14,20 +16,16 @@ import Reanimated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Attachment } from "@/services/shared/attachment";
+import Icon from "@/ui/components/Icon";
+import SkeletonView from "@/ui/components/SkeletonView";
+import { formatHTML } from "@/utils/format/html";
+
 import { Animation } from "../utils/Animation";
-import { PapillonAppearIn, PapillonAppearOut, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import { Dynamic } from "./Dynamic";
 import Stack from "./Stack";
 import Typography from "./Typography";
-import Icon from "@/ui/components/Icon";
-import SkeletonView from "@/ui/components/SkeletonView";
-import { Papicons } from "@getpapillon/papicons";
-import { Attachment } from "@/services/shared/attachment";
-import { ScrollView } from "react-native-gesture-handler";
-import HTMLTypography from "@/ui/components/HTMLTypography";
-import { formatHTML } from "@/utils/format/html";
-import { LinearGradient } from "expo-linear-gradient";
-import i18n from "@/utils/i18n";
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -39,16 +37,14 @@ interface TaskProps {
   emoji?: string;
   subject?: string;
   date?: string | Date;
-  progress?: number; // 0 to 1
-  index?: number;
+  progress?: number;
   attachments?: Attachment[];
-  magic?: string; // For future use, if needed
   onPress?: () => void;
   onProgressChange?: (progress: number) => void;
   skeleton?: boolean;
 }
 
-const Task: React.FC<TaskProps> = ({
+const TaskComponent: React.FC<TaskProps> = ({
   title,
   description,
   fromCache,
@@ -58,425 +54,195 @@ const Task: React.FC<TaskProps> = ({
   subject,
   date,
   progress,
-  index,
-  magic,
-  onPress = () => {
-  },
-  onProgressChange = () => {
-  },
+  onPress = () => { /* empty */ },
+  onProgressChange = () => { /* empty */ },
   skeleton = false,
 }) => {
   const theme = useTheme();
   const { colors } = theme;
 
-  const backgroundStyle = useMemo(() => ({
+  const [currentProgress, setCurrentProgress] = useState(() => progress ?? 0);
+  const [isPressed, setIsPressed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  React.useEffect(() => {
+    if (progress !== undefined) { setCurrentProgress(progress); }
+  }, [progress]);
+
+  const completed = currentProgress === 1;
+
+  const toggleProgress = useCallback(() => {
+    if (fromCache) { return; }
+    const newProgress = currentProgress !== 1 ? 1 : 0;
+    setCurrentProgress(newProgress);
+    onProgressChange(newProgress);
+  }, [currentProgress, onProgressChange, fromCache]);
+
+  const formattedDate = useMemo(() => {
+    if (!date) { return null; }
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? null : d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  }, [date]);
+
+  const containerStyle = useMemo(() => ({
     backgroundColor: colors.card,
     borderColor: colors.border,
   }), [colors.card, colors.border]);
 
-  const [currentProgress, setCurrentProgress] = React.useState(() => progress);
-
-  React.useEffect(() => {
-    setCurrentProgress(progress);
-  }, [progress]);
-
-  const notStarted = currentProgress === 0;
-  const completed = currentProgress === 1;
-
-  const toggleProgress = useCallback(() => {
-    const newProgress = currentProgress !== 1 ? 1 : 0;
-    setCurrentProgress(newProgress);
-    if (onProgressChange) {
-      onProgressChange(newProgress);
-    }
-  }, [currentProgress, onProgressChange]);
-
-  const resetProgress = useCallback(() => {
-    if (onProgressChange) {
-      onProgressChange(0);
-    }
-  }, []);
-
-  const [isPressed, setIsPressed] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
-
-  const currentDate = useMemo(() => {
-    if (!date) {
-      return undefined;
-    }
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-      return undefined;
-    }
-    return new Date(date);
-  }, [date]);
-
   const animatedChipStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { scale: withTiming(isPressed ? 1.05 : 1, { duration: 150 }) },
-        { translateY: withSpring(isHovered ? -4 : isPressed ? -2 : 0) },
+        { scale: withTiming(isPressed ? 0.95 : 1, { duration: 50 }) },
+        { translateY: withSpring(isHovered ? -2 : 0) },
       ],
-      borderColor: completed ? color + "88" : isPressed ? colors.text + "40" : colors.text + "22",
+      borderColor: completed ? color + "88" : colors.border,
+      backgroundColor: completed ? color + "22" : "transparent",
     };
-  }, [isPressed, colors.text]);
+  }, [isPressed, isHovered, completed, color, colors.text, containerStyle]);
 
   return (
-    <Reanimated.View
-      entering={PapillonAppearIn}
-      exiting={PapillonAppearOut}
+    <AnimatedPressable
+      onPress={onPress}
+      style={[styles.container, containerStyle]}
       layout={Animation(LinearTransition, "list")}
-      style={{ overflow: "hidden" }}
     >
-      {magic && (
-        <Reanimated.View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: 38 + 20,
-            backgroundColor: skeleton ? colors.text + "10" : color + "33",
-            zIndex: -1,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            borderColor: skeleton ? colors.border : color + "33",
-            borderWidth: 1,
-          }}
-          layout={Animation(LinearTransition, "list")}
-        >
-          <Reanimated.View
-            style={{
-              height: 38,
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              paddingHorizontal: 16,
-              flexDirection: "row",
-              gap: 8,
-            }}
-          >
-            <Icon size={14}
-              skeleton={skeleton}
-            >
-              <Sparkle fill={color}
-                stroke={color}
-                strokeWidth={2}
-              />
-            </Icon>
-            <Typography color={color}
-              weight="semibold"
-              skeleton={skeleton}
-              skeletonWidth={200}
-            >
-              {magic}
-            </Typography>
-          </Reanimated.View>
-        </Reanimated.View>
-      )}
-      <AnimatedPressable
-        onPress={onPress}
-        style={[
-          styles.container,
-          backgroundStyle,
-          {
-            transformOrigin: "center top",
-            marginTop: magic ? 38 : 0,
-            overflow: "hidden",
-          },
-        ]}
-        onLayout={/*(event) => {
-        const { width, height } = event.nativeEvent.layout;
-        console.log(`Task size: ${width}x${height}`);
-      }*/ undefined} // Uncomment to log size
-        layout={Animation(LinearTransition, "list")}
-      >
+      <LinearGradient
+        colors={[color + "15", color + "00"]}
+        locations={[0, 0.5]}
+        style={StyleSheet.absoluteFill}
+      />
 
-        <LayoutAnimationConfig skipEntering
-          skipExiting
-        >
-          <Stack direction="horizontal"
-            gap={8}
-            vAlign="start"
-            hAlign="center"
-            style={{ marginBottom: 10 }}
-          >
+      <LayoutAnimationConfig skipEntering skipExiting>
+        <Stack style={styles.contentPadding}>
+
+          <Stack direction="horizontal" gap={8} vAlign="start" hAlign="center" style={styles.headerContainer}>
             {emoji && (
-              <>
-                {skeleton ? (
-                  <SkeletonView style={{ width: 26, height: 26, borderRadius: 80 }} />
-                ) : (
-                  <Stack backgroundColor={color + "32"}
-                    inline
-                    radius={80}
-                    vAlign="center"
-                    hAlign="center"
-                    style={{ width: 26, height: 26 }}
-                  >
-                    <Text style={{ fontSize: 12 }}>
-                      {emoji}
-                    </Text>
-                  </Stack>
-                )}
-              </>
+              skeleton ? (
+                <SkeletonView style={styles.emojiSkeleton} />
+              ) : (
+                <Stack backgroundColor={color + "32"} inline radius={80} vAlign="center" hAlign="center" style={styles.emojiContainer}>
+                  <Text style={styles.emojiText}>{emoji}</Text>
+                </Stack>
+              )
             )}
+
             {subject && (
-              <Typography variant="body1"
-                weight="semibold"
-                color={color}
-                style={{ flex: 1 }}
-                skeleton={skeleton}
-                skeletonWidth={150}
-              >
+              <Typography variant="body1" weight="semibold" color={color} style={{ flex: 1 }} skeleton={skeleton} skeletonWidth={150}>
                 {subject}
               </Typography>
             )}
-            {currentDate && (
-              <Typography variant="body2"
-                weight="medium"
-                color="secondary"
-                skeleton={skeleton}
-              >
-                {currentDate.toLocaleDateString(i18n.language, {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                })}
+
+            {formattedDate && (
+              <Typography variant="body2" weight="medium" color="secondary" skeleton={skeleton}>
+                {formattedDate}
               </Typography>
             )}
           </Stack>
+
           {title && (
-            <Typography variant="h5"
-              weight="bold"
-              style={{ marginBottom: 4, lineHeight: 24 }}
-              skeleton={skeleton}
-              skeletonWidth={250}
-            >
+            <Typography variant="h5" weight="bold" style={styles.title} skeleton={skeleton} skeletonWidth={250}>
               {title}
             </Typography>
           )}
           {description && (
-            <Typography variant="body2"
-              color="secondary"
-              style={{ lineHeight: 20 }}
-              skeleton={skeleton}
-              skeletonLines={2}
-              skeletonWidth={230}
-            >
+            <Typography variant="body2" color="secondary" style={styles.description} skeleton={skeleton} skeletonLines={2} skeletonWidth={230}>
               {formatHTML(description, true)}
             </Typography>
           )}
-          <LinearGradient
-            colors={[colors.card, colors.card + "00"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              width: 16,
-              zIndex: 1,
-            }}
-          />
-          <LinearGradient
-            colors={[colors.card + "00", colors.card]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              right: 0,
-              width: 16,
-              zIndex: 1,
-            }}
-          />
+
           {attachments && attachments.length > 0 && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ paddingTop: 15, gap: 5, flex: 1 }}
-            >
-              {fromCache ? (
-                <AnimatedPressable
-                  layout={Animation(LinearTransition, "list")}
-                  style={[styles.chip, backgroundStyle]}
-                >
-                  <Icon size={20}
-                    fill={"#D60046" + 80}
-                    skeleton={skeleton}
-                  >
-                    <Papicons name={"Cross"} />
-                  </Icon>
-                  <Typography variant="body2"
-                    color={"#D60046" + 80}
-                    skeleton={skeleton}
-                  >
-                    Impossible de récupérer la pièce jointe
-                  </Typography>
-                </AnimatedPressable>
-              ) : (
-                <>
-                  {
-                    attachments.map(attachment => (
-                      <AnimatedPressable
-                        key={attachment.url}
-                        layout={Animation(LinearTransition, "list")}
-                        onPress={() => {
-                          Linking.openURL(attachment.url);
-                        }}
-                        style={[styles.chip, backgroundStyle]}
-                      >
-                        <Icon size={20}
-                          fill={colors.text}
-                          skeleton={skeleton}
-                        >
-                          <Papicons name={"Paper"} />
-                        </Icon>
-                        <Typography variant="body2"
-                          color="text"
-                          skeleton={skeleton}
-                        >
-                          {attachment.name}
-                        </Typography>
-                      </AnimatedPressable>
-                    ))
-                  }
-                </>
-              )}
-            </ScrollView>
-          )}
-          {(progress !== undefined || currentDate) && (
-            <>
-              <ScrollView horizontal
-                style={{ overflow: "visible" }}
-                showsHorizontalScrollIndicator={false}
-              >
-                <Stack style={{ marginTop: 12 }}
-                  direction="horizontal"
-                  gap={8}
-                >
-                  {progress !== undefined && (
+            <View style={styles.attachmentWrapper}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.attachmentScrollContent}>
+                {fromCache ? (
+                  <AnimatedPressable layout={Animation(LinearTransition, "list")} style={[styles.chip, containerStyle]}>
+                    <Icon size={20} fill={"#D60046" + 80} skeleton={skeleton}>
+                      <Papicons name={"Cross"} />
+                    </Icon>
+                    <Typography variant="body2" color={"#D60046" + 80} skeleton={skeleton}>
+                      Impossible de récupérer la pièce jointe
+                    </Typography>
+                  </AnimatedPressable>
+                ) : (
+                  attachments.map((attachment) => (
                     <AnimatedPressable
-                      onPressIn={() => setIsPressed(true)}
-                      onPressOut={() => setIsPressed(false)}
-                      onHoverIn={() => setIsHovered(true)}
-                      onHoverOut={() => setIsHovered(false)}
-                      disabled={fromCache}
-                      onPress={toggleProgress}
+                      key={attachment.url}
                       layout={Animation(LinearTransition, "list")}
-                      style={[styles.chip, backgroundStyle, completed && {
-                        backgroundColor: color + "22",
-                        borderColor: color,
-                      }, animatedChipStyle]}
-                      pointerEvents={skeleton ? "none" : "auto"}
+                      onPress={() => Linking.openURL(attachment.url)}
+                      style={[styles.chip, containerStyle]}
                     >
-                      {(notStarted || completed) && !skeleton && (
-                        <Dynamic
-                          animated
-                          layout={Animation(LinearTransition, "list")}
-                          entering={PapillonZoomIn}
-                          exiting={PapillonZoomOut}
-                          key={"progress-icon:" + (notStarted ? "a" : "b")}
-                        >
-                          {notStarted ? (
-                            <CircleDashed size={20}
-                              strokeWidth={2.5}
-                              opacity={0.7}
-                              color={colors.text}
-                            />
-                          ) : (
-                            <CheckCheck size={20}
-                              strokeWidth={2.5}
-                              opacity={1}
-                              color={color}
-                            />
-                          )}
-                        </Dynamic>
-                      )}
-
-                      {!notStarted && !completed && !skeleton && (
-                        <Dynamic animated>
-                          <Reanimated.View
-                            layout={Animation(LinearTransition, "list")}
-                            style={[
-                              styles.progressContainer,
-                              { backgroundColor: colors.text + "12" },
-                            ]}
-                          >
-                            <Reanimated.View
-                              layout={Animation(LinearTransition, "list")}
-                              style={[styles.progress, {
-                                width: currentProgress * 70,
-                                backgroundColor: color,
-                              }]} // Use numeric width
-                            />
-                          </Reanimated.View>
-                        </Dynamic>
-                      )}
-
-                      <Dynamic animated={true}
-                        layout={Animation(LinearTransition, "list")}
-                        key={"progress-text:" + currentProgress}
-                      >
-                        {!notStarted && !completed && (
-                          <Typography variant="body2"
-                            skeleton={skeleton}
-                            skeletonWidth={80}
-                          >
-                            {Math.ceil(currentProgress * 100)}%
-                          </Typography>
-                        )}
-
-                        {(notStarted || completed) && (
-                          <Typography variant="body2"
-                            color={!notStarted ? color : "secondary"}
-                            skeleton={skeleton}
-                            skeletonWidth={80}
-                          >
-                            {notStarted ? t("Task_Start") : t("Task_Complete")}
-                          </Typography>
-                        )}
-                      </Dynamic>
-                    </AnimatedPressable>
-                  )}
-
-                  {currentDate && (
-                    <AnimatedPressable
-                      layout={Animation(LinearTransition, "list")}
-                      style={[styles.chip, backgroundStyle]}
-                    >
-                      <Icon size={20}
-                        fill={colors.text}
-                        skeleton={skeleton}
-                      >
-                        <Papicons name={"Calendar"} />
+                      <Icon size={20} fill={colors.text} skeleton={skeleton}>
+                        <Papicons name={"Paper"} />
                       </Icon>
-                      <Typography variant="body2"
-                        color="text"
-                        skeleton={skeleton}
-                      >
-                        {formatDistanceToNow(currentDate, {
-                          addSuffix: true,
-                          locale: Localization.getLocales()[0].languageTag.split("-")[0] === "fr" ? fr : undefined,
-                        })}
+                      <Typography variant="body2" color="text" skeleton={skeleton}>
+                        {attachment.name}
                       </Typography>
                     </AnimatedPressable>
-                  )}
-                </Stack>
+                  ))
+                )}
               </ScrollView>
-            </>
+            </View>
           )}
-        </LayoutAnimationConfig>
-      </AnimatedPressable>
-    </Reanimated.View>
+
+          {progress !== undefined && !skeleton && (
+            <View style={styles.footerWrapper}>
+              <AnimatedPressable
+                onPressIn={() => setIsPressed(true)}
+                onPressOut={() => setIsPressed(false)}
+                onHoverIn={() => setIsHovered(true)}
+                onHoverOut={() => setIsHovered(false)}
+                disabled={fromCache || skeleton}
+                onPress={toggleProgress}
+                layout={Animation(LinearTransition, "list")}
+                style={[
+                  styles.statusButton,
+                  animatedChipStyle
+                ]}
+              >
+                <Dynamic
+                  animated
+                  layout={Animation(LinearTransition, "list")}
+                  entering={PapillonAppearIn}
+                  exiting={PapillonAppearOut}
+                  key={`icon-${completed}`}
+                >
+                  {completed ? (
+                    <View style={{ paddingLeft: 12, paddingRight: 8 }}>
+                      <Icon>
+                        <CheckCheck size={20} strokeWidth={2.5} opacity={1} color={color} />
+                      </Icon>
+                    </View>
+                  ) : (
+                    <Check size={20} strokeWidth={2.5} opacity={0.5} color={colors.text} />
+                  )}
+                </Dynamic>
+
+                {completed && (
+                  <Reanimated.View
+                    entering={FadeIn.duration(200)}
+                    exiting={FadeOut.duration(100)}
+                    style={styles.textContainer}
+                  >
+                    <Typography variant="body2" weight="semibold" color={color}>
+                      {t("Task_Complete")}
+                    </Typography>
+                  </Reanimated.View>
+                )}
+              </AnimatedPressable>
+            </View>
+          )}
+
+        </Stack>
+      </LayoutAnimationConfig>
+    </AnimatedPressable>
   );
 };
 
+const Task = React.memo(TaskComponent);
+Task.displayName = "Task";
+
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    width: '100%',
     borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -485,6 +251,40 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderCurve: "continuous",
     elevation: 1,
+    overflow: "hidden",
+  },
+  contentPadding: {
+    padding: 16,
+  },
+  headerContainer: {
+    marginBottom: 10,
+  },
+  emojiSkeleton: {
+    width: 26,
+    height: 26,
+    borderRadius: 80
+  },
+  emojiContainer: {
+    width: 26,
+    height: 26
+  },
+  emojiText: {
+    fontSize: 12
+  },
+  title: {
+    marginBottom: 4,
+    lineHeight: 24
+  },
+  description: {
+    lineHeight: 20
+  },
+  attachmentWrapper: {
+    position: 'relative',
+    marginTop: 15,
+    height: 42,
+  },
+  attachmentScrollContent: {
+    gap: 5,
   },
   chip: {
     height: 42,
@@ -497,17 +297,27 @@ const styles = StyleSheet.create({
     gap: 12,
     overflow: "hidden",
   },
-  progressContainer: {
-    width: 70,
-    height: 6,
-    borderRadius: 40,
-    justifyContent: "center",
-
+  footerWrapper: {
+    marginTop: 12,
+    width: '100%',
+    alignItems: 'flex-end',
   },
-  progress: {
-    height: 12,
-    borderRadius: 40,
+  statusButton: {
+    height: 42,
+    minWidth: 42,
+    paddingHorizontal: 0,
+    borderWidth: 1,
+    borderRadius: 160,
+    borderCurve: "continuous",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: 'center',
+    overflow: "hidden",
   },
+  textContainer: {
+    marginLeft: 8,
+    paddingRight: 16,
+  }
 });
 
 export default Task;
