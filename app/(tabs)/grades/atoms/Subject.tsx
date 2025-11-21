@@ -37,15 +37,25 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress }: { g
 
       <Trailing>
         <Stack direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={subjectColor + "15"} >
-          <Typography color={subjectColor} variant='navigation'>
-            {grade.studentScore.value.toFixed(2)}
-          </Typography>
+          {grade.studentScore.disabled ? (
+            <>
+              <Typography color={subjectColor} variant='navigation'>
+                {grade.studentScore.status}
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography color={subjectColor} variant='navigation'>
+                {grade.studentScore.value.toFixed(2)}
+              </Typography>
+            </>
+          )}
           <Typography color={subjectColor + "99"} variant='body2'>
             /{grade.outOf.value}
           </Typography>
         </Stack>
-      </Trailing>
-    </Item>
+      </Trailing >
+    </Item >
   );
 });
 
@@ -105,9 +115,15 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
             </Stack>
 
             <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
-              <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
-                {subject.studentAverage.value.toFixed(2)}
-              </Typography>
+              {subject.studentAverage.disabled ? (
+                <Typography variant='h5' inline style={{ marginTop: 0 }}>
+                  {subject.studentAverage.status}
+                </Typography>
+              ) : (
+                <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
+                  {subject.studentAverage.value.toFixed(2)}
+                </Typography>
+              )}
               <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
                 /{subject.outOf.value}
               </Typography>
