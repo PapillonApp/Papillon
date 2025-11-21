@@ -56,7 +56,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: runsIOS26 ? 'transparent' : colors.background,
+          backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
           borderColor: colors.border,
           borderBottomWidth: 0.5,
           position: 'absolute',
@@ -68,15 +68,11 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }, backgroundAnimatedStyle]}
       >
-        <LiquidGlassView
+        <BlurView
           style={{
-            position: 'absolute',
-            top: -10,
-            left: -10,
-            right: -10,
-            bottom: 0,
+            flex: 1,
           }}
-          effect={'regular'}
+          intensity={50}
         />
       </Reanimated.View>
 
