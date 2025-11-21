@@ -155,6 +155,7 @@
   "Settings_General": "Général",
 
   "Latest_Grades": "Nouvelles notes",
+  "Grades_Search_Placeholder": "Rechercher une note, une matière",
 
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
@@ -173,6 +174,7 @@
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
+  "Grades_Sort": "Trier",
   "Grades_Sorting_Alphabetical": "Alphabétique",
   "Grades_Sorting_Averages": "Moyennes",
   "Grades_Sorting_Date": "Date",
@@ -185,6 +187,9 @@
   "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
 
   "Grade_NoDescription": "Devoir de {{subject}}",
+
+  "Grades_Tab_Subjects": "Matières",
+  "Grades_Tab_Latest": "Nouvelles notes",
 
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",
