@@ -39,5 +39,5 @@ export const getPeriodNumber = (name: string) => {
     newName = name[0].toUpperCase();
   }
 
-  return newName;
+  return newName.toString()[0];
 }
