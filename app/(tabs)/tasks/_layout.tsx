@@ -12,7 +12,7 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          headerShown: true,
           headerTitle: t("Tab_Tasks"),
           headerTransparent: true,
         }}

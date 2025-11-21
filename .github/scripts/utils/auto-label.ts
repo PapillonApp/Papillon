@@ -1,7 +1,7 @@
 import * as github from '@actions/github';
 import { Context } from '@actions/github/lib/context';
 import { Octokit } from '@octokit/rest';
-import { labelResponse } from '..';
+import { labelResponse } from './types';
 
 const commitLabelMap: Record<string, string> = {
   fix: "type: bug",
@@ -27,6 +27,47 @@ const issueLabelMap: Record<string, string[]> = {
   "type: enhancement": ["feature", "ajouter"],
 };
 
+function checkConventionalCommits(commits: any[], labels: Set<string>, errors: Set<string>): void {
+  const conventionalError = "Afin d'améliorer nos processus d'automatisation et de garantir une meilleure lisibilité de l'historique Git, nous demandons à tous nos contributeurs de suivre la convention [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).";
+
+  for (const commit of commits) {
+    const match = commit.commit.message.match(/^(\w+)(\(.+\))?:/);
+    const prefix = match?.[1].toLowerCase();
+
+    if (prefix && commitLabelMap[prefix]) {
+      const label = commitLabelMap[prefix];
+      if (label) labels.add(label);
+    } else {
+      labels.add("status: invalid");
+      errors.add(conventionalError);
+    }
+  }
+}
+
+function checkAreaLabels(files: any[], labels: Set<string>): void {
+  for (const [label, patterns] of Object.entries(areaLabelMap)) {
+    if (patterns.some(pattern => files.some((f: any) => f.filename.includes(pattern)))) {
+      labels.add(label);
+    }
+  }
+}
+
+function checkIssueLabels(content: string, labels: Set<string>): void {
+  for (const [label, keywords] of Object.entries(issueLabelMap)) {
+    if (keywords.some(keyword => content.includes(keyword.toLowerCase()))) {
+      labels.add(label);
+    }
+  }
+}
+
+function cleanInvalidLabels(labels: Set<string>): void {
+  if (labels.has("status: invalid")) {
+    for (const label of [...labels]) {
+      if (!["status: needs triage", "status: invalid"].includes(label)) labels.delete(label);
+    }
+  }
+}
+
 export default async function autoLabel(
   context: Context,
   octokit: Octokit
@@ -34,9 +75,9 @@ export default async function autoLabel(
   const { owner, repo } = context.repo;
   const pull = context.payload.pull_request;
   const issue = context.payload.issue;
-	const isNew = context.payload.action === "opened" || context.payload.action === "reopened";
-	const labels = new Set<string>(isNew ? ["status: needs triage"] : []);
-  const errors: string[] = [];
+  const isNew = context.payload.action === "opened" || context.payload.action === "reopened";
+  const labels = new Set<string>(isNew ? ["status: needs triage"] : []);
+  const errors = new Set<string>();
 
   const issue_number = pull?.number ?? issue?.number;
   if (!issue_number) return { errors, labels: [...labels] };
@@ -47,51 +88,24 @@ export default async function autoLabel(
       octokit.rest.pulls.listFiles({ owner, repo, pull_number: pull.number }),
     ]);
 
-    for (const [label, patterns] of Object.entries(areaLabelMap)) {
-      if (patterns.some(pattern => filesResp.data.some(f => f.filename.includes(pattern)))) {
-        labels.add(label);
-      }
-    }
-
-    for (const commit of commitsResp.data) {
-      const match = commit.commit.message.match(/^(\w+)(\(.+\))?:/);
-      const prefix = match?.[1].toLowerCase();
-
-      if (prefix && commitLabelMap[prefix]) {
-        const label = commitLabelMap[prefix];
-        if (label) labels.add(label);
-      } else {
-        labels.add("status: invalid");
-        errors.push(
-          "Afin d'améliorer nos processus d'automatisation et de garantir une meilleure lisibilité de l'historique Git, nous demandons à tous nos contributeurs de suivre la convention [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)."
-        );
-      }
-    }
+    checkAreaLabels(filesResp.data, labels);
+    checkConventionalCommits(commitsResp.data, labels, errors);
   }
 
   if (issue) {
     const { data: fullIssue } = await octokit.rest.issues.get({ owner, repo, issue_number });
     const content = `${fullIssue.title ?? ""} ${fullIssue.body ?? ""}`.toLowerCase();
-
-    for (const [label, keywords] of Object.entries(issueLabelMap)) {
-      if (keywords.some(keyword => content.includes(keyword.toLowerCase()))) {
-        labels.add(label);
-      }
-    }
+    checkIssueLabels(content, labels);
   }
 
-  if (labels.has("status: invalid")) {
-    for (const label of [...labels]) {
-      if (!["status: needs triage", "status: invalid"].includes(label)) labels.delete(label);
-    }
-  }
+  cleanInvalidLabels(labels);
 
-	await octokit.rest.issues.addLabels({
-		owner,
-		repo,
-		issue_number,
-		labels: [...labels],
-	});
+  await octokit.rest.issues.addLabels({
+    owner,
+    repo,
+    issue_number,
+    labels: [...labels],
+  });
 
   return { errors, labels: [...labels] };
 }

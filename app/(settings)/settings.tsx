@@ -54,16 +54,17 @@ export default function SettingsIndex() {
   }, [account]);
 
   const logout = useCallback(() => {
-    router.replace("/(onboarding)/welcome");
     const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
-    if (!account) {
+    if (account) {
+      useAccountStore.getState().removeAccount(account)
+      useAccountStore.getState().setLastUsedAccount("")
+      for (const service of account.services) {
+        ClearDatabaseForAccount(service.id)
+      }
+    } else {
       error("Unable to find the current account")
     }
-    useAccountStore.getState().removeAccount(account)
-    useAccountStore.getState().setLastUsedAccount("")
-    for (const service of account.services) {
-      ClearDatabaseForAccount(service.id)
-    }
+    router.replace("/(onboarding)/welcome");
 
   }, [account, accountStore, router]);
 
@@ -119,7 +120,7 @@ export default function SettingsIndex() {
               t('Settings_Logout_Description'),
               [
                 {
-                  text: t('Cancel'),
+                  text: t('CANCEL_BTN'),
                   style: 'cancel',
                 },
                 {
@@ -258,7 +259,7 @@ export default function SettingsIndex() {
                 {(level || establishment) &&
                   <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
                     {level &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat style={{ flexShrink: 0 }}>
+                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
                         <Typography variant={"body1"} color="secondary">
                           {level}
                         </Typography>

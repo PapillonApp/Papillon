@@ -1,0 +1,223 @@
+name: Release Apps
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Get version
+        run: |
+          current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
+          echo "Current version in package.json -> $current"
+          echo "NEW_VERSION=$current" >> $GITHUB_ENV
+          clean_version=$(echo $current | tr -d '.')
+          base_code=$((clean_version * 100))
+          run_suffix=$(( ${{ github.run_number }} % 100 ))
+          version_code=$((base_code + run_suffix))
+          echo "VERSION_CODE=$version_code" >> $GITHUB_ENV
+
+      - name: 🍎 Sync iOS version
+        run: |
+          package_version=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
+          plist_version=$(grep -A 1 'CFBundleShortVersionString' ios/Papillon/Info.plist | tail -1 | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+          if [ "$package_version" != "$plist_version" ]; then
+            echo "Versions differ: package.json=$package_version, Info.plist=$plist_version. Updating Info.plist..."
+            sed -i "/CFBundleShortVersionString/{n;s|<string>.*</string>|<string>$package_version</string>|;}" ios/Papillon/Info.plist
+            echo "Info.plist updated to $package_version"
+          else
+            echo "Versions are already in sync: $package_version"
+          fi
+
+      - name: 💾 Commit changes
+        run: |
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add ios/Papillon/Info.plist
+            git commit -m "Sync iOS version to ${{ env.NEW_VERSION }}"
+            git push origin ${{ github.ref_name }}
+          fi
+
+      - name: 📢 Notify start
+        run: |
+          MESSAGE="🔨 *Release Started*
+
+          📦 ${{ github.repository }} (${{ github.ref_name }})
+          👤 ${{ github.actor }} | Run #${{ github.run_number }}
+          📅 $(date -u +'%Y-%m-%d %H:%M UTC')
+          🔗 [Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: 🚀 Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" \
+            --title "v${{ env.NEW_VERSION }} (${{ github.run_number }})" \
+            --generate-notes
+
+      - name: 📢 Notify Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANGELOG=$(gh release view "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" --json body -q .body)
+          JSON=$(jq -n --arg desc "$CHANGELOG" --arg version "${{ env.NEW_VERSION }}" --arg run "${{ github.run_number }}" --arg repo "${{ github.repository }}" '{
+            embeds: [
+              {
+                title: "Nouvelle bêta : v\($version)",
+                description: $desc,
+                url: "https://github.com/\($repo)/releases/tag/v\($version)-run\($run)",
+                color: 8701061
+              }
+            ]
+          }')
+          
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d "$JSON"
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📦 Install deps
+        run: npm install --legacy-peer-deps || true
+
+      - name: 🤖 Prebuild Android
+        run: npx expo prebuild --platform android --clean
+
+      - name: 🔑 Decode keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+
+      - name: ⚙️ Configure signing
+        run: |
+          sed -i '/signingConfigs {/a\        release {\n            storeFile file('\''release.keystore'\'')\n            storePassword '\''${{ secrets.KEYSTORE_PASSWORD }}'\''\n            keyAlias '\''${{ secrets.KEY_ALIAS }}'\''\n            keyPassword '\''${{ secrets.KEY_PASSWORD }}'\''\n        }' android/app/build.gradle
+          sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/' android/app/build.gradle
+          sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" android/app/build.gradle
+          echo "Signing config and version code configured in build.gradle"
+
+      - name: 🛠️ Configure Gradle
+        run: |
+          chmod +x android/gradlew
+          echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+
+      - name: 📱 Build APK
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: 📦 Build AAB
+        run: |
+          cd android
+          ./gradlew bundleRelease --no-daemon
+
+      - name: 🔐 Sign APK
+        run: |
+          echo "Aligning and signing APK..."
+          ZIPALIGN=$(find $ANDROID_HOME/build-tools -name zipalign | sort -V | tail -n 1)
+          APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -V | tail -n 1)
+          UNALIGNED_APK=android/app/build/outputs/apk/release/app-release.apk
+          ALIGNED_APK=android/app/build/outputs/apk/release/app-release-aligned.apk
+          FINAL_APK=android/app/build/outputs/apk/release/app-release-final.apk
+
+          echo "Using zipalign at: $ZIPALIGN"
+          echo "Using apksigner at: $APKSIGNER"
+
+          # Align APK
+          $ZIPALIGN -v -p 4 $UNALIGNED_APK $ALIGNED_APK
+
+          # Sign aligned APK
+          $APKSIGNER sign --ks android/app/release.keystore \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out $FINAL_APK \
+            $ALIGNED_APK
+
+          # Verify signature
+          $APKSIGNER verify --verbose --print-certs $FINAL_APK
+
+          # Replace unaligned APK by final signed & aligned APK
+          mv $FINAL_APK $UNALIGNED_APK
+
+          # Clean intermediate aligned APK
+          rm -f $ALIGNED_APK
+
+      - name: 📎 Attach APK to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" android/app/build/outputs/apk/release/app-release.apk
+
+      - name: ⬆️ Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: ⬆️ Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: 🎉 Publish to Play Store
+        if: success()
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_KEY }}
+          packageName: xyz.getpapillon.app
+          releaseFiles: android/app/build/outputs/bundle/release/*.aab
+          track: beta
+          inAppUpdatePriority: 3
+          status: completed
+
+      - name: ✅ Notify success
+        if: success()
+        run: |
+          DURATION=$((SECONDS - 0))
+          MESSAGE="✅ *Release Successful!*
+
+          📦 ${{ github.repository }} (${{ github.ref_name }})
+          👤 ${{ github.actor }} | Run #${{ github.run_number }}
+          ⏱️ ${DURATION}s | v${{ env.NEW_VERSION }} (${{ env.VERSION_CODE }})
+          🤖 Android: APK/AAB → Play Store (beta)
+          🍎 iOS: IPA → TestFlight (beta)
+          🔗 [Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"
+
+      - name: ❌ Notify failure
+        if: failure()
+        run: |
+          MESSAGE="❌ *Release Failed*
+
+          📦 ${{ github.repository }} (${{ github.ref_name }})
+          👤 ${{ github.actor }} | Run #${{ github.run_number }}
+          🔗 [Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d parse_mode=Markdown \
+            -d text="$MESSAGE"

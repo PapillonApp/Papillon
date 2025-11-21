@@ -10,7 +10,7 @@ module.exports = {
     version: PackageJSON.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "papillon",
+    scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -44,6 +44,7 @@ module.exports = {
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
+        monochromeImage: "./assets/images/monochrome-icon.png",
       },
       edgeToEdgeEnabled: true,
       splash: {

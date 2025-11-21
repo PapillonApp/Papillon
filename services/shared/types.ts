@@ -1,3 +1,4 @@
+import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
 import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
@@ -22,13 +23,17 @@ import { News } from "@/services/shared/news";
 import { Course, CourseDay, CourseResource } from "@/services/shared/timetable";
 import { Auth, Services } from "@/stores/account/types";
 
+import { Alise } from "../alise";
 import { ARD } from "../ard";
 import { EcoleDirecte } from "../ecoledirecte";
 import { Izly } from "../izly";
+import { Multi } from "../multi";
 import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
+import { User } from "appscho";
+import { Appscho } from "@/services/appscho";
 
 /** Represents a plugin for a school service.
  *
@@ -42,17 +47,19 @@ export interface SchoolServicePlugin {
   capabilities: Capabilities[];
   authData: Auth;
   session:
+    | ArdClient
+    | Identification
+    | MultiClient
     | SessionHandle
     | SkolengoSession
     | Session
     | TurboselfClient
-    | ArdClient
-    | Identification
+    | User
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | TurboSelf | ARD | Izly>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho>;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
@@ -109,7 +116,7 @@ export enum Capabilities {
   CANTEEN_BALANCE,
   CANTEEN_HISTORY,
   CANTEEN_BOOKINGS,
-  CANTEEN_QRCODE
+  CANTEEN_QRCODE,
 }
 
 /**

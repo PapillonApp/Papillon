@@ -137,7 +137,7 @@ export default function CourseModal() {
                         ? t("Modal_Course_Ongoing")
                         : t("Modal_Course_StartedAgo")}
                   </Typography>
-                  <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
+                  <Typography align="center" inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
                     {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime : endTime) * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })}
                   </Typography>
                 </Stack>
@@ -154,7 +154,7 @@ export default function CourseModal() {
                   <Typography color="secondary">
                     {t("Modal_Course_Group")}
                   </Typography>
-                  <Typography inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
+                  <Typography align="center" inline variant={(item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")).length > 20 ? "body2" : "h5"} color={subjectInfo.color} style={{ marginTop: 4 }}>
                     {item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")}
                   </Typography>
                 </Stack>

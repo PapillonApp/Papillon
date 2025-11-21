@@ -5,9 +5,6 @@ import { t } from "i18next";
 import AnimatedPressable from "./AnimatedPressable";
 import SkeletonView from "@/ui/components/SkeletonView";
 import i18n from "@/utils/i18n";
-import adjust from "@/utils/adjustColor";
-import { LinearGradient } from "expo-linear-gradient";
-import Stack from "./Stack";
 
 interface CompactGradeProps {
   emoji: string;
@@ -38,39 +35,25 @@ export const CompactGrade = ({
   color = "#888888",
   skeleton = false,
 }: CompactGradeProps) => {
-  const theme = useTheme();
-  const { colors } = theme;
+  const { colors } = useTheme();
 
   return (
     <AnimatedPressable
       onPress={onPress}
       style={{
-        width: 210,
-        height: 140,
+        width: 220,
+        height: 150,
         borderRadius: 24,
         borderCurve: "continuous",
         borderColor: colors.border,
-        backgroundColor: colors.card,
         borderWidth: 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 3,
+        backgroundColor: skeleton ? colors.text + "10" : (variant === "home" ? colors.card : color + "33"),
       }}
     >
-      <LinearGradient
-        colors={[color + "16", color + "00"]}
-        locations={[0, 0.5]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 24,
-        }}
-      />
-
       <View
         style={{
           flexDirection: "row",
@@ -78,12 +61,13 @@ export const CompactGrade = ({
           justifyContent: variant === "home" ? "space-between" : "flex-start",
           gap: 8,
           paddingHorizontal: 12,
-          paddingVertical: 10,
+          paddingVertical: 8,
         }}
       >
         <View
           style={[
             variant === "home" && {
+              backgroundColor: color + 40,
               padding: 7,
               paddingTop: 10,
               borderRadius: 80,
@@ -93,21 +77,17 @@ export const CompactGrade = ({
           {skeleton ? (
             <SkeletonView style={{ width: 25, height: 25, borderRadius: 100 }} />
           ) : (
-            <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={color + "22"}>
-              <Text style={{ fontSize: 15 }}>
-                {emoji}
-              </Text>
-            </Stack>
+            <Text>{emoji}</Text>
           )}
 
         </View>
         {title &&
-          <Typography variant="body1" color={variant === "home" ? colors.text : adjust(color, theme.dark ? 0.2 : -0.4)} style={{ flex: 1 }} nowrap weight="semibold" skeleton={skeleton} skeletonWidth={80}>
+          <Typography variant="body1" color={variant === "home" ? colors.text : color} style={{ flex: 1 }} nowrap weight="semibold" skeleton={skeleton} skeletonWidth={80}>
             {capitalizeWords(title)}
           </Typography>
         }
         {date &&
-          <Typography variant="body1" color={variant === "home" ? "secondary" : adjust(color, theme.dark ? 0.2 : -0.4)} nowrap skeleton={skeleton}>
+          <Typography variant="body1" color={variant === "home" ? "secondary" : color} nowrap skeleton={skeleton}>
             {date.toLocaleDateString(i18n.language, {
               day: "2-digit",
               month: "short",
@@ -118,16 +98,19 @@ export const CompactGrade = ({
       <View
         style={{
           paddingHorizontal: 12,
-          paddingVertical: 2,
+          paddingVertical: variant === "home" ? 0 : 12,
           paddingBottom: 12,
           flexDirection: "column",
-          gap: 8,
+          gap: 4,
+          backgroundColor: colors.card,
+          borderRadius: 24,
+          borderCurve: "continuous",
           flex: 1,
           justifyContent: "space-between",
           alignItems: "flex-start",
         }}
       >
-        <Typography variant="navigation" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
+        <Typography variant="body1" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
           {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
         <View style={{
@@ -135,7 +118,7 @@ export const CompactGrade = ({
           alignSelf: "flex-start",
           justifyContent: "flex-start",
           alignItems: "flex-end",
-          gap: 2,
+          gap: 4,
           borderRadius: 120,
           paddingHorizontal: 7,
           paddingVertical: 3,
@@ -145,13 +128,13 @@ export const CompactGrade = ({
             <Typography skeleton variant={"h4"} skeletonWidth={20} style={{ borderRadius: 100, overflow: "hidden" }} />
           ) : (
             <>
-              <Typography variant="h4" color={adjust(color, theme.dark ? 0.2 : -0.4)}
+              <Typography variant="h4" color={color}
                 style={{ lineHeight: 24 }}
               >
                 {disabled ? status : (score ?? 0).toFixed(2)}
               </Typography>
-              <Typography variant="body2" inline color={adjust(color, theme.dark ? 0.2 : -0.4)} style={{ marginBottom: 1 }}>
-                /{outOf ?? 20}
+              <Typography variant="body1" inline color={color} style={{ marginBottom: 2 }}>
+                / {outOf ?? 20}
               </Typography>
             </>
           )}

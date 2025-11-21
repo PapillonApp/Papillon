@@ -1,15 +1,56 @@
-const PapillonWeightedAvg = (grades) => {
-  let Addition = 0;
-  let Total = 0;
+import { Grade } from "@/services/shared/grade";
 
-  grades.filter(grade => !grade.studentScore?.disabled).forEach((grade) => {
-    if (grade.studentScore?.value !== null && grade.outOf?.value !== null) {
-      Addition += (grade.studentScore.value / grade.outOf.value) * 20 * (grade.coef || 1); // Use coef or default to 1 if not provided
-      Total += grade.coefficient || 1; // Use coef or default to 1 if not provided
+const PapillonWeightedAvg = (grades: Grade[]): number => {
+  let calcGradesSum = 0;
+  let calcOutOfSum = 0;
+
+  grades.forEach((grade) => {
+    // Skip invalid grades
+    if (
+      !grade.studentScore ||
+      grade.studentScore.disabled ||
+      grade.studentScore.value === null ||
+      grade.studentScore.value < 0 ||
+      grade.coefficient === 0 ||
+      typeof grade.studentScore.value !== "number" ||
+      !grade.outOf?.value
+    ) {
+      return;
+    }
+
+    const coefficient = grade.coefficient || 1;
+    const outOfValue = grade.outOf.value;
+    const gradeValue = grade.studentScore.value;
+
+    // Handle bonus grades
+    if (grade.bonus) {
+      const averageMoy = outOfValue / 2;
+      const newGradeValue = gradeValue - averageMoy;
+
+      if (newGradeValue >= 0) {
+        calcGradesSum += newGradeValue;
+        calcOutOfSum += 1;
+      }
+      return;
+    }
+
+    // Normalize grades to /20 scale
+    if (gradeValue > 20 || (coefficient < 1 && outOfValue - 20 >= -5) || outOfValue > 20) {
+      const gradeOn20 = (gradeValue / outOfValue) * 20;
+      calcGradesSum += gradeOn20 * coefficient;
+      calcOutOfSum += 20 * coefficient;
+    } else {
+      calcGradesSum += gradeValue * coefficient;
+      calcOutOfSum += outOfValue * coefficient;
     }
   });
 
-  return Total > 0 ? Addition / Total : 0;
+  if (calcOutOfSum > 0) {
+    const result = Math.min((calcGradesSum / calcOutOfSum) * 20, 20);
+    return isNaN(result) ? 0 : result;
+  }
+
+  return 0;
 };
 
 export default PapillonWeightedAvg;

@@ -49,6 +49,8 @@
   "ONBOARDING_LOGIN_PINCODE": "Entre le Code PIN de ton PRONOTE",
   "Onboarding_Load_Webview_Description": "Nous chargeons le site de ton établissement",
   "INPUT_PIN": "Code PIN",
+  "SEARCH_UNIV_PLACEHOLDER": "Rechercher une instance...",
+  "ONBOARDING_LOADING_LOGIN": "Connexion en cours...",
 
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
@@ -73,6 +75,9 @@
   "Tab_Calendar_Icals_Add_URL": "Ajouter une URL iCal",
   "Tab_Calendar_Icals_Manage_Title": "Gérer {{title}}",
   "Tab_Calendar_Icals_Manage_Description": "Ajouter ou supprimer des URL iCal à synchroniser avec ton calendrier.",
+  "Tab_Calendar_Icals_Add_Title": "Titre manquant",
+  "Tab_Calendar_Icals_Add_Description": "Donne un nom à cette URL iCal pour l'ajouter.",
+  "Tab_Calendar_Icals_Empty": "Aucune URL iCal ajoutée",
 
   "TabUnderConstruction_Title": "Cet onglet est en construction.",
   "TabUnderConstruction_Details": "Reviens plus tard pour des mises à jour.",
@@ -104,6 +109,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
   "Home_Planned_One": "Tu as un cours restant aujourd'hui",
@@ -149,7 +155,6 @@
   "Settings_General": "Général",
 
   "Latest_Grades": "Nouvelles notes",
-  "Grades_Search_Placeholder": "Rechercher une note, une matière",
 
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
@@ -158,10 +163,16 @@
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
 
+  "Grades_Semester": "Semestre",
+  "Grades_Trimester": "Trimestre",
+  "Grades_OutPeriod": "Hors période",
+  "Grades_Year": "Année",
+  "Grades_MockExamBac": "Bac blanc",
+  "Grades_MockExamBrevet": "Brevet blanc",
+
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
-  "Grades_Sort": "Trier",
   "Grades_Sorting_Alphabetical": "Alphabétique",
   "Grades_Sorting_Averages": "Moyennes",
   "Grades_Sorting_Date": "Date",
@@ -174,9 +185,6 @@
   "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
 
   "Grade_NoDescription": "Devoir de {{subject}}",
-
-  "Grades_Tab_Subjects": "Matières",
-  "Grades_Tab_Latest": "Nouvelles notes",
 
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",
@@ -191,12 +199,15 @@
   "Profile_News_Denominator_Plural": "nouvelles",
   "Profile_News_Open": "Ouvrir",
   "Profile_News_Loading_Title": "Chargement des actualités...",
+  "Profile_News_Author_Unknown": "Auteur inconnu",
 
   "Profile_Cards_Title": "QR-Code et cartes",
 
   "Modal_Grades_Title": "Détail de la note",
 
   "Grades_Details_Title": "Détails",
+  "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
+  "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
   "Grades_HighestGrade_Title": "Note la plus haute",
   "Grades_HighestGrade_Description": "Note maximale obtenue dans le groupe",
   "Grades_LowestGrade_Title": "Note la plus basse",
@@ -248,6 +259,8 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+  "Settings_Language_Title": "Langue",
+  "Settings_Language_Description": "Changer la langue",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",

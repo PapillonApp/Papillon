@@ -8,6 +8,7 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+.idea/
 
 # Native
 .kotlin/
@@ -48,5 +49,6 @@ android/*
 !android/app/src/main/AndroidManifest.xml
 
 bun.lock
+yarn.lock
 
 secrets.json

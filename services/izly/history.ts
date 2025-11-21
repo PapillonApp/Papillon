@@ -1,12 +1,12 @@
-import { Identification, OperationKind, operations } from "ezly";
+import { Identification, TransactionGroup, operations } from "ezly";
 import { CanteenHistoryItem } from "../shared/canteen";
 
 export async function fetchIzlyHistory(accountId: string, session: Identification): Promise<CanteenHistoryItem[]> {
-  const payments = await operations(session, OperationKind.Payment)
-  const topups = await operations(session, OperationKind.TopUp)
-  const transfers = await operations(session, OperationKind.Transfer)
+  const payments = await operations(session, TransactionGroup.Payments)
+  const topups = await operations(session, TransactionGroup.TopUp)
+  const transfers = await operations(session, TransactionGroup.BankAccountTransfer)
 
-  return [
+  const allTransactions = [
     ...payments.map(item => ({
       date: item.date,
       label: "Paiement",
@@ -28,5 +28,7 @@ export async function fetchIzlyHistory(accountId: string, session: Identificatio
       amount: (item.isCredit ? item.amount : -item.amount) * 100,
       createdByAccount: accountId
     }))
-  ]
+  ];
+
+  return allTransactions.sort((a, b) => b.date.getTime() - a.date.getTime());
 }

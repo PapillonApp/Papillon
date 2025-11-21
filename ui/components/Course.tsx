@@ -12,6 +12,7 @@ import AnimatedPressable from "./AnimatedPressable";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import i18n from "@/utils/i18n";
 
 type Variant = "primary" | "separator";
 
@@ -115,10 +116,10 @@ const Course = React.memo((props: CourseProps) => {
         gap={3}
       >
         <Typography nowrap variant="h5" align="center" style={{ lineHeight: 20, width: 60 }} skeleton={skeleton}>
-          {fStart.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+          {fStart.toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit" })}
         </Typography>
         <Typography nowrap variant="body2" color="secondary" align="center" style={{ width: 60 }} skeleton={skeleton}>
-          {fEnd.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+          {fEnd.toLocaleTimeString(i18n.language, { hour: "2-digit", minute: "2-digit" })}
         </Typography>
       </Stack>
     )
@@ -205,7 +206,7 @@ const Course = React.memo((props: CourseProps) => {
         styles.container,
         compact && styles.compactContainer,
         {
-          backgroundColor: adjust(color ?? "#FFFFFF", dark ? -0.8 : 0.8),
+          backgroundColor: adjust(color ?? "#FFFFFF", dark ? -0.85 : 0.85),
           borderWidth: 1,
           borderColor: colors.border,
         },

@@ -7,13 +7,15 @@ import fr from "@/locales/fr.json";
 import de from "@/locales/de.json";
 import es from "@/locales/es.json";
 import tr from "@/locales/tr.json";
+import br from "@/locales/br.json";
 
-const resources = {
-  fr: { translation: fr },
-  en: { translation: en },
-  de: { translation: de },
-  es: { translation: es },
-  tr: { translation: tr },
+export const resources = {
+  fr: { translation: fr, emoji: "🇫🇷", label: "Français" },
+  en: { translation: en, emoji: "🇬🇧", label: "English" },
+  de: { translation: de, emoji: "🇩🇪", label: "Deutsch" },
+  es: { translation: es, emoji: "🇪🇸", label: "Español" },
+  tr: { translation: tr, emoji: "🇹🇷", label: "Türkçe" },
+  br: { translation: br, emoji: "🏁", label: "Brezhoneg" },
 };
 
 const languageDetector = {
