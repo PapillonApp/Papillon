@@ -46,7 +46,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: Platform.OS === 'ios' ? 'transparent' : shouldCollapseHeader ? colors.background : 'transparent',
+          backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
           borderColor: colors.border,
           borderBottomWidth: 0.5,
           position: 'absolute',
@@ -58,12 +58,14 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }]}
       >
-        <BlurView
-          style={{
-            flex: 1,
-          }}
-          intensity={100}
-        />
+        {Platform.OS === 'ios' ?
+          <BlurView
+            style={{
+              flex: 1,
+            }}
+            tint='systemChromeMaterial'
+          />
+          : null}
       </Reanimated.View>
 
       <View
