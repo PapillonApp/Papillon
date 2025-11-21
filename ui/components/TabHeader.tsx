@@ -11,7 +11,7 @@ import Icon from './Icon';
 import { TouchableOpacity } from 'react-native';
 import TabHeaderTitle, { TabHeaderTitleProps } from './TabHeaderTitle';
 import Search from './Search';
-import Reanimated, { interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Reanimated, { FadeIn, FadeOut, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useTheme } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LiquidGlassView } from '@callstack/liquid-glass';
@@ -23,7 +23,7 @@ interface TabHeaderProps {
   title?: React.ReactElement<TabHeaderTitleProps>,
   trailing?: React.ReactElement,
   bottom?: React.ReactElement,
-  scrollHandlerOffset?: SharedValue<number>,
+  shouldCollapseHeader?: boolean,
 };
 
 const TabHeader: React.FC<TabHeaderProps> = ({
@@ -31,9 +31,10 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   title,
   trailing,
   bottom,
-  scrollHandlerOffset,
+  shouldCollapseHeader,
 }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
 
@@ -41,22 +42,11 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     onHeightChanged(height);
   }, [height]);
 
-  const backgroundAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(
-        scrollHandlerOffset ? scrollHandlerOffset.value : 0,
-        [0, 20],
-        [0, 1],
-        'clamp'
-      ),
-    };
-  });
-
   return (
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
+          backgroundColor: Platform.OS === 'ios' ? 'transparent' : shouldCollapseHeader ? colors.background : 'transparent',
           borderColor: colors.border,
           borderBottomWidth: 0.5,
           position: 'absolute',
@@ -66,13 +56,13 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           height: height,
           zIndex: 99,
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
-        }, backgroundAnimatedStyle]}
+        }]}
       >
         <BlurView
           style={{
             flex: 1,
           }}
-          intensity={50}
+          intensity={100}
         />
       </Reanimated.View>
 

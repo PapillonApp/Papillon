@@ -10,6 +10,7 @@ import Reanimated, {
   FadeIn,
   FadeOut,
   LinearTransition,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -37,6 +38,7 @@ import { predictHomework } from "@/utils/magic/prediction";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SortMethod = 'date' | 'subject' | 'done';
 
@@ -186,9 +188,12 @@ const TasksView: React.FC = () => {
   const { colors } = useTheme();
   const alert = useAlert();
   const currentDate = new Date();
+  const insets = useSafeAreaInsets();
 
   const [headerHeight, setHeaderHeight] = useState(0);
-  const offsetY = useSharedValue(0);
+
+  // Gestion du scroll
+  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
   const [selectedWeek, setSelectedWeek] = useState<number>(getWeekNumberFromDate(currentDate));
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -491,7 +496,7 @@ const TasksView: React.FC = () => {
             onChangeText={setSearchTerm}
           />
         }
-        scrollHandlerOffset={offsetY}
+        shouldCollapseHeader={shouldCollapseHeader}
       />
 
       <AnimatedSectionList
@@ -504,11 +509,14 @@ const TasksView: React.FC = () => {
         }}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
+        scrollIndicatorInsets={{
+          top: headerHeight - insets.top
+        }}
         renderSectionHeader={renderSectionHeader}
         ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={
-          <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15 }}>
+          <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
             <CircularProgress
               backgroundColor={colors.text + "22"}
               percentageComplete={

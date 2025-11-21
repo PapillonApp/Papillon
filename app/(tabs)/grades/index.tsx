@@ -91,10 +91,7 @@ const GradesView: React.FC = () => {
   ];
 
   // Gestion du scroll
-  const offsetY = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    offsetY.value = event.contentOffset.y;
-  });
+  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
   // Manager
   const manager = getManager();
@@ -325,14 +322,13 @@ const GradesView: React.FC = () => {
         }
         /* Recherche */
         bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
-        scrollHandlerOffset={offsetY}
+        shouldCollapseHeader={shouldCollapseHeader}
       />
 
 
       <Reanimated.FlatList
         style={{ flex: 1, height: '100%' }}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight, gap: 16, paddingBottom: bottomTabBarHeight }}
-        onScroll={scrollHandler}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, gap: 16, paddingBottom: bottomTabBarHeight }}
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
         layout={LinearTransition.springify()}
