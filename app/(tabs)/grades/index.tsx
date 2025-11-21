@@ -286,9 +286,10 @@ const GradesView: React.FC = () => {
           >
             <TabHeaderTitle
               color='#2B7ED6'
-              leading={getPeriodName(currentPeriod?.name || '')}
+              leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
               number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
               loading={loading}
+              chevron={periods.length > 1}
             />
           </MenuView>
         }
