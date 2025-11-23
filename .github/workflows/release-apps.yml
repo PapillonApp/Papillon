@@ -119,6 +119,7 @@ jobs:
         run: |
           chmod +x android/gradlew
           echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+          echo "android.enable16KbPageSizes=true" >> android/gradle.properties
 
       - name: 📱 Build APK
         run: |
