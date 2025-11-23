@@ -41,7 +41,7 @@ jobs:
           else
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
-            git add ios/Papillon/Info.plist
+            git add --force ios/Papillon/Info.plist
             git commit -m "Sync iOS version to ${{ env.NEW_VERSION }}"
             git push origin ${{ github.ref_name }}
           fi
