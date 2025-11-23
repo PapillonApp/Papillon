@@ -1,39 +1,37 @@
-import { UserX2Icon } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Linking, ScrollView, Text } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Alert, Linking, ScrollView } from "react-native";
 
-import { useAccountStore } from "@/stores/account";
+import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json"
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import SettingsHeader from "@/components/SettingsHeader";
-import packageJson from "@/package.json"
-import { useTranslation } from "react-i18next";
-import { Avatar } from "../(features)/(news)/news";
 import { Contributor, getContributors } from "@/utils/github/contributors";
+
+import { Avatar } from "../(features)/(news)/news";
 
 export const Teams = [
   {
     title: "Vince Linise",
-    description: "Président",
+    description: t("Settings_About_Chairman"),
     login: "ecnivtwelve",
     leading: <Avatar size={40} squared author="Vince Linise" imageURL="https://avatars.githubusercontent.com/u/32978709?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/vincelinise/")
   },
   {
     title: "Lucas Lavajo",
-    description: "Vice-Président",
+    description: t("Settings_About_DeputyChairman"),
     login: "tryon-dev",
     leading: <Avatar size={40} squared author="Lucas Lavajo" imageURL="https://avatars.githubusercontent.com/u/68423470?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/lucas-lavajo/")
   },
   {
     title: "Raphaël Schröder",
-    description: "Trésorier Adjoint",
+    description: t("Settings_About_AssistantTreasurer"),
     login: "raphckrman",
     leading: <Avatar size={40} squared author="Raphaël Schröder" imageURL="https://avatars.githubusercontent.com/u/41128238?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/")
@@ -41,18 +39,20 @@ export const Teams = [
   {
     title: "Tom Hélière",
     login: "tom-things",
-    description: "Secrétaire",
+    description: t("Settings_About_Secretary"),
     leading: <Avatar size={40} squared author="Tom Hélière" imageURL="https://pbs.twimg.com/profile_images/1943622137849294848/pzD1Fu1-_400x400.jpg" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
   },
   {
     title: "Rémy Godet",
-    description: "Secrétaire Adjoint",
+    description: t("Settings_About_AssistantSecretary"),
     login: "godetremy",
     leading: <Avatar size={40} squared author="Rémy Godet" imageURL="https://avatars.githubusercontent.com/u/77058107?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
   }
 ]
+
+import { t } from "i18next";
 
 import { useSettingsStore } from "@/stores/settings";
 

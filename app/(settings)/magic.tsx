@@ -118,14 +118,14 @@ export default function SettingsMagic() {
     >
       <SettingsHeader
         color={theme.dark ? "#1a0b14ff" : "#FAD9EC"}
-        title="Activer Magic+"
-        description="Optimise automatiquement l'organisation de tes tâches pour améliorer ta productivité"
+        title={t("Settings_MagicPlus_Enable")}
+        description={t("Settings_MagicPlus_Description_Optimization")}
         imageSource={require("@/assets/images/magic.png")}
         onSwitchChange={(isSwitchOn) => {
           if (settingsStore.magicEnabled && !isSwitchOn) {
             Alert.alert(
-              "Désactivation de Magic+",
-              "Papillon Magic+ sera désactivé au prochain redémarrage",
+              t("Settings_MagicPlus_Unloading"),
+              t("Settings_MagicPlus_UnloadingNextReload"),
               [{ text: "OK", style: "default" }]
             );
           }
@@ -148,11 +148,11 @@ export default function SettingsMagic() {
                 </Icon>
               </Leading>
               <Typography>
-                Statut du modèle
+                {t("Settings_MagicPlus_ModelStatus")}
               </Typography>
               <Trailing>
                 <Typography color="secondary">
-                  {modelStatus?.hasModel ? "Chargé" : "Non chargé"}
+                  {modelStatus?.hasModel ? t("Settings_MagicPlus_Loaded") : t("Settings_MagicPlus_NotLoaded")}
                 </Typography>
               </Trailing>
             </Item>
@@ -164,12 +164,12 @@ export default function SettingsMagic() {
                 </Icon>
               </Leading>
               <Typography>
-                Modèle actuel
+                {t("Settings_MagicPlus_LoadedModel")}
               </Typography>
               <Trailing>
-                <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>
-                  {currentPtr ? `${currentPtr.name} v${currentPtr.version}` : "Aucun"}
-                </Text>
+                <Typography color="secondary">
+                  {currentPtr ? `${currentPtr.name} v${currentPtr.version}` : t("Settings_MagicPlus_NoneModel")}
+                </Typography>
               </Trailing>
             </Item>
           </List>
@@ -182,7 +182,7 @@ export default function SettingsMagic() {
                 </Icon>
               </Leading>
               <Typography>
-                Vérifier les mises à jour
+                {t("Settings_MagicPlus_UpdateNow")}
               </Typography>
               <Trailing>
                 <Icon>
@@ -198,8 +198,8 @@ export default function SettingsMagic() {
                 </Icon>
               </Leading>
               <Typography>
-                Réinitialiser le modèle
-              </Typography>
+                {t("Settings_MagicPlus_ResetModel")}
+              </Typography>s
               <Trailing>
                 <Icon>
                   <Papicons name="chevronRight" size={20} color={colors.text + "50"} />
