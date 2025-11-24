@@ -435,7 +435,7 @@ const TasksView: React.FC = () => {
           />
         }
         trailing={
-          <MenuView
+          <ChipButton
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
               if (actionId === 'only-undone') {
@@ -477,16 +477,11 @@ const TasksView: React.FC = () => {
                 displayInline: true
               }
             ]}
+            icon="filter"
+            chevron
           >
-            <View style={styles.menuButtonContainer}>
-              <ChipButton
-                icon="filter"
-                chevron
-              >
-                {menuTitle}
-              </ChipButton>
-            </View>
-          </MenuView>
+            {menuTitle}
+          </ChipButton>
         }
         bottom={
           <Search

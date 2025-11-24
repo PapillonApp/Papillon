@@ -298,7 +298,7 @@ const GradesView: React.FC = () => {
         }
         /* Filtres */
         trailing={
-          <MenuView
+          <ChipButton
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
               if (actionId.startsWith("sort:")) {
@@ -318,11 +318,10 @@ const GradesView: React.FC = () => {
                 imageColor: colors.text,
               }))
             }
+            icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron
           >
-            <ChipButton icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron onPress={() => { }}>
-              {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
-            </ChipButton>
-          </MenuView>
+            {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
+          </ChipButton>
         }
         /* Recherche */
         bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
