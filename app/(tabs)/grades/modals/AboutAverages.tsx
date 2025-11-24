@@ -1,9 +1,12 @@
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { ScrollView, Text, View, Image } from "react-native";
 
 export default function AboutAverages() {
+  const theme = useTheme();
+
   return (
     <ScrollView
       style={{ flex: 1 }}
@@ -11,11 +14,12 @@ export default function AboutAverages() {
       <Image
         source={require("@/assets/images/kb/averages.png")}
         style={{ width: "100%", height: 180 }}
+        tintColor={theme.colors.primary}
       />
 
       <Stack padding={20} gap={8}>
         <Typography variant="h3">
-          A propos des moyennes générales
+          À propos des moyennes générales
         </Typography>
 
         <Typography variant="body1" color="secondary">
