@@ -63,7 +63,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             style={{
               flex: 1,
             }}
-            tint='systemChromeMaterial'
+            tint='system'
           />
           : null}
       </Reanimated.View>

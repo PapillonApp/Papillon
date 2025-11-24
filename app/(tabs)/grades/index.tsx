@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, View, FlatList, RefreshControl, Dimensions } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 
 import Reanimated, { createAnimatedComponent, LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import ChipButton from '@/ui/components/ChipButton';
@@ -233,12 +234,16 @@ const GradesView: React.FC = () => {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
-  const renderItem = useCallback(({ item: subject }: { item: Subject }) => {
+  const renderItem = useCallback(({ item }: { item: any }) => {
+    const subject = item as Subject;
     return (
       // @ts-expect-error navigation types
       <MemoizedSubjectItem subject={subject} grades={grades} />
     )
   }, [grades]);
+
+  // @ts-expect-error FlashList types
+  const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList) as any;
 
   return (
     <View
@@ -326,19 +331,18 @@ const GradesView: React.FC = () => {
       />
 
 
-      <Reanimated.FlatList
-        style={{ flex: 1, height: '100%' }}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, gap: 16, paddingBottom: bottomTabBarHeight }}
+      <AnimatedFlashList
+        data={filteredSubjects}
+        renderItem={renderItem}
+        estimatedItemSize={500}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: bottomTabBarHeight }}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
-        layout={LinearTransition.springify()}
-        keyExtractor={(item) => item.id}
+
+        keyExtractor={(item: any) => item.id}
         itemLayoutAnimation={LinearTransition.springify()}
-        initialNumToRender={3}
-        windowSize={5}
-        maxToRenderPerBatch={2}
-        updateCellsBatchingPeriod={50}
-        removeClippedSubviews={true}
 
         refreshControl={
           <RefreshControl
@@ -349,67 +353,61 @@ const GradesView: React.FC = () => {
         }
 
         ListHeaderComponent={(sortedGrades.length > 0 && searchText.length === 0) ?
-          <View>
-            <Dynamic animated key={'header:grades_label'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-                <Icon size={20}>
-                  <Papicons name='star' />
-                </Icon>
-                <Typography variant='h6' color='text'>
-                  {t('Grades_Tab_Latest')}
-                </Typography>
-              </Stack>
-            </Dynamic>
+          <View style={{ marginBottom: 16 }}>
+            <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
+              <Icon size={20}>
+                <Papicons name='star' />
+              </Icon>
+              <Typography variant='h6' color='text'>
+                {t('Grades_Tab_Latest')}
+              </Typography>
+            </Stack>
 
-            <Dynamic animated key={'header:grades'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <LegendList
-                horizontal
-                data={sortedGrades.slice(0, 10)}
-                style={{ overflow: 'visible', height: 140 + 24 }}
-                contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 0, gap: 12 }}
-                showsHorizontalScrollIndicator={false}
-                recycleItems={true}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item: grade }) =>
-                  <CompactGrade
-                    key={grade.id + "_compactGrade_header"}
-                    emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                    title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                    description={grade.description}
-                    score={grade.studentScore?.value || 0}
-                    outOf={grade.outOf?.value || 20}
-                    disabled={grade.studentScore?.disabled}
-                    status={grade.studentScore?.status}
-                    color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                    date={grade.givenAt}
-                    onPress={() => {
-                      // @ts-expect-error navigation types
-                      navigation.navigate('(modals)/grade', {
-                        grade: grade,
-                        subjectInfo: {
-                          name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                          color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                          emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                          originalName: getSubjectById(grade.subjectId)?.name || ""
-                        },
-                        allGrades: grades
-                      })
-                    }}
-                  />
-                }
-              />
-            </Dynamic>
+            <LegendList
+              horizontal
+              data={sortedGrades.slice(0, 10)}
+              style={{ overflow: 'visible', height: 140 + 24 }}
+              contentContainerStyle={{ paddingVertical: 12, paddingHorizontal: 0, gap: 12 }}
+              showsHorizontalScrollIndicator={false}
+              recycleItems={true}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item: grade }) =>
+                <CompactGrade
+                  key={grade.id + "_compactGrade_header"}
+                  emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
+                  title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
+                  description={grade.description}
+                  score={grade.studentScore?.value || 0}
+                  outOf={grade.outOf?.value || 20}
+                  disabled={grade.studentScore?.disabled}
+                  status={grade.studentScore?.status}
+                  color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
+                  date={grade.givenAt}
+                  onPress={() => {
+                    // @ts-expect-error navigation types
+                    navigation.navigate('(modals)/grade', {
+                      grade: grade,
+                      subjectInfo: {
+                        name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
+                        color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
+                        emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
+                        originalName: getSubjectById(grade.subjectId)?.name || ""
+                      },
+                      allGrades: grades
+                    })
+                  }}
+                />
+              }
+            />
 
-            <Dynamic animated key={'header:subjects_label'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
-              <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-                <Icon size={20}>
-                  <Papicons name='grades' />
-                </Icon>
-                <Typography variant='h6' color='text'>
-                  {t('Grades_Tab_Subjects')}
-                </Typography>
-              </Stack>
-            </Dynamic>
+            <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
+              <Icon size={20}>
+                <Papicons name='grades' />
+              </Icon>
+              <Typography variant='h6' color='text'>
+                {t('Grades_Tab_Subjects')}
+              </Typography>
+            </Stack>
           </View>
           : null}
 
@@ -433,9 +431,6 @@ const GradesView: React.FC = () => {
             </Stack>
           </Dynamic>
         }
-
-        data={filteredSubjects}
-        renderItem={renderItem}
       />
     </View>
   )

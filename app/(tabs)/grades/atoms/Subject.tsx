@@ -98,51 +98,49 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
   );
 
   return (
-    <Dynamic animated style={{ width: "100%" }} entering={PapillonAppearIn} exiting={PapillonAppearOut} key={subject.id}>
-      <Stack style={{ width: "100%" }}>
-        <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
-          <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
-            <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
-              <Text style={{ fontSize: 15 }}>
-                {subjectEmoji}
-              </Text>
-            </Stack>
-
-            <Stack flex inline>
-              <Typography variant='title' color={subjectAdjustedColor}>
-                {subjectName}
-              </Typography>
-            </Stack>
-
-            <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
-              {subject.studentAverage.disabled ? (
-                <Typography variant='h5' inline style={{ marginTop: 0 }}>
-                  {subject.studentAverage.status}
-                </Typography>
-              ) : (
-                <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
-                  {subject.studentAverage.value.toFixed(2)}
-                </Typography>
-              )}
-              <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                /{subject.outOf.value}
-              </Typography>
-            </Stack>
+    <Stack style={{ width: "100%" }} key={subject.id}>
+      <TouchableOpacity style={{ width: '100%' }} activeOpacity={0.5} onPress={handlePressSubject}>
+        <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
+          <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
+            <Text style={{ fontSize: 15 }}>
+              {subjectEmoji}
+            </Text>
           </Stack>
-        </TouchableOpacity>
 
-        <List style={{ marginTop: 6 }}>
-          {subject.grades.map((grade) => (
-            <GradeItem
-              key={grade.id}
-              grade={grade}
-              subjectName={subjectName}
-              subjectColor={subjectAdjustedColor}
-              onPress={handlePressGrade}
-            />
-          ))}
-        </List>
-      </Stack>
-    </Dynamic>
+          <Stack flex inline>
+            <Typography variant='title' color={subjectAdjustedColor}>
+              {subjectName}
+            </Typography>
+          </Stack>
+
+          <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
+            {subject.studentAverage.disabled ? (
+              <Typography variant='h5' inline style={{ marginTop: 0 }}>
+                {subject.studentAverage.status}
+              </Typography>
+            ) : (
+              <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
+                {subject.studentAverage.value.toFixed(2)}
+              </Typography>
+            )}
+            <Typography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
+              /{subject.outOf.value}
+            </Typography>
+          </Stack>
+        </Stack>
+      </TouchableOpacity>
+
+      <List style={{ marginTop: 6 }}>
+        {subject.grades.map((grade) => (
+          <GradeItem
+            key={grade.id}
+            grade={grade}
+            subjectName={subjectName}
+            subjectColor={subjectAdjustedColor}
+            onPress={handlePressGrade}
+          />
+        ))}
+      </List>
+    </Stack>
   );
 });
