@@ -1,6 +1,6 @@
 import { useAccountStore } from "@/stores/account";
 
-import { cleanSubjectName } from "./name";
+import { cleanSubjectName } from "./utils";
 
 export function getSubjectColor(subject: string): string {
   const cleanedName = cleanSubjectName(subject)
