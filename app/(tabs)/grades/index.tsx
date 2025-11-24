@@ -47,8 +47,6 @@ const GradesView: React.FC = () => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const bottomTabBarHeight = useBottomTabBarHeight();
 
-  const ReanimatedLegendList = createAnimatedComponent(LegendList);
-
   // Thème
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -131,6 +129,7 @@ const GradesView: React.FC = () => {
     setGradesLoading(true);
     if (period && managerToUse) {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+      if (!grades || !grades.subjects) return;
       setSubjects(grades.subjects);
       if (grades.studentOverall.value) {
         setServiceAverage(grades.studentOverall.value)

@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useMemo } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Reanimated from 'react-native-reanimated';
 
@@ -15,6 +15,7 @@ import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
+import adjust from '@/utils/adjustColor';
 
 interface SubjectInfo {
   name: string;
@@ -31,7 +32,8 @@ interface GradesModalProps {
 
 export default function GradesModal() {
   const { params } = useRoute();
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors;
 
   if (!params) {
     return null;
@@ -153,20 +155,72 @@ export default function GradesModal() {
               marginBottom: 20,
             }}
           >
-            <Reanimated.View>
-              <CompactGrade
-                key={grade.id + "_compactGrade"}
-                emoji={subjectInfo.emoji}
-                title={subjectInfo.name}
-                description={grade.description}
-                score={grade.studentScore?.value ?? 0}
-                outOf={grade.outOf?.value ?? 20}
-                disabled={grade.studentScore?.disabled}
-                status={grade.studentScore?.status}
-                color={subjectInfo.color}
-                date={grade.givenAt}
-              />
-            </Reanimated.View>
+            <Stack
+              vAlign="center"
+              hAlign="center"
+              gap={4}
+              padding={[20, 0]}
+            >
+              <View
+                style={{
+                  backgroundColor: subjectInfo.color + "22",
+                  width: 48,
+                  height: 48,
+                  borderRadius: 120,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderColor: colors.text + "22",
+                  borderWidth: 1,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 28
+                  }}
+                >
+                  {subjectInfo.emoji}
+                </Text>
+              </View>
+
+              <Stack
+                direction='horizontal'
+                vAlign="end"
+                hAlign="end"
+                gap={2}
+                style={{ marginBottom: -4 }}
+              >
+                <Typography variant='h0' weight='medium' inline color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
+                  {grade.studentScore?.disabled ? grade.studentScore?.status : grade.studentScore?.value.toFixed(2) ?? 0}
+                </Typography>
+                <Typography variant='h3' weight='semibold' color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
+                  /{grade.outOf?.value ?? 20}
+                </Typography>
+              </Stack>
+
+              <Typography
+                variant="title"
+                color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
+              >
+                {subjectInfo.name}
+              </Typography>
+              {grade.description && (
+                <Typography
+                  variant="body1"
+                >
+                  {grade.description}
+                </Typography>
+              )}
+              <Typography
+                variant="body1"
+                color='secondary'
+              >
+                {new Date(grade.givenAt).toLocaleDateString(undefined, {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </Typography>
+            </Stack>
 
             <Stack
               card
@@ -187,7 +241,7 @@ export default function GradesModal() {
                 <Typography color="secondary">
                   {t("Grades_Coefficient")}
                 </Typography>
-                <ContainedNumber color={subjectInfo.color}>
+                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
                   x{(grade.coefficient ?? 1).toFixed(2)}
                 </ContainedNumber>
               </Stack>
@@ -203,7 +257,7 @@ export default function GradesModal() {
                 <Typography color="secondary">
                   {t("Grades_Avg_Group_Short")}
                 </Typography>
-                <ContainedNumber color={subjectInfo.color} denominator={"/" + grade.outOf?.value}>
+                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
                   {grade.averageScore?.value.toFixed(2)}
                 </ContainedNumber>
               </Stack>

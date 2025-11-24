@@ -49,6 +49,11 @@ export const VARIANTS = StyleSheet.create({
     letterSpacing: 0.08,
     lineHeight: 22,
   },
+  h0: {
+    fontSize: 44,
+    fontFamily: FONT_FAMILIES.bold,
+    lineHeight: 56,
+  },
   h1: {
     fontSize: 32,
     fontFamily: FONT_FAMILIES.bold,
