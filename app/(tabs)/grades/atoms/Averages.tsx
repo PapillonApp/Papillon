@@ -115,7 +115,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
     }, [shownAverage, realAverage]);
 
     const backgroundColor = useMemo(() => {
-      return adjust(accent, theme.dark ? -0.93 : 0.93);
+      return adjust(accent, theme.dark ? -0.89 : 0.93);
     }, [accent, theme.dark]);
 
     if (!grades || grades.length === 0) {
