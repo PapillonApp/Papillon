@@ -17,6 +17,15 @@ export default function Layout() {
           headerTitle: t("Tab_Grades"),
         }}
       />
+      <Stack.Screen
+        name="modals/AboutAverages"
+        options={{
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTitle: t("Grades_Avg_KnowMore"),
+          presentation: "modal",
+        }}
+      />
     </Stack>
   );
 }

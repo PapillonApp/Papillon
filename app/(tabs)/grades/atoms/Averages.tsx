@@ -13,25 +13,29 @@ import { Papicons } from "@getpapillon/papicons";
 import { MenuView } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { t } from "i18next";
+import { useRouter } from "expo-router";
 
 const algorithms = [
   {
     key: "subjects",
-    label: "Moyenne des matières",
-    description: "Calcule la moyenne pondérée des moyennes de matières",
+    label: t('Grades_Avg_Subject_Title'),
+    description: t('Grades_Avg_Subject_Description'),
     algorithm: PapillonSubjectAvg,
     canInjectRealAverage: true,
+    sfsymbol: "square.stack.3d.up.fill"
   },
   {
     key: "weighted",
-    label: "Moyenne pondérée",
-    description: "Calcule la moyenne pondérée de toutes les notes",
+    label: t('Grades_Avg_All_Pond'),
+    description: t('Grades_Avg_All_Pond_Description'),
     algorithm: PapillonWeightedAvg,
+    sfsymbol: "plus.forwardslash.minus"
   }
 ]
 
@@ -42,6 +46,8 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
     const adjustedColor = adjust(accent, theme.dark ? 0.2 : -0.2);
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
+
+    const router = useRouter();
 
     const currentAverageHistory = useMemo(() => {
       if (!grades || grades.length === 0) return [];
@@ -185,16 +191,49 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
         </Stack>
 
         <MenuView
-          actions={algorithms.map((algo) => ({
-            id: algo.key,
-            title: algo.label,
-            subtitle: algo.description,
-            state: algorithm.key === algo.key ? "on" : "off",
-          }))}
+          actions={[
+            {
+              title: t('Grades_Avg_Methods'),
+              subactions: algorithms.map((algo) => ({
+                id: "setAlg:" + algo.key,
+                title: algo.label,
+                subtitle: algo.description,
+                state: algorithm.key === algo.key ? "on" : "off",
+                image: Platform.select({
+                  ios: algo.sfsymbol
+                }),
+                imageColor: theme.colors.text
+              })),
+              displayInline: true
+            },
+            {
+              title: "",
+              subactions: [
+                {
+                  id: 'open:more',
+                  title: t('Grades_Avg_KnowMore'),
+                  subtitle: t('Grades_Avg_KnowMore_Description'),
+                  image: Platform.select({
+                    ios: "info.circle"
+                  }),
+                  imageColor: theme.colors.text
+                }
+              ],
+              displayInline: true
+            }
+          ]}
           onPressAction={({ nativeEvent }) => {
             const actionId = nativeEvent.event;
 
-            setAlgorithm(algorithms.find((algo) => algo.key === actionId)!);
+            if (actionId.startsWith("open:")) {
+              if (actionId === "open:more") {
+                router.push("/(tabs)/grades/modals/AboutAverages");
+              }
+            }
+
+            if (actionId.startsWith("setAlg:")) {
+              setAlgorithm(algorithms.find((algo) => algo.key === actionId.slice(7))!);
+            }
           }}
         >
           <TouchableOpacity>
