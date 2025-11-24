@@ -319,11 +319,9 @@ const GradesView: React.FC = () => {
               }))
             }
           >
-            <View style={{ width: 200, alignItems: 'flex-end' }} >
-              <ChipButton icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron onPress={() => { }}>
-                {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
-              </ChipButton>
-            </View>
+            <ChipButton icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron onPress={() => { }}>
+              {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
+            </ChipButton>
           </MenuView>
         }
         /* Recherche */
