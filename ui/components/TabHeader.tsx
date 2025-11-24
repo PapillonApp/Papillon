@@ -45,6 +45,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
       <Reanimated.View
         style={[{
           backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
+          borderBottomWidth: 0,
           position: 'absolute',
           top: 0,
           left: 0,
@@ -56,7 +57,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
       >
         {Platform.OS === 'ios' && (
           <ProgressiveBlurView
-            blurType="systemThickMaterial"
+            blurType="systemMaterial"
             blurAmount={20}
             direction="blurredTopClearBottom"
             startOffset={0}
@@ -65,7 +66,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
               top: 0,
               left: 0,
               right: 0,
-              height: height,
+              height: height - 20,
               zIndex: 99,
             }}
           />
