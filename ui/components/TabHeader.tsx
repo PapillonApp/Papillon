@@ -56,7 +56,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
       >
         {Platform.OS === 'ios' && (
           <ProgressiveBlurView
-            blurType="light"
+            blurType="systemThickMaterial"
             blurAmount={20}
             direction="blurredTopClearBottom"
             startOffset={0}

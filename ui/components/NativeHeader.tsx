@@ -7,6 +7,7 @@ import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 import Typography from "./Typography";
 import AnimatedNumber from "./AnimatedNumber";
+import adjust from "@/utils/adjustColor";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance
@@ -273,11 +274,14 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   // Pre-compute style array once
   const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, { borderRadius: light ? 0 : styles.highlight.borderRadius }, light ? { padding: 0 } : {}];
 
+  const theme = useTheme();
+  const adjustedColor = adjust(color, theme.dark ? 0.2 : -0.2);
+
   return (
     <LayoutAnimationConfig skipEntering>
       <Reanimated.View style={viewStyle} {...props} layout={LinearTransition.springify()}>
         {typeof children === 'string' ? (
-          <AnimatedNumber variant={variant} style={{ color }}>
+          <AnimatedNumber variant={variant} style={{ color: adjustedColor }}>
             {children}
           </AnimatedNumber>
         ) : (

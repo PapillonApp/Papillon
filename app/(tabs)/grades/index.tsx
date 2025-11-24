@@ -288,7 +288,7 @@ const GradesView: React.FC = () => {
             }
           >
             <TabHeaderTitle
-              color='#2B7ED6'
+              color={colors.primary}
               leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
               number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
               loading={loading}
@@ -353,6 +353,7 @@ const GradesView: React.FC = () => {
           <View style={{ marginBottom: 16, display: (sortedGrades.length > 0 && searchText.length === 0) ? 'flex' : 'none' }}>
             <Averages
               grades={grades}
+              color={colors.primary}
               realAverage={serviceAverage || undefined}
             />
 

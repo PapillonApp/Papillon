@@ -17,6 +17,8 @@ import { TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+
 const algorithms = [
   {
     key: "subjects",
@@ -33,13 +35,13 @@ const algorithms = [
   }
 ]
 
-const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: number }) => {
+const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[], realAverage?: number, color?: string, scale?: number }) => {
   try {
     const theme = useTheme();
-    const accent = theme.colors.primary;
+    const accent = color || theme.colors.primary;
+    const adjustedColor = adjust(accent, theme.dark ? 0.2 : -0.2);
 
     const [algorithm, setAlgorithm] = useState(algorithms[0]);
-    const [scale, setScale] = useState(20);
 
     const currentAverageHistory = useMemo(() => {
       if (!grades || grades.length === 0) return [];
@@ -152,7 +154,7 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
               <LineGraph
                 points={graphAxis}
                 animated={true}
-                color={accent}
+                color={adjustedColor}
                 enablePanGesture={true}
                 onPointSelected={handleGestureUpdate}
                 onGestureEnd={handleGestureEnd}
@@ -171,12 +173,12 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
           </View>
         </View>
 
-        <Stack animated direction="horizontal" hAlign="end" vAlign="end" style={{ marginTop: -12 }}>
-          <AnimatedNumber variant="h1" color={accent}>
+        <Stack animated direction="horizontal" hAlign="end" vAlign="end" gap={2} style={{ marginTop: -12 }}>
+          <AnimatedNumber variant="h1" color={adjustedColor}>
             {shownAverage ? shownAverage.toFixed(2) : "0.00"}
           </AnimatedNumber>
           <Dynamic animated>
-            <Typography variant="title" style={{ color: accent, marginBottom: 2, opacity: 0.5 }}>
+            <Typography variant="title" style={{ color: adjustedColor, marginBottom: 4, opacity: 0.7 }}>
               /{scale}
             </Typography>
           </Dynamic>
