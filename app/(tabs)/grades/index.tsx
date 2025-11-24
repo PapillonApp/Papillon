@@ -37,6 +37,7 @@ import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/serv
 import { LegendList } from '@legendapp/list';
 import { useNavigation } from 'expo-router';
 import ActivityIndicator from '@/ui/components/ActivityIndicator';
+import Averages from './atoms/Averages';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -331,10 +332,9 @@ const GradesView: React.FC = () => {
       />
 
 
-      <AnimatedFlashList
+      <Reanimated.FlatList
         data={filteredSubjects}
         renderItem={renderItem}
-        estimatedItemSize={500}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: bottomTabBarHeight }}
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
 
@@ -342,7 +342,7 @@ const GradesView: React.FC = () => {
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
 
         keyExtractor={(item: any) => item.id}
-        itemLayoutAnimation={LinearTransition.springify()}
+        /* itemLayoutAnimation={LinearTransition.springify()} */
 
         refreshControl={
           <RefreshControl
@@ -352,8 +352,15 @@ const GradesView: React.FC = () => {
           />
         }
 
-        ListHeaderComponent={(sortedGrades.length > 0 && searchText.length === 0) ?
-          <View style={{ marginBottom: 16 }}>
+        ListHeaderComponent={
+          <View style={{ marginBottom: 16, display: (sortedGrades.length > 0 && searchText.length === 0) ? 'flex' : 'none' }}>
+            <Averages
+              grades={grades}
+              realAverage={serviceAverage || undefined}
+            />
+
+            <View style={{ height: 16 }} />
+
             <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
               <Icon size={20}>
                 <Papicons name='star' />
@@ -409,7 +416,7 @@ const GradesView: React.FC = () => {
               </Typography>
             </Stack>
           </View>
-          : null}
+        }
 
         ListEmptyComponent={loading ? undefined :
           <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
