@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, View, FlatList, RefreshControl, Dimensions } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 
-import Reanimated, { createAnimatedComponent, LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Reanimated, { createAnimatedComponent, LayoutAnimationConfig, LinearTransition, useAnimatedScrollHandler, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import ChipButton from '@/ui/components/ChipButton';
 
 import Search from '@/ui/components/Search';
@@ -38,6 +38,7 @@ import { LegendList } from '@legendapp/list';
 import { useNavigation } from 'expo-router';
 import ActivityIndicator from '@/ui/components/ActivityIndicator';
 import Averages from './atoms/Averages';
+import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -243,8 +244,10 @@ const GradesView: React.FC = () => {
     )
   }, [grades]);
 
-  // @ts-expect-error FlashList types
-  const AnimatedFlashList = Reanimated.createAnimatedComponent(FlashList) as any;
+  const keyboardHeight = useKeyboardHeight();
+  const footerStyle = useAnimatedStyle(() => ({
+    height: keyboardHeight.value - bottomTabBarHeight,
+  }));
 
   return (
     <View
@@ -415,6 +418,8 @@ const GradesView: React.FC = () => {
             </Stack>
           </View>
         }
+
+        ListFooterComponent={<Reanimated.View style={footerStyle} />}
 
         ListEmptyComponent={loading ? undefined :
           <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
