@@ -98,25 +98,12 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
     }, [accent, theme.dark]);
 
     return (
-      <Reanimated.View
-        style={{
-          backgroundColor: backgroundColor,
-          borderRadius: 18,
-          borderCurve: "continuous",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderColor: theme.colors.text + "25",
-          shadowColor: "#000000",
-          shadowOffset: {
-            width: 0,
-            height: 1,
-          },
-          shadowOpacity: 0.16,
-          shadowRadius: 1.5,
-        }}
+      <Stack
+        card
+        backgroundColor={backgroundColor}
+        hAlign="center"
+        vAlign="center"
+        gap={0}
       >
         <View
           style={{
@@ -203,7 +190,7 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
           </Typography>
         </Dynamic>
         <View style={{ height: 14 }} />
-      </Reanimated.View>
+      </Stack>
     );
   }
   catch (e) {
