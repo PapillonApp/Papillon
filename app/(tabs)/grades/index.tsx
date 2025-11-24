@@ -12,10 +12,9 @@ import Typography from '@/ui/components/Typography';
 import { useTheme } from '@react-navigation/native';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Grade as SharedGrade, Period, Subject as SharedSubject, Subject } from "@/services/shared/grade";
+import { Grade as SharedGrade, Period, Subject as SharedSubject, Subject, Grade } from "@/services/shared/grade";
 import PapillonMedian from "@/utils/grades/algorithms/median";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
-import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
+import { useGradeInfluence } from './hooks/useGradeInfluence';
 
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
@@ -239,14 +238,18 @@ const GradesView: React.FC = () => {
     const subject = item as Subject;
     return (
       // @ts-expect-error navigation types
-      <MemoizedSubjectItem subject={subject} grades={grades} />
+      <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
     )
   }, [grades]);
 
   const keyboardHeight = useKeyboardHeight();
+
   const footerStyle = useAnimatedStyle(() => ({
     height: keyboardHeight.value - bottomTabBarHeight,
   }));
+
+  // influences
+  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
 
   return (
     <View
@@ -277,10 +280,12 @@ const GradesView: React.FC = () => {
                 subtitle: `${period.start.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
-                })} - ${period.end.toLocaleDateString(i18n.language, {
-                  month: "short",
-                  year: "numeric",
-                })}`,
+                })
+                  } - ${period.end.toLocaleDateString(i18n.language, {
+                    month: "short",
+                    year: "numeric",
+                  })
+                  } `,
                 state: currentPeriod?.id === period.id ? "on" : "off",
                 image: Platform.select({
                   ios: (getPeriodNumber(period.name || "0")) + ".calendar"
@@ -400,7 +405,8 @@ const GradesView: React.FC = () => {
                         emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
                         originalName: getSubjectById(grade.subjectId)?.name || ""
                       },
-                      allGrades: grades
+                      avgInfluence: getAvgInfluence(grade),
+                      avgClass: getAvgClassInfluence(grade),
                     })
                   }}
                 />

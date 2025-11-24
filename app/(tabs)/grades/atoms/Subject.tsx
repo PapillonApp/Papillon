@@ -13,10 +13,12 @@ import { getSubjectName } from '@/utils/subjects/name';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
+import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
+import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import React, { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
-const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void }) => {
+const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
     // @ts-expect-error date type
     return grade.givenAt.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
@@ -59,7 +61,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress }: { g
   );
 });
 
-export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = React.memo(({ subject, grades }) => {
+export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence }) => {
   const theme = useTheme();
   const navigation = useNavigation();
 
@@ -91,7 +93,8 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[] }> = Reac
           emoji: subjectEmoji,
           originalName: subject.name
         },
-        allGrades: grades
+        avgInfluence: getAvgInfluence(grade),
+        avgClass: getAvgClassInfluence(grade),
       });
     },
     [navigation, subjectName, subjectAdjustedColor, subjectEmoji, subject.name, grades]

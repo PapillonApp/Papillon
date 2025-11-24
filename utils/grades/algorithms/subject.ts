@@ -1,7 +1,7 @@
 import { Grade } from "@/services/shared/grade";
 import { ScoreProperty } from "./helpers";
 
-const getSubjectAverage = (
+export const getSubjectAverage = (
   subject: Grade[],
   loop: boolean = false,
   key: ScoreProperty = "studentScore"

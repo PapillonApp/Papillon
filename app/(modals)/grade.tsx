@@ -13,8 +13,6 @@ import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
-import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import adjust from '@/utils/adjustColor';
 
 interface SubjectInfo {
@@ -27,7 +25,8 @@ interface SubjectInfo {
 interface GradesModalProps {
   grade: SharedGrade;
   subjectInfo: SubjectInfo;
-  allGrades: SharedGrade[];
+  avgInfluence: number;
+  avgClass: number;
 }
 
 export default function GradesModal() {
@@ -38,19 +37,7 @@ export default function GradesModal() {
   if (!params) {
     return null;
   }
-  const { grade, subjectInfo, allGrades } = params as GradesModalProps;
-
-  const avgInfluence = useMemo(() => {
-    const average = PapillonSubjectAvg(allGrades);
-    const averageWithoutGrade = PapillonSubjectAvg(allGrades.filter(g => g.id !== grade.id));
-    return Number((average - averageWithoutGrade).toFixed(2));
-  }, [allGrades, grade]);
-
-  const avgClass = useMemo(() => {
-    const average = PapillonSubjectAvgByProperty(allGrades, "averageScore");
-    const averageWithoutGrade = PapillonSubjectAvgByProperty(allGrades.filter(g => g.id !== grade.id), "averageScore");
-    return Number((average - averageWithoutGrade).toFixed(2));
-  }, [allGrades, grade]);
+  const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   return (
     <>
