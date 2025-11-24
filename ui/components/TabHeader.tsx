@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 
-import { Platform, View } from 'react-native';
+import { Dimensions, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
@@ -13,10 +13,8 @@ import TabHeaderTitle, { TabHeaderTitleProps } from './TabHeaderTitle';
 import Search from './Search';
 import Reanimated, { FadeIn, FadeOut, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useTheme } from '@react-navigation/native';
-import { BlurView } from 'expo-blur';
-import { LiquidGlassView } from '@callstack/liquid-glass';
-import { runsIOS26 } from '../utils/IsLiquidGlass';
-import getCorners from '../utils/Corners';
+import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+
 
 interface TabHeaderProps {
   onHeightChanged?: (height: number) => void,
@@ -47,8 +45,6 @@ const TabHeader: React.FC<TabHeaderProps> = ({
       <Reanimated.View
         style={[{
           backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
-          borderColor: colors.border,
-          borderBottomWidth: 0.5,
           position: 'absolute',
           top: 0,
           left: 0,
@@ -58,14 +54,22 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
         }]}
       >
-        {Platform.OS === 'ios' ?
-          <BlurView
+        {Platform.OS === 'ios' && (
+          <ProgressiveBlurView
+            blurType="light"
+            blurAmount={20}
+            direction="blurredTopClearBottom"
+            startOffset={0}
             style={{
-              flex: 1,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: height,
+              zIndex: 99,
             }}
-            tint='system'
           />
-          : null}
+        )}
       </Reanimated.View>
 
       <View
