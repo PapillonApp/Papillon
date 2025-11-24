@@ -42,14 +42,20 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
     const [scale, setScale] = useState(20);
 
     const currentAverageHistory = useMemo(() => {
-      const history = PapillonGradesAveragesOverTime(algorithm.algorithm, grades, "studentScore");
-      if (algorithm.canInjectRealAverage && realAverage) {
-        history.push({
-          average: realAverage,
-          date: new Date(),
-        });
+      if (!grades || grades.length === 0) return [];
+      try {
+        const history = PapillonGradesAveragesOverTime(algorithm.algorithm, grades, "studentScore");
+        if (algorithm.canInjectRealAverage && realAverage) {
+          history.push({
+            average: realAverage,
+            date: new Date(),
+          });
+        }
+        return history;
+      } catch (e) {
+        console.error("Error calculating average history:", e);
+        return [];
       }
-      return history;
     }, [grades, algorithm, realAverage]);
 
     const initialAverage = useMemo(() => {
@@ -60,11 +66,23 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
         };
       }
 
+      if (!currentAverageHistory || currentAverageHistory.length === 0) return null;
       return currentAverageHistory[currentAverageHistory.length - 1];
     }, [currentAverageHistory, algorithm, realAverage]);
 
     const [shownAverage, setShownAverage] = useState(initialAverage ? initialAverage.average : 0);
     const [shownDate, setShownDate] = useState(initialAverage ? initialAverage.date : new Date());
+
+    // Update state when initialAverage changes (e.g. when algorithm changes)
+    React.useEffect(() => {
+      if (initialAverage) {
+        setShownAverage(initialAverage.average);
+        setShownDate(initialAverage.date);
+      } else {
+        setShownAverage(0);
+        setShownDate(new Date());
+      }
+    }, [initialAverage]);
 
     const [active, setActive] = useState(false);
 
@@ -81,6 +99,7 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
     }, [initialAverage]);
 
     const graphAxis = useMemo(() => {
+      if (!currentAverageHistory) return [];
       return currentAverageHistory
         .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
         .map(item => ({
@@ -96,6 +115,13 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
     const backgroundColor = useMemo(() => {
       return adjust(accent, theme.dark ? -0.93 : 0.93);
     }, [accent, theme.dark]);
+
+    if (!grades || grades.length === 0) {
+      // You might want to return null or a placeholder here if there are absolutely no grades
+      // But if realAverage exists, we might still want to show something?
+      // For now, if there's no history and no real average, we can return null or render empty state.
+      if (!realAverage) return null;
+    }
 
     return (
       <Stack
@@ -122,30 +148,32 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
             }}
           >
 
-            <LineGraph
-              points={graphAxis}
-              animated={true}
-              color={accent}
-              enablePanGesture={true}
-              onPointSelected={handleGestureUpdate}
-              onGestureEnd={handleGestureEnd}
-              verticalPadding={30}
-              horizontalPadding={30}
-              lineThickness={5}
-              panGestureDelay={0}
-              enableIndicator={true}
-              indicatorPulsating={true}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            />
+            {graphAxis.length > 0 ? (
+              <LineGraph
+                points={graphAxis}
+                animated={true}
+                color={accent}
+                enablePanGesture={true}
+                onPointSelected={handleGestureUpdate}
+                onGestureEnd={handleGestureEnd}
+                verticalPadding={30}
+                horizontalPadding={30}
+                lineThickness={5}
+                panGestureDelay={0}
+                enableIndicator={true}
+                indicatorPulsating={true}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            ) : null}
           </View>
         </View>
 
         <Stack animated direction="horizontal" hAlign="end" vAlign="end" style={{ marginTop: -12 }}>
           <AnimatedNumber variant="h1" color={accent}>
-            {shownAverage.toFixed(2)}
+            {shownAverage ? shownAverage.toFixed(2) : "0.00"}
           </AnimatedNumber>
           <Dynamic animated>
             <Typography variant="title" style={{ color: accent, marginBottom: 2, opacity: 0.5 }}>
@@ -182,11 +210,11 @@ const Averages = ({ grades, realAverage }: { grades: Grade[], realAverage?: numb
         <Dynamic animated key={"dateSource:" + (isRealAverage ? "real" : "estimated")}>
           <Typography color="secondary" style={{ marginTop: 1 }}>
             {isRealAverage ? "par l'établissement" :
-              "estimée au " + shownDate.toLocaleDateString(undefined, {
+              "estimée au " + (shownDate instanceof Date && !isNaN(shownDate.getTime()) ? shownDate.toLocaleDateString(undefined, {
                 day: "numeric",
                 month: "short",
                 year: "numeric"
-              })}
+              }) : "Unknown Date")}
           </Typography>
         </Dynamic>
         <View style={{ height: 14 }} />
