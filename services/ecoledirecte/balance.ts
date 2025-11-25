@@ -1,4 +1,5 @@
 import { Session } from "pawdirecte";
+
 import { Balance } from "@/services/shared/balance";
 
 interface EDBalanceElement {
@@ -40,10 +41,6 @@ interface EDBalanceResponse {
 }
 
 export async function fetchEDBalances(session: Session): Promise<Balance[]> {
-  // Will be replaced later by another module
-
-  console.log(session.token)
-
   const f = await fetch("https://api.ecoledirecte.com/v3/comptes/detail.awp?verbe=get&v=7.0.1", {
     method: "POST",
     headers: {
@@ -54,7 +51,6 @@ export async function fetchEDBalances(session: Session): Promise<Balance[]> {
     body: 'data={}'
   });
   const json: EDBalanceResponse = await f.json();
-  console.log(json);
 
   return json.data.comptes.map(compte => ({
     amount: compte.solde * 100,
