@@ -56,13 +56,12 @@ export default function TabOneScreen() {
   const [date, setDate] = useState(new Date());
   const router = useRouter();
   const { colors } = useTheme();
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false); // controls spinner for manual refresh
+  const calendarRef = useRef<any>(null);
+
   const toggleDatePicker = useCallback(() => {
-    requestAnimationFrame(() => {
-      setShowDatePicker((prev) => !prev);
-    });
+    calendarRef.current?.toggle();
   }, []);
 
   const navigation = useNavigation();
@@ -436,20 +435,17 @@ export default function TabOneScreen() {
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
     if (Platform.OS === 'ios') {
-      setShowDatePicker(false);
+      calendarRef.current?.hide();
     }
   }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
     <>
-      {showDatePicker &&
-        <Calendar
-          key={"calendar-" + date.toISOString()}
-          date={date}
-          onDateChange={handleDateChange}
-          setShowDatePicker={setShowDatePicker}
-        />
-      }
+      <Calendar
+        ref={calendarRef}
+        date={date}
+        onDateChange={handleDateChange}
+      />
 
       <TabHeader
         onHeightChanged={setHeaderHeight}
