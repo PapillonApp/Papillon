@@ -434,9 +434,6 @@ export default function TabOneScreen() {
       setWeekNumber(newWeekNumber);
       // Don't call fetchWeeklyTimetable here - let the weekNumber useEffect handle it
     }
-    if (Platform.OS === 'ios') {
-      calendarRef.current?.hide();
-    }
   }, [fetchedWeeks, fetchWeeklyTimetable]);
 
   return (
@@ -445,6 +442,7 @@ export default function TabOneScreen() {
         ref={calendarRef}
         date={date}
         onDateChange={handleDateChange}
+        color={"#D6502B"}
       />
 
       <TabHeader

@@ -17,6 +17,7 @@ import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 export interface CalendarProps {
   date?: Date;
   onDateChange?: (date: Date) => void;
+  color?: string;
 }
 
 export interface CalendarRef {
@@ -28,6 +29,7 @@ export interface CalendarRef {
 const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
   date: initialDate = new Date(),
   onDateChange,
+  color,
 }, ref) => {
   const [date, setDate] = useState(initialDate);
   const [visible, setVisible] = useState(false);
@@ -58,7 +60,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
         mode="date"
         design="material"
         display="inline"
-        accentColor={colors.primary}
+        accentColor={color}
         locale={Localization.getLocales()[0].languageTag}
         onChange={handleChange}
         style={{ maxWidth: 300, width: 300, maxHeight: 320, height: 320, marginTop: -6, marginHorizontal: 10 }}
@@ -74,7 +76,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
   React.useEffect(() => {
     if (visible) {
       opacity.value = withTiming(1, { duration: 100 });
-      scale.value = withSpring(1, { duration: 600, dampingRatio: 0.5, mass: 2, velocity: 1 });
+      scale.value = withSpring(1, { duration: 600, dampingRatio: 0.6, mass: 2, velocity: 1 });
     } else {
       opacity.value = withTiming(0, { duration: 120 });
       scale.value = withSpring(0.85, { duration: 300 });
@@ -132,7 +134,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
               value={date}
               mode="date"
               display="inline"
-              accentColor={colors.primary}
+              accentColor={color}
               locale={Localization.getLocales()[0].languageTag}
               onChange={handleChange}
               style={{
