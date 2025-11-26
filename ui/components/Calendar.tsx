@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from "react-native-reanimated";
+import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring, withDelay } from "react-native-reanimated";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
@@ -73,11 +73,11 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
 
   React.useEffect(() => {
     if (visible) {
-      opacity.value = withSpring(1, { duration: 200 });
-      scale.value = withSpring(1, { duration: 200 });
+      opacity.value = withTiming(1, { duration: 100 });
+      scale.value = withSpring(1, { duration: 600, dampingRatio: 0.5, mass: 2, velocity: 1 });
     } else {
-      opacity.value = withSpring(0, { duration: 200 });
-      scale.value = withSpring(0.9, { duration: 200 });
+      opacity.value = withTiming(0, { duration: 120 });
+      scale.value = withSpring(0.85, { duration: 300 });
     }
   }, [visible]);
 
