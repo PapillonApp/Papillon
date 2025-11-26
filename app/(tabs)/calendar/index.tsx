@@ -28,6 +28,9 @@ import { useTimetable } from '@/database/useTimetable';
 import { getSubjectName } from '@/utils/subjects/name';
 import { useAccountStore } from '@/stores/account';
 import i18n from '@/utils/i18n';
+import TabHeader from '@/ui/components/TabHeader';
+import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
+import ChipButton from '@/ui/components/ChipButton';
 
 const EmptyListComponent = memo(() => (
   <Dynamic key={'empty-list:warn'}>
@@ -61,6 +64,8 @@ export default function TabOneScreen() {
   }, []);
 
   const navigation = useNavigation();
+
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([])
   const [weekNumber, setWeekNumber] = useState(getWeekNumberFromDate(date));
@@ -155,7 +160,6 @@ export default function TabOneScreen() {
     fetchWeeklyTimetable(weekNumber, true);
   }, [weekNumber]);
 
-  const headerHeight = useHeaderHeight()
   const bottomHeight = 80;
   const windowWidth = Dimensions.get("window").width;
   const INITIAL_INDEX = 10000;
@@ -243,7 +247,7 @@ export default function TabOneScreen() {
     }
   }, [windowWidth, getDateFromIndex, weekNumber]);
 
-  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors }: { dayDate: Date, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any }) {
+  const DayEventsPage = React.memo(function DayEventsPage({ dayDate, isRefreshing, onRefresh, colors, headerHeight }: { dayDate: Date, isRefreshing: boolean, onRefresh: () => void, colors: { primary: string, background: string }, router: Router, t: any, headerHeight: number }) {
     const normalizedDayDate = new Date(dayDate);
     normalizedDayDate.setHours(0, 0, 0, 0);
 
@@ -325,12 +329,12 @@ export default function TabOneScreen() {
           data={separatedDayEvents}
           style={styles.container}
           showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior={"always"}
           contentContainerStyle={
             {
               paddingHorizontal: 12,
               paddingVertical: 12,
               gap: 4,
+              paddingTop: headerHeight + 6,
             }
           }
           refreshControl={
@@ -416,6 +420,7 @@ export default function TabOneScreen() {
         onRefresh={handleRefresh}
         colors={colors}
         router={router}
+        headerHeight={headerHeight}
         t={t}
       />
     );
@@ -443,66 +448,44 @@ export default function TabOneScreen() {
         setShowDatePicker={setShowDatePicker}
       />
 
-
-      <NativeHeaderSide side="Right">
-        <MenuView
-          actions={[
-            {
-              id: 'manage_icals',
-              title: t("Tab_Calendar_Icals"),
-              subtitle: t("Tab_Calendar_Icals_Description"),
-              imageColor: colors.text,
-              image: Platform.select({
-                ios: 'calendar',
-                android: 'ic_menu_add',
-              }),
-            }
-          ]}
-          onPressAction={({ nativeEvent }) => {
-            if (nativeEvent.event === 'manage_icals') {
-              router.push({
-                pathname: "./calendar/icals",
-                params: {}
-              });
-            }
-          }}
-        >
-          <NativeHeaderPressable>
-            <Papicons name={"Calendar"} color={"#D6502B"} size={28} />
-          </NativeHeaderPressable>
-        </MenuView>
-      </NativeHeaderSide>
-
-
-      <NativeHeaderTitle key={"header-" + date.toISOString()}>
-        <NativeHeaderTopPressable
-          onPress={toggleDatePicker}
-          layout={Animation(LinearTransition)}
-        >
-          <Dynamic
-            style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-          >
-            <Dynamic animated key={date.toLocaleDateString(i18n.language, { weekday: "long" })}>
-              <Typography variant="navigation">
-                {date.toLocaleDateString(i18n.language, { weekday: "long" })}
-              </Typography>
-            </Dynamic>
-            <Dynamic animated>
-              <NativeHeaderHighlight color="#D6502B" style={{ marginBottom: 0 }}>
-                {date.toLocaleDateString(i18n.language, { day: "numeric" })}
-              </NativeHeaderHighlight>
-            </Dynamic>
-            <Dynamic animated key={date.toLocaleDateString(i18n.language, { month: "long" })}>
-              <Typography variant="navigation">
-                {date.toLocaleDateString(i18n.language, { month: "long" })}
-              </Typography>
-            </Dynamic>
-          </Dynamic>
-          <Dynamic animated>
-            <ChevronDown color={colors.text} opacity={0.7} />
-          </Dynamic>
-        </NativeHeaderTopPressable>
-      </NativeHeaderTitle>
+      <TabHeader
+        onHeightChanged={setHeaderHeight}
+        title={
+          <TabHeaderTitle
+            leading={date.toLocaleDateString(i18n.language, { weekday: "long" })}
+            number={date.toLocaleDateString(i18n.language, { day: "numeric" })}
+            trailing={date.toLocaleDateString(i18n.language, { month: "long" })}
+            color='#D6502B'
+            onPress={() => setShowDatePicker(!showDatePicker)}
+          />
+        }
+        trailing={
+          <ChipButton
+            icon="calendar"
+            chevron
+            actions={[
+              {
+                id: 'manage_icals',
+                title: t("Tab_Calendar_Icals"),
+                subtitle: t("Tab_Calendar_Icals_Description"),
+                imageColor: colors.text,
+                image: Platform.select({
+                  ios: 'calendar',
+                  android: 'ic_menu_add',
+                }),
+              }
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === 'manage_icals') {
+                router.push({
+                  pathname: "./calendar/icals",
+                  params: {}
+                });
+              }
+            }}
+          />
+        }
+      />
 
       {/*
       <NativeHeaderSide side="Right">

@@ -40,11 +40,13 @@ const ChipButton: React.FC<React.PropsWithChildren<{
             </Dynamic>
           }
 
-          <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut} key={"chip-text:" + children?.toString()}>
-            <Typography>
-              {children}
-            </Typography>
-          </Dynamic>
+          {children &&
+            <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut} key={"chip-text:" + children?.toString()}>
+              <Typography>
+                {children}
+              </Typography>
+            </Dynamic>
+          }
 
           {chevron &&
             <Dynamic animated>
