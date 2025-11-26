@@ -43,7 +43,9 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
           alignItems: 'center',
           gap: 4,
         }}
-        onPress={onPress}
+        onPress={() => {
+          onPress();
+        }}
       >
         <Stack
           direction='horizontal'

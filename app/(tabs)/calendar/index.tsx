@@ -60,7 +60,9 @@ export default function TabOneScreen() {
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false); // controls spinner for manual refresh
   const toggleDatePicker = useCallback(() => {
-    setShowDatePicker((prev) => !prev);
+    requestAnimationFrame(() => {
+      setShowDatePicker((prev) => !prev);
+    });
   }, []);
 
   const navigation = useNavigation();
@@ -440,13 +442,14 @@ export default function TabOneScreen() {
 
   return (
     <>
-      <Calendar
-        key={"calendar-" + date.toISOString()}
-        date={date}
-        onDateChange={handleDateChange}
-        showDatePicker={showDatePicker}
-        setShowDatePicker={setShowDatePicker}
-      />
+      {showDatePicker &&
+        <Calendar
+          key={"calendar-" + date.toISOString()}
+          date={date}
+          onDateChange={handleDateChange}
+          setShowDatePicker={setShowDatePicker}
+        />
+      }
 
       <TabHeader
         onHeightChanged={setHeaderHeight}
@@ -456,7 +459,7 @@ export default function TabOneScreen() {
             number={date.toLocaleDateString(i18n.language, { day: "numeric" })}
             trailing={date.toLocaleDateString(i18n.language, { month: "long" })}
             color='#D6502B'
-            onPress={() => setShowDatePicker(!showDatePicker)}
+            onPress={() => toggleDatePicker()}
           />
         }
         trailing={
