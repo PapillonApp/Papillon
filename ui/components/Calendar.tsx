@@ -122,7 +122,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
             isInteractive={true}
             glassOpacity={0}
             style={{
-              borderRadius: 16,
+              borderRadius: 20,
               zIndex: 999999,
               width: 340,
               height: 320,
@@ -141,7 +141,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
                 width: "100%",
                 height: "100%",
                 paddingHorizontal: 5,
-                paddingBottom: 8,
+                paddingBottom: 5,
               }}
             />
           </LiquidGlassView>
