@@ -1,23 +1,20 @@
-import { UserX2Icon } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, Alert } from "react-native";
+import { Alert, ScrollView, Text } from "react-native";
 
-import { useAccountStore } from "@/stores/account";
+import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json";
+import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import SettingsHeader from "@/components/SettingsHeader";
-import { useSettingsStore } from "@/stores/settings";
-import { t } from "i18next";
-import ModelManager from "@/utils/magic/ModelManager";
-import { getCurrentPtr, checkAndUpdateModel } from "@/utils/magic/updater";
-import packageJson from "@/package.json";
-import { Colors } from "@/utils/colors";
 import { MAGIC_URL } from "@/utils/endpoints";
+import { log } from "@/utils/logger/logger";
+import ModelManager from "@/utils/magic/ModelManager";
+import { checkAndUpdateModel, getCurrentPtr } from "@/utils/magic/updater";
 
 function getMagicURL(): string {
   return useSettingsStore.getState().personalization.magicModelURL || MAGIC_URL;
@@ -44,7 +41,7 @@ export default function SettingsMagic() {
         const ptr = await getCurrentPtr();
         setCurrentPtr(ptr);
       } catch (error) {
-        console.log("Erreur lors de la récupération du pointeur:", error);
+        log("Erreur lors de la récupération du pointeur: " + error);
       }
     };
 
@@ -59,14 +56,14 @@ export default function SettingsMagic() {
       const ptr = await getCurrentPtr();
       setCurrentPtr(ptr);
     } catch (error) {
-      console.log("Erreur lors de la récupération du pointeur:", error);
+      log("Erreur lors de la récupération du pointeur: " + error);
     }
   };
 
   const showDetailedStatus = () => {
-    if (!modelStatus) return;
+    if (!modelStatus) { return; }
 
-    console.log("Statut détaillé du modèle:", {
+    log("Statut détaillé du modèle:" + JSON.stringify({
       hasModel: modelStatus.hasModel,
       modelType: modelStatus.modelType,
       hasInitialized: modelStatus.hasInitialized,
@@ -77,11 +74,11 @@ export default function SettingsMagic() {
       wordIndexSize: modelStatus.wordIndexSize,
       oovIndex: modelStatus.oovIndex,
       tokenizerInfo: modelStatus.tokenizerInfo
-    });
+    }));
   };
 
   const checkForUpdates = async () => {
-    if (isUpdating) return;
+    if (isUpdating) { return; }
 
     setIsUpdating(true);
     setLastUpdateCheck(new Date());
@@ -94,7 +91,7 @@ export default function SettingsMagic() {
         refreshStatus();
       }
     } catch (error) {
-      console.log("Erreur lors de la vérification:", error);
+      log("Erreur lors de la vérification:" + error);
     } finally {
       setIsUpdating(false);
     }
@@ -107,7 +104,7 @@ export default function SettingsMagic() {
         refreshStatus();
       }
     } catch (error) {
-      console.log("Erreur lors de la réinitialisation:", error);
+      log("Erreur lors de la réinitialisation:" + error);
     }
   };
 
@@ -120,6 +117,7 @@ export default function SettingsMagic() {
         color={theme.dark ? "#1a0b14ff" : "#FAD9EC"}
         title="Activer Magic+"
         description="Optimise automatiquement l'organisation de tes tâches pour améliorer ta productivité"
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         imageSource={require("@/assets/images/magic.png")}
         onSwitchChange={(isSwitchOn) => {
           if (settingsStore.magicEnabled && !isSwitchOn) {

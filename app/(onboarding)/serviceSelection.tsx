@@ -1,17 +1,17 @@
-import React from 'react';
-import { View, Image } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, router, UnknownInputParams, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, View } from 'react-native';
+import Reanimated, { FadeInDown } from 'react-native-reanimated';
 
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Icon from '@/ui/components/Icon';
 import Typography from '@/ui/components/Typography';
 
-import Icon from '@/ui/components/Icon';
 import { GetSupportedServices, SupportedService } from './utils/constants';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Reanimated, { FadeInDown } from 'react-native-reanimated';
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
-import { useTranslation } from 'react-i18next';
 
 
 export default function WelcomeScreen() {
@@ -54,9 +54,6 @@ export default function WelcomeScreen() {
             marginVertical: 6,
             opacity: 0.4,
             marginHorizontal: 32,
-          }}
-          onLayout={event => {
-            console.log(event.nativeEvent.layout.height);
           }}
         >
           <View
