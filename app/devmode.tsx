@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { requestPermissionsAsync } from "expo-notifications";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
@@ -20,6 +21,7 @@ import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
+import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -319,6 +321,41 @@ export default function Devmode() {
           }}
         >
           <Typography variant="title">Réinitialiser la base de données</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Notifications"
+        leading={
+          <Icon>
+            <Papicons name="Clock" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={() => {
+            requestPermissionsAsync();
+          }}
+        >
+          <Typography variant="title">Demander la permission</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            const date = new Date(Date.now() + 5000);
+
+            const id = await scheduleNotificationAtDate(
+              "Papillon",
+              "Une notification programmée via Papillon arrive à l'instant!",
+              date,
+            );
+
+            Alert.alert("Une notification arrive dans 5 sec", `ID : ${id}`);
+          }}
+
+        >
+          <Typography variant="title">Programmer une notification</Typography>
         </Item>
       </List>
     </ScrollView >
