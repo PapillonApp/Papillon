@@ -317,7 +317,7 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
               <Stack.Screen
                 name="(modals)/grade"
                 options={{
-                  headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+                  headerShown: Platform.OS === 'ios' ? false : true,
                   headerTitle: t("Modal_Grades_Title"),
                   headerLargeTitle: false,
                   presentation: "modal",

@@ -139,7 +139,7 @@ export default function GradesModal() {
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginBottom: 20,
+              marginVertical: 20,
             }}
           >
             <Stack
