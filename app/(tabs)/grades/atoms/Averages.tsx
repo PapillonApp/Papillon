@@ -150,9 +150,9 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
           <View
             style={{
               width: "105%",
-              height: 130,
+              height: 120,
               marginLeft: -30,
-              marginTop: -30,
+              marginTop: -20,
             }}
           >
 
