@@ -130,7 +130,7 @@ const GradesView: React.FC = () => {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
       if (!grades || !grades.subjects) return;
       setSubjects(grades.subjects);
-      if (grades.studentOverall.value) {
+      if (grades.studentOverall && grades.studentOverall.value) {
         setServiceAverage(grades.studentOverall.value)
       }
 
