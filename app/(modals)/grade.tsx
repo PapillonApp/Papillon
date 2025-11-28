@@ -56,6 +56,7 @@ export default function GradesModal() {
       />
 
       <TableFlatList
+        engine='FlashList'
         sections={[
           {
             title: t("Grades_Details_Title"),

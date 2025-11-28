@@ -320,12 +320,10 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
                   headerShown: Platform.OS === 'ios' ? false : true,
                   headerTitle: t("Modal_Grades_Title"),
                   headerLargeTitle: false,
-                  presentation: "modal",
-                  headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
-                  contentStyle: {
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    overflow: Platform.OS === 'ios' ? "hidden" : "visible",
-                  },
+                  presentation: Platform.OS === 'ios' ? "formSheet" : "modal",
+                  sheetAllowedDetents: [0.7, 1],
+                  sheetCornerRadius: Platform.OS === 'ios' ? 42 : undefined,
+                  sheetGrabberVisible: true,
                 }}
               />
               <Stack.Screen

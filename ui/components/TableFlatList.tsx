@@ -49,7 +49,7 @@ interface TableFlatListProps extends FlatListProps<SectionItem> {
   listProps?: any;
   renderItem?: (item: SectionItem) => React.ReactNode;
   data?: Array<SectionItem>;
-  [key: string]: any;
+  ignoreHeaderHeight?: boolean;
 }
 
 const TableFlatList: React.FC<TableFlatListProps> = ({
@@ -58,11 +58,12 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   contentInsetAdjustmentBehavior = 'never',
   style = {},
   contentContainerStyle = {},
+  ignoreHeaderHeight = false,
   ...rest
 }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const headerHeight = useHeaderHeight();
+  const headerHeight = ignoreHeaderHeight ? 0 : useHeaderHeight();
 
   // render section title and items in same level array
   const data = sections.reduce((acc, section) => {
@@ -185,7 +186,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
 
   return (
     <ListComponent
-      contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
+      contentInsetAdjustmentBehavior={ignoreHeaderHeight ? 'never' : contentInsetAdjustmentBehavior}
       style={[{
         flex: 1, height: "100%", width: "100%",
         backgroundColor: colors.background,
