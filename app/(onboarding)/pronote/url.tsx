@@ -1,3 +1,4 @@
+import { useTheme } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from "react";
 import { Keyboard, View, KeyboardAvoidingView } from "react-native";
 import { RelativePathString, router } from "expo-router";
@@ -8,6 +9,7 @@ import Reanimated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import Button from '@/ui/components/Button';
 import Svg, { Path } from "react-native-svg";
 import { cleanURL, instance } from "pawnote";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -38,6 +40,8 @@ LinkIcon.displayName = "LinkIcon";
 
 
 export default function URLInputScreen() {
+  const theme = useTheme();
+
   const insets = useSafeAreaInsets();
 
   const alert = useAlert();
@@ -204,6 +208,15 @@ export default function URLInputScreen() {
             autoCorrect: false,
             onSubmitEditing: onValidate,
           }}
+        />
+        <Button
+          title={t("ONBOARDING_VALIDATE")}
+          style={{
+            backgroundColor: theme.dark ? theme.colors.border : "black",
+          }}
+          size='large'
+          disableAnimation
+          onPress={onValidate}
         />
       </Stack>
       <OnboardingBackButton />
