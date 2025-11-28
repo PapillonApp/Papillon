@@ -1,5 +1,4 @@
 import { Papicons } from '@getpapillon/papicons';
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,11 +9,10 @@ import Reanimated, {
   FadeIn,
   FadeOut,
   LinearTransition,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
-  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getWeekNumberFromDate, updateHomeworkIsDone, useHomeworkForWeek } from "@/database/useHomework";
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
@@ -38,7 +36,6 @@ import { predictHomework } from "@/utils/magic/prediction";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type SortMethod = 'date' | 'subject' | 'done';
 
@@ -419,8 +416,7 @@ const TasksView: React.FC = () => {
   );
 
   const activeSortLabel = sortingOptions.find(s => s.value === sortMethod)?.label;
-  const menuTitle = (activeSortLabel || t("Tasks_Sort_Default")) +
-    (showUndoneOnly ? ` (${t('Tasks_OnlyUndone_Short')})` : '');
+  const menuTitle = (activeSortLabel || t("Tasks_Sort_Default"))
 
   return (
     <View style={styles.container}>
@@ -461,19 +457,6 @@ const TasksView: React.FC = () => {
                   }),
                   imageColor: colors.text,
                 })),
-                displayInline: true
-              },
-              {
-                title: t('Task_Show_Title'),
-                subactions: [
-                  {
-                    title: t('Task_OnlyShowUndone'),
-                    id: 'only-undone',
-                    state: (showUndoneOnly ? 'on' : 'off'),
-                    image: Platform.select({ ios: "flag.pattern.checkered" }),
-                    imageColor: colors.text,
-                  }
-                ],
                 displayInline: true
               }
             ]}
