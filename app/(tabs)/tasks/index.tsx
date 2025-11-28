@@ -1,8 +1,9 @@
+import { LiquidGlassView } from '@callstack/liquid-glass';
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { t } from 'i18next';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, RefreshControl, SectionList, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Platform, Pressable, RefreshControl, SectionList, StyleSheet, Text, View } from 'react-native';
 import Reanimated, {
   createAnimatedComponent,
   Easing,
@@ -29,6 +30,7 @@ import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
 import Task from "@/ui/components/Task";
 import Typography from '@/ui/components/Typography';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { generateId } from "@/utils/generateId";
 import { error, log } from '@/utils/logger/logger';
@@ -36,6 +38,7 @@ import { predictHomework } from "@/utils/magic/prediction";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
+import { BlurView } from 'expo-blur';
 
 type SortMethod = 'date' | 'subject' | 'done';
 
@@ -418,111 +421,247 @@ const TasksView: React.FC = () => {
   const activeSortLabel = sortingOptions.find(s => s.value === sortMethod)?.label;
   const menuTitle = (activeSortLabel || t("Tasks_Sort_Default"))
 
-  return (
-    <View style={styles.container}>
-      <TabHeader
-        onHeightChanged={setHeaderHeight}
-        title={
-          <TabHeaderTitle
-            leading={t('Tasks_Week')}
-            number={selectedWeek.toString()}
-            color='#C54CB3'
-            onPress={() => log("Open Week Picker")}
-          />
-        }
-        trailing={
-          <ChipButton
-            onPressAction={({ nativeEvent }) => {
-              const actionId = nativeEvent.event;
-              if (actionId === 'only-undone') {
-                setShowUndoneOnly(prev => !prev);
-              } else if (actionId.startsWith("sort:")) {
-                setSortMethod(actionId.replace("sort:", "") as SortMethod);
-              }
-            }}
-            actions={[
-              {
-                title: t('Task_Sorting_Title'),
-                subactions: sortingOptions.map((method) => ({
-                  title: method.label,
-                  id: "sort:" + method.value,
-                  state: (sortMethod === method.value ? 'on' : 'off'),
-                  image: Platform.select({
-                    ios:
-                      method.value === 'date'
-                        ? "calendar"
-                        : method.value === 'subject'
-                          ? "character"
-                          : "checkmark.circle"
-                  }),
-                  imageColor: colors.text,
-                })),
-                displayInline: true
-              }
-            ]}
-            icon="filter"
-            chevron
-          >
-            {menuTitle}
-          </ChipButton>
-        }
-        bottom={
-          <Search
-            placeholder={t('Tasks_Search_Placeholder')}
-            color='#C54CB3'
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-          />
-        }
-        shouldCollapseHeader={shouldCollapseHeader}
-      />
+  const [showWeekPicker, setShowWeekPicker] = useState(false);
+  const WeekPickerRef = useRef<FlatList>(null);
 
-      <AnimatedSectionList
-        sections={sections}
-        style={styles.list}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingBottom: 100,
-          paddingTop: headerHeight + 10
-        }}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        scrollIndicatorInsets={{
-          top: headerHeight - insets.top
-        }}
-        renderSectionHeader={renderSectionHeader}
-        ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
-        stickySectionHeadersEnabled={false}
-        ListHeaderComponent={
-          <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
-            <CircularProgress
-              backgroundColor={colors.text + "22"}
-              percentageComplete={
-                sections.reduce((acc, section) => acc + section.data.filter(hw => hw.isDone).length, 0) /
-                Math.max(1, sections.reduce((acc, section) => acc + section.data.length, 0)) * 100
-              }
-              radius={15}
-              strokeWidth={5}
-              fill={"#D62B94"}
+  const layoutPicker = useCallback(() => {
+    if (WeekPickerRef.current) {
+      const offset = selectedWeek * 60;
+      WeekPickerRef.current.scrollToOffset({
+        offset,
+        animated: false,
+      });
+    }
+  }, [selectedWeek]);
+
+  const handleWeekScroll = useCallback((event: { nativeEvent: { contentOffset: { x: number } } }) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const itemWidth = 60;
+    const index = Math.round(contentOffsetX / itemWidth);
+    if (index < 0 || index >= 56) { return; }
+    requestAnimationFrame(() => {
+      setSelectedWeek(index);
+    });
+  }, []);
+
+  const toggleWeekPicker = useCallback(() => {
+    setShowWeekPicker((prev) => !prev);
+  }, []);
+
+  return (
+    <>
+      {showWeekPicker && (
+        <Reanimated.View
+          style={{
+            position: "absolute",
+            top: insets.top + 50,
+            left: 16,
+            alignSelf: "flex-start",
+            borderRadius: 16,
+            zIndex: 1000000,
+            transformOrigin: "center top",
+          }}
+          entering={PapillonAppearIn}
+          exiting={PapillonAppearOut}
+        >
+          <BlurView
+            style={{
+              height: 60,
+              width: 300,
+              borderRadius: 16,
+              overflow: "hidden",
+              boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.15)",
+            }}
+          >
+            <View
+              style={{
+                position: "absolute",
+                alignSelf: "center",
+                top: 5,
+                height: 50,
+                width: 50,
+                borderRadius: 16,
+                borderCurve: "continuous",
+                borderWidth: 2,
+                borderColor: "#C54CB3",
+              }}
             />
-            <Typography variant="title" color='#D62B94'>
-              {(() => {
-                const total = sections.reduce((acc, section) => acc + section.data.length, 0);
-                const undone = sections.reduce((acc, section) => acc + section.data.filter(hw => !hw.isDone).length, 0);
-                return `${undone} tâche${undone !== 1 ? 's' : ''} restante${undone !== 1 ? 's' : ''} cette semaine`;
-              })()}
-            </Typography>
-          </Stack>
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            progressViewOffset={headerHeight}
-          />
-        }
-      />
-    </View>
+
+            <FlatList
+              onLayout={() => {
+                layoutPicker();
+              }}
+              data={Array.from({ length: 56 }, (_, i) => i)}
+              initialScrollIndex={selectedWeek}
+              getItemLayout={(data, index) => (
+                { length: 60, offset: 60 * index, index }
+              )}
+              keyExtractor={(item) => "picker:" + item.toString()}
+              horizontal
+              removeClippedSubviews={true}
+              showsHorizontalScrollIndicator={false}
+              style={{
+                flexGrow: 0,
+                height: 100,
+                width: 300,
+              }}
+              contentContainerStyle={{
+                alignItems: "center",
+                gap: 0,
+                paddingLeft: 300 / 2 - 30,
+                paddingRight: 300 / 2 - 30,
+              }}
+              snapToInterval={60}
+              decelerationRate="fast"
+              ref={WeekPickerRef}
+              initialNumToRender={10}
+              onScroll={handleWeekScroll}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => {
+                    setSelectedWeek(item);
+                    setShowWeekPicker(false);
+                  }}
+                  style={[
+                    {
+                      width: 40,
+                      height: 40,
+                      margin: 10,
+                      borderRadius: 12,
+                      borderCurve: "continuous",
+                      backgroundColor: runsIOS26 ? colors.text + "10" : colors.background,
+                      borderColor: colors.text + "22",
+                      borderWidth: 1,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                    item === selectedWeek && {
+                      backgroundColor: "#C54CB3",
+                      boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.15)",
+                    }
+                  ]}
+                >
+                  <Text
+                    style={{
+                      color: item === selectedWeek ? "#FFF" : colors.text,
+                      fontSize: 16,
+                      fontFamily: item === selectedWeek ? "bold" : "medium",
+                    }}
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          </BlurView>
+        </Reanimated.View>
+      )}
+      <View style={styles.container}>
+
+        <TabHeader
+          onHeightChanged={setHeaderHeight}
+          title={
+            <TabHeaderTitle
+              leading={t('Tasks_Week')}
+              number={selectedWeek.toString()}
+              color='#C54CB3'
+              onPress={() => toggleWeekPicker()}
+            />
+          }
+          trailing={
+            <ChipButton
+              onPressAction={({ nativeEvent }) => {
+                const actionId = nativeEvent.event;
+                if (actionId === 'only-undone') {
+                  setShowUndoneOnly(prev => !prev);
+                } else if (actionId.startsWith("sort:")) {
+                  setSortMethod(actionId.replace("sort:", "") as SortMethod);
+                }
+              }}
+              actions={[
+                {
+                  title: t('Task_Sorting_Title'),
+                  subactions: sortingOptions.map((method) => ({
+                    title: method.label,
+                    id: "sort:" + method.value,
+                    state: (sortMethod === method.value ? 'on' : 'off'),
+                    image: Platform.select({
+                      ios:
+                        method.value === 'date'
+                          ? "calendar"
+                          : method.value === 'subject'
+                            ? "character"
+                            : "checkmark.circle"
+                    }),
+                    imageColor: colors.text,
+                  })),
+                  displayInline: true
+                }
+              ]}
+              icon="filter"
+              chevron
+            >
+              {menuTitle}
+            </ChipButton>
+          }
+          bottom={
+            <Search
+              placeholder={t('Tasks_Search_Placeholder')}
+              color='#C54CB3'
+              value={searchTerm}
+              onChangeText={setSearchTerm}
+            />
+          }
+          shouldCollapseHeader={shouldCollapseHeader}
+        />
+
+        <AnimatedSectionList
+          sections={sections}
+          style={styles.list}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingBottom: 100,
+            paddingTop: headerHeight + 10
+          }}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          scrollIndicatorInsets={{
+            top: headerHeight - insets.top
+          }}
+          renderSectionHeader={renderSectionHeader}
+          ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
+          stickySectionHeadersEnabled={false}
+          ListHeaderComponent={
+            <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
+              <CircularProgress
+                backgroundColor={colors.text + "22"}
+                percentageComplete={
+                  sections.reduce((acc, section) => acc + section.data.filter(hw => hw.isDone).length, 0) /
+                  Math.max(1, sections.reduce((acc, section) => acc + section.data.length, 0)) * 100
+                }
+                radius={15}
+                strokeWidth={5}
+                fill={"#D62B94"}
+              />
+              <Typography variant="title" color='#D62B94'>
+                {(() => {
+                  const total = sections.reduce((acc, section) => acc + section.data.length, 0);
+                  const undone = sections.reduce((acc, section) => acc + section.data.filter(hw => !hw.isDone).length, 0);
+                  return `${undone} tâche${undone !== 1 ? 's' : ''} restante${undone !== 1 ? 's' : ''} cette semaine`;
+                })()}
+              </Typography>
+            </Stack>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              progressViewOffset={headerHeight}
+            />
+          }
+        />
+      </View>
+    </>
   );
 };
 
