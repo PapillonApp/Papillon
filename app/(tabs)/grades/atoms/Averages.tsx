@@ -1,25 +1,22 @@
+import { Papicons } from "@getpapillon/papicons";
+import { MenuView } from "@react-native-menu/menu";
+import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { t } from "i18next";
+import React, { useCallback, useMemo, useState } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
+import { LineGraph } from "react-native-graph";
+
 import { Grade } from "@/services/shared/grade";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import { Papicons } from "@getpapillon/papicons";
-import { MenuView } from "@react-native-menu/menu";
-import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo, useState } from "react";
-import { Platform, TouchableOpacity, View } from "react-native";
-import { LineGraph } from "react-native-graph";
-import Reanimated, { LinearTransition } from "react-native-reanimated";
-
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { t } from "i18next";
-import { useRouter } from "expo-router";
 
 const algorithms = [
   {
@@ -50,7 +47,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
     const router = useRouter();
 
     const currentAverageHistory = useMemo(() => {
-      if (!grades || grades.length === 0) return [];
+      if (!grades || grades.length === 0) { return []; }
       try {
         const history = PapillonGradesAveragesOverTime(algorithm.algorithm, grades, "studentScore");
         if (algorithm.canInjectRealAverage && realAverage) {
@@ -74,7 +71,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
         };
       }
 
-      if (!currentAverageHistory || currentAverageHistory.length === 0) return null;
+      if (!currentAverageHistory || currentAverageHistory.length === 0) { return null; }
       return currentAverageHistory[currentAverageHistory.length - 1];
     }, [currentAverageHistory, algorithm, realAverage]);
 
@@ -107,7 +104,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
     }, [initialAverage]);
 
     const graphAxis = useMemo(() => {
-      if (!currentAverageHistory) return [];
+      if (!currentAverageHistory) { return []; }
       return currentAverageHistory
         .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
         .map(item => ({
@@ -128,8 +125,12 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
       // You might want to return null or a placeholder here if there are absolutely no grades
       // But if realAverage exists, we might still want to show something?
       // For now, if there's no history and no real average, we can return null or render empty state.
-      if (!realAverage) return null;
+      if (!realAverage) { return null; }
     }
+
+    graphAxis.forEach(item => {
+      item.value = Math.round(item.value * 100) / 100
+    })
 
     return (
       <Stack
