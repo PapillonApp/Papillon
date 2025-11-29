@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { initializeAccountManager } from '@/services/shared';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
 import { useAlert } from '@/ui/components/AlertProvider';
@@ -96,43 +97,56 @@ export default function PronoteLoginWithCredentials() {
       const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
       const schoolName = session.user.resources[0].establishmentName
       const className = session.user.resources[0].className
-
-      const account = {
-        id: device,
-        firstName,
-        lastName,
-        schoolName,
-        className,
-        services: [{
+      if (!local.serviceId) {
+        const account = {
           id: device,
-          auth: {
-            accessToken: authentication.token,
-            refreshToken: authentication.token,
-            additionals: {
-              instanceURL: authentication.url,
-              kind: authentication.kind,
-              username: authentication.username,
-              deviceUUID: device
-            }
-          },
-          serviceId: Services.PRONOTE,
+          firstName,
+          lastName,
+          schoolName,
+          className,
+          services: [{
+            id: device,
+            auth: {
+              accessToken: authentication.token,
+              refreshToken: authentication.token,
+              additionals: {
+                instanceURL: authentication.url,
+                kind: authentication.kind,
+                username: authentication.username,
+                deviceUUID: device
+              }
+            },
+            serviceId: Services.PRONOTE,
+            createdAt: (new Date()).toISOString(),
+            updatedAt: (new Date()).toISOString()
+          }],
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()
-        }],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString()
-      }
-
-      const store = useAccountStore.getState()
-      store.addAccount(account)
-      store.setLastUsedAccount(device)
-
-      router.push({
-        pathname: "../end/color",
-        params: {
-          accountId: device
         }
-      });
+
+        const store = useAccountStore.getState()
+        store.addAccount(account)
+        store.setLastUsedAccount(device)
+
+        return router.push({
+          pathname: "../end/color",
+          params: {
+            accountId: device
+          }
+        });
+      }
+      useAccountStore.getState().updateServiceAuthData(local.serviceId as string, {
+        accessToken: authentication.token,
+        refreshToken: authentication.token,
+        additionals: {
+          instanceURL: authentication.url,
+          kind: authentication.kind,
+          username: authentication.username,
+          deviceUUID: device
+        },
+      })
+      await initializeAccountManager()
+      return router.push("../../(tabs)")
     } catch (error) {
       if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
         setDoubleAuthError(error)
