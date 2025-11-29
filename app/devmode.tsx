@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
@@ -282,13 +283,39 @@ export default function Devmode() {
         <Item
           onPress={() => alert.showAlert({
             title: "Connexion impossible",
-            description: "Bla Bla Bla",
+            description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
             icon: "TriangleAlert",
             color: "#D60046",
+            customButton: {
+              label: "Me reconnecter",
+              showCancelButton: true,
+              onPress: () => {
+                const lastUsedAccount = useAccountStore.getState().lastUsedAccount
+                const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+
+                // Unavailable in ED/SKolengo
+                const authUrl = badService?.auth?.additionals?.["instanceURL"] ?? ""
+                setTimeout(() => {
+                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId: badService?.id } })
+                }, 200)
+              }
+            },
             technical: String(" Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28")
           })}
         >
           <Typography variant="title">Error Alert</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            const lastUsedAccount = useAccountStore.getState().lastUsedAccount
+            const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+            useAccountStore.getState().updateServiceAuthData(badService!.id, {
+              ...badService?.auth,
+              refreshToken: ""
+            })
+          }}
+        >
+          <Typography variant="title">Clear Auth Data</Typography>
         </Item>
         <Item>
           <Typography variant="title">Activer Alert au Login</Typography>

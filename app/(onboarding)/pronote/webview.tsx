@@ -7,6 +7,7 @@ import { WebView } from "react-native-webview";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
@@ -18,7 +19,7 @@ import uuid from "@/utils/uuid/uuid";
 import { Pronote2FAModal } from "./2fa";
 
 export default function WebViewScreen() {
-  const { url } = useGlobalSearchParams<{ url: string }>();
+  const { url, serviceId } = useGlobalSearchParams<{ url: string, serviceId?: string }>();
   const infoMobileURL = url + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 
   const { t } = useTranslation();
@@ -51,6 +52,7 @@ export default function WebViewScreen() {
     window.hookAccesDepuisAppli = function() {
       this.passerEnModeValidationAppliMobile('', '${deviceUUID}');
     };
+
     try {
           window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
     } catch {}
@@ -131,43 +133,58 @@ export default function WebViewScreen() {
         if (session.user.resources[0].profilePicture?.url) {
           pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
         }
-
-        useAccountStore.getState().addAccount({
-          id: deviceUUID,
-          firstName,
-          lastName,
-          schoolName,
-          className,
-          customisation: {
-            profilePicture: pp,
-            subjects: {}
-          },
-          services: [{
+        if (!serviceId) {
+          useAccountStore.getState().addAccount({
             id: deviceUUID,
-            auth: {
-              accessToken: refresh.token,
-              refreshToken: refresh.token,
-              additionals: {
-                instanceURL: refresh.url,
-                kind: refresh.kind,
-                username: refresh.username,
-                deviceUUID,
-              },
+            firstName,
+            lastName,
+            schoolName,
+            className,
+            customisation: {
+              profilePicture: pp,
+              subjects: {}
             },
-            serviceId: Services.PRONOTE,
+            services: [{
+              id: deviceUUID,
+              auth: {
+                accessToken: refresh.token,
+                refreshToken: refresh.token,
+                additionals: {
+                  instanceURL: refresh.url,
+                  kind: refresh.kind,
+                  username: refresh.username,
+                  deviceUUID,
+                },
+              },
+              serviceId: Services.PRONOTE,
+              createdAt: (new Date()).toISOString(),
+              updatedAt: (new Date()).toISOString(),
+            }],
             createdAt: (new Date()).toISOString(),
             updatedAt: (new Date()).toISOString(),
-          }],
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
-        });
-        useAccountStore.getState().setLastUsedAccount(deviceUUID);
-        return router.push({
-          pathname: "../end/color",
-          params: {
-            accountId: deviceUUID,
+          });
+
+          useAccountStore.getState().setLastUsedAccount(deviceUUID);
+          return router.push({
+            pathname: "../end/color",
+            params: {
+              accountId: deviceUUID,
+            },
+          });
+        }
+
+        useAccountStore.getState().updateServiceAuthData(serviceId, {
+          accessToken: refresh.token,
+          refreshToken: refresh.token,
+          additionals: {
+            instanceURL: refresh.url,
+            kind: refresh.kind,
+            username: refresh.username,
+            deviceUUID,
           },
-        });
+        })
+        await initializeAccountManager()
+        return router.push("../../(tabs)")
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
           setDoubleAuthError(error)
