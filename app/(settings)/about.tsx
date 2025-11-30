@@ -42,7 +42,7 @@ export const Teams = [
     title: "Tom Hélière",
     login: "tom-things",
     description: "Secrétaire",
-    leading: <Avatar size={40} squared author="Tom Hélière" imageURL="https://pbs.twimg.com/profile_images/1943622137849294848/pzD1Fu1-_400x400.jpg" />,
+    leading: <Avatar size={40} squared author="Tom Hélière" imageURL="https://avatars.githubusercontent.com/u/135361669?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
   },
   {
@@ -51,6 +51,13 @@ export const Teams = [
     login: "godetremy",
     leading: <Avatar size={40} squared author="Rémy Godet" imageURL="https://avatars.githubusercontent.com/u/77058107?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
+  },
+  {
+    title: "Mael Duret",
+    description: "Membre",
+    login: "ryzenixx",
+    leading: <Avatar size={40} squared author="Mael Duret" imageURL="https://avatars.githubusercontent.com/u/96339570?v=4" />,
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/")
   }
 ]
 
