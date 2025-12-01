@@ -30,7 +30,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
 
 // Extend Alert type with unique ID for better performance
-type Alert = {
+export type Alert = {
   id?: string;
   title: string;
   message?: string;
@@ -38,12 +38,19 @@ type Alert = {
   technical?: string;
   icon?: string;
   color?: string;
+  customButton?: {
+    label: string;
+    showCancelButton?: boolean;
+    onPress: () => void;
+  };
   withoutNavbar?: boolean;
   delay?: number;
 };
 
 type AlertContextType = {
   showAlert: (alert: Alert) => void;
+  getCallback: (alertId: string) => (() => void) | undefined;
+  cleanupCallback: (alertId: string) => void;
 };
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
@@ -60,11 +67,16 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const router = useRouter();
   const timeoutRefs = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const callbackRefs = useRef<Map<string, () => void>>(new Map());
 
   // Memoized showAlert function to prevent re-renders
   const showAlert = useCallback((alert: Alert) => {
     const alertId = alert.id || `alert_${Date.now()}_${Math.random()}`;
     const alertWithId = { ...alert, id: alertId };
+
+    if (alert.customButton?.onPress) {
+      callbackRefs.current.set(alertId, alert.customButton.onPress);
+    }
 
     setAlerts((prevAlerts) => [...prevAlerts, alertWithId]);
 
@@ -78,6 +90,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     const timeout = setTimeout(() => {
       setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
       timeoutRefs.current.delete(alertId);
+      callbackRefs.current.delete(alertId);
     }, alert.delay || 5000);
 
     timeoutRefs.current.set(alertId, timeout);
@@ -94,29 +107,40 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     gap: 10,
   }), [alerts]);
 
-  // Memoized alert removal function
-  const removeAlert = useCallback((alertId: string) => {
+  const handleAlertPress = useCallback((alert: Alert, alertId: string) => {
+    const alertDataForParams = {
+      ...alert,
+      customButton: alert.customButton ? {
+        ...alert.customButton,
+        onPress: undefined,
+      } : undefined,
+    };
+
+    router.navigate({
+      pathname: "/alert",
+      params: {
+        data: JSON.stringify(alertDataForParams),
+        callbackId: alertId,
+      },
+    });
+    setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
     const timeout = timeoutRefs.current.get(alertId);
     if (timeout) {
       clearTimeout(timeout);
       timeoutRefs.current.delete(alertId);
     }
-    setAlerts((prevAlerts) => prevAlerts.filter(a => a.id !== alertId));
+  }, [router]);
+
+  const getCallback = useCallback((alertId: string) => {
+    return callbackRefs.current.get(alertId);
   }, []);
 
-  // Memoized alert press handler
-  const handleAlertPress = useCallback((alert: Alert, alertId: string) => {
-    router.push({
-      pathname: "/alert",
-      params: {
-        ...alert,
-      },
-    });
-    removeAlert(alertId);
-  }, [router, removeAlert]);
+  const cleanupCallback = useCallback((alertId: string) => {
+    callbackRefs.current.delete(alertId);
+  }, []);
 
   // Memoized context value to prevent provider re-renders
-  const contextValue = useMemo(() => ({ showAlert }), [showAlert]);
+  const contextValue = useMemo(() => ({ showAlert, getCallback, cleanupCallback }), [showAlert, getCallback, cleanupCallback]);
 
   // Cleanup timeouts on unmount to prevent memory leaks
   useEffect(() => {
