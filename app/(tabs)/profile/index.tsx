@@ -38,7 +38,6 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { warn } from "@/utils/logger/logger";
 import i18n from "@/utils/i18n";
 
-
 function Tabs() {
   const [availableClientsAttendance, setAvailableClientsAttendance] = useState<number>(0);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -56,7 +55,7 @@ function Tabs() {
       denominator: t("Profile_Attendance_Denominator_Single"),
       denominator_plural: t("Profile_Attendance_Denominator_Plural"),
       color: "#C50066",
-      disabled: !(availableClientsAttendance),
+      disabled: false,
       onPress: () => {
         if (attendances.length === 0 || attendancePeriods.length === 0) { return; }
         router.push({
@@ -149,10 +148,10 @@ function Tabs() {
             padding={16}
             height={58}
             radius={200}
-            backgroundColor={tab.disabled ? colors.text + 10 : tab.unread > 0 ? adjust(tab.color, getTabBackground()) : colors.card}
+            backgroundColor={tab.disabled ? colors.text + 10 : tab.unread > 0 ? adjust(tab.color, getTabBackground()) : adjust(tab.color, theme.dark ? -0.85 : 0.85)}
           >
             <Icon papicon
-              fill={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
+              fill={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
             >
               <tab.icon />
             </Icon>
@@ -163,11 +162,11 @@ function Tabs() {
             >
               <Typography inline
                 variant="title"
-                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : colors.text}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? 0.3 : -0.3)}
               >{tab.title}</Typography>
               <Typography inline
                 variant="caption"
-                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : "secondary"}
+                color={tab.disabled ? colors.text + 40 : tab.unread > 0 ? tab.color : adjust(tab.color, theme.dark ? -0.2 : 0.2)}
               >
                 {tab.beta ? (
                   "Ça arrive !"
@@ -181,8 +180,9 @@ function Tabs() {
             </Stack>
           </Stack>
         </AnimatedPressable>
-      ))}
-    </Stack>
+      ))
+      }
+    </Stack >
   );
 }
 
@@ -240,10 +240,10 @@ function NewsSection() {
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
         }}
-        backgroundColor={adjust("#7DBB00", theme.dark ? -0.85 : 0.85)}
+        backgroundColor={adjust("#31ce1c", theme.dark ? -0.85 : 0.85)}
       >
         <Icon
-          fill={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          fill={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
           size={24}
           style={{ marginLeft: 8, marginRight: 0 }}
           papicon
@@ -251,7 +251,7 @@ function NewsSection() {
           <Papicons name={"Newspaper"} />
         </Icon>
         <Typography
-          color={adjust("#7DBB00", theme.dark ? 0.3 : -0.3)}
+          color={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
           style={{ flex: 1 }}
           variant="h5"
         >
@@ -274,17 +274,17 @@ function NewsSection() {
             padding={[12, 6]}
             radius={100}
             height={32}
-            backgroundColor={"#7DBB0040"}
+            backgroundColor={"#31ce1c40"}
           >
             <Typography style={{ marginBottom: -3 }}
               inline
-              color={adjust("#7DBB00", -0.3)}
+              color={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
             >
               {limitNews.filter(news => !news.acknowledged).length > 0 ? news.filter(news => !news.acknowledged).length + news.filter(news => !news.acknowledged).length > 1 ? t("Profile_News_Denominator_Plural") : t("Profile_News_Denominator_Single") : t("Profile_News_Open")}
             </Typography>
             <Icon papicon
               size={20}
-              fill={adjust("#7DBB00", -0.3)}
+              fill={adjust("#31ce1c", theme.dark ? 0.3 : -0.3)}
             >
               <Papicons name={"ArrowRightUp"} />
             </Icon>
@@ -490,9 +490,11 @@ export default function TabOneScreen() {
       </NativeHeaderSide>
 
       <TabFlatList
-        backgroundColor={theme.dark ? "#151515" : "#F0F0F0"}
-        height={200}
+        backgroundColor={theme.dark ? colors.primary + "20" : colors.primary + "30"}
+        foregroundColor={theme.dark ? "#ffffff" + "80" : "#000000" + "80"}
+        pattern={"cross"}
         onFullyScrolled={handleFullyScrolled}
+        height={200}
         data={["tabs", "news", "cards", "apps"]}
         gap={16}
         radius={42}
