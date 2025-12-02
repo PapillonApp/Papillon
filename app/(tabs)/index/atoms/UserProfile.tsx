@@ -30,7 +30,9 @@ const UserProfile = ({ subtitle }: { subtitle?: string }) => {
     <Stack
       direction="horizontal"
       hAlign="center"
-      gap={16}
+      gap={14}
+      inline
+      flex
 
       style={{
         shadowColor: "#000",
@@ -51,6 +53,8 @@ const UserProfile = ({ subtitle }: { subtitle?: string }) => {
         direction="vertical"
         vAlign="center"
         gap={0}
+        inline
+        flex
       >
         <TouchableOpacity activeOpacity={0.5}>
           <Stack
@@ -58,15 +62,15 @@ const UserProfile = ({ subtitle }: { subtitle?: string }) => {
             hAlign="center"
             gap={6}
           >
-            <Typography color='white' variant='navigation' weight='bold'>
+            <Typography nowrap color='white' variant='navigation' weight='bold'>
               {t('Home_Welcome_Name', { name: firstName, emoji: "👋" })}
             </Typography>
             <Papicons name="chevrondown" size={20} color="white" opacity={0.7} />
           </Stack>
         </TouchableOpacity>
         {subtitle &&
-          <Typography color='white' variant='body1' style={{ opacity: 0.7 }}>
-            {subtitle}
+          <Typography nowrap color='white' variant='body1' style={{ opacity: 0.7 }}>
+            {subtitle}aaaaaa
           </Typography>
         }
       </Stack>

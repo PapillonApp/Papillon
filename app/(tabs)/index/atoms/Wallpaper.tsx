@@ -34,7 +34,7 @@ const Wallpaper = ({ height = 400, dim = true }) => {
         <LinearGradient
           colors={['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0)']}
           locations={[0, 1]}
-          style={{ width: '100%', height: height / 1.5, position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+          style={{ width: '100%', height: height / 2, position: 'absolute', top: 0, left: 0, zIndex: 1 }}
         />
       }
 

@@ -3,7 +3,8 @@ import { useTheme } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { LiquidGlassContainer, LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 
 import { getChatsFromCache } from '@/database/useChat';
 import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
@@ -113,25 +114,39 @@ const HomeHeader = () => {
   ], [availableCanteenCards, absencesCount, t])
 
   const renderHeaderButton = useCallback(({ item }: { item: typeof HomeHeaderButtons[0] }) => (
-    <AnimatedPressable
-      style={[styles.headerBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-      onPress={item.onPress}
+    <LiquidGlassView
+      glassOpacity={0.4}
+      glassTintColor={colors.card}
+      glassType='regular'
+      isInteractive={true}
+      style={{
+        flex: 1,
+        borderRadius: 20,
+      }}
     >
-      <View
-        style={{
-          backgroundColor: item.color + 30,
-          borderRadius: 50,
-          padding: 7
-        }}
+      <Pressable
+        style={[styles.headerBtn]}
+        onPress={item.onPress}
       >
-        <Papicons name={item.icon} color={item.color} size={25} />
-      </View>
-      <Stack gap={0}>
-        <Typography variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
-        <Typography variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
-      </Stack>
-    </AnimatedPressable>
-  ), [])
+        <View
+          style={{
+            backgroundColor: item.color + 30,
+            borderRadius: 50,
+            padding: 7
+          }}
+        >
+          <Papicons name={item.icon} color={item.color} size={25} />
+        </View>
+        <View style={{
+          flex: 1,
+          overflow: 'hidden'
+        }}>
+          <Typography nowrap variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
+          <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
+        </View>
+      </Pressable>
+    </LiquidGlassView>
+  ), [colors])
 
   return (
     <View
@@ -141,7 +156,6 @@ const HomeHeader = () => {
       }}
     >
       <Stack>
-        <Typography variant="h4" color='white'>HomeHeader</Typography>
         <FlatList
           scrollEnabled={false}
           data={HomeHeaderButtons}
@@ -156,18 +170,17 @@ const HomeHeader = () => {
           columnWrapperStyle={{
             justifyContent: "space-between",
             alignItems: "center",
-            gap: 10
+            gap: 6
           }}
           style={{
             width: "100%",
-            overflow: "hidden",
-            gap: 10
+            overflow: "visible",
+            gap: 6
           }}
           removeClippedSubviews
           maxToRenderPerBatch={6}
           windowSize={1}
         />
-
       </Stack>
     </View>
   );
@@ -177,15 +190,8 @@ const styles = StyleSheet.create({
   headerBtn: {
     flex: 1,
     flexDirection: "row",
-    width: "48.5%",
     borderCurve: "circular",
     borderRadius: 20,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.07,
-    shadowRadius: 5,
-    elevation: 2,
     padding: 10,
     gap: 8
   }

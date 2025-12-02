@@ -5,7 +5,7 @@ import Stack from '@/ui/components/Stack';
 import UserProfile from './UserProfile';
 
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { LiquidGlassContainer, LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Papicons } from '@getpapillon/papicons';
 import Icon from '@/ui/components/Icon';
 
@@ -15,20 +15,27 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
   return (
     <>
       {Platform.OS === 'ios' && (
-        <ProgressiveBlurView
-          blurType="systemMaterial"
-          blurAmount={14}
-          direction="blurredTopClearBottom"
-          startOffset={0}
+        <View
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: height + insets.top + 24,
+            height: height + insets.top,
             zIndex: 10,
+            overflow: "hidden"
           }}
-        />
+        >
+          <ProgressiveBlurView
+            blurType="systemMaterial"
+            direction="blurredTopClearBottom"
+            startOffset={0}
+            style={{
+              width: "100%",
+              height: "101%",
+            }}
+          />
+        </View>
       )}
 
       <View
@@ -47,12 +54,12 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
       >
         <UserProfile subtitle='En cours de développement' />
 
+
         <Stack
           direction="horizontal"
           hAlign="center"
           vAlign="end"
           gap={12}
-          flex
           inline
         >
           <LiquidGlassView
