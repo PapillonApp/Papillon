@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { Dimensions, FlatList, View } from 'react-native';
 import Wallpaper from './atoms/Wallpaper';
 import HomeHeader from './atoms/HomeHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,10 +15,24 @@ import { generateId } from '@/utils/generateId';
 import { Grade, Period } from '@/services/shared/grade';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useSettingsStore } from '@/stores/settings';
+import HomeTimeTableWidget from './widgets/timetable';
+import Reanimated, { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { Animation } from '@/ui/utils/Animation';
+import Icon from '@/ui/components/Icon';
+import Typography from '@/ui/components/Typography';
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import { useRouter } from 'expo-router';
+import { Papicons } from '@getpapillon/papicons';
+import { t } from 'i18next';
+import { FlashList } from '@shopify/flash-list';
+import { LegendList } from '@legendapp/list';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const alert = useAlert();
+
+  const router = useRouter();
 
   const settingsstore = useSettingsStore(state => state.personalization)
 
@@ -96,10 +110,42 @@ const HomeScreen = () => {
 
       <HomeTopBar />
 
-      <FlatList
-        data={[]}
-        renderItem={({ item }) => <View />}
-        keyExtractor={(item, index) => index.toString()}
+      <LegendList
+        renderItem={({ item }) => {
+          if (!item || (item.dev && !__DEV__)) {
+            return null;
+          }
+
+          return (
+            <Stack card radius={25} gap={0} style={{ paddingBottom: 3 }}>
+              <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
+                <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
+                  {item.icon}
+                </Icon>
+                <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                  {item.title}
+                </Typography>
+                {(item.redirect || item.onPress) && (
+                  <AnimatedPressable
+                    onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                  >
+                    <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                      <Typography variant="body2" color="secondary" inline>
+                        {item.buttonLabel ?? "Afficher plus"}
+                      </Typography>
+                      <Icon size={20} papicon opacity={0.5}>
+                        <Papicons name={"ArrowRightUp"} />
+                      </Icon>
+                    </Stack>
+                  </AnimatedPressable>
+                )}
+              </Stack>
+              {item.render && item.render()}
+            </Stack>
+          )
+        }}
+
+        keyExtractor={(item) => item.title}
 
         ListHeaderComponent={<HomeHeader />}
 
@@ -108,9 +154,20 @@ const HomeScreen = () => {
         }}
 
         contentContainerStyle={{
-          paddingTop: insets.top + 56,
           paddingBottom: insets.bottom,
+          paddingHorizontal: 16,
         }}
+
+        data={
+          [
+            {
+              icon: <Papicons name={"Calendar"} />,
+              title: t("Home_Widget_NextCourses"),
+              redirect: "(tabs)/calendar",
+              render: () => <HomeTimeTableWidget />
+            },
+          ]
+        }
       />
     </>
   );

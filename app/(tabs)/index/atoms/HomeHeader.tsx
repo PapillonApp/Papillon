@@ -17,10 +17,12 @@ import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   // Canteen Services
   const accounts = useAccountStore((state) => state.accounts);
@@ -33,6 +35,7 @@ const HomeHeader = () => {
   const attendancesPeriodsRef = useRef<Period[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const absencesCount = useMemo(() => {
+    if (!attendances || !attendances.absences) return 0;
     let count = 0;
     attendances.forEach(attendances => count += attendances.absences.length);
     return count;
@@ -79,20 +82,20 @@ const HomeHeader = () => {
       icon: "card",
       color: "#EE9F00",
       description: availableCanteenCards.length > 0 ?
-        availableCanteenCards.length + (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Plurial") :
+        (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
           t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None")
     },
     {
-      title: "Menu",
+      title: t("Home_Menu_Button_Title"),
       icon: "cutlery",
       color: "#7ED62B",
-      description: "Menu du jour"
+      description: t("Home_Menu_Button_Description")
     },
     {
-      title: t("Profile_Attendance_Title"),
+      title: t("Home_Attendance_Title"),
       icon: "chair",
       color: "#D62B94",
-      description: absencesCount + " absences",
+      description: (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular")),
       onPress: () => {
         const periods = attendancesPeriodsRef.current;
         router.push({
@@ -106,10 +109,10 @@ const HomeHeader = () => {
       }
     },
     {
-      title: "Messages",
+      title: t("Home_Chats_Button_Title"),
       icon: "textbubble",
       color: "#2B7ED6",
-      description: `${chats.length} ` + (chats.length > 1 ? t("Home_Chats_Plurial") : t("Home_Chats_Singular"))
+      description: (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
     }
   ], [availableCanteenCards, absencesCount, t])
 
@@ -121,7 +124,7 @@ const HomeHeader = () => {
       isInteractive={true}
       style={{
         flex: 1,
-        borderRadius: 20,
+        borderRadius: 22
       }}
     >
       <Pressable
@@ -145,17 +148,21 @@ const HomeHeader = () => {
           <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
       </Pressable>
-    </LiquidGlassView>
+    </LiquidGlassView >
   ), [colors])
 
   return (
     <View
       style={{
-        paddingHorizontal: 16,
+        paddingHorizontal: 0,
         paddingVertical: 12,
+        width: "100%",
+        flex: 1
       }}
     >
-      <Stack>
+      <View style={{ height: insets.top + 56 }} />
+
+      <Stack inline flex width={"100%"}>
         <FlatList
           scrollEnabled={false}
           data={HomeHeaderButtons}
@@ -166,8 +173,10 @@ const HomeHeader = () => {
           contentContainerStyle={{
             justifyContent: "center",
             alignItems: "center",
+            gap: 6
           }}
           columnWrapperStyle={{
+            width: "100%",
             justifyContent: "space-between",
             alignItems: "center",
             gap: 6
@@ -175,7 +184,6 @@ const HomeHeader = () => {
           style={{
             width: "100%",
             overflow: "visible",
-            gap: 6
           }}
           removeClippedSubviews
           maxToRenderPerBatch={6}
@@ -189,6 +197,7 @@ const HomeHeader = () => {
 const styles = StyleSheet.create({
   headerBtn: {
     flex: 1,
+    width: "100%",
     flexDirection: "row",
     borderCurve: "circular",
     borderRadius: 20,

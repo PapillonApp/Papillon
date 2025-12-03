@@ -222,7 +222,7 @@ const Course = React.memo((props: CourseProps) => {
           {/* Nom du cours */}
           <Typography
             variant="h5"
-            numberOfLines={2}
+            numberOfLines={compact ? 1 : 2}
             style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1 }]}
             skeleton={skeleton}
           >
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   compactContainer: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
   },
   label: {

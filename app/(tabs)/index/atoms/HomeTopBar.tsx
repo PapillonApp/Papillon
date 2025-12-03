@@ -27,6 +27,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
           }}
         >
           <ProgressiveBlurView
+            blurAmount={10}
             blurType="systemMaterial"
             direction="blurredTopClearBottom"
             startOffset={0}
