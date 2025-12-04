@@ -1,0 +1,145 @@
+import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
+import { Stack } from 'expo-router';
+import { t } from 'i18next';
+
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
+import { screenOptions } from '@/utils/theme/ScreenOptions';
+import {
+  STACK_SCREEN_OPTIONS,
+  ALERT_SCREEN_OPTIONS,
+  DEVMODE_SCREEN_OPTIONS,
+  DEMO_SCREEN_OPTIONS,
+  CONSENT_SCREEN_OPTIONS,
+  CHANGELOG_SCREEN_OPTIONS,
+  AI_SCREEN_OPTIONS
+} from '@/constants/LayoutScreenOptions';
+
+export function RootNavigator() {
+  // Memoize combined screen options to prevent object recreation
+  const stackScreenOptions = useMemo(() => ({
+    ...screenOptions,
+    ...STACK_SCREEN_OPTIONS,
+  }), []);
+
+  return (
+    <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
+      <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="(settings)" options={{ headerShown: false }} />
+      <Stack.Screen name="(modals)" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="page" />
+      <Stack.Screen name="demo" options={DEMO_SCREEN_OPTIONS} />
+      <Stack.Screen name="consent" options={CONSENT_SCREEN_OPTIONS} />
+      <Stack.Screen name="changelog" options={CHANGELOG_SCREEN_OPTIONS} />
+      <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
+      <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
+      <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+
+      <Stack.Screen
+        name="(modals)/grade"
+        options={{
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: t("Modal_Grades_Title"),
+          headerLargeTitle: false,
+          presentation: Platform.OS === 'ios' ? "formSheet" : "modal",
+          sheetAllowedDetents: [0.7, 1],
+          sheetCornerRadius: Platform.OS === 'ios' ? undefined : 42,
+          sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/course"
+        options={{
+          headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
+          headerTitle: t("Modal_Course_Title"),
+          headerLargeTitle: false,
+          headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+          presentation: "modal",
+          contentStyle: {
+            borderRadius: Platform.OS === 'ios' ? 30 : 0,
+            overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+          }
+        }}
+      />
+      <Stack.Screen
+        name="(modals)/notifications"
+        options={{
+          headerShown: false,
+          headerTitle: "Notifications",
+          headerTransparent: runsIOS26,
+          headerLargeTitle: false,
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.5, 0.75, 1],
+          sheetCornerRadius: runsIOS26 ? undefined : 30,
+          contentStyle: {
+            backgroundColor: runsIOS26 ? 'transparent' : undefined
+          }
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/(news)/news"
+        options={{
+          headerShown: true,
+          headerTitle: t("Tab_News"),
+          headerTransparent: runsIOS26,
+          headerLargeTitle: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/(news)/specific"
+        options={{
+          headerShown: true,
+          headerTitle: t("Tab_News"),
+          headerTransparent: runsIOS26,
+          headerLargeTitle: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/(cards)/cards"
+        options={{
+          headerShown: true,
+          presentation: "modal",
+          headerTitle: t("Profile_QRCards"),
+          headerTransparent: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/(cards)/specific"
+        options={{
+          headerShown: true,
+          presentation: "modal",
+          headerTitle: t("Profile_QRCards"),
+          headerTransparent: true,
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/(cards)/qrcode"
+        options={{
+          headerShown: false,
+          presentation: "transparentModal",
+          headerTitle: "QR-Code",
+          animation: "fade"
+        }}
+      />
+
+      <Stack.Screen
+        name="(features)/attendance"
+        options={{
+          headerShown: true,
+          headerTitle: t("Tab_Attendance"),
+          headerTransparent: runsIOS26,
+          headerLargeTitle: true,
+          presentation: "modal"
+        }}
+      />
+    </Stack>
+  );
+}
