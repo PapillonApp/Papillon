@@ -11,7 +11,7 @@ import { EmptyCalendar } from './EmptyCalendar';
 
 interface CalendarDayProps {
   dayDate: Date;
-  timetable: any[];
+  courses: SharedCourse[];
   isRefreshing: boolean;
   onRefresh: () => void;
   colors: { primary: string, background: string };
@@ -20,16 +20,8 @@ interface CalendarDayProps {
   tabBarHeight: number;
 }
 
-export const CalendarDay = React.memo(({ dayDate, timetable, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight }: CalendarDayProps) => {
+export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight }: CalendarDayProps) => {
   const navigation = useNavigation<any>();
-  const normalizedDayDate = new Date(dayDate);
-  normalizedDayDate.setHours(0, 0, 0, 0);
-
-  const rawDayEvents: SharedCourse[] = timetable.find(w => {
-    const weekDate = new Date(w.date);
-    weekDate.setHours(0, 0, 0, 0);
-    return weekDate.getTime() === normalizedDayDate.getTime();
-  })?.courses ?? []
 
   // Cache to preserve event object identity by id
   const eventCache = useRef<{ [id: string]: any }>({});
@@ -50,18 +42,17 @@ export const CalendarDay = React.memo(({ dayDate, timetable, isRefreshing, onRef
   const dayEvents = useMemo(() => {
     const cache = eventCache.current;
     const next: { [id: string]: any } = {};
-    const result = (rawDayEvents ?? []).map(ev => {
+    const result = (courses ?? []).map(ev => {
       if (cache[ev.id] && shallowEqual(ev, cache[ev.id])) {
         next[ev.id] = cache[ev.id];
         return cache[ev.id];
       }
       next[ev.id] = ev;
       return ev;
-
     });
     eventCache.current = next;
     return result;
-  }, [rawDayEvents]);
+  }, [courses]);
 
   const threshold = 30;
 
@@ -174,7 +165,7 @@ export const CalendarDay = React.memo(({ dayDate, timetable, isRefreshing, onRef
     prevProps.isRefreshing === nextProps.isRefreshing &&
     prevProps.onRefresh === nextProps.onRefresh &&
     prevProps.headerHeight === nextProps.headerHeight &&
-    prevProps.timetable === nextProps.timetable
+    JSON.stringify(prevProps.courses) === JSON.stringify(nextProps.courses)
   );
 });
 

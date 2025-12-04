@@ -26,7 +26,9 @@ export function useCalendarState() {
   const getIndexFromDate = useCallback((d: Date) => {
     const base = new Date(referenceDate.current);
     base.setHours(0, 0, 0, 0);
-    const diff = Math.floor((d.setHours(0, 0, 0, 0) - base.getTime()) / (1000 * 60 * 60 * 24));
+    const target = new Date(d);
+    target.setHours(0, 0, 0, 0);
+    const diff = Math.round((target.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
     return INITIAL_INDEX + diff;
   }, []);
 

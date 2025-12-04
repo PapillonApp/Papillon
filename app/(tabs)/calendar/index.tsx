@@ -36,10 +36,18 @@ export default function TabOneScreen() {
 
   const renderDay = useCallback(({ index }: { index: number }) => {
     const dayDate = getDateFromIndex(index);
+    const normalizedDate = new Date(dayDate);
+    normalizedDate.setHours(0, 0, 0, 0);
+    const dayCourses = timetable.find(d => {
+      const dDate = new Date(d.date);
+      dDate.setHours(0, 0, 0, 0);
+      return dDate.getTime() === normalizedDate.getTime();
+    })?.courses || [];
+
     return (
       <CalendarDay
         dayDate={dayDate}
-        timetable={timetable}
+        courses={dayCourses}
         isRefreshing={manualRefreshing}
         onRefresh={handleRefresh}
         colors={colors}
@@ -69,20 +77,20 @@ export default function TabOneScreen() {
           initialScrollIndex={INITIAL_INDEX}
           getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
           renderItem={renderDay}
-          keyExtractor={(_, index) => String(index)}
+          keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
-          decelerationRate={0.9}
+          decelerationRate={0.98}
           disableIntervalMomentum={true}
           scrollEventThrottle={16}
           onMomentumScrollEnd={onMomentumScrollEnd}
           snapToInterval={windowWidth}
           bounces={false}
-          windowSize={3}
-          maxToRenderPerBatch={2}
-          initialNumToRender={1}
+          windowSize={4}
+          maxToRenderPerBatch={3}
+          initialNumToRender={3}
           showsVerticalScrollIndicator={false}
           removeClippedSubviews
-          extraData={{ manualRefreshing, headerHeight, colors, date, weekNumber, timetable }}
+          extraData={{ manualRefreshing, headerHeight, colors, timetable }}
         />
       </View>
     </>

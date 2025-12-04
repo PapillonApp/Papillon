@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { useTimetable } from '@/database/useTimetable';
 import { useAccountStore } from '@/stores/account';
@@ -22,12 +22,16 @@ export function useTimetableData(weekNumber: number) {
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
   
-  const timetable = useTimetable(refresh, weekNumber).map(day => ({
-    ...day,
-    courses: day.courses.filter(course =>
-      services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
-    )
-  })).filter(day => day.courses.length > 0);
+  const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1]);
+  
+  const timetable = useMemo(() => {
+    return rawTimetable.map(day => ({
+      ...day,
+      courses: day.courses.filter(course =>
+        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
+      )
+    })).filter(day => day.courses.length > 0);
+  }, [rawTimetable, services]);
 
   const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
     if (fetchTimeoutRef.current) {
