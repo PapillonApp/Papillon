@@ -5,6 +5,7 @@ import { useAccountStore } from '@/stores/account';
 import { log, warn } from "@/utils/logger/logger";
 
 export function useTimetableData(weekNumber: number) {
+  const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false);
   const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([]);
@@ -34,6 +35,7 @@ export function useTimetableData(weekNumber: number) {
   }, [rawTimetable, services]);
 
   const fetchWeeklyTimetable = useCallback(async (targetWeekNumber: number, forceRefresh = false) => {
+    setIsLoading(true);
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current);
       fetchTimeoutRef.current = null;
@@ -67,6 +69,7 @@ export function useTimetableData(weekNumber: number) {
       } catch (error) {
         log('Error fetching weekly timetable: ' + error);
       } finally {
+        setIsLoading(false);
         setManualRefreshing(false);
         fetchTimeoutRef.current = null;
       }
@@ -103,6 +106,7 @@ export function useTimetableData(weekNumber: number) {
     timetable,
     refresh,
     manualRefreshing,
-    handleRefresh
+    handleRefresh,
+    isLoading
   };
 }

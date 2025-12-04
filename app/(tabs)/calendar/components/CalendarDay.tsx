@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function getStatusText(status?: CourseStatus): string {
+export function getStatusText(status?: CourseStatus): string {
   switch (status) {
     case CourseStatus.ONLINE:
       return t("Online_Course")

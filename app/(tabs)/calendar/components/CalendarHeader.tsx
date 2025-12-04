@@ -14,9 +14,10 @@ interface CalendarHeaderProps {
   onDateChange: (date: Date) => void;
   onHeaderHeightChange: (height: number) => void;
   calendarRef: any;
+  isLoading?: boolean;
 }
 
-export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightChange, calendarRef }: CalendarHeaderProps) => {
+export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightChange, calendarRef, isLoading }: CalendarHeaderProps) => {
   const { colors } = useTheme();
   const router = useRouter();
 
@@ -42,6 +43,7 @@ export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightCh
             trailing={date.toLocaleDateString(i18n.language, { month: "long" })}
             color='#D6502B'
             onPress={() => toggleDatePicker()}
+            loading={isLoading}
           />
         }
         trailing={

@@ -31,7 +31,8 @@ export default function TabOneScreen() {
   const {
     timetable,
     manualRefreshing,
-    handleRefresh
+    handleRefresh,
+    isLoading
   } = useTimetableData(weekNumber);
 
   const renderDay = useCallback(({ index }: { index: number }) => {
@@ -65,6 +66,7 @@ export default function TabOneScreen() {
         onDateChange={handleDateChange}
         onHeaderHeightChange={setHeaderHeight}
         calendarRef={calendarRef}
+        isLoading={isLoading}
       />
 
       <View style={[styles.container, { backgroundColor: colors.background }]}>

@@ -16,7 +16,7 @@ import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
-import { getStatusText } from "../(tabs)/calendar";
+import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
 import { getSubjectName } from '@/utils/subjects/name';
 
 interface SubjectInfo {
