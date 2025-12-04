@@ -58,8 +58,7 @@ const TaskComponent: React.FC<TaskProps> = ({
   onProgressChange = () => { /* empty */ },
   skeleton = false,
 }) => {
-  const theme = useTheme();
-  const { colors } = theme;
+  const { colors } = useTheme();
 
   const [currentProgress, setCurrentProgress] = useState(() => progress ?? 0);
   const [isPressed, setIsPressed] = useState(false);
