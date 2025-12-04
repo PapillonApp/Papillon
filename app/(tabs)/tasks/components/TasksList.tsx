@@ -2,15 +2,14 @@ import React, { useCallback } from 'react';
 import { RefreshControl, SectionList, StyleSheet } from 'react-native';
 import Reanimated, {
     createAnimatedComponent,
-    FadeIn,
-    FadeOut,
     LinearTransition,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Homework } from "@/services/shared/homework";
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { generateId } from "@/utils/generateId";
 
-import { Homework } from "@/services/shared/homework";
 import DateHeader from '../atoms/DateHeader';
 import EmptyState from '../atoms/EmptyState';
 import TasksSummary from '../atoms/TasksSummary';
@@ -66,7 +65,11 @@ const TasksList: React.FC<TasksListProps> = ({
             const fromCache = !inFresh;
 
             return (
-                <Reanimated.View layout={LinearTransition} entering={FadeIn} exiting={FadeOut}>
+                <Reanimated.View
+                    layout={LinearTransition}
+                    entering={PapillonAppearIn}
+                    exiting={PapillonAppearOut}
+                >
                     <TaskItem
                         item={source}
                         index={index}
