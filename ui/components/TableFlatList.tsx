@@ -139,7 +139,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
             </Typography>
           )}
           {item.description && !item.tags && (
-            <Typography variant="caption" color="secondary">
+            <Typography variant="body2" weight='medium' color="secondary">
               {item.description}
             </Typography>
           )}
