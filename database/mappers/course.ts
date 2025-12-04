@@ -1,4 +1,5 @@
 import { Course as SharedCourse } from "@/services/shared/timetable";
+import { adjustToDeviceTimeZone } from "@/utils/date";
 
 import Course from "../models/Timetable";
 
@@ -9,8 +10,8 @@ export function mapCourseToShared(course: Course): SharedCourse {
     fromCache: true,
     createdByAccount: course.createdByAccount,
     type: course.type,
-    from: new Date(course.from),
-    to: new Date(course.to),
+    from: adjustToDeviceTimeZone(new Date(course.from)),
+    to: adjustToDeviceTimeZone(new Date(course.to)),
     additionalInfo: course.additionalInfo,
     room: course.room,
     teacher: course.teacher,

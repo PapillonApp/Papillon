@@ -21,4 +21,5 @@ export interface Personalization {
   showDevMode?: boolean;
   magicModelURL?: string;
   language?: string | null;
+  timezoneAdaptation: boolean;
 }
