@@ -20,16 +20,16 @@ export const PapillonSplashOut = () => {
       opacity: 1,
     },
     animations: {
-      opacity: withTiming(0, {
-        duration: 400,
-        easing: Easing.bezier(0.3, 0, 0, 1),
-      }),
+      opacity: withDelay(100, withTiming(0, {
+        duration: 250,
+        easing: Easing.out(Easing.ease),
+      })),
     },
   };
 };
 
 const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
-  if (Platform.OS !== 'ios' || __DEV__) {
+  if (Platform.OS !== 'ios') {
     SplashScreen.hideAsync();
     return null;
   };
