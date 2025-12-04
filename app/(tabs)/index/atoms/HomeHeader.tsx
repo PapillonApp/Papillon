@@ -1,81 +1,19 @@
-import { Papicons } from '@getpapillon/papicons';
-import { useTheme } from '@react-navigation/native';
-import { router } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { LiquidGlassContainer, LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-
-import { getChatsFromCache } from '@/database/useChat';
-import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Attendance } from '@/services/shared/attendance';
-import { Chat } from '@/services/shared/chat';
-import { Period } from '@/services/shared/grade';
-import { useAccountStore } from '@/stores/account';
-import { Services } from '@/stores/account/types';
-import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Stack from '@/ui/components/Stack';
+import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
+import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { availableCanteenCards, attendancesPeriods, attendances, absencesCount, chats } = useHomeHeaderData();
 
-  // Canteen Services
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-  const account = accounts.find((a) => a.id === lastUsedAccount);
-
-  const availableCanteenCards = account?.services.filter(service => service.serviceId === (Services.TURBOSELF || Services.ALISE || Services.ARD || Services.ECOLEDIRECTE)) ?? []
-
-  // School Life
-  const attendancesPeriodsRef = useRef<Period[]>([]);
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const absencesCount = useMemo(() => {
-    if (!attendances || !attendances.absences) return 0;
-    let count = 0;
-    attendances.forEach(attendances => count += attendances.absences.length);
-    return count;
-  }, [attendances]);
-
-  const updateAttendance = async function (manager: AccountManager) {
-    const periods = await manager.getAttendancePeriods();
-    const currentPeriod = getCurrentPeriod(periods);
-    const attendances = await manager.getAttendanceForPeriod(currentPeriod.name);
-
-    attendancesPeriodsRef.current = periods;
-    setAttendances(attendances);
-  }
-
-  // Discussions
-  const [chats, setChats] = useState<Chat[]>([]);
-  const updateDiscussions = async function (manager: AccountManager) {
-    const fetchedChats = await manager.getChats();
-    setChats(fetchedChats);
-  }
-
-  // Listen for initialization 
-  useEffect(() => {
-    const init = async () => {
-      const cachedChats = await getChatsFromCache();
-      setChats(cachedChats);
-    };
-
-    init();
-
-    const unsubscribe = subscribeManagerUpdate((_) => {
-      const manager = getManager();
-      updateAttendance(manager);
-      updateDiscussions(manager);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // Buttons in the header
-  const HomeHeaderButtons = useMemo(() => [
+  const HomeHeaderButtons: HomeHeaderButtonItem[] = useMemo(() => [
     {
       title: t("Home_Cards_Button_Title"),
       icon: "card",
@@ -96,12 +34,11 @@ const HomeHeader = () => {
       color: "#D62B94",
       description: (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular")),
       onPress: () => {
-        const periods = attendancesPeriodsRef.current;
         router.push({
           pathname: "/(features)/attendance",
           params: {
-            periods: JSON.stringify(periods),
-            currentPeriod: JSON.stringify(getCurrentPeriod(periods)),
+            periods: JSON.stringify(attendancesPeriods),
+            currentPeriod: JSON.stringify(getCurrentPeriod(attendancesPeriods)),
             attendances: JSON.stringify(attendances),
           },
         });
@@ -113,62 +50,17 @@ const HomeHeader = () => {
       color: "#2B7ED6",
       description: (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
     }
-  ], [availableCanteenCards, absencesCount, t])
-
-  const renderHeaderButton = useCallback(({ item }: { item: typeof HomeHeaderButtons[0] }) => (
-    <LiquidGlassView
-      glassOpacity={0.4}
-      glassTintColor={colors.card}
-      glassType='regular'
-      isInteractive={true}
-      style={{
-        flex: 1,
-        borderRadius: 22
-      }}
-    >
-      <Pressable
-        style={[styles.headerBtn]}
-        onPress={item.onPress}
-      >
-        <View
-          style={{
-            backgroundColor: item.color + 30,
-            borderRadius: 50,
-            padding: 7
-          }}
-        >
-          <Papicons name={item.icon} color={item.color} size={25} />
-        </View>
-        <View style={{
-          flex: 1,
-          overflow: 'hidden'
-        }}>
-          <Typography nowrap variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
-          <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
-        </View>
-      </Pressable>
-    </LiquidGlassView >
-  ), [colors])
+  ], [availableCanteenCards, absencesCount, chats, attendancesPeriods, attendances, t]);
 
   return (
-    <View
-      style={{
-        paddingHorizontal: 0,
-        paddingVertical: 12,
-        width: "100%",
-        flex: 1
-      }}
-    >
+    <View style={{ paddingHorizontal: 0, paddingVertical: 12, width: "100%", flex: 1 }}>
       <View style={{ height: insets.top + 56 }} />
-
       <Stack inline flex width={"100%"}>
         <View style={{ width: '100%', gap: 6 }}>
           {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
             <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
               {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
-                <React.Fragment key={item.title}>
-                  {renderHeaderButton({ item })}
-                </React.Fragment>
+                <HomeHeaderButton key={item.title} item={item} />
               ))}
               {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
             </View>
@@ -178,17 +70,5 @@ const HomeHeader = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  headerBtn: {
-    flex: 1,
-    width: "100%",
-    flexDirection: "row",
-    borderCurve: "circular",
-    borderRadius: 20,
-    padding: 10,
-    gap: 8
-  }
-})
 
 export default HomeHeader;

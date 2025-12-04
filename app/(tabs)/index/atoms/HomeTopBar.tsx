@@ -1,13 +1,10 @@
 import React from 'react';
-import { FlatList, Platform, Pressable, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Stack from '@/ui/components/Stack';
 import UserProfile from './UserProfile';
-
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
-import { LiquidGlassContainer, LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from '@/ui/components/Icon';
+import HomeTopBarButton from '../components/HomeTopBarButton';
 
 const HomeTopBar = ({ height = 56 }: { height?: number }) => {
   const insets = useSafeAreaInsets();
@@ -31,10 +28,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
             blurType="systemMaterial"
             direction="blurredTopClearBottom"
             startOffset={0}
-            style={{
-              width: "100%",
-              height: "101%",
-            }}
+            style={{ width: "100%", height: "101%" }}
           />
         </View>
       )}
@@ -55,51 +49,9 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
       >
         <UserProfile subtitle='En cours de développement' />
 
-
-        <Stack
-          direction="horizontal"
-          hAlign="center"
-          vAlign="end"
-          gap={12}
-          inline
-        >
-          <LiquidGlassView
-            glassType="clear"
-            isInteractive={true}
-            glassOpacity={0}
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 30,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Pressable>
-              <Icon size={26} fill='white'>
-                <Papicons name="palette" />
-              </Icon>
-            </Pressable>
-          </LiquidGlassView>
-
-          <LiquidGlassView
-            glassType="clear"
-            isInteractive={true}
-            glassOpacity={0}
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 30,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Pressable>
-              <Icon size={26} fill='white'>
-                <Papicons name="gears" />
-              </Icon>
-            </Pressable>
-          </LiquidGlassView>
+        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={12} inline>
+          <HomeTopBarButton icon="palette" />
+          <HomeTopBarButton icon="gears" />
         </Stack>
       </View>
     </>
