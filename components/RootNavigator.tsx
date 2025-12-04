@@ -14,13 +14,19 @@ import {
   CHANGELOG_SCREEN_OPTIONS,
   AI_SCREEN_OPTIONS
 } from '@/constants/LayoutScreenOptions';
+import { useTheme } from '@react-navigation/native';
 
 export function RootNavigator() {
+  const theme = useTheme();
+
   // Memoize combined screen options to prevent object recreation
   const stackScreenOptions = useMemo(() => ({
     ...screenOptions,
     ...STACK_SCREEN_OPTIONS,
-  }), []);
+    contentStyle: {
+      backgroundColor: theme.colors.background
+    }
+  }), [theme]);
 
   return (
     <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
@@ -43,10 +49,7 @@ export function RootNavigator() {
           headerShown: Platform.OS !== 'ios',
           headerTitle: t("Modal_Grades_Title"),
           headerLargeTitle: false,
-          presentation: Platform.OS === 'ios' ? "formSheet" : "modal",
-          sheetAllowedDetents: [0.7, 1],
-          sheetCornerRadius: Platform.OS === 'ios' ? undefined : 42,
-          sheetGrabberVisible: true,
+          presentation: "modal",
         }}
       />
       <Stack.Screen
