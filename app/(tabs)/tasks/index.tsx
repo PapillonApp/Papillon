@@ -192,7 +192,6 @@ const TasksView: React.FC = () => {
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  // Gestion du scroll
   const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
   const [selectedWeek, setSelectedWeek] = useState<number>(getWeekNumberFromDate(currentDate));
@@ -300,7 +299,12 @@ const TasksView: React.FC = () => {
   }, []);
 
   const sections = useMemo<HomeworkSection[]>(() => {
-    let data = [...homeworksFromCache];
+    const mergedData = homeworksFromCache.map(cached => {
+      const fresh = cached.id && homework[cached.id];
+      return fresh || cached;
+    });
+
+    let data = [...mergedData];
 
     if (showUndoneOnly) {
       data = data.filter(h => !h.isDone);
@@ -309,11 +313,14 @@ const TasksView: React.FC = () => {
     if (searchTerm.trim().length > 0) {
       const term = normalize(searchTerm);
       data = data.filter(h => {
-        const normalizedContent = normalize(h.content);
+        const cleanContent = h.content.replace(/<[^>]*>/g, "");
+        const normalizedContent = normalize(cleanContent);
         const normalizedSubject = normalize(h.subject);
+        const normalizedSubjectName = normalize(getSubjectName(h.subject));
         return (
           normalizedContent.includes(term) ||
-          normalizedSubject.includes(term)
+          normalizedSubject.includes(term) ||
+          normalizedSubjectName.includes(term)
         );
       });
     }
@@ -326,7 +333,9 @@ const TasksView: React.FC = () => {
       data.sort((a, b) => Number(a.isDone) - Number(b.isDone));
     }
 
-    if (sortMethod === 'date') {
+    const isSearching = searchTerm.trim().length > 0;
+
+    if (sortMethod === 'date' && !isSearching) {
       const sectionMap = new Map<string, HomeworkSection>();
 
       data.forEach((hw) => {
@@ -343,7 +352,6 @@ const TasksView: React.FC = () => {
           });
         }
 
-        // Ajoute tous les devoirs, même si le groupe est rétracté
         sectionMap.get(dateKey)!.data.push(hw);
       });
 
@@ -357,12 +365,11 @@ const TasksView: React.FC = () => {
         data
       }
     ];
-  }, [homeworksFromCache, showUndoneOnly, searchTerm, sortMethod, collapsedGroups]);
+  }, [homeworksFromCache, homework, showUndoneOnly, searchTerm, sortMethod]);
 
 
   const renderItem = useCallback(
     ({ item, index, section }: { item: Homework, index: number, section: HomeworkSection }) => {
-      // Si le groupe est rétracté, ne pas afficher l'item
       if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
         return null;
       }
@@ -608,8 +615,7 @@ const TasksView: React.FC = () => {
             <Search
               placeholder={t('Tasks_Search_Placeholder')}
               color='#C54CB3'
-              value={searchTerm}
-              onChangeText={setSearchTerm}
+              onTextChange={setSearchTerm}
             />
           }
           shouldCollapseHeader={shouldCollapseHeader}
@@ -632,25 +638,33 @@ const TasksView: React.FC = () => {
           ListEmptyComponent={<EmptyState isSearching={searchTerm.length > 0} />}
           stickySectionHeadersEnabled={false}
           ListHeaderComponent={
-            <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
-              <CircularProgress
-                backgroundColor={colors.text + "22"}
-                percentageComplete={
-                  sections.reduce((acc, section) => acc + section.data.filter(hw => hw.isDone).length, 0) /
-                  Math.max(1, sections.reduce((acc, section) => acc + section.data.length, 0)) * 100
-                }
-                radius={15}
-                strokeWidth={5}
-                fill={"#D62B94"}
-              />
-              <Typography variant="title" color='#D62B94'>
-                {(() => {
-                  const total = sections.reduce((acc, section) => acc + section.data.length, 0);
-                  const undone = sections.reduce((acc, section) => acc + section.data.filter(hw => !hw.isDone).length, 0);
-                  return `${undone} tâche${undone !== 1 ? 's' : ''} restante${undone !== 1 ? 's' : ''} cette semaine`;
-                })()}
-              </Typography>
-            </Stack>
+            searchTerm.trim().length === 0 ? (
+              <Reanimated.View
+                entering={PapillonAppearIn}
+                exiting={PapillonAppearOut}
+                layout={LinearTransition}
+              >
+                <Stack padding={16} backgroundColor={"#D62B9415"} bordered radius={20} gap={8} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
+                  <CircularProgress
+                    backgroundColor={colors.text + "22"}
+                    percentageComplete={
+                      sections.reduce((acc, section) => acc + section.data.filter(hw => hw.isDone).length, 0) /
+                      Math.max(1, sections.reduce((acc, section) => acc + section.data.length, 0)) * 100
+                    }
+                    radius={15}
+                    strokeWidth={5}
+                    fill={"#D62B94"}
+                  />
+                  <Typography variant="title" color='#D62B94'>
+                    {(() => {
+                      const total = sections.reduce((acc, section) => acc + section.data.length, 0);
+                      const undone = sections.reduce((acc, section) => acc + section.data.filter(hw => !hw.isDone).length, 0);
+                      return `${undone} tâche${undone !== 1 ? 's' : ''} restante${undone !== 1 ? 's' : ''} cette semaine`;
+                    })()}
+                  </Typography>
+                </Stack>
+              </Reanimated.View>
+            ) : null
           }
           refreshControl={
             <RefreshControl
