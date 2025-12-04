@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, FlatList, View } from 'react-native';
 import Wallpaper from './atoms/Wallpaper';
 import HomeHeader from './atoms/HomeHeader';
@@ -22,11 +22,12 @@ import { Animation } from '@/ui/utils/Animation';
 import Icon from '@/ui/components/Icon';
 import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { useRouter } from 'expo-router';
+import { SplashScreen, useRouter } from 'expo-router';
 import { Papicons } from '@getpapillon/papicons';
 import { t } from 'i18next';
 import { FlashList } from '@shopify/flash-list';
 import { LegendList } from '@legendapp/list';
+import FakeSplash from '@/components/FakeSplash';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();

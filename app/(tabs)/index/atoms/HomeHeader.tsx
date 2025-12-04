@@ -3,7 +3,7 @@ import { useTheme } from '@react-navigation/native';
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { LiquidGlassContainer, LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 
 import { getChatsFromCache } from '@/database/useChat';
@@ -13,7 +13,6 @@ import { Chat } from '@/services/shared/chat';
 import { Period } from '@/services/shared/grade';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
@@ -163,32 +162,18 @@ const HomeHeader = () => {
       <View style={{ height: insets.top + 56 }} />
 
       <Stack inline flex width={"100%"}>
-        <FlatList
-          scrollEnabled={false}
-          data={HomeHeaderButtons}
-          numColumns={2}
-          renderItem={renderHeaderButton}
-          keyExtractor={(item) => item.title}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 6
-          }}
-          columnWrapperStyle={{
-            width: "100%",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 6
-          }}
-          style={{
-            width: "100%",
-            overflow: "visible",
-          }}
-          removeClippedSubviews
-          maxToRenderPerBatch={6}
-          windowSize={1}
-        />
+        <View style={{ width: '100%', gap: 6 }}>
+          {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
+            <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
+              {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
+                <React.Fragment key={item.title}>
+                  {renderHeaderButton({ item })}
+                </React.Fragment>
+              ))}
+              {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
+            </View>
+          ))}
+        </View>
       </Stack>
     </View>
   );

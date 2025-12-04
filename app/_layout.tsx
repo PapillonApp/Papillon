@@ -113,7 +113,7 @@ export default function RootLayout() {
   // Memoize splash screen handler
   const hideSplashScreen = useCallback(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      // SplashScreen.hideAsync();
     }
   }, [loaded]);
 
@@ -130,6 +130,7 @@ export default function RootLayout() {
 
 import { Buffer } from 'buffer';
 
+import FakeSplash from '@/components/FakeSplash';
 import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
 import i18n from '@/utils/i18n';
@@ -166,6 +167,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
     return color || AppColors[0]; // Fallback vers la première couleur si aucune n'est trouvée
   }, [selectedColorEnum]);
 
+  const [isAppReady, setIsAppReady] = useState(false);
+
   // Initialise la base de données au démarrage de l’application 
   useEffect(() => {
     async function initDatabase() {
@@ -173,6 +176,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
         await initializeDatabaseOnStartup();
       } catch (err) {
         warn(`Database initialization failed: ${err}`);
+      } finally {
+        setIsAppReady(true);
       }
     }
 
@@ -300,6 +305,8 @@ const RootLayoutNav = React.memo(function RootLayoutNav() {
       <DatabaseProvider>
         <ThemeProvider value={theme}>
           <AlertProvider>
+            <FakeSplash isAppReady={isAppReady} />
+
             <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />

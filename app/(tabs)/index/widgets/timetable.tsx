@@ -89,6 +89,7 @@ const HomeTimeTableWidget = () => {
 
   return (
     <FlatList
+      scrollEnabled={false}
       data={courses}
       style={{
         width: '100%',
