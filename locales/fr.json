@@ -43,6 +43,7 @@
   "ONBOARDING_QRCODE_WAIT": "Cela peut prendre quelques instants...",
   "ONBOARDING_URL": "Indique l’adresse URL de ton établissement",
   "ONBOARDING_URL_PLACEHOLDER": "URL de ton instance PRONOTE",
+  "ONBOARDING_VALIDATE": "Valider",
   "ONBOARDING_COLOR_TITLE": "Avant de terminer",
   "ONBOARDING_COLOR_FIRST_LINE_DESCRIPTION": "Choisis une",
   "ONBOARDING_COLOR_SECOND_LINE_DESCRIPTION": "couleur de thème",

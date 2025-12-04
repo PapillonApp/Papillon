@@ -1,3 +1,4 @@
+import { useTheme } from '@react-navigation/native';
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Keyboard,
@@ -8,6 +9,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
 
+import Button from '@/ui/components/Button';
 import Typography from "@/ui/components/Typography";
 import Stack from "@/ui/components/Stack";
 
@@ -23,12 +25,27 @@ import { useTranslation } from "react-i18next";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 
 export default function SelectSchoolOnMap() {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [city, setCity] = useState<string>();
+  const search = useLocalSearchParams();
+  const { t } = useTranslation();
+
+  const onValidate = () => {
+    if (!city) return;
+
+    router.push({
+      pathname: "./map",
+      params: {
+        service: Number(search.service),
+        city,
+        method: "manual",
+      },
+    });
+  };
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
-  const search = useLocalSearchParams();
 
   const keyboardListeners = useMemo(() => ({
     show: () => {
@@ -52,8 +69,6 @@ export default function SelectSchoolOnMap() {
       hideSub.remove();
     };
   }, [keyboardListeners]);
-
-  const { t } = useTranslation();
 
   return (
     <KeyboardAvoidingView
@@ -117,7 +132,7 @@ export default function SelectSchoolOnMap() {
               {t("STEP_OUTOF")} 3
             </Typography>
           </Stack>
-          <Typography
+          ONBOARDING_METHOD_POSITION<Typography
             variant="h1"
             style={{ color: "white", fontSize: 32, lineHeight: 34 }}
           >
@@ -135,17 +150,17 @@ export default function SelectSchoolOnMap() {
             autoCapitalize: "none",
             autoCorrect: false,
             autoComplete: "address-line1",
-            onSubmitEditing: () => {
-              router.push({
-                pathname: "./map",
-                params: {
-                  service: Number(search.service),
-                  city,
-                  method: "manual",
-                },
-              });
-            }
+            onSubmitEditing: onValidate
           }}
+        />
+        <Button
+          title={t("ONBOARDING_VALIDATE")}
+          style={{
+            backgroundColor: theme.dark ? theme.colors.border : "black",
+          }}
+          size='large'
+          disableAnimation
+          onPress={onValidate}
         />
       </Stack>
       <OnboardingBackButton />
