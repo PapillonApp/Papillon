@@ -252,6 +252,12 @@
   "Grades_Coefficient": "Coefficient",
   "Grades_Avg_Group_Short": "Moy. groupe",
 
+  "News_Search_Placeholder": "Rechercher une actualité",
+  "News_Empty_Title": "Aucune actualité",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans votre établissement.",
+  "News_Search_NoResults": "Aucune actualité trouvée",
+  "News_Search_NoResults_Description": "Aucune actualité trouvée pour votre recherche.",
+
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Un thème doux et élégant",
 

@@ -5,9 +5,11 @@ import Stack from '@/ui/components/Stack';
 import UserProfile from './UserProfile';
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import HomeTopBarButton from '../components/HomeTopBarButton';
+import { useRouter } from 'expo-router';
 
 const HomeTopBar = ({ height = 56 }: { height?: number }) => {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <>
@@ -51,7 +53,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
 
         <Stack direction="horizontal" hAlign="center" vAlign="end" gap={8} inline>
           <HomeTopBarButton icon="palette" />
-          <HomeTopBarButton icon="gears" />
+          <HomeTopBarButton icon="gears" onPress={() => router.push("/(settings)/settings")} />
         </Stack>
       </View>
     </>
