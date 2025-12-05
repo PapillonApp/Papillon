@@ -1,3 +1,4 @@
+import { useAccountStore } from "@/stores/account";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
@@ -5,7 +6,7 @@ import {
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
-import { withLayoutContext } from "expo-router";
+import { useRouter, withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';

@@ -10,11 +10,23 @@ import { LegendList } from '@legendapp/list';
 import { useHomeData } from './hooks/useHomeData';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
+import { useRouter } from 'expo-router';
+import { useAccountStore } from '@/stores/account';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
-  useHomeData();
   const bottomTabBarHeight = useBottomTabBarHeight();
+
+  // Account
+  const accounts = useAccountStore((state) => state.accounts);
+  const router = useRouter();
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
+
+  useHomeData();
 
   const data: HomeWidgetItem[] = [
     {
