@@ -102,7 +102,18 @@ const GradesView: React.FC = () => {
     const result = await managerToUse.getGradesPeriods();
     const currentPeriodFound = getCurrentPeriod(result);
 
-    setPeriods(result);
+    // sort by time, then put Semestre and Trimestre on top
+    const sortedResult = [...result].sort((a, b) => {
+      const isAKey = a.name.startsWith("Semestre") || a.name.startsWith("Trimestre");
+      const isBKey = b.name.startsWith("Semestre") || b.name.startsWith("Trimestre");
+
+      if (isAKey && !isBKey) return -1;
+      if (!isAKey && isBKey) return 1;
+
+      return a.start.getTime() - b.start.getTime();
+    });
+
+    setPeriods(sortedResult);
     setCurrentPeriod(currentPeriodFound);
     setPeriodsLoading(false);
   };
