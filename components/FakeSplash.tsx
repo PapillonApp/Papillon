@@ -38,6 +38,7 @@ const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
 
   const player = useVideoPlayer(videoSource, player => {
     player.loop = false;
+    player.muted = true;
     player.play();
   });
 

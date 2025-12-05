@@ -49,7 +49,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
       >
         <UserProfile subtitle='En cours de développement' />
 
-        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={12} inline>
+        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={8} inline>
           <HomeTopBarButton icon="palette" />
           <HomeTopBarButton icon="gears" />
         </Stack>

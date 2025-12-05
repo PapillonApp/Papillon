@@ -9,10 +9,12 @@ import { t } from 'i18next';
 import { LegendList } from '@legendapp/list';
 import { useHomeData } from './hooks/useHomeData';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
+import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   useHomeData();
+  const bottomTabBarHeight = useBottomTabBarHeight();
 
   const data: HomeWidgetItem[] = [
     {
@@ -33,7 +35,7 @@ const HomeScreen = () => {
         ListHeaderComponent={<HomeHeader />}
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingBottom: insets.bottom,
+          paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,
         }}
         data={data}

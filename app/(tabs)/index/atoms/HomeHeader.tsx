@@ -7,6 +7,7 @@ import Stack from '@/ui/components/Stack';
 import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import WrappedBanner from './WrappedBanner';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
@@ -67,6 +68,8 @@ const HomeHeader = () => {
           ))}
         </View>
       </Stack>
+
+      <WrappedBanner />
     </View>
   );
 };

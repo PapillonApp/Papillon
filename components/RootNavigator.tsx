@@ -15,9 +15,11 @@ import {
   AI_SCREEN_OPTIONS
 } from '@/constants/LayoutScreenOptions';
 import { useTheme } from '@react-navigation/native';
+import getCorners from '@/ui/utils/Corners';
 
 export function RootNavigator() {
   const theme = useTheme();
+  const corners = getCorners();
 
   // Memoize combined screen options to prevent object recreation
   const stackScreenOptions = useMemo(() => ({
@@ -42,6 +44,19 @@ export function RootNavigator() {
       <Stack.Screen name="ai" options={AI_SCREEN_OPTIONS} />
       <Stack.Screen name="devmode" options={DEVMODE_SCREEN_OPTIONS} />
       <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
+
+      <Stack.Screen
+        name="(modals)/wrapped"
+        options={{
+          headerShown: false,
+          presentation: "fullScreenModal",
+          animation: "flip",
+          contentStyle: {
+            borderRadius: corners > 2 ? corners - 2 : 0,
+            overflow: "hidden"
+          }
+        }}
+      />
 
       <Stack.Screen
         name="(modals)/grade"

@@ -8,9 +8,9 @@ import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectName } from "@/utils/subjects/name";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
-import { getStatusText } from "../../calendar";
 import { CourseStatus } from "@/services/shared/timetable";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
+import { getStatusText } from '../../calendar/components/CalendarDay';
 
 const HomeTimeTableWidget = () => {
   const navigation = useNavigation();
@@ -39,7 +39,7 @@ const HomeTimeTableWidget = () => {
   return (
     <FlatList
       scrollEnabled={false}
-      data={courses}
+      data={courses.slice(0, 3)}
       style={{ width: '100%', paddingHorizontal: 10 }}
       renderItem={({ item }) => (
         <Course
