@@ -52,7 +52,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
         <UserProfile subtitle='En cours de développement' />
 
         <Stack direction="horizontal" hAlign="center" vAlign="end" gap={8} inline>
-          <HomeTopBarButton icon="palette" />
+          <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />
           <HomeTopBarButton icon="gears" onPress={() => router.push("/(settings)/settings")} />
         </Stack>
       </View>

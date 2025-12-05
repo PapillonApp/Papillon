@@ -3,9 +3,12 @@ import { Image, StatusBar, StyleSheet } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
+import { useSettingsStore } from '@/stores/settings';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   const visible = useIsFocused();
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const currentWallpaper = settingsStore.wallpaper;
 
   return (
     <MaskedView
@@ -19,7 +22,7 @@ const Wallpaper = ({ height = 400, dim = true }) => {
       }
     >
       <Image
-        source={require('@/assets/images/wallpapers/clouds.jpg')}
+        source={currentWallpaper ? { uri: currentWallpaper?.url } : require('@/assets/images/wallpapers/clouds.jpg')}
         style={[styles.image, { height }]}
       />
 

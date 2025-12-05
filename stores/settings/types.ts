@@ -12,6 +12,11 @@ export interface SettingsState {
   personalization: Personalization;
 }
 
+export interface Wallpaper {
+  id: string;
+  url: string;
+}
+
 export interface Personalization {
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
@@ -21,4 +26,5 @@ export interface Personalization {
   showDevMode?: boolean;
   magicModelURL?: string;
   language?: string | null;
+  wallpaper?: Wallpaper;
 }

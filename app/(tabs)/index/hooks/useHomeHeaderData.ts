@@ -26,7 +26,7 @@ export const useHomeHeaderData = () => {
     if (!attendances) return 0;
     let count = 0;
     attendances.forEach(att => {
-      if("absences" in att) {
+      if(att && "absences" in att) {
         if (att.absences) count += att.absences.length;
       }
     });

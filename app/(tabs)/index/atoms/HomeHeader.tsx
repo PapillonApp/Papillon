@@ -8,6 +8,7 @@ import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
 import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import WrappedBanner from './WrappedBanner';
+import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
@@ -56,18 +57,21 @@ const HomeHeader = () => {
   return (
     <View style={{ paddingHorizontal: 0, paddingVertical: 12, width: "100%", flex: 1 }}>
       <View style={{ height: insets.top + 56 }} />
-      <Stack inline flex width={"100%"}>
-        <View style={{ width: '100%', gap: 6 }}>
-          {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
-            <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
-              {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
-                <HomeHeaderButton key={item.title} item={item} />
-              ))}
-              {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
-            </View>
-          ))}
-        </View>
-      </Stack>
+      <LiquidGlassContainer>
+        <Stack inline flex width={"100%"}>
+          <View style={{ width: '100%', gap: 6 }}>
+            {Array.from({ length: Math.ceil(HomeHeaderButtons.length / 2) }).map((_, i) => (
+
+              <View key={i} style={{ flexDirection: 'row', gap: 6, width: '100%' }}>
+                {HomeHeaderButtons.slice(i * 2, i * 2 + 2).map((item) => (
+                  <HomeHeaderButton key={item.title} item={item} />
+                ))}
+                {HomeHeaderButtons.slice(i * 2, i * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}
+              </View>
+            ))}
+          </View>
+        </Stack>
+      </LiquidGlassContainer>
 
       <WrappedBanner />
     </View>
