@@ -87,8 +87,6 @@ const NewsModal = () => {
   const [HTMLCleanupEnabled, setHTMLCleanupEnabled] = useState(true)
   const cleanedContent = HTMLCleanupEnabled ? cleanHtmlForArticle(news.content) : news.content
 
-  console.log(news)
-
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -173,6 +171,17 @@ const NewsModal = () => {
           ))}
         </List>
       )}
+
+      <Stack gap={0} style={{ opacity: 0.4 }}>
+        <Typography variant="caption">
+          Si cette actualité ne s'affiche pas correctement,
+        </Typography>
+        <Typography variant="caption" style={{
+          textDecorationLine: 'underline'
+        }} onPress={() => setHTMLCleanupEnabled(!HTMLCleanupEnabled)}>
+          {HTMLCleanupEnabled ? "désactiver" : "activer"} le formattage automatique
+        </Typography>
+      </Stack>
     </ScrollView >
   );
 };
