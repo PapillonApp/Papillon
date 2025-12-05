@@ -160,7 +160,7 @@ const NewsItem = ({ item }: { item: News }) => {
     <List marginBottom={0}>
       <Item
         onPress={() => router.push({
-          pathname: "/(features)/(news)/specific",
+          pathname: "/(modals)/news",
           params: { news: JSON.stringify(item) },
         })}
       >
@@ -181,9 +181,10 @@ const NewsItem = ({ item }: { item: News }) => {
 
 
         <Stack
-          direction='row'
+          direction='horizontal'
           gap={4}
           style={{ marginTop: 4 }}
+          hAlign='center'
         >
           <Typography nowrap weight='medium' style={{ flex: 1 }} variant='caption' color='secondary'>
             {item.author}
@@ -196,6 +197,12 @@ const NewsItem = ({ item }: { item: News }) => {
               day: "numeric",
             })}
           </Typography>
+
+          {item.attachments.length > 0 && (
+            <Icon size={18} opacity={0.4}>
+              <Papicons name={"link"} />
+            </Icon>
+          )}
         </Stack>
       </Item>
     </List>

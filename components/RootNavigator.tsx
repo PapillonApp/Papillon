@@ -68,6 +68,15 @@ export function RootNavigator() {
         }}
       />
       <Stack.Screen
+        name="(modals)/news"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="(modals)/course"
         options={{
           headerShown: Platform.OS === 'ios' ? runsIOS26 : true,
