@@ -9,19 +9,69 @@
     {
       "layers" : [
         {
-          "glass" : true,
-          "image-name" : "Union 2.svg",
-          "name" : "Logo",
+          "hidden" : false,
+          "image-name" : "glass 2.png",
+          "name" : "glass 2",
+          "opacity" : 0,
+          "position" : {
+            "scale" : 0.83,
+            "translation-in-points" : [
+              62,
+              50
+            ]
+          }
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.20801,0.68652,0.56885,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "overlay.png",
+          "name" : "overlay",
           "opacity" : 1,
           "position" : {
-            "scale" : 4.25,
+            "scale" : 0.83,
             "translation-in-points" : [
-              65.9140625,
-              48.5546875
+              62,
+              50
+            ]
+          }
+        },
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.20801,0.68652,0.56885,1.00000"
+              }
+            }
+          ],
+          "glass" : false,
+          "hidden" : false,
+          "image-name" : "base.png",
+          "name" : "base",
+          "position" : {
+            "scale" : 0.83,
+            "translation-in-points" : [
+              62,
+              50
             ]
           }
         }
       ],
+      "position" : {
+        "scale" : 0.99,
+        "translation-in-points" : [
+          -10,
+          -11
+        ]
+      },
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5

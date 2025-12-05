@@ -73,6 +73,19 @@ const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
       exiting={PapillonSplashOut}
       onLayout={SplashLoaded}
     >
+      <Image
+        source={require('@/assets/images/splash.png')}
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+        }}
+        resizeMode="cover"
+      />
+
       <VideoView
         player={player}
         style={{
