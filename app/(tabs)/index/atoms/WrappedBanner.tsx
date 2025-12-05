@@ -1,11 +1,10 @@
+import { useEvent } from "expo";
+import { useNavigation } from 'expo-router';
+import { useVideoPlayer, VideoSource, VideoView } from 'expo-video';
 import React, { useEffect } from 'react';
 import { Image, View } from 'react-native';
 
-import { VideoSource, useVideoPlayer, VideoView } from 'expo-video';
-import { useEvent } from "expo";
-import Stack from '@/ui/components/Stack';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { useNavigation } from 'expo-router';
 
 const assetId = require('@/assets/video/wrapped.mp4');
 
@@ -31,7 +30,7 @@ const WrappedBanner = () => {
 
   return (
     <AnimatedPressable
-      onPress={() => navigation.navigate('(modals)/wrapped')}
+      onPress={() => navigation.navigate('(modals)/wrapped/index')}
     >
       <View
         style={{
