@@ -7,6 +7,8 @@ import { CalendarHeader } from "./components/CalendarHeader";
 import { CalendarDay } from "./components/CalendarDay";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { CourseStatus } from "@/services/shared/timetable";
+import { t } from "i18next";
 
 export default function TabOneScreen() {
   const { colors } = useTheme();
@@ -104,3 +106,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export function getStatusText(status?: CourseStatus): string {
+  switch (status) {
+    case CourseStatus.ONLINE:
+      return t("Online_Course")
+    case CourseStatus.EDITED:
+      return t("Edited_Course")
+    case CourseStatus.CANCELED:
+      return t("Canceled_Course")
+    case CourseStatus.EVALUATED:
+      return t("Evaluated_Course")
+    default:
+      return ""
+  }
+}
