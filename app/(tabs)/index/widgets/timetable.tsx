@@ -1,15 +1,17 @@
-import React from 'react';
-import { FlatList } from "react-native";
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
+import React from 'react';
+import { FlatList } from "react-native";
+
+import { CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
-import { getSubjectName } from "@/utils/subjects/name";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+
 import { getStatusText } from "../../calendar";
-import { CourseStatus } from "@/services/shared/timetable";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 
 const HomeTimeTableWidget = () => {
