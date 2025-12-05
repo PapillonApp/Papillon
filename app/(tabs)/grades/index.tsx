@@ -66,21 +66,21 @@ const GradesView: React.FC = () => {
       }
     },
     {
-      label: t("Grades_Sorting_Averages"),
-      value: "averages",
-      icon: {
-        ios: "chart.xyaxis.line",
-        android: "ic_averages",
-        papicon: "grades",
-      }
-    },
-    {
       label: t("Grades_Sorting_Date"),
       value: "date",
       icon: {
         ios: "calendar",
         android: "ic_date",
         papicon: "calendar",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Averages"),
+      value: "averages",
+      icon: {
+        ios: "chart.xyaxis.line",
+        android: "ic_averages",
+        papicon: "grades",
       }
     },
   ];
