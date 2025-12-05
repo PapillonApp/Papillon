@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, View } from 'react-native';
 
 import { VideoSource, useVideoPlayer, VideoView } from 'expo-video';
@@ -22,6 +22,12 @@ const WrappedBanner = () => {
   });
 
   const { isPlaying, oldIsPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+  useEffect(() => {
+    if (!isPlaying) {
+      player.play();
+    }
+  }, [isPlaying]);
 
   return (
     <AnimatedPressable
