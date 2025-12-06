@@ -22,7 +22,7 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
       }}
     >
       <Pressable
-        onPress={onPress}
+        onPressIn={onPress}
         style={{
           width: '100%',
           height: '100%',
