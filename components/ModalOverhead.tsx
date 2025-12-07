@@ -1,6 +1,6 @@
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import Typography, { Variant } from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
@@ -8,7 +8,7 @@ import { t } from "i18next";
 import React from "react";
 import { Text, View, ViewStyle } from "react-native";
 
-const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, title, date }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, title?: string, date?: Date }) => {
+const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
 
   return (
@@ -52,7 +52,8 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, titl
       )}
       {subject && (
         <Typography
-          variant="title"
+          variant={subjectVariant}
+          align="center"
           color={adjust(color, theme.dark ? 0.3 : -0.3)}
         >
           {subject}
@@ -70,7 +71,7 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, titl
           variant="body1"
           color='secondary'
         >
-          {new Date(date).toLocaleDateString(undefined, {
+          {new Date(date).toLocaleDateString(undefined, dateFormat ? dateFormat : {
             day: "numeric",
             month: "long",
             year: "numeric",

@@ -158,6 +158,10 @@
   "Modal_Course_Room": "Salle",
   "Modal_Course_Duration": "Durée",
 
+  "Modal_Course_Time": "Horaires du cours",
+  "Modal_Course_Start": "Début",
+  "Modal_Course_End": "Fin",
+
   "Tasks_Search_Placeholder": "Rechercher des tâches",
   "Tasks_LeftHomeworks_Title": "tâches restantes",
   "Tasks_LeftHomeworks_Time": "cette semaine",
