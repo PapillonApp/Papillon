@@ -4,7 +4,7 @@ import { t } from "i18next";
 export const getPeriodName = (name: string) => {
   // Clean up the string: remove digits and trim
   // Remove common prefixes that might be leftover (like "er" from "1er") 
-  let newName = name.replace(/^\d{1,4}[a-zÀ-ù]{0,4}/, '').trim();
+  let newName = name.replace(/^\d{1,4}[a-zÀ-ù]{0,4}/, '').replace(/\d/g, '').trim();
 
   // Remove digits
   newName = newName.replace(/\d/g, '').trim();

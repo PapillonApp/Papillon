@@ -41,7 +41,7 @@ jobs:
           else
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
-            git add ios/Papillon/Info.plist
+            git add --force ios/Papillon/Info.plist
             git commit -m "Sync iOS version to ${{ env.NEW_VERSION }}"
             git push origin ${{ github.ref_name }}
           fi
@@ -119,6 +119,7 @@ jobs:
         run: |
           chmod +x android/gradlew
           echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+          echo "android.enable16KbPageSizes=true" >> android/gradle.properties
 
       - name: 📱 Build APK
         run: |

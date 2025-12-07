@@ -1,28 +1,25 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View } from "react-native";
+import { useTheme } from "@react-navigation/native";
 import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
-
-import Typography from "@/ui/components/Typography";
-import Stack from "@/ui/components/Stack";
-
-import { getProfileColorByName } from "@/utils/chats/colors";
-
-import Reanimated, { FadeInDown, FadeOutUp, } from "react-native-reanimated";
-import { calculateDistanceBetweenPositions, getCurrentPosition } from "@/utils/native/position";
-import { useAlert } from "@/ui/components/AlertProvider";
-import { Services } from "@/stores/account/types";
 import { geolocation } from "pawnote";
+import React, { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import Reanimated, { FadeInDown, FadeOutUp, } from "react-native-reanimated";
+import { SearchSchools } from "skolengojs";
+import { School as SkolengoSkool } from "skolengojs";
+
+import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import { getProfileColorByName } from "@/utils/chats/colors";
 import { getInitials } from "@/utils/chats/initials";
 import { log } from "@/utils/logger/logger";
 import { GeographicQuerying, GeographicReverse } from "@/utils/native/georeverse";
-import { SearchSchools } from "skolengojs";
-
-import { School as SkolengoSkool } from "skolengojs";
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { useTheme } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
+import { calculateDistanceBetweenPositions, getCurrentPosition } from "@/utils/native/position";
 
 export interface School {
   name: string,
@@ -126,7 +123,6 @@ export default function SelectSchoolOnMap() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const local = useGlobalSearchParams();
-  console.log(local)
   const city = local.method === "manual" ? local.city : undefined
   const getPosition = useCallback(async () => {
     const fetchedSchools = await fetchSchools(Number(local.service), alert, city?.toString());

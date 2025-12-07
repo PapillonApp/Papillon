@@ -101,6 +101,9 @@ module.exports = {
       [
         "expo-build-properties",
         {
+          android: {
+            enable16KbPageSizes: true,
+          },
           ios: {
             extraPods: [
               { name: "SDWebImage", modular_headers: true },
