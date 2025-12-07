@@ -20,6 +20,7 @@ import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { LayoutAnimationConfig } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
+import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
 
 const algorithms = [
   {
@@ -101,10 +102,10 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
 
     const [active, setActive] = useState(false);
 
-    const handleGestureUpdate = useCallback((p: { value: number, date: Date }) => {
+    const handleGestureUpdate = useCallback((p: { value: number, date: Date, originalValue?: number, originalDate?: Date }) => {
       setActive(true);
-      setShownAverage(p.value);
-      setShownDate(p.date);
+      setShownAverage(p.originalValue ?? p.value);
+      setShownDate(p.originalDate ?? p.date);
     }, []);
 
     const handleGestureEnd = useCallback(() => {
@@ -113,15 +114,9 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
       setShownDate(initialAverage ? initialAverage.date : new Date());
     }, [initialAverage]);
 
-    const graphAxis = useMemo(() => {
-      if (!currentAverageHistory) { return []; }
-      return currentAverageHistory
-        .filter(item => !isNaN(item.average) && item.average !== null && item.average !== undefined)
-        .map(item => ({
-          value: item.average,
-          date: new Date(item.date)
-        }));
-    }, [currentAverageHistory]);
+    const graphAxis = useMemo<GraphPoint[]>(() => {
+      return calculateAmplifiedGraphPoints(currentAverageHistory, scale);
+    }, [currentAverageHistory, scale]);
 
     const isRealAverage = useMemo(() => {
       return shownAverage === realAverage;
@@ -171,7 +166,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
                   width: "105%",
                   height: 120,
                   marginLeft: -30,
-                  marginTop: -20,
+                  marginTop: -10,
                 }}
               >
 

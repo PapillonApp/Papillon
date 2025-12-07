@@ -19,11 +19,17 @@ const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) =>
         width: 42,
         height: 42,
         borderRadius: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
       }}
     >
-      <Pressable onPress={onPress}>
+      <Pressable
+        onPressIn={onPress}
+        style={{
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <Icon size={26} fill='white'>
           <Papicons name={icon} />
         </Icon>
