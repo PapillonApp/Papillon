@@ -7,7 +7,7 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { useUserProfileData } from '../hooks/useUserProfileData';
 
-const UserProfile = ({ subtitle }: { subtitle?: string }) => {
+const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
   const { firstName, initials, profilePicture } = useUserProfileData();
 
   return (
@@ -25,12 +25,14 @@ const UserProfile = ({ subtitle }: { subtitle?: string }) => {
         imageUrl={profilePicture}
       />
       <Stack direction="vertical" vAlign="center" gap={0} inline flex>
-        <TouchableOpacity activeOpacity={0.5}>
+        <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
           <Stack direction="horizontal" hAlign="center" gap={6}>
             <Typography nowrap color='white' variant='navigation' weight='bold'>
               {t('Home_Welcome_Name', { name: firstName, emoji: "👋" })}
             </Typography>
-            <Papicons name="chevrondown" size={20} color="white" opacity={0.7} />
+            {chevron &&
+              <Papicons name="chevrondown" size={20} color="white" opacity={0.7} />
+            }
           </Stack>
         </TouchableOpacity>
         {subtitle &&

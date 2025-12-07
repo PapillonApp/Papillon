@@ -49,7 +49,7 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
           gap: 12,
         }}
       >
-        <UserProfile subtitle='En cours de développement' />
+        <UserProfile />
 
         <Stack direction="horizontal" hAlign="center" vAlign="end" gap={8} inline>
           <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />
