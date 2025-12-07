@@ -16,6 +16,7 @@ const TasksView: React.FC = () => {
   const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
   const {
+    defaultWeek,
     selectedWeek,
     showWeekPicker,
     toggleWeekPicker,
@@ -54,6 +55,7 @@ const TasksView: React.FC = () => {
       )}
       <View style={styles.container}>
         <TasksHeader
+          defaultWeek={defaultWeek}
           selectedWeek={selectedWeek}
           onToggleWeekPicker={toggleWeekPicker}
           setHeaderHeight={setHeaderHeight}

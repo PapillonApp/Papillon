@@ -11,6 +11,7 @@ import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
 export type SortMethod = 'date' | 'subject' | 'done';
 
 interface TasksHeaderProps {
+    defaultWeek: number;
     selectedWeek: number;
     onToggleWeekPicker: () => void;
     setHeaderHeight: (height: number) => void;
@@ -22,6 +23,7 @@ interface TasksHeaderProps {
 }
 
 const TasksHeader: React.FC<TasksHeaderProps> = ({
+    defaultWeek,
     selectedWeek,
     onToggleWeekPicker,
     setHeaderHeight,
@@ -51,9 +53,11 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
             title={
                 <TabHeaderTitle
                     leading={t('Tasks_Week')}
+                    subtitle={selectedWeek == defaultWeek ? t('Tasks_ThisWeek') : undefined}
                     number={selectedWeek.toString()}
                     color='#C54CB3'
                     onPress={onToggleWeekPicker}
+                    height={56}
                 />
             }
             trailing={
@@ -97,6 +101,9 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
                     placeholder={t('Tasks_Search_Placeholder')}
                     color='#C54CB3'
                     onTextChange={setSearchTerm}
+                    style={{
+                        marginTop: 6
+                    }}
                 />
             }
             shouldCollapseHeader={shouldCollapseHeader}

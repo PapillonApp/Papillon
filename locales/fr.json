@@ -419,6 +419,11 @@
   "Tasks_Sorting_Methods_DueDate": "Date de rendu",
   "Tasks_Sorting_Methods_Subject": "Matières",
   "Tasks_Sorting_Methods_Done": "Non terminé",
+  "Tasks_ThisWeek": "Cette semaine",
 
-  "Modal_Wallpaper_Title": "Personnaliser le fond d'écran"
+  "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
+
+  "Today": "Aujourd'hui",
+  "Yesterday": "Hier",
+  "Tomorrow": "Demain"
 }

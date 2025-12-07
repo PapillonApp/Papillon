@@ -3,7 +3,8 @@ import { getWeekNumberFromDate } from "@/database/useHomework";
 
 export const useWeekSelection = () => {
   const currentDate = new Date();
-  const [selectedWeek, setSelectedWeek] = useState<number>(getWeekNumberFromDate(currentDate));
+  const defaultWeek = getWeekNumberFromDate(currentDate);
+  const [selectedWeek, setSelectedWeek] = useState<number>(defaultWeek);
   const [showWeekPicker, setShowWeekPicker] = useState(false);
 
   const toggleWeekPicker = useCallback(() => {
@@ -15,6 +16,7 @@ export const useWeekSelection = () => {
   }, []);
 
   return {
+    defaultWeek,
     selectedWeek,
     setSelectedWeek,
     showWeekPicker,

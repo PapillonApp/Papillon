@@ -25,6 +25,13 @@ export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightCh
     calendarRef.current?.toggle();
   };
 
+  // know if date is today, yesterday, or tomorrow
+  const isToday = date.toDateString() === new Date().toDateString();
+  const isYesterday = date.toDateString() === new Date(new Date().setDate(new Date().getDate() - 1)).toDateString();
+  const isTomorrow = date.toDateString() === new Date(new Date().setDate(new Date().getDate() + 1)).toDateString();
+
+  const subtitle = isToday ? t("Today") : isYesterday ? t("Yesterday") : isTomorrow ? t("Tomorrow") : "";
+
   return (
     <>
       <Calendar
@@ -41,7 +48,9 @@ export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightCh
             leading={date.toLocaleDateString(i18n.language, { weekday: "long" })}
             number={date.toLocaleDateString(i18n.language, { day: "numeric" })}
             trailing={date.toLocaleDateString(i18n.language, { month: "long" })}
+            subtitle={subtitle}
             color='#D6502B'
+            height={56}
             onPress={() => toggleDatePicker()}
             loading={isLoading}
           />

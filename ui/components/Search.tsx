@@ -13,19 +13,20 @@ interface SearchProps {
   placeholder?: string,
   onTextChange?: (text: string) => void,
   color?: string,
+  style?: StyleProp<ViewStyle>,
 };
 
-const SearchContainer = ({ children }: { children: React.ReactNode }) => {
+const SearchContainer = ({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) => {
   const { colors } = useTheme();
 
   if (!isLiquidGlassSupported) {
     return (
       <View
-        style={{
+        style={[{
           width: Dimensions.get("window").width - 32,
           borderRadius: 300,
           backgroundColor: colors.text + "16",
-        }}
+        }, style]}
       >
         {children}
       </View>
@@ -38,10 +39,10 @@ const SearchContainer = ({ children }: { children: React.ReactNode }) => {
       isInteractive={true}
       glassTintColor="transparent"
       glassOpacity={0}
-      style={{
+      style={[{
         width: Dimensions.get("window").width - 32,
         borderRadius: 300,
-      }}
+      }, style]}
     >
       {children}
     </LiquidGlassView>
@@ -52,6 +53,7 @@ const Search: React.FC<SearchProps> = ({
   placeholder = "Rechercher",
   onTextChange = () => { },
   color,
+  style,
 }) => {
   const { colors } = useTheme();
   const [input, setInput] = useState("");
@@ -61,7 +63,7 @@ const Search: React.FC<SearchProps> = ({
   }, [input]);
 
   return (
-    <SearchContainer>
+    <SearchContainer style={style}>
       <Stack
         height={42}
         style={{
