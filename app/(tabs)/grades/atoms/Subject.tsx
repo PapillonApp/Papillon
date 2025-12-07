@@ -11,7 +11,7 @@ import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import { useTheme } from '@react-navigation/native';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { t } from 'i18next';
 import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
@@ -63,7 +63,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
 export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }> = React.memo(({ subject, grades, getAvgInfluence, getAvgClassInfluence }) => {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
   // Memoize derived values
   const subjectAdjustedColor = useMemo(
@@ -75,12 +75,11 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   const subjectEmoji = useMemo(() => getSubjectEmoji(subject.name), [subject.name]);
 
   const handlePressSubject = useCallback(() => {
-    Alert.alert(
-      'Ça arrive bientôt !',
-      "La vue détaillée des matières est en cours de développement et sera disponible dans une future mise à jour de Papillon. 🦋",
-      [{ text: 'OK' }]
-    );
-  }, []);
+    // @ts-expect-error navigation types
+    navigation.navigate('modals/SubjectInfo', {
+      subject: subject
+    });
+  }, [navigation, subject]);
 
   const handlePressGrade = useCallback(
     (grade: Grade) => {

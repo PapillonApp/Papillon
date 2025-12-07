@@ -14,6 +14,7 @@ import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
+import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
 
 interface SubjectInfo {
   name: string;
@@ -143,72 +144,20 @@ export default function GradesModal() {
               marginVertical: 20,
             }}
           >
-            <Stack
-              vAlign="center"
-              hAlign="center"
-              gap={4}
-              padding={[20, 0]}
-            >
-              <View
-                style={{
-                  backgroundColor: subjectInfo.color + "22",
-                  width: 48,
-                  height: 48,
-                  borderRadius: 120,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderColor: colors.text + "22",
-                  borderWidth: 1,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 28
-                  }}
-                >
-                  {subjectInfo.emoji}
-                </Text>
-              </View>
-
-              <Stack
-                direction='horizontal'
-                vAlign="end"
-                hAlign="end"
-                gap={2}
-                style={{ marginBottom: -4 }}
-              >
-                <Typography variant='h0' weight='medium' inline color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
-                  {grade.studentScore?.disabled ? grade.studentScore?.status : grade.studentScore?.value.toFixed(2) ?? 0}
-                </Typography>
-                <Typography variant='h3' weight='semibold' color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} style={{ marginBottom: 7, opacity: 0.5 }}>
-                  /{grade.outOf?.value ?? 20}
-                </Typography>
-              </Stack>
-
-              <Typography
-                variant="title"
-                color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
-              >
-                {subjectInfo.name}
-              </Typography>
-              {grade.description && (
-                <Typography
-                  variant="body1"
-                >
-                  {grade.description}
-                </Typography>
-              )}
-              <Typography
-                variant="body1"
-                color='secondary'
-              >
-                {new Date(grade.givenAt).toLocaleDateString(undefined, {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </Typography>
-            </Stack>
+            <ModalOverhead
+              color={subjectInfo.color}
+              emoji={subjectInfo.emoji}
+              subject={subjectInfo.name}
+              title={grade.description}
+              date={new Date(grade.givenAt)}
+              overhead={
+                <ModalOverHeadScore
+                  color={subjectInfo.color}
+                  score={grade.studentScore?.disabled ? String(grade.studentScore?.status) : String(grade.studentScore?.value.toFixed(2))}
+                  outOf={grade.outOf?.value}
+                />
+              }
+            />
 
             <Stack
               card

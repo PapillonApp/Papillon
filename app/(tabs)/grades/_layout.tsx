@@ -18,6 +18,15 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
+        name="modals/SubjectInfo"
+        options={{
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTitle: t("Grades_SubjectInfo"),
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
         name="modals/AboutAverages"
         options={{
           headerShown: true,
