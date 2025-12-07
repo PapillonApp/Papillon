@@ -3,7 +3,7 @@ import { MenuView } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
 
@@ -21,6 +21,9 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { LayoutAnimationConfig } from "react-native-reanimated";
 import Reanimated from "react-native-reanimated";
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
+import * as Haptics from "expo-haptics";
+import * as WebBrowser from "expo-web-browser";
+
 
 const algorithms = [
   {
@@ -113,6 +116,10 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
       setShownAverage(initialAverage ? initialAverage.average : 0);
       setShownDate(initialAverage ? initialAverage.date : new Date());
     }, [initialAverage]);
+
+    useEffect(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }, [active]);
 
     const graphAxis = useMemo<GraphPoint[]>(() => {
       return calculateAmplifiedGraphPoints(currentAverageHistory, scale);
@@ -241,7 +248,9 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
 
                 if (actionId.startsWith("open:")) {
                   if (actionId === "open:more") {
-                    router.push("/(tabs)/grades/modals/AboutAverages");
+                    WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support/kb/averages", {
+                      presentationStyle: "pageSheet"
+                    });
                   }
                 }
 
