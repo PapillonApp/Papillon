@@ -1,11 +1,11 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { useEvent } from "expo";
 import { useNavigation } from 'expo-router';
 import { useVideoPlayer, VideoSource, VideoView } from 'expo-video';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, View, Platform, ActivityIndicator } from 'react-native';
+import { Image, View } from 'react-native';
 
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { useFocusEffect } from "@react-navigation/native";
 
 // Import assets
 const videoAssetId = require('@/assets/video/wrapped.mp4');
@@ -51,7 +51,11 @@ const WrappedBanner = () => {
         // Screen is blurred (no longer visible)
         setIsFocused(false);
         // Pause the video to save resources
-        player.pause();
+        try {
+          player.pause();
+        } catch (e) {
+          // Ignore error if native player object is not found
+        }
         // For *extreme* optimization on Android/iOS, you might consider:
         // player.replace(null); // This unloads the video resource completely
         // If you unload, you need to call player.replace(videoSource) on focus
