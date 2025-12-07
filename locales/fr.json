@@ -95,6 +95,22 @@
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
+  "Course_Separator_Lunch_Default": "Pause méridienne",
+  "Course_Separator_Lunch_Alt_1": "Bon appétit !",
+  "Course_Separator_Lunch_Alt_2": "Miam !",
+
+  "Course_Separator_Morning_Default": "Pause matinale",
+  "Course_Separator_Morning_Alt_1": "Au dodo !",
+  "Course_Separator_Morning_Alt_2": "Petit déjeuner",
+
+  "Course_Separator_Evening_Default": "Pause de l'après-midi",
+  "Course_Separator_Evening_Alt_1": "Une pause s'impose !",
+  "Course_Separator_Evening_Alt_2": "Heure du goûter !",
+
+  "Course_Separator_Night_Default": "Pause du soir",
+  "Course_Separator_Night_Alt_1": "Au dodo !",
+  "Course_Separator_Night_Alt_2": "Il fait nuit !",
+
   "Context_Delete": "Supprimer",
   "Context_Cancel": "Annuler",
   "Context_Edit": "Modifier",
