@@ -100,7 +100,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
         left: 16,
         bottom: 0,
         right: 0,
-        zIndex: 99999,
+        zIndex: 999,
         alignItems: "flex-start",
         justifyContent: "flex-start",
         shadowColor: "#000",
@@ -123,7 +123,7 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
             glassOpacity={0}
             style={{
               borderRadius: 20,
-              zIndex: 999999,
+              zIndex: 99,
               width: 340,
               height: 320,
               alignItems: "center",
