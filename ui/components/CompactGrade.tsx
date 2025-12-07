@@ -8,6 +8,7 @@ import i18n from "@/utils/i18n";
 import adjust from "@/utils/adjustColor";
 import { LinearGradient } from "expo-linear-gradient";
 import Stack from "./Stack";
+import { Papicons } from "@getpapillon/papicons";
 
 interface CompactGradeProps {
   emoji: string;
@@ -19,6 +20,7 @@ interface CompactGradeProps {
   disabled?: boolean;
   status?: string;
   onPress?: () => void,
+  hasMaxScore?: boolean,
   color?: string;
   variant?: "normal" | "home";
   skeleton?: boolean;
@@ -34,12 +36,17 @@ export const CompactGrade = ({
   disabled,
   status,
   onPress,
+  hasMaxScore,
   variant,
   color = "#888888",
   skeleton = false,
 }: CompactGradeProps) => {
   const theme = useTheme();
   const { colors } = theme;
+
+  const trailingBase = adjust(color, theme.dark ? 0.2 : -0.4);
+  const trailingBackground = hasMaxScore ? trailingBase : trailingBase + "15";
+  const trailingForeground = hasMaxScore ? "#FFFFFF" : trailingBase;
 
   return (
     <AnimatedPressable
@@ -130,32 +137,29 @@ export const CompactGrade = ({
         <Typography variant="navigation" color="text" style={{ lineHeight: 20 }} numberOfLines={2} skeleton={skeleton} skeletonWidth={150} skeletonLines={2}>
           {description ? description : t('Grade_NoDescription', { subject: title })}
         </Typography>
-        <View style={{
-          flexDirection: "row",
-          alignSelf: "flex-start",
-          justifyContent: "flex-start",
-          alignItems: "flex-end",
-          gap: 2,
-          borderRadius: 120,
-          paddingHorizontal: 7,
-          paddingVertical: 3,
-          backgroundColor: skeleton ? colors.text + "10" : color + "33",
-        }}>
-          {skeleton ? (
-            <Typography skeleton variant={"h4"} skeletonWidth={20} style={{ borderRadius: 100, overflow: "hidden" }} />
+
+        <Stack noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+          {disabled ? (
+            <>
+              <Typography color={trailingForeground} variant='navigation'>
+                {status}
+              </Typography>
+            </>
           ) : (
             <>
-              <Typography variant="h4" color={adjust(color, theme.dark ? 0.2 : -0.4)}
-                style={{ lineHeight: 24 }}
-              >
-                {disabled ? status : (score ?? 0).toFixed(2)}
-              </Typography>
-              <Typography variant="body2" inline color={adjust(color, theme.dark ? 0.2 : -0.4)} style={{ marginBottom: 1 }}>
-                /{outOf ?? 20}
+              <Typography color={trailingForeground} variant='navigation'>
+                {score.toFixed(2)}
               </Typography>
             </>
           )}
-        </View>
+          <Typography color={trailingForeground + "99"} variant='body2'>
+            /{outOf}
+          </Typography>
+
+          {hasMaxScore && (
+            <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+          )}
+        </Stack>
       </View>
     </AnimatedPressable>
   );

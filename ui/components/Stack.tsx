@@ -26,6 +26,7 @@ interface StackProps extends ViewProps {
   bordered?: boolean; // Utilisé pour les listes avec bordures
   radius?: number;
   animated?: boolean;
+  noShadow?: boolean;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -92,6 +93,7 @@ const Stack: React.FC<StackProps> = ({
   bordered = false,
   style,
   children,
+  noShadow = false,
   animated = false,
   ...rest
 }) => {
@@ -100,8 +102,8 @@ const Stack: React.FC<StackProps> = ({
 
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}-${animated}`,
-    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card, animated]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}-${animated}-${noShadow}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card, animated, noShadow]
   );
 
   // Ultra-optimized style computation with caching
@@ -146,11 +148,13 @@ const Stack: React.FC<StackProps> = ({
     if (card) {
       dynamicStyle.borderRadius = radius || 20;
       dynamicStyle.borderCurve = "continuous";
-      dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
-      dynamicStyle.shadowOffset = { width: 0, height: 0 };
-      dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
-      dynamicStyle.shadowRadius = 1.5;
-      dynamicStyle.elevation = 1;
+      if (!noShadow) {
+        dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
+        dynamicStyle.shadowOffset = { width: 0, height: 0 };
+        dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
+        dynamicStyle.shadowRadius = 1.5;
+        dynamicStyle.elevation = 1;
+      }
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
       dynamicStyle.borderWidth = flat ? 1 : 0.5;

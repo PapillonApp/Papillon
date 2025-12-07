@@ -17,6 +17,7 @@ import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers"
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import React, { useCallback, useMemo } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
+import { Papicons } from '@getpapillon/papicons';
 
 const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
@@ -28,6 +29,10 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
     requestAnimationFrame(() => onPress(grade));
   }, [grade, onPress]);
 
+  const hasMaxScore = grade.studentScore.value == grade.maxScore.value;
+  const trailingBackground = hasMaxScore ? subjectColor : subjectColor + "15";
+  const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
+
   return (
     <Item isLast disablePadding onPress={handlePress}>
       <Typography variant='title'>
@@ -38,23 +43,27 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
       </Typography>
 
       <Trailing>
-        <Stack direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={subjectColor + "15"} >
+        <Stack noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
           {grade.studentScore.disabled ? (
             <>
-              <Typography color={subjectColor} variant='navigation'>
+              <Typography color={trailingForeground} variant='navigation'>
                 {grade.studentScore.status}
               </Typography>
             </>
           ) : (
             <>
-              <Typography color={subjectColor} variant='navigation'>
+              <Typography color={trailingForeground} variant='navigation'>
                 {grade.studentScore.value.toFixed(2)}
               </Typography>
             </>
           )}
-          <Typography color={subjectColor + "99"} variant='body2'>
+          <Typography color={trailingForeground + "99"} variant='body2'>
             /{grade.outOf.value}
           </Typography>
+
+          {hasMaxScore && (
+            <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+          )}
         </Stack>
       </Trailing >
     </Item >

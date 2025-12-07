@@ -304,6 +304,7 @@ const GradesView: React.FC = () => {
                 status={grade.studentScore?.status}
                 color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                 date={grade.givenAt}
+                hasMaxScore={grade.studentScore?.value == grade.maxScore?.value}
                 onPress={() => {
                   // @ts-expect-error navigation types
                   navigation.navigate('(modals)/grade', {
