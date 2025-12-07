@@ -20,7 +20,7 @@ interface HomeWidgetProps {
   item: HomeWidgetItem;
 }
 
-const HomeWidget: React.FC<HomeWidgetProps> = ({ item }) => {
+const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
   const router = useRouter();
 
   if (!item || (item.dev && !__DEV__)) {
@@ -54,6 +54,6 @@ const HomeWidget: React.FC<HomeWidgetProps> = ({ item }) => {
       {item.render && item.render()}
     </Stack>
   );
-};
+});
 
 export default HomeWidget;

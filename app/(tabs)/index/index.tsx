@@ -28,14 +28,16 @@ const HomeScreen = () => {
 
   useHomeData();
 
-  const data: HomeWidgetItem[] = [
+  const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+
+  const data: HomeWidgetItem[] = React.useMemo(() => [
     {
       icon: <Papicons name={"Calendar"} />,
       title: t("Home_Widget_NextCourses"),
       redirect: "(tabs)/calendar",
-      render: () => <HomeTimeTableWidget />
+      render: renderTimeTable
     },
-  ];
+  ], [renderTimeTable]);
 
   return (
     <>

@@ -13,7 +13,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
 
-const HomeTimeTableWidget = () => {
+const HomeTimeTableWidget = React.memo(() => {
   const navigation = useNavigation();
   const { courses } = useTimetableWidgetData();
 
@@ -71,7 +71,7 @@ const HomeTimeTableWidget = () => {
       )}
     />
   );
-}
+});
 
 export default HomeTimeTableWidget;
 
