@@ -11,6 +11,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import i18n from "@/utils/i18n";
 
 const SubjectInfo = () => {
   const { params } = useRoute();
@@ -26,26 +27,26 @@ const SubjectInfo = () => {
 
   const averagesData = [
     {
-      title: "Moyenne de la classe",
-      subtitle: "Moyenne de tous les élèves en " + subjectName,
+      title: i18n.t("SubjectInfo_ClassAverage_Label"),
+      subtitle: i18n.t("SubjectInfo_ClassAverage_Description"),
       disabled: subject.classAverage.disabled,
-      value: subject.classAverage.value,
+      value: subject.classAverage.value.toFixed(2),
       status: subject.classAverage.status,
       icon: "GraduationHat",
     },
     {
-      title: "Moyenne haute",
-      subtitle: "Moyenne la plus élevée du groupe",
+      title: i18n.t("SubjectInfo_MaxAverage_Label"),
+      subtitle: i18n.t("SubjectInfo_MaxAverage_Description"),
       disabled: subject.maximum.disabled,
-      value: subject.maximum.value,
+      value: subject.maximum.value.toFixed(2),
       status: subject.maximum.status,
       icon: "ArrowRightUp",
     },
     {
-      title: "Moyenne basse",
-      subtitle: "Moyenne la plus basse du groupe",
+      title: i18n.t("SubjectInfo_MinAverage_Label"),
+      subtitle: i18n.t("SubjectInfo_MinAverage_Description"),
       disabled: subject.minimum.disabled,
-      value: subject.minimum.value,
+      value: subject.minimum.value.toFixed(2),
       status: subject.minimum.status,
       icon: "Minus",
     }
@@ -76,7 +77,7 @@ const SubjectInfo = () => {
             subject={subjectName}
             color={subjectColor}
             emoji={subjectEmoji}
-            overtitle="Moyenne de la matière"
+            overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
             overhead={
               <ModalOverHeadScore
                 color={subjectColor}
@@ -92,7 +93,7 @@ const SubjectInfo = () => {
 
         sections={[
           {
-            title: "Moyennes de la matière",
+            title: i18n.t("SubjectInfo_Stats_Header"),
             icon: <Papicons name="grades" />,
             items: averagesData.map((average) => ({
               icon: <Papicons name={average.icon} />,

@@ -198,6 +198,15 @@
   "Grades_Avg_KnowMore_Description": "Comprendre les méthodes de calcul de la moyenne générale",
 
   "Grades_SubjectInfo": "Informations sur la matière",
+  "Grades_SubjectInfo_NbGrades": "{{number}} note(s)",
+  "SubjectInfo_StudentAverage_Label": "Moyenne de l'élève",
+  "SubjectInfo_Stats_Header": "Comparatif",
+  "SubjectInfo_ClassAverage_Label": "Moyenne de classe",
+  "SubjectInfo_ClassAverage_Description": "Moyenne générale de la classe",
+  "SubjectInfo_MaxAverage_Label": "Moyenne maximale",
+  "SubjectInfo_MaxAverage_Description": "Meilleure moyenne du groupe",
+  "SubjectInfo_MinAverage_Label": "Moyenne minimale",
+  "SubjectInfo_MinAverage_Description": "Moyenne la plus faible du groupe",
 
   "Grades_Semester": "Semestre",
   "Grades_Trimester": "Trimestre",
