@@ -24,6 +24,9 @@ const WrappedBanner = () => {
   // Using a ref to hold the player ensures it doesn't get re-created on every render
   const playerRef = useRef(useVideoPlayer(videoSource, player => {
     player.loop = true;
+    player.muted = true;
+    player.showNowPlayingNotification = false;
+    player.audioMixingMode = "mixWithOthers";
   }));
   const player = playerRef.current;
 
@@ -71,7 +74,7 @@ const WrappedBanner = () => {
 
   return (
     <AnimatedPressable
-      onPress={() => navigation.navigate('(modals)/wrapped/index')}
+      onPress={() => navigation.navigate('(modals)/wrapped')}
       style={{ marginTop: 12 }}
     >
       <View
