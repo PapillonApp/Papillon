@@ -32,6 +32,7 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
+        CADisableMinimumFrameDurationOnPhone: true,
       },
       supportsTablet: true,
       config: {
