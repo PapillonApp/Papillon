@@ -21,11 +21,6 @@ const HomeScreen = () => {
   const accounts = useAccountStore((state) => state.accounts);
   const router = useRouter();
 
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-    return null;
-  }
-
   useHomeData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
@@ -38,6 +33,11 @@ const HomeScreen = () => {
       render: renderTimeTable
     },
   ], [renderTimeTable]);
+
+  if (accounts.length === 0) {
+    router.replace("/(onboarding)/welcome");
+    return null;
+  }
 
   return (
     <>
