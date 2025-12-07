@@ -80,7 +80,7 @@ const SubjectInfo = () => {
             overhead={
               <ModalOverHeadScore
                 color={subjectColor}
-                score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value)}
+                score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
                 outOf={outOf}
               />
             }
