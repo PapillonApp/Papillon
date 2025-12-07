@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { Platform, Pressable, PressableProps } from "react-native";
+import { Platform, PressableProps } from "react-native";
 import Reanimated, {
   LinearTransition,
   useAnimatedStyle,
@@ -8,6 +8,7 @@ import Reanimated, {
 } from "react-native-reanimated";
 import * as ExpoHaptics from "expo-haptics";
 import { Animation } from "../utils/Animation";
+import { Pressable } from "react-native-gesture-handler";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
