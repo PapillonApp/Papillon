@@ -61,12 +61,11 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/wallpaper"
         options={{
-          presentation: "formSheet",
+          presentation: "modal",
           headerLargeTitle: false,
           headerTitle: t("Modal_Wallpaper_Title"),
-          sheetAllowedDetents: "fitToContents",
           contentStyle: {
-            backgroundColor: runsIOS26 ? 'transparent' : theme.colors.background
+            backgroundColor: theme.colors.card
           }
         }}
       />

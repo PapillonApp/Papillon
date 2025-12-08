@@ -5,8 +5,8 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
 import { useTheme } from "@react-navigation/native"
-import React, { useState } from "react"
-import { FlatList, Image, Platform, View } from "react-native"
+import React, { useEffect, useState } from "react"
+import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
 import { File, Directory, Paths } from 'expo-file-system';
 import ActivityIndicator from "@/components/ActivityIndicator"
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
@@ -16,37 +16,38 @@ import { MenuView } from "@react-native-menu/menu"
 
 import * as ImagePicker from 'expo-image-picker';
 
+const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
+
 interface Collection {
   name: string;
+  icon?: string;
+  link?: string;
   images: Wallpaper[];
 }
 
-const collections: Collection[] = [
-  {
-    name: "Par défaut",
-    images: [
-      {
-        id: "picsum:23",
-        url: "https://picsum.photos/id/23/367/267"
-      },
-      {
-        id: "picsum:17",
-        url: "https://picsum.photos/id/17/2500/1667"
-      },
-      {
-        id: "picsum:16",
-        url: "https://picsum.photos/id/16/367/267"
-      },
-      {
-        id: "picsum:5",
-        url: "https://picsum.photos/id/5/367/267"
-      }
-    ]
-  }
-]
-
 const WallpaperModal = () => {
   const { colors } = useTheme()
+
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCollections = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(COLLECTIONS_SOURCE);
+      const data = await response.json();
+      setCollections(data);
+    } catch (error) {
+      setError(error as string);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
 
   const [currentlyDownloading, setCurrentlyDownloading] = useState<string[]>([]);
 
@@ -125,12 +126,30 @@ const WallpaperModal = () => {
         contentInsetAdjustmentBehavior="automatic"
         data={collections}
         style={{
-          height: 300
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          gap: 16
         }}
         renderItem={({ item }) => (
           <View>
-            <Stack direction="horizontal" alignItems="center" padding={[16, 10]}>
-              <Typography variant="body2" color="secondary">{item.name}</Typography>
+            <Stack direction="horizontal" alignItems="center" gap={8} padding={[16, 10]}>
+              {item.icon &&
+                <Image
+                  source={{ uri: item.icon }}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 6
+                  }}
+                />
+              }
+
+              <Typography style={{ flex: 1 }} variant="body1" color="text">{item.name}</Typography>
+
+              {item.images.find((image) => image.id === currentWallpaper?.id) && item.images.find((image) => image.id === currentWallpaper?.id)?.credit &&
+                <Typography variant="caption" color="secondary">{item.images.find((image) => image.id === currentWallpaper?.id)?.credit}</Typography>
+              }
             </Stack>
 
             <FlatList
@@ -144,52 +163,16 @@ const WallpaperModal = () => {
                 gap: 6
               }}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <AnimatedPressable
-                  onPress={() => downloadAndSelect(item)}
-                >
-                  <View
-                    style={{
-                      width: 160,
-                      height: 100,
-                      padding: 2,
-                      borderRadius: 16,
-                      borderCurve: "continuous",
-                      borderWidth: selectedId === item.id ? 2 : 0,
-                      borderColor: selectedId === item.id ? colors.primary : "transparent"
-                    }}
-                    key={item.id}
-                  >
-                    {
-                      currentlyDownloading.includes(item.id) &&
-                      <View
-                        style={{
-                          position: "absolute",
-                          top: 2,
-                          left: 2,
-                          width: "100%",
-                          height: "100%",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          zIndex: 1,
-                          borderRadius: 12,
-                          backgroundColor: "rgba(0, 0, 0, 0.5)"
-                        }}
-                      >
-                        <ActivityIndicator color="#ffffff" />
-                      </View>
-                    }
-
-                    <Image
-                      source={{ uri: item.url }}
-                      style={{ width: "100%", height: "100%", borderRadius: 12 }}
-                    />
-                  </View>
-                </AnimatedPressable>
-              )}
+              renderItem={({ item }) => <WallpaperImage item={item} onPress={() => downloadAndSelect(item)} selectedId={currentWallpaper?.id} isDownloading={currentlyDownloading.includes(item.id)} />}
             />
           </View>
         )}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={fetchCollections}
+          />
+        }
       />
 
       <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + hasCustomWallpaper ? "true" : "false"}>
@@ -262,5 +245,56 @@ const WallpaperModal = () => {
     </>
   )
 }
+
+const WallpaperImage = ({ item, onPress, selectedId, isDownloading }: { item: WallpaperCollection, onPress: () => void, selectedId: string, isDownloading: boolean }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const { colors } = useTheme();
+
+  return (
+
+    <AnimatedPressable
+      onPress={onPress}
+    >
+      <View
+        style={{
+          width: 160,
+          height: 100,
+          padding: 2,
+          borderRadius: 16,
+          borderCurve: "continuous",
+          borderWidth: selectedId === item.id ? 2 : 0,
+          borderColor: selectedId === item.id ? colors.primary : "transparent"
+        }}
+        key={item.id}
+      >
+        {
+          (!imageLoaded || isDownloading) &&
+          <View
+            style={{
+              position: "absolute",
+              top: 2,
+              left: 2,
+              width: "100%",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1,
+              borderRadius: 12,
+              backgroundColor: "rgba(0, 0, 0, 0.5)"
+            }}
+          >
+            <ActivityIndicator color="#ffffff" />
+          </View>
+        }
+
+        <Image
+          source={{ uri: item.thumbnail || item.url }}
+          style={{ width: "100%", height: "100%", borderRadius: 12 }}
+          onLoad={() => setImageLoaded(true)}
+        />
+      </View>
+    </AnimatedPressable>
+  );
+};
 
 export default WallpaperModal

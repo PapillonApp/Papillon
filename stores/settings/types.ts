@@ -15,6 +15,8 @@ export interface SettingsState {
 export interface Wallpaper {
   id: string;
   url: string;
+  thumbnail?: string;
+  credit?: string;
 }
 
 export interface Personalization {
