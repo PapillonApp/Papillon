@@ -26,6 +26,10 @@ import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 170;
 
+const upperFirst = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default function LannionCredentials() {
     const insets = useSafeAreaInsets();
     const theme = useTheme();
@@ -84,8 +88,8 @@ export default function LannionCredentials() {
             const etudiant = firstReleve.relevé?.etudiant;
 
             const accountUUID = String(uuid());
-            const studentName = etudiant?.nom || "Unknown";
-            const studentFirstName = etudiant?.prenom || "Student";
+            const studentName = upperFirst(etudiant?.nom) || "Unknown";
+            const studentFirstName = upperFirst(etudiant?.prenom) || "Student";
 
             const account: Account = {
                 id: accountUUID,

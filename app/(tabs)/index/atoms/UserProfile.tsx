@@ -6,8 +6,10 @@ import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { useUserProfileData } from '../hooks/useUserProfileData';
+import { useRouter } from 'expo-router';
 
 const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
+  const router = useRouter();
   const { firstName, initials, profilePicture } = useUserProfileData();
 
   return (
@@ -19,11 +21,17 @@ const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevro
       flex
       style={styles.container}
     >
-      <Avatar
-        size={38}
-        initials={initials}
-        imageUrl={profilePicture}
-      />
+      <TouchableOpacity
+        onPress={() => {
+          router.push("/(modals)/profile");
+        }}
+      >
+        <Avatar
+          size={38}
+          initials={initials}
+          imageUrl={profilePicture}
+        />
+      </TouchableOpacity>
       <Stack direction="vertical" vAlign="center" gap={0} inline flex>
         <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
           <Stack direction="horizontal" hAlign="center" gap={6}>
