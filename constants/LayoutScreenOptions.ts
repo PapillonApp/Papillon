@@ -29,9 +29,6 @@ export const ALERT_SCREEN_OPTIONS = {
   sheetGrabberVisible: false,
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,
-  contentStyle: {
-    backgroundColor: runsIOS26 ? 'transparent' : undefined
-  }
 } as const;
 
 export const DEVMODE_SCREEN_OPTIONS = {
