@@ -17,6 +17,10 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
   const theme = useTheme();
   const colors = theme.colors;
 
+  if (sections.length === 0) {
+    return null;
+  }
+
   return (
     <Reanimated.View
       entering={PapillonAppearIn}
@@ -36,8 +40,14 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
         />
         <Typography variant="title" color='#AB2276'>
           {(() => {
+
             const total = sections.reduce((acc, section) => acc + section.data.length, 0);
             const undone = sections.reduce((acc, section) => acc + section.data.filter(hw => !hw.isDone).length, 0);
+
+            if (undone === 0) {
+              return "Toutes les tâches sont terminées !";
+            }
+
             return `${undone} tâche${undone !== 1 ? 's' : ''} restante${undone !== 1 ? 's' : ''} cette semaine`;
           })()}
         </Typography>
