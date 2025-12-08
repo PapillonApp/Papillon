@@ -136,7 +136,6 @@ export default function CustomProfileScreen() {
           >
             <Button
               inline
-              variant="outline"
               size="small"
               icon={<Papicons name="Camera" />}
               title={t("Button_Change_ProfilePicture")}
