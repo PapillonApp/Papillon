@@ -1,20 +1,20 @@
-import { Account, Session, studentHomepageTimeline } from "pawdirecte";
+import { Client } from "@blockshub/blocksdirecte";
 
 import { warn } from "@/utils/logger/logger";
 
 import { News } from "../shared/news";
 
-export async function fetchEDNews(session: Session, account: Account, accountId: string): Promise<News[]> {
+export async function fetchEDNews(session: Client, accountId: string): Promise<News[]> {
   try {
-    const news = await studentHomepageTimeline(session, account)
+    const news = (await session.timeline.getPublicTimeline()).postits
     return news.map(item => ({
-      id: item.id,
-      createdAt: item.creationDate,
+      id: String(item.id),
+      createdAt: new Date(item.dateCreation),
       createdByAccount: accountId,
       acknowledged: true,
       attachments: [],
-      content: item.content,
-      author: item.authorName,
+      content: item.contenu,
+      author: [item.auteur.prenom, item.auteur.nom].join(" "),
       category: "Actualités"
     }))
   } catch (error) {

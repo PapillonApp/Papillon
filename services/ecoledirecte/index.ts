@@ -54,23 +54,24 @@ export class EcoleDirecte implements SchoolServicePlugin {
     if (this.session) {
       return fetchEDHomeworks(this.session, this.accountId, weekNumber);
     }
-    error("Session or account is not valid", "EcoleDirecte.getHomeworks")
+
+    throw error("Session or account is not valid", "EcoleDirecte.getHomeworks")
   }
 
   async getNews(): Promise<News[]> {
-    if (this.session && this.account) {
-      return fetchEDNews(this.session, this.account, this.accountId);
+    if (this.session) {
+      return fetchEDNews(this.session, this.accountId);
     }
 
-    error("Session or account is not valid", "EcoleDirecte.getNews");
+    throw error("Session or account is not valid", "EcoleDirecte.getNews");
   }
 
   async getGradesForPeriod(period: Period): Promise<PeriodGrades> {
-    if (this.session && this.account) {
-      return fetchEDGrades(this.session, this.account, this.accountId, period)
+    if (this.session) {
+      return fetchEDGrades(this.session, this.accountId, period)
     }
 		
-    error("Session or account is not valid", "EcoleDirecte.getGradesForPeriod");
+    throw error("Session or account is not valid", "EcoleDirecte.getGradesForPeriod");
   }
 
   async getGradesPeriods(): Promise<Period[]> {

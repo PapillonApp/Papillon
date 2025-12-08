@@ -1,19 +1,18 @@
-import { Account, GradeKind, GradeValue, Session, studentGrades } from "pawdirecte";
 
-import { generateId } from "@/utils/generateId";
+import { Client } from "@blockshub/blocksdirecte";
+
 import { warn } from "@/utils/logger/logger";
 
-import { AttachmentType } from "../shared/attachment";
-import { GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
+import { Grade, Period, PeriodGrades, Subject } from "../shared/grade";
 
-export async function fetchEDGradePeriods(session: Session, account: Account, accountId: string): Promise<Period[]> {
+export async function fetchEDGradePeriods(session: Client, accountId: string): Promise<Period[]> {
   try {
-    const grades = await studentGrades(session, account, "")
-    return grades.periods.map(period => ({
-      name: period.name,
-      id: period.id,
-      start: period.startDate,
-      end: period.endDate,
+    const overview = await session.marks.getMark()
+    return overview.periodes.map(period => ({
+      name: period.periode,
+      id: period.codePeriode,
+      start: new Date(period.dateDebut),
+      end: new Date(period.dateFin),
       createdByAccount: accountId
     }))
   } catch {
@@ -21,11 +20,13 @@ export async function fetchEDGradePeriods(session: Session, account: Account, ac
   }
 }
 
-export async function fetchEDGrades(session: Session, account: Account, accountId: string, period: Period): Promise<PeriodGrades> {
+export async function fetchEDGrades(session: Client, accountId: string, period: Period): Promise<PeriodGrades> {
   try {
-    const grades = await studentGrades(session, account, "")
+    const overview = await session.marks.getMark()
+    const periodReport = overview.periodes.find(item => item.idPeriode === period.id)
+    const grades = overview.notes.filter(grade => grade.codePeriode === period.id)
     
-    if (!grades?.overview?.[period.id!]) {
+    if (!overview || !periodReport) {
       warn("Invalid grades data structure or period not found")
       return {
         createdByAccount: accountId,
@@ -35,64 +36,47 @@ export async function fetchEDGrades(session: Session, account: Account, accountI
       }
     }
     
-    const overview = grades.overview[period.id!];
     const subjects: Record<string, Subject> = {}
-
-    if (overview.subjects) {
-      for (const subject of overview.subjects) {
-        subjects[subject.name] = {
-          id: subject.id,
-          name: subject.name,
-          studentAverage: mapEDGradeScore(subject.studentAverage),
-          classAverage: mapEDGradeScore(subject.classAverage),
-          minimum: mapEDGradeScore(subject.minAverage),
-          maximum: mapEDGradeScore(subject.maxAverage),
-          outOf: mapEDGradeScore(subject.outOf),
-          grades: []
-        }
+    const allMappedGrades: Grade[] = grades.map(g => ({
+      id: String(g.id),
+      subjectId: g.codeMatiere,
+      subjectName: g.libelleMatiere,
+      description: g.commentaire,
+      givenAt: new Date(g.date),
+      subjectFile: undefined,
+      correctionFile: undefined,
+      bonus: false,
+      optional: g.nonSignificatif,
+      outOf: { value: Number(g.noteSur) },
+      coefficient: Number(g.coef),
+      studentScore: { value: Number(g.valeur) },
+      averageScore: { value: Number(g.moyenneClasse) },
+      minScore: { value: Number(g.minClasse) },
+      maxScore: { value: Number(g.maxClasse) },
+      createdByAccount: accountId
+    }))
+    
+    for (const subject of periodReport.ensembleMatieres.disciplines) {
+      subjects[subject.codeMatiere] = {
+        id: subject.codeMatiere,
+        name: subject.discipline,
+        studentAverage: { value: Number(subject.moyenne) },
+        classAverage: { value: Number(subject.moyenneClasse) },
+        maximum: { value: Number(subject.moyenneMax) },
+        minimum: { value: Number(subject.moyenneMin) },
+        outOf: { value: 20 },
+        grades: allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
       }
     }
 
-    if (grades.grades) {
-      for (const grade of grades.grades) {
-        if (subjects[grade.subject.name]) {
-          subjects[grade.subject.name].grades.push({
-            id: generateId(JSON.stringify(grade)),
-            subjectId: grade.subject.id,
-            subjectName: grade.subject.name,
-            description: grade.comment,
-            givenAt: grade.date,
-            subjectFile: {
-              type: AttachmentType.LINK,
-              name: "Sujet",
-              url: grade.subjectFilePath,
-              createdByAccount: accountId
-            },
-            correctionFile: {
-              type: AttachmentType.LINK,
-              name: "Sujet",
-              url: grade.correctionFilePath,
-              createdByAccount: accountId
-            },
-            bonus: false,
-            optional: grade.isOptional,
-            outOf: { value: grade.outOf },
-            coefficient: grade.coefficient,
-            studentScore: mapEDGradeScore(grade.value),
-            averageScore: mapEDGradeScore(grade.average),
-            minScore: mapEDGradeScore(grade.min),
-            maxScore: mapEDGradeScore(grade.max),
-            createdByAccount: accountId
-          })
-        }
-      }
-    }
+    const average = grades.reduce((sum, grade) => sum + Number(grade.valeur), 0) / grades.length
+    const classAverage = Object.values(subjects).reduce((sum, subject) => sum + subject.classAverage.value, 0) / Object.keys(subjects).length
 
     return {
-      createdByAccount: accountId,
-      classAverage: mapEDGradeScore(overview.classAverage),
-      studentOverall: mapEDGradeScore(overview.overallAverage),
-      subjects: Object.values(subjects).filter(subject => subject.grades.length > 0)
+      studentOverall: { value: average },
+      classAverage: { value: classAverage },
+      subjects: Object.values(subjects),
+      createdByAccount: accountId
     }
   } catch (error) {
     warn(String(error))
@@ -102,24 +86,5 @@ export async function fetchEDGrades(session: Session, account: Account, accountI
       studentOverall: { value: 16.66, disabled: true },
       subjects: []
     }
-  }
-}
-
-function mapEDGradeScore(grade: GradeValue): GradeScore {
-  switch(grade.kind) {
-  case GradeKind.Grade:
-    return { value: grade.points }
-  case GradeKind.Absent:
-    return { value: grade.points, disabled: true, status: "Abs."}
-  case GradeKind.Error:
-    return { value: grade.points, disabled: true, status: "Erreur"}
-  case GradeKind.Exempted:
-    return { value: grade.points, disabled: true, status: "Disp."}
-  case GradeKind.NotGraded:
-    return { value: grade.points, disabled: true, status: "N. Not."}
-  case GradeKind.Waiting:
-    return { value: grade.points, disabled: true, status: "Attente"}
-  default:
-    return { value: grade.points }
   }
 }
