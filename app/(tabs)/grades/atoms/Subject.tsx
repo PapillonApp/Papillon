@@ -29,7 +29,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
     requestAnimationFrame(() => onPress(grade));
   }, [grade, onPress]);
 
-  const hasMaxScore = grade.studentScore.value == grade.maxScore.value;
+  const hasMaxScore = grade.studentScore?.value == grade.maxScore?.value;
   const trailingBackground = hasMaxScore ? subjectColor : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
@@ -119,7 +119,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
           </Stack>
 
           <Stack flex inline>
-            <Typography variant='title' color={subjectAdjustedColor}>
+            <Typography nowrap variant='title' color={subjectAdjustedColor}>
               {subjectName}
             </Typography>
           </Stack>

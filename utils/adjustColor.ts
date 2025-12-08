@@ -32,5 +32,12 @@ export default function adjust(hex: string, percent: number) {
     .slice(1)}`;
 
   cache.set(key, result);
+
+  // check if result is valid HEX
+  if (!/^#[0-9A-F]{6}$/i.test(result)) {
+    console.error(`Invalid HEX color: ${result}`, 'adjustColor');
+    return hex;
+  }
+
   return result;
 }
