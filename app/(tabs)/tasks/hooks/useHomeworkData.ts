@@ -56,34 +56,32 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
     setIsRefreshing(false);
   }, [fetchHomeworks]);
 
-  const onProgressChange = useCallback(
-    (item: Homework, _newProgress: number) => {
-      const updateHomeworkCompletion = async (homeworkItem: Homework) => {
-        const id = generateId(
-          homeworkItem.subject +
-          homeworkItem.content +
-          homeworkItem.createdByAccount +
-          new Date(homeworkItem.dueDate).toDateString()
-        );
+  const setAsDone = useCallback(
+    async (item: Homework, done: boolean) => {
+      const id = generateId(
+        item.subject +
+        item.content +
+        item.createdByAccount +
+        new Date(item.dueDate).toDateString()
+      );
+
+      try {
+        const manager = getManager();
+        await manager.setHomeworkCompletion(item, done)
+
+        updateHomeworkIsDone(id, done);
         
-        const newIsDoneState = !homeworkItem.isDone;
-
-        try {
-          const manager = getManager();
-          await manager.setHomeworkCompletion(homeworkItem, newIsDoneState)
-
-          updateHomeworkIsDone(id, newIsDoneState);
-          setRefreshTrigger(prev => prev + 1);
-          setHomework(prev => ({
-            ...prev,
-            [id]: {
-              ...(prev[id] ?? homeworkItem),
-              isDone: newIsDoneState,
-            }
-          }));
-
-        } catch (err) {
-          alert.showAlert({
+        setRefreshTrigger(prev => prev + 1);
+        setHomework(prev => ({
+          ...prev,
+          [id]: {
+            ...(prev[id] ?? item),
+            isDone: done,
+          }
+        }));
+      }
+      catch (err) {
+        alert.showAlert({
             title: "Une erreur est survenue",
             message: "Ce devoir n'a pas été mis à jour",
             description:
@@ -92,12 +90,19 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
             icon: "TriangleAlert",
             technical: String(err)
           });
-        }
-      };
 
-      updateHomeworkCompletion(item);
+        updateHomeworkIsDone(id, !done);
+        setRefreshTrigger(prev => prev + 1);
+        setHomework(prev => ({
+          ...prev,
+          [id]: {
+            ...(prev[id] ?? item),
+            isDone: !done,
+          }
+        }));
+      }
     },
-    [alert]
+    []
   );
 
   return {
@@ -105,6 +110,6 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
     homeworksFromCache,
     isRefreshing,
     handleRefresh,
-    onProgressChange,
+    setAsDone,
   };
 };

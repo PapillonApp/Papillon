@@ -424,8 +424,15 @@
   "Tasks_Sorting_Methods_Done": "Non terminé",
   "Tasks_ThisWeek": "Cette semaine",
 
+  "Task_Undone": "Non terminé",
+  "Task_Done": "Terminé",
+
   "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
   "Modal_Profile_Title": "Personnaliser le profil",
+
+  "Modal_Task_Status": "État du devoir",
+  "Modal_Task_Description": "Description du devoir",
+  "Modal_Task_Attachments": "Pièces jointes",
 
   "Today": "Aujourd'hui",
   "Yesterday": "Hier",

@@ -20,8 +20,10 @@ interface SectionItem {
   type?: string;
   content?: React.ReactNode;
   title?: string;
+  titleProps?: any;
   tags?: Array<string>;
   description?: string;
+  descriptionProps?: any;
   onPress?: () => void;
   hideTitle?: boolean;
   itemProps?: PressableProps;
@@ -135,12 +137,12 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
             </Icon>
           ) : null}
           {item.title && (
-            <Typography variant='title'>
+            <Typography variant='title' {...item.titleProps}>
               {item.title}
             </Typography>
           )}
           {item.description && !item.tags && (
-            <Typography variant="body2" weight='medium' color="secondary">
+            <Typography variant="body2" weight='medium' color="secondary" {...item.descriptionProps}>
               {item.description}
             </Typography>
           )}

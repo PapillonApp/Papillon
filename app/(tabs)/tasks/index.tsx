@@ -29,7 +29,7 @@ const TasksView: React.FC = () => {
     homeworksFromCache,
     isRefreshing,
     handleRefresh,
-    onProgressChange,
+    setAsDone,
   } = useHomeworkData(selectedWeek, alert);
 
   const {
@@ -76,7 +76,7 @@ const TasksView: React.FC = () => {
           toggleGroup={toggleGroup}
           sortMethod={sortMethod}
           homework={homework}
-          onProgressChange={onProgressChange}
+          setAsDone={setAsDone}
         />
       </View>
     </>

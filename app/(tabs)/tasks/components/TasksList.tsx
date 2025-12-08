@@ -34,7 +34,7 @@ interface TasksListProps {
   toggleGroup: (headerId: string) => void;
   sortMethod: string;
   homework: Record<string, Homework>;
-  onProgressChange: (item: Homework, newProgress: number) => void;
+  setAsDone: (item: Homework, done: boolean) => void;
 }
 
 const TasksList: React.FC<TasksListProps> = ({
@@ -47,7 +47,7 @@ const TasksList: React.FC<TasksListProps> = ({
   toggleGroup,
   sortMethod,
   homework,
-  onProgressChange,
+  setAsDone,
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -74,14 +74,14 @@ const TasksList: React.FC<TasksListProps> = ({
             item={source}
             index={index}
             fromCache={fromCache}
-            onProgressChange={(item, newProgress) => {
-              onProgressChange(source, newProgress);
+            setAsDone={(item, done) => {
+              setAsDone(item, done);
             }}
           />
         </Reanimated.View>
       );
     },
-    [homework, onProgressChange, collapsedGroups, sortMethod]
+    [homework, setAsDone, collapsedGroups, sortMethod]
   );
 
   const renderSectionHeader = useCallback(

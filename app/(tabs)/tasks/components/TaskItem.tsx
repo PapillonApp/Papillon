@@ -15,14 +15,14 @@ interface TaskItemProps {
   item: Homework;
   index: number;
   fromCache?: boolean;
-  onProgressChange: (item: Homework, newProgress: number) => void;
+  setAsDone: (item: Homework, done: boolean) => void;
 }
 
 const TaskItem = memo(
   ({
     item,
     fromCache = false,
-    onProgressChange
+    setAsDone
   }: TaskItemProps) => {
     const navigation = useNavigation();
     const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
@@ -44,7 +44,7 @@ const TaskItem = memo(
           completed={item.isDone}
           hasAttachments={item.attachments.length > 0}
           magic={magic}
-          onToggle={() => onProgressChange(item, item.isDone ? 0 : 1)}
+          onToggle={() => setAsDone(item, !item.isDone)}
           onPress={() =>
             // @ts-ignore Modal types
             navigation.navigate("(modals)/task", {

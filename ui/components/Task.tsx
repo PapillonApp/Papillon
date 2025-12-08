@@ -17,6 +17,7 @@ import { Dynamic } from './Dynamic';
 import { Animation } from '../utils/Animation';
 import { LinearTransition } from 'react-native-reanimated';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
+import { t } from 'i18next';
 
 interface TaskProps {
   subject: string;
@@ -91,10 +92,17 @@ const Task: React.FC<TaskProps> = ({
               {emoji}
             </Text>
             {/* Name */}
-            <Stack inline flex>
+            <Stack inline flex direction="horizontal" gap={4} hAlign='center'>
               <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
                 {subject}
               </Typography>
+
+              {/* Attachments */}
+              {hasAttachments && (
+                <Icon size={18} fill={tintedColor}>
+                  <Papicons name="link" />
+                </Icon>
+              )}
             </Stack>
             {/* Date */}
             <Typography nowrap variant='body2' weight='medium' color={"secondary"}>
