@@ -61,7 +61,7 @@ const DEFAULT_CONTAINER_STYLE = Object.freeze({
 const DEFAULT_CONTENT_STYLE = Object.freeze({
   flexDirection: "column" as const,
   flex: 1,
-  gap: 3
+  gap: 2
 });
 
 // Optimized areEqual with early returns and minimal key checking

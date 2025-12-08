@@ -33,6 +33,8 @@ import { getSubjectName } from "@/utils/subjects/name";
 import Averages from './atoms/Averages';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
+import Item, { Trailing } from '@/ui/components/Item';
+import List from '@/ui/components/List';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -129,6 +131,7 @@ const GradesView: React.FC = () => {
   // Obtention des notes
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [serviceAverage, setServiceAverage] = useState<number | null>(null);
+  const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
 
   const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
     setGradesLoading(true);
@@ -143,6 +146,12 @@ const GradesView: React.FC = () => {
         setServiceAverage(grades.studentOverall.value)
       } else {
         setServiceAverage(null);
+      }
+
+      if (grades.rank && typeof grades.rank.value === 'number' && !grades.rank.disabled) {
+        setServiceRank(grades.rank)
+      } else {
+        setServiceRank(null);
       }
 
       requestAnimationFrame(() => {
@@ -244,8 +253,13 @@ const GradesView: React.FC = () => {
   // Refresh
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
+
+    if (periods.length === 0) {
+      fetchPeriods();
+    }
+
     fetchGradesForPeriod(currentPeriod);
-  }, [currentPeriod]);
+  }, [currentPeriod, periods]);
 
   const renderItem = useCallback(({ item }: { item: any }) => {
     const subject = item as Subject;
@@ -272,6 +286,39 @@ const GradesView: React.FC = () => {
         color={colors.primary}
         realAverage={serviceAverage || undefined}
       />
+
+      {serviceRank && (
+        <List style={{ marginTop: 8 }}>
+          <Item>
+            <Icon opacity={0.5}>
+              <Papicons name='crown' />
+            </Icon>
+
+            <Typography variant='title'>
+              {t('Grades_Tab_Rank')}
+            </Typography>
+            <Typography variant='body1' color='secondary'>
+              {t('Grades_Tab_Rank_Description')}
+            </Typography>
+
+            <Trailing>
+              <Stack
+                direction='horizontal'
+                gap={4}
+                vAlign='end'
+                hAlign='end'
+              >
+                <Typography variant='h3' inline color='text'>
+                  {serviceRank.value}
+                </Typography>
+                <Typography variant='body1' inline color='secondary'>
+                  /{serviceRank.outOf}
+                </Typography>
+              </Stack>
+            </Trailing>
+          </Item>
+        </List>
+      )}
 
       <View style={{ height: 16 }} />
 
