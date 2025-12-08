@@ -5,13 +5,14 @@ import * as Localization from "expo-localization";
 import React, { useState, useEffect } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 
-import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
+import { PapillonAppearIn, PapillonAppearOut, PapillonSpringIn, PapillonSpringOut, PapillonZoomIn, PapillonZoomOut } from "../utils/Transition";
 import Reanimated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring, withDelay } from "react-native-reanimated";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { runsIOS26 } from '../utils/IsLiquidGlass';
 
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { PapillonSplashOut } from '@/components/FakeSplash';
 
 
 export interface CalendarProps {
@@ -70,60 +71,43 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
 
   const insets = useSafeAreaInsets();
 
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.9);
-
-  React.useEffect(() => {
-    if (visible) {
-      opacity.value = withTiming(1, { duration: 100 });
-      scale.value = withSpring(1, { duration: 600, dampingRatio: 0.6, mass: 2, velocity: 1 });
-    } else {
-      opacity.value = withTiming(0, { duration: 120 });
-      scale.value = withSpring(0.85, { duration: 300 });
-    }
-  }, [visible]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ scale: scale.value }],
-    };
-  });
-
   return (
-    <Pressable
-      onPress={() => setVisible(false)}
-      pointerEvents={visible ? "auto" : "none"}
-      style={{
-        position: "absolute",
-        top: runsIOS26 ? insets.top + 46 : 0,
-        left: 16,
-        bottom: 0,
-        right: 0,
-        zIndex: 999,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowRadius: 20,
-        shadowOffset: { width: 0, height: 2 },
-      }}
-    >
-      <View style={{ pointerEvents: "box-none" }}>
+    <>
+      {
+        visible && (
+          <Pressable
+            onPress={() => setVisible(false)}
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 9,
+            }}
+          />
+        )
+      }
+
+      {visible && (
         <Reanimated.View
           style={[{
             transformOrigin: "top left",
             overflow: "visible",
-            top: 4,
-          }, animatedStyle]}
+            position: "absolute",
+            top: insets.top + 58,
+            left: 12,
+            zIndex: 10,
+          }]}
+          entering={PapillonSpringIn}
+          exiting={PapillonSpringOut}
         >
           <LiquidGlassView
             glassType="regular"
             isInteractive={true}
-            glassOpacity={0}
+            glassOpacity={0.1}
             style={{
               borderRadius: 20,
-              zIndex: 99,
               width: 340,
               height: 320,
               alignItems: "center",
@@ -146,8 +130,8 @@ const Calendar = React.forwardRef<CalendarRef, CalendarProps>(({
             />
           </LiquidGlassView>
         </Reanimated.View>
-      </View>
-    </Pressable>
+      )}
+    </>
   );
 });
 
