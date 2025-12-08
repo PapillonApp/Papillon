@@ -196,9 +196,9 @@ export default function SettingsIndex() {
 
   const RenderBigButtons = useCallback(() => {
     return (
-      <Stack direction="vertical" gap={15}>
+      <Stack direction="vertical" gap={10}>
         {Array.from({ length: Math.ceil(BigButtons.length / 2) }, (_, rowIndex) => (
-          <Stack key={rowIndex} direction="horizontal" gap={15}>
+          <Stack key={rowIndex} direction="horizontal" gap={10}>
             {BigButtons.slice(rowIndex * 2, rowIndex * 2 + 2).map((button, _) => {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
@@ -212,17 +212,17 @@ export default function SettingsIndex() {
                     flex
                     card
                     direction="vertical"
-                    gap={14}
-                    padding={16}
-                    radius={25}
+                    gap={8}
+                    padding={[14, 14]}
+                    radius={22}
                     backgroundColor={button.disabled ? theme.colors.border : adjust(button.color, theme.dark ? -0.85 : 0.85)}
                   >
-                    <Icon papicon size={24} fill={button.disabled ? "#505050" : newButtonColor}>
+                    <Icon papicon size={32} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}
                     </Icon>
-                    <Stack direction="vertical" hAlign="start" gap={2} style={{ marginBottom: -2 }}>
-                      <Typography inline variant="title" color={button.disabled ? "#505050" : newButtonColor}>{button.title}</Typography>
-                      <Typography inline variant="caption" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</Typography>
+                    <Stack direction="vertical" hAlign="start" gap={0}>
+                      <Typography inline variant="title" weight="bold" color={button.disabled ? "#505050" : newButtonColor}>{button.title}</Typography>
+                      <Typography inline variant="body2" weight="medium" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</Typography>
                     </Stack>
                   </Stack>
                 </AnimatedPressable>
@@ -256,28 +256,10 @@ export default function SettingsIndex() {
                 <Typography variant="title">
                   {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
                 </Typography>
-                {(level || establishment) &&
-                  <Stack direction={"horizontal"} gap={6} style={{ marginTop: 4 }}>
-                    {level &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                        <Typography variant={"body1"} color="secondary">
-                          {level}
-                        </Typography>
-                      </Stack>
-                    }
-                    {establishment &&
-                      <Stack direction={"horizontal"} gap={8} hAlign={"center"} radius={100} backgroundColor={colors.background} inline padding={[12, 3]} card flat>
-                        <Typography
-                          variant={"body1"}
-                          color="secondary"
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          style={{ flexShrink: 1 }}>
-                          {establishment}
-                        </Typography>
-                      </Stack>
-                    }
-                  </Stack>
+                {establishment &&
+                  <Typography variant="caption" color="secondary">
+                    {level} {(level && establishment) && " — "} {establishment}
+                  </Typography>
                 }
               </Item>
             </List>
