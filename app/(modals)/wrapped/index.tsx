@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Pressable, View } from 'react-native';
+import { Dimensions, FlatList, Pressable, StatusBar, View } from 'react-native';
 
 import { useVideoPlayer, VideoView, VideoPlayer } from 'expo-video';
 import { useEvent } from "expo";
@@ -12,7 +12,7 @@ import { useNavigation } from 'expo-router';
 
 import Reanimated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Typography from '@/ui/components/Typography';
-import { Warning } from '@/app/(modals)/wrapped/stories/consent';
+import { Cooking, Warning } from '@/app/(modals)/wrapped/stories/consent';
 import { Welcome } from '@/app/(modals)/wrapped/stories/welcome';
 
 const WrappedView = () => {
@@ -43,19 +43,18 @@ const WrappedView = () => {
     player.play();
   });
 
-  const slides = [Welcome, Warning];
+  const slides = [Welcome, Warning, Cooking];
   const sliderRef = useRef<FlatList>(null);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'black' }}>
       {!aboutToExit && (
         <>
-          {(currentIndex == 0) && (
-            <WrappedBackgroundVideo player={mainBackground} />
-          )}
-
-          {(currentIndex == 1) && (
-            <WrappedBackgroundVideo player={redBackground} />
+          {(currentIndex == 0 || currentIndex == 1 || currentIndex == 2) && (
+            <>
+              <StatusBar barStyle={"light-content"} />
+              <WrappedBackgroundVideo player={mainBackground} />
+            </>
           )}
         </>
       )}

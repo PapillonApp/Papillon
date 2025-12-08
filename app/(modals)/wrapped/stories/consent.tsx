@@ -7,6 +7,7 @@ import Reanimated, { FadeInDown, FadeOut, FadeOutUp } from 'react-native-reanima
 
 import Stack from '@/ui/components/Stack';
 import Typography from "@/ui/components/Typography";
+import adjust from '@/utils/adjustColor';
 
 type ConsentItem = {
   title: string;
@@ -31,6 +32,9 @@ const ConsentButton = memo(({
   >
     <LiquidGlassView
       glassTintColor='white'
+      glassOpacity={0.2}
+      glassType='clear'
+      isInteractive
       style={{
         justifyContent: "space-between",
         borderRadius: 20,
@@ -93,7 +97,7 @@ export const Warning = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
             entering={FadeInDown.springify().dampingRatio(0.5).duration(1800).delay(200)}
             exiting={FadeOut.duration(800)}
           >
-            <Typography variant="h4" align='center' color='white' style={styles.title}>
+            <Typography variant="h4" align='center' color={adjust(colors.background, 0.1)} style={styles.title}>
               Ton Yearbook contient un récap de toutes tes statistiques liées à ta vie d&apos;étudiant, choisis ce que tu souhaites afficher avant de commencer :
             </Typography>
             <FlatList
@@ -104,6 +108,25 @@ export const Warning = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
             />
           </Reanimated.View>
         </View>
+      )}
+    </View>
+  );
+};
+
+export const Cooking = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.RefObject<FlatList> }) => {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ width: "100%", height: Dimensions.get('screen').height, justifyContent: 'center', alignItems: 'center' }}>
+      {isCurrent && (
+        <Reanimated.View
+          entering={FadeInDown.springify().dampingRatio(0.5).duration(1800).delay(200)}
+          exiting={FadeOut.duration(800)}
+        >
+          <Typography variant="h4" align='center' color='white' style={styles.title}>
+            Ton Yearbook contient un récap de toutes tes statistiques liées à ta vie d&apos;étudiant, choisis ce que tu souhaites afficher avant de commencer :
+          </Typography>
+        </Reanimated.View>
       )}
     </View>
   );
