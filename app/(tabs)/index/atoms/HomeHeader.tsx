@@ -73,7 +73,9 @@ const HomeHeader = () => {
         </Stack>
       </LiquidGlassContainer>
 
-      <WrappedBanner />
+      {__DEV__ && (
+        <WrappedBanner />
+      )}
     </View>
   );
 };

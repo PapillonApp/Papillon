@@ -89,7 +89,7 @@ const Task = () => {
                 leading:
                   <AnimatedPressable onPress={() => setAsDone(!isDone)}>
                     <Stack
-                      backgroundColor={isDone ? colors.primary : undefined}
+                      backgroundColor={isDone ? subjectInfo.color : undefined}
                       card
                       radius={100}
                       width={28}
