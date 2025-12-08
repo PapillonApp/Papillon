@@ -64,6 +64,16 @@ export default function CourseModal() {
 
       <TableFlatList
         sections={[
+          getStatusText(course.status) ? {
+            title: t("Modal_Course_Status"),
+            hideTitle: true,
+            items: [
+              {
+                title: getStatusText(course.status),
+                icon: <Papicons.Info />,
+              }
+            ]
+          } : null,
           {
             title: t("Modal_Course_Time"),
             papicon: <Papicons.Clock />,
