@@ -1,21 +1,21 @@
-import React, { useMemo } from 'react';
-import { Platform } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { t } from 'i18next';
+import React, { useMemo } from 'react';
+import { Platform } from 'react-native';
 
+import {
+  AI_SCREEN_OPTIONS,
+  ALERT_SCREEN_OPTIONS,
+  CHANGELOG_SCREEN_OPTIONS,
+  CONSENT_SCREEN_OPTIONS,
+  DEMO_SCREEN_OPTIONS,
+  DEVMODE_SCREEN_OPTIONS,
+  STACK_SCREEN_OPTIONS
+} from '@/constants/LayoutScreenOptions';
+import getCorners from '@/ui/utils/Corners';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
-import {
-  STACK_SCREEN_OPTIONS,
-  ALERT_SCREEN_OPTIONS,
-  DEVMODE_SCREEN_OPTIONS,
-  DEMO_SCREEN_OPTIONS,
-  CONSENT_SCREEN_OPTIONS,
-  CHANGELOG_SCREEN_OPTIONS,
-  AI_SCREEN_OPTIONS
-} from '@/constants/LayoutScreenOptions';
-import { useTheme } from '@react-navigation/native';
-import getCorners from '@/ui/utils/Corners';
 
 export function RootNavigator() {
   const theme = useTheme();
@@ -46,7 +46,7 @@ export function RootNavigator() {
       <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
       <Stack.Screen
-        name="(modals)/wrapped"
+        name="(modals)/wrapped/index"
         options={{
           headerShown: false,
           presentation: "fullScreenModal",
