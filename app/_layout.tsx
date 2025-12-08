@@ -24,7 +24,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
+import { Appearance, AppState, AppStateStatus, Platform, StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
@@ -68,7 +68,9 @@ const ALERT_SCREEN_OPTIONS = {
   sheetExpandsWhenScrolledToEdge: false,
   sheetInitialDetentIndex: 0,
   contentStyle: {
-    backgroundColor: runsIOS26 ? 'transparent' : undefined
+    backgroundColor: runsIOS26
+      ? 'transparent'
+      : (Appearance.getColorScheme() === 'dark' ? 'black' : 'white'),
   }
 } as const;
 

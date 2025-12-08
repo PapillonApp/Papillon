@@ -3,6 +3,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
+import { instance } from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -12,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { removeAllDuplicates } from "@/database/DatabaseProvider";
 import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
+import { AuthenticationError } from "@/services/errors/AuthenticationError";
 import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
 import { Grade, Period } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
@@ -36,6 +38,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import { generateId } from "@/utils/generateId";
 import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import i18n from "@/utils/i18n";
 import { checkConsent } from "@/utils/logger/consent";
 import { log, warn } from "@/utils/logger/logger";
 import { getSubjectColor } from "@/utils/subjects/colors";
@@ -44,7 +47,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
 import GradesWidget from "./widgets/Grades";
-import i18n from "@/utils/i18n";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -84,30 +86,53 @@ const IndexScreen = () => {
     try {
       await initializeAccountManager()
       log("Refreshed Manager received")
-
-      await Promise.all([fetchEDT(), fetchGrades()]);
-
-      if (settingsStore.showAlertAtLogin) {
-        alert.showAlert({
-          title: "Synchronisation réussie",
-          description: "Toutes vos données ont été mises à jour avec succès.",
-          icon: "CheckCircle",
-          color: "#00C851",
-          withoutNavbar: true,
-          delay: 1000
-        });
-      }
-
     } catch (error) {
       if (String(error).includes("Unable to find")) { return; }
-      alert.showAlert({
-        title: "Connexion impossible",
-        description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        technical: String(error)
-      })
+      if (error instanceof AuthenticationError) {
+        const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
+        const serviceId = error?.service?.id ?? undefined;
+
+        alert.showAlert({
+          title: "Connexion impossible",
+          description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+          icon: "TriangleAlert",
+          color: "#D60046",
+          customButton: instanceURL ? {
+            label: "Me reconnecter",
+            showCancelButton: true,
+            onPress: async () => {
+              const authUrl = instanceURL;
+              const instanceInfo = await instance(authUrl as string);
+
+              if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
+                return setTimeout(() => {
+                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId } })
+                }, 200)
+              }
+
+              setTimeout(() => {
+                router.push({ pathname: "/(onboarding)/pronote/credentials", params: { url: authUrl, serviceId } })
+              }, 200)
+            }
+          } : undefined,
+          technical: error.message
+        })
+      }
     }
+    await Promise.all([fetchEDT(), fetchGrades()]);
+
+    if (settingsStore.showAlertAtLogin) {
+      alert.showAlert({
+        title: "Synchronisation réussie",
+        description: "Toutes vos données ont été mises à jour avec succès.",
+        icon: "CheckCircle",
+        color: "#00C851",
+        withoutNavbar: true,
+        delay: 1000
+      });
+    }
+
+
   };
 
   useMemo(() => {
