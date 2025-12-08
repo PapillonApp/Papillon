@@ -11,48 +11,44 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { useMagicPrediction } from '../hooks/useMagicPrediction';
 
 interface TaskItemProps {
-    item: Homework;
-    index: number;
-    fromCache?: boolean;
-    onProgressChange: (item: Homework, newProgress: number) => void;
+  item: Homework;
+  index: number;
+  fromCache?: boolean;
+  onProgressChange: (item: Homework, newProgress: number) => void;
 }
 
 const TaskItem = memo(
-    ({
-        item,
-        fromCache = false,
-        onProgressChange
-    }: TaskItemProps) => {
-        const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
-        const magic = useMagicPrediction(cleanContent);
+  ({
+    item,
+    fromCache = false,
+    onProgressChange
+  }: TaskItemProps) => {
+    const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
+    const magic = useMagicPrediction(cleanContent);
 
-        return (
-            <Reanimated.View style={styles.taskContainer}
-                entering={PapillonAppearIn}
-                exiting={PapillonAppearOut}
-            >
-                <Task
-                    subject={getSubjectName(item.subject)}
-                    emoji={getSubjectEmoji(item.subject)}
-                    title={""}
-                    color={getSubjectColor(item.subject)}
-                    description={item.content}
-                    date={new Date(item.dueDate)}
-                    progress={item.isDone ? 1 : 0}
-                    fromCache={fromCache ?? false}
-                    attachments={item.attachments}
-                    onProgressChange={(newProgress: number) => onProgressChange(item, newProgress)}
-                />
-            </Reanimated.View>
-        );
-    }
+    return (
+      <Reanimated.View
+        style={{ marginBottom: 10 }}
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+      >
+        <Task
+          subject={getSubjectName(item.subject)}
+          emoji={getSubjectEmoji(item.subject)}
+          title={""}
+          color={getSubjectColor(item.subject)}
+          description={item.content}
+          date={new Date(item.dueDate)}
+          completed={item.isDone}
+          hasAttachments={item.attachments.length > 0}
+          magic={magic}
+          onToggle={() => onProgressChange(item, item.isDone ? 0 : 1)}
+          onPress={() => console.log("onPress")}
+        />
+      </Reanimated.View>
+    );
+  }
 );
+
 TaskItem.displayName = "TaskItem";
-
-const styles = StyleSheet.create({
-    taskContainer: {
-        marginBottom: 16,
-    },
-});
-
 export default TaskItem;

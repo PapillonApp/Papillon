@@ -46,7 +46,17 @@ export const useTaskFilters = (
       return fresh || cached;
     });
 
-    let data = [...mergedData];
+    const uniqueIds = new Set<string>();
+    let data = mergedData.filter(hw => {
+      if (hw.id) {
+        if (!uniqueIds.has(hw.id)) {
+          uniqueIds.add(hw.id);
+          return true;
+        }
+        return false;
+      }
+      return true;
+    });
 
     if (showUndoneOnly) {
       data = data.filter(h => !h.isDone);
