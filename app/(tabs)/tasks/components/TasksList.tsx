@@ -106,7 +106,7 @@ const TasksList: React.FC<TasksListProps> = ({
   );
 
   const keyExtractor = useCallback((item: Homework) => {
-    return "hw:" + item.id;
+    return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
   }, []);
 
   return (
@@ -116,7 +116,7 @@ const TasksList: React.FC<TasksListProps> = ({
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingBottom: 100,
-        paddingTop: headerHeight - 8,
+        paddingTop: headerHeight,
       }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}

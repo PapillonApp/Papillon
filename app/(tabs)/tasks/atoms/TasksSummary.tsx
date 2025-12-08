@@ -7,13 +7,15 @@ import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { Homework } from "@/services/shared/homework";
+import adjust from '@/utils/adjustColor';
 
 interface TasksSummaryProps {
   sections: { data: Homework[] }[];
 }
 
 const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors;
 
   return (
     <Reanimated.View
@@ -21,7 +23,7 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
       exiting={PapillonAppearOut}
       layout={LinearTransition}
     >
-      <Stack padding={16} gap={16} backgroundColor={"#AB227615"} bordered radius={20} hAlign="center" direction='horizontal' style={{ marginBottom: 15, marginTop: 8 }}>
+      <Stack padding={16} gap={16} backgroundColor={adjust("#AB2276", theme.dark ? -0.8 : 0.9)} card radius={20} hAlign="center" direction='horizontal' style={{ marginBottom: 16 }}>
         <CircularProgress
           backgroundColor={colors.text + "22"}
           percentageComplete={
