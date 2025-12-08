@@ -29,8 +29,10 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
     requestAnimationFrame(() => onPress(grade));
   }, [grade, onPress]);
 
+  const theme = useTheme();
+
   const hasMaxScore = grade.studentScore?.value == grade.maxScore?.value;
-  const trailingBackground = hasMaxScore ? subjectColor : subjectColor + "15";
+  const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
   return (

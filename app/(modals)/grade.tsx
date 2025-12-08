@@ -15,6 +15,7 @@ import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
+import { colorCheck } from '@/utils/colorCheck';
 
 interface SubjectInfo {
   name: string;
@@ -160,9 +161,9 @@ export default function GradesModal() {
             />
 
             {grade.studentScore?.value == grade.maxScore?.value &&
-              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32}>
-                <Papicons size={20} name="crown" color="#FFFFFF" />
-                <Typography color="#FFFFFF" variant='body2'>
+              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bestgrade:" + theme.dark ? "dark" : "light"}>
+                <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
+                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
                   {t("Modal_Grades_BestGrade")}
                 </Typography>
               </Stack>
