@@ -1,7 +1,6 @@
 
-import { Client } from "blocksdirecte";
+import { Client } from "@blockshub/blocksdirecte";
 
-import { Attachment, AttachmentType } from "../shared/attachment";
 import { Homework } from "../shared/homework";
 
 export async function fetchEDHomeworks(
@@ -18,12 +17,12 @@ export async function fetchEDHomeworks(
 
     for (const subject of matieres) {
       const homework = subject.aFaire
-      response.push({,
+      response.push({
         attachments: [],
         content: homework?.contenu ?? "",
         isDone: homework?.effectue ?? false,
         dueDate: date,
-        id: String(homework?.idDevoir) ?? "",
+        id: String(homework?.idDevoir),
         subject: subject.entityLibelle,
         evaluation: false,
         custom: false,
@@ -35,15 +34,22 @@ export async function fetchEDHomeworks(
   return response
 }
 
-export async function setEDHomeworkAsDone(session: Session, account: Account, homework: Homework, state?: boolean): Promise<Homework> {
-  await setHomeworkState(session, account, Number(homework.id), state ?? !homework.isDone)
+export async function setEDHomeworkAsDone(session: Client, homework: Homework, state?: boolean): Promise<Homework> {
+  const finalState = state ?? !homework.isDone
+  const homeworkId = Number(homework.id)
+  
+  if (finalState) {
+    await session.homework.markHomeworkAsDone(homeworkId)
+  } else {
+    await session.homework.markHomeworkAsUndone(homeworkId)
+  }
   return {
     ...homework,
-    isDone: state ?? !homework.isDone
+    isDone: finalState
   }
 }
 
-import { addDays,startOfISOWeek } from "date-fns";
+import { addDays,format,startOfISOWeek } from "date-fns";
 
 export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
   const currentYear = year || new Date().getFullYear();
@@ -59,8 +65,6 @@ export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] 
   // Construire la liste des jours
   return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 };
-
-import { format } from "date-fns";
 
 export const formatDate = (date: Date): string => {
   return format(date, "yyyy-MM-dd");

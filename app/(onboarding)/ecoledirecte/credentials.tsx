@@ -1,6 +1,6 @@
 
+import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
 import { useTheme } from "@react-navigation/native";
-import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "blocksdirecte";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

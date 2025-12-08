@@ -1,5 +1,5 @@
+import { Client } from "@blockshub/blocksdirecte";
 import { User } from "appscho";
-import { Client } from "blocksdirecte";
 import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
 import { SessionHandle } from "pawnote";

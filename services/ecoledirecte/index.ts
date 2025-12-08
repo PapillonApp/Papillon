@@ -1,4 +1,4 @@
-import { Client } from "blocksdirecte";
+import { Client } from "@blockshub/blocksdirecte";
 
 import { fetchEDBalances } from "@/services/ecoledirecte/balance";
 import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";

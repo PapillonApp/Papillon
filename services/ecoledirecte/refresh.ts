@@ -1,4 +1,4 @@
-import { Client } from "blocksdirecte";
+import { Client } from "@blockshub/blocksdirecte";
 
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
