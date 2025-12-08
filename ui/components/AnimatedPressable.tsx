@@ -84,7 +84,7 @@ function AnimatedPressable({
     <TapGestureHandler
       // Configure TapGestureHandler to be more responsive to short presses
       maxDurationMs={300}
-      maxDelayMs={100}
+      maxDelayMs={0}
       onActivated={handleOnActivated}
     >
       <ReanimatedPressable
