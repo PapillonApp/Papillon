@@ -1,5 +1,9 @@
-import { Account, Session } from "pawdirecte";
+import { Client } from "blocksdirecte";
 
+import { fetchEDBalances } from "@/services/ecoledirecte/balance";
+import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";
+import { Balance } from "@/services/shared/balance";
+import { QRCode } from "@/services/shared/canteen";
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
 
@@ -17,10 +21,6 @@ import { fetchEDHomeworks, setEDHomeworkAsDone } from "./homework";
 import { fetchEDNews } from "./news";
 import { refreshEDAccount } from "./refresh";
 import { fetchEDTimetable } from "./timetable";
-import { QRCode } from "@/services/shared/canteen";
-import { fetchEDQRCode } from "@/services/ecoledirecte/qrcode";
-import { Balance } from "@/services/shared/balance";
-import { fetchEDBalances } from "@/services/ecoledirecte/balance";
 
 export class EcoleDirecte implements SchoolServicePlugin {
   displayName = "EcoleDirecte";
@@ -36,8 +36,7 @@ export class EcoleDirecte implements SchoolServicePlugin {
     Capabilities.CANTEEN_QRCODE,
     Capabilities.CANTEEN_BALANCE,
   ];
-  session: Session | undefined = undefined;
-  account: Account | undefined = undefined;
+  session: Client | undefined;
   authData: Auth = {};
 
   constructor(public accountId: string) {}
@@ -46,15 +45,14 @@ export class EcoleDirecte implements SchoolServicePlugin {
     const refresh = (await refreshEDAccount(this.accountId, credentials))
 
     this.authData = refresh.auth
-    this.account = refresh.account
-    this.session = refresh.session
+    this.session = refresh.account
 
     return this;
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
-    if (this.session && this.account) {
-      return fetchEDHomeworks(this.session, this.account, this.accountId, weekNumber);
+    if (this.session) {
+      return fetchEDHomeworks(this.session, this.accountId, weekNumber);
     }
     error("Session or account is not valid", "EcoleDirecte.getHomeworks")
   }

@@ -1,13 +1,11 @@
-import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
 
-import { warn } from "@/utils/logger/logger";
+import { Client } from "blocksdirecte";
 
 import { Attachment, AttachmentType } from "../shared/attachment";
 import { Homework } from "../shared/homework";
 
 export async function fetchEDHomeworks(
-  session: Session,
-  account: Account,
+  session: Client,
   accountId: string,
   weekNumber: number
 ): Promise<Homework[]> {
@@ -16,26 +14,18 @@ export async function fetchEDHomeworks(
   for (const date of weekdays) {
     const formattedDate = formatDate(date);
 
-    const { homeworks } = await studentHomeworks(
-      session,
-      account,
-      formattedDate,
-    );
+    const { matieres } = await session.homework.getHomeworksForDate(formattedDate);
 
-    for (const homework of homeworks) {
-      response.push({
-        attachments: homework.attachments.map((att) => ({
-          url: `${att.name}\\${att.id}\\${att.kind}`,
-          type: AttachmentType.FILE,
-          name: att.name,
-          createdByAccount: accountId
-        })),
-        content: homework.content,
-        isDone: homework.done,
+    for (const subject of matieres) {
+      const homework = subject.aFaire
+      response.push({,
+        attachments: [],
+        content: homework?.contenu ?? "",
+        isDone: homework?.effectue ?? false,
         dueDate: date,
-        id: homework.id.toString(),
-        subject: homework.subject,
-        evaluation: homework.exam,
+        id: String(homework?.idDevoir) ?? "",
+        subject: subject.entityLibelle,
+        evaluation: false,
         custom: false,
         createdByAccount: accountId
       });
@@ -43,15 +33,6 @@ export async function fetchEDHomeworks(
   }
 
   return response
-}
-
-function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
-  return data.map(att => ({
-    type: AttachmentType.FILE,
-    name: att.name,
-    url: att.name,
-    createdByAccount: accountId
-  }))
 }
 
 export async function setEDHomeworkAsDone(session: Session, account: Account, homework: Homework, state?: boolean): Promise<Homework> {
@@ -62,7 +43,7 @@ export async function setEDHomeworkAsDone(session: Session, account: Account, ho
   }
 }
 
-import { startOfISOWeek, addDays } from "date-fns";
+import { addDays,startOfISOWeek } from "date-fns";
 
 export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
   const currentYear = year || new Date().getFullYear();

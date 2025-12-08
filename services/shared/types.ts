@@ -1,11 +1,13 @@
+import { User } from "appscho";
+import { Client } from "blocksdirecte";
 import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
-import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
 import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
 
+import { Appscho } from "@/services/appscho";
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
 import {
@@ -32,8 +34,6 @@ import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
-import { User } from "appscho";
-import { Appscho } from "@/services/appscho";
 
 /** Represents a plugin for a school service.
  *
@@ -52,7 +52,7 @@ export interface SchoolServicePlugin {
     | MultiClient
     | SessionHandle
     | SkolengoSession
-    | Session
+    | Client
     | TurboselfClient
     | User
     | undefined;
