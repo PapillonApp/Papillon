@@ -78,7 +78,15 @@ export function RootNavigator() {
           headerTitle: t("Modal_Profile_Title")
         }}
       />
-
+      <Stack.Screen
+        name="(modals)/task"
+        options={{
+          headerShown: Platform.OS !== 'ios',
+          headerTitle: t("Modal_Task_Title"),
+          headerLargeTitle: false,
+          presentation: "modal",
+        }}
+      />
       <Stack.Screen
         name="(modals)/grade"
         options={{

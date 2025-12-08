@@ -59,24 +59,29 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const onProgressChange = useCallback(
     (item: Homework, _newProgress: number) => {
       const updateHomeworkCompletion = async (homeworkItem: Homework) => {
+        const id = generateId(
+          homeworkItem.subject +
+          homeworkItem.content +
+          homeworkItem.createdByAccount +
+          new Date(homeworkItem.dueDate).toDateString()
+        );
+        
+        const newIsDoneState = !homeworkItem.isDone;
+
         try {
           const manager = getManager();
-          const id = generateId(
-            homeworkItem.subject +
-            homeworkItem.content +
-            homeworkItem.createdByAccount +
-            new Date(homeworkItem.dueDate).toDateString()
-          );
-          await manager.setHomeworkCompletion(homeworkItem, !homeworkItem.isDone);
-          updateHomeworkIsDone(id, !homeworkItem.isDone);
+          await manager.setHomeworkCompletion(homeworkItem, newIsDoneState)
+
+          updateHomeworkIsDone(id, newIsDoneState);
           setRefreshTrigger(prev => prev + 1);
           setHomework(prev => ({
             ...prev,
             [id]: {
               ...(prev[id] ?? homeworkItem),
-              isDone: !homeworkItem.isDone,
+              isDone: newIsDoneState,
             }
           }));
+
         } catch (err) {
           alert.showAlert({
             title: "Une erreur est survenue",

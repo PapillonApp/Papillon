@@ -12,6 +12,11 @@ import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Papicons } from '@getpapillon/papicons';
 import Icon from './Icon';
+import AnimatedPressable from './AnimatedPressable';
+import { Dynamic } from './Dynamic';
+import { Animation } from '../utils/Animation';
+import { LinearTransition } from 'react-native-reanimated';
+import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 
 interface TaskProps {
   subject: string;
@@ -63,76 +68,106 @@ const Task: React.FC<TaskProps> = ({
   }
 
   return (
-    <Stack card radius={20} style={{ borderColor: theme.colors.text + "32" }}>
-      <Stack padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
-        <LinearGradient
-          colors={[color, theme.colors.card]}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 100,
-            zIndex: -1,
-            opacity: 0.1
-          }}
-        />
+    <AnimatedPressable onPress={onPress}>
+      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32" }}>
+        <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
+          <LinearGradient
+            colors={[color, theme.colors.card]}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 100,
+              zIndex: -1,
+              opacity: 0.1
+            }}
+          />
 
-        {/* Subejct */}
-        <Stack direction="horizontal" gap={8} hAlign='center'>
-          {/* Emoji container */}
-          <Text style={{ fontSize: 22 }}>
-            {emoji}
-          </Text>
-          {/* Name */}
-          <Stack inline flex>
-            <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
-              {subject}
+          {/* Subejct */}
+          <Stack direction="horizontal" gap={8} hAlign='center'>
+            {/* Emoji container */}
+            <Text style={{ fontSize: 22 }}>
+              {emoji}
+            </Text>
+            {/* Name */}
+            <Stack inline flex>
+              <Typography nowrap variant='body1' weight='semibold' color={tintedColor}>
+                {subject}
+              </Typography>
+            </Stack>
+            {/* Date */}
+            <Typography nowrap variant='body2' weight='medium' color={"secondary"}>
+              {formatDistanceDay(date)}
             </Typography>
           </Stack>
-          {/* Date */}
-          <Typography nowrap variant='body2' weight='medium' color={"secondary"}>
-            {formatDistanceDay(date)}
-          </Typography>
-        </Stack>
 
-        {/* Magic */}
-        {magic && (
-          <Stack
-            direction="horizontal"
-            gap={6}
-            hAlign='center'
-            vAlign='center'
-            padding={[10, 4]}
-            radius={10}
-            backgroundColor={tintedColor + "20"}
-          >
-            <Papicons name='sparkles' size={22} color={tintedColor} style={{ marginLeft: -2 }} />
-            <Typography color={tintedColor} variant='body2'>
-              {magic}
+          {/* Content */}
+          <Stack animated layout={Animation(LinearTransition, "list")}>
+            <Typography numberOfLines={3} variant='title' weight='medium'>
+              {formatHTML(description)}
             </Typography>
           </Stack>
-        )}
 
-        {/* Content */}
-        <Typography numberOfLines={3} variant='title' weight='medium'>
-          {formatHTML(description)}
-        </Typography>
-
-        {/* Bottom */}
-        <Stack direction="horizontal" gap={8} hAlign='center'>
-          <Stack inline flex hAlign='start' vAlign='center'>
-          </Stack>
-          <Stack inline flex hAlign='end' vAlign='center'>
-            <Stack card padding={8}>
-              <Icon size={24} opacity={0.5}>
-                <Papicons name='check' />
-              </Icon>
+          {/* Bottom */}
+          <Stack animated layout={Animation(LinearTransition, "list")} direction="horizontal" gap={8} hAlign='center'>
+            <Stack inline flex hAlign='start' vAlign='center'>
+              {/* Magic */}
+              {magic && (
+                <Dynamic animated>
+                  <Stack
+                    animated
+                    direction="horizontal"
+                    gap={6}
+                    hAlign='center'
+                    vAlign='center'
+                    padding={[12, 6]}
+                    radius={12}
+                    backgroundColor={tintedColor + "20"}
+                  >
+                    <Papicons name='sparkles' size={22} color={tintedColor} style={{ marginLeft: -2 }} />
+                    <Typography color={tintedColor} variant='body1' weight='semibold'>
+                      {magic}
+                    </Typography>
+                  </Stack>
+                </Dynamic>
+              )}
+            </Stack>
+            <Stack animated layout={Animation(LinearTransition, "list")} inline hAlign='end' vAlign='center'>
+              <AnimatedPressable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
+                <Stack
+                  animated
+                  layout={Animation(LinearTransition, "list")}
+                  card
+                  backgroundColor={completed ? tintedColor : undefined}>
+                  <Stack
+                    animated
+                    layout={Animation(LinearTransition, "list")}
+                    padding={[completed ? 12 : 8, 8]}
+                    direction='horizontal'
+                    gap={6}
+                    radius={100}
+                    hAlign='center'
+                    style={{ overflow: "hidden" }}
+                  >
+                    <Icon size={24} opacity={completed ? 1 : 0.5} fill={completed ? "#FFF" : undefined}>
+                      <Papicons name='check' />
+                    </Icon>
+                    {completed &&
+                      <Dynamic animated>
+                        <Typography color='#FFF'>
+                          Terminé
+                        </Typography>
+                      </Dynamic>
+                    }
+                  </Stack>
+                </Stack>
+              </AnimatedPressable>
             </Stack>
           </Stack>
         </Stack>
       </Stack>
-    </Stack>
+    </AnimatedPressable >
   );
 };
 

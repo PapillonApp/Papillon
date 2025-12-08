@@ -89,7 +89,7 @@ function AnimatedPressable({
     >
       <ReanimatedPressable
         {...props}
-        layout={layoutAnim}
+        layout={props.layout || layoutAnim}
         style={[style, animatedStyle]}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}

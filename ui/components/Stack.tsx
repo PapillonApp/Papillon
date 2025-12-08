@@ -27,6 +27,7 @@ interface StackProps extends ViewProps {
   radius?: number;
   animated?: boolean;
   noShadow?: boolean;
+  layout?: any;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -181,7 +182,7 @@ const Stack: React.FC<StackProps> = ({
   }, [cacheKey, direction, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]);
 
   return (
-    <Reanimated.View style={[computedStyle, style]} layout={animated ? Animation(LinearTransition) : undefined} {...rest}>
+    <Reanimated.View style={[computedStyle, style]} layout={rest.layout || (animated ? Animation(LinearTransition) : undefined)} {...rest}>
       {children}
     </Reanimated.View>
   );

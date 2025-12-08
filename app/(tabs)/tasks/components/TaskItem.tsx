@@ -9,6 +9,7 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { useMagicPrediction } from '../hooks/useMagicPrediction';
+import { useNavigation } from 'expo-router';
 
 interface TaskItemProps {
   item: Homework;
@@ -23,6 +24,7 @@ const TaskItem = memo(
     fromCache = false,
     onProgressChange
   }: TaskItemProps) => {
+    const navigation = useNavigation();
     const cleanContent = useMemo(() => item.content.replace(/<[^>]*>/g, ""), [item.content]);
     const magic = useMagicPrediction(cleanContent);
 
@@ -43,7 +45,12 @@ const TaskItem = memo(
           hasAttachments={item.attachments.length > 0}
           magic={magic}
           onToggle={() => onProgressChange(item, item.isDone ? 0 : 1)}
-          onPress={() => console.log("onPress")}
+          onPress={() =>
+            // @ts-ignore Modal types
+            navigation.navigate("(modals)/task", {
+              task: item
+            })
+          }
         />
       </Reanimated.View>
     );
