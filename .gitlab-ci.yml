@@ -1,12 +1,18 @@
 sync_from_github:
-  image: alpine/git
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  script:
+  image: alpine:latest
+
+  before_script:
+    - apk add --no-cache git
     - git config --global user.email "noreply@maelduret.com"
     - git config --global user.name "GitLab Sync Bot"
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+
+  script:
+    - git remote remove github || true
     - git remote add github https://github.com/PapillonApp/Papillon.git
     - git fetch github
     - git checkout main
     - git merge github/main --allow-unrelated-histories || true
-    - git push https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git HEAD:main
+    - git push "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:main
