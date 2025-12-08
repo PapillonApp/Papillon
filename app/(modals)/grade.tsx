@@ -160,7 +160,7 @@ export default function GradesModal() {
             />
 
             {grade.studentScore?.value == grade.maxScore?.value &&
-              <Stack direction="horizontal" gap={8} backgroundColor={subjectInfo.color} vAlign='center' hAlign='center' padding={[12, 6]} radius={32}>
+              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32}>
                 <Papicons size={20} name="crown" color="#FFFFFF" />
                 <Typography color="#FFFFFF" variant='body2'>
                   {t("Modal_Grades_BestGrade")}
