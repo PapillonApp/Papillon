@@ -43,7 +43,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
       </Typography>
 
       <Trailing>
-        <Stack noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
+        <Stack pointerEvents='none' noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
           {grade.studentScore.disabled ? (
             <>
               <Typography color={trailingForeground} variant='navigation'>
