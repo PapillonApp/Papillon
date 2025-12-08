@@ -56,11 +56,34 @@ export class Lannion implements SchoolServicePlugin {
             }
           }
 
+          console.log(semestre);
+
+          const startYear = semestre.annee_scolaire.split("/")[0];
+          const endYear = semestre.annee_scolaire.split("/")[1];
+
+          const partOfYear = Number(semestre.semestre_id) % 2;
+
+          const estimatedDateDebut = new Date("2021-01-30");
+          
+          estimatedDateDebut.setFullYear(Number(startYear));
+          estimatedDateDebut.setMonth(8);
+
+          const estimatedDateFin = new Date("2021-01-30");
+          estimatedDateFin.setFullYear(Number(endYear));
+          estimatedDateFin.setMonth(0);
+
+          if(partOfYear == 0) {
+            estimatedDateDebut.setFullYear(Number(endYear));
+            estimatedDateDebut.setMonth(0);
+            estimatedDateFin.setFullYear(Number(endYear));
+            estimatedDateFin.setMonth(6);
+          }
+
           return {
             id: id!.toString(),
-            name: `Semestre ${semestre.semestre_id} - ${semestre.annee_scolaire}`,
-            start: new Date(semestre.date_debut || Date.now()),
-            end: new Date(semestre.date_fin || Date.now()),
+            name: `Semestre ${semestre.semestre_id}`,
+            start: estimatedDateDebut,
+            end: estimatedDateFin,
             createdByAccount: this.accountId,
           };
         });
