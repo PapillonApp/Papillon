@@ -157,6 +157,16 @@ export function RootNavigator() {
       />
 
       <Stack.Screen
+        name="(features)/soon"
+        options={{
+          headerShown: false,
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: "fitToContents"
+        }}
+      />
+
+      <Stack.Screen
         name="(features)/(cards)/cards"
         options={{
           headerShown: true,

@@ -22,13 +22,19 @@ const HomeHeader = () => {
       color: "#EE9F00",
       description: availableCanteenCards.length > 0 ?
         (availableCanteenCards.length > 1 ? t("Home_Cards_Button_Description_Number", { number: availableCanteenCards.length }) :
-          t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None")
+          t("Home_Cards_Button_Description_Singular")) : t("Home_Cards_Button_Description_None"),
+      onPress: () => {
+        router.push("/(features)/(cards)/cards");
+      }
     },
     {
       title: t("Home_Menu_Button_Title"),
       icon: "cutlery",
       color: "#7ED62B",
-      description: t("Home_Menu_Button_Description")
+      description: t("Home_Menu_Button_Description"),
+      onPress: () => {
+        router.push("/(features)/soon");
+      }
     },
     {
       title: t("Home_Attendance_Title"),
@@ -50,7 +56,10 @@ const HomeHeader = () => {
       title: t("Home_Chats_Button_Title"),
       icon: "textbubble",
       color: "#2B7ED6",
-      description: (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
+      description: (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular")),
+      onPress: () => {
+        router.push("/(features)/soon");
+      }
     }
   ], [availableCanteenCards, absencesCount, chats, attendancesPeriods, attendances, t]);
 
