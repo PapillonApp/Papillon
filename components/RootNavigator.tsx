@@ -46,7 +46,7 @@ export function RootNavigator() {
       <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
       <Stack.Screen
-        name="(modals)/wrapped/index"
+        name="(modals)/wrapped"
         options={{
           headerShown: false,
           presentation: "fullScreenModal",
