@@ -29,6 +29,7 @@ import News from '@/database/models/News'
 import { Papicons } from '@getpapillon/papicons'
 import Icon from '@/ui/components/Icon'
 import { RefreshControl } from 'react-native-gesture-handler'
+import { FlashList } from '@shopify/flash-list'
 
 const NewsView = () => {
   const theme = useTheme()
@@ -101,7 +102,7 @@ const NewsView = () => {
       />
 
       <LayoutAnimationConfig skipEntering>
-        <LegendList
+        <FlatList
           contentContainerStyle={{
             paddingBottom: insets.bottom + bottomTabBarHeight,
             paddingHorizontal: 16,
@@ -118,7 +119,6 @@ const NewsView = () => {
             />
           }
           data={filteredNews}
-          estimatedItemSize={158 + 9}
           keyExtractor={(item: any) => item.id}
           ListFooterComponent={<Reanimated.View style={footerStyle} />}
           renderItem={({ item }) => <NewsItem item={item} />}
@@ -157,55 +157,57 @@ const NewsItem = ({ item }: { item: News }) => {
   const profileInitials = useMemo(() => getInitials(item.author), [item.author]);
 
   return (
-    <List marginBottom={0}>
-      <Item
-        onPress={() => router.push({
-          pathname: "/(modals)/news",
-          params: { news: JSON.stringify(item) },
-        })}
-      >
-        <Leading>
-          <Avatar
-            size={40}
-            color={profileColor}
-            initials={profileInitials}
-          />
-        </Leading>
+    <AnimatedPressable
+      onPress={() => router.push({
+        pathname: "/(modals)/news",
+        params: { news: JSON.stringify(item) },
+      })}
+    >
+      <Stack card>
+        <Item isLast>
+          <Leading>
+            <Avatar
+              size={40}
+              color={profileColor}
+              initials={profileInitials}
+            />
+          </Leading>
 
-        <Typography variant='title' numberOfLines={2}>
-          {item.title}
-        </Typography>
-        <Typography variant='body1' color='secondary' numberOfLines={3}>
-          {item.content ? truncateString(cleanContent(item.content), 100) : ""}
-        </Typography>
-
-
-        <Stack
-          direction='horizontal'
-          gap={4}
-          style={{ marginTop: 4 }}
-          hAlign='center'
-        >
-          <Typography nowrap weight='medium' style={{ flex: 1 }} variant='caption' color='secondary'>
-            {item.author}
+          <Typography variant='title' numberOfLines={2}>
+            {item.title}
+          </Typography>
+          <Typography variant='body1' color='secondary' numberOfLines={3}>
+            {item.content ? truncateString(cleanContent(item.content), 100) : ""}
           </Typography>
 
-          <Typography nowrap weight='medium' variant='caption' color='secondary'>
-            {item.createdAt.toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </Typography>
 
-          {item.attachments.length > 0 && (
-            <Icon size={18} opacity={0.4}>
-              <Papicons name={"link"} />
-            </Icon>
-          )}
-        </Stack>
-      </Item>
-    </List>
+          <Stack
+            direction='horizontal'
+            gap={4}
+            style={{ marginTop: 4 }}
+            hAlign='center'
+          >
+            <Typography nowrap weight='medium' style={{ flex: 1 }} variant='caption' color='secondary'>
+              {item.author}
+            </Typography>
+
+            <Typography nowrap weight='medium' variant='caption' color='secondary'>
+              {item.createdAt.toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </Typography>
+
+            {item.attachments.length > 0 && (
+              <Icon size={18} opacity={0.4}>
+                <Papicons name={"link"} />
+              </Icon>
+            )}
+          </Stack>
+        </Item>
+      </Stack>
+    </AnimatedPressable>
   )
 }
 
