@@ -13,7 +13,7 @@ import { Papicons } from "@getpapillon/papicons";
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
 import { useTranslation } from "react-i18next";
-import { Avatar } from "../(features)/(news)/news";
+import Avatar from "@/ui/components/Avatar";
 import { Contributor, getContributors } from "@/utils/github/contributors";
 
 export const Teams = [

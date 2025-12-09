@@ -1,7 +1,7 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LucideIcon } from "lucide-react-native";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
@@ -126,34 +126,79 @@ const Course = React.memo((props: CourseProps) => {
   ), [fEnd, fStart, showTimes, skeleton, timesRendered]);
 
   /** Séparateur */
-  const renderSeparator = useCallback(() => (
-    <Stack
-      card
-      direction="horizontal"
-      padding={[14, 8]}
-      radius={300}
-      vAlign="start"
-      gap={8}
-      hAlign="center"
-      style={{ flex: 1, backgroundColor: colors.card }}
-    >
-      <Icon papicon size={24} opacity={skeleton ? 0.1 : 0.6}>
-        {hStart < 11 ? <Papicons name="Sunrise" /> : hStart < 14 ? <Papicons name="Cutlery" /> : <Papicons name="Sun" />}
-      </Icon>
-      <Typography variant="h6" style={{ flex: 1, opacity: 0.6, color: colors.text }} nowrap skeleton={skeleton}>
-        {hStart < 11
-          ? "Pause matinale"
-          : hStart < 14
-            ? "Pause méridienne"
-            : hStart < 18
-              ? "Pause d'après-midi"
-              : "Pause du soir"}
-      </Typography>
-      <Typography variant="body1" style={{ color: colors.text + "80" }} skeleton={skeleton}>
-        {formatDuration(duration)}
-      </Typography>
-    </Stack>
-  ), [colors.card, colors.text, duration, hStart, skeleton]);
+  const renderSeparator = useCallback(() => {
+    const [taps, setTaps] = useState(0);
+
+    const messageKeys = {
+      morning: [
+        "Course_Separator_Morning_Default",
+        "Course_Separator_Morning_Alt_1",
+        "Course_Separator_Morning_Alt_2"
+      ],
+      lunch: [
+        "Course_Separator_Lunch_Default",
+        "Course_Separator_Lunch_Alt_1",
+        "Course_Separator_Lunch_Alt_2"
+      ],
+      evening: [
+        "Course_Separator_Evening_Default",
+        "Course_Separator_Evening_Alt_1",
+        "Course_Separator_Evening_Alt_2"
+      ],
+      night: [
+        "Course_Separator_Night_Default",
+        "Course_Separator_Night_Alt_1",
+        "Course_Separator_Night_Alt_2"
+      ]
+    };
+
+    const increaseTaps = () => {
+      setTaps((prevTaps) => (prevTaps + 1) % 3);
+    };
+
+    let timeKey;
+    if (hStart < 11) {
+      timeKey = 'morning';
+    } else if (hStart < 14) {
+      timeKey = 'lunch';
+    } else if (hStart < 18) {
+      timeKey = 'evening';
+    } else {
+      timeKey = 'night';
+    }
+
+    const message = t(messageKeys[timeKey][taps]);
+
+    return (
+      <AnimatedPressable
+        onPress={() => increaseTaps()}
+        style={{
+          flex: 1,
+        }}
+      >
+        <Stack
+          card
+          direction="horizontal"
+          padding={[14, 8]}
+          radius={300}
+          vAlign="start"
+          gap={8}
+          hAlign="center"
+          style={{ flex: 1, backgroundColor: colors.card }}
+        >
+          <Icon papicon size={24} opacity={skeleton ? 0.1 : 0.6}>
+            {hStart < 11 ? <Papicons name="Sunrise" /> : hStart < 14 ? <Papicons name="Cutlery" /> : <Papicons name="Sun" />}
+          </Icon>
+          <Typography variant="h6" style={{ flex: 1, opacity: 0.6, color: colors.text }} nowrap skeleton={skeleton}>
+            {message}
+          </Typography>
+          <Typography variant="body1" style={{ color: colors.text + "80" }} skeleton={skeleton}>
+            {formatDuration(duration)}
+          </Typography>
+        </Stack>
+      </AnimatedPressable>
+    )
+  }, [colors.card, colors.text, duration, hStart, skeleton]);
 
   /** statut (cours annulé ou magicInfo) */
   const renderStatus = useCallback(() => {
@@ -222,7 +267,7 @@ const Course = React.memo((props: CourseProps) => {
           {/* Nom du cours */}
           <Typography
             variant="h5"
-            numberOfLines={2}
+            numberOfLines={compact ? 1 : 2}
             style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1 }]}
             skeleton={skeleton}
           >
@@ -332,7 +377,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   compactContainer: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
   },
   label: {

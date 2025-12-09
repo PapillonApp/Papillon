@@ -40,7 +40,7 @@ export default function CardView() {
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 20, gap: 15,
+        padding: 20, gap: 15, paddingTop: 82,
       }}
     >
       <SettingsHeader

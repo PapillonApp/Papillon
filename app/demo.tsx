@@ -27,7 +27,7 @@ export default function TabOneScreen() {
       style={styles.container}
     >
       <SectionTitle title={"Typography"}
-                    colors={colors}
+        colors={colors}
       />
       <View style={styles.typographyContainer}>
         <Typography variant="h1">
@@ -59,7 +59,7 @@ export default function TabOneScreen() {
           condimentum nibh. Curabitur vehicula mauris in turpis mattis, eget posuere erat sagittis.
         </Typography>
         <Typography variant="caption"
-                    color="secondary"
+          color="secondary"
         >
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet venenatis ipsum. Sed non luctus
           purus. Fusce vel mollis turpis, non eleifend leo. Praesent id libero tristique, condimentum elit at,
@@ -67,7 +67,7 @@ export default function TabOneScreen() {
         </Typography>
       </View>
       <SectionTitle title={"Timetable"}
-                    colors={colors}
+        colors={colors}
       />
       <View style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
         <Course
@@ -131,8 +131,8 @@ export default function TabOneScreen() {
           magicInfo={{
             label: "Dans 20 minutes",
             icon: ({ color }) => <Icon papicon
-                                       size={24}
-                                       fill={color}
+              size={24}
+              fill={color}
             >
               <Papicons name={"Clock"} />
             </Icon>,
@@ -140,7 +140,7 @@ export default function TabOneScreen() {
         />
       </View>
       <SectionTitle title={"List & Item"}
-                    colors={colors}
+        colors={colors}
       />
       <List>
         <Item>
@@ -161,11 +161,11 @@ export default function TabOneScreen() {
         <Item>
           <Leading>
             <Hamburger size={24}
-                       color={colors.primary}
+              color={colors.primary}
             />
           </Leading>
           <Typography variant="body1"
-                      color="primary"
+            color="primary"
           >
             Item with Leading
           </Typography>
@@ -173,25 +173,25 @@ export default function TabOneScreen() {
         <Item>
           <Trailing>
             <Hamburger size={24}
-                       color={colors.primary}
+              color={colors.primary}
             />
           </Trailing>
           <Typography variant="body1"
-                      color="primary"
+            color="primary"
           >
             Item with Trailing
           </Typography>
         </Item>
       </List>
       <SectionTitle title={"Skeleton"}
-                    colors={colors}
+        colors={colors}
       />
       <SkeletonView style={{ width: 100, height: 20, borderRadius: 4 }} />
       <Typography variant="h1"
-                  skeleton
+        skeleton
       >This is a skeleton text</Typography>
       <Typography skeleton
-                  skeletonLines={2}
+        skeletonLines={2}
       >This is a description with multiple lines</Typography>
       <Course
         id="id1"
@@ -206,8 +206,8 @@ export default function TabOneScreen() {
         magicInfo={{
           label: "Dans 20 minutes",
           icon: ({ color }) => <Icon papicon
-                                     size={24}
-                                     fill={color}
+            size={24}
+            fill={color}
           >
             <Papicons name={"Clock"} />
           </Icon>,
@@ -227,14 +227,14 @@ export default function TabOneScreen() {
         skeleton
       />
       <Stack direction={"horizontal"}
-             hAlign={"center"}
-             gap={10}
+        hAlign={"center"}
+        gap={10}
       >
         <Icon skeleton>
           <Papicons name={"Placeholder"} />
         </Icon>
         <Icon skeleton
-              size={64}
+          size={64}
         >
           <Papicons name={"Placeholder"} />
         </Icon>
@@ -248,12 +248,12 @@ export default function TabOneScreen() {
         skeleton
       />
       <Grade title={"Hello"}
-             date={Date.now()}
-             score={15}
-             outOf={20}
-             skeleton
-             isLast={true}
-             isFirst={true}
+        date={Date.now()}
+        score={15}
+        outOf={20}
+        skeleton
+        isLast={true}
+        isFirst={true}
       />
       <CompactGrade
         color={"#0095D6"}
@@ -265,51 +265,40 @@ export default function TabOneScreen() {
         date={new Date()}
         skeleton
       />
-      <Task
-        color={"#0095D6"}
-        emoji={"📝"}
-        subject={"Mathématiques"}
-        date={(new Date()).setDate((new Date()).getDate() + 9999999)}
-        progress={0.5}
-        title={"Do something"}
-        description={"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-        magic={"Dans 2 jours"}
-        skeleton
-      />
       <SectionTitle title={"Avatar"}
-                    colors={colors}
+        colors={colors}
       />
       <Stack direction={"horizontal"}
-             gap={10}
-             hAlign="center"
+        gap={10}
+        hAlign="center"
       >
         <Avatar size={80} />
         <Avatar size={64}
-                initials={"VL"}
-                color={"#009EC5"}
+          initials={"VL"}
+          color={"#009EC5"}
         />
         <Avatar size={40}
-                initials={"RG"}
-                color={"#DD0030"}
-                shape={"square"}
+          initials={"RG"}
+          color={"#DD0030"}
+          shape={"square"}
         />
         <Avatar size={40}
-                imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
+          imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
         />
         <Avatar size={80}
-                shape={"square"}
-                imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
+          shape={"square"}
+          imageUrl={"https://avatars.githubusercontent.com/u/114444115"}
         />
       </Stack>
       <Stack direction={"horizontal"}
-             gap={10}
-             hAlign="center"
+        gap={10}
+        hAlign="center"
       >
         <Avatar size={64}
-                imageUrl={"https://avatars.githubusercontent.com/u/-1"}
+          imageUrl={"https://avatars.githubusercontent.com/u/-1"}
         />
         <Avatar size={64}
-                skeleton
+          skeleton
         />
       </Stack>
     </ScrollView>
@@ -331,7 +320,7 @@ const SectionTitle = ({ title, colors }: SectionTitleProps) => (
     }}
   >
     <Typography variant="h4"
-                color="primary"
+      color="primary"
     >
       {title}
     </Typography>

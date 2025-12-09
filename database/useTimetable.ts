@@ -12,29 +12,33 @@ import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
 import { getICalEventsForWeek } from "@/services/local/ical";
 
-export function useTimetable(refresh = 0, weekNumber = 0) {
+export function useTimetable(refresh = 0, weekNumber: number | number[] = 0) {
   const database = useDatabase();
   const [timetable, setTimetable] = useState<SharedCourseDay[]>([]);
 
+  const weeks = Array.isArray(weekNumber) ? weekNumber : [weekNumber];
+  // Create a stable key for the weeks array to use in dependency arrays
+  const weeksKey = weeks.join(',');
+
   useEffect(() => {
     const fetchTimetable = async () => {
-      const timetableFetched = await getCoursesFromCache(weekNumber);
+      const timetableFetched = await getCoursesFromCache(weeks);
       setTimetable(timetableFetched);
     };
     fetchTimetable();
-  }, [refresh, database, weekNumber]);
+  }, [refresh, database, weeksKey]);
 
   useEffect(() => {
     const icalQuery = database.get('icals').query();
     const subscription = icalQuery.observe().subscribe(() => {
       const fetchTimetable = async () => {
-        const timetableFetched = await getCoursesFromCache(weekNumber);
+        const timetableFetched = await getCoursesFromCache(weeks);
         setTimetable(timetableFetched);
       };
       fetchTimetable();
     });
     return () => subscription.unsubscribe();
-  }, [database, weekNumber]);
+  }, [database, weeksKey]);
 
   return timetable;
 }
@@ -136,14 +140,22 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
   );
 }
 
-export async function getCoursesFromCache(weekNumber: number): Promise<SharedCourseDay[]> {
+export async function getCoursesFromCache(weeks: number[]): Promise<SharedCourseDay[]> {
   try {
     const database = getDatabaseInstance();
-    const { start, end } = getDateRangeOfWeek(weekNumber);
+    
+    let minStart = new Date(8640000000000000);
+    let maxEnd = new Date(-8640000000000000);
+    
+    for (const w of weeks) {
+      const { start, end } = getDateRangeOfWeek(w);
+      if (start < minStart) minStart = start;
+      if (end > maxEnd) maxEnd = end;
+    }
 
     const courses = await database
       .get<Course>('courses')
-      .query(Q.where('from', Q.between(start.getTime(), end.getTime())))
+      .query(Q.where('from', Q.between(minStart.getTime(), maxEnd.getTime())))
       .fetch();
 
     const dayMap: Record<string, SharedCourse[]> = {};
@@ -154,7 +166,7 @@ export async function getCoursesFromCache(weekNumber: number): Promise<SharedCou
     }
 
     try {
-      const icalEvents = await getICalEventsForWeek(start, end);
+      const icalEvents = await getICalEventsForWeek(minStart, maxEnd);
       for (const event of icalEvents) {
         const dayKey = new Date(event.from).toISOString().split("T")[0];
         dayMap[dayKey] = dayMap[dayKey] || [];

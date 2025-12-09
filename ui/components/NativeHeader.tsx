@@ -2,11 +2,12 @@ import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Platform, Pressable, PressableProps, PressableStateCallbackType, StyleSheet, View, ViewProps } from "react-native";
-import Reanimated, { LayoutAnimationConfig, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Reanimated, { LayoutAnimationConfig, LinearTransition, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { runsIOS26 } from "../utils/IsLiquidGlass";
 import Typography from "./Typography";
 import AnimatedNumber from "./AnimatedNumber";
+import adjust from "@/utils/adjustColor";
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 // Pre-computed styles for maximum performance
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
+    overflow: "hidden",
   },
 });
 
@@ -255,12 +257,14 @@ interface NativeHeaderHighlightProps extends ViewProps {
   children?: React.ReactNode;
   color?: string;
   light?: boolean;
+  variant?: "navigation" | "header";
 }
 
 const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   children,
   color = DEFAULT_COLOR,
   light = false,
+  variant = "navigation",
   style,
   ...props
 }: NativeHeaderHighlightProps) {
@@ -270,17 +274,20 @@ const NativeHeaderHighlight = React.memo(function NativeHeaderHighlight({
   // Pre-compute style array once
   const viewStyle = style ? [styles.highlight, { backgroundColor }, style, light ? { padding: 0 } : {}] : [styles.highlight, { backgroundColor }, { borderRadius: light ? 0 : styles.highlight.borderRadius }, light ? { padding: 0 } : {}];
 
+  const theme = useTheme();
+  const adjustedColor = adjust(color, theme.dark ? 0.2 : -0.2);
+
   return (
     <LayoutAnimationConfig skipEntering>
-      <View style={viewStyle} {...props}>
+      <Reanimated.View style={viewStyle} {...props} layout={LinearTransition.springify()}>
         {typeof children === 'string' ? (
-          <AnimatedNumber variant="navigation" style={{ color }}>
+          <AnimatedNumber variant={variant} style={{ color: adjustedColor }}>
             {children}
           </AnimatedNumber>
         ) : (
           children
         )}
-      </View>
+      </Reanimated.View>
     </LayoutAnimationConfig>
   );
 });

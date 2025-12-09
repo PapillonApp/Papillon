@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useMemo } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Reanimated from 'react-native-reanimated';
 
@@ -13,8 +13,9 @@ import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
-import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
+import adjust from '@/utils/adjustColor';
+import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
+import { colorCheck } from '@/utils/colorCheck';
 
 interface SubjectInfo {
   name: string;
@@ -26,29 +27,19 @@ interface SubjectInfo {
 interface GradesModalProps {
   grade: SharedGrade;
   subjectInfo: SubjectInfo;
-  allGrades: SharedGrade[];
+  avgInfluence: number;
+  avgClass: number;
 }
 
 export default function GradesModal() {
   const { params } = useRoute();
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const colors = theme.colors;
 
   if (!params) {
     return null;
   }
-  const { grade, subjectInfo, allGrades } = params as GradesModalProps;
-
-  const avgInfluence = useMemo(() => {
-    const average = PapillonSubjectAvg(allGrades);
-    const averageWithoutGrade = PapillonSubjectAvg(allGrades.filter(g => g.id !== grade.id));
-    return Number((average - averageWithoutGrade).toFixed(2));
-  }, [allGrades, grade]);
-
-  const avgClass = useMemo(() => {
-    const average = PapillonSubjectAvgByProperty(allGrades, "averageScore");
-    const averageWithoutGrade = PapillonSubjectAvgByProperty(allGrades.filter(g => g.id !== grade.id), "averageScore");
-    return Number((average - averageWithoutGrade).toFixed(2));
-  }, [allGrades, grade]);
+  const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
   return (
     <>
@@ -67,6 +58,7 @@ export default function GradesModal() {
       />
 
       <TableFlatList
+        engine='FlashList'
         sections={[
           {
             title: t("Grades_Details_Title"),
@@ -150,23 +142,32 @@ export default function GradesModal() {
               alignItems: "center",
               justifyContent: "center",
               gap: 16,
-              marginBottom: 20,
+              marginVertical: 20,
             }}
           >
-            <Reanimated.View>
-              <CompactGrade
-                key={grade.id + "_compactGrade"}
-                emoji={subjectInfo.emoji}
-                title={subjectInfo.name}
-                description={grade.description}
-                score={grade.studentScore?.value ?? 0}
-                outOf={grade.outOf?.value ?? 20}
-                disabled={grade.studentScore?.disabled}
-                status={grade.studentScore?.status}
-                color={subjectInfo.color}
-                date={grade.givenAt}
-              />
-            </Reanimated.View>
+            <ModalOverhead
+              color={subjectInfo.color}
+              emoji={subjectInfo.emoji}
+              subject={subjectInfo.name}
+              title={grade.description}
+              date={new Date(grade.givenAt)}
+              overhead={
+                <ModalOverHeadScore
+                  color={subjectInfo.color}
+                  score={grade.studentScore?.disabled ? String(grade.studentScore?.status) : String(grade.studentScore?.value.toFixed(2))}
+                  outOf={grade.outOf?.value}
+                />
+              }
+            />
+
+            {grade.studentScore?.value == grade.maxScore?.value &&
+              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bestgrade:" + theme.dark ? "dark" : "light"}>
+                <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
+                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
+                  {t("Modal_Grades_BestGrade")}
+                </Typography>
+              </Stack>
+            }
 
             <Stack
               card
@@ -187,7 +188,7 @@ export default function GradesModal() {
                 <Typography color="secondary">
                   {t("Grades_Coefficient")}
                 </Typography>
-                <ContainedNumber color={subjectInfo.color}>
+                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
                   x{(grade.coefficient ?? 1).toFixed(2)}
                 </ContainedNumber>
               </Stack>
@@ -203,7 +204,7 @@ export default function GradesModal() {
                 <Typography color="secondary">
                   {t("Grades_Avg_Group_Short")}
                 </Typography>
-                <ContainedNumber color={subjectInfo.color} denominator={"/" + grade.outOf?.value}>
+                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
                   {grade.averageScore?.value.toFixed(2)}
                 </ContainedNumber>
               </Stack>

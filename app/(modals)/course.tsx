@@ -3,7 +3,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
 
-import { formatDistanceToNow, formatDistanceStrict } from 'date-fns'
+import { formatDistanceToNow, formatDistanceStrict, formatDistanceToNowStrict } from 'date-fns'
 import * as DateLocale from 'date-fns/locale';
 
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
@@ -16,8 +16,9 @@ import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
 import LinearGradient from "react-native-linear-gradient";
 import Course from "@/ui/components/Course";
-import { getStatusText } from "../(tabs)/calendar";
+import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
 import { getSubjectName } from '@/utils/subjects/name';
+import ModalOverhead from "@/components/ModalOverhead";
 
 interface SubjectInfo {
   name: string;
@@ -63,6 +64,39 @@ export default function CourseModal() {
 
       <TableFlatList
         sections={[
+          getStatusText(course.status) ? {
+            title: t("Modal_Course_Status"),
+            hideTitle: true,
+            items: [
+              {
+                title: getStatusText(course.status),
+                icon: <Papicons.Info />,
+              }
+            ]
+          } : null,
+          {
+            title: t("Modal_Course_Time"),
+            papicon: <Papicons.Clock />,
+            items: [
+              {
+                title: t("Modal_Course_Start"),
+                description: formatDistanceToNow(startTime * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS, addSuffix: true }),
+                icon: <Papicons.Logout />,
+                trailing: <Typography variant="header">{new Date(startTime * 1000).toLocaleString(undefined, {
+                  hour: "numeric",
+                  minute: "numeric"
+                })}</Typography>
+              },
+              {
+                title: t("Modal_Course_End"),
+                icon: <Papicons.Login />,
+                trailing: <Typography variant="header">{new Date(endTime * 1000).toLocaleString(undefined, {
+                  hour: "numeric",
+                  minute: "numeric"
+                })}</Typography>
+              }
+            ]
+          },
           {
             title: t("Modal_Course_Details"),
             papicon: <Papicons.Info />,
@@ -86,81 +120,24 @@ export default function CourseModal() {
           }
         ]}
         ListHeaderComponent={
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 0,
-              marginBottom: 20,
+          <ModalOverhead
+            subject={getSubjectName(item.subject)}
+            color={subjectInfo.color}
+            emoji={subjectInfo.emoji}
+            subjectVariant="h3"
+            date={new Date(startTime * 1000)}
+            dateFormat={{
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "numeric",
+              minute: "numeric"
             }}
-          >
-            <Reanimated.View>
-              <Course
-                id={item.id}
-                name={getSubjectName(item.subject)}
-                teacher={item.teacher}
-                room={item.room}
-                color={subjectInfo.color}
-                status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                variant="primary"
-                start={Math.floor(item.from.getTime() / 1000)}
-                end={Math.floor(item.to.getTime() / 1000)}
-                readonly={!!item.createdByAccount}
-                timesRendered={false}
-              />
-            </Reanimated.View>
-
-            <Stack
-              card
-              direction="horizontal"
-              width={"100%"}
-              style={{ marginTop: 8 }}
-            >
-              <View style={{
-                flexDirection: "row",
-                width: "100%",
-              }}>
-                <Stack
-                  vAlign="center"
-                  hAlign="center"
-                  style={{ flex: 1, borderRightWidth: 1, borderRightColor: colors.border }}
-                  padding={12}
-                  gap={0}
-                >
-                  <Icon papicon opacity={0.5}>
-                    <Papicons.Clock />
-                  </Icon>
-                  <Typography color="secondary">
-                    {startTime * 1000 > Date.now()
-                      ? t("Modal_Course_StartsIn")
-                      : endTime * 1000 > Date.now()
-                        ? t("Modal_Course_Ongoing")
-                        : t("Modal_Course_StartedAgo")}
-                  </Typography>
-                  <Typography align="center" inline variant="h5" color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {formatDistanceToNow((endTime * 1000 > Date.now() ? startTime : endTime) * 1000, { locale: DateLocale[i18n.language as keyof typeof DateLocale] || DateLocale.enUS })}
-                  </Typography>
-                </Stack>
-                <Stack
-                  style={{ flex: 1 }}
-                  vAlign="center"
-                  hAlign="center"
-                  padding={12}
-                  gap={0}
-                >
-                  <Icon papicon opacity={0.5}>
-                    <Papicons.Apple />
-                  </Icon>
-                  <Typography color="secondary">
-                    {t("Modal_Course_Group")}
-                  </Typography>
-                  <Typography align="center" inline variant={(item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")).length > 20 ? "body2" : "h5"} color={subjectInfo.color} style={{ marginTop: 4 }}>
-                    {item.group?.replaceAll("[", "").replaceAll("]", "") || t("Modal_Course_Group_Full")}
-                  </Typography>
-                </Stack>
-              </View>
-            </Stack>
-          </View>
+            style={{
+              marginBottom: 24,
+              marginTop: 24
+            }}
+          />
         }
         style={{ backgroundColor: "transparent" }}
       />
