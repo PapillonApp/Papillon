@@ -121,7 +121,7 @@ const Task = () => {
           },
           task.attachments.length > 0 ? {
             title: t("Modal_Task_Attachments"),
-            leading: <Icon><Papicons name="Link" /></Icon>,
+            icon: <Papicons name="Link" />,
             items: task.attachments.map((attachment) => ({
               title: attachment.name || attachment.url,
               titleProps: {
@@ -131,7 +131,7 @@ const Task = () => {
               descriptionProps: {
                 nowrap: true
               },
-              leading: <Papicons name={getAttachmentIcon(attachment)} color={colors.text} />,
+              leading: <Icon><Papicons name={getAttachmentIcon(attachment)} /></Icon>,
               onPress: () => WebBrowser.openBrowserAsync(attachment.url, {
                 presentationStyle: "formSheet"
               })
