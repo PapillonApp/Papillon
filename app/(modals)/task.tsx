@@ -1,8 +1,16 @@
+import { Papicons } from "@getpapillon/papicons";
+import { useRoute, useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import * as WebBrowser from "expo-web-browser";
+import { t } from "i18next";
+import React, { useState } from "react";
+
 import ModalOverhead from "@/components/ModalOverhead";
 import Homework from "@/database/models/Homework";
 import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import { formatHTML } from "@/utils/format/html";
@@ -11,13 +19,6 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Papicons } from "@getpapillon/papicons";
-import { useRoute, useTheme } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
-import { t } from "i18next";
-import React, { useState } from "react";
-import * as WebBrowser from "expo-web-browser";
-import Icon from "@/ui/components/Icon";
 
 const Task = () => {
   const { params } = useRoute();
@@ -130,7 +131,7 @@ const Task = () => {
               descriptionProps: {
                 nowrap: true
               },
-              leading: <Papicons name={getAttachmentIcon(attachment)} />,
+              leading: <Papicons name={getAttachmentIcon(attachment)} color={colors.text} />,
               onPress: () => WebBrowser.openBrowserAsync(attachment.url, {
                 presentationStyle: "formSheet"
               })
