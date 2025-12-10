@@ -1,23 +1,20 @@
+import { Papicons } from '@getpapillon/papicons';
+import { useTheme } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
+import { t } from 'i18next';
+import React, { useCallback, useMemo } from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+
 import { Grade } from '@/database/models/Grades';
 import Subject from '@/database/models/Subject';
-import { Dynamic } from '@/ui/components/Dynamic';
 import Item, { Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import adjust from '@/utils/adjustColor';
 import { getSubjectColor } from '@/utils/subjects/colors';
 import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
-import { useTheme } from '@react-navigation/native';
-import { useNavigation, useRouter } from 'expo-router';
-import { t } from 'i18next';
-import { PapillonSubjectAvgByProperty } from "@/utils/grades/algorithms/helpers";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
-import React, { useCallback, useMemo } from 'react';
-import { Alert, Text, TouchableOpacity } from 'react-native';
-import { Papicons } from '@getpapillon/papicons';
 
 const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
@@ -31,7 +28,7 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
   const theme = useTheme();
 
-  const hasMaxScore = grade.studentScore?.value == grade.maxScore?.value;
+  const hasMaxScore = grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore.disabled;
   const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
@@ -157,3 +154,6 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
     </Stack>
   );
 });
+
+GradeItem.displayName = "GradeItem"
+SubjectItem.displayName = "SubjectItem"

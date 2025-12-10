@@ -1,20 +1,18 @@
 import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
-import React, { useMemo } from "react";
-import { Text, View } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Reanimated from 'react-native-reanimated';
 
+import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
 import { Grade as SharedGrade } from "@/services/shared/grade";
-import { CompactGrade } from "@/ui/components/CompactGrade";
 import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
-import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
 import { colorCheck } from '@/utils/colorCheck';
 
 interface SubjectInfo {
@@ -160,7 +158,7 @@ export default function GradesModal() {
               }
             />
 
-            {grade.studentScore?.value == grade.maxScore?.value &&
+            {grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore?.disabled &&
               <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bestgrade:" + theme.dark ? "dark" : "light"}>
                 <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
                 <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>

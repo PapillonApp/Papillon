@@ -16,6 +16,8 @@ import ChipButton from '@/ui/components/ChipButton';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
 import Icon from '@/ui/components/Icon';
+import Item, { Trailing } from '@/ui/components/Item';
+import List from '@/ui/components/List';
 import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
@@ -33,8 +35,6 @@ import { getSubjectName } from "@/utils/subjects/name";
 import Averages from './atoms/Averages';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
-import Item, { Trailing } from '@/ui/components/Item';
-import List from '@/ui/components/List';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -358,7 +358,7 @@ const GradesView: React.FC = () => {
                 status={grade.studentScore?.status}
                 color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
                 date={grade.givenAt}
-                hasMaxScore={grade.studentScore?.value == grade.maxScore?.value}
+                hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
                 onPress={() => {
                   // @ts-expect-error navigation types
                   navigation.navigate('(modals)/grade', {
