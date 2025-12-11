@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: .github/bot
-        run: npm ci
+        run: npm install
 
       - name: Build Bot
         working-directory: .github/bot
