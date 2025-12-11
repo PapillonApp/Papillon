@@ -4,8 +4,6 @@ import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Papicons } from '@getpapillon/papicons';
 import Typography from '@/ui/components/Typography';
 import { useTheme } from '@react-navigation/native';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -23,18 +21,19 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
   const { colors } = useTheme();
 
   return (
-    <AnimatedPressable
-      style={styles.headerBtn}
-      onPress={item.onPress}
+    <LiquidGlassView
+      glassOpacity={0.7}
+      glassTintColor={colors.card}
+      glassType='regular'
+      isInteractive={true}
+      style={{
+        flex: 1,
+        borderRadius: 22
+      }}
     >
-      <Stack
-        direction='horizontal'
-        card
-        inline flex
-        padding={[10, 10]}
-        hAlign='center'
-        vAlign='center'
-        gap={10}
+      <Pressable
+        style={styles.headerBtn}
+        onPress={item.onPress}
       >
         <View
           style={{
@@ -49,11 +48,11 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
           flex: 1,
           overflow: 'hidden'
         }}>
-          <Typography nowrap inline variant="title">{item.title}</Typography>
-          <Typography nowrap inline variant="body2" color='secondary'>{item.description}</Typography>
+          <Typography nowrap variant="h6" color={colors.text + 95} style={{ lineHeight: 0 }}>{item.title}</Typography>
+          <Typography nowrap variant="title" color={colors.text + 60} style={{ lineHeight: 0 }}>{item.description}</Typography>
         </View>
-      </Stack>
-    </AnimatedPressable>
+      </Pressable>
+    </LiquidGlassView >
   );
 };
 
@@ -62,6 +61,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     flexDirection: "row",
+    borderCurve: "circular",
+    borderRadius: 20,
+    padding: 10,
+    gap: 8
   }
 });
 

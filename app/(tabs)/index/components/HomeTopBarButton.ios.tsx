@@ -3,8 +3,6 @@ import { Pressable, View } from 'react-native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import Icon from '@/ui/components/Icon';
 import { Papicons } from '@getpapillon/papicons';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Stack from '@/ui/components/Stack';
 
 interface HomeTopBarButtonProps {
   icon: string;
@@ -13,26 +11,30 @@ interface HomeTopBarButtonProps {
 
 const HomeTopBarButton: React.FC<HomeTopBarButtonProps> = ({ icon, onPress }) => {
   return (
-    <AnimatedPressable
-      onPressIn={onPress}
+    <LiquidGlassView
+      glassType="clear"
+      isInteractive={true}
+      glassOpacity={0}
+      style={{
+        width: 42,
+        height: 42,
+        borderRadius: 30,
+      }}
     >
-      <Stack
-        card
+      <Pressable
+        onPressIn={onPress}
         style={{
-          width: 42,
-          height: 42,
-          borderRadius: 30,
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-        hAlign='center'
-        vAlign='center'
-        noShadow
-        backgroundColor='#FFFFFF50'
       >
         <Icon size={26} fill='white'>
           <Papicons name={icon} />
         </Icon>
-      </Stack>
-    </AnimatedPressable>
+      </Pressable>
+    </LiquidGlassView>
   );
 };
 
