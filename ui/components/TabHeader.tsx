@@ -37,7 +37,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   const [height, setHeight] = React.useState(0);
 
   useEffect(() => {
-    onHeightChanged(height);
+    onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
   }, [height]);
 
   return (
@@ -53,7 +53,9 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           height: height,
           zIndex: 99,
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
+          elevation: 2,
         }]}
+        pointerEvents={'none'}
       >
         {Platform.OS === 'ios' && (
           <ProgressiveBlurView

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { RefreshControl, SectionList, StyleSheet } from 'react-native';
+import { Platform, RefreshControl, SectionList, StyleSheet } from 'react-native';
 import Reanimated, {
   createAnimatedComponent,
   LinearTransition,
@@ -116,7 +116,7 @@ const TasksList: React.FC<TasksListProps> = ({
       contentContainerStyle={{
         paddingHorizontal: 16,
         paddingBottom: 100,
-        paddingTop: headerHeight,
+        paddingTop: headerHeight + (Platform.OS === 'android' ? 10 : 0),
       }}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
