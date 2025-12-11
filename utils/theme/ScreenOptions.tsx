@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import AndroidBackButton from "./AndroidBackButton";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const screenOptions: any = {
@@ -19,4 +20,11 @@ export const screenOptions: any = {
     fontFamily: "semibold",
     fontSize: 17,
   },
+  animation: Platform.OS == 'android' ? "fade_from_bottom" : undefined,
+  headerBackIcon: Platform.OS == 'android' ? {
+    type: "image",
+    source: require("@/assets/icons/back.svg"),
+  } : undefined,
+  headerLeft: Platform.OS == 'android' ? () => <AndroidBackButton /> : undefined,
+  headerBackVisible: Platform.OS == 'android' ? false : undefined,
 };

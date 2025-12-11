@@ -13,7 +13,6 @@ export default function Layout() {
     ...screenOptions,
     headerShown: true,
     headerLargeTitle: false,
-    headerBackVisible: true,
     headerTransparent: runsIOS26,
     headerShadowVisible: false,
   }), []);
