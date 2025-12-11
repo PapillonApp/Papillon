@@ -2,7 +2,7 @@ name: Issue Check
 
 on:
   issues:
-    types: [opened, edited, reopened]
+    types: [opened]
 
 jobs:
   check-issue:
