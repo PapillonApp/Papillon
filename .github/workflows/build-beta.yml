@@ -1,4 +1,4 @@
-name: Release Apps
+name: Build a beta
 
 on:
   workflow_dispatch:
@@ -46,9 +46,9 @@ jobs:
             git push origin ${{ github.ref_name }}
           fi
 
-      - name: 📢 Notify start
+      - name: 📢 Notify start on Telegram
         run: |
-          MESSAGE="🔨 *Release Started*
+          MESSAGE="📣 *Launch of a beta build*
 
           📦 ${{ github.repository }} (${{ github.ref_name }})
           👤 ${{ github.actor }} | Run #${{ github.run_number }}
@@ -180,7 +180,7 @@ jobs:
           name: app-release.aab
           path: android/app/build/outputs/bundle/release/*.aab
 
-      - name: 🎉 Publish to Play Store
+      - name: ✨ Released on the Play Store in beta version
         if: success()
         uses: r0adkll/upload-google-play@v1
         with:
@@ -191,7 +191,7 @@ jobs:
           inAppUpdatePriority: 3
           status: completed
 
-      - name: ✅ Notify success
+      - name: ✅ Notify success on Telegram
         if: success()
         run: |
           DURATION=$((SECONDS - 0))
@@ -209,7 +209,7 @@ jobs:
             -d parse_mode=Markdown \
             -d text="$MESSAGE"
 
-      - name: ❌ Notify failure
+      - name: ❌ Notify failure on Telegram
         if: failure()
         run: |
           MESSAGE="❌ *Release Failed*
