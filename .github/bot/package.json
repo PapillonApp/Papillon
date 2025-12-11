@@ -15,10 +15,6 @@
     "@actions/github": "^6.0.1",
     "@octokit/rest": "^22.0.1",
     "@types/node": "^25.0.0",
-    "typescript": "^5.9.3",
-    "openai": "^4.0.0"
-  },
-  "dependencies": {
-    "openai": "^6.10.0"
+    "typescript": "^5.9.3"
   }
 }

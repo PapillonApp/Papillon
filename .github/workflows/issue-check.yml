@@ -31,5 +31,4 @@ jobs:
         working-directory: .github/bot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: node dist/issue/index.js

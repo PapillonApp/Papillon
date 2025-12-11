@@ -1,7 +1,6 @@
 import * as github from '@actions/github';
 import * as core from '@actions/core';
 import { getLabelsFromTitle } from './labeler';
-import { classifyIssueArea } from './ai';
 import { postWelcomeMessage } from './message';
 
 async function run() {
@@ -25,15 +24,10 @@ async function run() {
 
     core.info(`Processing Issue #${number}: ${title}`);
 
-    // Feature 1: Auto-labeler (Keyword based)
     const labelsToAdd = getLabelsFromTitle(title);
-
-    // Feature 2: AI Area Detection
-    if (context.payload.issue.body) {
-      const aiLabel = await classifyIssueArea(title, context.payload.issue.body);
-      if (aiLabel) {
-        labelsToAdd.push(aiLabel);
-      }
+    
+    if (context.payload.action === 'opened') {
+      labelsToAdd.push('status: needs triage');
     }
 
     if (labelsToAdd.length > 0) {
@@ -46,7 +40,6 @@ async function run() {
       core.info(`Added labels: ${labelsToAdd.join(', ')}`);
     }
 
-    // Feature 3: Welcome Message
     if (context.payload.action === 'opened') {
         await postWelcomeMessage(octokit, owner, repo, number, user.login);
     }

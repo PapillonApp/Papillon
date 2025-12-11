@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 
 export async function postWelcomeMessage(
-  octokit: any, // Using 'any' to avoid strict type conflicts with @actions/github
+  octokit: any,
   owner: string,
   repo: string,
   issueNumber: number,
@@ -16,7 +16,6 @@ Nous espérons te revoir très bientôt avec une nouvelle issue !
 À très vite sur **Papillon** 🦋
 `.trim();
 
-  // Check if we already posted
   const comments = await octokit.rest.issues.listComments({
     owner,
     repo,
