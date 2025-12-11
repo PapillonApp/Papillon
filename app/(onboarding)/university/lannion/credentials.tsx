@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import {
     Keyboard,
     KeyboardAvoidingView,
+    Platform,
     View,
 } from "react-native";
 import Reanimated, {
@@ -138,6 +139,24 @@ export default function LannionCredentials() {
             }
             setIsLoggingIn(false);
         }
+    }
+
+    if (Platform.OS === 'android') {
+        return (
+            <Stack padding={20} gap={8} style={{ paddingTop: insets.top + 20 }}>
+                <Typography variant="h3">
+                    Lannion n'est pas encore disponible sur Android
+                </Typography>
+                <Typography variant="body1" color="secondary">
+                    On travaille dur pour rendre les librairies nécessaires disponibles sur Android.
+                </Typography>
+                <View style={{ marginTop: 24 }} />
+                <Button
+                    title="Retour"
+                    onPress={() => router.back()}
+                />
+            </Stack>
+        )
     }
 
     return (
