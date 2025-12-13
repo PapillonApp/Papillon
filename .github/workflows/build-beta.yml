@@ -11,14 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create secrets.json
-        run: |
-          echo '{
-            "APP_KEY": "${{ secrets.COUNTLY_APP_KEY }}",
-            "SALT": "${{ secrets.COUNTLY_SALT }}",
-            "SERVER_URL": "${{ secrets.COUNTLY_SERVER_URL }}"
-          }' > secrets.json
-
       - name: Get version
         run: |
           current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
@@ -128,6 +120,14 @@ jobs:
           chmod +x android/gradlew
           echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
           echo "android.enable16KbPageSizes=true" >> android/gradle.properties
+
+      - name: Create secrets.json
+        run: |
+          echo '{
+            "APP_KEY": "${{ secrets.COUNTLY_APP_KEY }}",
+            "SALT": "${{ secrets.COUNTLY_SALT }}",
+            "SERVER_URL": "${{ secrets.COUNTLY_SERVER_URL }}"
+          }' > secrets.json
 
       - name: Build APK
         run: |
