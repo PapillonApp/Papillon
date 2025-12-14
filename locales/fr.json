@@ -95,6 +95,22 @@
   "Event_DeleteEvent": "Supprimer l'événement",
   "Event_Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
+  "Course_Separator_Lunch_Default": "Pause méridienne",
+  "Course_Separator_Lunch_Alt_1": "Bon appétit !",
+  "Course_Separator_Lunch_Alt_2": "Miam !",
+
+  "Course_Separator_Morning_Default": "Pause matinale",
+  "Course_Separator_Morning_Alt_1": "Au dodo !",
+  "Course_Separator_Morning_Alt_2": "Petit déjeuner",
+
+  "Course_Separator_Evening_Default": "Pause de l'après-midi",
+  "Course_Separator_Evening_Alt_1": "Une pause s'impose !",
+  "Course_Separator_Evening_Alt_2": "Heure du goûter !",
+
+  "Course_Separator_Night_Default": "Pause du soir",
+  "Course_Separator_Night_Alt_1": "Au dodo !",
+  "Course_Separator_Night_Alt_2": "Il fait nuit !",
+
   "Context_Delete": "Supprimer",
   "Context_Cancel": "Annuler",
   "Context_Edit": "Modifier",
@@ -108,7 +124,10 @@
 
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
-  "Home_Welcome_Name": "Bonjour, {{name}} !",
+  "Home_Welcome_Name": "Bonjour, {{name}} {{emoji}}",
+  "Home_Cards_Button_Description_Plurial": "disponibles",
+  "Home_Chats_Plurial": "discussions",
+  "Home_Chats_Singular": "discussion",
   "Home_See_All_Tasks": "Voir toutes les tâches",
   "Home_Welcome": "Bonjour !",
   "Home_Planned_None": "Tu n'as aucun cours restant de prévu aujourd'hui",
@@ -118,6 +137,27 @@
   "Home_Widget_NextCourses": "Prochains cours",
   "Home_Widget_NewGrades": "Nouvelles notes",
   "Home_Widget_NewHomeworks": "Tâches à faire",
+
+  "Home_Widget_NoCourses": "Aucun cours à venir",
+  "Home_Widget_NoCourses_Description": "Il n'y a pas de cours prévus pour aujourd'hui.",
+
+  "Home_Cards_Button_Title": "Cartes",
+  "Home_Cards_Button_Description_None": "Aucune carte",
+  "Home_Cards_Button_Description_Singular": "Une carte",
+  "Home_Cards_Button_Description_Number": "{{number}} cartes",
+
+  "Home_Chats_Button_Title": "Messages",
+  "Home_Chats_Button_Description_None": "Aucun message",
+  "Home_Chats_Button_Description_Singular": "Un message",
+  "Home_Chats_Button_Description_Number": "{{number}} messages",
+
+  "Home_Attendance_Title": "Absences",
+  "Home_Attendance_Button_Description_None": "Aucune absence",
+  "Home_Attendance_Button_Description_Singular": "Une absence",
+  "Home_Attendance_Button_Description_Number": "{{number}} absences",
+
+  "Home_Menu_Button_Title": "Menu",
+  "Home_Menu_Button_Description": "Menu du jour",
 
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoute un événement ou synchronise ton calendrier pour commencer.",
@@ -133,6 +173,10 @@
   "Modal_Course_Teacher": "Enseignant",
   "Modal_Course_Room": "Salle",
   "Modal_Course_Duration": "Durée",
+
+  "Modal_Course_Time": "Horaires du cours",
+  "Modal_Course_Start": "Début",
+  "Modal_Course_End": "Fin",
 
   "Tasks_Search_Placeholder": "Rechercher des tâches",
   "Tasks_LeftHomeworks_Title": "tâches restantes",
@@ -155,13 +199,34 @@
   "Settings_General": "Général",
 
   "Latest_Grades": "Nouvelles notes",
+  "Grades_Search_Placeholder": "Rechercher une note, une matière",
 
+  "Grades_Avg_Methods": "Méthodes de calcul",
   "Grades_Avg_All_Title": "Moyenne générale",
   "Grades_Avg_All_Short": "Moy. générale",
-  "Grades_Avg_Subject_Title": "Moyenne des notes",
-  "Grades_Avg_Subject_Short": "Moy. notes",
+  "Grades_Avg_All_Pond": "Moyenne pondérée",
+  "Grades_Avg_All_Pond_Short": "Moy. pondérée",
+  "Grades_Avg_All_Pond_Description": "Calcule la moyenne pondérée de toutes les notes",
+  "Grades_Avg_Subject_Title": "Moyenne des matières",
+  "Grades_Avg_Subject_Short": "Moy. matières",
+  "Grades_Avg_Subject_Description": "Calcule la moyenne pondérée des moyennes de matières",
   "Grades_Avg_Median_Title": "Médiane",
   "Grades_Avg_Median_Short": "Médiane",
+
+  "Grades_Avg_More": "En savoir plus",
+  "Grades_Avg_KnowMore": "En savoir plus",
+  "Grades_Avg_KnowMore_Description": "Comprendre les méthodes de calcul de la moyenne générale",
+
+  "Grades_SubjectInfo": "Informations sur la matière",
+  "Grades_SubjectInfo_NbGrades": "{{number}} note(s)",
+  "SubjectInfo_StudentAverage_Label": "Moyenne de l'élève",
+  "SubjectInfo_Stats_Header": "Statistiques",
+  "SubjectInfo_ClassAverage_Label": "Moyenne de classe",
+  "SubjectInfo_ClassAverage_Description": "Moyenne générale de la classe",
+  "SubjectInfo_MaxAverage_Label": "Moyenne maximale",
+  "SubjectInfo_MaxAverage_Description": "Meilleure moyenne du groupe",
+  "SubjectInfo_MinAverage_Label": "Moyenne minimale",
+  "SubjectInfo_MinAverage_Description": "Moyenne la plus faible du groupe",
 
   "Grades_Semester": "Semestre",
   "Grades_Trimester": "Trimestre",
@@ -173,6 +238,7 @@
   "Grades_Method_AllGrades": "Toutes les matières",
   "Grades_Method_Weighted": "Pondération",
 
+  "Grades_Sort": "Trier",
   "Grades_Sorting_Alphabetical": "Alphabétique",
   "Grades_Sorting_Averages": "Moyennes",
   "Grades_Sorting_Date": "Date",
@@ -185,6 +251,9 @@
   "Grades_Empty_Description": "Tu n'as pas encore été noté sur cette période.",
 
   "Grade_NoDescription": "Devoir de {{subject}}",
+
+  "Grades_Tab_Subjects": "Matières",
+  "Grades_Tab_Latest": "Nouvelles notes",
 
   "Profile_Attendance_Title": "Assiduité",
   "Profile_Attendance_Denominator_Single": "absence",
@@ -204,6 +273,7 @@
   "Profile_Cards_Title": "QR-Code et cartes",
 
   "Modal_Grades_Title": "Détail de la note",
+  "Modal_Grades_BestGrade": "Meilleure note du groupe",
 
   "Grades_Details_Title": "Détails",
   "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
@@ -216,6 +286,14 @@
   "Grades_Avg_Group_Title": "Moyenne du groupe",
   "Grades_Coefficient": "Coefficient",
   "Grades_Avg_Group_Short": "Moy. groupe",
+  "Grades_Tab_Rank": "Classement",
+  "Grades_Tab_Rank_Description": "Position dans le groupe",
+
+  "News_Search_Placeholder": "Rechercher une actualité",
+  "News_Empty_Title": "Aucune actualité",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans votre établissement.",
+  "News_Search_NoResults": "Aucune actualité trouvée",
+  "News_Search_NoResults_Description": "Aucune actualité trouvée pour votre recherche.",
 
   "News_Theme_Papillon_Title": "Papillon",
   "News_Theme_Papillon_Description": "Un thème doux et élégant",
@@ -247,7 +325,7 @@
   "Settings_Accessibility_Description": "Affichage, son...",
   "Settings_MagicPlus_Title": "Magic+",
   "Settings_MagicPlus_Description": "Fonctionnalités intelligentes",
-  "Settings_MagicPlus_Description_Card": "Fonctionnalités I.A",
+  "Settings_MagicPlus_Description_Card": "Fonctionnalités IA",
   "Settings_MagicPlus_Enable": "Activer Magic+",
   "Settings_MagicPlus_Description_Optimization": "Optimise automatiquement l’organisation de tes tâches pour améliorer ta productivité",
   "Settings_MagicPlus_ExplanationLocal": "Modèle entièrement local, aucune donnée n’est transférée en dehors de ton appareil",
@@ -343,5 +421,20 @@
 
   "Tasks_Sorting_Methods_DueDate": "Date de rendu",
   "Tasks_Sorting_Methods_Subject": "Matières",
-  "Tasks_Sorting_Methods_Done": "Non terminé"
+  "Tasks_Sorting_Methods_Done": "Non terminé",
+  "Tasks_ThisWeek": "Cette semaine",
+
+  "Task_Undone": "Non terminé",
+  "Task_Done": "Terminé",
+
+  "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
+  "Modal_Profile_Title": "Personnaliser le profil",
+
+  "Modal_Task_Status": "État du devoir",
+  "Modal_Task_Description": "Description du devoir",
+  "Modal_Task_Attachments": "Pièces jointes",
+
+  "Today": "Aujourd'hui",
+  "Yesterday": "Hier",
+  "Tomorrow": "Demain"
 }
