@@ -68,7 +68,10 @@ const WallpaperModal = () => {
       mutateProperty("personalization", {
         wallpaper: {
           id: wallpaper.id,
-          url: wallpaperFile.uri
+          path: {
+            directory: wallpaperDirectory.name,
+            name: wallpaperFile.name
+          }
         }
       })
       return;
@@ -76,16 +79,17 @@ const WallpaperModal = () => {
 
     setCurrentlyDownloading((prev) => [...prev, wallpaper.id]);
 
-
     if (!wallpaperDirectory.exists) {
       wallpaperDirectory.create();
     }
-    File.downloadFileAsync(wallpaper.url, wallpaperFile).then((result) => {
-      const newUrl = result.uri;
+    File.downloadFileAsync(wallpaper.url!, wallpaperFile).then((result) => {
       mutateProperty("personalization", {
         wallpaper: {
           id: wallpaper.id,
-          url: newUrl
+          path: {
+            directory: wallpaperDirectory.name,
+            name: wallpaperFile.name
+          }
         }
       })
     }).finally(() => {
@@ -111,7 +115,10 @@ const WallpaperModal = () => {
         mutateProperty("personalization", {
           wallpaper: {
             id: `custom:${Date.now()}`,
-            url: importedFile.uri
+            path: {
+              directory: wallpaperDirectory.name,
+              name: importedFile.name
+            }
           }
         })
       })

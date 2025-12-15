@@ -12,9 +12,15 @@ export interface SettingsState {
   personalization: Personalization;
 }
 
+export interface Path {
+  directory: string;
+  name: string;
+}
+
 export interface Wallpaper {
   id: string;
-  url: string;
+  url?: string;
+  path?: Path;
   thumbnail?: string;
   credit?: string;
 }

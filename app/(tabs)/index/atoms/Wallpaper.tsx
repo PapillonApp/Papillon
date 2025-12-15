@@ -1,44 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, StatusBar, StyleSheet } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
 import { useSettingsStore } from '@/stores/settings';
+import { File, Paths } from 'expo-file-system';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
-  const visible = useIsFocused();
-  const settingsStore = useSettingsStore(state => state.personalization);
-  const currentWallpaper = settingsStore.wallpaper;
+  try {
+    const visible = useIsFocused();
+    const settingsStore = useSettingsStore(state => state.personalization);
+    const currentWallpaper = settingsStore.wallpaper;
 
-  return (
-    <MaskedView
-      style={[styles.container, { height }]}
-      maskElement={
-        <LinearGradient
-          colors={['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 0)']}
-          locations={[0.5, 1]}
-          style={{ width: '100%', height }}
+    const [image, setImage] = useState();
+
+    useEffect(() => {
+      if (currentWallpaper) {
+        const file = new File(Paths.document, currentWallpaper.path?.directory, currentWallpaper.path?.name);
+        if (file.exists) {
+          setImage(file.uri);
+        }
+      }
+    }, [currentWallpaper]);
+
+    return (
+      <MaskedView
+        style={[styles.container, { height }]}
+        maskElement={
+          <LinearGradient
+            colors={['rgba(0, 0, 0, 1)', 'rgba(0, 0, 0, 0)']}
+            locations={[0.5, 1]}
+            style={{ width: '100%', height }}
+          />
+        }
+      >
+        <Image
+          source={image ? { uri: image } : require('@/assets/images/wallpapers/clouds.jpg')}
+          style={[styles.image, { height }]}
         />
-      }
-    >
-      <Image
-        source={currentWallpaper ? { uri: currentWallpaper?.url } : require('@/assets/images/wallpapers/clouds.jpg')}
-        style={[styles.image, { height }]}
-      />
 
-      {dim &&
-        <LinearGradient
-          colors={['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0)']}
-          locations={[0, 1]}
-          style={[styles.dimGradient, { height: height / 2 }]}
-        />
-      }
+        {dim &&
+          <LinearGradient
+            colors={['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0)']}
+            locations={[0, 1]}
+            style={[styles.dimGradient, { height: height / 2 }]}
+          />
+        }
 
-      {dim && visible &&
-        <StatusBar translucent animated barStyle={'light-content'} />
-      }
-    </MaskedView>
-  );
+        {dim && visible &&
+          <StatusBar translucent animated barStyle={'light-content'} />
+        }
+      </MaskedView>
+    );
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 };
 
 const styles = StyleSheet.create({
