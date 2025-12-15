@@ -21,6 +21,9 @@ const Wallpaper = ({ height = 400, dim = true }) => {
           setImage(file.uri);
         }
       }
+      else {
+        setImage(null);
+      }
     }, [currentWallpaper]);
 
     return (

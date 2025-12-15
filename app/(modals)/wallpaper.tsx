@@ -49,6 +49,8 @@ const WallpaperModal = () => {
     fetchCollections();
   }, []);
 
+
+
   const [currentlyDownloading, setCurrentlyDownloading] = useState<string[]>([]);
 
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -57,6 +59,19 @@ const WallpaperModal = () => {
   const currentWallpaper = settingsStore.wallpaper;
   const selectedId = currentWallpaper?.id;
   const hasCustomWallpaper = selectedId?.startsWith("custom:") ?? false;
+
+  const flatListRef = React.useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (collections.length > 0 && currentWallpaper) {
+      const collectionIndex = collections.findIndex((collection) => collection.images.find((image) => image.id === currentWallpaper.id));
+      if (collectionIndex !== -1) {
+        setTimeout(() => {
+          flatListRef.current?.scrollToIndex({ index: collectionIndex, animated: true });
+        }, 500);
+      }
+    }
+  }, [collections, currentWallpaper]);
 
   const wallpaperDirectory = new Directory(Paths.document, "wallpapers");
 
@@ -88,7 +103,7 @@ const WallpaperModal = () => {
           id: wallpaper.id,
           path: {
             directory: wallpaperDirectory.name,
-            name: wallpaperFile.name
+            name: result.name
           }
         }
       })
@@ -116,7 +131,7 @@ const WallpaperModal = () => {
           wallpaper: {
             id: `custom:${Date.now()}`,
             path: {
-              directory: wallpaperDirectory.name,
+              directory: importedFile.parentDirectory?.name,
               name: importedFile.name
             }
           }
@@ -130,15 +145,16 @@ const WallpaperModal = () => {
   return (
     <>
       <FlatList
-        contentInsetAdjustmentBehavior="automatic"
+        ref={flatListRef}
         data={collections}
         style={{
           flex: 1,
         }}
         contentContainerStyle={{
-          gap: 16
+          gap: 16,
+          paddingTop: 72
         }}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View>
             <Stack direction="horizontal" alignItems="center" gap={8} padding={[16, 10]}>
               {item.icon &&
@@ -172,6 +188,10 @@ const WallpaperModal = () => {
               }}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => <WallpaperImage item={item} onPress={() => downloadAndSelect(item)} selectedId={currentWallpaper?.id} isDownloading={currentlyDownloading.includes(item.id)} />}
+              getItemLayout={(data, index) => (
+                { length: 160 + 6, offset: (160 + 6) * index, index }
+              )}
+              initialScrollIndex={item.images.findIndex((image) => image.id === currentWallpaper?.id) !== -1 ? item.images.findIndex((image) => image.id === currentWallpaper?.id) : undefined}
             />
           </View>
         )}
@@ -179,6 +199,7 @@ const WallpaperModal = () => {
           <RefreshControl
             refreshing={loading}
             onRefresh={fetchCollections}
+            progressViewOffset={72}
           />
         }
       />
