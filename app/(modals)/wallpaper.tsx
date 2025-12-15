@@ -167,7 +167,8 @@ const WallpaperModal = () => {
                 paddingHorizontal: 12
               }}
               contentContainerStyle={{
-                gap: 6
+                gap: 6,
+                paddingRight: 12
               }}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => <WallpaperImage item={item} onPress={() => downloadAndSelect(item)} selectedId={currentWallpaper?.id} isDownloading={currentlyDownloading.includes(item.id)} />}
