@@ -4,7 +4,7 @@ import { useTimetable } from '@/database/useTimetable';
 import { useAccountStore } from '@/stores/account';
 import { log, warn } from "@/utils/logger/logger";
 
-export function useTimetableData(weekNumber: number) {
+export function useTimetableData(weekNumber: number, currentDate: Date) {
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false);
@@ -23,7 +23,7 @@ export function useTimetableData(weekNumber: number) {
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
   
-  const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1]);
+  const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1], currentDate);
   
   const timetable = useMemo(() => {
     return rawTimetable.map(day => ({
@@ -57,7 +57,11 @@ export function useTimetableData(weekNumber: number) {
 
         if (weeksToFetch.length > 0) {
           await Promise.all(
-            weeksToFetch.map((week) => manager.getWeeklyTimetable(week))
+            weeksToFetch.map((week) => {
+              const targetDate = new Date(currentDate);
+              targetDate.setDate(targetDate.getDate() + (week - targetWeekNumber) * 7);
+              return manager.getWeeklyTimetable(week, targetDate)
+            })
           );
 
           setRefresh(prev => prev + 1);

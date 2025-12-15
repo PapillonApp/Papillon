@@ -140,11 +140,11 @@ export class Pronote implements SchoolServicePlugin {
     error("Session is not valid", "Pronote.getWeeklyCanteenMenu");
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     await this.checkTokenValidty()
 
     if (this.session) {
-      return fetchPronoteWeekTimetable(this.session, this.accountId, weekNumber);
+      return fetchPronoteWeekTimetable(this.session, this.accountId, weekNumber, date);
     }
 
     error("Session is not valid", "Pronote.getWeeklyTimetable");
