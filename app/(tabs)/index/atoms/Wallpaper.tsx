@@ -12,13 +12,15 @@ const Wallpaper = ({ height = 400, dim = true }) => {
     const settingsStore = useSettingsStore(state => state.personalization);
     const currentWallpaper = settingsStore.wallpaper;
 
-    const [image, setImage] = useState();
+    const [image, setImage] = useState<string | null>(null);
 
     useEffect(() => {
-      if (currentWallpaper) {
-        const file = new File(Paths.document, currentWallpaper.path?.directory, currentWallpaper.path?.name);
+      if (currentWallpaper?.path?.name) {
+        const file = new File(Paths.document, currentWallpaper.path.directory || '', currentWallpaper.path.name);
         if (file.exists) {
           setImage(file.uri);
+        } else {
+          setImage(null);
         }
       }
       else {
