@@ -12,7 +12,8 @@ import { useNavigation } from 'expo-router';
 
 import Reanimated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Typography from '@/ui/components/Typography';
-import { Cooking, Warning } from '@/app/(modals)/wrapped/stories/consent';
+import { Consent } from '@/app/(modals)/wrapped/stories/consent';
+import { Loading } from '@/app/(modals)/wrapped/stories/loading';
 import { Welcome } from '@/app/(modals)/wrapped/stories/welcome';
 
 const WrappedView = () => {
@@ -43,7 +44,7 @@ const WrappedView = () => {
     player.play();
   });
 
-  const slides = [Welcome, Warning, Cooking];
+  const slides = [Welcome, Consent, Loading];
   const sliderRef = useRef<FlatList>(null);
 
   return (
