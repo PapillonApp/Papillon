@@ -87,7 +87,9 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             .fetch();
 
           for (const oldRecord of oldExistingRecords) {
-            await oldRecord.markAsDeleted();
+            if (oldId !== id) {
+              await oldRecord.markAsDeleted();
+            }
           }
 
           if (existingRecords.length === 0) {

@@ -9,7 +9,9 @@ import Stack from '@/ui/components/Stack';
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 
-export const Loading = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.RefObject<FlatList> }) => {
+import { fetchHistory } from '../helpers/fetchHistory';
+
+export const Loading = ({ isCurrent, sliderRef, onFinished }: { isCurrent: boolean, sliderRef: React.RefObject<FlatList>, onFinished?: () => void }) => {
     const { colors } = useTheme();
     const [progress, setProgress] = useState(0);
     const [stepText, setStepText] = useState("Démarrage...");
@@ -17,6 +19,8 @@ export const Loading = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
 
     useEffect(() => {
         if (isCurrent) {
+            fetchHistory();
+
             setProgress(0);
             setStepText("Démarrage...");
             setAnimationKey(prev => prev + 1);
@@ -42,6 +46,7 @@ export const Loading = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
                 if (newProgress >= 100) {
                     clearInterval(interval);
                     setStepText("C'est prêt !");
+                    if (onFinished) onFinished();
                 }
             }, 50);
 

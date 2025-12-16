@@ -14,6 +14,7 @@ import Reanimated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, Fade
 import Typography from '@/ui/components/Typography';
 import { Consent } from '@/app/(modals)/wrapped/stories/consent';
 import { Loading } from '@/app/(modals)/wrapped/stories/loading';
+import { StatsDev } from '@/app/(modals)/wrapped/stories/stats_dev';
 import { Welcome } from '@/app/(modals)/wrapped/stories/welcome';
 
 const WrappedView = () => {
@@ -22,6 +23,8 @@ const WrappedView = () => {
 
   const [aboutToExit, setAboutToExit] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadingFinished, setLoadingFinished] = useState(false);
+  const [statsLocked, setStatsLocked] = useState(false);
 
   const mainBackground = useVideoPlayer({
     assetId: require('@/assets/video/wrapped.mp4'),
@@ -44,14 +47,21 @@ const WrappedView = () => {
     player.play();
   });
 
-  const slides = [Welcome, Consent, Loading];
+  const slides = statsLocked ? [StatsDev] : [Welcome, Consent, Loading, ...(loadingFinished ? [StatsDev] : [])];
   const sliderRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (statsLocked && sliderRef.current) {
+      setCurrentIndex(0);
+      sliderRef.current.scrollToIndex({ index: 0, animated: false });
+    }
+  }, [statsLocked]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'black' }}>
       {!aboutToExit && (
         <>
-          {(currentIndex == 0 || currentIndex == 1 || currentIndex == 2) && (
+          {(currentIndex == 0 || currentIndex == 1 || currentIndex == 2) && !statsLocked && (
             <>
               <StatusBar barStyle={"light-content"} />
               <WrappedBackgroundVideo player={mainBackground} />
@@ -157,7 +167,11 @@ const WrappedView = () => {
         windowSize={1}
         data={slides}
         renderItem={({ item: Item, index }) => (
-          <Item isCurrent={index === currentIndex} sliderRef={sliderRef} />
+          <Item
+            isCurrent={index === currentIndex}
+            sliderRef={sliderRef}
+            onFinished={() => setLoadingFinished(true)}
+          />
         )}
         keyExtractor={(item, index) => index.toString()}
         style={{
@@ -173,9 +187,14 @@ const WrappedView = () => {
         scrollEventThrottle={16}
         snapToInterval={Dimensions.get('screen').height}
         decelerationRate="fast"
+        disableIntervalMomentum={true}
         onScroll={e => {
           const index = Math.round(e.nativeEvent.contentOffset.y / Dimensions.get('screen').height);
           setCurrentIndex(index);
+
+          if (!statsLocked && loadingFinished && slides.length > 1 && index === slides.length - 1) {
+            setStatsLocked(true);
+          }
         }}
         ref={sliderRef}
       />
