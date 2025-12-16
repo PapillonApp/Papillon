@@ -17,9 +17,9 @@ export const Welcome = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
             // eslint-disable-next-line @typescript-eslint/no-require-imports
             source={require('@/assets/images/monYearbook.png')}
             style={{
-              height: 180,
-              width: 280,
-              overflow: 'visible',
+              height: 100,
+              width: Dimensions.get('window').width * 0.8,
+              alignSelf: 'center',
               shadowColor: '#000',
               shadowOffset: {
                 width: 0,
@@ -41,7 +41,7 @@ export const Welcome = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
           >
             <Stack direction='horizontal' hAlign='center' gap={5}>
               <Papicons name='ArrowUp' color='white' />
-              <Typography variant='h4' color='white'>Swipe pour le révéler</Typography>
+              <Typography variant='h4' color='white'>Swipe pour commencer</Typography>
             </Stack>
           </Reanimated.View>
         </>

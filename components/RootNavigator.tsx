@@ -59,6 +59,19 @@ export function RootNavigator() {
       />
 
       <Stack.Screen
+        name="(modals)/wrapped_info"
+        options={{
+          headerShown: false,
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: "fitToContents",
+          contentStyle: {
+            backgroundColor: theme.colors.card
+          }
+        }}
+      />
+
+      <Stack.Screen
         name="(modals)/wallpaper"
         options={{
           presentation: "modal",
