@@ -40,7 +40,9 @@ const HomeHeader = () => {
       title: t("Home_Attendance_Title"),
       icon: "chair",
       color: "#D62B94",
-      description: (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular")),
+      description: absencesCount > 0 ?
+        (absencesCount > 1 ? t("Home_Attendance_Button_Description_Number", { number: absencesCount }) : t("Home_Attendance_Button_Description_Singular"))
+        : t("Home_Attendance_Button_Description_None"),
       onPress: () => {
         router.push({
           pathname: "/(features)/attendance",
@@ -56,7 +58,9 @@ const HomeHeader = () => {
       title: t("Home_Chats_Button_Title"),
       icon: "textbubble",
       color: "#2B7ED6",
-      description: (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular")),
+      description: chats.length > 0 ?
+        (chats.length > 1 ? t("Home_Chats_Button_Description_Number", { number: chats.length }) : t("Home_Chats_Button_Description_Singular"))
+        : t("Home_Chats_Button_Description_None"),
       onPress: () => {
         router.push("/(features)/soon");
       }
