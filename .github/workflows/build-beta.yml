@@ -11,41 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get version
-        run: |
-          current=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
-          echo "Current version in package.json -> $current"
-          echo "NEW_VERSION=$current" >> $GITHUB_ENV
-          clean_version=$(echo $current | tr -d '.')
-          base_code=$((clean_version * 100))
-          run_suffix=$(( ${{ github.run_number }} % 100 ))
-          version_code=$((base_code + run_suffix))
-          echo "VERSION_CODE=$version_code" >> $GITHUB_ENV
-
-      - name: Sync iOS version
-        run: |
-          package_version=$(grep '"version"' package.json | head -1 | cut -d'"' -f4)
-          plist_version=$(grep -A 1 'CFBundleShortVersionString' ios/Papillon/Info.plist | tail -1 | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
-          if [ "$package_version" != "$plist_version" ]; then
-            echo "Versions differ: package.json=$package_version, Info.plist=$plist_version. Updating Info.plist..."
-            sed -i "/CFBundleShortVersionString/{n;s|<string>.*</string>|<string>$package_version</string>|;}" ios/Papillon/Info.plist
-            echo "Info.plist updated to $package_version"
-          else
-            echo "Versions are already in sync: $package_version"
-          fi
-
-      - name: Commit iOS version changes
-        run: |
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
-            git add --force ios/Papillon/Info.plist
-            git commit -m "Sync iOS version to ${{ env.NEW_VERSION }}"
-            git push origin ${{ github.ref_name }}
-          fi
-
       - name: Notify start on Telegram
         run: |
           MESSAGE="🦋 *Starting a build for a beta version*
@@ -59,34 +24,6 @@ jobs:
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d parse_mode=Markdown \
             -d text="$MESSAGE"
-
-      - name: Create release on GitHub
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" \
-            --title "v${{ env.NEW_VERSION }} (${{ github.run_number }})" \
-            --generate-notes
-
-      - name: Notify Discord
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          CHANGELOG=$(gh release view "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" --json body -q .body)
-          JSON=$(jq -n --arg desc "$CHANGELOG" --arg version "${{ env.NEW_VERSION }}" --arg run "${{ github.run_number }}" --arg repo "${{ github.repository }}" '{
-            embeds: [
-              {
-                title: "Nouvelle bêta : v\($version)",
-                description: $desc,
-                url: "https://github.com/\($repo)/releases/tag/v\($version)-run\($run)",
-                color: 8701061
-              }
-            ]
-          }')
-          
-          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
-            -H "Content-Type: application/json" \
-            -d "$JSON"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -169,12 +106,6 @@ jobs:
 
           # Clean intermediate aligned APK
           rm -f $ALIGNED_APK
-
-      - name: Attach APK to release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload "v${{ env.NEW_VERSION }}-run${{ github.run_number }}" android/app/build/outputs/apk/release/app-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
