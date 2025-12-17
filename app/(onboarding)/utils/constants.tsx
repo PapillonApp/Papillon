@@ -4,10 +4,9 @@ import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleProp, ViewStyle } from 'react-native';
+import { Alert, StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
-import { useAlert } from '@/ui/components/AlertProvider';
 export interface SupportedService {
   name: string;
   title: string;
@@ -24,7 +23,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   const theme = useTheme();
   const { colors } = theme;
   const { t } = useTranslation()
-  const alert = useAlert();
 
   return [
     {
@@ -44,13 +42,17 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       type: "main",
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
-        alert.showAlert({
-          title: "Service en maintenance",
-          description: "Suite à des changements récents de la part d'EcoleDirecte, ce service est momentanément indisponible.",
-          icon: "TriangleAlert",
-          color: "#D60046",
-          withoutNavbar: true
-        })
+        Alert.alert(
+          "🦋 École Directe est indisponible pour le moment.",
+          "Suite à des problèmes techniques, École Directe est actuellement indisponible. Nous travaillons pour résoudre ce problème et nous vous remercions de votre patience.",
+          [
+            {
+              text: "J'ai compris !",
+              onPress: () => { },
+              style: "default"
+            }
+          ]
+        )
         //redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
       },
       variant: 'service' as const,
