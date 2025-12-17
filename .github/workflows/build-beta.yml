@@ -45,6 +45,15 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
 
+      - name: Calculate Android Version Code
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          VERSION_CLEAN=${PACKAGE_VERSION//./}
+          TIME_SUFFIX=$(date +'%H%M')
+          VERSION_CODE="${VERSION_CLEAN}${TIME_SUFFIX}"
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Computed VERSION_CODE: $VERSION_CODE"
+
       - name: Configure signing
         run: |
           sed -i '/signingConfigs {/a\        release {\n            storeFile file('\''release.keystore'\'')\n            storePassword '\''${{ secrets.KEYSTORE_PASSWORD }}'\''\n            keyAlias '\''${{ secrets.KEY_ALIAS }}'\''\n            keyPassword '\''${{ secrets.KEY_PASSWORD }}'\''\n        }' android/app/build.gradle
