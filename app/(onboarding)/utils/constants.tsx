@@ -303,7 +303,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       name: "alise",
       title: "Alise",
       hasLimitedSupport: false,
-      image: require("@/assets/images/alise.png"),
+      image: require("@/assets/images/alise.jpg"),
       type: "main",
       onPress: () => {
         redirect({ pathname: '../alise/credentials' });
