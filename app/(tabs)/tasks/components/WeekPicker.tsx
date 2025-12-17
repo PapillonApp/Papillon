@@ -1,10 +1,11 @@
+import { useTheme } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
 import React, { useCallback, useRef } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getDateRangeOfWeek, getWeekNumberFromDate } from '@/database/useHomework';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 
@@ -33,7 +34,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const itemWidth = 60;
     const index = Math.round(contentOffsetX / itemWidth);
-    if (index < 0 || index >= 56) { return; }
+    if (index < 0 || index >= 300) { return; }
     requestAnimationFrame(() => {
       onSelectWeek(index);
     });
@@ -80,7 +81,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
           onLayout={() => {
             layoutPicker();
           }}
-          data={Array.from({ length: 56 }, (_, i) => i)}
+          data={Array.from({ length: 300 }, (_, i) => i)}
           initialScrollIndex={selectedWeek}
           getItemLayout={(data, index) => (
             { length: 60, offset: 60 * index, index }
@@ -137,7 +138,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({ selectedWeek, onSelectWeek, onC
                   fontFamily: item === selectedWeek ? "bold" : "medium",
                 }}
               >
-                {item}
+                {getWeekNumberFromDate(getDateRangeOfWeek(item).start)}
               </Text>
             </Pressable>
           )}
