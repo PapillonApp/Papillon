@@ -90,7 +90,7 @@
 <td>
 <p align="center">
 <a href="https://github.com/maeldrt"><img alt="" src="https://github.com/user-attachments/assets/5e61c4e6-48a9-41b9-a859-5cce653494f8" /></a>
-<p align="center">Maël</p>
+<p align="center">Mael</p>
 </p>
 </td>
 
