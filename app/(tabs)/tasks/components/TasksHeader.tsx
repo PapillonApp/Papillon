@@ -55,7 +55,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
         <TabHeaderTitle
           leading={t('Tasks_Week')}
           subtitle={selectedWeek === defaultWeek ? t('Tasks_ThisWeek') : undefined}
-          number={getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek).start).toString()}
+          number={getWeekNumberFromDate(getDateRangeOfWeek(selectedWeek, new Date().getFullYear()).start).toString()}
           color='#C54CB3'
           onPress={onToggleWeekPicker}
           height={56}
