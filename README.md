@@ -68,35 +68,35 @@
 
 <td>
 <p align="center">
-<img alt="" src="https://github.com/user-attachments/assets/7ab04024-2cdc-47e7-91e9-ba234efb1d3d" />
+<a href="https://github.com/tryon-dev"><img alt="" src="https://github.com/user-attachments/assets/7ab04024-2cdc-47e7-91e9-ba234efb1d3d" /></a>
 <p align="center">Lucas</p>
 </p>
 </td>
 
 <td>
 <p align="center">
-<img alt="" src="https://github.com/user-attachments/assets/64ba327b-9095-4972-b8a8-d2e81819b327" />
+<a href="https://github.com/godetremy"><img alt="" src="https://github.com/user-attachments/assets/64ba327b-9095-4972-b8a8-d2e81819b327" /></a>
 <p align="center">Rémy</p>
 </p>
 </td>
 
 <td>
 <p align="center">
-<img alt="" src="https://github.com/user-attachments/assets/79437727-c6a7-443c-b20a-3b83e6d1d46e" />
+<a href="https://github.com/tom-things"><img alt="" src="https://github.com/user-attachments/assets/79437727-c6a7-443c-b20a-3b83e6d1d46e" /></a>
 <p align="center">Tom</p>
 </p>
 </td>
 
 <td>
 <p align="center">
-<img alt="" src="https://github.com/user-attachments/assets/5e61c4e6-48a9-41b9-a859-5cce653494f8" />
+<a href="https://github.com/maeldrt"><img alt="" src="https://github.com/user-attachments/assets/5e61c4e6-48a9-41b9-a859-5cce653494f8" /></a>
 <p align="center">Maël</p>
 </p>
 </td>
 
 <td>
 <p align="center">
-<img alt="" src="https://github.com/user-attachments/assets/31f2eb01-3963-4ea0-8f25-bad8876f2941" />
+<a href="https://github.com/raphckrman"><img alt="" src="https://github.com/user-attachments/assets/31f2eb01-3963-4ea0-8f25-bad8876f2941" /></a>
 <p align="center">Raphaël</p>
 </p>
 </td>
