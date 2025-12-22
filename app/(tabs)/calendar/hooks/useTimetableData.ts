@@ -89,7 +89,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
-  }, [weekNumber]);
+  }, [weekNumber, fetchWeeklyTimetable]);
 
   useEffect(() => {
     const unsubscribe = subscribeManagerUpdate((updatedManager) => {
@@ -98,7 +98,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
       }
     });
     return () => unsubscribe();
-  }, [weekNumber]);
+  }, [weekNumber, fetchWeeklyTimetable]);
 
   useEffect(() => {
     return () => {
