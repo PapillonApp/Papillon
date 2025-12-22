@@ -5,8 +5,8 @@ import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from '@/stores/account';
 import { log, warn } from "@/utils/logger/logger";
 
-export function useTimetableData(weekNumber: number, currentDate: Date) {
-  const safeDate = currentDate || new Date();
+export function useTimetableData(weekNumber: number, currentDate: Date = new Date()) {
+  const safeDate = currentDate;
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false);
