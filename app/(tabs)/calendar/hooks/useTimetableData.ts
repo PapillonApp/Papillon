@@ -13,7 +13,8 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
   const [fetchedWeeks, setFetchedWeeks] = useState<string[]>([]);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  let manager: unknown;
+  let manager: ReturnType<typeof getManager> | null;
+
   try {
     manager = getManager();
   } catch (error) {
