@@ -1,21 +1,23 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
+import { useCallback, useEffect, useMemo,useRef, useState } from 'react';
+
 import { useTimetable } from '@/database/useTimetable';
+import { getManager, subscribeManagerUpdate } from "@/services/shared";
 import { useAccountStore } from '@/stores/account';
 import { log, warn } from "@/utils/logger/logger";
 
 export function useTimetableData(weekNumber: number, currentDate: Date) {
+  const safeDate = currentDate || new Date();
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [manualRefreshing, setManualRefreshing] = useState(false);
-  const [fetchedWeeks, setFetchedWeeks] = useState<number[]>([]);
+  const [fetchedWeeks, setFetchedWeeks] = useState<string[]>([]);
   const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  let manager: any;
+  let manager: unknown;
   try {
     manager = getManager();
   } catch (error) {
-    console.warn('Manager not initialized, iCal events will still work');
+    warn('Manager not initialized, iCal events will still work');
     manager = null;
   }
 
@@ -23,7 +25,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
   const account = store.accounts.find(account => store.lastUsedAccount);
   const services: string[] = account?.services?.map((service: { id: string }) => service.id) ?? [];
   
-  const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1], currentDate);
+  const rawTimetable = useTimetable(refresh, [weekNumber - 1, weekNumber, weekNumber + 1], safeDate);
   
   const timetable = useMemo(() => {
     return rawTimetable.map(day => ({
@@ -51,23 +53,27 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
           return;
         }
 
-        const weeksToFetch = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].filter(
-          (week) => !fetchedWeeks.includes(week)
-        );
+        const candidates = [targetWeekNumber - 1, targetWeekNumber, targetWeekNumber + 1].map(week => {
+          const targetDate = new Date(safeDate);
+          targetDate.setDate(targetDate.getDate() + (week - targetWeekNumber) * 7);
+          const year = targetDate.getFullYear();
+          const key = `${year}-${week}`;
+          return { week, targetDate, key };
+        });
 
-        if (weeksToFetch.length > 0) {
+        const toFetch = candidates.filter(c => !fetchedWeeks.includes(c.key));
+
+        if (toFetch.length > 0) {
           await Promise.all(
-            weeksToFetch.map((week) => {
-              const targetDate = new Date(currentDate);
-              targetDate.setDate(targetDate.getDate() + (week - targetWeekNumber) * 7);
-              return manager.getWeeklyTimetable(week, targetDate)
+            toFetch.map((c) => {
+              return manager.getWeeklyTimetable(c.week, c.targetDate)
             })
           );
 
           setRefresh(prev => prev + 1);
           setFetchedWeeks((prevFetchedWeeks) => [
             ...prevFetchedWeeks,
-            ...weeksToFetch,
+            ...toFetch.map(c => c.key),
           ]);
         }
       } catch (error) {
@@ -78,7 +84,7 @@ export function useTimetableData(weekNumber: number, currentDate: Date) {
         fetchTimeoutRef.current = null;
       }
     }, 100);
-  }, [fetchedWeeks, manager]);
+  }, [fetchedWeeks, manager, safeDate]);
 
   useEffect(() => {
     fetchWeeklyTimetable(weekNumber);
