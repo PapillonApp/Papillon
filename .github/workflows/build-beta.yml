@@ -47,7 +47,7 @@ jobs:
 
       - name: Calculate Android Version Code
         run: |
-          VERSION_CODE=$(node -p "
+          VERSION_CODE=$(node -e "
             const version = require('./package.json').version;
             const cleanVersion = parseInt(version.replace(/\./g, ''));
             const runNumber = parseInt(process.env.GITHUB_RUN_NUMBER || '0');
