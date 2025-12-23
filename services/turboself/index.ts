@@ -48,7 +48,7 @@ export class TurboSelf implements SchoolServicePlugin {
     return CanteenKind.FORFAIT;
   }
 
-  async getCanteenBalances(): Promise<Balance[]> {    
+  async getCanteenBalances(): Promise<Balance[]> {
 
     if (this.session) {
       try {
