@@ -316,16 +316,16 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
         client.getWeeklyTimetable
-          ? await client.getWeeklyTimetable(weekNumber)
+          ? await client.getWeeklyTimetable(weekNumber, date)
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache(weekNumber),
+        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
