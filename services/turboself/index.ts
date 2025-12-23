@@ -66,7 +66,9 @@ export class TurboSelf implements SchoolServicePlugin {
 	    try {
 	      const balances = await fetchTurboSelfBalance(this.session, this.accountId);
 	      if (balances && balances.length > 0) return balances;
-	    } catch (e) {}
+	    } catch (e) {
+			error("Failed to fetch balances", "TurboSelf.getCanteenBalances", e);
+		}
 	    
 	    return fallbackBalance;
 	  }
