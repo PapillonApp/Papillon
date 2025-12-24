@@ -48,13 +48,30 @@ export class TurboSelf implements SchoolServicePlugin {
     return CanteenKind.FORFAIT;
   }
 
-  async getCanteenBalances(): Promise<Balance[]> {
-    if (this.session) {
-      return fetchTurboSelfBalance(this.session, this.accountId)
-    }
-
-    error("Session is not valid", "TurboSelf.getCanteenBalances");
-  }
+	async getCanteenBalances(): Promise<Balance[]> {
+	    const fallbackBalance: Balance[] = [{
+	      amount: 0, 
+	      currency: "€",
+	      label: "Solde TurboSelf",
+	      createdByAccount: this.accountId,
+	      lunchRemaining: 0,
+	      lunchPrice: 0
+	    }];
+	
+	    if (!this.session) {
+	      error("Session is not valid", "TurboSelf.getCanteenBalances");
+	      return fallbackBalance;
+	    }
+	
+	    try {
+	      const balances = await fetchTurboSelfBalance(this.session, this.accountId);
+	      if (balances && balances.length > 0) return balances;
+	    } catch (e) {
+			error("Failed to fetch balances", "TurboSelf.getCanteenBalances", e);
+		}
+	    
+	    return fallbackBalance;
+	  }
 
   async getCanteenTransactionsHistory(): Promise<CanteenHistoryItem[]> {
     if (this.session) {
