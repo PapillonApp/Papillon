@@ -1,13 +1,14 @@
-import { useAccountStore } from "@/stores/account";
-import { Account, Services } from "@/stores/account/types";
-import uuid from "@/utils/uuid/uuid";
+import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AuthFlow, ChallengeMethod, GetOIDCAccessTokens, GetUserInfo, School } from "skolengojs";
-import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
-import * as Linking from "expo-linking";
 import { useTranslation } from "react-i18next";
+import { AuthFlow, ChallengeMethod, School } from "skolengojs";
+
+import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { useAccountStore } from "@/stores/account";
+import { Account, Services } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
+import uuid from "@/utils/uuid/uuid";
 
 export default function WebViewScreen() {
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
@@ -55,9 +56,8 @@ export default function WebViewScreen() {
       const code = url.match(/code=([^&]*)/)
       const state = url.match(/state=([^&]*)/)
 
-      if (!code || !state) return false;
+      if (!code || !state) { return false; }
       if (!flowRef.current) {
-        console.log("Flow not initialized yet");
         return false;
       }
       const auth = await flowRef.current.finalizeLogin(code[1], state[1])

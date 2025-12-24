@@ -147,7 +147,22 @@ export const useAccountStore = create<AccountsStorage>()(
           }
           return account
         }),
-      })
+      }),
+      setSubjects: (subjects: Record<string, Subject>) => set({
+        accounts: get().accounts.map((account) => {
+          if (account.id === get().lastUsedAccount) {
+            return {
+              ...account,
+              customisation: {
+                ...account.customisation,
+                profilePicture: account.customisation?.profilePicture ?? "",
+                subjects: subjects
+              }
+            };
+          }
+          return account
+        }),
+      }),
     }),
     {
       name: 'account-storage',

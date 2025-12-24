@@ -200,7 +200,7 @@ export default function MultiLoginWithCredentials() {
           }}
         />
         <Button
-          title={isLoggingIn ? t("LOGIN_LOGINING") : t("LOGIN_BTN")}
+          title={isLoggingIn ? t("ONBOARDING_LOADING_LOGIN") : t("LOGIN_BTN")}
           style={{
             backgroundColor: (theme.dark ? theme.colors.border : "#000000") + (isLoggingIn ? "50" : "FF"),
           }}

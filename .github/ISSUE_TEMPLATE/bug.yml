@@ -51,8 +51,8 @@ body:
       label: Papillon testé depuis
       description: Tu as testé/installé Papillon depuis...
       options:
-        - Play/Apple Store (Version Stable)
-        - Play Store/TestFlight (Version Bêta)
+        - Play/App Store (version stable)
+        - Play Store/TestFlight (version bêta)
     validations:
       required: true
 
@@ -67,12 +67,13 @@ body:
   - type: dropdown
     attributes:
       label: Service scolaire/cantine
-      description: Chaque personne dans l'équipe de Papillon gère un service (🎒 = Service scolaire et 🍽️ = Service de cantine)
+      description: 🎒 = Service scolaire et 🍽️ = Service de cantine
       options:
         - 🎒🦋 Pronote
         - 🎒🟦 ÉcoleDirecte
         - 🎒🟡 Skolengo
         - 🎒🏫 Universités et autres (à préciser dans la description du bug)
+        - 🍽️🟢 Alise
         - 🍽️🔴 Turboself
         - 🍽️🟣 ARD
         - 🍽️🔵 Izly

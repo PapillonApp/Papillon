@@ -1,3 +1,4 @@
+import { useAccountStore } from "@/stores/account";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
@@ -5,7 +6,7 @@ import {
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
-import { withLayoutContext } from "expo-router";
+import { useRouter, withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
@@ -31,7 +32,7 @@ const ICONS = {
   calendar: IS_IOS_WITH_PADDING ? require('@/assets/icons/calendar_padding.svg') : require('@/assets/icons/calendar.svg'),
   tasks: IS_IOS_WITH_PADDING ? require('@/assets/icons/tasks_padding.svg') : require('@/assets/icons/tasks.svg'),
   grades: IS_IOS_WITH_PADDING ? require('@/assets/icons/results_padding.svg') : require('@/assets/icons/results.svg'),
-  profile: IS_IOS_WITH_PADDING ? require('@/assets/icons/profile_padding.svg') : require('@/assets/icons/profile.svg'),
+  news: IS_IOS_WITH_PADDING ? require('@/assets/icons/news_padding.svg') : require('@/assets/icons/news.svg'),
 } as const;
 
 // Static style object to prevent recreation on every render
@@ -45,7 +46,7 @@ const getHomeIcon = () => ICONS.home;
 const getCalendarIcon = () => ICONS.calendar;
 const getTasksIcon = () => ICONS.tasks;
 const getGradesIcon = () => ICONS.grades;
-const getProfileIcon = () => ICONS.profile;
+const getNewsIcon = () => ICONS.news;
 
 // Custom hook for optimized tab translations
 const useTabTranslations = () => {
@@ -56,7 +57,7 @@ const useTabTranslations = () => {
     calendar: t("Tab_Calendar"),
     tasks: t("Tab_Tasks"),
     grades: t("Tab_Grades"),
-    profile: t("Tab_Profile"),
+    news: t("Tab_News"),
   }), [t]);
 };
 
@@ -83,9 +84,9 @@ export default function TabLayout() {
       title: translations.grades,
       tabBarIcon: getGradesIcon,
     },
-    profile: {
-      title: translations.profile,
-      tabBarIcon: getProfileIcon,
+    news: {
+      title: translations.news,
+      tabBarIcon: getNewsIcon,
     },
   }), [translations]);
 
@@ -118,8 +119,8 @@ export default function TabLayout() {
         options={screenOptions.grades}
       />
       <Tabs.Screen
-        name="profile"
-        options={screenOptions.profile}
+        name="news"
+        options={screenOptions.news}
       />
     </Tabs>
   );

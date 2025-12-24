@@ -175,7 +175,6 @@ export async function getAttendanceFromCache(period: string): Promise<SharedAtte
       throw new Error("Attendance not found");
     }
     const att = attendance[0];
-    console.log(att.delays)
     return {
       createdByAccount: att.createdByAccount,
       delays: mapDelaysToShared(att.delays, att),

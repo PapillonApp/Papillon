@@ -1,15 +1,16 @@
+import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import React, { useEffect } from "react";
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
 import { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { WebView, WebViewProps } from "react-native-webview";
+
+import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import React, { useEffect } from "react";
 import ViewContainer from "@/ui/components/ViewContainer";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { WebView, WebViewProps } from "react-native-webview";
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, View } from "react-native";
-import { useTheme } from "@react-navigation/native";
-import Animated from "react-native-reanimated";
-import { t } from "i18next";
 
 const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webViewRef }: {
   title: string
@@ -134,7 +135,6 @@ const OnboardingWebview = ({ title, color, step, totalSteps, webviewProps, webVi
               }}
               onLoadEnd={(e) => {
                 webviewProps.onLoadEnd?.(e);
-                console.log(e.nativeEvent.url)
                 if (e.nativeEvent.url.includes("pronote")) {
                   if (e.nativeEvent.url !== webviewProps.source?.uri) {
                     setTotallyLoaded(true);

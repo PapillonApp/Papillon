@@ -1,29 +1,30 @@
 import { router, useGlobalSearchParams } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
-import { createRef, RefObject, useState } from "react";
+import React, { createRef, RefObject, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
-import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
+
 import { Pronote2FAModal } from "./2fa";
 
 export default function WebViewScreen() {
-  const { url } = useGlobalSearchParams<{ url: string }>();
+  const { url, serviceId } = useGlobalSearchParams<{ url: string, serviceId?: string }>();
   const infoMobileURL = url + "/InfoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 
   const { t } = useTranslation();
   const [deviceUUID] = useState(uuid());
   const [received, setReceived] = useState<boolean>(false);
-  console.log("WebViewScreen initialized with URL:", url);
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
   const [doubleAuthError, setDoubleAuthError] = useState<SecurityError | null>(null);
@@ -31,7 +32,6 @@ export default function WebViewScreen() {
   const [deviceId, setDeviceId] = useState<string>("");
 
   if (!url) {
-    console.warn("No URL provided");
     return (
       <View style={styles.container}>
         <Typography>Aucune URL fournie</Typography>
@@ -39,7 +39,7 @@ export default function WebViewScreen() {
     );
   }
 
-  const webViewRef: RefObject<WebView<{}> | null> = createRef<WebView>();
+  const webViewRef: RefObject<WebView<object> | null> = createRef<WebView>();
   const PRONOTE_COOKIE_EXPIRED = new Date(0).toUTCString();
   const PRONOTE_COOKIE_VALIDATION_EXPIRES = new Date(
     new Date().getTime() + 5 * 60 * 1000,
@@ -48,12 +48,11 @@ export default function WebViewScreen() {
     new Date().getTime() + 365 * 24 * 60 * 60 * 1000,
   ).toUTCString();
 
-  console.log("Device UUID:", deviceUUID);
-
   const INJECT_PRONOTE_INITIAL_LOGIN_HOOK = `
     window.hookAccesDepuisAppli = function() {
       this.passerEnModeValidationAppliMobile('', '${deviceUUID}');
     };
+
     try {
           window.GInterface.passerEnModeValidationAppliMobile('', '${deviceUUID}', '', '', '{"model": "random", "platform": "android"}');
     } catch {}
@@ -73,8 +72,6 @@ export default function WebViewScreen() {
             // 1036 = French
             document.cookie = "ielang=1036; expires=${PRONOTE_COOKIE_LANGUAGE_EXPIRES}";
           }
-
-          console.log(lJetonCas)
 
           window.location.assign("${url}/mobile.eleve.html?fd=1");
         }
@@ -101,23 +98,16 @@ export default function WebViewScreen() {
     if (received) { return; }
 
     const message = JSON.parse(nativeEvent.data);
-    console.log("Message received from WebView:", message);
 
     if (message.type === "pronote.loginState") {
-      console.log("Login state message received:", message.data);
-
       if (!message.data) {
-        console.warn("No login data in message");
         return;
       }
       if (message.data.status !== 0) {
-        console.warn("Login status is not valid:", message.data.status);
         return;
       }
       setReceived(true);
 
-      console.log(message.data.login, message.data.mdp);
-      console.log("Creating session handle...");
       const session = createSessionHandle(customFetcher);
       try {
         const refresh = await loginToken(
@@ -135,7 +125,6 @@ export default function WebViewScreen() {
           throw new Error("Erreur lors de la connexion");
         }
 
-        console.log("Login successful, adding account to store...");
         const schoolName = session.user.resources[0].establishmentName;
         const className = session.user.resources[0].className;
         const { firstName, lastName } = GetIdentityFromPronoteUsername(session.user.name)
@@ -144,43 +133,58 @@ export default function WebViewScreen() {
         if (session.user.resources[0].profilePicture?.url) {
           pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
         }
-
-        useAccountStore.getState().addAccount({
-          id: deviceUUID,
-          firstName,
-          lastName,
-          schoolName,
-          className,
-          customisation: {
-            profilePicture: pp,
-            subjects: {}
-          },
-          services: [{
+        if (!serviceId) {
+          useAccountStore.getState().addAccount({
             id: deviceUUID,
-            auth: {
-              accessToken: refresh.token,
-              refreshToken: refresh.token,
-              additionals: {
-                instanceURL: refresh.url,
-                kind: refresh.kind,
-                username: refresh.username,
-                deviceUUID,
-              },
+            firstName,
+            lastName,
+            schoolName,
+            className,
+            customisation: {
+              profilePicture: pp,
+              subjects: {}
             },
-            serviceId: Services.PRONOTE,
+            services: [{
+              id: deviceUUID,
+              auth: {
+                accessToken: refresh.token,
+                refreshToken: refresh.token,
+                additionals: {
+                  instanceURL: refresh.url,
+                  kind: refresh.kind,
+                  username: refresh.username,
+                  deviceUUID,
+                },
+              },
+              serviceId: Services.PRONOTE,
+              createdAt: (new Date()).toISOString(),
+              updatedAt: (new Date()).toISOString(),
+            }],
             createdAt: (new Date()).toISOString(),
             updatedAt: (new Date()).toISOString(),
-          }],
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
-        });
-        useAccountStore.getState().setLastUsedAccount(deviceUUID);
-        return router.push({
-          pathname: "../end/color",
-          params: {
-            accountId: deviceUUID,
+          });
+
+          useAccountStore.getState().setLastUsedAccount(deviceUUID);
+          return router.push({
+            pathname: "../end/color",
+            params: {
+              accountId: deviceUUID,
+            },
+          });
+        }
+
+        useAccountStore.getState().updateServiceAuthData(serviceId, {
+          accessToken: refresh.token,
+          refreshToken: refresh.token,
+          additionals: {
+            instanceURL: refresh.url,
+            kind: refresh.kind,
+            username: refresh.username,
+            deviceUUID,
           },
-        });
+        })
+        await initializeAccountManager()
+        return router.push("../../(tabs)")
       } catch (error) {
         if (error instanceof SecurityError && !error.handle.shouldCustomPassword && !error.handle.shouldCustomDoubleAuth) {
           setDoubleAuthError(error)
@@ -188,7 +192,6 @@ export default function WebViewScreen() {
           setDeviceId(deviceUUID)
           setChallengeModalVisible(true)
         } else {
-          console.error("Error during login:", error);
           throw error;
         }
       }
@@ -197,17 +200,14 @@ export default function WebViewScreen() {
 
   const onWebviewLoadEnd = (e: WebViewNavigationEvent | WebViewErrorEvent) => {
     const { url } = e.nativeEvent;
-    console.log("WebView finished loading URL:", url);
 
     webViewRef.current?.injectJavaScript(
       INJECT_PRONOTE_INITIAL_LOGIN_HOOK,
     );
 
     if (url === infoMobileURL) {
-      console.log("Injecting JSON script for InfoMobileURL");
       webViewRef.current?.injectJavaScript(INJECT_PRONOTE_JSON);
     } else if (url.includes("mobile.eleve.html")) {
-      console.log("Injecting login state scripts for student account");
       webViewRef.current?.injectJavaScript(
         INJECT_PRONOTE_INITIAL_LOGIN_HOOK,
       );
