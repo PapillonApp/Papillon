@@ -32,7 +32,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: "en",
+    fallbackLng: "fr",
     lng: Localization.getLocales()[0].languageTag.split("-")[0],
     interpolation: { escapeValue: false },
     detection: {

@@ -1,50 +1,70 @@
-
 import React, { useRef, useMemo } from 'react';
 import Typography, { TypographyProps } from './Typography';
-import Reanimated, { LinearTransition, withDelay, withSpring } from 'react-native-reanimated';
+import Reanimated, { LinearTransition, withDelay, withSpring, AnimateProps } from 'react-native-reanimated';
 
 interface AnimatedNumberProps extends TypographyProps {
   distance?: number; // Distance to translate the number
   duration?: number; // Duration of the animation
+  dampingRatio?: number; // Damping ratio of the animation
   disableMoveAnimation?: boolean; // Désactivé la transition linéaire
 }
 
-function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAnimation = false, ...rest }: AnimatedNumberProps) {
+// Type the outer Reanimated component for better type safety
+const AnimatedView = Reanimated.View as React.ComponentType<AnimateProps<React.ComponentProps<typeof Reanimated.View>>>;
+
+function AnimatedNumber({
+  children,
+  distance = 12,
+  duration = 700,
+  dampingRatio = 0.55,
+  disableMoveAnimation = false,
+  ...rest
+}: AnimatedNumberProps) {
   try {
-    // Convert children to string and split into digits
+    // 1. Memoize value string and digits array
     const value = useMemo(() => (children?.toString ? children.toString().trim() : ''), [children]);
     const digits = useMemo(() => value.split(''), [value]);
 
-    // Track previous digits
+    // 2. Track previous digits for comparison
     const prevDigitsRef = useRef<string[]>(digits);
     React.useEffect(() => {
+      // Update the previous digits AFTER the current render cycle is complete
       prevDigitsRef.current = digits;
     }, [value]);
 
-    // Memoize unchanged and changedIndex arrays
+    // 3. Memoize comparison arrays - Runs only when `digits` changes
     const { unchangedArr, changedIndexArr } = useMemo(() => {
       const prevDigits = prevDigitsRef.current;
-      const unchangedArr = digits.map((digit, idx) => prevDigits && prevDigits[idx] === digit);
+      const unchangedArr: boolean[] = [];
+      const changedIndexArr: number[] = [];
       let changedCounter = 0;
-      const changedIndexArr = unchangedArr.map((unchanged) => (unchanged ? -1 : changedCounter++));
+
+      // Use a standard loop for potential slight performance gain over .map()
+      for (let idx = 0; idx < digits.length; idx++) {
+        const isUnchanged = prevDigits[idx] === digits[idx];
+        unchangedArr.push(isUnchanged);
+        changedIndexArr.push(isUnchanged ? -1 : changedCounter++);
+      }
+
       return { unchangedArr, changedIndexArr };
     }, [digits]);
 
-    // Memoize animation configs
+    // 4. Memoize animation configs (factory functions) - Runs only if distance or duration changes
     const getNumberEntering = useMemo(() => {
       return (changedIndex: number, unchanged: boolean) => () => {
         'worklet';
-        const delay = unchanged ? 0 : changedIndex * 60;
+        // Delay applied only if the digit actually changed
+        const delay = unchanged ? 60 : changedIndex * 60;
         return {
           initialValues: {
             opacity: 0,
-            transform: [{ translateY: 0 - distance }, { scale: 0.4 }],
+            transform: [{ translateY: distance }, { scale: 0.4 }],
           },
           animations: {
-            opacity: withDelay(delay, withSpring(1, { duration })),
+            opacity: withDelay(delay, withSpring(1, { duration: duration / 2 })),
             transform: [
-              { translateY: withDelay(delay, withSpring(0, { duration })) },
-              { scale: withDelay(delay, withSpring(1, { duration })) },
+              { translateY: withDelay(delay, withSpring(0, { duration, dampingRatio })) },
+              { scale: withDelay(delay, withSpring(1, { duration, dampingRatio })) },
             ],
           },
         };
@@ -52,6 +72,7 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
     }, [distance, duration]);
 
     const getNumberExiting = useMemo(() => {
+
       return (changedIndex: number, unchanged: boolean) => () => {
         'worklet';
         const delay = unchanged ? 0 : changedIndex * 60;
@@ -61,10 +82,10 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
             transform: [{ translateY: 0 }, { scale: 1 }],
           },
           animations: {
-            opacity: withDelay(delay, withSpring(0, { duration })),
+            opacity: withDelay(delay, withSpring(0, { duration, dampingRatio })),
             transform: [
-              { translateY: withDelay(delay, withSpring(distance, { duration })) },
-              { scale: withDelay(delay, withSpring(0.4, { duration })) },
+              { translateY: withDelay(delay, withSpring(-distance, { duration, dampingRatio })) }, // Use -distance for upward exit
+              { scale: withDelay(delay, withSpring(0.5, { duration, dampingRatio })) },
             ],
           },
         };
@@ -72,7 +93,8 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
     }, [distance, duration]);
 
     return (
-      <Reanimated.View
+      <AnimatedView
+        // Parent view layout for digit count/position changes
         layout={disableMoveAnimation ? undefined : LinearTransition.springify()}
         style={{
           flexDirection: 'row',
@@ -83,24 +105,30 @@ function AnimatedNumber({ children, distance = 16, duration = 300, disableMoveAn
         {digits.map((digit, index) => {
           const unchanged = unchangedArr[index];
           const changedIndex = changedIndexArr[index];
+
           return (
-            <Reanimated.View
-              key={"animated-number-" + digit + (digit != "." ? "-" + index : "")}
-              layout={LinearTransition.springify()}
+            <AnimatedView
+              // Use digit and index in the key to ensure React/Reanimated sees a change 
+              // when the value or position of a digit changes
+              key={`animated-number-${digit}-${index}`}
+              // **Optimization:** Removed inner 'layout' prop to rely only on controlled entering/exiting
+              layout={(digit == "." || digit == ",") ? LinearTransition.springify() : undefined}
               entering={getNumberEntering(changedIndex, unchanged)}
               exiting={getNumberExiting(changedIndex, unchanged)}
             >
               <Typography {...rest}>{digit}</Typography>
-            </Reanimated.View>
+            </AnimatedView>
           );
         })}
-      </Reanimated.View>
+      </AnimatedView>
     );
   }
   catch (error) {
+    // Keep error handling robust
     console.error("Error in AnimatedNumber:", error);
     return <Typography {...rest}>{children}</Typography>;
   }
 }
 
+// Keep the outer memoization
 export default React.memo(AnimatedNumber);

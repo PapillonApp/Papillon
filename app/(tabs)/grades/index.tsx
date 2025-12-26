@@ -1,70 +1,62 @@
-/* eslint-disable react/display-name */
 import { Papicons } from '@getpapillon/papicons';
+import { LegendList } from '@legendapp/list';
 import { MenuView } from '@react-native-menu/menu';
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
-import { t } from "i18next";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, Platform, RefreshControl, useWindowDimensions } from "react-native";
-import Reanimated, { FadeInUp, FadeOutUp } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
+import { t } from 'i18next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dimensions, Platform, RefreshControl, View } from 'react-native';
+import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
+import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getManager, subscribeManagerUpdate } from "@/services/shared";
-import { Grade as SharedGrade, Period, Subject as SharedSubject } from "@/services/shared/grade";
-import { useAccountStore } from "@/stores/account";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { Dynamic } from "@/ui/components/Dynamic";
-import Grade from "@/ui/components/Grade";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
-import Stack from "@/ui/components/Stack";
-import Subject from "@/ui/components/Subject";
-import TabFlatList from "@/ui/components/TabFlatList";
-import Typography from "@/ui/components/Typography";
-import { Animation } from "@/ui/utils/Animation";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
-import PapillonMedian from "@/utils/grades/algorithms/median";
-import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
-import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import { getCurrentPeriod } from "@/utils/grades/helper/period";
+import { getManager, subscribeManagerUpdate } from '@/services/shared';
+import { Period, Subject } from "@/services/shared/grade";
+import ChipButton from '@/ui/components/ChipButton';
+import { CompactGrade } from '@/ui/components/CompactGrade';
+import { Dynamic } from '@/ui/components/Dynamic';
+import Icon from '@/ui/components/Icon';
+import Item, { Trailing } from '@/ui/components/Item';
+import List from '@/ui/components/List';
+import Search from '@/ui/components/Search';
+import Stack from '@/ui/components/Stack';
+import TabHeader from '@/ui/components/TabHeader';
+import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
+import Typography from '@/ui/components/Typography';
+import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import i18n from '@/utils/i18n';
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
-import GradesWidget from "../index/widgets/Grades";
-import NativeHeaderTopPressable from '@/ui/components/NativeHeaderTopPressable';
-import i18n from '@/utils/i18n';
+import Averages from './atoms/Averages';
+import { SubjectItem } from './atoms/Subject';
+import { useGradeInfluence } from './hooks/useGradeInfluence';
 
-const EmptyListComponent = memo(() => (
-  <Dynamic animated key={'empty-list:warn'}>
-    <Stack
-      hAlign="center"
-      vAlign="center"
-      flex
-      style={{ width: "100%" }}
-    >
-      <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-        <Papicons name={"Grades"} />
-      </Icon>
-      <Typography variant="h4" color="text" align="center">
-        {t('Grades_Empty_Title')}
-      </Typography>
-      <Typography variant="body2" color="secondary" align="center">
-        {t('Grades_Empty_Description')}
-      </Typography>
-    </Stack>
-  </Dynamic>
-));
+const MemoizedSubjectItem = React.memo(SubjectItem);
 
-export default function TabOneScreen() {
-  const theme = useTheme();
-  const { colors } = theme;
-  const headerHeight = useHeaderHeight();
-  const windowDimensions = useWindowDimensions();
+const GradesView: React.FC = () => {
+  // Layout du header
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const bottomTabBarHeight = useBottomTabBarHeight();
 
-  const [fullyScrolled, setFullyScrolled] = useState(false);
+  // Thème
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+
+  // Chargement
+  const [periodsLoading, setPeriodsLoading] = useState(false);
+  const [gradesLoading, setGradesLoading] = useState(false);
+  const loading = periodsLoading || gradesLoading;
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Sortings
+  const [sortMethod, setSortMethod] = useState<string>("date");
   const sortings = [
     {
       label: t("Grades_Sorting_Alphabetical"),
@@ -72,14 +64,7 @@ export default function TabOneScreen() {
       icon: {
         ios: "character",
         android: "ic_alphabetical",
-      }
-    },
-    {
-      label: t("Grades_Sorting_Averages"),
-      value: "averages",
-      icon: {
-        ios: "chart.xyaxis.line",
-        android: "ic_averages",
+        papicon: "font",
       }
     },
     {
@@ -88,64 +73,51 @@ export default function TabOneScreen() {
       icon: {
         ios: "calendar",
         android: "ic_date",
+        papicon: "calendar",
+      }
+    },
+    {
+      label: t("Grades_Sorting_Averages"),
+      value: "averages",
+      icon: {
+        ios: "chart.xyaxis.line",
+        android: "ic_averages",
+        papicon: "grades",
       }
     },
   ];
 
-  const avgAlgorithms = [
-    {
-      label: t("Grades_Avg_All_Title"),
-      short: t("Grades_Avg_All_Short"),
-      subtitle: t("Grades_Method_AllGrades"),
-      value: "subject",
-      algorithm: (grades: SharedGrade[]) => PapillonSubjectAvg(grades)
-    },
-    {
-      label: t("Grades_Avg_Subject_Title"),
-      short: t("Grades_Avg_Subject_Short"),
-      subtitle: t("Grades_Method_Weighted"),
-      value: "weighted",
-      algorithm: (grades: SharedGrade[]) => PapillonWeightedAvg(grades)
-    },
-    {
-      label: t("Grades_Avg_Median_Title"),
-      short: t("Grades_Avg_Median_Short"),
-      subtitle: t("Grades_Method_AllGrades"),
-      value: "median",
-      algorithm: (grades: SharedGrade[]) => PapillonMedian(grades)
-    },
-  ]
+  // Gestion du scroll
+  const [shouldCollapseHeader, setShouldCollapseHeader] = useState(false);
 
-  const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
-    setFullyScrolled(isFullyScrolled);
-  }, []);
-
-  const [sorting, setSorting] = useState("alphabetical");
-  const [currentAlgorithm, setCurrentAlgorithm] = useState("subject");
-
-  const [periods, setPeriods] = useState<Period[]>([]);
-  const [newSubjects, setSubjects] = useState<Array<SharedSubject>>([]);
-  const [currentPeriod, setCurrentPeriod] = useState<Period>();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
-
+  // Manager
   const manager = getManager();
 
+  // Obtention des périodes
+  const [periods, setPeriods] = useState<Period[]>([]);
+  const [currentPeriod, setCurrentPeriod] = useState<Period>();
+
   const fetchPeriods = async (managerToUse = manager) => {
-    if (currentPeriod) {
-      return;
-    }
+    if (currentPeriod || !managerToUse) { return; }
+    setPeriodsLoading(true);
 
-    if (!managerToUse) {
-      return;
-    }
+    const result = await managerToUse.getGradesPeriods();
+    const currentPeriodFound = getCurrentPeriod(result);
 
-    const result = await managerToUse.getGradesPeriods()
-    setPeriods(result);
+    // sort by time, then put Semestre and Trimestre on top
+    const sortedResult = [...result].sort((a, b) => {
+      const isAKey = a.name.startsWith("Semestre") || a.name.startsWith("Trimestre");
+      const isBKey = b.name.startsWith("Semestre") || b.name.startsWith("Trimestre");
 
-    const currentPeriodFound = getCurrentPeriod(result)
-    setCurrentPeriod(currentPeriodFound)
+      if (isAKey && !isBKey) { return -1; }
+      if (!isAKey && isBKey) { return 1; }
+
+      return a.start.getTime() - b.start.getTime();
+    });
+
+    setPeriods(sortedResult);
+    setCurrentPeriod(currentPeriodFound);
+    setPeriodsLoading(false);
   };
 
   useEffect(() => {
@@ -156,19 +128,40 @@ export default function TabOneScreen() {
     return () => unsubscribe();
   }, []);
 
+  // Obtention des notes
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [serviceAverage, setServiceAverage] = useState<number | null>(null);
+  const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
+
   const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+    setGradesLoading(true);
     if (period && managerToUse) {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+      if (!grades || !grades.subjects) {
+        setGradesLoading(false);
+        return;
+      }
       setSubjects(grades.subjects);
-      if (grades.studentOverall.value) {
+      if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
         setServiceAverage(grades.studentOverall.value)
+      } else {
+        setServiceAverage(null);
+      }
+
+      if (grades.rank && typeof grades.rank.value === 'number' && !grades.rank.disabled) {
+        setServiceRank(grades.rank)
+      } else {
+        setServiceRank(null);
       }
 
       requestAnimationFrame(() => {
         setTimeout(() => {
+          setGradesLoading(false);
           setIsRefreshing(false);
         }, 200);
       });
+    } else {
+      setGradesLoading(false);
     }
   };
 
@@ -177,315 +170,239 @@ export default function TabOneScreen() {
     fetchGradesForPeriod(currentPeriod);
   }, [currentPeriod]);
 
+  const grades = useMemo(() => {
+    return subjects.flatMap((subject) => subject.grades);
+  }, [subjects]);
+
+  const getSubjectById = useCallback((id: string) => {
+    return subjects.find((subject) => subject.id === id);
+  }, [subjects]);
+
+  // Sort
+  // Sort grades in subjects by date descending then sort subjects by latest grade descending
+  const sortedSubjects = useMemo(() => {
+    const subjectsCopy = [...subjects];
+    subjectsCopy.forEach((subject) => {
+      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+    });
+
+    switch (sortMethod) {
+      case "alphabetical":
+        subjectsCopy.sort((a, b) => {
+          const nameA = getSubjectName(a.name).toLowerCase();
+          const nameB = getSubjectName(b.name).toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+        break;
+
+      case "averages":
+        subjectsCopy.sort((a, b) => {
+          const aAvg = a.studentAverage.value;
+          const bAvg = b.studentAverage.value;
+          return bAvg - aAvg;
+        });
+        break;
+
+      default:
+        subjectsCopy.sort((a, b) => {
+          const aLatestGrade = a.grades[0];
+          const bLatestGrade = b.grades[0];
+
+          if (!aLatestGrade && !bLatestGrade) { return 0; }
+          if (!aLatestGrade) { return 1; }
+          if (!bLatestGrade) { return -1; }
+
+          return bLatestGrade.givenAt.getTime() - aLatestGrade.givenAt.getTime();
+        });
+        break;
+    }
+
+    return subjectsCopy;
+  }, [subjects, sortMethod]);
+
+  const sortedGrades = useMemo(() => {
+    const gradesCopy = [...grades];
+    gradesCopy.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+    return gradesCopy;
+  }, [grades]);
+
+  // Search
+  const [searchText, setSearchText] = useState<string>("");
+  const filteredSubjects = useMemo(() => {
+    if (searchText.trim() === "") {
+      return sortedSubjects;
+    }
+
+    const lowerSearchText = searchText.toLowerCase();
+
+    return sortedSubjects.filter((subject) => {
+      const subjectName = getSubjectName(subject.name).toLowerCase();
+      if (subjectName.includes(lowerSearchText)) {
+        return true;
+      }
+
+      // Also search in grades descriptions
+      const matchingGrades = subject.grades.filter((grade) => {
+        return grade.description?.toLowerCase().includes(lowerSearchText);
+      });
+
+      return matchingGrades.length > 0;
+    });
+  }, [searchText, sortedSubjects]);
+
+  // Refresh
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
+
+    if (periods.length === 0) {
+      fetchPeriods();
+    }
+
     fetchGradesForPeriod(currentPeriod);
-  }, [currentPeriod]);
+  }, [currentPeriod, periods]);
 
-  const average = useMemo(() => {
-    const algorithm = avgAlgorithms.find(a => a.value === currentAlgorithm);
-    if (serviceAverage !== null && algorithm?.value === "subject") {
-      return serviceAverage;
-    }
-    const grades = newSubjects
-      .flatMap(subject => subject.grades)
-      .filter(grade =>
-        grade.studentScore?.value !== undefined &&
-        !grade.studentScore.disabled &&
-        !isNaN(grade.studentScore.value)
-      );
-    if (algorithm && grades.length > 0) {
-      const result = algorithm.algorithm(grades);
-      return isNaN(result) || result === -1 ? 0 : result;
-    }
-    return 0;
-  }, [currentAlgorithm, newSubjects, serviceAverage]);
-
-  const [shownAverage, setShownAverage] = useState(average);
-  const [selectionDate, setSelectionDate] = useState<number | null>(null);
-
-  // Update shownAverage when algorithm changes only if is not set
-  React.useEffect(() => {
-    if (!shownAverage) {
-      setShownAverage(average);
-    }
-  }, [average]);
-  const accounts = useAccountStore((state) => state.accounts);
-
-  const subjectData = useMemo(() => {
-    const subjectMap = new Map();
-    newSubjects.forEach(subject => {
-      const cleanedName = subject.name.toLocaleLowerCase().trim().replace(/\s+/g, ' ').replace(/[^\w\s]/gi, '');
-      if (!subjectMap.has(cleanedName)) {
-        subjectMap.set(cleanedName, {
-          color: getSubjectColor(subject.name),
-          emoji: getSubjectEmoji(subject.name),
-          name: getSubjectName(subject.name),
-          originalName: subject.name
-        });
-      }
-    });
-    return subjectMap;
-  }, [accounts]);
-
-
-  const getSubjectInfo = useCallback((subjectName: string) => {
-    const cleanedName = subjectName.toLocaleLowerCase().trim().replace(/\s+/g, ' ').replace(/[^\w\s]/gi, '');
-    return subjectData.get(cleanedName) || {
-      color: getSubjectColor(subjectName),
-      emoji: getSubjectEmoji(subjectName),
-      name: getSubjectName(subjectName),
-      originalName: subjectName
-    };
-  }, [accounts]);
-
-  // Transform subjects into a list with headers and grades
-  const transformedData = useMemo(() => {
-    const sortedSubjects = [...newSubjects].sort((a, b) => {
-      if (sorting === "alphabetical") {
-        return a.name.localeCompare(b.name);
-      } else if (sorting === "averages") {
-        const aAvg = a.studentAverage?.value ?? 0;
-        const bAvg = b.studentAverage?.value ?? 0;
-        return bAvg - aAvg;
-      } else if (sorting === "date") {
-        const aGrades = a.grades.filter(g => g.givenAt);
-        const bGrades = b.grades.filter(g => g.givenAt);
-        const aMostRecentDate = aGrades.length > 0 ? Math.max(...aGrades.map(g => g.givenAt.getTime())) : 0;
-        const bMostRecentDate = bGrades.length > 0 ? Math.max(...bGrades.map(g => g.givenAt.getTime())) : 0;
-        return bMostRecentDate - aMostRecentDate;
-      }
-      return 0;
-    });
-
-    const result = sortedSubjects.flatMap((subject) => {
-      const grades = subject.grades
-        .slice() // Create a shallow copy to avoid mutating the original array
-        .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-
-      return [
-        { type: "header", subject, ui: { isHeader: true, key: "su:" + subject.id + "(" + currentPeriod?.name + ")" } },
-        ...grades.map((grade, index) => ({
-          type: "grade",
-          grade,
-          ui: {
-            isFirst: index === 0,
-            isLast: index === grades.length - 1,
-            key: `g:${grade.id}(${currentPeriod?.name})`,
-          },
-        })),
-      ];
-    });
-
-    return result;
-  }, [newSubjects, sorting, currentPeriod]);
-
-  const renderItemGrade = useCallback(({ item, uiFirst, uiLast }: { item: SharedGrade; index: number, uiFirst: boolean, uiLast: boolean }) => {
-    const subject = newSubjects.find(s => s.id === item.subjectId);
-    const subjectInfo = getSubjectInfo(subject?.name ?? "");
+  const renderItem = useCallback(({ item }: { item: any }) => {
+    const subject = item as Subject;
     return (
-      <Grade
-        isLast={uiLast}
-        isFirst={uiFirst}
-        title={item.description ? item.description : t('Grade_NoDescription', { subject: subjectInfo.name })}
-        date={item.givenAt.getTime()}
-        score={(item.studentScore?.value ?? 0)}
-        disabled={item.studentScore?.disabled}
-        status={item.studentScore?.status}
-        outOf={item.outOf?.value ?? 20}
-        color={subjectInfo.color}
-        onPress={() => {
-          navigation.navigate('(modals)/grade', {
-            grade: item,
-            subjectInfo: subjectInfo,
-            allGrades: newSubjects.flatMap(subject => subject.grades)
-          });
-        }}
-      />
-    );
-  }, [newSubjects, getSubjectInfo]);
-
-  const renderItemSubject = useCallback(({ item }: { item: SharedSubject; index: number }) => {
-    const subjectInfo = getSubjectInfo(item.name);
-    return (
-      <Subject
-        color={subjectInfo.color}
-        emoji={subjectInfo.emoji}
-        name={subjectInfo.name}
-        average={item.studentAverage?.value ?? 0}
-        disabled={item.studentAverage.disabled}
-        status={item.studentAverage.status}
-        outOf={item.outOf?.value ?? 20}
-      />
-    );
-  }, [getSubjectInfo]);
-
-  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
-    if (item.type === "header") {
-      return renderItemSubject({ item: item.subject, index });
-    } else if (item.type === "grade") {
-      return renderItemGrade({
-        item: item.grade,
-        index,
-        uiFirst: item.ui.isFirst,
-        uiLast: item.ui.isLast
-      });
-    }
-    return null;
-  }, [renderItemSubject, renderItemGrade]);
-
-  const navigation = useNavigation();
-
-  const recentGrades = useMemo(() => {
-    return newSubjects.flatMap(subject => subject.grades).sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).slice(0, 6);
-  }, [newSubjects]);
-
-  const LatestGradeItem = useCallback(({ item }: { item: SharedGrade }) => {
-    const subject = newSubjects.find(s => s.id === item.subjectId);
-    const subjectInfo = getSubjectInfo(subject?.name ?? "");
-
-    return (
-      <Reanimated.View
-        sharedTransitionTag={item.id + "_compactGrade"}
-      >
-        <CompactGrade
-          key={item.id + "_compactGrade"}
-          emoji={subjectInfo.emoji}
-          title={subjectInfo.name}
-          description={item.description}
-          score={item.studentScore?.value ?? 0}
-          outOf={item.outOf?.value ?? 20}
-          disabled={item.studentScore?.disabled}
-          color={subjectInfo.color}
-          status={item.studentScore?.status}
-          date={item.givenAt}
-          onPress={() => {
-            navigation.navigate('(modals)/grade', {
-              grade: item,
-              subjectInfo: subjectInfo,
-              allGrades: newSubjects.flatMap(subject => subject.grades)
-            });
-          }}
-        />
-      </Reanimated.View>
+      // @ts-expect-error navigation types
+      <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
     )
-  }, [colors, newSubjects, getSubjectInfo]);
+  }, [grades]);
 
-  const LatestGrades = useCallback(() => (
-    <Reanimated.View
-      key={"latest-grades:" + currentPeriod}
-    >
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Star"} size={18} />
-        </Icon>
-        <Typography>
-          {t("Latest_Grades")}
-        </Typography>
-      </Stack>
-      <FlatList
-        horizontal
-        keyExtractor={(item: SharedGrade) => item.id}
-        data={recentGrades}
-        renderItem={({ item }) => (
-          <LatestGradeItem item={item} />
-        )}
-        style={{
-          height: 150,
-          marginBottom: 16,
-          overflow: "visible",
-        }}
-        contentContainerStyle={{
-          display: "flex",
-          flexDirection: "row",
-          overflow: "visible",
-          gap: 10,
-        }}
-        showsHorizontalScrollIndicator={false}
-      />
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Grades"} size={18} />
-        </Icon>
-        <Typography>
-          Mes notes
-        </Typography>
-      </Stack>
-    </Reanimated.View>
-  ), [newSubjects, colors]);
+  const keyboardHeight = useKeyboardHeight();
 
-  const insets = useSafeAreaInsets();
+  const footerStyle = useAnimatedStyle(() => ({
+    height: keyboardHeight.value - bottomTabBarHeight,
+  }));
 
-  return (
-    <>
-      <TabFlatList
-        radius={36}
-        engine="FlatList"
-        backgroundColor={theme.dark ? "#071d18ff" : "#ddeeea"}
-        foregroundColor="#29947A"
-        pattern={"cross"}
-        initialNumToRender={2}
-        removeClippedSubviews={true}
-        onFullyScrolled={handleFullyScrolled}
-        height={200}
-        data={transformedData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.ui.key}
-        ListEmptyComponent={<EmptyListComponent />}
-        header={(
-          <GradesWidget
-            accent="#29947A"
-            algorithm={currentAlgorithm}
-            period={currentPeriod}
-          />
-        )}
-        ListHeaderComponent={transformedData.length > 0 ? <LatestGrades /> : null}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            progressViewOffset={200}
-          />
-        }
+  // influences
+  const { getAvgInfluence, getAvgClassInfluence } = useGradeInfluence(subjects, getSubjectById);
+
+  // header
+  const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
+    <View style={{ marginBottom: 16 }}>
+      <Averages
+        grades={grades}
+        color={colors.primary}
+        realAverage={serviceAverage || undefined}
       />
 
-      {!runsIOS26 && fullyScrolled && (
-        <Reanimated.View
-          entering={Animation(FadeInUp, "list")}
-          exiting={Animation(FadeOutUp, "default")}
-          style={[
-            {
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: headerHeight + 1,
-              backgroundColor: colors.card,
-              zIndex: 1000000,
-            },
-            Platform.OS === 'android' && {
-              elevation: 4,
-            },
-            Platform.OS === 'ios' && {
-              borderBottomWidth: 0.5,
-              borderBottomColor: colors.border,
-            }
-          ]}
-        />
+      {serviceRank && (
+        <List style={{ marginTop: 8 }}>
+          <Item>
+            <Icon opacity={0.5}>
+              <Papicons name='crown' />
+            </Icon>
+
+            <Typography variant='title'>
+              {t('Grades_Tab_Rank')}
+            </Typography>
+            <Typography variant='body1' color='secondary'>
+              {t('Grades_Tab_Rank_Description')}
+            </Typography>
+
+            <Trailing>
+              <Stack
+                direction='horizontal'
+                gap={4}
+                vAlign='end'
+                hAlign='end'
+              >
+                <Typography variant='h3' inline color='text'>
+                  {serviceRank.value}
+                </Typography>
+                <Typography variant='body1' inline color='secondary'>
+                  /{serviceRank.outOf}
+                </Typography>
+              </Stack>
+            </Trailing>
+          </Item>
+        </List>
       )}
 
-      <NativeHeaderTitle key={"grades-title:" + shownAverage.toFixed(2) + ":" + fullyScrolled + ":" + currentPeriod?.id}>
-        <NativeHeaderTopPressable>
+      <View style={{ height: 16 }} />
+
+      <Dynamic
+        animated
+        entering={PapillonAppearIn}
+        exiting={PapillonAppearOut}
+      >
+        <Stack gap={8}>
+          <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
+            <Icon size={20}>
+              <Papicons name='star' />
+            </Icon>
+            <Typography variant='h6' color='text'>
+              {t('Grades_Tab_Latest')}
+            </Typography>
+          </Stack>
+
+          <LegendList
+            horizontal
+            data={sortedGrades.slice(0, 10)}
+            style={{ overflow: 'visible', height: 140 + 24, width: Dimensions.get('window').width - 20 }}
+            contentContainerStyle={{ gap: 12 }}
+            estimatedItemSize={210 + 12}
+            showsHorizontalScrollIndicator={false}
+            recycleItems={true}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item: grade }) =>
+              <CompactGrade
+                key={grade.id + "_compactGrade_header"}
+                emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
+                title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
+                description={grade.description}
+                score={grade.studentScore?.value || 0}
+                outOf={grade.outOf?.value || 20}
+                disabled={grade.studentScore?.disabled}
+                status={grade.studentScore?.status}
+                color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
+                date={grade.givenAt}
+                hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                onPress={() => {
+                  // @ts-expect-error navigation types
+                  navigation.navigate('(modals)/grade', {
+                    grade: grade,
+                    subjectInfo: {
+                      name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
+                      color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
+                      emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
+                      originalName: getSubjectById(grade.subjectId)?.name || ""
+                    },
+                    avgInfluence: getAvgInfluence(grade),
+                    avgClass: getAvgClassInfluence(grade),
+                  })
+                }}
+              />
+            }
+          />
+        </Stack>
+      </Dynamic>
+
+      <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
+        <Icon size={20}>
+          <Papicons name='grades' />
+        </Icon>
+        <Typography variant='h6' color='text'>
+          {t('Grades_Tab_Subjects')}
+        </Typography>
+      </Stack>
+    </View>
+  ) : null), [sortedGrades, searchText]);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        /* @ts-expect-error colors
+        backgroundColor: colors.overground */
+      }}
+    >
+      {/* Header */}
+      <TabHeader
+        onHeightChanged={setHeaderHeight}
+        /* Nom de la période */
+        title={
           <MenuView
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
@@ -502,10 +419,12 @@ export default function TabOneScreen() {
                 subtitle: `${period.start.toLocaleDateString(i18n.language, {
                   month: "short",
                   year: "numeric",
-                })} - ${period.end.toLocaleDateString(i18n.language, {
-                  month: "short",
-                  year: "numeric",
-                })}`,
+                })
+                  } - ${period.end.toLocaleDateString(i18n.language, {
+                    month: "short",
+                    year: "numeric",
+                  })
+                  } `,
                 state: currentPeriod?.id === period.id ? "on" : "off",
                 image: Platform.select({
                   ios: (getPeriodNumber(period.name || "0")) + ".calendar"
@@ -514,106 +433,95 @@ export default function TabOneScreen() {
               }))
             }
           >
-            <Dynamic
-              animated={true}
-              style={{
-                flexDirection: "column",
-                alignItems: Platform.OS === 'android' ? "left" : "center",
-                justifyContent: "center",
-                gap: 4,
-                width: 200,
-                height: 60,
-                marginTop: runsIOS26 ? fullyScrolled ? 6 : 0 : Platform.OS === 'ios' ? -4 : -2,
-              }}
-            >
-              <Dynamic animated style={{ flexDirection: "row", alignItems: "center", gap: (!runsIOS26 && fullyScrolled) ? 0 : 4, height: 30, marginBottom: -3 }}>
-                <Dynamic animated>
-                  <Typography inline variant="navigation" numberOfLines={1}>{getPeriodName(currentPeriod?.name || t("Tab_Grades"))}</Typography>
-                </Dynamic>
-                {currentPeriod?.name &&
-                  <Dynamic animated style={{ marginTop: -3 }}>
-                    <NativeHeaderHighlight color="#29947A" light={!runsIOS26 && fullyScrolled}>
-                      {getPeriodNumber(currentPeriod?.name || t("Grades_Menu_CurrentPeriod"))}
-                    </NativeHeaderHighlight>
-                  </Dynamic>
-                }
-                {periods.length > 0 && (
-                  <Dynamic animated>
-                    <Papicons style={{ marginTop: -2 }} name={"ChevronDown"} color={colors.text} size={22} opacity={0.5} />
-                  </Dynamic>
-                )}
-              </Dynamic>
-              {fullyScrolled && (
-                <Dynamic animated>
-                  <Typography inline variant={"body2"} style={{ color: "#29947A" }} align="center">
-                    {avgAlgorithms.find(a => a.value === currentAlgorithm)?.short || "Aucune moyenne"} : {(shownAverage ?? 0).toFixed(2)}/20
-                  </Typography>
-                </Dynamic>
-              )}
-            </Dynamic>
+            <TabHeaderTitle
+              color={colors.primary}
+              leading={periods.length > 0 ? getPeriodName(currentPeriod?.name || '') : t("Tab_Grades")}
+              number={isPeriodWithNumber(currentPeriod?.name || '') ? getPeriodNumber(currentPeriod?.name || '') : undefined}
+              loading={loading}
+              chevron={periods.length > 1}
+            />
           </MenuView>
-        </NativeHeaderTopPressable>
-      </NativeHeaderTitle >
-
-      <NativeHeaderSide side="Left" key={"left-side-grades:" + sorting}>
-        <MenuView
-          onPressAction={({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
-            if (actionId.startsWith("sort:")) {
-              const selectedSorting = actionId.replace("sort:", "");
-              setSorting(selectedSorting);
-            } else if (actionId.startsWith("algorithm:")) {
-              const selectedAlgorithm = actionId.replace("algorithm:", "");
-              setCurrentAlgorithm(selectedAlgorithm);
+        }
+        /* Filtres */
+        trailing={
+          <ChipButton
+            onPressAction={({ nativeEvent }) => {
+              const actionId = nativeEvent.event;
+              if (actionId.startsWith("sort:")) {
+                const selectedSorting = actionId.replace("sort:", "");
+                setSortMethod(selectedSorting);
+              }
+            }}
+            actions={
+              sortings.map((s) => ({
+                id: "sort:" + s.value,
+                title: s.label,
+                state: sortMethod === s.value ? "on" : "off",
+                image: Platform.select({
+                  ios: s.icon.ios,
+                  android: s.icon.android,
+                }),
+                imageColor: colors.text,
+              }))
             }
-          }}
-          actions={
-            sortings.map((s) => ({
-              id: "sort:" + s.value,
-              title: s.label,
-              state: sorting === s.value ? "on" : "off",
-              image: Platform.select({
-                ios: s.icon.ios,
-                android: s.icon.android,
-              }),
-              imageColor: colors.text,
-            }))
-          }
-        >
-          <NativeHeaderPressable onPress={() => { }}>
-            <Icon size={28}>
-              <Papicons name={"Filter"} color={"#29947A"} />
-            </Icon>
-          </NativeHeaderPressable>
-        </MenuView>
-      </NativeHeaderSide>
+            icon={sortings.find(s => s.value === sortMethod)?.icon.papicon || 'filter'} chevron
+          >
+            {sortings.find(s => s.value === sortMethod)?.label || t("Grades_Sort")}
+          </ChipButton>
+        }
+        /* Recherche */
+        bottom={<Search placeholder={t('Grades_Search_Placeholder')} color='#2B7ED6' onTextChange={(text) => setSearchText(text)} />}
+        shouldCollapseHeader={shouldCollapseHeader}
+      />
 
-      <NativeHeaderSide side="Right" key={"right-side-grades:" + currentAlgorithm}>
-        <MenuView
-          onPressAction={({ nativeEvent }) => {
-            const actionId = nativeEvent.event;
-            if (actionId.startsWith("sort:")) {
-              const selectedSorting = actionId.replace("sort:", "");
-              setSorting(selectedSorting);
-            } else if (actionId.startsWith("algorithm:")) {
-              const selectedAlgorithm = actionId.replace("algorithm:", "");
-              setCurrentAlgorithm(selectedAlgorithm);
-            }
-          }}
-          actions={avgAlgorithms.map((a) => ({
-            id: "algorithm:" + a.value,
-            title: a.label,
-            subtitle: a.subtitle,
-            state: currentAlgorithm === a.value ? "on" : "off",
-          }))}
-        >
-          <NativeHeaderPressable onPress={() => { }}>
-            <Icon size={28}>
-              <Papicons name={"Pie"} color={"#29947A"} />
-            </Icon>
-          </NativeHeaderPressable>
-        </MenuView>
-      </NativeHeaderSide >
-    </>
-  );
-}
+
+      <Reanimated.FlatList
+        data={filteredSubjects}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: bottomTabBarHeight }}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+
+        scrollEventThrottle={16}
+        scrollIndicatorInsets={{ top: headerHeight - insets.top }}
+
+        keyExtractor={(item: any) => item.id}
+        itemLayoutAnimation={LinearTransition.springify()}
+
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            progressViewOffset={headerHeight}
+          />
+        }
+
+        ListHeaderComponent={ListHeader}
+
+        ListFooterComponent={<Reanimated.View style={footerStyle} />}
+
+        ListEmptyComponent={loading ? undefined :
+          <Dynamic animated key={'empty-list:warn'} entering={PapillonAppearIn} exiting={PapillonAppearOut}>
+            <Stack
+              hAlign="center"
+              vAlign="center"
+              flex
+              style={{ width: "100%" }}
+            >
+              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                <Papicons name={"Grades"} />
+              </Icon>
+              <Typography variant="h4" color="text" align="center">
+                {t('Grades_Empty_Title')}
+              </Typography>
+              <Typography variant="body2" color="secondary" align="center">
+                {t('Grades_Empty_Description')}
+              </Typography>
+            </Stack>
+          </Dynamic>
+        }
+      />
+    </View>
+  )
+};
+
+export default GradesView;

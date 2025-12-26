@@ -46,6 +46,7 @@ interface ListProps extends PressableProps {
   animate?: boolean;
   contentContainerStyle?: PressableProps["style"];
   isLast?: boolean;
+  disablePadding?: boolean;
 }
 
 const DEFAULT_CONTAINER_STYLE = Object.freeze({
@@ -60,6 +61,7 @@ const DEFAULT_CONTAINER_STYLE = Object.freeze({
 const DEFAULT_CONTENT_STYLE = Object.freeze({
   flexDirection: "column" as const,
   flex: 1,
+  gap: 2
 });
 
 // Optimized areEqual with early returns and minimal key checking
@@ -89,6 +91,7 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     onPressIn,
     onPressOut,
     isLast = false,
+    disablePadding = false,
     ...rest
   },
   ref
@@ -195,11 +198,18 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     , [isLast, borderColor]);
 
   const containerStyle = useMemo(() => {
-    if (style) {
-      return [DEFAULT_CONTAINER_STYLE, style, animatedStyle];
+    const baseStyle = [DEFAULT_CONTAINER_STYLE, animatedStyle];
+
+    if (disablePadding) {
+      baseStyle.push({ paddingVertical: 0, paddingHorizontal: 0 } as any);
     }
-    return [DEFAULT_CONTAINER_STYLE, animatedStyle];
-  }, [style, animatedStyle]);
+
+    if (style) {
+      baseStyle.push(style as any);
+    }
+
+    return baseStyle;
+  }, [style, animatedStyle, disablePadding]);
 
   const contentStyle = useMemo(() =>
     contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE

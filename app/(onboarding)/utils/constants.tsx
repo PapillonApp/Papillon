@@ -1,20 +1,22 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert, StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
-
 export interface SupportedService {
-    name: string;
-    title: string;
-    type: string;
-    image?: any;
-    onPress: () => void;
-    variant: string;
-    color?: string;
-    icon?: React.ReactNode;
-    style?: { [key: string]: any }
+  name: string;
+  title: string;
+  type: string;
+  image?: NodeRequire;
+  onPress: () => void;
+  variant: string;
+  color?: string;
+  icon?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function GetSupportedServices(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedService[] {
@@ -40,7 +42,18 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       type: "main",
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
-        redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
+        Alert.alert(
+          "🦋 École Directe est indisponible pour le moment.",
+          "Suite à des problèmes techniques, École Directe est actuellement indisponible. Nous travaillons pour résoudre ce problème et nous vous remercions de votre patience.",
+          [
+            {
+              text: "J'ai compris !",
+              onPress: () => { },
+              style: "default"
+            }
+          ]
+        )
+        //redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
       },
       variant: 'service' as const,
       color: 'light' as const,
@@ -61,7 +74,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       title: "separator",
       type: "separator",
       image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => {},
+      onPress: () => { /* empty */ },
       variant: 'service' as const,
       color: 'light' as const,
     },
@@ -91,16 +104,15 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
 }
 
 export interface SupportedUniversity {
-    name: string;
-    title: string;
-    hasLimitedSupport: boolean;
-    image?: any;
-    icon?: any;
-    type: string;
-    onPress: () => void;
+  name: string;
+  title: string;
+  hasLimitedSupport: boolean;
+  image?: NodeRequire;
+  type: string;
+  onPress: () => void;
 }
 
-export function GetSupportedUniversities(redirect: (path: { pathname: string }) => void): SupportedUniversity[] {
+export function GetSupportedUniversities(redirect: (path: { pathname: string, options?: UnknownInputParams }) => void): SupportedUniversity[] {
   const { t } = useTranslation();
 
   return [
@@ -135,21 +147,24 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
       },
     },
     {
-      name: "appscho",
-      title: "Autres universités",
-      hasLimitedSupport: false,
-      type: "other",
-      onPress: () => {redirect({ pathname: './appscho/list' }) }
-    },
-    /*{
       name: "iut-lannion",
       title: "IUT de Lannion",
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),
       type: "main",
-      onPress: () => { }
+      onPress: () => {
+        redirect({ pathname: './lannion/credentials' });
+      },
     },
     {
+      name: "appscho",
+      title: "Autres universités",
+      hasLimitedSupport: false,
+      type: "other",
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
+    },
+
+    /*{
       name: "limited-functions",
       title: t("Feature_Limited"),
       hasLimitedSupport: true,
@@ -188,16 +203,16 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string }) 
       image: require("@/assets/images/univ_paris_sorbonne.png"),
       type: "main",
       onPress: () => { }
-    }*/
+    } */
   ]
 }
 
 export interface LoginMethod {
-    id: string,
-    availableFor: Array<Services>,
-    description: string,
-    icon: React.ReactNode,
-    onPress: () => void;
+  id: string,
+  availableFor: Array<Services>,
+  description: string,
+  icon: React.ReactNode,
+  onPress: () => void;
 }
 
 export function GetLoginMethods(redirect: (path: { pathname: RelativePathString }) => void): LoginMethod[] {
@@ -244,55 +259,55 @@ export function GetLoginMethods(redirect: (path: { pathname: RelativePathString 
 }
 
 export interface SupportedRestaurant {
-    name: string;
-    title: string;
-    hasLimitedSupport: boolean;
-    image: any;
-    type: string;
-    onPress: () => void;
+  name: string;
+  title: string;
+  hasLimitedSupport: boolean;
+  image: any;
+  type: string;
+  onPress: () => void;
 }
 
 export function GetSupportedRestaurants(redirect: (path: { pathname: string }) => void): SupportedRestaurant[] {
-    return [
-        {
-            name: "turboself",
-            title: "TurboSelf",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/turboself.png"),
-            type: "main",
-            onPress: () => {
-                redirect({ pathname: '../turboself/credentials' });
-            }
-        },
-        {
-            name: "ard",
-            title: "ARD",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/ard.png"),
-            type: "main",
-            onPress: () => {
-                redirect({ pathname: '../ard/credentials' });
-            }
-        },
-        {
-            name: "izly",
-            title: "Izly",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/izly.png"),
-            type: "main",
-            onPress: () => {
-                redirect({ pathname: '../izly/credentials' });
-            }
-        },
-        {
-            name: "alise",
-            title: "Alise",
-            hasLimitedSupport: false,
-            image: require("@/assets/images/alise.png"),
-            type: "main",
-            onPress: () => {
-                redirect({ pathname: '../alise/credentials' });
-            }
-        }
-    ]
+  return [
+    {
+      name: "turboself",
+      title: "TurboSelf",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/turboself.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: '../turboself/credentials' });
+      }
+    },
+    {
+      name: "ard",
+      title: "ARD",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/ard.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: '../ard/credentials' });
+      }
+    },
+    {
+      name: "izly",
+      title: "Izly",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/izly.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: '../izly/credentials' });
+      }
+    },
+    {
+      name: "alise",
+      title: "Alise",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/alise.jpg"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: '../alise/credentials' });
+      }
+    }
+  ]
 }

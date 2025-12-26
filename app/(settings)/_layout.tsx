@@ -12,8 +12,9 @@ export default function Layout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerLargeTitle: runsIOS26,
-    headerBackVisible: true,
+    headerLargeTitle: false,
+    headerTransparent: runsIOS26,
+    headerShadowVisible: false,
   }), []);
 
   return (
@@ -30,9 +31,6 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_Services_Title"),
           headerShown: true,
-          headerLargeTitle: false,
-          headerTransparent: false,
-          headerBackVisible: true,
         }}
       />
       <Stack.Screen
@@ -51,7 +49,6 @@ export default function Layout() {
           headerShown: true,
           headerTitle: t("Settings_Cards_Title"),
           headerLargeTitle: false,
-          headerTransparent: false,
           headerBackButtonDisplayMode: "minimal",
           gestureEnabled: true
         }}

@@ -10,7 +10,7 @@ module.exports = {
     version: PackageJSON.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
-    scheme: "papillon",
+    scheme: ["papillon", "izly", "skoapp-prod"],
     platforms: ["ios", "android"],
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -32,6 +32,7 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
+        CADisableMinimumFrameDurationOnPhone: true,
       },
       supportsTablet: true,
       config: {
@@ -62,6 +63,7 @@ module.exports = {
     plugins: [
       "expo-router",
       "expo-font",
+      "expo-video",
       "expo-localization",
       [
         "expo-image-picker",
@@ -100,6 +102,9 @@ module.exports = {
       [
         "expo-build-properties",
         {
+          android: {
+            enable16KbPageSizes: true,
+          },
           ios: {
             extraPods: [
               { name: "SDWebImage", modular_headers: true },

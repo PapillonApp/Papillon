@@ -8428,8 +8428,8 @@
     ]
   },
   {
-    "label": "EMC",
-    "pretty": "Enseignement moral & civique",
+    "label": "enseignementmoralcivique",
+    "pretty": "Enseignement Moral & Civique",
     "emoji": "🏛️",
     "formats": [
       "ENS. MORAL & CIVIQUE",
@@ -8438,7 +8438,87 @@
       "emc",
       "EMC"
     ]
+  },
+  {
+    "label": "infographie3d",
+    "pretty": "Infographie 3D",
+    "emoji": "🧊",
+    "formats": [
+      "infographie 3d",
+      "al infographie 3d"
+    ]
+  },
+  {
+    "label": "creationdesigninteractif",
+    "pretty": "Création et Design Interactif",
+    "emoji": "🖌️",
+    "formats": [
+      "creation et design interactif"
+    ]
+  },
+  {
+    "label": "devfrontintegration",
+    "pretty": "Dev Front & Intégration",
+    "emoji": "💻",
+    "formats": [
+      "developpement front et integration"
+    ]
+  },
+  {
+    "label": "deploiementservices",
+    "pretty": "Déploiement de Services",
+    "emoji": "🚀",
+    "formats": [
+      "deploiement de services"
+    ]
+  },
+  {
+    "label": "designdexperience",
+    "pretty": "Design d'Expérience",
+    "emoji": "🎨",
+    "formats": [
+      "design d experience"
+    ]
+  },
+  {
+    "label": "cultureartistique",
+    "pretty": "Culture Artistique",
+    "emoji": "🎭",
+    "formats": [
+      "culture artistique"
+    ]
+  },
+  {
+    "label": "expressioncomrhetorique",
+    "pretty": "Expression Com & Rhétorique",
+    "emoji": "🗣️",
+    "formats": [
+      "expression communication et rhetorique"
+    ]
+  },
+  {
+    "label": "gestioncontenuback",
+    "pretty": "Gestion Contenus & Dev Back",
+    "emoji": "⚙️",
+    "formats": [
+      "gestion de contenus avancee developpement back"
+    ]
+  },
+  {
+    "label": "ecogestiondroitnum",
+    "pretty": "Eco Gestion Droit Num",
+    "emoji": "⚖️",
+    "formats": [
+      "economie gestion et droit du numerique"
+    ]
+  },
+  {
+    "label": "strategiecommarketing",
+    "pretty": "Stratégie Com & Marketing",
+    "emoji": "📈",
+    "formats": [
+      "strategie de com et marketing"
+    ]
   }
-
 ]
 

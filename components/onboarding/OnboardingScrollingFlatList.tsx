@@ -54,7 +54,6 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
     left: 0,
     right: 0,
     zIndex: 2,
-    transformOrigin: "top",
     transform: [
       {
         scaleY: interpolate(
@@ -98,7 +97,7 @@ const OnboardingScrollingFlatList = ({ lottie, hasReturnButton = true, title, co
   return (
     <ViewContainer>
       <Reanimated.View
-        style={AnimatedHeaderStyle}
+        style={[AnimatedHeaderStyle, { transformOrigin: "top" }]}
       >
         <Stack
           padding={32}

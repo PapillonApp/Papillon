@@ -1,19 +1,17 @@
-import { UserX2Icon } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Alert, Linking, ScrollView, Text } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Alert, Linking, ScrollView } from "react-native";
 
-import { useAccountStore } from "@/stores/account";
+import SettingsHeader from "@/components/SettingsHeader";
+import packageJson from "@/package.json"
+import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useTheme } from "@react-navigation/native";
-import { Papicons } from "@getpapillon/papicons";
-import SettingsHeader from "@/components/SettingsHeader";
-import packageJson from "@/package.json"
-import { useTranslation } from "react-i18next";
-import { Avatar } from "../(features)/(news)/news";
+import { getInitials } from "@/utils/chats/initials";
 import { Contributor, getContributors } from "@/utils/github/contributors";
 
 export const Teams = [
@@ -21,36 +19,43 @@ export const Teams = [
     title: "Vince Linise",
     description: "Président",
     login: "ecnivtwelve",
-    leading: <Avatar size={40} squared author="Vince Linise" imageURL="https://avatars.githubusercontent.com/u/32978709?v=4" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://avatars.githubusercontent.com/u/32978709?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/vincelinise/")
   },
   {
     title: "Lucas Lavajo",
     description: "Vice-Président",
     login: "tryon-dev",
-    leading: <Avatar size={40} squared author="Lucas Lavajo" imageURL="https://avatars.githubusercontent.com/u/68423470?v=4" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://avatars.githubusercontent.com/u/68423470?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/lucas-lavajo/")
   },
   {
     title: "Raphaël Schröder",
     description: "Trésorier Adjoint",
     login: "raphckrman",
-    leading: <Avatar size={40} squared author="Raphaël Schröder" imageURL="https://avatars.githubusercontent.com/u/41128238?v=4" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Raphaël Schröder")} imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/")
   },
   {
     title: "Tom Hélière",
     login: "tom-things",
     description: "Secrétaire",
-    leading: <Avatar size={40} squared author="Tom Hélière" imageURL="https://pbs.twimg.com/profile_images/1943622137849294848/pzD1Fu1-_400x400.jpg" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Tom Hélière")} imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
   },
   {
     title: "Rémy Godet",
     description: "Secrétaire Adjoint",
     login: "godetremy",
-    leading: <Avatar size={40} squared author="Rémy Godet" imageURL="https://avatars.githubusercontent.com/u/77058107?v=4" />,
+    leading: <Avatar size={40} shape="square" initials={getInitials("Rémy Godet")} imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
+  },
+  {
+    title: "Mael Duret",
+    description: "Membre",
+    login: "ryzenixx",
+    leading: <Avatar size={40} shape="square" initials={getInitials("Mael Duret")} imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4" />,
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/")
   }
 ]
 
@@ -192,7 +197,7 @@ export default function SettingsAbout() {
         {contributors.map(item => (
           <Item key={item.login} onPress={() => Linking.openURL(item.html_url)}>
             <Leading>
-              <Avatar size={40} squared author={item.login} imageURL={item.avatar_url} />
+              <Avatar size={40} shape="square" initials={getInitials(item.login)} imageUrl={item.avatar_url} />
             </Leading>
             <Typography>{item.login}</Typography>
             <Typography color="secondary">{item.contributions} contributions</Typography>

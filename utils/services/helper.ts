@@ -29,7 +29,7 @@ export function getServiceLogo(service: Services): ImageSourcePropType {
     case Services.ECOLEDIRECTE:
       return require("@/assets/images/ecoledirecte.png")
     case Services.ALISE:
-      return require("@/assets/images/alise.png")
+      return require("@/assets/images/alise.jpg")
     default: 
       return require("@/assets/images/turboself.png")
   }

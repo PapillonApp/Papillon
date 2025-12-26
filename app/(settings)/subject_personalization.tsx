@@ -12,18 +12,25 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useSettingsStore } from "@/stores/settings";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 
 export default function SubjectPersonalization() {
   const { colors } = useTheme();
 
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const store = useAccountStore.getState()
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
   const subjects = Object.entries(account?.customisation?.subjects ?? {}).map(([key, value]) => ({
     id: key,
     ...value,
   })).filter(item => item.name && item.emoji && item.color);
+
+  const resetAllSubjects = () => {
+    store.setSubjects({});
+  };
 
   function renderItem(emoji: string, name: string, id: string, color: string) {
     return (
@@ -94,39 +101,49 @@ export default function SubjectPersonalization() {
   const { t } = useTranslation();
 
   return (
-    <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{ padding: 16 }}
-      contentInsetAdjustmentBehavior={"always"}
-    >
-      {subjects.length > 0 ? (
-        <List>
-          {subjects.map(item => renderItem(item.emoji, item.name, item.id, item.color))}
-        </List>
-      ) : (
-        <Stack
-          hAlign="center"
-          vAlign="center"
-          margin={16}
-          gap={16}
-        >
-          <View
-            style={{
-              alignItems: "center"
-            }}
+    <>
+      <NativeHeaderSide side="Right">
+        <NativeHeaderPressable onPress={() => resetAllSubjects()}>
+          <Icon>
+            <Papicons name="Trash" />
+          </Icon>
+        </NativeHeaderPressable>
+      </NativeHeaderSide>
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16 }}
+        contentInsetAdjustmentBehavior={"always"}
+      >
+        {subjects.length > 0 ? (
+          <List>
+            {subjects.map(item => renderItem(item.emoji, item.name, item.id, item.color))}
+          </List>
+        ) : (
+          <Stack
+            hAlign="center"
+            vAlign="center"
+            margin={16}
+            gap={16}
           >
-            <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-              <Papicons name={"Card"} />
-            </Icon>
-            <Typography variant="h4" color="text" align="center">
-              {t("Settings_Subjects_None_Title")}
-            </Typography>
-            <Typography variant="body2" color="secondary" align="center">
-              {t("Settings_Subjects_None_Description")}
-            </Typography>
-          </View>
-        </Stack>
-      )}
-    </ScrollView>
+            <View
+              style={{
+                alignItems: "center"
+              }}
+            >
+              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
+                <Papicons name={"Card"} />
+              </Icon>
+              <Typography variant="h4" color="text" align="center">
+                {t("Settings_Subjects_None_Title")}
+              </Typography>
+              <Typography variant="body2" color="secondary" align="center">
+                {t("Settings_Subjects_None_Description")}
+              </Typography>
+            </View>
+          </Stack>
+        )}
+      </ScrollView>
+    </>
   );
 };

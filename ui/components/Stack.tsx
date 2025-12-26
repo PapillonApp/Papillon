@@ -2,6 +2,9 @@ import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 
+import Reanimated, { LinearTransition } from "react-native-reanimated";
+import { Animation } from "../utils/Animation";
+
 // Types pour la direction et l'alignement
 type Direction = "vertical" | "horizontal";
 type Alignment = "start" | "center" | "end";
@@ -22,6 +25,9 @@ interface StackProps extends ViewProps {
   flat?: boolean; // Utilisé pour les listes plates
   bordered?: boolean; // Utilisé pour les listes avec bordures
   radius?: number;
+  animated?: boolean;
+  noShadow?: boolean;
+  layout?: any;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -85,9 +91,11 @@ const Stack: React.FC<StackProps> = ({
   radius = 0,
   card = false,
   flat = false,
-  bordered = false,
+  bordered,
   style,
   children,
+  noShadow = false,
+  animated = false,
   ...rest
 }) => {
   const theme = useTheme();
@@ -95,8 +103,8 @@ const Stack: React.FC<StackProps> = ({
 
   // Generate cache key for style optimization
   const cacheKey = React.useMemo(() =>
-    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}`,
-    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card]
+    `${direction}-${gap}-${width}--${height}-${padding}-${margin}-${vAlign}-${hAlign}-${inline}-${theme.dark}-${flex}-${backgroundColor || ''}-${radius}-${card}-${animated}-${noShadow}`,
+    [direction, gap, width, height, padding, margin, vAlign, hAlign, inline, theme.dark, flex, backgroundColor, radius, card, animated, noShadow]
   );
 
   // Ultra-optimized style computation with caching
@@ -141,14 +149,16 @@ const Stack: React.FC<StackProps> = ({
     if (card) {
       dynamicStyle.borderRadius = radius || 20;
       dynamicStyle.borderCurve = "continuous";
-      dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
-      dynamicStyle.shadowOffset = { width: 0, height: 0 };
-      dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
-      dynamicStyle.shadowRadius = 1.5;
-      dynamicStyle.elevation = 1;
+      if (!noShadow) {
+        dynamicStyle.shadowColor = flat ? "transparent" : "#000000";
+        dynamicStyle.shadowOffset = { width: 0, height: 0 };
+        dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
+        dynamicStyle.shadowRadius = 1.5;
+        dynamicStyle.elevation = 1;
+      }
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
-      dynamicStyle.borderWidth = flat ? 1 : 0.5;
+      dynamicStyle.borderWidth = (bordered !== undefined && bordered == false) ? 0 : (flat ? 1 : 0.5);
       dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
     }
 
@@ -172,9 +182,9 @@ const Stack: React.FC<StackProps> = ({
   }, [cacheKey, direction, gap, padding, margin, hAlign, vAlign, backgroundColor, radius, inline]);
 
   return (
-    <View {...rest} style={[computedStyle, style]}>
+    <Reanimated.View style={[computedStyle, style]} layout={rest.layout || (animated ? Animation(LinearTransition) : undefined)} {...rest}>
       {children}
-    </View>
+    </Reanimated.View>
   );
 };
 

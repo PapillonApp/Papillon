@@ -1,0 +1,34 @@
+name: Issue Check
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        working-directory: .github/bot
+        run: npm ci
+
+      - name: Build Bot
+        working-directory: .github/bot
+        run: npm run build
+
+      - name: Run Issue Check
+        working-directory: .github/bot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node dist/issue/index.js

@@ -60,6 +60,7 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
+import { AuthenticationError } from "../errors/AuthenticationError";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -73,7 +74,7 @@ export class AccountManager {
   }
 
   getAccount(): Account {
-    return this.account
+    return this.account;
   }
 
   async refreshAllAccounts(): Promise<boolean> {
@@ -101,10 +102,7 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        error(
-          `Failed to refresh account for service ${service.serviceId}: ${e}`,
-          "AccountManager.refreshAllAccounts"
-        );
+        throw new AuthenticationError(String(e), service)
       }
     }
 
@@ -122,7 +120,7 @@ export class AccountManager {
         client.getCanteenKind ? client.getCanteenKind() : CanteenKind.ARGENT,
       {
         multiple: false,
-        clientId
+        clientId,
       }
     );
   }
@@ -170,12 +168,18 @@ export class AccountManager {
     );
   }
 
-  async getGradesForPeriod(period: Period, clientId: string, kid?: Kid): Promise<PeriodGrades> {
+  async getGradesForPeriod(
+    period: Period,
+    clientId: string,
+    kid?: Kid
+  ): Promise<PeriodGrades> {
     return await this.fetchData(
       Capabilities.GRADES,
       async client =>
-        client.getGradesForPeriod ? await client.getGradesForPeriod(period, kid) : error("Bad Implementation"),
-      { 
+        client.getGradesForPeriod
+          ? await client.getGradesForPeriod(period, kid)
+          : error("Bad Implementation"),
+      {
         multiple: false,
         clientId,
         fallback: async () => getGradePeriodsFromCache(period.name),
@@ -312,16 +316,16 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
         client.getWeeklyTimetable
-          ? await client.getWeeklyTimetable(weekNumber)
+          ? await client.getWeeklyTimetable(weekNumber, date)
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache(weekNumber),
+        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
@@ -436,24 +440,31 @@ export class AccountManager {
     return await this.fetchData(
       Capabilities.CANTEEN_QRCODE,
       async client =>
-        client.getCanteenQRCodes ? await client.getCanteenQRCodes() : error("getCanteenQRCodes not found"),
+        client.getCanteenQRCodes
+          ? await client.getCanteenQRCodes()
+          : error("getCanteenQRCodes not found"),
       {
         multiple: false,
-        clientId
+        clientId,
       }
-    )
+    );
   }
 
-  async getCanteenBookingWeek(weekNumber: number, clientId: string): Promise<BookingDay[]> {
+  async getCanteenBookingWeek(
+    weekNumber: number,
+    clientId: string
+  ): Promise<BookingDay[]> {
     return await this.fetchData(
       Capabilities.CANTEEN_BOOKINGS,
       async client =>
-        client.getCanteenBookingWeek ? await client.getCanteenBookingWeek(weekNumber) : [],
+        client.getCanteenBookingWeek
+          ? await client.getCanteenBookingWeek(weekNumber)
+          : [],
       {
         multiple: true,
-        clientId
+        clientId,
       }
-    )
+    );
   }
 
   async setMealAsBooked(meal: Booking, booked?: boolean): Promise<Booking> {
@@ -630,7 +641,18 @@ export class AccountManager {
       return new module.Appscho(service.id);
     }
 
-    error("We're not able to find a plugin for service: " + service.serviceId + ". Please review your implementation", "AccountManager.getServicePluginForAccount");
+    if (service.serviceId === Services.LANNION) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/lannion/index");
+      return new module.Lannion(service.id);
+    }
+
+    error(
+      "We're not able to find a plugin for service: " +
+        service.serviceId +
+        ". Please review your implementation",
+      "AccountManager.getServicePluginForAccount"
+    );
   }
 }
 
@@ -641,10 +663,14 @@ export const subscribeManagerUpdate = (
   listener: (manager: AccountManager) => void
 ) => {
   managerListeners.push(listener);
-  if (globalManager) {listener(globalManager);}
+  if (globalManager) {
+    listener(globalManager);
+  }
   return () => {
     const idx = managerListeners.indexOf(listener);
-    if (idx !== -1) {managerListeners.splice(idx, 1);}
+    if (idx !== -1) {
+      managerListeners.splice(idx, 1);
+    }
   };
 };
 

@@ -13,9 +13,26 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTitle: t("Tab_Grades"),
-          headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="modals/SubjectInfo"
+        options={{
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTitle: t("Grades_SubjectInfo"),
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="modals/AboutAverages"
+        options={{
+          headerShown: true,
+          headerLargeTitle: false,
+          headerTitle: t("Grades_Avg_KnowMore"),
+          presentation: "modal",
         }}
       />
     </Stack>
