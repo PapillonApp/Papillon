@@ -42,7 +42,7 @@ export function useWrappedStats() {
       courses.forEach(course => {
         if (course.status === CourseStatus.CANCELED) return;
         
-        // Cours le pluss eu
+        // Cours le plus eu
         if (course.subject) {
           subjectCounts[course.subject] = (subjectCounts[course.subject] || 0) + 1;
         }
