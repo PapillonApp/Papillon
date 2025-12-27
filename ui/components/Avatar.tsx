@@ -37,11 +37,13 @@ const Avatar = ({
   const [hasFailed, setHasFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
+  const borderRadius = shape === "circle" ? size / 2 : size * 0.2;
+
   const generateBodyStyle = (): StyleProps => {
     let baseStyle: StyleProps = {
       width: size,
       height: size,
-      borderRadius: shape === "circle" ? size / 2 : size * 0.2,
+      borderRadius: borderRadius,
       justifyContent: "center",
       alignItems: "center",
       overflow: "hidden",
@@ -79,6 +81,7 @@ const Avatar = ({
             left: 0,
             width: size,
             height: size,
+            borderRadius: borderRadius,
           }}
         />
       )}
@@ -88,7 +91,7 @@ const Avatar = ({
           <Image
             key={reloadKey}
             source={{ uri: imageUrl }}
-            style={{ width: size, height: size }}
+            style={{ width: size, height: size, borderRadius: borderRadius }}
             resizeMode="cover"
             onError={() => setHasFailed(true)}
           />
