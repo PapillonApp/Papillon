@@ -81,6 +81,7 @@ const Avatar = ({
             left: 0,
             width: size,
             height: size,
+            borderRadius: borderRadius,
           }}
         />
       )}
