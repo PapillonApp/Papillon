@@ -211,7 +211,7 @@ const WallpaperModal = () => {
         }
       />
 
-      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + hasCustomWallpaper ? "true" : "false"}>
+      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
         {Platform.OS === 'android' ? (
           <NativeHeaderPressable onPress={() => router.back()}>
             <Icon size={28}>
