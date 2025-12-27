@@ -129,7 +129,16 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
                 {subject.studentAverage.status}
               </Typography>
             ) : (
-              <Typography variant='h5' inline style={{ marginTop: 0, fontSize: 19 }}>
+              <Typography
+                variant='h5'
+                inline
+                style={{ marginTop: 0, fontSize: 19 }}
+                color={
+                  subject.studentAverage.value === subject.maximum.value
+                    ? subjectAdjustedColor
+                    : undefined
+                }
+              >
                 {subject.studentAverage.value.toFixed(2)}
               </Typography>
             )}
@@ -137,7 +146,7 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
               /{subject.outOf.value}
             </Typography>
             {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
-              <Papicons style={{ marginBottom: 4, marginLeft: 4 }} name="crown" color={adjust(subjectAdjustedColor, -0.2)} size={20} />
+              <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />
             )}
           </Stack>
         </Stack>
