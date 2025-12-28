@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "expo-router/entry",
-  "version": "8.3.1",
+  "version": "8.3.2",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
