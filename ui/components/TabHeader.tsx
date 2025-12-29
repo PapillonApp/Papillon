@@ -63,6 +63,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             blurAmount={20}
             direction="blurredTopClearBottom"
             startOffset={0}
+            reducedTransparencyFallbackColor="#00000000"
             style={{
               position: 'absolute',
               top: 0,

@@ -16,14 +16,14 @@ import { error } from "@/utils/logger/logger";
 export async function fetchPronoteWeekTimetable(
   session: SessionHandle,
   accountId: string,
-  weekNumberRaw: number
+  weekNumberRaw: number,
+  date: Date
 ): Promise<CourseDay[]> {
   if (!session) {
     error("Session is undefined", "fetchPronoteTimetable");
   }
 
-  const { start } = getDateRangeOfWeek(weekNumberRaw)
-  const weekNumber = translateToWeekNumber(start, session.instance.firstMonday);
+  const weekNumber = translateToWeekNumber(date, session.instance.firstMonday);
   const timetable = await timetableFromWeek(session, weekNumber);
 
   parseTimetable(session, timetable, {

@@ -39,7 +39,7 @@ export class Multi implements SchoolServicePlugin {
     error("Session is not valid", "Multi.getNews");
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     if (this.session) {
       return fetchMultiTimetable(this.session, this.accountId, weekNumber);
     }
