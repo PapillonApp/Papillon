@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Pressable, StatusBar, View } from 'react-native';
+import { Dimensions, FlatList, Image, Pressable, StatusBar, View } from 'react-native';
 
 import { useVideoPlayer, VideoView, VideoPlayer } from 'expo-video';
 import { useEvent } from "expo";
@@ -9,22 +9,56 @@ import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Papicons } from '@getpapillon/papicons';
 import { useNavigation } from 'expo-router';
-
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import Reanimated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight, FadeInUp, FadeOut, FadeOutUp, LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Typography from '@/ui/components/Typography';
 import { Consent } from '@/app/(modals)/wrapped/stories/consent';
 import { Loading } from '@/app/(modals)/wrapped/stories/loading';
 import { StatsDev } from '@/app/(modals)/wrapped/stories/stats_dev';
 import { Welcome } from '@/app/(modals)/wrapped/stories/welcome';
+import { IntroHours } from './stories/intro_hours';
+import { StepSubject } from './stories/step_subject';
+import { StepTeacher } from './stories/step_teacher';
+import { StepRoom } from './stories/step_room';
+import { useIsFocused } from '@react-navigation/native';
+import { Volume2Icon, VolumeIcon, VolumeXIcon } from 'lucide-react-native';
+
+const audioLoop = require('@/assets/audio/wrapped_loop.mp3');
 
 const WrappedView = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   const [aboutToExit, setAboutToExit] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadingFinished, setLoadingFinished] = useState(false);
   const [statsLocked, setStatsLocked] = useState(false);
+
+  const loopPlayer = useAudioPlayer(audioLoop);
+
+  const [muted, setMuted] = useState(false);
+
+  const playLoop = () => {
+    loopPlayer.seekTo(0);
+    loopPlayer.loop = true;
+    loopPlayer.play();
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      playLoop();
+    }
+    else {
+      loopPlayer.pause();
+    }
+  }, [isFocused]);
+
+  setAudioModeAsync({
+    playsInSilentMode: true,
+    shouldPlayInBackground: false,
+    interruptionMode: "mixWithOthers"
+  });
 
   const mainBackground = useVideoPlayer({
     assetId: require('@/assets/video/wrapped.mp4'),
@@ -47,7 +81,7 @@ const WrappedView = () => {
     player.play();
   });
 
-  const slides = statsLocked ? [StatsDev] : [Welcome, Consent, Loading, ...(loadingFinished ? [StatsDev] : [])];
+  const slides = statsLocked ? [IntroHours, StepSubject, StepTeacher, StepRoom] : [Welcome, Consent, Loading, ...(loadingFinished ? [IntroHours] : [])];
   const sliderRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -67,8 +101,30 @@ const WrappedView = () => {
               <WrappedBackgroundVideo player={mainBackground} />
             </>
           )}
+
+          {statsLocked && (
+            <>
+              <StatusBar barStyle={"light-content"} />
+              <WrappedBackgroundVideo player={altBackground} />
+            </>
+          )}
         </>
       )}
+
+      <Image
+        source={require('@/assets/logo.png')}
+        style={{
+          position: 'absolute',
+          top: insets.top + 14,
+          left: 0,
+          zIndex: 20000,
+          width: '100%',
+          height: 24,
+          objectFit: 'contain',
+          opacity: 0.5,
+        }}
+        pointerEvents="none"
+      />
 
       <LiquidGlassView
         style={{
@@ -92,6 +148,32 @@ const WrappedView = () => {
           }}
         >
           <Papicons name="Info" size={24} color='white' />
+        </Pressable>
+      </LiquidGlassView>
+
+      <LiquidGlassView
+        style={{
+          position: 'absolute',
+          top: insets.top + 2,
+          left: 68,
+          zIndex: 200,
+          borderRadius: 120,
+        }}
+        glassType="clear"
+        isInteractive={true}
+        glassOpacity={0.6}
+        glassTintColor={"#000"}
+      >
+        <Pressable
+          style={{
+            padding: 10
+          }}
+          onPress={() => {
+            loopPlayer.muted = !loopPlayer.muted;
+            setMuted(loopPlayer.muted);
+          }}
+        >
+          {muted ? <VolumeXIcon size={24} color='white' /> : <Volume2Icon size={24} color='white' />}
         </Pressable>
       </LiquidGlassView>
 
@@ -132,7 +214,7 @@ const WrappedView = () => {
           top: 0,
           bottom: 0,
           left: 0,
-          padding: 16,
+          padding: 9,
           gap: 8,
           zIndex: 100,
           justifyContent: 'center',

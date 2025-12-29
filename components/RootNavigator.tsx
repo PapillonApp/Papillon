@@ -50,7 +50,6 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           presentation: "fullScreenModal",
-          animation: "flip",
           contentStyle: {
             borderRadius: corners > 2 ? corners - 2 : 0,
             overflow: "hidden"
@@ -121,7 +120,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/course"
         options={{
-          headerShown: Platform.OS === 'ios' ? false : true,
+          headerShown: Platform.OS !== 'ios',
           headerTitle: t("Modal_Course_Title"),
           headerLargeTitle: false,
           headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,

@@ -8,6 +8,8 @@ import Reanimated, { FadeInDown, FadeOut, FadeOutUp, ZoomIn } from 'react-native
 import Stack from '@/ui/components/Stack';
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
+import { SHADOW_OVER_ANIMATED_BG } from '../_layout';
+import { AlertTriangleIcon } from 'lucide-react-native';
 
 type ConsentItem = {
   title: string;
@@ -41,15 +43,17 @@ const ConsentButton = memo(({
         borderCurve: "circular",
         borderWidth: 1,
         borderColor,
-        width: 300
+        width: Dimensions.get('window').width - 60
       }}>
       <Stack
         direction='horizontal'
         padding={15}
+        vAlign='center'
+        hAlign='center'
       >
         <Stack direction='horizontal' style={{ alignItems: "center", flex: 1 }} gap={10}>
-          <Papicons name={item.icon} color={ICON_COLOR} />
-          <Typography variant='title' color={ICON_COLOR}>{item.title}</Typography>
+          <Papicons name={item.icon} size={28} color={ICON_COLOR} />
+          <Typography variant='navigation' color={ICON_COLOR}>{item.title}</Typography>
         </Stack>
         <Switch value={item.enabled} onValueChange={() => onToggle(index)} trackColor={TRACK_COLOR} />
       </Stack>
@@ -84,7 +88,7 @@ export const Consent = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
   ), [colors.border, toggleConsent]);
 
   return (
-    <View style={{ width: "100%", height: Dimensions.get('screen').height, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ width: "100%", height: Dimensions.get('screen').height, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00000052' }}>
       {isCurrent && (
         <>
           <View
@@ -92,34 +96,37 @@ export const Consent = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
               flex: 1,
               alignItems: "center",
               alignContent: "center",
-              justifyContent: "center"
+              justifyContent: "center",
+              paddingHorizontal: 40
             }}>
+
             <Reanimated.View
               entering={FadeInDown.springify().dampingRatio(0.5).duration(1800).delay(200)}
               exiting={FadeOut.duration(800)}
+              style={{ gap: 8 }}
             >
-              <Image
-                source={require('@/assets/images/monYearbook.png')}
-                style={{
-                  width: Dimensions.get('window').width * 0.6,
-                  height: 80,
-                  alignSelf: 'center',
-                  marginBottom: 20
-                }}
-                resizeMode="contain"
-              />
-              <Typography variant="h2" weight="bold" align='center' color={adjust(colors.background, 0.1)} style={{ marginBottom: 2 }}>
-                Ton Yearbook, à ton image
+              <AlertTriangleIcon size={32} color={"white"} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }} />
+              <Typography variant="h2" weight="bold" align='left' color={adjust(colors.background, 0.1)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
+                Avant de commencer
               </Typography>
-              <Typography variant="body1" align='center' color={adjust(colors.background, 0.3)} style={{ marginBottom: 40, opacity: 0.7 }}>
-                Sélectionne les souvenirs que tu veux revivre.
+              <Typography variant="title" align='left' weight='semibold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
+                Ton Yearbook passera en revue plusieurs aspects de ta vie scolaire.
               </Typography>
+              <Typography variant="navigation" align='left' weight='bold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
+                Cela concernera tes cours, tes profs, tes absences, tes retards, tes notes... Si tu ne souhaites pas voir certaines informations, nous t'invitons à ne pas continuer.
+              </Typography>
+              <Typography variant="title" align='left' weight='semibold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 40, ...SHADOW_OVER_ANIMATED_BG }}>
+                Si ces sujets te posent problème, on t'invite à en parler avec un proche de confiance.
+              </Typography>
+
+              {/*
               <FlatList
                 data={consentItems}
                 renderItem={renderItem}
                 removeClippedSubviews
                 style={styles.listContent}
               />
+              */}
             </Reanimated.View>
           </View>
 
@@ -127,7 +134,8 @@ export const Consent = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
             entering={ZoomIn.delay(400).springify().duration(800).dampingRatio(0.5)}
             style={{
               position: "absolute",
-              bottom: 70
+              bottom: 70,
+              ...SHADOW_OVER_ANIMATED_BG
             }}
           >
             <Stack direction='horizontal' hAlign='center' gap={5}>
@@ -147,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   listContent: {
-    gap: 20,
+    gap: 12,
     alignItems: "center"
   }
 })

@@ -1,6 +1,7 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
+import Reanimated, { AnimateProps, LinearTransition, withDelay, withSpring } from 'react-native-reanimated';
+
 import Typography, { TypographyProps } from './Typography';
-import Reanimated, { LinearTransition, withDelay, withSpring, AnimateProps } from 'react-native-reanimated';
 
 interface AnimatedNumberProps extends TypographyProps {
   distance?: number; // Distance to translate the number
@@ -22,7 +23,17 @@ function AnimatedNumber({
 }: AnimatedNumberProps) {
   try {
     // 1. Memoize value string and digits array
-    const value = useMemo(() => (children?.toString ? children.toString().trim() : ''), [children]);
+    const value = useMemo(() => {
+      if (!children) { return ''; }
+
+      // If children is an array (e.g., [10, "%"]), join it without commas
+      if (Array.isArray(children)) {
+        return children.join('').trim();
+      }
+
+      // Fallback for single values (strings or numbers)
+      return children.toString().trim();
+    }, [children]);
     const digits = useMemo(() => value.split(''), [value]);
 
     // 2. Track previous digits for comparison
@@ -110,7 +121,7 @@ function AnimatedNumber({
             <AnimatedView
               // Use digit and index in the key to ensure React/Reanimated sees a change 
               // when the value or position of a digit changes
-              key={`animated-number-${digit}-${index}`}
+              key={`animated-number-${digit}-${(digit == "%" ? "percent" : index)}`}
               // **Optimization:** Removed inner 'layout' prop to rely only on controlled entering/exiting
               layout={(digit == "." || digit == ",") ? LinearTransition.springify() : undefined}
               entering={getNumberEntering(changedIndex, unchanged)}
