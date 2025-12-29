@@ -11,6 +11,7 @@ import { File, Directory, Paths } from 'expo-file-system';
 import ActivityIndicator from "@/components/ActivityIndicator"
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
 import Icon from "@/ui/components/Icon"
+import { router } from "expo-router";
 import { Papicons } from "@getpapillon/papicons"
 import { MenuView } from "@react-native-menu/menu"
 
@@ -158,7 +159,7 @@ const WallpaperModal = () => {
         }}
         contentContainerStyle={{
           gap: 16,
-          paddingTop: 72
+          paddingTop: Platform.OS === 'android' ? 20 : 72
         }}
         renderItem={({ item, index }) => (
           <View>
@@ -210,15 +211,30 @@ const WallpaperModal = () => {
         }
       />
 
-      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + hasCustomWallpaper ? "true" : "false"}>
-        <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
-          <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
-            <Papicons name="Gallery" />
-          </Icon>
-        </NativeHeaderPressable>
+      <NativeHeaderSide side="Left" key={currentWallpaper?.id + ":" + "upload:" + (hasCustomWallpaper ? "true" : "false")}>
+        {Platform.OS === 'android' ? (
+          <NativeHeaderPressable onPress={() => router.back()}>
+            <Icon size={28}>
+              <Papicons name="Cross" />
+            </Icon>
+          </NativeHeaderPressable>
+        ) : (
+          <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
+            <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
+              <Papicons name="Gallery" />
+            </Icon>
+          </NativeHeaderPressable>
+        )}
       </NativeHeaderSide>
 
       <NativeHeaderSide side="Right" key={currentWallpaper?.id + ":" + wallpaperDirectory.exists}>
+        {Platform.OS === 'android' && (
+          <NativeHeaderPressable onPress={() => uploadCustomWallpaper()}>
+            <Icon size={28} fill={hasCustomWallpaper ? colors.primary : undefined}>
+              <Papicons name="Gallery" />
+            </Icon>
+          </NativeHeaderPressable>
+        )}
         <MenuView
           actions={[
             {

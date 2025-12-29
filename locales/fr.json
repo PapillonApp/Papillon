@@ -386,6 +386,9 @@
   "Settings_Cards_None_Description": "Ajoute en-une pour accéder à ton solde de cantine, scanner ton QR-Code et plus encore",
   "Settings_Subjects_None_Title": "Aucune matière",
   "Settings_Subjects_None_Description": "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
+  "Settings_Subjects_Reset_Title": "Réinitialiser",
+  "Settings_Subjects_Reset_Message": "Voulez-vous vraiment réinitialiser toutes les matières ?",
+  "Settings_Subjects_Reset_Button": "Réinitialiser",
 
   "Settings_Donator": "Donateurs",
   "Settings_Donator_Description": "Voir la liste des donateurs",

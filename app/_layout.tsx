@@ -1,11 +1,12 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+
 import 'react-native-reanimated';
 import "@/utils/i18n";
+
 import { Buffer } from 'buffer';
 import React from 'react';
 
-import FakeSplash from '@/components/FakeSplash';
 import { AppProviders } from '@/components/AppProviders';
+import FakeSplash from '@/components/FakeSplash';
 import { RootNavigator } from '@/components/RootNavigator';
 import { useAppInitialization } from '@/hooks/useAppInitialization';
 

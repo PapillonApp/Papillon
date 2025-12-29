@@ -13,8 +13,17 @@ export const useHomeHeaderData = () => {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
-  const availableCanteenCards = useMemo(() => 
-    account?.services.filter(service => service.serviceId === (Services.TURBOSELF || Services.ALISE || Services.ARD || Services.ECOLEDIRECTE)) ?? [],
+  const availableCanteenCards = useMemo(
+    () =>
+      account?.services.filter(service =>
+        [
+          Services.TURBOSELF,
+          Services.ALISE,
+          Services.ARD,
+          Services.ECOLEDIRECTE,
+          Services.IZLY,
+        ].includes(service.serviceId)
+      ) ?? [],
     [account]
   );
 

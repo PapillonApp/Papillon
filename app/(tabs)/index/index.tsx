@@ -21,9 +21,11 @@ const HomeScreen = () => {
   const accounts = useAccountStore((state) => state.accounts);
   const router = useRouter();
 
-  if (accounts.length === 0) {
-    router.replace("/(onboarding)/welcome");
-  }
+  React.useEffect(() => {
+    if (accounts.length === 0) {
+      router.replace("/(onboarding)/welcome");
+    }
+  }, [accounts.length]);
 
   useHomeData();
 
