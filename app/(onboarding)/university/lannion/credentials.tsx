@@ -28,7 +28,7 @@ import uuid from "@/utils/uuid/uuid";
 const ANIMATION_DURATION = 170;
 
 const upperFirst = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 export default function LannionCredentials() {
