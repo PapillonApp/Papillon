@@ -96,7 +96,8 @@
 
 <td>
 <p align="center">
-<a href="https://github.com/raphckrman"><img alt="" src="https://github.com/user-attachments/assets/31f2eb01-3963-4ea0-8f25-bad8876f2941" /></a>
+<a href="https://github.com/raphckrman"><img width="300" height="300" alt="" src="https://github.com/user-attachments/assets/70c8c6c7-484d-4dd3-8679-9cbb0fcaf993" />
+</a>
 <p align="center">Raphaël</p>
 </p>
 </td>
