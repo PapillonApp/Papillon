@@ -32,6 +32,7 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
+        CFBundleLocalizations: ["fr", "en", "br", "pt", "de", "es", "tr"],
         CADisableMinimumFrameDurationOnPhone: true,
       },
       supportsTablet: true,
@@ -64,6 +65,7 @@ module.exports = {
       "expo-router",
       "expo-font",
       "expo-video",
+      "expo-audio",
       "expo-localization",
       [
         "expo-image-picker",
