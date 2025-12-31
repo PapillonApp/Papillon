@@ -1,8 +1,8 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { FlexAlignType, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
-
+import { FlexAlignType, StyleProp, StyleSheet, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+
 import { Animation } from "../utils/Animation";
 
 // Types pour la direction et l'alignement
@@ -13,8 +13,8 @@ interface StackProps extends ViewProps {
   direction?: Direction;
   gap?: number;
   padding?: number | [number, number];
-  height?: number;
-  width?: number | "100%" | "auto" | string;
+  height?: DimensionValue;
+  width?: DimensionValue;
   margin?: number;
   vAlign?: Alignment;
   hAlign?: Alignment;
@@ -27,8 +27,8 @@ interface StackProps extends ViewProps {
   radius?: number;
   animated?: boolean;
   noShadow?: boolean;
-  layout?: any;
-  style?: ViewStyle | ViewStyle[];
+  layout?: unknown;
+  style?: StyleProp<ViewStyle>;
 }
 
 // Pre-computed alignment maps for maximum performance
@@ -45,7 +45,7 @@ const JUSTIFY_CONTENT_MAP: Record<Alignment, ViewStyle["justifyContent"]> = {
 } as const;
 
 // Pre-computed style cache to avoid object creation
-const STYLE_CACHE = new Map<string, (ViewStyle | any)[]>();
+const STYLE_CACHE = new Map<string, StyleProp<ViewStyle>>();
 
 // Cache cleanup to prevent memory leaks (runs when cache gets too large)
 const MAX_CACHE_SIZE = 100;
@@ -130,7 +130,7 @@ const Stack: React.FC<StackProps> = ({
     };
 
     // Add conditional styles only if needed
-    if (backgroundColor) {
+    if (backgroundColor && typeof backgroundColor === 'string' && !backgroundColor.includes('undefined') && !backgroundColor.includes('null')) {
       dynamicStyle.backgroundColor = backgroundColor;
     }
 
@@ -158,7 +158,7 @@ const Stack: React.FC<StackProps> = ({
       }
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
-      dynamicStyle.borderWidth = (bordered !== undefined && bordered == false) ? 0 : (flat ? 1 : 0.5);
+      dynamicStyle.borderWidth = (bordered !== undefined && bordered === false) ? 0 : (flat ? 1 : 0.5);
       dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
     }
 
