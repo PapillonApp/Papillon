@@ -1,18 +1,18 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LucideIcon } from "lucide-react-native";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
 
 import { formatDuration } from "../utils/Duration";
 import AnimatedPressable from "./AnimatedPressable";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
-import i18n from "@/utils/i18n";
 
 type Variant = "primary" | "separator";
 
@@ -268,7 +268,7 @@ const Course = React.memo((props: CourseProps) => {
           <Typography
             variant="h5"
             numberOfLines={compact ? 1 : 2}
-            style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1 }]}
+            style={[styles.label, { color: textColor, opacity: skeleton ? 0.5 : 1, width: '100%' }]}
             skeleton={skeleton}
           >
             {name}

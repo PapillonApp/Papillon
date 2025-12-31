@@ -1,3 +1,10 @@
+const SCHOOL_LIST = [
+  {
+    domain: "planning.univ-rennes1.fr",
+    name: "UNIVRENNES1"
+  }
+];
+
 export function isValidUrl(url: string): boolean {
   try {
     new URL(url);
@@ -14,12 +21,15 @@ export function normalizeUrl(url: string): string {
   return url;
 }
 
-export function detectProvider(prodId?: string): { isADE: boolean; isHyperplanning: boolean; provider: string } {
-  const provider = prodId || 'unknown';
+export function detectProvider(prodId?: string, url?: string): { isADE: boolean; isHyperplanning: boolean; provider: string, isSchool: boolean, schoolName?: string } {
+  const provider = prodId || url || 'unknown';
   const isADE = Boolean(prodId?.toUpperCase().includes('ADE'));
   const isHyperplanning = Boolean(prodId?.toUpperCase().includes('HYPERPLANNING'));
 
-  return { isADE, isHyperplanning, provider };
+  const school = SCHOOL_LIST.find((school) => url?.includes(school.domain));
+  const isSchool = Boolean(school);
+
+  return { isADE, isHyperplanning, provider, isSchool, schoolName: school?.name };
 }
 
 export function isADEProvider(provider?: string): boolean {

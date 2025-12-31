@@ -2878,7 +2878,9 @@
       "Écrituremédianumérique",
       "Écriturevmédiawnumérique",
       "Écriturtdmédia numérique",
-      "Écrtlure médit numérique"
+      "Écrtlure médit numérique",
+      "ecriture media",
+      "écriture media"
     ]
   },
   {
@@ -6632,6 +6634,17 @@
     ]
   },
   {
+    "label": "portfolio",
+    "pretty": "Portfolio",
+    "emoji": "",
+    "formats": [
+      "portfolio",
+      "portfolio2",
+      "portfolio3",
+      "portfolio4"
+    ]
+  },
+  {
     "label": "portugaiscorr",
     "pretty": "Portugais LV1 Corr",
     "emoji": "🇵🇹",
@@ -8443,9 +8456,11 @@
     "label": "infographie3d",
     "pretty": "Infographie 3D",
     "emoji": "🧊",
-    "formats": [
+    "formats": [ 
       "infographie 3d",
-      "al infographie 3d"
+      "al infographie 3d",
+      "al:3d",
+      "al3d"
     ]
   },
   {
@@ -8466,10 +8481,11 @@
   },
   {
     "label": "deploiementservices",
-    "pretty": "Déploiement de Services",
+    "pretty": "Déploiement de services",
     "emoji": "🚀",
     "formats": [
-      "deploiement de services"
+      "deploiement de services",
+      "deploiement"
     ]
   },
   {
@@ -8490,7 +8506,7 @@
   },
   {
     "label": "expressioncomrhetorique",
-    "pretty": "Expression Com & Rhétorique",
+    "pretty": "Expression-Communication & Rhétorique",
     "emoji": "🗣️",
     "formats": [
       "expression communication et rhetorique"
@@ -8498,7 +8514,7 @@
   },
   {
     "label": "gestioncontenuback",
-    "pretty": "Gestion Contenus & Dev Back",
+    "pretty": "Gestion Contenus & Développement Back",
     "emoji": "⚙️",
     "formats": [
       "gestion de contenus avancee developpement back"
@@ -8506,7 +8522,7 @@
   },
   {
     "label": "ecogestiondroitnum",
-    "pretty": "Eco Gestion Droit Num",
+    "pretty": "Economie-Gestion & Droit du Numérique",
     "emoji": "⚖️",
     "formats": [
       "economie gestion et droit du numerique"
@@ -8514,7 +8530,7 @@
   },
   {
     "label": "strategiecommarketing",
-    "pretty": "Stratégie Com & Marketing",
+    "pretty": "Stratégie de Communication & Marketing",
     "emoji": "📈",
     "formats": [
       "strategie de com et marketing"
