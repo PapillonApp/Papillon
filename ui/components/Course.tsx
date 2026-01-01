@@ -1,4 +1,4 @@
-import { Papicons } from "@getpapillon/papicons";
+import { IconNames, Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LucideIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
@@ -26,7 +26,7 @@ interface CourseProps {
     canceled?: boolean;
     label: string;
     color?: string;
-    icon?: string;
+    icon?: IconNames;
   };
   variant?: Variant;
   start: number;
@@ -208,7 +208,7 @@ const Course = React.memo((props: CourseProps) => {
       return (
         <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingBottom: 5, paddingTop: 6 }} gap={6}>
           <Icon papicon size={20} fill={skeleton ? colors.text + "10" : (status.color || adjust("#DC1400", dark ? 0.4 : -0.2))}>
-            <Papicons name={status.icon as any || "Ghost"} />
+            <Papicons name={status.icon || "Ghost"} />
           </Icon>
           <Typography
             nowrap
@@ -308,7 +308,7 @@ const Course = React.memo((props: CourseProps) => {
           {/* Statut du cours */}
           {status && !status.canceled && variant === "primary" && (
             <View style={{ flexDirection: "row", alignItems: "center", gap: 7, marginTop: status.label ? 4 : 0, opacity: skeleton ? 0.5 : 1 }}>
-              {status.label && (
+              {status.label && !status.color && (
                 <Stack
                   radius={300}
                   backgroundColor={skeleton ? colors.text + "09" : colors.background}
