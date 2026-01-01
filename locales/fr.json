@@ -100,7 +100,7 @@
   "Course_Separator_Lunch_Alt_2": "Miam !",
 
   "Course_Separator_Morning_Default": "Pause matinale",
-  "Course_Separator_Morning_Alt_1": "Pause café !",
+  "Course_Separator_Morning_Alt_1": "Au dodo !",
   "Course_Separator_Morning_Alt_2": "Petit déjeuner",
 
   "Course_Separator_Evening_Default": "Pause de l'après-midi",
@@ -387,7 +387,7 @@
   "Settings_Subjects_None_Title": "Aucune matière",
   "Settings_Subjects_None_Description": "Parcours les différents onglets de l'application afin de pouvoir customiser les matières.",
   "Settings_Subjects_Reset_Title": "Réinitialiser",
-  "Settings_Subjects_Reset_Message": "Veux-tu vraiment réinitialiser toutes les matières ?",
+  "Settings_Subjects_Reset_Message": "Voulez-vous vraiment réinitialiser toutes les matières ?",
   "Settings_Subjects_Reset_Button": "Réinitialiser",
 
   "Settings_Donator": "Donateurs",
