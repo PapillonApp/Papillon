@@ -25,6 +25,8 @@ interface CourseProps {
   status?: {
     canceled?: boolean;
     label: string;
+    color?: string;
+    icon?: string;
   };
   variant?: Variant;
   start: number;
@@ -202,15 +204,15 @@ const Course = React.memo((props: CourseProps) => {
 
   /** statut (cours annulé ou magicInfo) */
   const renderStatus = useCallback(() => {
-    if (status?.canceled) {
+    if (status?.canceled || status?.color) {
       return (
         <Stack direction="horizontal" hAlign="center" style={{ paddingHorizontal: 15, paddingBottom: 5, paddingTop: 6 }} gap={6}>
-          <Icon papicon size={20} fill={skeleton ? colors.text + "10" : adjust("#DC1400", dark ? 0.4 : -0.2)}>
-            <Papicons name="Ghost" />
+          <Icon papicon size={20} fill={skeleton ? colors.text + "10" : (status.color || adjust("#DC1400", dark ? 0.4 : -0.2))}>
+            <Papicons name={status.icon as any || "Ghost"} />
           </Icon>
           <Typography
             nowrap
-            color={adjust("#DC1400", dark ? 0.4 : -0.2)}
+            color={status.color || adjust("#DC1400", dark ? 0.4 : -0.2)}
             variant="h4"
             style={[styles.room, { flex: 1, paddingVertical: 0, opacity: skeleton ? 0.5 : 1 }]}
             skeleton={skeleton}
@@ -255,7 +257,7 @@ const Course = React.memo((props: CourseProps) => {
           borderWidth: 1,
           borderColor: colors.border,
         },
-        status?.canceled && { backgroundColor: colors.card },
+        (status?.canceled || status?.color) && { backgroundColor: colors.card },
         skeleton && { backgroundColor: colors.text + "05" },
         containerStyle && StyleSheet.flatten(containerStyle),
       ]}
@@ -329,7 +331,7 @@ const Course = React.memo((props: CourseProps) => {
           )}
         </Stack>
       </Stack>
-    </Stack>
+    </Stack >
   ), [colors.border, colors.card, colors.text, compact, containerStyle, dark, duration, name, room, skeleton, status, textColor, t, teacher, variant, color]);
 
   /** Cours principale */
@@ -349,7 +351,7 @@ const Course = React.memo((props: CourseProps) => {
           <View
             style={[
               { flex: 1, borderRadius: compact ? 18 : 25, overflow: "hidden" },
-              status?.canceled && { backgroundColor: adjust("#DC1400", dark ? -0.7 : 0.8), borderWidth: 0.2, borderColor: colors.border },
+              (status?.canceled || status?.color) && { backgroundColor: adjust(status?.color || "#DC1400", dark ? -0.7 : 0.8), borderWidth: 0.2, borderColor: colors.border },
               magicInfo && { borderWidth: 1, borderColor: colors.border, backgroundColor: adjust(color ?? "#FFFFFF", 0.8) },
               skeleton && { backgroundColor: "#00000005" },
             ]}
