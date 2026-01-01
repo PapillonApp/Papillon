@@ -138,7 +138,12 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
               room={item.room}
               color={getSubjectColor(item.subject) || Colors[0]}
               status={{
-                label: item.customStatus ? item.customStatus : getStatusText(item.status),
+                label: (
+                  (item.status === CourseStatus.EDITED || item.customStatus?.toLowerCase().includes("modifié")) ? t("Modified_Course") :
+                    item.customStatus?.toLowerCase().includes("déplacé") ? t("Moved_Course") :
+                      item.customStatus?.toLowerCase().includes("exceptionnel") ? t("Exceptional_Course") :
+                        (item.customStatus ? item.customStatus : getStatusText(item.status))
+                ),
                 canceled: (item.status === CourseStatus.CANCELED),
                 color: (
                   (item.status === CourseStatus.EDITED || item.customStatus?.toLowerCase().includes("modifié")) ? "#e07a10" :
