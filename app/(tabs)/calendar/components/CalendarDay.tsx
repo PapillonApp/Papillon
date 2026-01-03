@@ -21,11 +21,7 @@ interface CalendarDayProps {
   tabBarHeight: number;
 }
 
-const StatusColors = {
-  EDITED: "#A85A32",
-  MOVED: "#545E75",
-  EXCEPTIONAL: "#8C845A",
-};
+
 
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight }: CalendarDayProps) => {
   const navigation = useNavigation<any>();
@@ -148,15 +144,15 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           let statusIcon: IconNames | undefined = undefined;
 
           if (isEdited) {
-            statusColor = StatusColors.EDITED;
+            statusColor = colors.primary;
             statusIcon = "Pen";
           }
           if (isMoved) {
-            statusColor = StatusColors.MOVED;
+            statusColor = colors.primary;
             statusIcon = "Archive";
           }
           if (isExceptional) {
-            statusColor = StatusColors.EXCEPTIONAL;
+            statusColor = colors.primary;
             statusIcon = "Sparkles";
           }
 
