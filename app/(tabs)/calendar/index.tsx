@@ -37,7 +37,7 @@ export default function TabOneScreen() {
   } = useTimetableData(weekNumber, date);
 
   const timetableMap = useMemo(() => {
-    const map = new Map();
+    const map = new Map<number, (typeof timetable)[number]["courses"]>();
 
     timetable.forEach(day => {
       const normalized = new Date(day.date);
@@ -69,7 +69,7 @@ export default function TabOneScreen() {
         tabBarHeight={tabBarHeight}
       />
     );
-  }, [getDateFromIndex, timetableMap, manualRefreshing, handleRefresh, colors, headerHeight]);
+  }, [getDateFromIndex, timetableMap, manualRefreshing, handleRefresh, colors, headerHeight, insets, tabBarHeight]);
 
   const extraData = useMemo(() => ({
     manualRefreshing,

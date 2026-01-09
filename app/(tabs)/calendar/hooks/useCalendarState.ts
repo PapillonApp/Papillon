@@ -34,16 +34,11 @@ export function useCalendarState() {
     return INITIAL_INDEX + diff;
   }, []);
 
-  const handleDateChange = useCallback(
-    (newDate: Date) => {
-      setDate(newDate);
-      const newWeekNumber = getWeekNumberFromDate(newDate);
-      if (newWeekNumber !== weekNumber) {
-        setWeekNumber(newWeekNumber);
-      }
-    },
-    [weekNumber]
-  );
+  const handleDateChange = useCallback((newDate: Date) => {
+    setDate(newDate);
+    const newWeekNumber = getWeekNumberFromDate(newDate);
+    setWeekNumber(prev => (prev !== newWeekNumber ? newWeekNumber : prev));
+  }, []);
 
   // Sync FlatList with date
   useEffect(() => {
@@ -91,8 +86,6 @@ export function useCalendarState() {
 
   const onScroll = useCallback(
     (e: any) => {
-      e.nativeEvent.useNativeDriver = true;
-
       const offsetX = e.nativeEvent.contentOffset.x;
       const newIndex = Math.round(offsetX / windowWidth);
       if (newIndex !== lastEmittedIndex.current) {
