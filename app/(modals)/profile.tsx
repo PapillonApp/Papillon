@@ -64,9 +64,26 @@ export default function CustomProfileScreen() {
   const updateProfilePictureFromService = async () => {
     Alert.alert(
       t("Feature_Soon"),
-      "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
+      t("Feature_Soon_Notification"),
       [{ text: "OK" }]
     );
+  }
+
+  const updateAccountName = () => {
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+
+    if (!trimmedFirstName || !trimmedLastName) {
+      Alert.alert(
+        t("Error"),
+        t("Error_FirstName_LastName_Required"),
+        [{ text: "OK" }]
+      );
+
+      return;
+    }
+
+    useAccountStore.getState().setAccountName(lastUsedAccount, trimmedFirstName, trimmedLastName);
   }
 
   const { colors } = useTheme();
@@ -170,7 +187,7 @@ export default function CustomProfileScreen() {
         <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
           <NativeHeaderPressable
             onPressIn={() => {
-              useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
+              updateAccountName();
               router.back();
             }}
           >
