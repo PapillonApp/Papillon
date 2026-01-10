@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useMemo } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useCalendarState } from "./hooks/useCalendarState";
@@ -20,7 +20,6 @@ export default function TabOneScreen() {
   const {
     date,
     weekNumber,
-    currentIndex,
     flatListRef,
     getDateFromIndex,
     handleDateChange,
@@ -37,15 +36,26 @@ export default function TabOneScreen() {
     isLoading
   } = useTimetableData(weekNumber, date);
 
+  const timetableMap = useMemo(() => {
+    const map = new Map<number, (typeof timetable)[number]["courses"]>();
+
+    timetable.forEach(day => {
+      const normalized = new Date(day.date);
+      normalized.setHours(0, 0, 0, 0);
+      const key = normalized.getTime();
+      map.set(key, day.courses);
+    });
+
+    return map;
+  }, [timetable]);
+
   const renderDay = useCallback(({ index }: { index: number }) => {
     const dayDate = getDateFromIndex(index);
     const normalizedDate = new Date(dayDate);
+
     normalizedDate.setHours(0, 0, 0, 0);
-    const dayCourses = timetable.find(d => {
-      const dDate = new Date(d.date);
-      dDate.setHours(0, 0, 0, 0);
-      return dDate.getTime() === normalizedDate.getTime();
-    })?.courses || [];
+
+    const dayCourses = timetableMap.get(normalizedDate.getTime()) || [];
 
     return (
       <CalendarDay
@@ -59,7 +69,14 @@ export default function TabOneScreen() {
         tabBarHeight={tabBarHeight}
       />
     );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
+  }, [getDateFromIndex, timetableMap, manualRefreshing, handleRefresh, colors, headerHeight, insets, tabBarHeight]);
+
+  const extraData = useMemo(() => ({
+    manualRefreshing,
+    headerHeight,
+    colors,
+    timetableVersion: timetable.length
+  }), [manualRefreshing, headerHeight, colors, timetable.length]);
 
   return (
     <>
@@ -83,18 +100,23 @@ export default function TabOneScreen() {
           renderItem={renderDay}
           keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
-          decelerationRate={0.98}
-          disableIntervalMomentum={true}
+
+          decelerationRate="fast"
+          disableIntervalMomentum={false}
           scrollEventThrottle={16}
           onMomentumScrollEnd={onMomentumScrollEnd}
           snapToInterval={windowWidth}
+          snapToAlignment="start"
           bounces={false}
-          windowSize={4}
-          maxToRenderPerBatch={3}
-          initialNumToRender={3}
+
+          windowSize={5}
+          maxToRenderPerBatch={2}
+          initialNumToRender={1}
+          updateCellsBatchingPeriod={50}
+
           showsVerticalScrollIndicator={false}
           removeClippedSubviews
-          extraData={{ manualRefreshing, headerHeight, colors, timetable }}
+          extraData={extraData}
         />
       </View>
     </>
