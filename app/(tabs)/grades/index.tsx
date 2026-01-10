@@ -259,7 +259,7 @@ const GradesView: React.FC = () => {
         const dateMatch = grade.givenAt?.toLocaleDateString(i18n.language).toLowerCase().includes(normalizedSearch);
 
         // score
-        const scoreMatch = grade.studentScore?.value.toString().toLocaleLowerCase().includes(normalizedSearch);
+        const scoreMatch = grade.studentScore?.value.toString().toLowerCase().includes(normalizedSearch);
 
         return descriptionMatch || dateMatch || scoreMatch;
       }) ?? false;
@@ -301,7 +301,7 @@ const GradesView: React.FC = () => {
   const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
     <View style={{ marginBottom: 16 }}>
       <Averages
-        grades={grades.filter(g => g !== undefined) as any}
+        grades={grades.filter((g): g is NonNullable<typeof g> => g !== undefined)}
         color={colors.primary}
         realAverage={serviceAverage || undefined}
       />
@@ -364,7 +364,7 @@ const GradesView: React.FC = () => {
             estimatedItemSize={210 + 12}
             showsHorizontalScrollIndicator={false}
             recycleItems={true}
-            keyExtractor={(item) => item?.id ?? ''}
+            keyExtractor={(item, index) => item?.id ?? `grade-${index}`}
             renderItem={({ item: grade }) =>
               <CompactGrade
                 key={(grade?.id ?? '') + "_compactGrade_header"}
