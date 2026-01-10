@@ -147,7 +147,7 @@ export default function CustomProfileScreen() {
 
         <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
           <View style={{ gap: 10 }}>
-            <Typography color="secondary">Prénom</Typography>
+            <Typography color="secondary">{t("Label_FirstName")}</Typography>
             <OnboardingInput
               placeholder={t("Label_FirstName")}
               text={firstName}
@@ -156,7 +156,7 @@ export default function CustomProfileScreen() {
               inputProps={{}}
             />
 
-            <Typography color="secondary">Nom</Typography>
+            <Typography color="secondary">{t("Label_LastName")}</Typography>
             <OnboardingInput
               placeholder={t("Label_LastName")}
               text={lastName}
