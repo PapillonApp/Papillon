@@ -3,7 +3,6 @@ import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker"
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -19,13 +18,13 @@ import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useAccountStore } from "@/stores/account";
 import Avatar from "@/ui/components/Avatar";
 import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import { useNavigation } from "expo-router";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const store = useAccountStore.getState();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -43,6 +42,15 @@ export default function CustomProfileScreen() {
       setProfilePictureUrl(account.customisation?.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : null);
     }
   }, [account]);
+
+  // Automatic save
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      updateAccountName();
+    });
+
+    return unsubscribe;
+  }, [navigation, firstName, lastName]);
 
   const insets = useSafeAreaInsets()
 
@@ -73,15 +81,7 @@ export default function CustomProfileScreen() {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
 
-    if (!trimmedFirstName || !trimmedLastName) {
-      Alert.alert(
-        t("Error"),
-        t("Error_FirstName_LastName_Required"),
-        [{ text: "OK" }]
-      );
-
-      return;
-    }
+    if (!trimmedFirstName || !trimmedLastName) return;
 
     useAccountStore.getState().setAccountName(lastUsedAccount, trimmedFirstName, trimmedLastName);
   }
@@ -184,18 +184,6 @@ export default function CustomProfileScreen() {
           </View>
         </View>
 
-        <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
-          <NativeHeaderPressable
-            onPressIn={() => {
-              updateAccountName();
-              router.back();
-            }}
-          >
-            <Icon papicon size={26}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
-        </NativeHeaderSide>
       </ScrollView>
     </KeyboardAvoidingView >
   );
