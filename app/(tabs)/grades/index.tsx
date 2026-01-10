@@ -227,7 +227,7 @@ const GradesView: React.FC = () => {
   }, [subjects, sortMethod]);
 
   const sortedGrades = useMemo(() => {
-    const gradesCopy = [...grades].filter((g): g is any => g !== undefined && g.givenAt !== undefined);
+    const gradesCopy = [...grades].filter(g => g !== undefined && g.givenAt !== undefined);
     gradesCopy.sort((a, b) => (b?.givenAt?.getTime() ?? 0) - (a?.givenAt?.getTime() ?? 0));
     return gradesCopy;
   }, [grades]);
