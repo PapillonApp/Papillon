@@ -48,9 +48,9 @@ export default function CustomProfileScreen() {
 
   const updateProfilePictureFromLibrary = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: "images",
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
       base64: true
     });
@@ -75,16 +75,18 @@ export default function CustomProfileScreen() {
   return (
     <KeyboardAvoidingView
       behavior={"position"}
-      keyboardVerticalOffset={-insets.top * 3.2}
+      keyboardVerticalOffset={insets.bottom}
       style={{ flex: 1 }}
     >
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
+        {/* Removed `paddingTop: 20 + (Platform.OS === "android" ? height : 0)` to center */}
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15 }}>
           <Avatar
-            size={117}
+            size={150}
             initials={getInitials(`${firstName} ${lastName}`)}
             imageUrl={profilePictureUrl || undefined}
           />
@@ -153,6 +155,7 @@ export default function CustomProfileScreen() {
               icon={"Font"}
               inputProps={{}}
             />
+
             <Typography color="secondary">Nom</Typography>
             <OnboardingInput
               placeholder={"Nom"}
@@ -163,6 +166,7 @@ export default function CustomProfileScreen() {
             />
           </View>
         </View>
+
         <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
           <NativeHeaderPressable
             onPressIn={() => {
@@ -174,7 +178,6 @@ export default function CustomProfileScreen() {
               <Papicons name="ArrowLeft" />
             </Icon>
           </NativeHeaderPressable>
-
         </NativeHeaderSide>
       </ScrollView>
     </ KeyboardAvoidingView >
