@@ -180,6 +180,6 @@ export default function CustomProfileScreen() {
           </NativeHeaderPressable>
         </NativeHeaderSide>
       </ScrollView>
-    </ KeyboardAvoidingView >
+    </KeyboardAvoidingView >
   );
 }
