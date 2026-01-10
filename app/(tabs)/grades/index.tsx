@@ -253,13 +253,13 @@ const GradesView: React.FC = () => {
       // Search in description, date and score
       const hasMatchingGrade = subject.grades?.some((grade) => {
         // description
-        const descriptionMatch = grade.description?.toLowerCase().includes(normalizedSearch);
+        const descriptionMatch = grade.description?.toLowerCase().includes(normalizedSearch) || false;
 
         // date
-        const dateMatch = grade.givenAt?.toLocaleDateString(i18n.language).toLowerCase().includes(normalizedSearch);
+        const dateMatch = grade.givenAt?.toLocaleDateString(i18n.language).includes(normalizedSearch) || false;
 
         // score
-        const scoreMatch = grade.studentScore?.value.toString().toLowerCase().includes(normalizedSearch);
+        const scoreMatch = grade.studentScore?.value.toString().includes(normalizedSearch) || false;
 
         return descriptionMatch || dateMatch || scoreMatch;
       }) ?? false;
