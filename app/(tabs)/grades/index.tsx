@@ -184,13 +184,14 @@ const GradesView: React.FC = () => {
   // Sort
   // Sort grades in subjects by date descending then sort subjects by latest grade descending
   const sortedSubjects = useMemo(() => {
-    const subjectsCopy = [...subjects];
-
-    subjectsCopy.forEach((subject) => {
-      if (subject.grades) {
-        subject.grades.sort((a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0));
-      }
-    });
+    const subjectsCopy = subjects.map((subject) => ({
+      ...subject,
+      grades: subject.grades
+        ? [...subject.grades].sort(
+          (a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0)
+        )
+        : subject.grades,
+    }));
 
     switch (sortMethod) {
       case "alphabetical":
@@ -365,35 +366,43 @@ const GradesView: React.FC = () => {
             showsHorizontalScrollIndicator={false}
             recycleItems={true}
             keyExtractor={(item, index) => item?.id ?? `grade-${index}`}
-            renderItem={({ item: grade }) =>
-              <CompactGrade
-                emoji={getSubjectEmoji(getSubjectById(grade?.subjectId ?? '')?.name || "")}
-                title={getSubjectName(getSubjectById(grade?.subjectId ?? '')?.name || "")}
-                description={grade?.description || ""}
-                score={grade?.studentScore?.value || 0}
-                outOf={grade?.outOf?.value || 20}
-                disabled={grade?.studentScore?.disabled}
-                status={grade?.studentScore?.status}
-                color={getSubjectColor(getSubjectById(grade?.subjectId ?? '')?.name || "")}
-                date={grade?.givenAt}
-                hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
-                onPress={() => {
-                  if (!grade) return;
-                  // @ts-expect-error navigation types
-                  navigation.navigate('(modals)/grade', {
-                    grade: grade,
-                    subjectInfo: {
-                      name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                      color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                      emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                      originalName: getSubjectById(grade.subjectId)?.name || ""
-                    },
-                    avgInfluence: getAvgInfluence(grade),
-                    avgClass: getAvgClassInfluence(grade),
-                  })
-                }}
-              />
-            }
+            renderItem={({ item: grade }) => {
+              const subject = getSubjectById(grade?.subjectId ?? '');
+              const subjectName = subject?.name;
+              const safeEmoji = subjectName ? getSubjectEmoji(subjectName) : '🤓';
+              const safeTitle = subjectName ? getSubjectName(subjectName) : '';
+              const safeColor = subjectName ? getSubjectColor(subjectName) : '#888888';
+
+              return (
+                <CompactGrade
+                  emoji={safeEmoji}
+                  title={safeTitle}
+                  description={grade?.description || ""}
+                  score={grade?.studentScore?.value || 0}
+                  outOf={grade?.outOf?.value || 20}
+                  disabled={grade?.studentScore?.disabled}
+                  status={grade?.studentScore?.status}
+                  color={safeColor}
+                  date={grade?.givenAt}
+                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  onPress={() => {
+                    if (!grade) return;
+                    // @ts-expect-error navigation types
+                    navigation.navigate('(modals)/grade', {
+                      grade: grade,
+                      subjectInfo: {
+                        name: subjectName,
+                        color: safeColor,
+                        emoji: safeEmoji,
+                        originalName: subjectName
+                      },
+                      avgInfluence: getAvgInfluence(grade),
+                      avgClass: getAvgClassInfluence(grade),
+                    })
+                  }}
+                />
+              );
+            }}
           />
         </Stack>
       </Dynamic>
