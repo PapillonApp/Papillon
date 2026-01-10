@@ -367,7 +367,6 @@ const GradesView: React.FC = () => {
             keyExtractor={(item, index) => item?.id ?? `grade-${index}`}
             renderItem={({ item: grade }) =>
               <CompactGrade
-                key={(grade?.id ?? '') + "_compactGrade_header"}
                 emoji={getSubjectEmoji(getSubjectById(grade?.subjectId ?? '')?.name || "")}
                 title={getSubjectName(getSubjectById(grade?.subjectId ?? '')?.name || "")}
                 description={grade?.description || ""}
@@ -376,7 +375,7 @@ const GradesView: React.FC = () => {
                 disabled={grade?.studentScore?.disabled}
                 status={grade?.studentScore?.status}
                 color={getSubjectColor(getSubjectById(grade?.subjectId ?? '')?.name || "")}
-                date={grade?.givenAt ?? new Date()}
+                date={grade?.givenAt}
                 hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
                 onPress={() => {
                   if (!grade) return;
@@ -389,8 +388,8 @@ const GradesView: React.FC = () => {
                       emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
                       originalName: getSubjectById(grade.subjectId)?.name || ""
                     },
-                    avgInfluence: grade ? getAvgInfluence(grade) : 0,
-                    avgClass: grade ? getAvgClassInfluence(grade) : 0,
+                    avgInfluence: getAvgInfluence(grade),
+                    avgClass: getAvgClassInfluence(grade),
                   })
                 }}
               />

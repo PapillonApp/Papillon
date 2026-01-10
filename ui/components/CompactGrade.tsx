@@ -16,7 +16,7 @@ interface CompactGradeProps {
   description: string;
   score: number;
   outOf: number;
-  date: Date;
+  date: Date | undefined;
   disabled?: boolean;
   status?: string;
   onPress?: () => void,
@@ -113,14 +113,22 @@ export const CompactGrade = ({
             {capitalizeWords(title)}
           </Typography>
         }
-        {date &&
-          <Typography variant="body1" color={variant === "home" ? "secondary" : adjust(color, theme.dark ? 0.2 : -0.4)} nowrap skeleton={skeleton}>
-            {date.toLocaleDateString(i18n.language, {
+
+        {/* Date or error message */}
+        <Typography
+          variant="body1"
+          color={variant === "home" ? "secondary" : adjust(color, theme.dark ? 0.2 : -0.4)}
+          nowrap
+          skeleton={skeleton}
+        >
+          {date
+            ? date.toLocaleDateString(i18n.language, {
               day: "2-digit",
               month: "short",
-            })}
-          </Typography>
-        }
+            })
+            : t("Grade_Date_Error")
+          }
+        </Typography>
       </View>
       <View
         style={{
