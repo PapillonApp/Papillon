@@ -376,7 +376,7 @@ const GradesView: React.FC = () => {
                 disabled={grade?.studentScore?.disabled}
                 status={grade?.studentScore?.status}
                 color={getSubjectColor(getSubjectById(grade?.subjectId ?? '')?.name || "")}
-                date={grade?.givenAt ?? new Date()}
+                date={grade?.givenAt}
                 hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
                 onPress={() => {
                   if (!grade) return;
