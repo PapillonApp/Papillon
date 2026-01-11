@@ -120,6 +120,34 @@ export default function SettingsAbout() {
     },
   ];
 
+  const SocialLinks = [
+    {
+      title: "X (Twitter)",
+      leading: <Papicons name="Link" />,
+      onPress: () => Linking.openURL('https://x.com/thepapillonapp'),
+    },
+    {
+      title: "Instagram",
+      leading: <Papicons name="Link" />,
+      onPress: () => Linking.openURL('https://www.instagram.com/thepapillonapp'),
+    },
+    {
+      title: "Tiktok",
+      leading: <Papicons name="Link" />,
+      onPress: () => Linking.openURL('https://tiktok.com/@thepapillonapp'),
+    },
+    {
+      title: "Youtube",
+      leading: <Papicons name="Link" />,
+      onPress: () => Linking.openURL('https://youtube.com/@thepapillonapp'),
+    },
+    {
+      title: "LinkedIn",
+      leading: <Papicons name="Link" />,
+      onPress: () => Linking.openURL('https://fr.linkedin.com/company/papillonbzh'),
+    },
+  ];
+
   const [tapCount, setTapCount] = React.useState(0);
 
   const handleVersionTap = () => {
@@ -243,6 +271,31 @@ export default function SettingsAbout() {
 
             <Typography variant="caption" color="secondary">
               {item.description}
+            </Typography>
+
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" />
+              </Icon>
+            </Trailing>
+          </Item>
+        ))}
+      </List>
+
+      <List>
+        {SocialLinks.map((item, index) => (
+          <Item
+            key={index}
+            onPress={item.onPress}
+          >
+            <Leading>
+              <Icon>
+                {item.leading}
+              </Icon>
+            </Leading>
+
+            <Typography variant="title">
+              {item.title}
             </Typography>
 
             <Trailing>
