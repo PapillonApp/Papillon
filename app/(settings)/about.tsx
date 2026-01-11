@@ -78,7 +78,7 @@ export default function SettingsAbout() {
     fetchContributors()
   }, [])
 
-  const Items = [
+  const Links = [
     {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
@@ -181,7 +181,7 @@ export default function SettingsAbout() {
       </List>
 
       <List>
-        {Items.map((item, index) => (
+        {Links.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
