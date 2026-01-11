@@ -360,6 +360,8 @@
   "Settings_About_Github_Description": "Contribuer au projet sur GitHub",
   "Settings_About_Issue": "Signaler un bug",
   "Settings_About_Issue_Description": "Reporter un bug rencontré",
+  "Settings_About_Documentation": "Documentation",
+  "Settings_About_Documentation_Description": "La documentation de Papillon",
   "Settings_About_Dependency_Version": "Version des dépendances",
 
   "Alert_No_Technical": "Aucune information technique disponible.",
