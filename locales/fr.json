@@ -13,6 +13,8 @@
   "Button_Change_ProfilePicture_FromLibrary": "Depuis la photothèque",
   "Button_Change_ProfilePicture_FromService": "Récupérer depuis ton ENT",
   "Button_Change_ProfilePicture_Remove": "Supprimer la photo",
+  "Label_FirstName": "Prénom",
+  "Label_LastName": "Nom de famille",
   "Tab_Page": "Page",
   "Tab_Settings": "Paramètres",
   "Tab_News": "Actualités",
@@ -399,7 +401,6 @@
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important",
-
 
   "OnBoarding_Step": "Étape ",
   "OnBoarding_Step_Of": "sur ",
