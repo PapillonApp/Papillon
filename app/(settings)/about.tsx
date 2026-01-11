@@ -78,7 +78,7 @@ export default function SettingsAbout() {
     fetchContributors()
   }, [])
 
-  const Links = [
+  const CommunityLinks = [
     {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
@@ -92,6 +92,15 @@ export default function SettingsAbout() {
       onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
     },
     {
+      title: t("Settings_About_Issue"),
+      description: t("Settings_About_Issue_Description"),
+      leading: <Papicons name="Info" />,
+      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+    },
+  ];
+
+  const DevelopperLinks = [
+    {
       title: t("Settings_About_Crowdin"),
       description: t("Settings_About_Crowdin_Description"),
       leading: <Papicons name="Crown" />,
@@ -104,10 +113,10 @@ export default function SettingsAbout() {
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
     {
-      title: t("Settings_About_Issue"),
-      description: t("Settings_About_Issue_Description"),
-      leading: <Papicons name="Info" />,
-      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+      title: t("Settings_About_Documentation"),
+      description: t("Settings_About_Documentation_Description"),
+      leading: <Papicons name="Paper" />,
+      onPress: () => Linking.openURL('https://docs.papillon.bzh'),
     },
   ];
 
@@ -188,7 +197,36 @@ export default function SettingsAbout() {
       </List>
 
       <List>
-        {Links.map((item, index) => (
+        {CommunityLinks.map((item, index) => (
+          <Item
+            key={index}
+            onPress={item.onPress}
+          >
+            <Leading>
+              <Icon>
+                {item.leading}
+              </Icon>
+            </Leading>
+
+            <Typography variant="title">
+              {item.title}
+            </Typography>
+
+            <Typography variant="caption" color="secondary">
+              {item.description}
+            </Typography>
+
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" />
+              </Icon>
+            </Trailing>
+          </Item>
+        ))}
+      </List>
+
+      <List>
+        {DevelopperLinks.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
