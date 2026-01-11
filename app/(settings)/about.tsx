@@ -93,6 +93,12 @@ export default function SettingsAbout() {
       onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
     },
     {
+      title: t("Settings_About_Crowdin"),
+      description: t("Settings_About_Crowdin_Description"),
+      leading: <Papicons name="Crown" />,
+      onPress: () => Linking.openURL('https://crowdin.com/project/papillonapp'),
+    },
+    {
       title: t("Settings_About_Github"),
       description: t("Settings_About_Github_Description"),
       leading: <Papicons name="Ghost" />,
@@ -104,8 +110,10 @@ export default function SettingsAbout() {
 
   const handleVersionTap = () => {
     setTapCount(prev => prev + 1);
+
     if (tapCount + 1 >= 8) {
       setTapCount(0);
+
       if (settingsStore.showDevMode) {
         Alert.alert("Dev Mode", "Dev mode désactivé!");
         mutateProperty("personalization", { showDevMode: false });
@@ -143,6 +151,7 @@ export default function SettingsAbout() {
         disableMargin
         height={270}
       />
+
       <List>
         {Teams.map((item, index) => (
           <Item
@@ -168,6 +177,7 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
       <List>
         {Items.map((item, index) => (
           <Item
@@ -193,6 +203,7 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
       <List>
         {contributors.map(item => (
           <Item key={item.login} onPress={() => Linking.openURL(item.html_url)}>
@@ -204,6 +215,7 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
       <List>
         {Infos.map((item, index) => (
           <Item
@@ -224,6 +236,7 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
     </ScrollView>
   );
 }
