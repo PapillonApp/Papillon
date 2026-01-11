@@ -103,6 +103,12 @@ export default function SettingsAbout() {
       leading: <Papicons name="Ghost" />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
+    {
+      title: t("Settings_About_Issue"),
+      description: t("Settings_About_Issue_Description"),
+      leading: <Papicons name="Info" />,
+      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+    },
   ];
 
   const [tapCount, setTapCount] = React.useState(0);
