@@ -14,7 +14,7 @@ import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { Contributor, getContributors } from "@/utils/github/contributors";
 
-export const Teams = [
+export const Team = [
   {
     title: "Vince Linise",
     description: "Président",
@@ -70,7 +70,7 @@ export default function SettingsAbout() {
 
   const [contributors, setContributors] = useState<Contributor[]>([])
   const fetchContributors = async () => {
-    const fethedContributors = (await getContributors()).filter(contrib => !Teams.map(item => item.login).includes(contrib.login))
+    const fethedContributors = (await getContributors()).filter(contrib => !Team.map(item => item.login).includes(contrib.login))
     setContributors(fethedContributors)
   }
 
@@ -168,7 +168,7 @@ export default function SettingsAbout() {
       />
 
       <List>
-        {Teams.map((item, index) => (
+        {Team.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
