@@ -112,41 +112,35 @@ export default function SettingsAbout() {
       leading: <Papicons name="Ghost" />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
-    {
-      title: t("Settings_About_Documentation"),
-      description: t("Settings_About_Documentation_Description"),
-      leading: <Papicons name="Paper" />,
-      onPress: () => Linking.openURL('https://docs.papillon.bzh'),
-    },
   ];
 
-  const SocialLinks = [
-    {
-      title: "X (Twitter)",
-      leading: <Papicons name="Link" />,
-      onPress: () => Linking.openURL('https://x.com/thepapillonapp'),
-    },
-    {
-      title: "Instagram",
-      leading: <Papicons name="Link" />,
-      onPress: () => Linking.openURL('https://www.instagram.com/thepapillonapp'),
-    },
-    {
-      title: "Tiktok",
-      leading: <Papicons name="Link" />,
-      onPress: () => Linking.openURL('https://tiktok.com/@thepapillonapp'),
-    },
-    {
-      title: "Youtube",
-      leading: <Papicons name="Link" />,
-      onPress: () => Linking.openURL('https://youtube.com/@thepapillonapp'),
-    },
-    {
-      title: "LinkedIn",
-      leading: <Papicons name="Link" />,
-      onPress: () => Linking.openURL('https://fr.linkedin.com/company/papillonbzh'),
-    },
-  ];
+  // const SocialLinks = [
+  //   {
+  //     title: "X (Twitter)",
+  //     leading: <Papicons name="Link" />,
+  //     onPress: () => Linking.openURL('https://x.com/thepapillonapp'),
+  //   },
+  //   {
+  //     title: "Instagram",
+  //     leading: <Papicons name="Link" />,
+  //     onPress: () => Linking.openURL('https://www.instagram.com/thepapillonapp'),
+  //   },
+  //   {
+  //     title: "Tiktok",
+  //     leading: <Papicons name="Link" />,
+  //     onPress: () => Linking.openURL('https://tiktok.com/@thepapillonapp'),
+  //   },
+  //   {
+  //     title: "Youtube",
+  //     leading: <Papicons name="Link" />,
+  //     onPress: () => Linking.openURL('https://youtube.com/@thepapillonapp'),
+  //   },
+  //   {
+  //     title: "LinkedIn",
+  //     leading: <Papicons name="Link" />,
+  //     onPress: () => Linking.openURL('https://fr.linkedin.com/company/papillonbzh'),
+  //   },
+  // ];
 
   const [tapCount, setTapCount] = React.useState(0);
 
@@ -182,7 +176,7 @@ export default function SettingsAbout() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: 20, gap: 20 }}
+      contentContainerStyle={{ padding: 20, gap: 10 }}
       contentInsetAdjustmentBehavior="always"
       showsVerticalScrollIndicator={false}
     >
@@ -282,7 +276,7 @@ export default function SettingsAbout() {
         ))}
       </List>
 
-      <List>
+      {/* <List>
         {SocialLinks.map((item, index) => (
           <Item
             key={index}
@@ -305,7 +299,7 @@ export default function SettingsAbout() {
             </Trailing>
           </Item>
         ))}
-      </List>
+      </List> */}
 
       <List>
         {contributors.map(item => (
