@@ -99,7 +99,7 @@ export default function SettingsAbout() {
     },
   ];
 
-  const DevelopperLinks = [
+  const DeveloperLinks = [
     {
       title: t("Settings_About_Crowdin"),
       description: t("Settings_About_Crowdin_Description"),
@@ -248,7 +248,7 @@ export default function SettingsAbout() {
       </List>
 
       <List>
-        {DevelopperLinks.map((item, index) => (
+        {DeveloperLinks.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
@@ -309,7 +309,7 @@ export default function SettingsAbout() {
             </Leading>
 
             <Typography>{item.login}</Typography>
-            <Typography color="secondary">{item.contributions} contributions</Typography>
+            <Typography color="secondary">{item.contributions} {item.contributions > 1 ? "contributions" : "contribution"}</Typography>
           </Item>
         ))}
       </List>
