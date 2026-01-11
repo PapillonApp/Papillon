@@ -63,7 +63,6 @@ import { useSettingsStore } from "@/stores/settings";
 
 export default function SettingsAbout() {
   const theme = useTheme()
-  const { colors } = theme
 
   const { t } = useTranslation();
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -163,12 +162,15 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
+
             <Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
@@ -189,12 +191,15 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
+
             <Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
@@ -210,6 +215,7 @@ export default function SettingsAbout() {
             <Leading>
               <Avatar size={40} shape="square" initials={getInitials(item.login)} imageUrl={item.avatar_url} />
             </Leading>
+
             <Typography>{item.login}</Typography>
             <Typography color="secondary">{item.contributions} contributions</Typography>
           </Item>
@@ -227,9 +233,11 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
