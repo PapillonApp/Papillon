@@ -147,6 +147,7 @@ export default function SettingsAbout() {
     <ScrollView
       contentContainerStyle={{ padding: 20, gap: 20 }}
       contentInsetAdjustmentBehavior="always"
+      showsVerticalScrollIndicator={false}
     >
       <SettingsHeader
         color={theme.dark ? "#121e2a" : "#dfebf7"}
