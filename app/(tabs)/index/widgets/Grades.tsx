@@ -1,86 +1,124 @@
-import React, { useCallback } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
-
-import Reanimated from 'react-native-reanimated';
-import { useHomeworkData } from '../../tasks/hooks/useHomeworkData';
-import { HomeworkSection, useTaskFilters } from '../../tasks/hooks/useTaskFilters';
-import { useWeekSelection } from '../../tasks/hooks/useWeekSelection';
-
-import { useAlert } from "@/ui/components/AlertProvider";
-import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
-import { generateId } from '@/utils/generateId';
-import { Homework } from "@/services/shared/homework";
-import { LinearTransition } from 'react-native-reanimated';
-import TaskItem from '../../tasks/components/TaskItem';
-import Typography from '@/ui/components/Typography';
+import { Papicons } from '@getpapillon/papicons';
+import { useTheme } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import Reanimated, { LinearTransition } from 'react-native-reanimated';
+
+import { getManager, subscribeManagerUpdate } from '@/services/shared';
+import { Period, Subject } from "@/services/shared/grade";
+import { CompactGrade } from '@/ui/components/CompactGrade';
+import { Dynamic } from '@/ui/components/Dynamic';
+import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { getSubjectColor } from "@/utils/subjects/colors";
+import { getSubjectEmoji } from "@/utils/subjects/emoji";
+import { getSubjectName } from "@/utils/subjects/name";
+import { LegendList } from '@legendapp/list';
 
 const HomeGradesWidget = React.memo(() => {
-    const alert = useAlert();
+    const { colors } = useTheme();
+    const navigation = useNavigation();
 
-    const { selectedWeek } = useWeekSelection();
+    const [loading, setLoading] = useState(false);
+    const manager = getManager();
 
-    const {
-        homework,
-        homeworksFromCache,
-        setAsDone,
-    } = useHomeworkData(selectedWeek, alert);
+    const [currentPeriod, setCurrentPeriod] = useState<Period>();
+    const [subjects, setSubjects] = useState<Subject[]>([]);
 
-    const {
-        sortMethod,
-        collapsedGroups,
-        sections,
-    } = useTaskFilters(homeworksFromCache, homework);
+    const fetchPeriods = async (managerToUse = manager) => {
+        if (!managerToUse) return;
 
-    const renderItem = useCallback(
-        ({ item, index, section }: { item: Homework, index: number, section: HomeworkSection }) => {
-            if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
-                return null;
+        const result = await managerToUse.getGradesPeriods();
+        const currentPeriodFound = getCurrentPeriod(result);
+        setCurrentPeriod(currentPeriodFound);
+    };
+
+    const fetchGradesForPeriod = async (period: Period | undefined, managerToUse = manager) => {
+        setLoading(true);
+        if (period && managerToUse) {
+            const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+            if (grades?.subjects) {
+                setSubjects(grades.subjects);
             }
+        }
+        setLoading(false);
+    };
 
-            // Generate the same ID used to store homeworks in the homework object
-            const generatedId = generateId(
-                item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString()
-            );
+    useEffect(() => {
+        const unsubscribe = subscribeManagerUpdate((updatedManager) => {
+            fetchPeriods(updatedManager);
+        });
 
-            const inFresh = homework[generatedId];
-            const source = inFresh ?? item;
-            const fromCache = !inFresh;
-
-            return (
-                <Reanimated.View
-                    layout={LinearTransition}
-                    entering={PapillonAppearIn}
-                    exiting={PapillonAppearOut}
-                >
-                    <TaskItem
-                        item={source}
-                        index={index}
-                        fromCache={fromCache}
-                        setAsDone={(item, done) => {
-                            setAsDone(item, done);
-                        }}
-                    />
-                </Reanimated.View>
-            );
-        },
-        [homework, setAsDone, collapsedGroups, sortMethod]
-    );
-
-    const limitedSections = sections.slice(0, 1).map(section => ({
-        ...section,
-        data: section.data.slice(0, 2)
-    }));
-
-    const keyExtractor = useCallback((item: Homework) => {
-        return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
+        return () => unsubscribe();
     }, []);
 
-    if (limitedSections.length == 0) {
+    useEffect(() => {
+        if (currentPeriod) {
+            fetchGradesForPeriod(currentPeriod);
+        }
+    }, [currentPeriod]);
+
+    const sortedGrades = useMemo(() => {
+        const allGrades = subjects.flatMap((subject) => subject.grades);
+        return allGrades
+            .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime())
+            .slice(0, 5);
+    }, [subjects]);
+
+    const getSubjectById = useCallback((id: string) => {
+        return subjects.find((subject) => subject.id === id);
+    }, [subjects]);
+
+    const renderItem = useCallback(({ item: grade }: { item: any }) => {
+        const subject = getSubjectById(grade.subjectId);
+
+        return (
+            <Reanimated.View
+                layout={LinearTransition}
+                entering={PapillonAppearIn}
+                exiting={PapillonAppearOut}
+            >
+                <CompactGrade
+                    key={grade.id + "_compactGrade_widget"}
+                    emoji={getSubjectEmoji(subject?.name || "")}
+                    title={getSubjectName(subject?.name || "")}
+                    description={grade.description}
+                    score={grade.studentScore?.value || 0}
+                    outOf={grade.outOf?.value || 20}
+                    disabled={grade.studentScore?.disabled}
+                    status={grade.studentScore?.status}
+                    color={getSubjectColor(subject?.name || "")}
+                    date={grade.givenAt}
+                    hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                    onPress={() => {
+                        // @ts-expect-error navigation types
+                        navigation.navigate('(modals)/grade', {
+                            grade: grade,
+                            subjectInfo: {
+                                name: getSubjectName(subject?.name || ""),
+                                color: getSubjectColor(subject?.name || ""),
+                                emoji: getSubjectEmoji(subject?.name || ""),
+                                originalName: subject?.name || ""
+                            },
+                        });
+                    }}
+                />
+            </Reanimated.View>
+        );
+    }, [subjects, getSubjectById, navigation]);
+
+    const keyExtractor = useCallback((item: any) => item.id, []);
+
+    if (sortedGrades.length === 0 && !loading) {
         return (
             <Stack
-                inline flex
+                inline
+                flex
                 hAlign="center"
                 vAlign="center"
                 padding={[22, 16]}
@@ -88,24 +126,25 @@ const HomeGradesWidget = React.memo(() => {
                 style={{ paddingTop: 12 }}
             >
                 <Typography align="center" variant="title" color="text">
-                    {t("Tasks_NoTasks_Title")}
+                    {t('Grades_Empty_Title')}
                 </Typography>
                 <Typography align="center" variant="body1" color="secondary">
-                    {t("Tasks_NoTasks_Description")}
+                    {t('Grades_Empty_Description')}
                 </Typography>
             </Stack>
         );
     }
 
     return (
-        <SectionList
-            scrollEnabled={false}
-            sections={limitedSections}
+        <LegendList
+            horizontal
+            scrollEnabled={true}
+            data={sortedGrades}
             style={styles.list}
-            contentContainerStyle={{ paddingHorizontal: 12 }}
+            contentContainerStyle={{ paddingBottom: 10, paddingLeft: 12, gap: 12 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            stickySectionHeadersEnabled={false}
+            showsHorizontalScrollIndicator={false}
         />
     );
 });
@@ -113,7 +152,6 @@ const HomeGradesWidget = React.memo(() => {
 const styles = StyleSheet.create({
     list: {
         flex: 1,
-        height: '100%',
     },
 });
 

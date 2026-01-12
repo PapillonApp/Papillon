@@ -64,7 +64,7 @@ const HomeScreen = () => {
     //   redirect: "(tabs)/grades",
     //   render: renderAverage
     // },
-  ], [renderTimeTable, renderTasks]);
+  ], [renderTimeTable, renderTasks, renderGrades]);
 
   return (
     <>
