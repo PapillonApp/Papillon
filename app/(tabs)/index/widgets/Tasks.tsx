@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { SectionList, StyleSheet, View } from 'react-native';
 
-import TasksHeader from '../../tasks/components/TasksHeader';
 import TasksList from '../../tasks/components/TasksList';
-import WeekPicker from '../../tasks/components/WeekPicker';
+import Reanimated, { createAnimatedComponent } from 'react-native-reanimated';
 import { useHomeworkData } from '../../tasks/hooks/useHomeworkData';
-import { useTaskFilters } from '../../tasks/hooks/useTaskFilters';
+import { HomeworkSection, useTaskFilters } from '../../tasks/hooks/useTaskFilters';
 import { useWeekSelection } from '../../tasks/hooks/useWeekSelection';
 
 import { useAlert } from "@/ui/components/AlertProvider";
+import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { generateId } from '@/utils/generateId';
+import { Homework } from "@/services/shared/homework";
+import { LinearTransition } from 'react-native-reanimated';
+import TaskItem from '../../tasks/components/TaskItem';
 
 const HomeTasksWidget = React.memo(() => {
+    const AnimatedSectionList = createAnimatedComponent(SectionList<Homework, HomeworkSection>);
+
     const alert = useAlert();
 
     const {
@@ -20,43 +26,76 @@ const HomeTasksWidget = React.memo(() => {
     const {
         homework,
         homeworksFromCache,
-        isRefreshing,
-        handleRefresh,
         setAsDone,
     } = useHomeworkData(selectedWeek, alert);
 
     const {
-        searchTerm,
         sortMethod,
         collapsedGroups,
-        toggleGroup,
         sections,
     } = useTaskFilters(homeworksFromCache, homework);
 
+    const renderItem = useCallback(
+        ({ item, index, section }: { item: Homework, index: number, section: HomeworkSection }) => {
+            if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
+                return null;
+            }
+
+            // Generate the same ID used to store homeworks in the homework object
+            const generatedId = generateId(
+                item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString()
+            );
+
+            const inFresh = homework[generatedId];
+            const source = inFresh ?? item;
+            const fromCache = !inFresh;
+
+            return (
+                <Reanimated.View
+                    layout={LinearTransition}
+                    entering={PapillonAppearIn}
+                    exiting={PapillonAppearOut}
+                >
+                    <TaskItem
+                        item={source}
+                        index={index}
+                        fromCache={fromCache}
+                        setAsDone={(item, done) => {
+                            setAsDone(item, done);
+                        }}
+                    />
+                </Reanimated.View>
+            );
+        },
+        [homework, setAsDone, collapsedGroups, sortMethod]
+    );
+
+    const keyExtractor = useCallback((item: Homework) => {
+        return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
+    }, []);
+
     return (
-        <>
-            <View style={styles.container}>
-                <TasksList
-                    sections={sections}
-                    headerHeight={0}
-                    searchTerm={searchTerm}
-                    isRefreshing={isRefreshing}
-                    onRefresh={handleRefresh}
-                    collapsedGroups={collapsedGroups}
-                    toggleGroup={toggleGroup}
-                    sortMethod={sortMethod}
-                    homework={homework}
-                    setAsDone={setAsDone}
-                />
-            </View>
-        </>
+        <AnimatedSectionList
+            scrollEnabled={false}
+            sections={sections}
+            style={styles.list}
+            contentContainerStyle={{
+                paddingHorizontal: 16,
+                paddingBottom: 100,
+            }}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            stickySectionHeadersEnabled={false}
+        />
     );
 });
 
 const styles = StyleSheet.create({
-    container: {
+    list: {
         flex: 1,
+        height: '100%',
     },
 });
+
 
 export default HomeTasksWidget;
