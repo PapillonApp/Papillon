@@ -12,6 +12,7 @@ import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
+import GradesWidget from './widgets/Grades';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -30,6 +31,7 @@ const HomeScreen = () => {
   useHomeData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderGrades = React.useCallback(() => <GradesWidget />, []);
 
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
@@ -38,17 +40,26 @@ const HomeScreen = () => {
       redirect: "(tabs)/calendar",
       render: renderTimeTable
     },
-  ], [renderTimeTable]);
+    {
+      icon: <Papicons name={"Grades"} />,
+      title: t("Tab_Grades"),
+      redirect: "(tabs)/grades",
+      render: renderGrades
+    },
+  ], [renderTimeTable, renderGrades]);
 
   return (
     <>
       <Wallpaper />
       <HomeTopBar />
+
       <LegendList
         renderItem={({ item }) => <HomeWidget item={item} />}
         keyExtractor={(item) => item.title}
+
         ListHeaderComponent={<HomeHeader />}
         style={{ flex: 1 }}
+
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,

@@ -246,14 +246,12 @@ const GradesWidget = (
     return (
       <View
         style={{
-          width: "100%",
-          height: "100%",
           marginTop: header ? -20 : 0,
         }}
       >
         <View
           style={{
-            marginLeft: -16,
+            marginLeft: 0,
           }}
         >
           <View style={{ height: 140 }} />
@@ -261,11 +259,11 @@ const GradesWidget = (
           <Reanimated.View
             key={`grades-graph-container:${graphAxis.length}:${currentAlgorithm}`}
             style={{
-              width: windowDimensions.width + (header ? 0 : 36 - 8),
+              width: windowDimensions.width - 32,
               height: 140,
               position: 'absolute',
               top: 0,
-              left: header ? 0 : -36,
+              left: 0,
               right: 0,
               zIndex: 1000,
               paddingBottom: 20,
@@ -301,7 +299,7 @@ const GradesWidget = (
             style={{
               padding: 28,
               marginTop: (-32 * 2) + (header ? -4 : 0),
-              paddingLeft: 36
+              paddingLeft: 28
             }}
           >
             <Stack direction="horizontal" gap={0} inline vAlign={header ? "center" : "start"} hAlign="end" style={{ width: "100%", marginBottom: -2 }}>
