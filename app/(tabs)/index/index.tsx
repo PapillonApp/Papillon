@@ -14,6 +14,7 @@ import { useAccountStore } from '@/stores/account';
 import HomeAverageWidget from './widgets/Average';
 import HomeTasksWidget from './widgets/Tasks';
 import HomeTimeTableWidget from './widgets/timetable';
+import HomeGradesWidget from './widgets/Grades';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -33,6 +34,7 @@ const HomeScreen = () => {
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
+  const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
 
   // const renderAverage = React.useCallback(() => <HomeAverageWidget />, []);
 
@@ -49,11 +51,18 @@ const HomeScreen = () => {
       redirect: "(tabs)/tasks",
       render: renderTasks
     },
+    {
+      icon: <Papicons name={"Grades"} />,
+      title: t("Latest_Grades"),
+      redirect: "(tabs)/grades",
+      render: renderGrades
+    },
+
     // {
     //   icon: <Papicons name={"Grades"} />,
     //   title: t("Grades_Avg_All_Title"),
     //   redirect: "(tabs)/grades",
-    //   render: renderGrades
+    //   render: renderAverage
     // },
   ], [renderTimeTable, renderTasks]);
 
