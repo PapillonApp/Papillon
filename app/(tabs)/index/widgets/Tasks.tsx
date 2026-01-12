@@ -12,6 +12,8 @@ import { generateId } from '@/utils/generateId';
 import { Homework } from "@/services/shared/homework";
 import { LinearTransition } from 'react-native-reanimated';
 import TaskItem from '../../tasks/components/TaskItem';
+import Typography from '@/ui/components/Typography';
+import { t } from 'i18next';
 
 const HomeTasksWidget = React.memo(() => {
     const alert = useAlert();
@@ -74,6 +76,19 @@ const HomeTasksWidget = React.memo(() => {
         return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
     }, []);
 
+    if (limitedSections.length == 0) {
+        return (
+            <View style={styles.emptyContainer}>
+                <Typography variant="h4" align="center">
+                    {t('Tasks_NoTasks_Title')}
+                </Typography>
+                <Typography variant="body2" align="center" style={styles.emptyText}>
+                    {t('Tasks_NoTasks_Description')}
+                </Typography>
+            </View>
+        );
+    }
+
     return (
         <SectionList
             scrollEnabled={false}
@@ -92,7 +107,14 @@ const styles = StyleSheet.create({
         flex: 1,
         height: '100%',
     },
+    emptyContainer: {
+        alignItems: 'center',
+        padding: 32,
+        opacity: 0.6,
+    },
+    emptyText: {
+        marginTop: 8,
+    },
 });
-
 
 export default HomeTasksWidget;
