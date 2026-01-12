@@ -14,6 +14,7 @@ import { LinearTransition } from 'react-native-reanimated';
 import TaskItem from '../../tasks/components/TaskItem';
 import Typography from '@/ui/components/Typography';
 import { t } from 'i18next';
+import Stack from '@/ui/components/Stack';
 
 const HomeTasksWidget = React.memo(() => {
     const alert = useAlert();
@@ -78,14 +79,21 @@ const HomeTasksWidget = React.memo(() => {
 
     if (limitedSections.length == 0) {
         return (
-            <View style={styles.emptyContainer}>
-                <Typography variant="h4" align="center">
-                    {t('Tasks_NoTasks_Title')}
+            <Stack
+                inline flex
+                hAlign="center"
+                vAlign="center"
+                padding={[22, 16]}
+                gap={2}
+                style={{ paddingTop: 12 }}
+            >
+                <Typography align="center" variant="title" color="text">
+                    {t("Tasks_NoTasks_Title")}
                 </Typography>
-                <Typography variant="body2" align="center" style={styles.emptyText}>
-                    {t('Tasks_NoTasks_Description')}
+                <Typography align="center" variant="body1" color="secondary">
+                    {t("Tasks_NoTasks_Description")}
                 </Typography>
-            </View>
+            </Stack>
         );
     }
 
@@ -106,14 +114,6 @@ const styles = StyleSheet.create({
     list: {
         flex: 1,
         height: '100%',
-    },
-    emptyContainer: {
-        alignItems: 'center',
-        padding: 32,
-        opacity: 0.6,
-    },
-    emptyText: {
-        marginTop: 8,
     },
 });
 
