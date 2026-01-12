@@ -3,7 +3,6 @@ import Wallpaper from './atoms/Wallpaper';
 import HomeHeader from './atoms/HomeHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeTopBar from './atoms/HomeTopBar';
-import HomeTimeTableWidget from './widgets/timetable';
 import { Papicons } from '@getpapillon/papicons';
 import { t } from 'i18next';
 import { LegendList } from '@legendapp/list';
@@ -14,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
 import HomeGradesWidget from './widgets/Grades';
 import HomeTasksWidget from './widgets/Tasks';
+import HomeTimeTableWidget from './widgets/timetable';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -48,12 +48,12 @@ const HomeScreen = () => {
       redirect: "(tabs)/tasks",
       render: renderTasks
     },
-    {
-      icon: <Papicons name={"Grades"} />,
-      title: t("Grades_Avg_All_Title"),
-      redirect: "(tabs)/grades",
-      render: renderGrades
-    },
+    // {
+    //   icon: <Papicons name={"Grades"} />,
+    //   title: t("Grades_Avg_All_Title"),
+    //   redirect: "(tabs)/grades",
+    //   render: renderGrades
+    // },
   ], [renderTimeTable, renderGrades]);
 
   return (
