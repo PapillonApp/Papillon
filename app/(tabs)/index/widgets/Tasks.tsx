@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 
 import TasksList from '../../tasks/components/TasksList';
-import Reanimated, { createAnimatedComponent } from 'react-native-reanimated';
+import Reanimated from 'react-native-reanimated';
 import { useHomeworkData } from '../../tasks/hooks/useHomeworkData';
 import { HomeworkSection, useTaskFilters } from '../../tasks/hooks/useTaskFilters';
 import { useWeekSelection } from '../../tasks/hooks/useWeekSelection';
@@ -15,8 +15,6 @@ import { LinearTransition } from 'react-native-reanimated';
 import TaskItem from '../../tasks/components/TaskItem';
 
 const HomeTasksWidget = React.memo(() => {
-    const AnimatedSectionList = createAnimatedComponent(SectionList<Homework, HomeworkSection>);
-
     const alert = useAlert();
 
     const {
@@ -75,14 +73,11 @@ const HomeTasksWidget = React.memo(() => {
     }, []);
 
     return (
-        <AnimatedSectionList
+        <SectionList
             scrollEnabled={false}
             sections={sections}
             style={styles.list}
-            contentContainerStyle={{
-                paddingHorizontal: 16,
-                paddingBottom: 100,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             stickySectionHeadersEnabled={false}
