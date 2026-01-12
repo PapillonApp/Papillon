@@ -13,6 +13,7 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
 import HomeGradesWidget from './widgets/Grades';
+import HomeTasksWidget from './widgets/Tasks';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -31,6 +32,7 @@ const HomeScreen = () => {
   useHomeData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
   const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
 
   const data: HomeWidgetItem[] = useMemo(() => [
@@ -39,6 +41,12 @@ const HomeScreen = () => {
       title: t("Home_Widget_NextCourses"),
       redirect: "(tabs)/calendar",
       render: renderTimeTable
+    },
+    {
+      icon: <Papicons name={"Tasks"} />,
+      title: t("Tab_Tasks"),
+      redirect: "(tabs)/tasks",
+      render: renderTasks
     },
     {
       icon: <Papicons name={"Grades"} />,
