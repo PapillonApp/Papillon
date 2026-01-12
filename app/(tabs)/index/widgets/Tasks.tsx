@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 
-import TasksList from '../../tasks/components/TasksList';
 import Reanimated from 'react-native-reanimated';
 import { useHomeworkData } from '../../tasks/hooks/useHomeworkData';
 import { HomeworkSection, useTaskFilters } from '../../tasks/hooks/useTaskFilters';
@@ -17,9 +16,7 @@ import TaskItem from '../../tasks/components/TaskItem';
 const HomeTasksWidget = React.memo(() => {
     const alert = useAlert();
 
-    const {
-        selectedWeek,
-    } = useWeekSelection();
+    const { selectedWeek } = useWeekSelection();
 
     const {
         homework,
@@ -68,6 +65,11 @@ const HomeTasksWidget = React.memo(() => {
         [homework, setAsDone, collapsedGroups, sortMethod]
     );
 
+    const limitedSections = sections.slice(0, 1).map(section => ({
+        ...section,
+        data: section.data.slice(0, 2)
+    }));
+
     const keyExtractor = useCallback((item: Homework) => {
         return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
     }, []);
@@ -75,9 +77,9 @@ const HomeTasksWidget = React.memo(() => {
     return (
         <SectionList
             scrollEnabled={false}
-            sections={sections}
+            sections={limitedSections}
             style={styles.list}
-            contentContainerStyle={{ paddingHorizontal: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 12 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             stickySectionHeadersEnabled={false}
