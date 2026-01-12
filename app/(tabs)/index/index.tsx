@@ -63,6 +63,7 @@ const HomeScreen = () => {
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,
+          gap: 12
         }}
         data={data}
       />
