@@ -1,7 +1,6 @@
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React from 'react';
-import { FlatList } from "react-native";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
@@ -12,6 +11,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
+import { LegendList } from "@legendapp/list";
 
 const HomeTimeTableWidget = React.memo(() => {
   const navigation = useNavigation();
@@ -38,7 +38,7 @@ const HomeTimeTableWidget = React.memo(() => {
   }
 
   return (
-    <FlatList
+    <LegendList
       scrollEnabled={false}
       data={courses.slice(0, 3)}
       style={{ width: '100%', paddingHorizontal: 10 }}
