@@ -11,7 +11,7 @@ import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
-import HomeGradesWidget from './widgets/Grades';
+import HomeAverageWidget from './widgets/Average';
 import HomeTasksWidget from './widgets/Tasks';
 import HomeTimeTableWidget from './widgets/timetable';
 
@@ -33,7 +33,8 @@ const HomeScreen = () => {
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
-  const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
+
+  // const renderAverage = React.useCallback(() => <HomeAverageWidget />, []);
 
   const data: HomeWidgetItem[] = useMemo(() => [
     {
@@ -54,7 +55,7 @@ const HomeScreen = () => {
     //   redirect: "(tabs)/grades",
     //   render: renderGrades
     // },
-  ], [renderTimeTable, renderGrades]);
+  ], [renderTimeTable, renderTasks]);
 
   return (
     <>

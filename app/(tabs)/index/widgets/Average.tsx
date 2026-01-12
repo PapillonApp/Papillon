@@ -44,7 +44,7 @@ const avgAlgorithms = [
   },
 ]
 
-const HomeGradesWidget = (
+const HomeAverageWidget = (
   {
     accent = "#29947A",
     header = false,
@@ -340,4 +340,4 @@ const HomeGradesWidget = (
   }
 }
 
-export default HomeGradesWidget;
+export default HomeAverageWidget;

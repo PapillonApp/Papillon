@@ -46,7 +46,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
-import HomeGradesWidget from "./widgets/Grades";
+import HomeAverageWidget from "./widgets/Average";
 
 const IndexScreen = () => {
   const now = new Date();
@@ -359,7 +359,7 @@ const IndexScreen = () => {
         </Typography>
       </Stack>
     ),
-    <HomeGradesWidget header accent={foreground} />,
+    <HomeAverageWidget header accent={foreground} />,
   ];
 
   if (accounts.length === 0) {
