@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Wallpaper from './atoms/Wallpaper';
 import HomeHeader from './atoms/HomeHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,7 +33,7 @@ const HomeScreen = () => {
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderGrades = React.useCallback(() => <GradesWidget />, []);
 
-  const data: HomeWidgetItem[] = React.useMemo(() => [
+  const data: HomeWidgetItem[] = useMemo(() => [
     {
       icon: <Papicons name={"Calendar"} />,
       title: t("Home_Widget_NextCourses"),
