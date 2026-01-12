@@ -12,7 +12,7 @@ import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
-import GradesWidget from './widgets/Grades';
+import HomeGradesWidget from './widgets/Grades';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -31,7 +31,7 @@ const HomeScreen = () => {
   useHomeData();
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
-  const renderGrades = React.useCallback(() => <GradesWidget />, []);
+  const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
 
   const data: HomeWidgetItem[] = useMemo(() => [
     {

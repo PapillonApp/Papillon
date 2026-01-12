@@ -44,7 +44,7 @@ const avgAlgorithms = [
   },
 ]
 
-const GradesWidget = (
+const HomeGradesWidget = (
   {
     accent = "#29947A",
     header = false,
@@ -340,4 +340,4 @@ const GradesWidget = (
   }
 }
 
-export default GradesWidget;
+export default HomeGradesWidget;
