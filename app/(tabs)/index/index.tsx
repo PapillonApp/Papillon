@@ -50,7 +50,7 @@ const HomeScreen = () => {
     },
     {
       icon: <Papicons name={"Grades"} />,
-      title: t("Tab_Grades"),
+      title: t("Grades_Avg_All_Title"),
       redirect: "(tabs)/grades",
       render: renderGrades
     },
