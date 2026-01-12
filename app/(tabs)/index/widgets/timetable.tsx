@@ -74,4 +74,3 @@ const HomeTimeTableWidget = React.memo(() => {
 });
 
 export default HomeTimeTableWidget;
-
