@@ -19,6 +19,8 @@ import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { LegendList } from '@legendapp/list';
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
+import { Animation } from "@/ui/utils/Animation";
 
 const HomeGradesWidget = React.memo(() => {
     const { colors } = useTheme();
@@ -132,6 +134,28 @@ const HomeGradesWidget = React.memo(() => {
                     {t('Grades_Empty_Description')}
                 </Typography>
             </Stack>
+        );
+    }
+
+    if (loading) {
+        return (
+            <Dynamic
+                animated
+                layout={Animation(LinearTransition, "list")}
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
+                    minHeight: 150,
+                    width: '100%'
+                }}
+            >
+                <ActivityIndicator
+                    size={30}
+                    strokeWidth={3}
+                    color={colors.primary}
+                />
+            </Dynamic>
         );
     }
 
