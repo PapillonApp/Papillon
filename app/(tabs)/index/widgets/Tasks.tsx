@@ -68,7 +68,7 @@ const HomeTasksWidget = React.memo(() => {
         [homework, setAsDone, collapsedGroups, sortMethod]
     );
 
-    const limitedSections = sections.slice(0, 1).map(section => ({
+    const limitedSections = sections.slice(selectedWeek - 1, selectedWeek).map(section => ({
         ...section,
         data: section.data.slice(0, 2)
     }));
