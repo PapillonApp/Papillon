@@ -54,6 +54,9 @@ const HomeTasksWidget = React.memo(() => {
                     layout={LinearTransition}
                     entering={PapillonAppearIn}
                     exiting={PapillonAppearOut}
+                    style={{
+                        maxWidth: 300
+                    }}
                 >
                     <TaskItem
                         item={source}
@@ -71,7 +74,7 @@ const HomeTasksWidget = React.memo(() => {
 
     const limitedSections = sections.slice(selectedWeek - 1, selectedWeek).map(section => ({
         ...section,
-        data: section.data.slice(0, 2)
+        data: section.data.slice(0, 5)
     }));
 
     const keyExtractor = useCallback((item: Homework) => {
@@ -103,10 +106,10 @@ const HomeTasksWidget = React.memo(() => {
             horizontal
             sections={limitedSections}
             style={styles.list}
-            contentContainerStyle={{ paddingHorizontal: 12 }}
+            contentContainerStyle={{ gap: 12 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            stickySectionHeadersEnabled={false}
+            showsHorizontalScrollIndicator={false}
         />
     );
 });
