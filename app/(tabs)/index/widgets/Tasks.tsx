@@ -16,6 +16,7 @@ import Typography from '@/ui/components/Typography';
 import { t } from 'i18next';
 import Stack from '@/ui/components/Stack';
 import { log } from '@/utils/logger/logger';
+import { LegendList } from '@legendapp/list';
 
 const HomeTasksWidget = React.memo(() => {
     const alert = useAlert();
@@ -35,12 +36,7 @@ const HomeTasksWidget = React.memo(() => {
     } = useTaskFilters(homeworksFromCache, homework);
 
     const renderItem = useCallback(
-        ({ item, index, section }: { item: Homework, index: number, section: HomeworkSection }) => {
-            if (sortMethod === 'date' && collapsedGroups.includes(section.id)) {
-                return null;
-            }
-
-            // Generate the same ID used to store homeworks in the homework object
+        ({ item, index }: { item: Homework, index: number }) => {
             const generatedId = generateId(
                 item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString()
             );
@@ -72,16 +68,15 @@ const HomeTasksWidget = React.memo(() => {
         [homework, setAsDone, collapsedGroups, sortMethod]
     );
 
-    const limitedSections = sections.slice(selectedWeek - 1, selectedWeek).map(section => ({
-        ...section,
-        data: section.data.slice(0, 5)
-    }));
+    const limitedData = sections
+        .slice(selectedWeek - 1, selectedWeek)
+        .flatMap(section => section.data.slice(0, 5));
 
     const keyExtractor = useCallback((item: Homework) => {
         return "hw:" + item.subject + item.content + item.createdByAccount + new Date(item.dueDate).toDateString();
     }, []);
 
-    if (limitedSections.length == 0) {
+    if (limitedData.length === 0) {
         return (
             <Stack
                 inline flex
@@ -102,9 +97,9 @@ const HomeTasksWidget = React.memo(() => {
     }
 
     return (
-        <SectionList
+        <LegendList
             horizontal
-            sections={limitedSections}
+            data={limitedData}
             style={styles.list}
             contentContainerStyle={{ gap: 12 }}
             keyExtractor={keyExtractor}
