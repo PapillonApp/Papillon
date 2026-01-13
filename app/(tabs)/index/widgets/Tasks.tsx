@@ -15,6 +15,7 @@ import TaskItem from '../../tasks/components/TaskItem';
 import Typography from '@/ui/components/Typography';
 import { t } from 'i18next';
 import Stack from '@/ui/components/Stack';
+import { log } from '@/utils/logger/logger';
 
 const HomeTasksWidget = React.memo(() => {
     const alert = useAlert();
@@ -99,7 +100,7 @@ const HomeTasksWidget = React.memo(() => {
 
     return (
         <SectionList
-            scrollEnabled={false}
+            horizontal
             sections={limitedSections}
             style={styles.list}
             contentContainerStyle={{ paddingHorizontal: 12 }}
