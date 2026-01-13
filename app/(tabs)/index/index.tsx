@@ -77,6 +77,8 @@ const HomeScreen = () => {
         ListHeaderComponent={<HomeHeader />}
         style={{ flex: 1 }}
 
+        showsVerticalScrollIndicator={false}
+
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,
