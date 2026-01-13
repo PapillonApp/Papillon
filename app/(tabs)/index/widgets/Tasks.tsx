@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import Reanimated from 'react-native-reanimated';
 import { useHomeworkData } from '../../tasks/hooks/useHomeworkData';
-import { HomeworkSection, useTaskFilters } from '../../tasks/hooks/useTaskFilters';
+import { useTaskFilters } from '../../tasks/hooks/useTaskFilters';
 import { useWeekSelection } from '../../tasks/hooks/useWeekSelection';
 
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -15,7 +15,6 @@ import TaskItem from '../../tasks/components/TaskItem';
 import Typography from '@/ui/components/Typography';
 import { t } from 'i18next';
 import Stack from '@/ui/components/Stack';
-import { log } from '@/utils/logger/logger';
 import { LegendList } from '@legendapp/list';
 
 const HomeTasksWidget = React.memo(() => {
