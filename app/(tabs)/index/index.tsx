@@ -11,7 +11,6 @@ import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
 import { useAccountStore } from '@/stores/account';
-import HomeAverageWidget from './widgets/Average';
 import HomeTasksWidget from './widgets/Tasks';
 import HomeTimeTableWidget from './widgets/timetable';
 import HomeGradesWidget from './widgets/Grades';
