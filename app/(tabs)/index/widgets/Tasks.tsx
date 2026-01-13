@@ -101,7 +101,7 @@ const HomeTasksWidget = React.memo(() => {
             horizontal
             data={limitedData}
             style={styles.list}
-            contentContainerStyle={{ gap: 12 }}
+            contentContainerStyle={{ paddingLeft: 12, gap: 12 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             showsHorizontalScrollIndicator={false}
