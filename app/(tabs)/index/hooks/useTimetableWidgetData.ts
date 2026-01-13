@@ -8,25 +8,30 @@ export const useTimetableWidgetData = () => {
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now);
 
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-  const account = accounts.find((a) => a.id === lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
-  const services = useMemo(() =>
-    account?.services?.map((service: { id: string }) => service.id) ?? [],
+  const services = useMemo(
+    () => account?.services?.map((service: { id: string }) => service.id) ?? [],
     [account?.services]
   );
 
   const [courses, setCourses] = useState<SharedCourse[]>([]);
 
   const timetableData = useTimetable(undefined, weekNumber);
-  const weeklyTimetable = useMemo(() =>
-    timetableData.map(day => ({
-      ...day,
-      courses: day.courses.filter(course =>
-        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
-      )
-    })).filter(day => day.courses.length > 0),
+  const weeklyTimetable = useMemo(
+    () =>
+      timetableData
+        .map(day => ({
+          ...day,
+          courses: day.courses.filter(
+            course =>
+              services.includes(course.createdByAccount) ||
+              course.createdByAccount.startsWith("ical_")
+          ),
+        }))
+        .filter(day => day.courses.length > 0),
     [timetableData, services]
   );
 
@@ -35,11 +40,24 @@ export const useTimetableWidgetData = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+      let dayCourse =
+        weeklyTimetable.find(day => {
+          const dayDate = new Date(day.date);
+
+          return (
+            dayDate.getFullYear() === today.getFullYear() &&
+            dayDate.getMonth() === today.getMonth() &&
+            dayDate.getDate() === today.getDate()
+          );
+        })?.courses ?? [];
 
       if (dayCourse.length === 0) {
         const futureDays = weeklyTimetable
-          .filter(day => day.date.getTime() > today.getTime())
+          .filter(day => {
+            const dayDate = new Date(day.date);
+            dayDate.setHours(0, 0, 0, 0);
+            return dayDate > today;
+          })
           .sort((a, b) => a.date.getTime() - b.date.getTime());
 
         if (futureDays.length > 0) {
@@ -47,9 +65,9 @@ export const useTimetableWidgetData = () => {
         }
       }
 
-      dayCourse = dayCourse.filter(course => course.to.getTime() > Date.now());
       setCourses(dayCourse);
     };
+
     fetchData();
   }, [weeklyTimetable]);
 
