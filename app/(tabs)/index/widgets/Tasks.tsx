@@ -116,6 +116,8 @@ const HomeTasksWidget = React.memo(() => {
 
 const styles = StyleSheet.create({
     list: {
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
         flex: 1,
         height: '100%',
     },
