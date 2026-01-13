@@ -40,7 +40,7 @@ const HomeTimeTableWidget = React.memo(() => {
   return (
     <LegendList
       scrollEnabled={false}
-      data={courses.slice(0, 3)}
+      data={courses}
       style={{ width: '100%', paddingHorizontal: 10 }}
       renderItem={({ item }) => (
         <Course
