@@ -165,7 +165,7 @@ const HomeGradesWidget = React.memo(() => {
             scrollEnabled={true}
             data={sortedGrades}
             style={styles.list}
-            contentContainerStyle={{ paddingBottom: 10, paddingLeft: 12, gap: 12, minHeight: 150 }}
+            contentContainerStyle={{ paddingLeft: 12, gap: 12, minHeight: 150 }}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             showsHorizontalScrollIndicator={false}
