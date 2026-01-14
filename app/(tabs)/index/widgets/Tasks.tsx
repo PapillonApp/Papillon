@@ -50,7 +50,7 @@ const HomeTasksWidget = React.memo(() => {
                     entering={PapillonAppearIn}
                     exiting={PapillonAppearOut}
                     style={{
-                        maxWidth: 320
+                        width: 320
                     }}
                 >
                     <TaskItem
