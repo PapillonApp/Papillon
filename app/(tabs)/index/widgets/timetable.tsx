@@ -12,10 +12,16 @@ import { getSubjectName } from "@/utils/subjects/name";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
 import { LegendList } from "@legendapp/list";
+import { Dynamic } from "@/ui/components/Dynamic";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useTheme } from "@react-navigation/native";
+import { Animation } from "@/ui/utils/Animation";
+import { LinearTransition } from "react-native-reanimated";
 
 const HomeTimeTableWidget = React.memo(() => {
+  const { colors } = useTheme();
   const navigation = useNavigation();
-  const { courses } = useTimetableWidgetData();
+  const { courses, isLoading } = useTimetableWidgetData();
 
   if (courses.length === 0) {
     return (
@@ -37,11 +43,34 @@ const HomeTimeTableWidget = React.memo(() => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <Dynamic
+        animated
+        layout={Animation(LinearTransition, "list")}
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+
+          minHeight: 150,
+          width: '100%'
+        }}
+      >
+        <ActivityIndicator
+          size={30}
+          strokeWidth={3}
+          color={colors.primary}
+        />
+      </Dynamic>
+    );
+  }
+
   return (
     <LegendList
       scrollEnabled={false}
       data={courses}
       style={{ width: '100%', paddingHorizontal: 10 }}
+      contentContainerStyle={{ minHeight: 150 }}
       renderItem={({ item }) => (
         <Course
           key={item.id}

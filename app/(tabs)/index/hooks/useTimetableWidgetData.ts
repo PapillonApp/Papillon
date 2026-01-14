@@ -18,6 +18,7 @@ export const useTimetableWidgetData = () => {
   );
 
   const [courses, setCourses] = useState<SharedCourse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const timetableData = useTimetable(undefined, weekNumber);
   const weeklyTimetable = useMemo(
@@ -37,6 +38,8 @@ export const useTimetableWidgetData = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -66,10 +69,12 @@ export const useTimetableWidgetData = () => {
       }
 
       setCourses(dayCourse);
+
+      setIsLoading(false);
     };
 
     fetchData();
   }, [weeklyTimetable]);
 
-  return { courses };
+  return { courses, isLoading };
 };
