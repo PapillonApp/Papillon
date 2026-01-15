@@ -136,7 +136,7 @@
 
   "Home_Widget_NextCourses": "Prochains cours",
   "Home_Widget_NewGrades": "Nouvelles notes",
-  "Home_Widget_NewHomeworks": "Tâches à faire",
+  "Home_Widget_NewHomeworks": "Tâches à venir",
 
   "Home_Widget_NoCourses": "Aucun cours à venir",
   "Home_Widget_NoCourses_Description": "Il n'y a pas de cours prévus pour aujourd'hui.",
@@ -399,7 +399,6 @@
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important",
-
 
   "OnBoarding_Step": "Étape ",
   "OnBoarding_Step_Of": "sur ",

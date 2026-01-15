@@ -52,7 +52,7 @@ const HomeScreen = () => {
     },
     {
       icon: <Papicons name={"Tasks"} />,
-      title: t("Tab_Tasks"),
+      title: t("Home_Widget_NewHomeworks"),
       redirect: "(tabs)/tasks",
       render: renderTasks
     }
