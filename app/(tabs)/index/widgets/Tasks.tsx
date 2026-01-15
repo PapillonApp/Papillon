@@ -29,8 +29,6 @@ const HomeTasksWidget = React.memo(() => {
     } = useHomeworkData(selectedWeek, alert);
 
     const {
-        sortMethod,
-        collapsedGroups,
         sections,
     } = useTaskFilters(homeworksFromCache, homework);
 
@@ -62,7 +60,7 @@ const HomeTasksWidget = React.memo(() => {
                 </Reanimated.View>
             );
         },
-        [homework, setAsDone, collapsedGroups, sortMethod]
+        [homework, setAsDone]
     );
 
     const data = React.useMemo(() => {
@@ -110,10 +108,18 @@ const HomeTasksWidget = React.memo(() => {
         <LegendList
             horizontal
             data={data}
+
             style={styles.list}
             contentContainerStyle={{ paddingLeft: 12, gap: 12 }}
+
             keyExtractor={keyExtractor}
             renderItem={renderItem}
+
+            recycleItems={true}
+            decelerationRate="normal"
+            disableIntervalMomentum={false}
+            estimatedItemSize={320}
+
             showsHorizontalScrollIndicator={false}
         />
     );

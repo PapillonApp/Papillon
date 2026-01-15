@@ -1,16 +1,14 @@
-import { Papicons } from '@getpapillon/papicons';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
 import { Period, Subject } from "@/services/shared/grade";
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
-import Icon from '@/ui/components/Icon';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
@@ -69,7 +67,7 @@ const HomeGradesWidget = React.memo(() => {
         const allGrades = subjects.flatMap((subject) => subject.grades);
         return allGrades
             .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime())
-            .slice(0, 5);
+            .slice(0, 10);
     }, [subjects]);
 
     const getSubjectById = useCallback((id: string) => {
@@ -164,10 +162,19 @@ const HomeGradesWidget = React.memo(() => {
             horizontal
             scrollEnabled={true}
             data={sortedGrades}
+
             style={styles.list}
             contentContainerStyle={{ paddingLeft: 12, gap: 12, minHeight: 150 }}
+
             keyExtractor={keyExtractor}
             renderItem={renderItem}
+
+            recycleItems={true}
+            decelerationRate="normal"
+            disableIntervalMomentum={false}
+            estimatedItemSize={210}
+            maintainVisibleContentPosition
+
             showsHorizontalScrollIndicator={false}
         />
     );

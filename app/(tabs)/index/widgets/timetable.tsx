@@ -68,12 +68,15 @@ const HomeTimeTableWidget = React.memo(() => {
   return (
     <LegendList
       scrollEnabled={false}
+
       data={courses}
+      keyExtractor={(item) => item.id}
+
       style={{ width: '100%', paddingHorizontal: 10 }}
       contentContainerStyle={{ minHeight: 150 }}
+
       renderItem={({ item }) => (
         <Course
-          key={item.id}
           id={item.id}
           name={getSubjectName(item.subject)}
           teacher={item.teacher}
