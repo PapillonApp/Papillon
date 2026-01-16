@@ -3,7 +3,7 @@ import { Client } from "@blockshub/blocksdirecte";
 
 import { warn } from "@/utils/logger/logger";
 
-import { Grade, Period, PeriodGrades, Subject } from "../shared/grade";
+import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
 
 export async function fetchEDGradePeriods(session: Client, accountId: string): Promise<Period[]> {
   try {
@@ -47,12 +47,12 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       correctionFile: undefined,
       bonus: false,
       optional: g.nonSignificatif,
-      outOf: { value: Number(g.noteSur) },
+      outOf: parseGradeValue(g.noteSur),
       coefficient: Number(g.coef),
-      studentScore: { value: Number(g.valeur) },
-      averageScore: { value: Number(g.moyenneClasse) },
-      minScore: { value: Number(g.minClasse) },
-      maxScore: { value: Number(g.maxClasse) },
+      studentScore: parseGradeValue(g.valeur),
+      averageScore: parseGradeValue(g.moyenneClasse),
+      minScore: parseGradeValue(g.minClasse),
+      maxScore: parseGradeValue(g.maxClasse),
       createdByAccount: accountId
     }))
     
@@ -60,10 +60,10 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       subjects[subject.codeMatiere] = {
         id: subject.codeMatiere,
         name: subject.discipline,
-        studentAverage: { value: Number(subject.moyenne) },
-        classAverage: { value: Number(subject.moyenneClasse) },
-        maximum: { value: Number(subject.moyenneMax) },
-        minimum: { value: Number(subject.moyenneMin) },
+        studentAverage: parseGradeValue(subject.moyenne),
+        classAverage: parseGradeValue(subject.moyenneClasse),
+        maximum: parseGradeValue(subject.moyenneMax),
+        minimum: parseGradeValue(subject.moyenneMin),
         outOf: { value: 20 },
         grades: allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
       }
@@ -75,7 +75,7 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
     return {
       studentOverall: { value: average },
       classAverage: { value: classAverage },
-      subjects: Object.values(subjects),
+      subjects: Object.values(subjects).filter(subject => subject.grades?.length),
       createdByAccount: accountId
     }
   } catch (error) {
@@ -87,4 +87,12 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       subjects: []
     }
   }
+}
+
+function parseGradeValue(value: string): GradeScore {
+  const score = parseFloat(value.replace(',', '.'));
+  if (typeof score === 'number' && !isNaN(score)) {
+    return { value: score };
+  }
+  return { value: NaN, disabled: true, status: "Inconnu" };
 }

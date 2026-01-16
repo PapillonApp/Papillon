@@ -1,4 +1,3 @@
-import { User } from "appscho";
 import { Client } from "@blockshub/blocksdirecte";
 import { User } from "appscho";
 import { Multi as MultiClient } from "esup-multi.js";
@@ -11,7 +10,6 @@ import { Client as TurboselfClient } from "turboself-api";
 import { Appscho } from "@/services/appscho";
 import { Lannion } from "@/services/lannion";
 import { LannionClient } from "@/services/lannion/module";
-import { Appscho } from "@/services/appscho";
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
 import {
