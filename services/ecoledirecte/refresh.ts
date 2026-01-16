@@ -5,7 +5,7 @@ import { Auth } from "@/stores/account/types";
 
 export async function refreshEDAccount(accountId: string, credentials: Auth): Promise<{auth: Auth, account: Client }> {
   const client = new Client();
-  const refreshed = await client.auth.refreshToken(
+  await client.auth.refreshToken(
     credentials.additionals!["username"] as string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     "E" as any,
@@ -15,15 +15,17 @@ export async function refreshEDAccount(accountId: string, credentials: Auth): Pr
     credentials.additionals!["deviceUUID"]  as string
   )
 
+  client.auth.setAccount(0);
+  const account = client.auth.getAccount()
+
   const auth: Auth = {
     additionals: {
       "username": credentials.additionals!["username"],
-      "token": refreshed.token,
+      "token": account.accessToken,
       "deviceUUID": credentials.additionals!["deviceUUID"]
     }
   }
-
-  client.auth.setAccount(0);
+  
   useAccountStore.getState().updateServiceAuthData(accountId, auth);
 
   return {

@@ -98,7 +98,7 @@ export default function EDLoginWithCredentials() {
               auth: {
                 additionals: {
                   "username": username,
-                  "token": tokens.token,
+                  "token": authentication.accessToken,
                   "cn": keys?.cn ?? "",
                   "cv": keys?.cv ?? "",
                   "deviceUUID": device
