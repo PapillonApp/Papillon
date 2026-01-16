@@ -23,25 +23,6 @@ const HomeTimeTableWidget = React.memo(() => {
   const navigation = useNavigation();
   const { courses, isLoading } = useTimetableWidgetData();
 
-  if (courses.length === 0) {
-    return (
-      <Stack
-        inline flex
-        hAlign="center"
-        vAlign="center"
-        padding={[22, 16]}
-        gap={2}
-        style={{ paddingTop: 12 }}
-      >
-        <Typography align="center" variant="title" color="text">
-          {t("Home_Widget_NoCourses")}
-        </Typography>
-        <Typography align="center" variant="body1" color="secondary">
-          {t("Home_Widget_NoCourses_Description")}
-        </Typography>
-      </Stack>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -62,6 +43,26 @@ const HomeTimeTableWidget = React.memo(() => {
           color={colors.primary}
         />
       </Dynamic>
+    );
+  }
+
+  if (courses.length === 0) {
+    return (
+      <Stack
+        inline flex
+        hAlign="center"
+        vAlign="center"
+        padding={[22, 16]}
+        gap={2}
+        style={{ paddingTop: 12 }}
+      >
+        <Typography align="center" variant="title" color="text">
+          {t("Home_Widget_NoCourses")}
+        </Typography>
+        <Typography align="center" variant="body1" color="secondary">
+          {t("Home_Widget_NoCourses_Description")}
+        </Typography>
+      </Stack>
     );
   }
 

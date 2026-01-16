@@ -114,27 +114,6 @@ const HomeGradesWidget = React.memo(() => {
 
     const keyExtractor = useCallback((item: any) => item.id, []);
 
-    if (sortedGrades.length === 0 && !loading) {
-        return (
-            <Stack
-                inline
-                flex
-                hAlign="center"
-                vAlign="center"
-                padding={[22, 16]}
-                gap={2}
-                style={{ paddingTop: 12 }}
-            >
-                <Typography align="center" variant="title" color="text">
-                    {t('Grades_Empty_Title')}
-                </Typography>
-                <Typography align="center" variant="body1" color="secondary">
-                    {t('Grades_Empty_Description')}
-                </Typography>
-            </Stack>
-        );
-    }
-
     if (loading) {
         return (
             <Dynamic
@@ -154,6 +133,27 @@ const HomeGradesWidget = React.memo(() => {
                     color={colors.primary}
                 />
             </Dynamic>
+        );
+    }
+
+    if (sortedGrades.length === 0 && !loading) {
+        return (
+            <Stack
+                inline
+                flex
+                hAlign="center"
+                vAlign="center"
+                padding={[22, 16]}
+                gap={2}
+                style={{ paddingTop: 12 }}
+            >
+                <Typography align="center" variant="title" color="text">
+                    {t('Grades_Empty_Title')}
+                </Typography>
+                <Typography align="center" variant="body1" color="secondary">
+                    {t('Grades_Empty_Description')}
+                </Typography>
+            </Stack>
         );
     }
 
