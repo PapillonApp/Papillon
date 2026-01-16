@@ -31,7 +31,7 @@ export class Appscho implements SchoolServicePlugin {
     }
   }
 
-  async getWeeklyTimetable(weekNumber: number, forceRefresh?: boolean): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date, forceRefresh?: boolean): Promise<CourseDay[]> {
     if (this.session) {
       const instanceId = String(this.authData.additionals?.["instanceId"]);
       return fetchAppschoTimetable(this.session, this.accountId, weekNumber, instanceId, forceRefresh);

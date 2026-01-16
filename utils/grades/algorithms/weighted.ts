@@ -1,18 +1,19 @@
 import { Grade } from "@/services/shared/grade";
+import { ScoreProperty } from "./helpers";
 
-const PapillonWeightedAvg = (grades: Grade[]): number => {
+const PapillonWeightedAvg = (grades: Grade[], key: ScoreProperty = "studentScore"): number => {
   let calcGradesSum = 0;
   let calcOutOfSum = 0;
 
   grades.forEach((grade) => {
     // Skip invalid grades
     if (
-      !grade.studentScore ||
-      grade.studentScore.disabled ||
-      grade.studentScore.value === null ||
-      grade.studentScore.value < 0 ||
+      !grade[key] ||
+      grade[key].disabled ||
+      grade[key].value === null ||
+      grade[key].value < 0 ||
       grade.coefficient === 0 ||
-      typeof grade.studentScore.value !== "number" ||
+      typeof grade[key].value !== "number" ||
       !grade.outOf?.value
     ) {
       return;
@@ -20,7 +21,7 @@ const PapillonWeightedAvg = (grades: Grade[]): number => {
 
     const coefficient = grade.coefficient || 1;
     const outOfValue = grade.outOf.value;
-    const gradeValue = grade.studentScore.value;
+    const gradeValue = grade[key].value;
 
     // Handle bonus grades
     if (grade.bonus) {

@@ -4,10 +4,9 @@ import { useTheme } from '@react-navigation/native';
 import { RelativePathString, UnknownInputParams } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleProp, ViewStyle } from 'react-native';
+import { Alert, StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
-import { useAlert } from '@/ui/components/AlertProvider';
 export interface SupportedService {
   name: string;
   title: string;
@@ -24,7 +23,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   const theme = useTheme();
   const { colors } = theme;
   const { t } = useTranslation()
-  const alert = useAlert();
 
   return [
     {
@@ -44,7 +42,18 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       type: "main",
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
-        redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
+        Alert.alert(
+          "🦋 École Directe est indisponible pour le moment.",
+          "Suite à des problèmes techniques, École Directe est actuellement indisponible. Nous travaillons pour résoudre ce problème et nous vous remercions de votre patience.",
+          [
+            {
+              text: "J'ai compris !",
+              onPress: () => { },
+              style: "default"
+            }
+          ]
+        )
+        //redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
       },
       variant: 'service' as const,
       color: 'light' as const,
@@ -108,6 +117,16 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
 
   return [
     {
+      name: "iut-lannion",
+      title: "IUT de Lannion",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lannion.png"),
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: './lannion/credentials' });
+      },
+    },
+    {
       name: "univ-lorraine",
       title: "Université de Lorraine",
       hasLimitedSupport: false,
@@ -144,15 +163,8 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       type: "other",
       onPress: () => { redirect({ pathname: './appscho/list' }) }
     },
+
     /*{
-      name: "iut-lannion",
-      title: "IUT de Lannion",
-      hasLimitedSupport: false,
-      image: require("@/assets/images/univ_lannion.png"),
-      type: "main",
-      onPress: () => { }
-    },
-    {
       name: "limited-functions",
       title: t("Feature_Limited"),
       hasLimitedSupport: true,
@@ -191,7 +203,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       image: require("@/assets/images/univ_paris_sorbonne.png"),
       type: "main",
       onPress: () => { }
-    }*/
+    } */
   ]
 }
 
@@ -291,7 +303,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       name: "alise",
       title: "Alise",
       hasLimitedSupport: false,
-      image: require("@/assets/images/alise.png"),
+      image: require("@/assets/images/alise.jpg"),
       type: "main",
       onPress: () => {
         redirect({ pathname: '../alise/credentials' });

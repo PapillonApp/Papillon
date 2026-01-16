@@ -64,6 +64,7 @@ export default function TabOneScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.containerContent}
       style={styles.container}
+      keyboardShouldPersistTaps="handled"
     >
       <List>
         {icalUrl.length > 0 &&
@@ -93,8 +94,8 @@ export default function TabOneScreen() {
           />
           {icalUrl.length > 0 && (
             <Trailing>
-              <AnimatedPressable>
-                <Papicons name={'Add'} onPress={handleAdd} size={24} color={'#D6502B'} disabled={!isValidUrl(icalUrl)} />
+              <AnimatedPressable onPress={handleAdd} disabled={!isValidUrl(icalUrl)}>
+                <Papicons name={'Add'} size={24} color={'#D6502B'} />
               </AnimatedPressable>
             </Trailing>
           )}

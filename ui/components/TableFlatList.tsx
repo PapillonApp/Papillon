@@ -20,8 +20,10 @@ interface SectionItem {
   type?: string;
   content?: React.ReactNode;
   title?: string;
+  titleProps?: any;
   tags?: Array<string>;
   description?: string;
+  descriptionProps?: any;
   onPress?: () => void;
   hideTitle?: boolean;
   itemProps?: PressableProps;
@@ -41,7 +43,7 @@ interface Section {
 }
 
 interface TableFlatListProps extends FlatListProps<SectionItem> {
-  sections: Array<Section>;
+  sections: Array<Section | null>;
   engine?: 'FlatList' | 'LegendList' | 'FlashList';
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never';
   style?: StyleProp<ViewStyle>;
@@ -49,7 +51,7 @@ interface TableFlatListProps extends FlatListProps<SectionItem> {
   listProps?: any;
   renderItem?: (item: SectionItem) => React.ReactNode;
   data?: Array<SectionItem>;
-  [key: string]: any;
+  ignoreHeaderHeight?: boolean;
 }
 
 const TableFlatList: React.FC<TableFlatListProps> = ({
@@ -58,14 +60,16 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   contentInsetAdjustmentBehavior = 'never',
   style = {},
   contentContainerStyle = {},
+  ignoreHeaderHeight = false,
   ...rest
 }) => {
   const theme = useTheme();
   const { colors } = theme;
-  const headerHeight = useHeaderHeight();
+  const headerHeight = ignoreHeaderHeight ? 0 : useHeaderHeight();
 
   // render section title and items in same level array
   const data = sections.reduce((acc, section) => {
+    if (!section) return acc;
     if (section.title) {
       acc.push({ type: 'title', title: section.title, icon: section.icon, papicon: section.papicon, hideTitle: section.hideTitle });
     }
@@ -133,12 +137,12 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
             </Icon>
           ) : null}
           {item.title && (
-            <Typography variant='title'>
+            <Typography variant='title' {...item.titleProps}>
               {item.title}
             </Typography>
           )}
           {item.description && !item.tags && (
-            <Typography variant="caption" color="secondary">
+            <Typography variant="body2" weight='medium' color="secondary" {...item.descriptionProps}>
               {item.description}
             </Typography>
           )}
@@ -185,7 +189,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
 
   return (
     <ListComponent
-      contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
+      contentInsetAdjustmentBehavior={ignoreHeaderHeight ? 'never' : contentInsetAdjustmentBehavior}
       style={[{
         flex: 1, height: "100%", width: "100%",
         backgroundColor: colors.background,

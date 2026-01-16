@@ -60,6 +60,7 @@ import { useAccountStore } from "@/stores/account";
 import { Account, ServiceAccount, Services } from "@/stores/account/types";
 import { error, log, warn } from "@/utils/logger/logger";
 
+import { AuthenticationError } from "../errors/AuthenticationError";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -101,10 +102,7 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        error(
-          `Failed to refresh account for service ${service.serviceId}: ${e}`,
-          "AccountManager.refreshAllAccounts"
-        );
+        throw new AuthenticationError(String(e), service)
       }
     }
 
@@ -318,16 +316,16 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
         client.getWeeklyTimetable
-          ? await client.getWeeklyTimetable(weekNumber)
+          ? await client.getWeeklyTimetable(weekNumber, date)
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache(weekNumber),
+        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
@@ -641,6 +639,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/appscho/index");
       return new module.Appscho(service.id);
+    }
+
+    if (service.serviceId === Services.LANNION) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/lannion/index");
+      return new module.Lannion(service.id);
     }
 
     error(

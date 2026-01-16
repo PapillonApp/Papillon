@@ -1,8 +1,10 @@
 import { Grade } from "@/services/shared/grade";
+import { ScoreProperty } from "./helpers";
 
-const getSubjectAverage = (
+export const getSubjectAverage = (
   subject: Grade[],
-  loop: boolean = false
+  loop: boolean = false,
+  key: ScoreProperty = "studentScore"
 ): number => {
   let calcGradesSum = 0;
   let calcOutOfSum = 0;
@@ -12,12 +14,12 @@ const getSubjectAverage = (
 
     // Skip invalid grades
     if (
-      !grade.studentScore ||
-      grade.studentScore.disabled ||
-      grade.studentScore.value === null ||
-      grade.studentScore.value < 0 ||
+      !grade[key] ||
+      grade[key].disabled ||
+      grade[key].value === null ||
+      grade[key].value < 0 ||
       grade.coefficient === 0 ||
-      typeof grade.studentScore.value !== "number" ||
+      typeof grade[key].value !== "number" ||
       !grade.outOf?.value
     ) {
       continue;
@@ -25,13 +27,13 @@ const getSubjectAverage = (
 
     const coefficient = grade.coefficient || 1;
     const outOfValue = grade.outOf.value;
-    const gradeValue = grade.studentScore.value;
+    const gradeValue = grade[key].value;
 
     // Handle optional grades
     if (grade.optional && !loop) {
       const filteredSubject = subject.filter((_, idx) => idx !== i);
-      const avgWithout = getSubjectAverage(filteredSubject, true);
-      const avgWith = getSubjectAverage(subject, true);
+      const avgWithout = getSubjectAverage(filteredSubject, true, key);
+      const avgWith = getSubjectAverage(subject, true, key);
 
       // Only keep optional grade if it improves the average
       if (avgWithout > avgWith) {
@@ -70,7 +72,7 @@ const getSubjectAverage = (
   return -1;
 };
 
-const PapillonSubjectAvg = (grades: Grade[]): number => {
+const PapillonSubjectAvg = (grades: Grade[], key: ScoreProperty = "studentScore"): number => {
   if (!grades?.length) {
     return 0;
   }
@@ -93,7 +95,7 @@ const PapillonSubjectAvg = (grades: Grade[]): number => {
 
   // Calculate average for each subject
   for (let i = 0; i < subjects.length; i++) {
-    const nAvg = getSubjectAverage(subjects[i]);
+    const nAvg = getSubjectAverage(subjects[i], false, key);
     if (nAvg !== -1) {
       countedSubjects++;
       totalAverage += nAvg;
