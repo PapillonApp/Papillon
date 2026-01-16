@@ -130,6 +130,7 @@ export default function EDLoginWithCredentials() {
         setSession(client);
         setChallengeModalVisible(true);
         setToken(e.token);
+        setIsLoggingIn(false);
       }
     }
   }
@@ -145,9 +146,13 @@ export default function EDLoginWithCredentials() {
   async function handleChallenge(index: number) {
     setChallengeModalVisible(false);
 
-    if (!session) { return }
-    const keys = await session.auth.send2FAQuestion(doubleAuthChallenge!.propositions[index], token ?? "");
-    queueMicrotask(() => void handleLogin(username, password, keys));
+    if (!session || !doubleAuthChallenge?.propositions?.[index]) { return }
+    try {
+      const keys = await session.auth.send2FAQuestion(doubleAuthChallenge.propositions[index], token ?? "");
+      queueMicrotask(() => void handleLogin(username, password, keys));
+    } catch {
+      throw new Error("2FA challenge failed");
+    }
   }
 
   function questionComponent({ item, index }: { item: string; index: number }) {

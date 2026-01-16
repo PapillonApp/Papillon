@@ -9,12 +9,11 @@ export async function fetchEDAttendance(session: Client, accountId: string): Pro
   try {
     const attendance = await session.schoollife.getSchoolLife()
     const punishments = mapEcoleDirectePunishments(attendance.sanctionsEncouragements, accountId);
-    const exemptions = mapEcoleDirectePunishments(attendance.sanctionsEncouragements, accountId);
     const absences = mapEcoleDirecteAbsences(attendance.absencesRetards, accountId);
     const delays = mapEcoleDirecteDelays(attendance.absencesRetards, accountId);
     return {
       absences: absences,
-      punishments: [...punishments, ...exemptions],
+      punishments,
       delays,
       observations: [],
       createdByAccount: accountId
@@ -33,7 +32,7 @@ export async function fetchEDAttendance(session: Client, accountId: string): Pro
 
 function mapEcoleDirecteAbsences(data: SchoolLifeAttendanceItem[], accountId: string): Absence[] {
   return data
-    .filter(item => item.typeElement !== SchoolLifeAttendanceItemType.ABSENCE)
+    .filter(item => item.typeElement === SchoolLifeAttendanceItemType.ABSENCE)
     .map(item => {
       const { start, end } = mapStringToDates(item.displayDate);
       return {
@@ -50,7 +49,7 @@ function mapEcoleDirecteAbsences(data: SchoolLifeAttendanceItem[], accountId: st
 
 function mapEcoleDirecteDelays(data: SchoolLifeAttendanceItem[], accountId: string): Delay[] {
   return data
-    .filter(item => item.typeElement !== SchoolLifeAttendanceItemType.DELAY)
+    .filter(item => item.typeElement === SchoolLifeAttendanceItemType.DELAY)
     .map(item => {
       const { start, end } = mapStringToDates(item.displayDate);
       return {
@@ -145,7 +144,7 @@ function mapStringToDates(str: string): { start: Date, end: Date } {
     return { start, end }
   }
 
-  throw error("Invalid Display Date", "mapStringToDuration");
+  throw error("Invalid Display Date", "mapStringToDates");
 }
 
 function mapStringToDuration(str: string): number | undefined {

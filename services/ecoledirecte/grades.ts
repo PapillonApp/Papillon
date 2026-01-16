@@ -69,8 +69,13 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
       }
     }
 
-    const average = grades.reduce((sum, grade) => sum + Number(grade.valeur), 0) / grades.length
-    const classAverage = Object.values(subjects).reduce((sum, subject) => sum + subject.classAverage.value, 0) / Object.keys(subjects).length
+    const average = grades.length > 0 
+      ? grades.reduce((sum, grade) => sum + Number(grade.valeur), 0) / grades.length 
+      : 0;
+    const subjectValues = Object.values(subjects);
+    const classAverage = subjectValues.length > 0 
+      ? subjectValues.reduce((sum, subject) => sum + subject.classAverage.value, 0) / subjectValues.length 
+      : 0;
 
     return {
       studentOverall: { value: average },
