@@ -28,7 +28,7 @@ HAS_XCODE := $(shell xcode-select -p 2> /dev/null)
 HAS_PODS := $(shell command -v pod 2> /dev/null)
 HAS_BREW := $(shell command -v brew 2> /dev/null)
 
-.PHONY: install
+.PHONY: install ios android start
 
 install:
 	@clear
@@ -105,18 +105,8 @@ install:
 	fi; \
 	echo ""; \
 	echo "   ✅ Dépendances installées"; \
-	if [ "$(DETECTED_OS)" = "macOS" ]; then \
-		echo ""; \
-		echo -e "   🍎 Pour lancer l'application iOS :     \033[1;36mmake ios\033[0m"; \
-	fi; \
-	echo -e "   🤖 Pour lancer l'application Android : \033[1;36mmake android\033[0m"; \
+	echo -e "   🚀 Pour lancer le serveur de développement : \033[1;36mmake start\033[0m"; \
 	echo ""
-
-ios:
-	bun run ios
-
-android:
-	bun run android
 
 start:
 	bun start
