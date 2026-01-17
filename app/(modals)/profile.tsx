@@ -100,7 +100,6 @@ export default function CustomProfileScreen() {
         style={{ height: "100%" }}
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >
-        {/* Removed `paddingTop: 20 + (Platform.OS === "android" ? height : 0)` to center */}
         <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15 }}>
           <Avatar
             size={150}
