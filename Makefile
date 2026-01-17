@@ -95,7 +95,7 @@ install:
 	echo ""; \
 	echo "   🏗️  Prébuild de l'application..."; \
 	echo "n" | bunx expo prebuild --platform all --no-install > /dev/null 2>&1 || true; \
-	git restore ios/Podfile > /dev/null 2>&1 || true; \
+	git restore ios/Podfile ios/Papillon.xcodeproj/project.pbxproj > /dev/null 2>&1 || true; \
 	echo "   ✅ Prébuild réussi"; \
 	if [ "$(DETECTED_OS)" = "macOS" ]; then \
 		echo ""; \
