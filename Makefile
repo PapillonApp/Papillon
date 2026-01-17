@@ -32,17 +32,17 @@ HAS_BREW := $(shell command -v brew 2> /dev/null)
 
 install:
 	@clear
-	@echo "\033[0;32m"
+	@echo -e "\033[0;32m"
 	@echo "    ____  ___    ____  ____  __    __    ____  _   __"
 	@echo "   / __ \/   |  / __ \/  _/ / /   / /   / __ \/ | / /"
 	@echo "  / /_/ / /| | / /_/ // /  / /   / /   / / / /  |/ / "
 	@echo " / ____/ ___ |/ ____// /  / /___/ /___/ /_/ / /|  /  "
 	@echo "/_/   /_/  |_/_/   /___/ /_____/_____/\____/_/ |_/   "
-	@echo "\033[0m"
-	@echo " \033[1;37mOS détecté : \033[1;36m$(DETECTED_OS)\033[0m"
-	@echo " \033[1;37mVersion détectée : \033[1;36m$(OS_VERSION)\033[0m"
+	@echo -e "\033[0m"
+	@echo -e " \033[1;37mOS détecté : \033[1;36m$(DETECTED_OS)\033[0m"
+	@echo -e " \033[1;37mVersion détectée : \033[1;36m$(OS_VERSION)\033[0m"
 	@echo ""
-	@echo " \033[1;34m📦 Vérification des pré-requis :\033[0m"
+	@echo -e " \033[1;34m📦 Vérification des pré-requis :\033[0m"
 	@COUNT=0; \
 	TOTAL=0; \
 	MISSING=0; \
@@ -59,7 +59,7 @@ install:
 	fi; \
 	\
 	echo ""; \
-	echo "   \033[1;33m$$COUNT/$$TOTAL pré-requis installés.\033[0m"; \
+	echo -e "   \033[1;33m$$COUNT/$$TOTAL pré-requis installés.\033[0m"; \
 	echo ""; \
 	\
 	if [ $$MISSING -gt 0 ]; then \
@@ -72,7 +72,7 @@ install:
 	echo ""; \
 	echo ""; \
 	\
-	echo " \033[1;34m📂 Vérification du projet :\033[0m"; \
+	echo -e " \033[1;34m📂 Vérification du projet :\033[0m"; \
 	echo ""; \
 	if [ -d ".git" ]; then echo "   ✅ Dépôt Git détecté"; else echo "   ❌ Pas de dépôt Git"; exit 1; fi; \
 	if [ -f "package.json" ]; then \
@@ -107,9 +107,9 @@ install:
 	echo "   ✅ Dépendances installées"; \
 	if [ "$(DETECTED_OS)" = "macOS" ]; then \
 		echo ""; \
-		echo "   🍎 Pour lancer l'application iOS :     \033[1;36mmake ios\033[0m"; \
+		echo -e "   🍎 Pour lancer l'application iOS :     \033[1;36mmake ios\033[0m"; \
 	fi; \
-	echo "   🤖 Pour lancer l'application Android : \033[1;36mmake android\033[0m"; \
+	echo -e "   🤖 Pour lancer l'application Android : \033[1;36mmake android\033[0m"; \
 	echo ""
 
 ios:
