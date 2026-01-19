@@ -103,20 +103,17 @@ export const Consent = ({ isCurrent }: { isCurrent: boolean, sliderRef: React.Re
             <Reanimated.View
               entering={FadeInDown.springify().dampingRatio(0.5).duration(1800).delay(200)}
               exiting={FadeOut.duration(800)}
-              style={{ gap: 8 }}
+              style={{ gap: 8, alignItems: 'flex-start' }}
             >
               <AlertTriangleIcon size={32} color={"white"} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }} />
-              <Typography variant="h2" weight="bold" align='left' color={adjust(colors.background, 0.1)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
+              <Typography variant="h2" weight="bold" align='left' color='white' style={{ marginBottom: 12, marginTop: 8, ...SHADOW_OVER_ANIMATED_BG }}>
                 Avant de commencer
               </Typography>
-              <Typography variant="title" align='left' weight='semibold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
-                Ton Yearbook passera en revue plusieurs aspects de ta vie scolaire.
+              <Typography variant="h4" align='left' weight='semibold' color='white' style={{ marginBottom: 8, opacity: 0.9, ...SHADOW_OVER_ANIMATED_BG }}>
+                Ton Yearbook retrace ton année : notes, vie scolaire, professeurs...
               </Typography>
-              <Typography variant="navigation" align='left' weight='bold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 2, ...SHADOW_OVER_ANIMATED_BG }}>
-                Cela concernera tes cours, tes profs, tes absences, tes retards, tes notes... Si tu ne souhaites pas voir certaines informations, nous t'invitons à ne pas continuer.
-              </Typography>
-              <Typography variant="title" align='left' weight='semibold' color={adjust(colors.background, 0.3)} style={{ marginBottom: 40, ...SHADOW_OVER_ANIMATED_BG }}>
-                Si ces sujets te posent problème, on t'invite à en parler avec un proche de confiance.
+              <Typography variant="h4" align='left' weight='medium' color='white' style={{ marginBottom: 40, opacity: 0.8, ...SHADOW_OVER_ANIMATED_BG }}>
+                Si ces sujets sont sensibles pour toi, sens-toi libre de ne pas continuer ou d'en parler à un proche.
               </Typography>
 
               {/*
