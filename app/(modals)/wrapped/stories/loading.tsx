@@ -100,8 +100,8 @@ export const Loading = ({ isCurrent, sliderRef, onFinished }: { isCurrent: boole
                 key={animationKey}
                 radius={80}
                 strokeWidth={12}
-                backgroundColor={adjust(colors.background, 0.1) + '20'}
-                fill={adjust(colors.background, 0.1)}
+                backgroundColor={'#ffffff20'}
+                fill={'white'}
                 percentageComplete={progress}
               />
               {progress >= 100 && (
@@ -109,7 +109,7 @@ export const Loading = ({ isCurrent, sliderRef, onFinished }: { isCurrent: boole
                   entering={ZoomIn.springify().dampingRatio(0.6)}
                   style={{ position: 'absolute' }}
                 >
-                  <Papicons name="Check" size={80} color={adjust(colors.background, 0.1)} />
+                  <Papicons name="Check" size={80} color={'white'} />
                 </Reanimated.View>
               )}
             </View>
@@ -124,7 +124,7 @@ export const Loading = ({ isCurrent, sliderRef, onFinished }: { isCurrent: boole
                     justifyContent: 'center',
                   }}
                   exiting={ZoomOut.duration(300)}>
-                  <Typography variant="h1" style={{ fontSize: 48, lineHeight: 48, fontVariant: ['tabular-nums'] }} weight="semibold" align='center' color={adjust(colors.background, 0.1)}>
+                  <Typography variant="h1" style={{ fontSize: 48, lineHeight: 48, fontVariant: ['tabular-nums'] }} weight="semibold" align='center' color={'white'}>
                     {progress.toFixed(0)}%
                   </Typography>
                 </Reanimated.View>
@@ -136,7 +136,7 @@ export const Loading = ({ isCurrent, sliderRef, onFinished }: { isCurrent: boole
                 entering={FadeInUp.springify()}
                 exiting={FadeOutDown.springify()}
               >
-                <Typography variant="title" align='center' color={adjust(colors.background, 0.3)} style={{ opacity: 1, minWidth: 250 }}>
+                <Typography variant="title" align='center' color={'white'} style={{ opacity: 1, minWidth: 250 }}>
                   {stepText}
                 </Typography>
               </Reanimated.View>
