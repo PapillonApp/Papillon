@@ -144,31 +144,6 @@ const WrappedView = () => {
             padding: 10
           }}
           onPress={() => {
-            navigation.navigate('(modals)/wrapped_info' as never);
-          }}
-        >
-          <Papicons name="Info" size={24} color='white' />
-        </Pressable>
-      </LiquidGlassView>
-
-      <LiquidGlassView
-        style={{
-          position: 'absolute',
-          top: insets.top + 2,
-          left: 68,
-          zIndex: 200,
-          borderRadius: 120,
-        }}
-        glassType="clear"
-        isInteractive={true}
-        glassOpacity={0.6}
-        glassTintColor={"#000"}
-      >
-        <Pressable
-          style={{
-            padding: 10
-          }}
-          onPress={() => {
             loopPlayer.muted = !loopPlayer.muted;
             setMuted(loopPlayer.muted);
           }}
