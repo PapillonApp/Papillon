@@ -1,11 +1,13 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { Github, Languages } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, ScrollView } from "react-native";
 
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
+import { useSettingsStore } from "@/stores/settings";
 import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
@@ -59,8 +61,6 @@ export const Team = [
   }
 ]
 
-import { useSettingsStore } from "@/stores/settings";
-
 export default function SettingsAbout() {
   const theme = useTheme()
 
@@ -103,13 +103,13 @@ export default function SettingsAbout() {
     {
       title: t("Settings_About_Crowdin"),
       description: t("Settings_About_Crowdin_Description"),
-      leading: <Papicons name="Crown" />,
+      leading: <Languages />,
       onPress: () => Linking.openURL('https://crowdin.com/project/papillonapp'),
     },
     {
       title: t("Settings_About_Github"),
       description: t("Settings_About_Github_Description"),
-      leading: <Papicons name="Ghost" />,
+      leading: <Github />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
   ];
