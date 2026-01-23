@@ -124,14 +124,22 @@ export default function EDLoginWithCredentials() {
         });
       }
     } catch (e) {
+      setIsLoggingIn(false);
       if (e instanceof Require2FA) {
         const questions = await client.auth.get2FAQuestion(e.token);
         setDoubleAuthChallenge(questions);
         setSession(client);
         setChallengeModalVisible(true);
         setToken(e.token);
-        setIsLoggingIn(false);
       }
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(e),
+        withoutNavbar: true,
+      });
     }
   }
 
