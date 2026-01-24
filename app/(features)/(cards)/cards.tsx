@@ -4,6 +4,7 @@ import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import { Dynamic } from "@/ui/components/Dynamic";
+import { EmptyItem } from "@/ui/components/EmptyItem";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
@@ -44,7 +45,7 @@ export default function QRCodeAndCardsPage() {
 
   return (
     <>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
         {wallets && wallets?.length > 0 ? (
           <>
             <View style={{ flexDirection: "column", position: "relative" }}>
@@ -87,24 +88,16 @@ export default function QRCodeAndCardsPage() {
           <Stack
             hAlign="center"
             vAlign="center"
-            margin={16}
-            gap={16}
+            padding={[0, 0]}
+            gap={20}
           >
-            <View
-              style={{
-                alignItems: "center"
-              }}
-            >
-              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                <Papicons name={"Card"} />
-              </Icon>
-              <Typography variant="h4" color="text" align="center">
-                {t("Settings_Cards_None_Title")}
-              </Typography>
-              <Typography variant="body2" color="secondary" align="center">
-                {t("Settings_Cards_None_Description")}
-              </Typography>
-            </View>
+            <EmptyItem
+              icon="Card"
+              title={t("Settings_Cards_None_Title")}
+              description={t("Settings_Cards_None_Description")}
+              margin={0}
+            />
+
             <Button title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
               router.dismiss();
               router.push({

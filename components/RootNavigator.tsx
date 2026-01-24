@@ -108,7 +108,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="(modals)/course"
         options={{
-          headerShown: Platform.OS === 'ios' ? false : true,
+          headerShown: Platform.OS !== 'ios',
           headerTitle: t("Modal_Course_Title"),
           headerLargeTitle: false,
           headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
@@ -172,7 +172,7 @@ export function RootNavigator() {
           headerShown: true,
           presentation: "modal",
           headerTitle: t("Profile_QRCards"),
-          headerTransparent: false,
+          headerTransparent: runsIOS26,
         }}
       />
 
@@ -182,7 +182,7 @@ export function RootNavigator() {
           headerShown: true,
           presentation: "modal",
           headerTitle: t("Profile_QRCards"),
-          headerTransparent: true,
+          headerTransparent: runsIOS26,
         }}
       />
 
