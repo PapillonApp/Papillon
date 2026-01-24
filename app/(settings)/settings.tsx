@@ -165,13 +165,12 @@ export default function SettingsIndex() {
         }
       },
       {
-        icon: <Papicons name={"User"} />,
-        title: "Services",
-        description: t('Settings_Services_Title'),
-        color: "#DD9B00",
-        disabled: true,
+        icon: <Papicons name={"Calendar"} />,
+        title: t('Settings_Personalization_Subject_Title_Card'),
+        description: t('Settings_Personalization_Subject_Description'),
+        color: "#8500dd",
         onPress: () => {
-          Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+          router.navigate("/(settings)/subject_personalization")
         }
       },
       {
