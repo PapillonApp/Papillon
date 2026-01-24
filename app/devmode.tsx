@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
@@ -15,11 +16,12 @@ import { useAlert } from "@/ui/components/AlertProvider";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
-import Stack from "@/ui/components/Stack";
+import SectionHeader from "@/ui/components/SectionHeader";
 import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
+import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
 
 export default function Devmode() {
   const accountStore = useAccountStore();
@@ -112,20 +114,14 @@ export default function Devmode() {
         </Item>
       </List>
 
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Sparkles"} size={18} />
-        </Icon>
-        <Typography>
-          Magic+
-        </Typography>
-      </Stack>
-
+      <SectionHeader
+        title="Magic+"
+        leading={
+          <Icon>
+            <Papicons name="Sparkles" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item>
@@ -262,33 +258,65 @@ export default function Devmode() {
         >
           <Typography variant="title">Reset URL Magic Model</Typography>
         </Item>
+        <Item
+          onPress={() => magicStore.clear()}
+        >
+          <Typography variant="title">Clear Magic Store</Typography>
+        </Item>
+        <Item
+          onPress={() => log(JSON.stringify(magicStoreHomework))}
+        >
+          <Typography variant="title">ConsoleLog Magic Store</Typography>
+        </Item>
 
       </List>
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Star"} size={18} />
-        </Icon>
-        <Typography>
-          Alert
-        </Typography>
-      </Stack>
+
+      <SectionHeader
+        title="Alert"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item
           onPress={() => alert.showAlert({
             title: "Connexion impossible",
-            description: "Bla Bla Bla",
+            description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
             icon: "TriangleAlert",
             color: "#D60046",
+            customButton: {
+              label: "Me reconnecter",
+              showCancelButton: true,
+              onPress: () => {
+                const lastUsedAccount = useAccountStore.getState().lastUsedAccount
+                const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+
+                // Unavailable in ED/SKolengo
+                const authUrl = badService?.auth?.additionals?.["instanceURL"] ?? ""
+                setTimeout(() => {
+                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId: badService?.id } })
+                }, 200)
+              }
+            },
             technical: String(" Error: TokenExpiredError at AuthService.validateToken (file:///app/services/auth.js:45:15) at processTicksAndRejections (node:internal/process/task_queues:96:5) at async file:///app/routes/api/user.js:10:28")
           })}
         >
           <Typography variant="title">Error Alert</Typography>
+        </Item>
+        <Item
+          onPress={() => {
+            const lastUsedAccount = useAccountStore.getState().lastUsedAccount
+            const badService = useAccountStore.getState().accounts.find(account => account.id === lastUsedAccount)?.services[0]
+            useAccountStore.getState().updateServiceAuthData(badService!.id, {
+              ...badService?.auth,
+              refreshToken: ""
+            })
+          }}
+        >
+          <Typography variant="title">Clear Auth Data</Typography>
         </Item>
         <Item>
           <Typography variant="title">Activer Alert au Login</Typography>
@@ -300,54 +328,15 @@ export default function Devmode() {
           </Trailing>
         </Item>
       </List>
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Star"} size={18} />
-        </Icon>
-        <Typography>
-          Magic Store
-        </Typography>
-      </Stack>
 
-      <List>
-        <Item
-          onPress={() => magicStore.clear()}
-        >
-          <Typography variant="title">Clear Magic Store</Typography>
-        </Item>
-        <Item
-          onPress={() => log(JSON.stringify(magicStoreHomework))}
-        >
-          <Typography variant="title">ConsoleLog Magic Store</Typography>
-        </Item>
-        <Item
-          onPress={() => resetMagicCache()}
-        >
-          <Typography variant="title">Reset Magic Cache</Typography>
-        </Item>
-      </List>
-
-      <Stack direction="horizontal" gap={10} vAlign="start" hAlign="center" style={{
-        paddingHorizontal: 6,
-        paddingVertical: 0,
-        marginBottom: 14,
-        opacity: 0.5,
-      }}>
-        <Icon>
-          <Papicons name={"Star"} size={18} />
-        </Icon>
-        <Typography>
-          Session
-        </Typography>
-      </Stack>
-
-
-
+      <SectionHeader
+        title="Session"
+        leading={
+          <Icon>
+            <Papicons name="Star" size={18} />
+          </Icon>
+        }
+      />
 
       <List>
         <Item
@@ -358,6 +347,41 @@ export default function Devmode() {
           }}
         >
           <Typography variant="title">Réinitialiser la base de données</Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="Notifications"
+        leading={
+          <Icon>
+            <Papicons name="Clock" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={() => {
+            requestPermissionsAsync();
+          }}
+        >
+          <Typography variant="title">Demander la permission</Typography>
+        </Item>
+        <Item
+          onPress={async () => {
+            const date = new Date(Date.now() + 5000);
+
+            const id = await scheduleNotificationAtDate(
+              "Papillon",
+              "Une notification programmée via Papillon arrive à l'instant!",
+              date,
+            );
+
+            Alert.alert("Une notification arrive dans 5 sec", `ID : ${id}`);
+          }}
+
+        >
+          <Typography variant="title">Programmer une notification</Typography>
         </Item>
       </List>
     </ScrollView >

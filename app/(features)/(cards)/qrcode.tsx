@@ -1,10 +1,12 @@
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import Barcode, { Format } from "@aramir/react-native-barcode";
 import { Phone } from "@getpapillon/papicons";
+import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
-import { useTranslation } from "react-i18next";
-import { Dimensions, Image, Platform, View } from "react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { Dimensions, Platform } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import QRCode from "react-native-qrcode-svg";
 import Reanimated, {
   FlipInEasyX,
   runOnJS,
@@ -12,13 +14,11 @@ import Reanimated, {
   withSpring,
   ZoomInDown,
 } from "react-native-reanimated";
+
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { BlurView } from "expo-blur";
-import Barcode, { Format } from "@aramir/react-native-barcode";
-import QRCode from "react-native-qrcode-svg";
-import { getServiceBackground } from "@/utils/services/helper";
 import { Services } from "@/stores/account/types";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
 
 export default function QRCodePage() {
 
@@ -38,7 +38,7 @@ export default function QRCodePage() {
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       translationY.value = e.translationY < 0 ? e.translationY / 10 : e.translationY;
-      if (e.translationY < 0) return;
+      if (e.translationY < 0) { return; }
       opacity.value = 1 - Math.min(Math.abs(e.translationY) / 300, 0.7);
       scale.value = 1 - Math.min(Math.abs(e.translationY) / 600, 0.4);
     })
@@ -63,7 +63,7 @@ export default function QRCodePage() {
       gesture={panGesture}
     >
       <BlurView style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? undefined : "#000" }}
-                tint={"dark"}
+        tint={"dark"}
       >
         <Reanimated.View
           entering={ZoomInDown.springify()}
@@ -77,12 +77,11 @@ export default function QRCodePage() {
             padding: 20,
           }}
         >
-
           <Reanimated.View
             style={{
-              aspectRatio: 1.54,
+              aspectRatio: 1,
               width: "100%",
-              backgroundColor: "#FFF2",
+              backgroundColor: "#FFF",
               position: "relative",
               justifyContent: "center",
               alignItems: "center",
@@ -93,40 +92,20 @@ export default function QRCodePage() {
             }}
             entering={FlipInEasyX.springify().delay(100)}
           >
-            <Image
-              source={getServiceBackground(service)}
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-                borderRadius: 25,
-                overflow: "hidden",
-              }}
-              resizeMode="cover"
-              blurRadius={100}
-            />
-            <View
-              style={{
-                padding: 15,
-                backgroundColor: "#FFF",
-                borderRadius: type === "QR" ? 15:20,
-              }}
-            >
-              {type === "QR" ? (
-                <QRCode
-                  value={qr}
-                  size={Dimensions.get("window").width * 0.4}
-                  backgroundColor={"transparent"}
-                  color={"#000"}
-                />
-              ) : (
-                <Barcode
-                  value={qr}
-                  format={type as Format}
-                  background={"transparent"}
-                />
-              )}
-            </View>
+            {type === "QR" ? (
+              <QRCode
+                value={qr}
+                size={Dimensions.get("window").width * 0.8}
+                backgroundColor={"transparent"}
+                color={"#000"}
+              />
+            ) : (
+              <Barcode
+                value={qr}
+                format={type as Format}
+                background={"transparent"}
+              />
+            )}
           </Reanimated.View>
 
           <Stack
@@ -135,13 +114,13 @@ export default function QRCodePage() {
           >
             <Phone fill={"#FFFFFF"} />
             <Typography variant="body2"
-                        align="center"
-                        color="#FFFFFF"
+              align="center"
+              color="#FFFFFF"
             >{t("Profile_Cards_Scan_Orientation")}</Typography>
           </Stack>
         </Reanimated.View>
         <OnboardingBackButton icon={"Cross"}
-                              position={"right"}
+          position={"right"}
         />
       </BlurView>
     </GestureDetector>

@@ -1,8 +1,8 @@
 import { Grade } from "@/services/shared/grade";
 
-type ScoreProperty = "studentScore" | "averageScore" | "minScore" | "maxScore";
+export type ScoreProperty = "studentScore" | "averageScore" | "minScore" | "maxScore";
 
-const getSubjectAverageByProperty = (
+export const getSubjectAverageByProperty = (
   subject: Grade[],
   property: ScoreProperty = "studentScore",
   loop: boolean = false

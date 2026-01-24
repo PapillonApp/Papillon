@@ -1,7 +1,7 @@
-/* eslint-disable camelcase */
+
+import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
 import { useTheme } from "@react-navigation/native";
 import { router } from "expo-router";
-import { checkDoubleAuth, DoubleAuthChallenge, DoubleAuthRequired, initDoubleAuth, login, Session, setAccessToken } from "pawdirecte";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -28,7 +28,6 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { error } from "@/utils/logger/logger";
 import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 170;
@@ -42,10 +41,10 @@ export default function EDLoginWithCredentials() {
   const { t } = useTranslation();
 
   const [challengeModalVisible, setChallengeModalVisible] = useState<boolean>(false);
-  const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthChallenge | null>(null);
+  const [doubleAuthChallenge, setDoubleAuthChallenge] = useState<DoubleAuthQuestions | null>(null);
 
-  const [session, setSession] = useState<Session | null>(null);
-  const [cachedPassword, setCachedPassword] = useState<string>("");
+  const [session, setSession] = useState<Client | null>(null);
+  const [token, setToken] = useState<string>();
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -78,121 +77,90 @@ export default function EDLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  const handleLogin = async (username: string, password: string, currentSession = session) => {
+  const handleLogin = async (username: string, password: string, keys?: DoubleAuthResult) => {
+    const client = new Client();
+    const device = uuid();
+    const store = useAccountStore.getState();
+
     try {
-      const store = useAccountStore.getState();
+      const tokens = await client.auth.loginUsername(username, password, keys?.cn, keys?.cv, true, device);
+      if (tokens) {
+        client.auth.setAccount(0);
+        const authentication = client.auth.getAccount();
+        const account: Account = {
+          id: device,
+          firstName: authentication.prenom,
+          lastName: authentication.nom,
+          schoolName: authentication.nomEtablissement,
+          services: [
+            {
+              id: device,
+              auth: {
+                additionals: {
+                  "username": username,
+                  "token": authentication.accessToken,
+                  "cn": keys?.cn ?? "",
+                  "cv": keys?.cv ?? "",
+                  "deviceUUID": device
+                }
+              },
+              serviceId: Services.ECOLEDIRECTE,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            },
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
 
-      if (currentSession === null) {
-        const accountID = uuid();
-        currentSession = { username, device_uuid: accountID };
-        setCachedPassword(password);
+        store.addAccount(account);
+        store.setLastUsedAccount(device);
+
+        queueMicrotask(() => {
+          router.push({
+            pathname: "../end/color",
+            params: { accountId: device },
+          });
+        });
       }
-
-      const accounts = await login(currentSession, password || cachedPassword);
-      const userAccount = accounts[0];
-
-      setAccessToken(currentSession, userAccount);
-      const account: Account = {
-        id: currentSession.device_uuid,
-        firstName: userAccount.firstName,
-        lastName: userAccount.lastName,
-        schoolName: userAccount.schoolName,
-        className: userAccount.class.short,
-        services: [
-          {
-            id: currentSession.device_uuid,
-            auth: { session: currentSession },
-            serviceId: Services.ECOLEDIRECTE,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            additionals: userAccount
-          },
-        ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      store.addAccount(account);
-      store.setLastUsedAccount(currentSession.device_uuid);
-
-      queueMicrotask(() => {
-        router.push({
-          pathname: "../end/color",
-          params: { accountId: currentSession!.device_uuid },
-        });
-      });
-    } catch (err) {
-      if (err instanceof DoubleAuthRequired) {
-        const challenge = await initDoubleAuth(currentSession!).catch((e) => {
-          alert.showAlert({
-            title: "Erreur",
-            technical: String(e)
-          })
-          return null;
-        });
-        setDoubleAuthChallenge(challenge);
-        setSession(currentSession);
+    } catch (e) {
+      setIsLoggingIn(false);
+      if (e instanceof Require2FA) {
+        const questions = await client.auth.get2FAQuestion(e.token);
+        setDoubleAuthChallenge(questions);
+        setSession(client);
         setChallengeModalVisible(true);
-        return;
+        setToken(e.token);
       }
-      if (error instanceof Error) {
-        alert.showAlert({
-          title: "Erreur d'authentification",
-          description:
-            "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
-          icon: "TriangleAlert",
-          color: "#D60046",
-          withoutNavbar: true,
-        });
-      }
-      else {
-        alert.showAlert({
-          title: "Erreur d'authentification",
-          description: "Une erreur inconnue est survenue...",
-          technical: String(err),
-          icon: "TriangleAlert",
-          color: "#D60046",
-          withoutNavbar: true,
-        });
-      }
+      alert.showAlert({
+        title: "Erreur d'authentification",
+        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+        icon: "TriangleAlert",
+        color: "#D60046",
+        technical: String(e),
+        withoutNavbar: true,
+      });
     }
   }
 
   const loginED = async () => {
     if (!username.trim() || !password.trim()) { return; }
     setIsLoggingIn(true);
-    try {
-      Keyboard.dismiss();
-      await handleLogin(username, password);
-    } catch (e) {
-
-    } finally {
-      setIsLoggingIn(false);
-    }
+    Keyboard.dismiss();
+    await handleLogin(username, password);
+    setIsLoggingIn(false);
   };
 
-  async function handleChallenge(answer: string) {
+  async function handleChallenge(index: number) {
     setChallengeModalVisible(false);
 
-    if (!session) { return }
-    const currentSession = { ...session };
-    const correct = await checkDoubleAuth(currentSession, answer)
-
-    if (!correct) {
-      alert.showAlert({
-        title: "Erreur d'authentification",
-        description:
-          "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        withoutNavbar: true,
-      });
-      setDoubleAuthChallenge(null);
-      setSession(null);
-      return;
+    if (!session || !doubleAuthChallenge?.propositions?.[index]) { return }
+    try {
+      const keys = await session.auth.send2FAQuestion(doubleAuthChallenge.propositions[index], token ?? "");
+      queueMicrotask(() => void handleLogin(username, password, keys));
+    } catch {
+      throw new Error("2FA challenge failed");
     }
-
-    queueMicrotask(() => void handleLogin("", "", currentSession));
   }
 
   function questionComponent({ item, index }: { item: string; index: number }) {
@@ -203,7 +171,7 @@ export default function EDLoginWithCredentials() {
       >
         <AnimatedPressable
           onPress={() => {
-            handleChallenge(item);
+            handleChallenge(index);
           }}
           style={{
             paddingHorizontal: 10,
@@ -309,15 +277,14 @@ export default function EDLoginWithCredentials() {
             textContentType: "password",
             onSubmitEditing: () => {
               Keyboard.dismiss();
-              if (!isLoggingIn && username.trim() && password.trim())
-                loginED();
+              if (!isLoggingIn && username.trim() && password.trim()) { loginED(); }
             },
             returnKeyType: "done",
             editable: !isLoggingIn,
           }}
         />
         <Button
-          title={isLoggingIn ? t("LOGIN_LOGINING") : t("LOGIN_BTN")}
+          title={isLoggingIn ? t("ONBOARDING_LOADING_LOGIN") : t("LOGIN_BTN")}
           style={{
             backgroundColor: (theme.dark ? theme.colors.border : "#000000") + (isLoggingIn ? "50" : "FF"),
           }}
@@ -342,7 +309,7 @@ export default function EDLoginWithCredentials() {
           step={3}
           hasReturnButton={false}
           totalSteps={3}
-          elements={doubleAuthChallenge?.answers ?? []}
+          elements={doubleAuthChallenge?.propositions ?? []}
           renderItem={questionComponent}
         />
       </Modal>

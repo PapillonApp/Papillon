@@ -6,17 +6,17 @@ import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
-  const newScreenOptions = React.useMemo(() => ({
-    ...screenOptions,
-    headerShown: false,
-    headerBackVisible: true,
-    headerTitle: '',
-    gestureEnabled: false,
-    headerTransparent: true,
-    headerTintColor: "#FFFFFF",
-    headerBackButtonDisplayMode: "minimal",
-    headerBackButtonMenuEnabled: false
-  }), []);
+    const newScreenOptions = React.useMemo(() => ({
+        ...screenOptions,
+        headerShown: false,
+        headerBackVisible: true,
+        headerTitle: '',
+        gestureEnabled: false,
+        headerTransparent: true,
+        headerTintColor: "#FFFFFF",
+        headerBackButtonDisplayMode: "minimal",
+        headerBackButtonMenuEnabled: false
+    }), []);
 
     return (
         <View style={{ flex: 1, backgroundColor: "black" }}>
@@ -63,13 +63,17 @@ export default function OnboardingLayout() {
                     options={{ ...newScreenOptions }}
                 />
                 <Stack.Screen
+                    name="university/lannion/credentials"
+                    options={{ ...newScreenOptions }}
+                />
+                <Stack.Screen
                     name="pronote/url"
                     options={{ ...newScreenOptions }}
                 />
                 <Stack.Screen
                     name="pronote/webview"
                     options={{ ...newScreenOptions }}
-                    initialParams={{ url: "" }}
+                    initialParams={{ url: "", serviceId: undefined }}
                 />
                 <Stack.Screen
                     name="pronote/credentials"
@@ -121,19 +125,19 @@ export default function OnboardingLayout() {
                     initialParams={{ ref: {} }}
                 />
                 <Stack.Screen
-                  name="university/appscho/list"
-                  options={{ ...newScreenOptions }}
-                  initialParams={{ url: "", previousPage: "map" }}
+                    name="university/appscho/list"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ url: "", previousPage: "map" }}
                 />
                 <Stack.Screen
-                  name="university/appscho/webview"
-                  options={{ ...newScreenOptions }}
-                  initialParams={{ instanceId: "" }}
+                    name="university/appscho/webview"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ instanceId: "" }}
                 />
                 <Stack.Screen
-                  name="university/appscho/credentials"
-                  options={{ ...newScreenOptions }}
-                  initialParams={{ instanceId: "" }}
+                    name="university/appscho/credentials"
+                    options={{ ...newScreenOptions }}
+                    initialParams={{ instanceId: "" }}
                 />
             </Stack>
         </View>

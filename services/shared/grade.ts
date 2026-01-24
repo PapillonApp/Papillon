@@ -5,6 +5,11 @@ export interface PeriodGrades extends GenericInterface {
   studentOverall: GradeScore;
   classAverage: GradeScore;
   subjects: Subject[];
+  modules?: Subject[];
+  rank?: GradeScore;
+  features?: {
+    [key: string]: any;
+  };
 }
 
 export interface Subject {
@@ -15,7 +20,9 @@ export interface Subject {
   maximum?: GradeScore;
   minimum?: GradeScore;
   outOf: GradeScore;
-  grades: Grade[];
+  grades?: Grade[];
+  credits?: GradeScore;
+  rank?: GradeScore;
 }
 
 export interface Grade extends GenericInterface {
@@ -23,7 +30,7 @@ export interface Grade extends GenericInterface {
   subjectId: string;
   subjectName: string;
   description: string;
-  givenAt: Date;
+  givenAt?: Date;
   subjectFile?: Attachment;
   correctionFile?: Attachment;
   bonus?: boolean;
@@ -34,10 +41,12 @@ export interface Grade extends GenericInterface {
   averageScore?: GradeScore;
   minScore?: GradeScore;
   maxScore?: GradeScore;
+  rank?: GradeScore;
 }
 
 export interface GradeScore {
   value: number;
+  outOf?: number;
   status?: string;
   disabled?: boolean;
 }

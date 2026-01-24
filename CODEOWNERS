@@ -1,9 +1,14 @@
 services/* @raphckrman
 database/* @raphckrman
 stores/* @raphckrman
-.github/* @raphckrman
+
+.github/* @ryzenixx
 
 utils/magic/* @tryon-dev
 
 ui/* @ecnivtwelve
+app/* @ecnivtwelve
+components/* @ecnivtwelve
+utils/* @ecnivtwelve
+
 ui/components/Pattern/* @godetremy

@@ -1,11 +1,9 @@
-import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View } from "react-native";
-
+import { DimensionValue, StyleSheet, Text, TextProps, TextStyle, View, StyleProp } from "react-native";
+import { useTheme } from "@react-navigation/native";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import SkeletonView from "@/ui/components/SkeletonView";
 
-// Map to actual font family names loaded in assets/fonts
 const FONT_FAMILIES = {
   regular: "regular",
   medium: "medium",
@@ -45,6 +43,17 @@ export const VARIANTS = StyleSheet.create({
     fontFamily: FONT_FAMILIES.semibold,
     lineHeight: 24,
   },
+  header: {
+    fontSize: 19,
+    fontFamily: FONT_FAMILIES.bold,
+    letterSpacing: 0.08,
+    lineHeight: 22,
+  },
+  h0: {
+    fontSize: 44,
+    fontFamily: FONT_FAMILIES.bold,
+    lineHeight: 56,
+  },
   h1: {
     fontSize: 32,
     fontFamily: FONT_FAMILIES.bold,
@@ -77,12 +86,11 @@ export const VARIANTS = StyleSheet.create({
   },
 });
 
-// Pre-computed alignment styles to avoid object creation
 const ALIGNMENT_STYLES = StyleSheet.create({
-  left: { textAlign: "left" as const },
-  center: { textAlign: "center" as const },
-  right: { textAlign: "right" as const },
-  justify: { textAlign: "justify" as const },
+  left: { textAlign: "left" },
+  center: { textAlign: "center" },
+  right: { textAlign: "right" },
+  justify: { textAlign: "justify" },
 });
 
 const WEIGHT_STYLES = StyleSheet.create({
@@ -92,11 +100,19 @@ const WEIGHT_STYLES = StyleSheet.create({
   bold: { fontFamily: FONT_FAMILIES.bold },
 });
 
-// Static color values to avoid string concatenation
 const STATIC_COLORS = {
   light: "#FFFFFF",
   danger: "#DC1400",
 } as const;
+
+const FLEX_ALIGN_MAP = {
+  left: "flex-start",
+  center: "center",
+  right: "flex-end",
+  justify: "stretch",
+} as const;
+
+const ITALIC_STYLE = { transform: [{ skewX: "-13deg" }] };
 
 export type Variant = keyof typeof VARIANTS;
 type Color = "primary" | "text" | "secondary" | "light" | "danger";
@@ -106,7 +122,7 @@ export interface TypographyProps extends TextProps {
   variant?: Variant;
   color?: Color | string;
   align?: Alignment;
-  style?: TextStyle | TextStyle[];
+  style?: StyleProp<TextStyle>;
   inline?: boolean;
   nowrap?: boolean;
   weight?: keyof typeof WEIGHT_STYLES;
@@ -116,236 +132,125 @@ export interface TypographyProps extends TextProps {
   italic?: boolean;
 }
 
-// Cache for computed color styles per theme
-const colorStyleCache = new WeakMap<Record<string, string>, Record<string, TextStyle>>();
+const arePropsEqual = (prev: TypographyProps, next: TypographyProps) => {
+  if (prev.children !== next.children) return false;
+  if (prev.variant !== next.variant) return false;
+  if (prev.color !== next.color) return false;
+  if (prev.align !== next.align) return false;
+  if (prev.weight !== next.weight) return false;
+  if (prev.italic !== next.italic) return false;
+  if (prev.inline !== next.inline) return false;
+  if (prev.nowrap !== next.nowrap) return false;
+  if (prev.skeleton !== next.skeleton) return false;
 
-// Cache for computed final styles
-const styleCache = new Map<string, TextStyle>();
+  if (prev.style === next.style) return true;
 
-const getColorsStyles = (colors: Record<string, string>): Record<string, TextStyle> => {
-  let cached = colorStyleCache.get(colors);
-  if (!cached) {
-    cached = {
-      primary: { color: colors.primary },
-      text: { color: colors.text },
-      secondary: { color: colors.text + "80" },
-      light: { color: STATIC_COLORS.light },
-      danger: { color: STATIC_COLORS.danger },
-    };
-    colorStyleCache.set(colors, cached);
+  if (Array.isArray(prev.style) && Array.isArray(next.style)) {
+    if (prev.style.length !== next.style.length) return false;
+    for (let i = 0; i < prev.style.length; i++) {
+      if (prev.style[i] !== next.style[i]) return false;
+    }
+    return true;
   }
-  return cached;
+
+  return false;
 };
 
-const Typography: React.FC<TypographyProps> = React.memo(
-  ({
-    variant = "body1",
-    color = "text",
-    align = "left",
-    inline = false,
-    nowrap = false,
-    weight,
-    style,
-    skeleton = false,
-    skeletonLines = 1,
-    skeletonWidth,
-    italic = false,
-    ...rest
-  }) => {
-    const { colors } = useTheme();
+const Typography = React.memo(({
+  variant = "body1",
+  color = "text",
+  align = "left",
+  inline = false,
+  nowrap = false,
+  weight,
+  style,
+  skeleton = false,
+  skeletonLines = 1,
+  skeletonWidth,
+  italic = false,
+  children,
+  ...rest
+}: TypographyProps) => {
+  const { colors } = useTheme();
 
-    const getStyle = (): TextStyle => {
-      return StyleSheet.flatten(style || {}) as TextStyle;
-    }
+  if (skeleton) {
+    const variantStyles = VARIANTS[variant];
+    const fontSize = variantStyles.fontSize;
+    const lineHeight = variantStyles.lineHeight;
+    const spacer = (lineHeight - fontSize) / 2;
 
-    const getFlexAlignment = () => {
-      switch (align) {
-        case "left":
-          return "flex-start";
-        case "center":
-          return "center";
-        case "right":
-          return "flex-end";
-        case "justify":
-          return "stretch";
-        default:
-          return "flex-start";
+    const skeletons = [];
+    for (let i = 0; i < skeletonLines; i++) {
+      let width: DimensionValue = "100%";
+      if (skeletonWidth !== undefined) {
+        if (typeof skeletonWidth === "number") {
+          width = skeletonWidth * (1 - (i / 5));
+        } else if (typeof skeletonWidth === "string" && skeletonWidth.endsWith("%")) {
+          const val = parseFloat(skeletonWidth);
+          width = `${val * (1 - (i / 5))}%`;
+        }
+      } else if (typeof children === "string") {
+        width = `${(children.length * 2) * (1 - (i / 5))}%`;
       }
-    }
 
-    const getFontSize = () => {
-      const flattenedStyle = getStyle();
-      return flattenedStyle.fontSize || VARIANTS[variant].fontSize;
-    }
-
-    const getLineHeight = () => {
-      const flattenedStyle = getStyle();
-      return (flattenedStyle.lineHeight || VARIANTS[variant].lineHeight) - (getFontSize() || 16);
-    }
-
-    const calculateSkeletonWidth = (index: number) => {
-      if (typeof skeletonWidth === "number") {
-        return (skeletonWidth as number) * (1 - (index / 5));
-      } else if (typeof skeletonWidth === "string" && skeletonWidth.endsWith("%")) {
-        const percentage = parseFloat(skeletonWidth) / 100;
-        return `${percentage * (1 - (index / 5)) * 100}%`;
-      }
-      if (typeof rest.children === "string") {
-        return `${(rest.children.length * 2) * (1 - (index / 5))}%`;
-      }
-      return "100%";
-    }
-
-    if (skeleton)
-      return (
-        <View {...rest} style={[{ flexDirection: "column", alignItems: getFlexAlignment() }, style]}>
-          {Array.from({ length: skeletonLines }).map((_, index) => (
-            <SkeletonView
-              key={index}
-              style={{
-                width: calculateSkeletonWidth(index),
-                minWidth: 50,
-                height: getFontSize() || 16,
-                borderRadius: 4,
-                marginTop: getLineHeight() / 2,
-                marginBottom: getLineHeight() / 2,
-              }}
-            />
-          ))}
-        </View>
+      skeletons.push(
+        <SkeletonView
+          key={i}
+          style={{
+            width,
+            minWidth: 50,
+            height: fontSize,
+            borderRadius: 4,
+            marginTop: spacer,
+            marginBottom: spacer,
+          }}
+        />
       );
-
-    // Generate cache key for this specific combination
-    const cacheKey = React.useMemo(() => {
-      const hasCustomStyle = style != null;
-      const isCustomColor = typeof color === "string" && !(color in STATIC_COLORS) &&
-        !["primary", "text", "secondary"].includes(color);
-
-      // Only cache if no custom styles or custom colors to avoid memory leaks
-      if (!hasCustomStyle && !isCustomColor) {
-        return `${variant}-${color}-${align}-${inline}-${colors.primary}-${colors.text}-${weight}-${italic}`;
-      }
-      return null;
-    }, [variant, color, align, inline, colors.primary, colors.text, style]);
-
-    const computedStyle = React.useMemo(() => {
-      // Try cache first for common cases
-      if (cacheKey) {
-        const cached = styleCache.get(cacheKey);
-        if (cached) { return cached; }
-      }
-
-      const colorStyles = getColorsStyles(colors);
-      const variantStyle = VARIANTS[variant];
-      const alignStyle = ALIGNMENT_STYLES[align];
-      const weightStyle = WEIGHT_STYLES[weight] || null;
-      const italicStyle = italic ? { transform: [{ skewX: "-13deg" }] } : {};
-
-      const inlineStyle: TextStyle = inline ? (() => {
-        let fontSize: number | undefined;
-        if (style) {
-          const flattened = Array.isArray(style) ? StyleSheet.flatten(style) : style;
-          fontSize = flattened.fontSize;
-        }
-        return {
-          lineHeight: fontSize ?? (variantStyle.fontSize ?? 1)
-        };
-      })() : {};
-
-      let colorStyle: TextStyle;
-      if (typeof color === "string" && color in colorStyles) {
-        colorStyle = colorStyles[color as Color];
-      } else if (typeof color === "string") {
-        colorStyle = { color };
-      } else {
-        colorStyle = colorStyles.text;
-      }
-
-      let finalStyle: TextStyle;
-
-      if (style) {
-        // For custom styles, merge without caching to avoid memory leaks
-        finalStyle = {
-          ...variantStyle,
-          ...alignStyle,
-          ...colorStyle,
-          ...weightStyle, // Ensure weightStyle is merged here
-          ...(Array.isArray(style) ? StyleSheet.flatten(style) : style),
-          ...inlineStyle,
-          ...italicStyle
-        };
-      } else {
-        // For common cases without custom styles, use optimized merging
-        finalStyle = {
-          ...variantStyle,
-          ...alignStyle,
-          ...colorStyle,
-          ...weightStyle, // Ensure weightStyle is merged here
-          ...inlineStyle,
-          ...italicStyle
-        };
-
-        // Cache only common cases
-        if (cacheKey) {
-          styleCache.set(cacheKey, finalStyle);
-        }
-      }
-
-      return finalStyle;
-    }, [colors, variant, color, align, style, italic, cacheKey]);
-
-    return <Text {...rest} style={computedStyle} numberOfLines={nowrap ? 1 : rest.numberOfLines} />;
-  },
-  // Custom comparison for even better performance
-  (prevProps, nextProps) => {
-    // Fast equality checks for most common props
-    if (prevProps.variant !== nextProps.variant) { return false; }
-    if (prevProps.color !== nextProps.color) { return false; }
-    if (prevProps.align !== nextProps.align) { return false; }
-    if (prevProps.children !== nextProps.children) { return false; }
-
-    // Shallow comparison for style prop
-    if (prevProps.style !== nextProps.style) {
-      if (!prevProps.style && !nextProps.style) { return true; }
-      if (!prevProps.style || !nextProps.style) { return false; }
-
-      // For array styles, do shallow comparison
-      if (Array.isArray(prevProps.style) && Array.isArray(nextProps.style)) {
-        if (prevProps.style.length !== nextProps.style.length) { return false; }
-        return prevProps.style.every((s, i) => s === (nextProps.style as TextStyle[])[i]);
-      }
-
-      // For object styles, reference equality is sufficient for performance
-      return prevProps.style === nextProps.style;
     }
 
-    // Check other TextProps that might affect rendering
-    const textPropsToCheck: (keyof TextProps)[] = [
-      'numberOfLines', 'ellipsizeMode', 'selectable', 'testID'
-    ];
-
-    return textPropsToCheck.every(prop => prevProps[prop] === nextProps[prop]);
+    return (
+      <View
+        style={[
+          style,
+          { flexDirection: "column", alignItems: FLEX_ALIGN_MAP[align] }
+        ]}
+        {...rest}
+      >
+        {skeletons}
+      </View>
+    );
   }
-);
 
-// Cache cleanup to prevent memory leaks
-const MAX_CACHE_SIZE = 1000;
-const cleanupCache = () => {
-  if (styleCache.size > MAX_CACHE_SIZE) {
-    // Keep only the most recently used half
-    const entries = Array.from(styleCache.entries());
-    styleCache.clear();
-    // Re-add the second half (most recent)
-    entries.slice(Math.floor(entries.length / 2)).forEach(([key, value]) => {
-      styleCache.set(key, value);
-    });
-  }
-};
+  const textColor =
+    color === "primary" ? colors.primary :
+      color === "text" ? colors.text :
+        color === "secondary" ? colors.text :
+          color === "light" ? STATIC_COLORS.light :
+            color === "danger" ? STATIC_COLORS.danger :
+              color;
 
-// Cleanup cache periodically
-if (typeof setInterval !== 'undefined') {
-  setInterval(cleanupCache, 30000); // Every 30 seconds
-}
+  const secondaryOpacity = color === "secondary" ? { opacity: 0.5 } : undefined;
+
+  const combinedStyle = [
+    VARIANTS[variant],
+    ALIGNMENT_STYLES[align],
+    { color: textColor },
+    secondaryOpacity,
+    weight && WEIGHT_STYLES[weight],
+    italic && ITALIC_STYLE,
+    style
+  ];
+
+  return (
+    <Text
+      {...rest}
+      style={combinedStyle}
+      numberOfLines={nowrap ? 1 : rest.numberOfLines}
+    >
+      {children}
+    </Text>
+  );
+}, arePropsEqual);
 
 Typography.displayName = "Typography";
 

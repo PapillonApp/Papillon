@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -12,8 +12,9 @@ export default function Layout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerLargeTitle: runsIOS26,
-    headerBackVisible: true,
+    headerLargeTitle: false,
+    headerTransparent: runsIOS26,
+    headerShadowVisible: false,
   }), []);
 
   return (
@@ -30,9 +31,6 @@ export default function Layout() {
         options={{
           headerTitle: t("Settings_Services_Title"),
           headerShown: true,
-          headerLargeTitle: false,
-          headerTransparent: false,
-          headerBackVisible: true,
         }}
       />
       <Stack.Screen
@@ -51,7 +49,6 @@ export default function Layout() {
           headerShown: true,
           headerTitle: t("Settings_Cards_Title"),
           headerLargeTitle: false,
-          headerTransparent: false,
           headerBackButtonDisplayMode: "minimal",
           gestureEnabled: true
         }}
@@ -78,6 +75,15 @@ export default function Layout() {
         name="subject_personalization"
         options={{
           headerTitle: t("Settings_SubjectPersonalization_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: false,
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="tabs"
+        options={{
+          headerTitle: t("Settings_Tabs_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: false,
           headerLargeTitle: false,

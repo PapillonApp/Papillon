@@ -12,6 +12,19 @@ export interface SettingsState {
   personalization: Personalization;
 }
 
+export interface Path {
+  directory: string;
+  name: string;
+}
+
+export interface Wallpaper {
+  id: string;
+  url?: string;
+  path?: Path;
+  thumbnail?: string;
+  credit?: string;
+}
+
 export interface Personalization {
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
@@ -21,4 +34,6 @@ export interface Personalization {
   showDevMode?: boolean;
   magicModelURL?: string;
   language?: string | null;
+  wallpaper?: Wallpaper;
+  disabledTabs?: string[];
 }

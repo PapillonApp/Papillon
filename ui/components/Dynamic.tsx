@@ -20,7 +20,7 @@ const APPEAR_IN = PapillonAppearIn;
 const APPEAR_OUT = PapillonAppearOut;
 
 // Pre-compute animated layout to avoid conditional computation
-const ANIMATED_LAYOUT = Animation(LinearTransition);
+const ANIMATED_LAYOUT = Animation(LinearTransition, "smooth");
 
 // Base style object to avoid recreation
 const BASE_STYLE = { flexDirection: "row" as const };
