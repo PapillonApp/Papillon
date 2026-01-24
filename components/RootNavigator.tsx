@@ -46,6 +46,19 @@ export function RootNavigator() {
       <Stack.Screen name="alert" options={ALERT_SCREEN_OPTIONS} />
 
       <Stack.Screen
+        name="(new)/task"
+        options={{
+          headerShown: false,
+          headerTitle: t("Tab_New_Task"),
+          presentation: "modal",
+          contentStyle: {
+            borderRadius: Platform.OS === 'ios' ? 30 : 0,
+            overflow: Platform.OS === 'ios' ? "hidden" : "visible",
+          },
+        }}
+      />
+
+      <Stack.Screen
         name="(modals)/wrapped"
         options={{
           headerShown: false,
