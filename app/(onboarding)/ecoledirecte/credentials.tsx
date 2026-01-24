@@ -163,14 +163,14 @@ export default function EDLoginWithCredentials() {
     }
   }
 
-  function questionComponent({ item, index }: { item: string; index: number }) {
+  function questionComponent({ item, index }: { item: unknown; index: number }) {
     return (
       <Reanimated.View
         entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
         exiting={FadeOutUp.springify().duration(400).delay(index * 80 + 150)}
       >
         <AnimatedPressable
-          onPress={() => {
+          onPressOut={() => {
             handleChallenge(index);
           }}
           style={{
@@ -199,7 +199,7 @@ export default function EDLoginWithCredentials() {
           </Stack>
           <Stack gap={0} style={{ width: "80%" }}>
             <Typography nowrap variant="title" style={{ width: "100%" }}>
-              {item}
+              {String(item)}
             </Typography>
           </Stack>
         </AnimatedPressable>
