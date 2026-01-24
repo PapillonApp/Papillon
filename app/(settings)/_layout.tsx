@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
-import { Platform } from "react-native";
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -75,6 +75,15 @@ export default function Layout() {
         name="subject_personalization"
         options={{
           headerTitle: t("Settings_SubjectPersonalization_Title"),
+          headerBackButtonDisplayMode: "minimal",
+          headerTransparent: false,
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="tabs"
+        options={{
+          headerTitle: t("Settings_Tabs_Title"),
           headerBackButtonDisplayMode: "minimal",
           headerTransparent: false,
           headerLargeTitle: false,

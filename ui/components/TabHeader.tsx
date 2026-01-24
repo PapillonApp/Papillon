@@ -22,6 +22,7 @@ interface TabHeaderProps {
   trailing?: React.ReactElement,
   bottom?: React.ReactElement,
   shouldCollapseHeader?: boolean,
+  modal?: boolean,
 };
 
 const TabHeader: React.FC<TabHeaderProps> = ({
@@ -30,11 +31,13 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   trailing,
   bottom,
   shouldCollapseHeader,
+  modal,
 }) => {
   const theme = useTheme();
   const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
+  const usedInsets = modal ? 16 : insets.top;
 
   useEffect(() => {
     onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
@@ -78,7 +81,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
 
       <View
         style={{
-          paddingTop: insets.top + 4,
+          paddingTop: usedInsets + 4,
           paddingBottom: 16,
           position: 'absolute',
           top: 0,
@@ -100,6 +103,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             flexDirection: 'row',
             gap: 16,
             paddingHorizontal: 16,
+            paddingLeft: modal ? 24 : 16,
             height: 40,
             alignItems: 'center',
             justifyContent: 'center',
