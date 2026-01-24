@@ -11,7 +11,7 @@ import Reanimated, { LinearTransition, useAnimatedStyle } from 'react-native-rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Period, Subject } from "@/services/shared/grade";
+import { GradeScore, Period, Subject } from "@/services/shared/grade";
 import ChipButton from '@/ui/components/ChipButton';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
@@ -33,6 +33,7 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import Averages from './atoms/Averages';
+import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
 
@@ -130,6 +131,7 @@ const GradesView: React.FC = () => {
 
   // Obtention des notes
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [features, setFeatures] = useState<GradeFeatures | null>(null);
   const [serviceAverage, setServiceAverage] = useState<number | null>(null);
   const [serviceRank, setServiceRank] = useState<GradeScore | null>(null);
 
@@ -137,6 +139,10 @@ const GradesView: React.FC = () => {
     setGradesLoading(true);
     if (period && managerToUse) {
       const grades = await managerToUse.getGradesForPeriod(period, period.createdByAccount);
+
+      if (grades?.features) {
+        setFeatures(grades.features);
+      }
       if (!grades || !grades.subjects) {
         setGradesLoading(false);
         return;
@@ -379,14 +385,18 @@ const GradesView: React.FC = () => {
         </Stack>
       </Dynamic>
 
-      <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
-        <Icon size={20}>
-          <Papicons name='grades' />
-        </Icon>
-        <Typography variant='h6' color='text'>
-          {t('Grades_Tab_Subjects')}
-        </Typography>
-      </Stack>
+      <FeaturesMap features={features} />
+
+      <Dynamic animated>
+        <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
+          <Icon size={20}>
+            <Papicons name='grades' />
+          </Icon>
+          <Typography variant='h6' color='text'>
+            {t('Grades_Tab_Subjects')}
+          </Typography>
+        </Stack>
+      </Dynamic>
     </View>
   ) : null), [sortedGrades, searchText]);
 
