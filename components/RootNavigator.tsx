@@ -169,7 +169,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="(features)/(cards)/cards"
         options={{
-          headerShown: true,
+          headerShown: false,
           presentation: "modal",
           headerTitle: t("Profile_QRCards"),
           headerTransparent: runsIOS26,
@@ -179,7 +179,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="(features)/(cards)/specific"
         options={{
-          headerShown: true,
+          headerShown: false,
           presentation: "modal",
           headerTitle: t("Profile_QRCards"),
           headerTransparent: runsIOS26,

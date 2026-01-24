@@ -376,6 +376,9 @@
   "Webview_Wait": "Un peu de patience...",
 
   "Profile_QRCards": "QR-Code et cartes",
+  "Profile_QRCards_Subtitle": "{{count}} carte(s)",
+  "Profile_Cards_Loading_History": "Chargement de l'historique des transactions",
+  "Profile_Cards_Loading_History_Description": "Cela peut prendre un moment...",
 
   "Settings_Cards_Banner_Title": "Cartes",
   "Settings_Cantineen_Subtitle_Card": "Cantine, accès",
