@@ -256,6 +256,62 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
                         </Trailing>
                       </Item>
                     </List>
+
+                    <List>
+                      {Object.entries(data[openedUE].saes).map(([key, value]) => (
+                        <Item key={key}>
+                          <Typography variant='title'>
+                            {key}
+                          </Typography>
+                          <Trailing>
+                            <Stack direction='horizontal' gap={8} hAlign='center'>
+                              <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0}>
+                                <Typography variant='navigation' color='text'>
+                                  {value.moyenne}
+                                </Typography>
+                                <Typography variant='body2' color="secondary">
+                                  /20
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0} padding={[8, 2]} bordered radius={8}>
+                                <Typography variant='navigation' color='text'>
+                                  x{value.coef}
+                                </Typography>
+                              </Stack>
+                            </Stack>
+                          </Trailing>
+                        </Item>
+                      ))}
+                    </List>
+
+                    <List>
+                      {Object.entries(data[openedUE].ressources).map(([key, value]) => (
+                        <Item key={key}>
+                          <Typography variant='title'>
+                            {key}
+                          </Typography>
+                          <Trailing>
+                            <Stack direction='horizontal' gap={8} hAlign='center'>
+                              <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0}>
+                                <Typography variant='navigation' color='text'>
+                                  {value.moyenne}
+                                </Typography>
+                                <Typography variant='body2' color="secondary">
+                                  /20
+                                </Typography>
+                              </Stack>
+
+                              <Stack direction='horizontal' vAlign='end' hAlign='end' gap={0} padding={[8, 2]} bordered radius={8}>
+                                <Typography variant='navigation' color='text'>
+                                  x{value.coef}
+                                </Typography>
+                              </Stack>
+                            </Stack>
+                          </Trailing>
+                        </Item>
+                      ))}
+                    </List>
                   </Stack>
                 </ScrollView>
               </>
