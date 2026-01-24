@@ -64,7 +64,7 @@ const ScodocUES: React.FC<{ data: UEMap }> = ({ data }) => {
         <Stack gap={8}>
 
           <AnimatedPressable onPress={() => setDisplayUEs(!displayUEs)} style={{ width: '100%' }}>
-            <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.6 }} padding={[10, 2]} backgroundColor={colors.text + '22'} bordered radius={12}>
+            <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.6 }} padding={[10, 2]} backgroundColor={!displayUEs ? colors.text + '22' : 'transparent'} radius={12}>
               <Icon size={20}>
                 <Papicons name='pie' />
               </Icon>
