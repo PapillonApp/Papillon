@@ -1,20 +1,18 @@
 
+import { Papicons } from '@getpapillon/papicons';
 import React from 'react';
-
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Dimensions, TouchableOpacity } from 'react-native';
+import { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
 
 import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
 import Typography from '@/ui/components/Typography';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { TouchableOpacity } from 'react-native';
-import Stack from './Stack';
-import { Dynamic } from './Dynamic';
-import { LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
+
+import { Animation } from '../utils/Animation';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import ActivityIndicator from './ActivityIndicator';
-import { Animation } from '../utils/Animation';
+import { Dynamic } from './Dynamic';
+import Icon from './Icon';
+import Stack from './Stack';
 
 export interface TabHeaderTitleProps {
   leading?: string,
@@ -63,11 +61,14 @@ const TabHeaderTitle: React.FC<TabHeaderTitleProps> = ({
             direction='horizontal'
             hAlign='center'
             gap={4}
+            style={{
+              maxWidth: Dimensions.get('window').width - 230,
+            }}
           >
             {leading &&
               typeof leading === 'string' ? (
               <Dynamic animated entering={PapillonAppearIn} exiting={PapillonAppearOut} key={"leading:" + leading.toString()}>
-                <Typography variant="header">{leading}</Typography>
+                <Typography variant="header" nowrap>{leading}</Typography>
               </Dynamic>
             ) : (
               leading
