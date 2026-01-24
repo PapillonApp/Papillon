@@ -1,14 +1,16 @@
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Stack from '@/ui/components/Stack';
-import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
-import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import WrappedBanner from './WrappedBanner';
 import { LiquidGlassContainer } from '@sbaiahmed1/react-native-blur';
+import { router } from 'expo-router';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import Stack from '@/ui/components/Stack';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+
+import HomeHeaderButton, { HomeHeaderButtonItem } from '../components/HomeHeaderButton';
+import { useHomeHeaderData } from '../hooks/useHomeHeaderData';
+import WrappedBanner from './WrappedBanner';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
@@ -86,7 +88,7 @@ const HomeHeader = () => {
         </Stack>
       </LiquidGlassContainer>
 
-      {__DEV__ && (
+      {__DEV__ && 1 === 2 && (
         <WrappedBanner />
       )}
     </View>
