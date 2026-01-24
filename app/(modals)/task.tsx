@@ -27,7 +27,6 @@ const Task = () => {
 
   const { task } = params as { task: Homework };
 
-  console.log(task);
   const subjectInfo = {
     color: getSubjectColor(task.subject),
     emoji: getSubjectEmoji(task.subject),
