@@ -1,6 +1,8 @@
 import React from 'react';
+import { View } from 'react-native';
 import Wallpaper from './atoms/Wallpaper';
 import HomeHeader from './atoms/HomeHeader';
+import ConnectionWarning from './components/ConnectionWarning';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeTopBar from './atoms/HomeTopBar';
 import HomeTimeTableWidget from './widgets/timetable';
@@ -17,6 +19,16 @@ import { checkConsent } from '@/utils/logger/consent';
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const bottomTabBarHeight = useBottomTabBarHeight();
+
+
+
+
+  // ! TEMPORARY
+  const connectionDown = true;
+
+
+
+
 
   // Account
   const accounts = useAccountStore((state) => state.accounts);
@@ -55,7 +67,16 @@ const HomeScreen = () => {
       <LegendList
         renderItem={({ item }) => <HomeWidget item={item} />}
         keyExtractor={(item) => item.title}
-        ListHeaderComponent={<HomeHeader />}
+        ListHeaderComponent={
+          <>
+            <HomeHeader />
+            {connectionDown && (
+              <View>
+                <ConnectionWarning />
+              </View>
+            )}
+          </>
+        }
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
