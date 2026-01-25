@@ -8,6 +8,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Modal,
+  Platform,
+  Pressable,
   View,
 } from "react-native";
 import Reanimated, {
@@ -31,6 +33,7 @@ import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 170;
+export const PlatformPressable = Platform.OS === 'android' ? Pressable : AnimatedPressable;
 
 export default function EDLoginWithCredentials() {
   const insets = useSafeAreaInsets();
@@ -169,8 +172,8 @@ export default function EDLoginWithCredentials() {
         entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
         exiting={FadeOutUp.springify().duration(400).delay(index * 80 + 150)}
       >
-        <AnimatedPressable
-          onPressOut={() => {
+        <PlatformPressable
+          onPress={() => {
             handleChallenge(index);
           }}
           style={{
@@ -202,7 +205,7 @@ export default function EDLoginWithCredentials() {
               {String(item)}
             </Typography>
           </Stack>
-        </AnimatedPressable>
+        </PlatformPressable>
       </Reanimated.View>
     );
   }
