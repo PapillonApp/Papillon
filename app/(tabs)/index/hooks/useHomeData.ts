@@ -30,21 +30,14 @@ export const useHomeData = () => {
       return;
     }
     const gradePeriods = await manager.getGradesPeriods();
-    const validPeriods: Period[] = [];
-    const date = new Date().getTime();
-    for (const period of gradePeriods) {
-      if (period.start.getTime() > date && period.end.getTime() > date) {
-        validPeriods.push(period);
-      }
-    }
 
     const grades: Grade[] = [];
-    const currentPeriod = getCurrentPeriod(validPeriods);
+    const currentPeriod = getCurrentPeriod(gradePeriods);
 
     if (currentPeriod) {
       const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount);
       periodGrades.subjects.forEach(subject => {
-        subject.grades.forEach(grade => {
+        subject.grades?.forEach(grade => {
           grades.push(grade);
         });
       });

@@ -9,6 +9,8 @@ const featureComponent = {
 
 
 const FeaturesMap: React.FC<{ features: Record<string, any> }> = ({ features }) => {
+  if (!features) { return null; }
+
   return (
     <View style={{ marginBottom: 16 }}>
       {Object.entries(features).map(([key, value]) => {

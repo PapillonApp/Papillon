@@ -1,6 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch } from "react-native";
@@ -29,6 +29,8 @@ export default function Devmode() {
   const settingStore = useSettingsStore(state => state.personalization)
   const mutateProperty = useSettingsStore(state => state.mutateProperty)
   const magicStore = useMagicStore()
+
+  const navigation = useNavigation()
 
   const magicStoreHomework = useMagicStore(state => state.processHomeworks)
 
@@ -382,6 +384,15 @@ export default function Devmode() {
 
         >
           <Typography variant="title">Programmer une notification</Typography>
+        </Item>
+      </List>
+      <List>
+        <Item
+          onPress={() => {
+            navigation.navigate("(new)/task")
+          }}
+        >
+          <Typography variant="title">Créer un devoirs</Typography>
         </Item>
       </List>
     </ScrollView >
