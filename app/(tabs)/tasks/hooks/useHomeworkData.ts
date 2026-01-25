@@ -5,7 +5,7 @@ import { Homework } from "@/services/shared/homework";
 import { useHomeworkForWeek, updateHomeworkIsDone } from "@/database/useHomework";
 import { generateId } from "@/utils/generateId";
 import { error } from '@/utils/logger/logger';
-import * as Haptics from "expo-haptics";
+import { notificationAsync, NotificationFeedbackType } from "expo-haptics";
 
 export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -81,7 +81,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
           }
         }));
         if (done) {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          notificationAsync(NotificationFeedbackType.Success);
         }
       }
       catch (err) {
