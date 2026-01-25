@@ -1,15 +1,15 @@
-import { Account, Session, studentTimetable, TimetableItem, TimetableItemKind } from "pawdirecte";
+import { Client, TimetableCourse, TimetableCourseType } from "@blockshub/blocksdirecte";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
 import { Course, CourseDay, CourseStatus, CourseType } from "../shared/timetable";
 
-export async function fetchEDTimetable(session: Session, account: Account, accountId: string, weekNumber: number): Promise<CourseDay[]> {
+export async function fetchEDTimetable(session: Client, accountId: string, weekNumber: number): Promise<CourseDay[]> {
   try {
     const { start, end } = getDateRangeOfWeek(weekNumber);
 
-    const timetable = (await studentTimetable(session, account, start, end)).filter(course => course.subjectShortName !== "");
+    const timetable = (await session.timetable.getTimetableBetweenDates(start, end, false)).filter(course => course.codeMatiere !== "");
     const mappedCourses = mapEcoleDirecteCourses(timetable, accountId);
     const dayMap: Record<string, Course[]> = {};
 
@@ -33,30 +33,26 @@ export async function fetchEDTimetable(session: Session, account: Account, accou
   }
 }
 
-function mapEcoleDirecteCourses(data: TimetableItem[], accountId: string): Course[] {
+function mapEcoleDirecteCourses(data: TimetableCourse[], accountId: string): Course[] {
   return data.map(item => ({
     createdByAccount: accountId,
-    subject: item.subjectName,
+    subject: item.matiere,
     id: String(item.id),
-    type: mapCourseKind(item.kind),
-    from: item.startDate,
-    to: item.endDate,
-    additionalInfo: item.notes,
-    room: item.room,
-    teacher: item.teacher,
+    type: mapCourseKind(item.typeCours),
+    from: new Date(item.start_date),
+    to: new Date(item.end_date),
+    additionalInfo: item.text,
+    room: item.salle,
+    teacher: item.prof,
     backgroundColor: item.color,
-    status: item.cancelled ? CourseStatus.CANCELED : undefined
+    status: item.isAnnule ? CourseStatus.CANCELED : undefined
   }))
 }
 
-function mapCourseKind(kind: TimetableItemKind): CourseType {
+function mapCourseKind(kind: TimetableCourseType): CourseType {
   switch (kind) {
-  case TimetableItemKind.SANCTION:
-    return CourseType.DETENTION
-  case TimetableItemKind.EVENEMENT:
+  case TimetableCourseType.PERMANENCY:
     return CourseType.ACTIVITY
-  case TimetableItemKind.CONGE:
-    return CourseType.VACATION
   default:
     return CourseType.LESSON
   }

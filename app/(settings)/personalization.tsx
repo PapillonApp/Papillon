@@ -6,7 +6,7 @@ import List from "@/ui/components/List";
 import Item, { Trailing } from "@/ui/components/Item";
 import Typography from "@/ui/components/Typography";
 import Icon from "@/ui/components/Icon";
-import { Papicons } from "@getpapillon/papicons";
+import { Papicons, PapillonApp } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { useTheme } from "@react-navigation/native";
 import AppColorsSelector from "@/components/AppColorsSelector";
@@ -202,6 +202,24 @@ const PersonalizationSettings = () => {
           </Item>
         </List>
         <List>
+          <Item
+            onPress={() => {
+              router.push("/(settings)/tabs");
+            }}
+          >
+            <Icon size={30}>
+              <Papicons name={"PapillonApp"} color="#818181" />
+            </Icon>
+            <Typography variant={"title"}>{t("Settings_Tabs_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Tabs_Description")}</Typography>
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" color="#818181" />
+              </Icon>
+            </Trailing>
+          </Item>
           <Item
             onPress={() => {
               router.push("/(settings)/language");

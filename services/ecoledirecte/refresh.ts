@@ -1,25 +1,35 @@
-import { Account, AccountKind, refresh,Session } from "pawdirecte"
+import { Client } from "@blockshub/blocksdirecte";
 
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
-import { error } from "@/utils/logger/logger";
 
-export async function refreshEDAccount(accountId: string, credentials: Auth): Promise<{auth: Auth, session: Session, account: Account }> {
-  const session = (credentials.session) as unknown as Session
-  const accounts = await refresh(session, AccountKind.Student);
+export async function refreshEDAccount(accountId: string, credentials: Auth): Promise<{auth: Auth, account: Client }> {
+  const client = new Client();
+  await client.auth.refreshToken(
+    credentials.additionals!["username"] as string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    "E" as any,
+    credentials.additionals!["token"]  as string,
+    undefined,
+    undefined,
+    credentials.additionals!["deviceUUID"]  as string
+  )
+
+  client.auth.setAccount(0);
+  const account = client.auth.getAccount()
+
   const auth: Auth = {
-    session
+    additionals: {
+      "username": credentials.additionals!["username"],
+      "token": account.accessToken,
+      "deviceUUID": credentials.additionals!["deviceUUID"]
+    }
   }
-
-  if (accounts.length === 0 ) {
-    error("This account seems to be empty")
-  }
-
+  
   useAccountStore.getState().updateServiceAuthData(accountId, auth);
 
   return {
     auth,
-    session,
-    account: accounts[0]
+    account: client
   }
 }
