@@ -1,20 +1,22 @@
-import React, { useMemo } from 'react';
-import Wallpaper from './atoms/Wallpaper';
-import HomeHeader from './atoms/HomeHeader';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HomeTopBar from './atoms/HomeTopBar';
 import { Papicons } from '@getpapillon/papicons';
-import { t } from 'i18next';
 import { LegendList } from '@legendapp/list';
-import { useHomeData } from './hooks/useHomeData';
-import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
-import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useRouter } from 'expo-router';
+import { t } from 'i18next';
+import React, { useMemo } from 'react';
+import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useAccountStore } from '@/stores/account';
+import { checkConsent } from '@/utils/logger/consent';
+
+import HomeHeader from './atoms/HomeHeader';
+import HomeTopBar from './atoms/HomeTopBar';
+import Wallpaper from './atoms/Wallpaper';
+import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
+import { useHomeData } from './hooks/useHomeData';
+import HomeGradesWidget from './widgets/Grades';
 import HomeTasksWidget from './widgets/Tasks';
 import HomeTimeTableWidget from './widgets/timetable';
-import HomeGradesWidget from './widgets/Grades';
-import { checkConsent } from '@/utils/logger/consent';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -43,8 +45,6 @@ const HomeScreen = () => {
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
   const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
 
-  // const renderAverage = React.useCallback(() => <HomeAverageWidget />, []);
-
   const data: HomeWidgetItem[] = useMemo(() => [
     {
       icon: <Papicons name={"Calendar"} />,
@@ -65,12 +65,6 @@ const HomeScreen = () => {
       render: renderTasks
     }
 
-    // {
-    //   icon: <Papicons name={"Grades"} />,
-    //   title: t("Grades_Avg_All_Title"),
-    //   redirect: "(tabs)/grades",
-    //   render: renderAverage
-    // },
   ], [renderTimeTable, renderTasks, renderGrades]);
 
   return (
