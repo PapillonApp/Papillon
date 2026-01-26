@@ -1,7 +1,6 @@
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React from 'react';
-import { FlatList } from "react-native";
 
 import { CourseStatus } from "@/services/shared/timetable";
 import Course from "@/ui/components/Course";
@@ -12,10 +11,40 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 import { getStatusText } from '../../calendar/components/CalendarDay';
+import { LegendList } from "@legendapp/list";
+import { Dynamic } from "@/ui/components/Dynamic";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
+import { useTheme } from "@react-navigation/native";
+import { Animation } from "@/ui/utils/Animation";
+import { LinearTransition } from "react-native-reanimated";
 
 const HomeTimeTableWidget = React.memo(() => {
+  const { colors } = useTheme();
   const navigation = useNavigation();
-  const { courses } = useTimetableWidgetData();
+  const { courses, isLoading } = useTimetableWidgetData();
+
+
+  if (isLoading) {
+    return (
+      <Dynamic
+        animated
+        layout={Animation(LinearTransition, "list")}
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+
+          minHeight: 150,
+          width: '100%'
+        }}
+      >
+        <ActivityIndicator
+          size={30}
+          strokeWidth={3}
+          color={colors.primary}
+        />
+      </Dynamic>
+    );
+  }
 
   if (courses.length === 0) {
     return (
@@ -38,13 +67,17 @@ const HomeTimeTableWidget = React.memo(() => {
   }
 
   return (
-    <FlatList
+    <LegendList
       scrollEnabled={false}
-      data={courses.slice(0, 3)}
+
+      data={courses}
+      keyExtractor={(item) => item.id}
+
       style={{ width: '100%', paddingHorizontal: 10 }}
+      contentContainerStyle={{ minHeight: 150 }}
+
       renderItem={({ item }) => (
         <Course
-          key={item.id}
           id={item.id}
           name={getSubjectName(item.subject)}
           teacher={item.teacher}
@@ -74,4 +107,3 @@ const HomeTimeTableWidget = React.memo(() => {
 });
 
 export default HomeTimeTableWidget;
-
