@@ -19,6 +19,7 @@ import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { authenticateWithCredentials, LannionAPI } from "@/services/lannion/module";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
+import { useSettingsStore } from "@/stores/settings";
 import { useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
@@ -117,6 +118,14 @@ export default function LannionCredentials() {
 
             store.addAccount(account);
             store.setLastUsedAccount(accountUUID);
+
+            const settingsStore = useSettingsStore.getState();
+            const disabledTabs = settingsStore.personalization.disabledTabs || [];
+            const newDisabledTabs = Array.from(new Set([...disabledTabs, "news", "tasks"]));
+
+            settingsStore.mutateProperty("personalization", {
+                disabledTabs: newDisabledTabs
+            });
 
             setIsLoggingIn(false);
 

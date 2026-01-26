@@ -1,9 +1,10 @@
-import Stack from "@/ui/components/Stack";
-import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
-import { KeyboardTypeOptions, Platform, TextInput, TextInputProps } from "react-native";
-import React from "react";
 import { useTheme } from "@react-navigation/native";
+import React from "react";
+import { KeyboardTypeOptions, Platform, TextInput, TextInputProps } from "react-native";
+
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
 
 const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputProps }: {
   placeholder: string

@@ -45,6 +45,7 @@ export default defineConfig([
       "no-unassigned-vars": "error",
       "no-unreachable-loop": "error",
       "no-useless-assignment": "error",
+      "react/display-name": "off",
       camelcase: ["error", { properties: "always" }],
       curly: "error",
       "default-case": "error",
