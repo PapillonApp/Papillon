@@ -54,7 +54,7 @@ const HomeScreen = () => {
     },
     {
       icon: <Papicons name={"Grades"} />,
-      title: t("Latest_Grades"),
+      title: t("Home_Widget_NewGrades"),
       redirect: "(tabs)/grades",
       render: renderGrades
     },

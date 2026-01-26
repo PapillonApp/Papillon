@@ -136,7 +136,7 @@
   "Home_Planned_Number": "Tu as {{number}} cours restants aujourd'hui",
 
   "Home_Widget_NextCourses": "Prochains cours",
-  "Home_Widget_NewGrades": "Nouvelles notes",
+  "Home_Widget_NewGrades": "Dernières notes",
   "Home_Widget_NewHomeworks": "Tâches à faire",
 
   "Home_Widget_NoCourses": "Aucun cours à venir",
@@ -199,7 +199,7 @@
   "Task_Show_Title": "Afficher",
   "Settings_General": "Général",
 
-  "Latest_Grades": "Dernières notes",
+  "Latest_Grades": "Nouvelles notes",
   "Grades_Search_Placeholder": "Rechercher une note, une matière",
 
   "Grades_Avg_Methods": "Méthodes de calcul",
