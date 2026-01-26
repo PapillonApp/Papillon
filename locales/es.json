@@ -107,6 +107,7 @@
   "Form_End": "Fin",
   "Confirm_DeleteEvent": "¿Estás seguro de que quieres eliminar este evento?",
   "Home_Welcome_Name": "¡Hola, {{name}}!",
+  "Home_Display_More": "Afficher plus",
   "Home_Cards_Button_Description_Plurial": "disponibles",
   "Home_Chats_Plurial": "discusiones",
   "Home_Chats_Singular": "discusión",
