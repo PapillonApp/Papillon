@@ -32,6 +32,10 @@ import { Services } from "@/stores/account/types";
 import { useTranslation } from "react-i18next";
 import { Capabilities } from "@/services/shared/types";
 import i18n from "@/utils/i18n";
+import TabHeader from "@/ui/components/TabHeader";
+import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
+import ChipButton from "@/ui/components/ChipButton";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 
 export default function QRCodeAndCardsPage() {
   const alert = useAlert();
@@ -42,7 +46,6 @@ export default function QRCodeAndCardsPage() {
 
   const theme = useTheme();
   const { colors } = theme;
-  const headerHeight = useHeaderHeight();
 
   const manager = getManager();
   const hasBookingCapacity = manager?.clientHasCapatibility(Capabilities.CANTEEN_BOOKINGS, wallet.createdByAccount)
@@ -74,9 +77,13 @@ export default function QRCodeAndCardsPage() {
     }
   }, [manager, wallet.createdByAccount]);
 
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
   const fetchHistory = useCallback(async () => {
+    setLoadingHistory(true);
     const history = await manager.getCanteenTransactionsHistory(wallet.createdByAccount);
     setHistory(history);
+    setLoadingHistory(false);
   }, [manager, wallet.createdByAccount]);
 
   const fetchBookingWeek = useCallback(async () => {
@@ -141,6 +148,8 @@ export default function QRCodeAndCardsPage() {
 
   const { t } = useTranslation();
 
+  const [headerHeight, setHeaderHeight] = useState(0);
+
   return (
     <>
       <Calendar
@@ -159,8 +168,29 @@ export default function QRCodeAndCardsPage() {
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      <ScrollView>
-        <View style={{ padding: 15, paddingTop: headerHeight, flex: 1, gap: 20 }}>
+      <TabHeader
+        modal
+        onHeightChanged={setHeaderHeight}
+        title={
+          <TabHeaderTitle
+            chevron={false}
+            leading={serviceName}
+            subtitle={(wallet.amount / 100).toFixed(2) + " " + wallet.currency}
+          />
+        }
+        trailing={
+          <ChipButton
+            single
+            icon="cross"
+            onPress={() => {
+              router.dismiss();
+            }}
+          />
+        }
+      />
+
+      <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ paddingTop: headerHeight - 12 }}>
+        <View style={{ padding: 15, flex: 1, gap: 20 }}>
           <Card index={0} service={service} wallet={wallet} disabled inSpecificView />
 
           {qrcode && (
@@ -169,14 +199,14 @@ export default function QRCodeAndCardsPage() {
               style={{
                 width: "100%",
                 backgroundColor: colors.background,
-                padding: 33,
+                paddingVertical: 18,
                 borderRadius: 25,
                 borderWidth: 1,
                 borderColor: colors.border,
               }}
             >
-              <Stack direction="horizontal" hAlign="center" vAlign="center" gap={5}>
-                <QrCode />
+              <Stack direction="horizontal" hAlign="center" vAlign="center" gap={10}>
+                <QrCode color={getServiceColor(service)} />
                 <Typography variant="h6">Afficher le QR-Code</Typography>
               </Stack>
             </AnimatedPressable>
@@ -258,7 +288,17 @@ export default function QRCodeAndCardsPage() {
             </View>
           )}
 
-
+          {loadingHistory && history.length === 0 && (
+            <Stack padding={20} hAlign="center" vAlign="center" gap={4}>
+              <ActivityIndicator size={42} />
+              <Typography align="center" variant="title" color="text" style={{ marginTop: 8 }}>
+                {t("Profile_Cards_Loading_History")}
+              </Typography>
+              <Typography align="center" variant="body2" color="secondary">
+                {t("Profile_Cards_Loading_History_Description")}
+              </Typography>
+            </Stack>
+          )}
 
           {history.length > 0 && (
             <View style={{ display: "flex", gap: 13.5 }}>
@@ -290,18 +330,6 @@ export default function QRCodeAndCardsPage() {
           )}
         </View>
       </ScrollView>
-
-      <NativeHeaderSide side="Left">
-        <NativeHeaderPressable onPress={() => router.back()}>
-          <Icon papicon opacity={0.5}>
-            <Papicons name="Cross" />
-          </Icon>
-        </NativeHeaderPressable>
-      </NativeHeaderSide>
-
-      <NativeHeaderTitle>
-        <Typography>{serviceName}</Typography>
-      </NativeHeaderTitle>
     </>
   );
 }

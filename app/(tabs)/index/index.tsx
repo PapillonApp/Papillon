@@ -14,6 +14,7 @@ import { useAccountStore } from '@/stores/account';
 import HomeTasksWidget from './widgets/Tasks';
 import HomeTimeTableWidget from './widgets/timetable';
 import HomeGradesWidget from './widgets/Grades';
+import { checkConsent } from '@/utils/logger/consent';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -26,6 +27,13 @@ const HomeScreen = () => {
   React.useEffect(() => {
     if (accounts.length === 0) {
       router.replace("/(onboarding)/welcome");
+    }
+    if (accounts.length > 0) {
+      checkConsent().then(consent => {
+        if (!consent.given) {
+          router.push("../consent");
+        }
+      });
     }
   }, [accounts.length]);
 

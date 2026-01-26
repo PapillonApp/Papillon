@@ -1,11 +1,13 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { Github, Languages } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, ScrollView } from "react-native";
 
 import SettingsHeader from "@/components/SettingsHeader";
 import packageJson from "@/package.json"
+import { useSettingsStore } from "@/stores/settings";
 import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
@@ -14,7 +16,7 @@ import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { Contributor, getContributors } from "@/utils/github/contributors";
 
-export const Teams = [
+export const Team = [
   {
     title: "Vince Linise",
     description: "Président",
@@ -59,11 +61,8 @@ export const Teams = [
   }
 ]
 
-import { useSettingsStore } from "@/stores/settings";
-
 export default function SettingsAbout() {
   const theme = useTheme()
-  const { colors } = theme
 
   const { t } = useTranslation();
   const settingsStore = useSettingsStore(state => state.personalization);
@@ -71,7 +70,7 @@ export default function SettingsAbout() {
 
   const [contributors, setContributors] = useState<Contributor[]>([])
   const fetchContributors = async () => {
-    const fethedContributors = (await getContributors()).filter(contrib => !Teams.map(item => item.login).includes(contrib.login))
+    const fethedContributors = (await getContributors()).filter(contrib => !Team.map(item => item.login).includes(contrib.login))
     setContributors(fethedContributors)
   }
 
@@ -79,7 +78,7 @@ export default function SettingsAbout() {
     fetchContributors()
   }, [])
 
-  const Items = [
+  const CommunityLinks = [
     {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
@@ -93,9 +92,24 @@ export default function SettingsAbout() {
       onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
     },
     {
+      title: t("Settings_About_Issue"),
+      description: t("Settings_About_Issue_Description"),
+      leading: <Papicons name="Info" />,
+      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+    },
+  ];
+
+  const DeveloperLinks = [
+    {
+      title: t("Settings_About_Crowdin"),
+      description: t("Settings_About_Crowdin_Description"),
+      leading: <Languages />,
+      onPress: () => Linking.openURL('https://crowdin.com/project/papillonapp'),
+    },
+    {
       title: t("Settings_About_Github"),
       description: t("Settings_About_Github_Description"),
-      leading: <Papicons name="Ghost" />,
+      leading: <Github />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
     },
   ];
@@ -104,8 +118,10 @@ export default function SettingsAbout() {
 
   const handleVersionTap = () => {
     setTapCount(prev => prev + 1);
+
     if (tapCount + 1 >= 8) {
       setTapCount(0);
+
       if (settingsStore.showDevMode) {
         Alert.alert("Dev Mode", "Dev mode désactivé!");
         mutateProperty("personalization", { showDevMode: false });
@@ -132,8 +148,9 @@ export default function SettingsAbout() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: 20, gap: 20 }}
+      contentContainerStyle={{ padding: 20, gap: 10 }}
       contentInsetAdjustmentBehavior="always"
+      showsVerticalScrollIndicator={false}
     >
       <SettingsHeader
         color={theme.dark ? "#121e2a" : "#dfebf7"}
@@ -143,8 +160,9 @@ export default function SettingsAbout() {
         disableMargin
         height={270}
       />
+
       <List>
-        {Teams.map((item, index) => (
+        {Team.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
@@ -154,12 +172,15 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
+
             <Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
@@ -168,8 +189,9 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
       <List>
-        {Items.map((item, index) => (
+        {CommunityLinks.map((item, index) => (
           <Item
             key={index}
             onPress={item.onPress}
@@ -179,12 +201,15 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
+
             <Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
@@ -193,17 +218,49 @@ export default function SettingsAbout() {
           </Item>
         ))}
       </List>
+
+      <List>
+        {DeveloperLinks.map((item, index) => (
+          <Item
+            key={index}
+            onPress={item.onPress}
+          >
+            <Leading>
+              <Icon>
+                {item.leading}
+              </Icon>
+            </Leading>
+
+            <Typography variant="title">
+              {item.title}
+            </Typography>
+
+            <Typography variant="caption" color="secondary">
+              {item.description}
+            </Typography>
+
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" />
+              </Icon>
+            </Trailing>
+          </Item>
+        ))}
+      </List>
+
       <List>
         {contributors.map(item => (
           <Item key={item.login} onPress={() => Linking.openURL(item.html_url)}>
             <Leading>
               <Avatar size={40} shape="square" initials={getInitials(item.login)} imageUrl={item.avatar_url} />
             </Leading>
+
             <Typography>{item.login}</Typography>
-            <Typography color="secondary">{item.contributions} contributions</Typography>
+            <Typography color="secondary">{item.contributions} {item.contributions > 1 ? "contributions" : "contribution"}</Typography>
           </Item>
         ))}
       </List>
+
       <List>
         {Infos.map((item, index) => (
           <Item
@@ -215,15 +272,18 @@ export default function SettingsAbout() {
                 {item.leading}
               </Icon>
             </Leading>
+
             <Typography variant="title">
               {item.title}
             </Typography>
+
             <Typography variant="caption" color="secondary">
               {item.description}
             </Typography>
           </Item>
         ))}
       </List>
+
     </ScrollView>
   );
 }
