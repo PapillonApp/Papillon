@@ -55,6 +55,7 @@ const HomeTasksWidget = React.memo(() => {
                         item={source}
                         index={index}
                         fromCache={fromCache}
+                        showCompletedButton={false}
                         setAsDone={setAsDone}
                     />
                 </Reanimated.View>
