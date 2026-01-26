@@ -1,16 +1,18 @@
-import Stack from "@/ui/components/Stack";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import Typography from "@/ui/components/Typography";
-import { CompactGrade } from "@/ui/components/CompactGrade";
-import { Alert, Dimensions, ScrollView, View, Platform } from "react-native";
-import OnboardingInput from "@/components/onboarding/OnboardingInput";
-import { Colors } from "@/utils/subjects/colors";
-import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { useAccountStore } from "@/stores/account";
+import React, { useState } from "react";
+import { Dimensions, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import EmojiPicker, { fr } from 'rn-emoji-keyboard';
+
+import OnboardingInput from "@/components/onboarding/OnboardingInput";
+import { useAccountStore } from "@/stores/account";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { CompactGrade } from "@/ui/components/CompactGrade";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import { Colors } from "@/utils/subjects/colors";
 
 export default function EditSubject() {
   const { colors } = useTheme();
@@ -21,6 +23,7 @@ export default function EditSubject() {
   const [selectedName, setSelectedName] = useState<string>(String(params.name));
   const [selectedColor, setSelectedColor] = useState<string>(Colors.find(c => c === String(params.color)) || Colors[0]);
   const [selectedEmoji, setSelectedEmoji] = useState<string>(String(params.emoji));
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
   const AvailableEmojis = [
     "📖",
@@ -39,7 +42,7 @@ export default function EditSubject() {
       style={{
         flex: 1,
         paddingTop: Platform.OS === 'android' ? insets.top : 0,
-       }}
+      }}
     >
       <Stack
         padding={15}
@@ -57,8 +60,8 @@ export default function EditSubject() {
           }}
         >
           <Papicons name={"Cross"}
-                    size={25}
-                    color={colors.text + "7F"}
+            size={25}
+            color={colors.text + "7F"}
           />
         </AnimatedPressable>
         <Typography variant={"title"}>Modifier la matière</Typography>
@@ -79,8 +82,8 @@ export default function EditSubject() {
           }}
         >
           <Papicons name={"Check"}
-                    size={25}
-                    color={"#FFF"}
+            size={25}
+            color={"#FFF"}
           />
         </AnimatedPressable>
       </Stack>
@@ -103,13 +106,13 @@ export default function EditSubject() {
         gap={10}
       >
         <Stack gap={5}
-               direction={"horizontal"}
-               hAlign={"center"}
-               style={{ paddingHorizontal: 16, marginTop: 20 }}
+          direction={"horizontal"}
+          hAlign={"center"}
+          style={{ paddingHorizontal: 16, marginTop: 20 }}
         >
           <Papicons name={"Font"}
-                    color={colors.text + "7F"}
-                    size={18}
+            color={colors.text + "7F"}
+            size={18}
           />
           <Typography color="secondary">Nom de la matière</Typography>
         </Stack>
@@ -123,13 +126,13 @@ export default function EditSubject() {
           />
         </Stack>
         <Stack gap={5}
-               direction={"horizontal"}
-               hAlign={"center"}
-               style={{ paddingHorizontal: 16 }}
+          direction={"horizontal"}
+          hAlign={"center"}
+          style={{ paddingHorizontal: 16 }}
         >
           <Papicons name={"Palette"}
-                    color={colors.text + "7F"}
-                    size={18}
+            color={colors.text + "7F"}
+            size={18}
           />
           <Typography color="secondary">Couleur</Typography>
         </Stack>
@@ -161,20 +164,20 @@ export default function EditSubject() {
             >
               {selectedColor === color && (
                 <Papicons name={"Check"}
-                          color={"#FFF"}
+                  color={"#FFF"}
                 />
               )}
             </AnimatedPressable>
           ))}
         </ScrollView>
         <Stack gap={5}
-               direction={"horizontal"}
-               hAlign={"center"}
-               style={{ paddingHorizontal: 16 }}
+          direction={"horizontal"}
+          hAlign={"center"}
+          style={{ paddingHorizontal: 16 }}
         >
           <Papicons name={"Emoji"}
-                    color={colors.text + "7F"}
-                    size={18}
+            color={colors.text + "7F"}
+            size={18}
           />
           <Typography color="secondary">Emoji</Typography>
         </Stack>
@@ -222,14 +225,7 @@ export default function EditSubject() {
               }}
               onPress={() => {
                 if (emoji === "custom") {
-                  Alert.prompt("Emoji personnalisé", "Entre un emoji personnalisé pour cette matière (ex: 🧪)", (text) => {
-                    var regexp = /((\ud83c[\udde6-\uddff]){2}|([#*0-9]\u20e3)|(\u00a9|\u00ae|[\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])((\ud83c[\udffb-\udfff])?(\ud83e[\uddb0-\uddb3])?(\ufe0f?\u200d([\u2000-\u3300]|[\ud83c-\ud83e][\ud000-\udfff])\ufe0f?)?)*)/g;
-                    const emojiMatch = text.match(regexp);
-                    if (emojiMatch) {
-                      emoji = emojiMatch[emojiMatch.length - 1];
-                      setSelectedEmoji(emoji)
-                    }
-                  });
+                  setIsEmojiPickerOpen(true);
                 }
                 else {
                   setSelectedEmoji(emoji)
@@ -237,21 +233,53 @@ export default function EditSubject() {
               }}
             >
               {emoji === "custom" ? (
-                  <Papicons name={"Emoji"} color={colors.text + "7F"} size={25} />
-                ) : (
-                  <Typography
-                    style={{
-                      fontSize: 25,
-                      lineHeight: 32,
-                    }}
-                  >
-                    {emoji}
-                  </Typography>
-                )}
+                <Papicons name={"Emoji"} color={colors.text + "7F"} size={25} />
+              ) : (
+                <Typography
+                  style={{
+                    fontSize: 25,
+                    lineHeight: 32,
+                  }}
+                >
+                  {emoji}
+                </Typography>
+              )}
             </AnimatedPressable>
           ))}
         </ScrollView>
       </Stack>
+
+      <EmojiPicker
+        onEmojiSelected={(emojiObject) => {
+          setSelectedEmoji(emojiObject.emoji);
+          setIsEmojiPickerOpen(false);
+        }}
+        open={isEmojiPickerOpen}
+        onClose={() => setIsEmojiPickerOpen(false)}
+        translation={fr}
+        categoryPosition="bottom"
+        emojiSize={48}
+        expandable={false}
+        defaultHeight="80%"
+        styles={{
+          header: {
+            fontFamily: "bold",
+          },
+        }}
+        theme={{
+          backdrop: '#00000055',
+          knob: "transparent",
+          container: colors.background,
+          header: colors.text,
+          skinTonesContainer: colors.card,
+          category: {
+            icon: colors.text,
+            iconActive: colors.primary,
+            container: colors.background,
+            containerActive: colors.primary + "20",
+          },
+        }}
+      />
     </View>
   );
 };
