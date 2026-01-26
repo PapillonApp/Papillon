@@ -107,6 +107,7 @@
   "Form_End": "Son",
   "Confirm_DeleteEvent": "Bu etkinliği silmeye emin misin ?",
   "Home_Welcome_Name": "Merhaba, {{name}} !",
+  "Home_Display_More": "Afficher plus",
   "Home_Cards_Button_Description_Plurial": "mevcut",
   "Home_Chats_Plurial": "tartışmalar",
   "Home_Chats_Singular": "tartışma",
