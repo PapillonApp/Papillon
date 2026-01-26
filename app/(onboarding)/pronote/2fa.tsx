@@ -1,20 +1,22 @@
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import Icon from "@/ui/components/Icon";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import * as Device from "expo-device"
+import { router } from "expo-router";
 import { finishLoginManually, SecurityError, securitySave, securitySource, SessionHandle } from "pawnote";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";
-import Reanimated from "react-native-reanimated"
-import * as Device from "expo-device"
-import { Services } from "@/stores/account/types";
-import { useAccountStore } from "@/stores/account";
-import { router } from "expo-router";
-import { useAlert } from "@/ui/components/AlertProvider";
 import { ScrollView } from "react-native-gesture-handler";
+import Reanimated from "react-native-reanimated"
+
+import { useAccountStore } from "@/stores/account";
+import { Services } from "@/stores/account/types";
+import { useAlert } from "@/ui/components/AlertProvider";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+
+import { PlatformPressable } from "../ecoledirecte/credentials";
 
 export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallengeModalVisible, deviceId }: { doubleAuthSession: SessionHandle | null, doubleAuthError: SecurityError | null, setChallengeModalVisible: (visible: boolean) => void, deviceId: string }) {
   const { t } = useTranslation();
@@ -25,7 +27,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
 
   const solveDoubleAuth = async (pinCode: string) => {
     try {
-      if (!doubleAuthSession || !doubleAuthError) return;
+      if (!doubleAuthSession || !doubleAuthError) { return; }
 
       const error = doubleAuthError
       const session = doubleAuthSession
@@ -178,14 +180,14 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       onPress: () => {
         solveDoubleAuth(pinCode);
 
-        if (!doubleAuthSession || !doubleAuthError || pinCode.length < 4) return;
+        if (!doubleAuthSession || !doubleAuthError || pinCode.length < 4) { return; }
         setChallengeModalVisible(false);
       }
     }
   ]
 
   const renderItem = useCallback(({ item }: { item: typeof data[0] }) => (
-    <AnimatedPressable
+    <PlatformPressable
       onPress={item.onPress}
       style={{
         width: 80,
@@ -197,7 +199,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
         borderRadius: 100
       }}>
       {!item.icon ? (<Typography variant="h1">{item.name}</Typography>) : (item.icon)}
-    </AnimatedPressable>
+    </PlatformPressable>
   ), [data]);
 
   return (
