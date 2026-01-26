@@ -1,6 +1,7 @@
 import React from 'react';
 import Stack from '@/ui/components/Stack';
 import Icon from '@/ui/components/Icon';
+import { t } from 'i18next';
 import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
@@ -42,7 +43,7 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
           >
             <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
               <Typography variant="body2" color="secondary" inline>
-                {item.buttonLabel ?? "Afficher plus"}
+                {t('Home_Display_More',)}
               </Typography>
               <Icon size={20} papicon opacity={0.5}>
                 <Papicons name={"ArrowRightUp"} />
