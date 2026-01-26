@@ -107,6 +107,7 @@
   "Form_End": "End",
   "Confirm_DeleteEvent": "Are you sure you want to delete this event?",
   "Home_Welcome_Name": "Hello, {{name}} {{emoji}}",
+  "Home_Display_More": "Display more",
   "Home_Cards_Button_Description_Plurial": "available",
   "Home_Chats_Plurial": "chats",
   "Home_Chats_Singular": "chat",
