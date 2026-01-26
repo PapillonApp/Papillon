@@ -39,9 +39,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install deps
-        run: npm install --legacy-peer-deps || true
-
       - name: Create and Push Tag
         run: |
           VERSION=$(node -p "require('./package.json').version")
@@ -53,6 +50,9 @@ jobs:
           
           git tag $TAG
           git push origin $TAG
+
+      - name: Install deps
+        run: npm install --legacy-peer-deps || true
 
       - name: Prebuild Android
         run: npx expo prebuild --platform android --clean
