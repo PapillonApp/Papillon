@@ -96,10 +96,10 @@ const HomeTasksWidget = React.memo(() => {
                 style={{ paddingTop: 12 }}
             >
                 <Typography align="center" variant="title" color="text">
-                    {t("Tasks_NoTasks_Title")}
+                    {t("Home_Widget_NoTasks")}
                 </Typography>
                 <Typography align="center" variant="body1" color="secondary">
-                    {t("Tasks_NoTasks_Description")}
+                    {t("Home_Widget_NoTasks_Description")}
                 </Typography>
             </Stack>
         );

@@ -142,6 +142,9 @@
   "Home_Widget_NoCourses": "Aucun cours à venir",
   "Home_Widget_NoCourses_Description": "Il n'y a pas de cours prévus pour aujourd'hui.",
 
+  "Home_Widget_NoTasks": "Aucune tâche pour demain",
+  "Home_Widget_NoTasks_Description": "Tu n'as pas de tâches prévues pour demain.",
+
   "Home_Cards_Button_Title": "Cartes",
   "Home_Cards_Button_Description_None": "Aucune carte",
   "Home_Cards_Button_Description_Singular": "Une carte",
