@@ -107,6 +107,7 @@
   "Form_End": "Ende",
   "Confirm_DeleteEvent": "Möchtest du diese Event wirklich löschen?",
   "Home_Welcome_Name": "Hallo, {{name}} {{emoji}}",
+  "Home_Display_More": "Afficher plus",
   "Home_Cards_Button_Description_Plurial": "Verfügbar",
   "Home_Chats_Plurial": "Gespräche",
   "Home_Chats_Singular": "Gespräch",
