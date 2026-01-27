@@ -6,7 +6,7 @@ import { KeyboardTypeOptions, Platform, TextInput, TextInputProps } from "react-
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 
-const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputProps, keyboardType }: {
+const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputProps }: {
   placeholder: string
   text: string
   setText: (text: string) => void
@@ -14,7 +14,6 @@ const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputPr
   isPassword?: boolean
   keyboardType?: KeyboardTypeOptions
   inputProps: TextInputProps
-  keyBoardType?: KeyboardTypeOptions
 }) => {
   const { colors, dark } = useTheme();
 
@@ -56,7 +55,7 @@ const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputPr
             flex: 1,
           }}
           secureTextEntry={isPassword ?? false}
-          keyboardType={keyboardType}
+          keyboardType={"default"}
           {...inputProps}
         />
       </Stack>
