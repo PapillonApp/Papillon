@@ -6,6 +6,7 @@ import React from 'react';
 import { LinearTransition } from "react-native-reanimated";
 
 import { CourseStatus } from "@/services/shared/timetable";
+import { useSettingsStore } from "@/stores/settings";
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Course from "@/ui/components/Course";
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -23,6 +24,9 @@ const HomeTimeTableWidget = React.memo(() => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { courses, isLoading } = useTimetableWidgetData();
+
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const maxCoursesOnHome = settingsStore?.maxCoursesOnHome || 3;
 
 
   if (isLoading) {
@@ -71,7 +75,7 @@ const HomeTimeTableWidget = React.memo(() => {
     <LegendList
       scrollEnabled={false}
 
-      data={courses.slice(0, 3)}
+      data={courses.slice(0, maxCoursesOnHome)}
       keyExtractor={(item) => item.id}
 
       style={{ width: '100%', paddingHorizontal: 10 }}
