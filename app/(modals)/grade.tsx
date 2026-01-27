@@ -39,8 +39,6 @@ export default function GradesModal() {
   }
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
-  console.log(JSON.stringify(grade, null, 2));
-
   return (
     <>
       <LinearGradient
