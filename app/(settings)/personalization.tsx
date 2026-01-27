@@ -226,7 +226,7 @@ const PersonalizationSettings = () => {
           {/* Page d'accueil */}
           <Item
             onPress={() => {
-              router.push("/(settings)/home_personalization");
+              router.push("/(settings)/home");
             }}
           >
             <Icon size={30}>
