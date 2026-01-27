@@ -20,28 +20,22 @@ const SettingsHome = () => {
   const tabs = [
     {
       id: "calendar",
-      name: t("Tab_Calendar"),
+      name: t("Home_Widget_NextCourses"),
       icon: "calendar",
       enabled: !disabledTabs.includes("calendar"),
     },
     {
-      id: "tasks",
-      name: t("Tab_Tasks"),
-      icon: "tasks",
-      enabled: !disabledTabs.includes("tasks"),
-    },
-    {
       id: "grades",
-      name: t("Tab_Grades"),
+      name: t("Home_Widget_NewGrades"),
       icon: "grades",
       enabled: !disabledTabs.includes("grades"),
     },
     {
-      id: "news",
-      name: t("Tab_News"),
-      icon: "newspaper",
-      enabled: !disabledTabs.includes("news"),
-    }
+      id: "tasks",
+      name: t("Home_Widget_NewTasks"),
+      icon: "tasks",
+      enabled: !disabledTabs.includes("tasks"),
+    },
   ]
 
   const toggleTab = (tabId: string) => {
