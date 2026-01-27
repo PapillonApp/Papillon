@@ -1,3 +1,4 @@
+import { LegendList } from '@legendapp/list';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
@@ -6,19 +7,18 @@ import { StyleSheet } from 'react-native';
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
-import { Period, Subject } from "@/services/shared/grade";
+import { Grade, Period, Subject } from "@/services/shared/grade";
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
+import { Animation } from "@/ui/utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { LegendList } from '@legendapp/list';
-import ActivityIndicator from '@/ui/components/ActivityIndicator';
-import { Animation } from "@/ui/utils/Animation";
 
 const HomeGradesWidget = React.memo(() => {
   const { colors } = useTheme();
@@ -31,7 +31,7 @@ const HomeGradesWidget = React.memo(() => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
 
   const fetchPeriods = async (managerToUse = manager) => {
-    if (!managerToUse) return;
+    if (!managerToUse) { return; }
 
     const result = await managerToUse.getGradesPeriods();
     const currentPeriodFound = getCurrentPeriod(result);
@@ -74,7 +74,7 @@ const HomeGradesWidget = React.memo(() => {
     return subjects.find((subject) => subject.id === id);
   }, [subjects]);
 
-  const renderItem = useCallback(({ item: grade }: { item: any }) => {
+  const renderItem = useCallback(({ item: grade }: { item: Grade }) => {
     const subject = getSubjectById(grade.subjectId);
 
     return (
@@ -112,7 +112,7 @@ const HomeGradesWidget = React.memo(() => {
     );
   }, [subjects, getSubjectById, navigation]);
 
-  const keyExtractor = useCallback((item: any) => item.id, []);
+  const keyExtractor = useCallback((item: Grade) => item.id, []);
 
   if (loading) {
     return (
