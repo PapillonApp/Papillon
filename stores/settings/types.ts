@@ -37,4 +37,5 @@ export interface Personalization {
   wallpaper?: Wallpaper;
   disabledTabs?: string[];
   disabledWidgets?: string[];
+  maxCoursesOnHome?: number;
 }
