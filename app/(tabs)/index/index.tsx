@@ -7,6 +7,7 @@ import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAccountStore } from '@/stores/account';
+import { useSettingsStore } from '@/stores/settings';
 import { checkConsent } from '@/utils/logger/consent';
 
 import HomeHeader from './atoms/HomeHeader';
@@ -30,6 +31,7 @@ const HomeScreen = () => {
     if (accounts.length === 0) {
       router.replace("/(onboarding)/welcome");
     }
+
     if (accounts.length > 0) {
       checkConsent().then(consent => {
         if (!consent.given) {
@@ -41,6 +43,9 @@ const HomeScreen = () => {
 
   useHomeData();
 
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const disabledWidgets = settingsStore?.disabledWidgets || [];
+
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
   const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
@@ -50,22 +55,25 @@ const HomeScreen = () => {
       icon: <Papicons name={"Calendar"} />,
       title: t("Home_Widget_NextCourses"),
       redirect: "(tabs)/calendar",
+      enabled: !disabledWidgets.includes("calendar"),
       render: renderTimeTable
     },
     {
       icon: <Papicons name={"Grades"} />,
       title: t("Home_Widget_NewGrades"),
       redirect: "(tabs)/grades",
+      enabled: !disabledWidgets.includes("grades"),
       render: renderGrades
     },
     {
       icon: <Papicons name={"Tasks"} />,
       title: t("Home_Widget_NewTasks"),
       redirect: "(tabs)/tasks",
+      enabled: !disabledWidgets.includes("tasks"),
       render: renderTasks
     }
 
-  ], [renderTimeTable, renderTasks, renderGrades]);
+  ], [renderTimeTable, renderTasks, renderGrades, disabledWidgets]);
 
   return (
     <>
@@ -86,7 +94,7 @@ const HomeScreen = () => {
           paddingHorizontal: 16,
           gap: 16
         }}
-        data={data}
+        data={data.filter(item => item.enabled)}
       />
     </>
   );
