@@ -1,9 +1,11 @@
 import { Papicons } from "@getpapillon/papicons";
-import React from "react";
+import { useNavigation } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch } from "react-native";
+import { ScrollView, Switch, View } from "react-native";
 
 import { useSettingsStore } from "@/stores/settings";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Item, { Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
@@ -11,11 +13,15 @@ import Typography from "@/ui/components/Typography";
 
 const SettingsHome = () => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
   const disabledWidgets = settingsStore?.disabledWidgets || [];
+  const maxCoursesOnHome = settingsStore?.maxCoursesOnHome || 3;
+
+  const [localMaxCoursesOnHome, setLocalMaxCoursesOnHome] = useState(maxCoursesOnHome);
 
   const widgets = [
     {
@@ -46,8 +52,31 @@ const SettingsHome = () => {
     }
   }
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
+      mutateMaxCoursesOnHomes();
+    });
+
+    return unsubscribe;
+  }, [navigation, localMaxCoursesOnHome, maxCoursesOnHome]);
+  
+
+  const mutateMaxCoursesOnHomes = () => {
+    mutateProperty("personalization", {...settingsStore, maxCoursesOnHome: localMaxCoursesOnHome});
+  }
+    
+  const onIncreaseMaxCourses = () => {
+    setLocalMaxCoursesOnHome(localMaxCoursesOnHome + 1)
+  }
+
+  const onDecreaseMaxCourses = () => {
+    if (localMaxCoursesOnHome > 1) {
+      setLocalMaxCoursesOnHome(localMaxCoursesOnHome - 1)
+    }
+  }
+
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 16 }}>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 16, gap: 12 }}>
       <List>
         {widgets.map((widget) => (
           <Item key={widget.id}>
@@ -60,6 +89,34 @@ const SettingsHome = () => {
             </Trailing>
           </Item>
         ))}
+      </List>
+
+      <List>
+        <Item>
+          <Icon>
+            <Papicons name="calendar" />
+          </Icon>
+
+          <Typography variant="title">{t("Settings_Home_MaxCourses")}</Typography>
+          
+          <Trailing>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <AnimatedPressable scaleTo={0.8} onPress={onIncreaseMaxCourses}>
+                <Icon>
+                  <Papicons name="plus" />
+                </Icon>
+              </AnimatedPressable>
+
+              <Typography variant="title">{localMaxCoursesOnHome}</Typography>
+
+              <AnimatedPressable scaleTo={0.8} onPress={onDecreaseMaxCourses}>
+                <Icon>
+                  <Papicons name="minus" />
+                </Icon>
+              </AnimatedPressable>
+            </View>
+          </Trailing>
+        </Item>
       </List>
     </ScrollView>
   )
