@@ -23,7 +23,7 @@ export async function fetchEDHomeworks(
         isDone: homework?.effectue ?? false,
         dueDate: date,
         id: String(homework?.idDevoir),
-        subject: subject.entityLibelle,
+        subject: subject.matiere.length > 0 ? subject.matiere : subject.entityLibelle,
         evaluation: false,
         custom: false,
         createdByAccount: accountId
