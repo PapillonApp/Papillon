@@ -23,7 +23,7 @@ const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevro
     >
       <TouchableOpacity
         onPress={() => {
-          router.push("/(modals)/profile");
+          router.navigate("/(modals)/profile");
         }}
       >
         <Avatar
