@@ -347,6 +347,7 @@
   "Settings_Language_Description": "Changer la langue",
   "Settings_Tabs_Title": "Onglets",
   "Settings_Tabs_Description": "Masquer des onglets du menu",
+  "Settings_Home_MaxCourses": "Nombre maximal de cours affichés",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
