@@ -39,6 +39,8 @@ export default function GradesModal() {
   }
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
 
+  console.log(JSON.stringify(grade, null, 2));
+
   return (
     <>
       <LinearGradient
@@ -166,7 +168,23 @@ export default function GradesModal() {
                 </Typography>
               </Stack>
             }
+            {grade.optional &&
+              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"optionalgrade:" + theme.dark ? "dark" : "light"}>
+                <Papicons size={20} name="star" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
+                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
+                  {t("Modal_Grades_OptionalGrade")}
+                </Typography>
+              </Stack>
+            }
 
+            {grade.bonus &&
+                <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bonusgrade:" + theme.dark ? "dark" : "light"}>
+                  <Papicons size={20} name="star" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
+                  <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
+                    {t("Modal_Grades_BonusGrade")}
+                  </Typography>
+                </Stack>
+            }
             <Stack
               card
               direction="horizontal"

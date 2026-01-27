@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-code and cards",
   "Modal_Grades_Title": "Grade details",
   "Modal_Grades_BestGrade": "Best grade of your group",
+  "Modal_Grades_OptionalGrade": "Optional grade",
+  "Modal_Grades_BonusGrade": "Bonus grade",
   "Grades_Details_Title": "Details",
   "Grades_NormalizedGrade_Title": "Grade normalized to 20",
   "Grades_NormalizedGrade_Description": "Grade value converted to a scale of 20",
