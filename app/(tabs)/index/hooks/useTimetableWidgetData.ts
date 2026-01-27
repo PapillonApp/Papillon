@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
@@ -50,6 +50,8 @@ const getNextDayCourses = (
 };
 
 export const useTimetableWidgetData = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now);
 
@@ -90,5 +92,7 @@ export const useTimetableWidgetData = () => {
       : getNextDayCourses(weeklyTimetable, today);
   }, [weeklyTimetable, now]);
 
-  return { courses };
+  setIsLoading(false);
+
+  return { courses, isLoading };
 };
