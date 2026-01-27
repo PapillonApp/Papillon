@@ -15,48 +15,48 @@ const SettingsHome = () => {
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  const disabledTabs = settingsStore?.disabledTabs || [];
+  const disabledWidgets = settingsStore?.disabledWidgets || [];
 
-  const tabs = [
+  const widgets = [
     {
       id: "calendar",
       name: t("Home_Widget_NextCourses"),
       icon: "calendar",
-      enabled: !disabledTabs.includes("calendar"),
+      enabled: !disabledWidgets.includes("calendar"),
     },
     {
       id: "grades",
       name: t("Home_Widget_NewGrades"),
       icon: "grades",
-      enabled: !disabledTabs.includes("grades"),
+      enabled: !disabledWidgets.includes("grades"),
     },
     {
       id: "tasks",
       name: t("Home_Widget_NewTasks"),
       icon: "tasks",
-      enabled: !disabledTabs.includes("tasks"),
+      enabled: !disabledWidgets.includes("tasks"),
     },
   ]
 
-  const toggleTab = (tabId: string) => {
-    if (disabledTabs.includes(tabId)) {
-      mutateProperty("personalization", { ...settingsStore, disabledTabs: disabledTabs.filter(id => id !== tabId) });
+  const toggleWidget = (widgetId: string) => {
+    if (disabledWidgets.includes(widgetId)) {
+      mutateProperty("personalization", { ...settingsStore, disabledWidgets: disabledWidgets.filter(id => id !== widgetId) });
     } else {
-      mutateProperty("personalization", { ...settingsStore, disabledTabs: [...disabledTabs, tabId] });
+      mutateProperty("personalization", { ...settingsStore, disabledWidgets: [...disabledWidgets, widgetId] });
     }
   }
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 16 }}>
       <List>
-        {tabs.map((tab) => (
-          <Item key={tab.id}>
+        {widgets.map((widget) => (
+          <Item key={widget.id}>
             <Icon>
-              <Papicons name={tab.icon} />
+              <Papicons name={widget.icon} />
             </Icon>
-            <Typography variant="title">{tab.name}</Typography>
+            <Typography variant="title">{widget.name}</Typography>
             <Trailing>
-              <Switch value={tab.enabled} onValueChange={() => toggleTab(tab.id)} />
+              <Switch value={widget.enabled} onValueChange={() => toggleWidget(widget.id)} />
             </Trailing>
           </Item>
         ))}
