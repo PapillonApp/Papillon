@@ -1,0 +1,86 @@
+name: Build AAB for Play Store
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install deps
+        run: npm install --legacy-peer-deps || true
+
+      - name: Prebuild Android
+        run: npx expo prebuild --platform android --clean
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/release.keystore
+
+      - name: Calculate Android Version Code
+        run: |
+          VERSION_CODE=$(node -e "
+            const version = require('./package.json').version;
+            const cleanVersion = parseInt(version.replace(/\./g, ''));
+            const runNumber = parseInt(process.env.GITHUB_RUN_NUMBER || '0');
+            console.log(cleanVersion * 100000 + runNumber);
+          ")
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Computed VERSION_CODE: $VERSION_CODE"
+
+      - name: Configure signing
+        run: |
+          sed -i '/signingConfigs {/a\        release {\n            storeFile file('\''release.keystore'\'')\n            storePassword '\''${{ secrets.KEYSTORE_PASSWORD }}'\''\n            keyAlias '\''${{ secrets.KEY_ALIAS }}'\''\n            keyPassword '\''${{ secrets.KEY_PASSWORD }}'\''\n        }' android/app/build.gradle
+          sed -i 's/signingConfig signingConfigs.debug/signingConfig signingConfigs.release/' android/app/build.gradle
+          sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" android/app/build.gradle
+          echo "Signing config and version code configured in build.gradle"
+
+      - name: Configure Gradle
+        run: |
+          chmod +x android/gradlew
+          echo "org.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+          echo "android.enable16KbPageSizes=true" >> android/gradle.properties
+
+      - name: Create secrets.json
+        run: |
+          echo '{
+            "APP_KEY": "${{ secrets.COUNTLY_APP_KEY }}",
+            "SALT": "${{ secrets.COUNTLY_SALT }}",
+            "SERVER_URL": "${{ secrets.COUNTLY_SERVER_URL }}"
+          }' > secrets.json
+
+      - name: Build AAB
+        run: |
+          cd android
+          ./gradlew bundleRelease --no-daemon
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: Upload on Play Store on beta track
+        if: success()
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_KEY }}
+          packageName: xyz.getpapillon.app
+          releaseFiles: android/app/build/outputs/bundle/release/*.aab
+          track: internal
+          inAppUpdatePriority: 3
+          status: draft
