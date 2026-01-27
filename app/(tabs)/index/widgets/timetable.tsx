@@ -1,22 +1,23 @@
+import { LegendList } from "@legendapp/list";
+import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React from 'react';
+import { LinearTransition } from "react-native-reanimated";
 
 import { CourseStatus } from "@/services/shared/timetable";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
+
 import { getStatusText } from '../../calendar/components/CalendarDay';
-import { LegendList } from "@legendapp/list";
-import { Dynamic } from "@/ui/components/Dynamic";
-import ActivityIndicator from "@/ui/components/ActivityIndicator";
-import { useTheme } from "@react-navigation/native";
-import { Animation } from "@/ui/utils/Animation";
-import { LinearTransition } from "react-native-reanimated";
+import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 
 const HomeTimeTableWidget = React.memo(() => {
   const { colors } = useTheme();
@@ -70,7 +71,7 @@ const HomeTimeTableWidget = React.memo(() => {
     <LegendList
       scrollEnabled={false}
 
-      data={courses}
+      data={courses.slice(0, 3)}
       keyExtractor={(item) => item.id}
 
       style={{ width: '100%', paddingHorizontal: 10 }}
