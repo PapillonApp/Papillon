@@ -29,6 +29,27 @@ interface GradesModalProps {
   avgClass: number;
 }
 
+interface GradeBadgeProps {
+  icon: string;
+  label: string;
+  color: string;
+  theme: any;
+}
+
+const GradeBadge = ({ icon, label, color, theme }: GradeBadgeProps) => {
+  const backgroundColor = adjust(color, theme.dark ? 0.3 : -0.3);
+  const textColor = colorCheck("#FFFFFF", [backgroundColor]) ? "#FFFFFF" : "#000000";
+
+  return (
+    <Stack direction="horizontal" gap={8} backgroundColor={backgroundColor} vAlign='center' hAlign='center' padding={[12, 6]} radius={32}>
+      <Papicons size={20} name={icon} color={textColor} />
+      <Typography color={textColor} variant='body2'>
+        {label}
+      </Typography>
+    </Stack>
+  );
+};
+
 export default function GradesModal() {
   const { params } = useRoute();
   const theme = useTheme();
@@ -159,29 +180,29 @@ export default function GradesModal() {
             />
 
             {grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore?.disabled &&
-              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bestgrade:" + theme.dark ? "dark" : "light"}>
-                <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
-                  {t("Modal_Grades_BestGrade")}
-                </Typography>
-              </Stack>
+              <GradeBadge
+                icon="crown"
+                label={t("Modal_Grades_BestGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+              />
             }
             {grade.optional &&
-              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"optionalgrade:" + theme.dark ? "dark" : "light"}>
-                <Papicons size={20} name="star" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
-                  {t("Modal_Grades_OptionalGrade")}
-                </Typography>
-              </Stack>
+              <GradeBadge
+                icon="star"
+                label={t("Modal_Grades_OptionalGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+              />
             }
 
             {grade.bonus &&
-                <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bonusgrade:" + theme.dark ? "dark" : "light"}>
-                  <Papicons size={20} name="star" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                  <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
-                    {t("Modal_Grades_BonusGrade")}
-                  </Typography>
-                </Stack>
+              <GradeBadge
+                icon="star"
+                label={t("Modal_Grades_BonusGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+              />
             }
             <Stack
               card
