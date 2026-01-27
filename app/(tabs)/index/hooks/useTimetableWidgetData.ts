@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
@@ -50,8 +50,6 @@ const getNextDayCourses = (
 };
 
 export const useTimetableWidgetData = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
   const now = new Date();
   const weekNumber = getWeekNumberFromDate(now);
 
@@ -63,6 +61,12 @@ export const useTimetableWidgetData = () => {
     () => account?.services?.map((service: { id: string }) => service.id) ?? [],
     [account?.services]
   );
+  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, []);
 
   const timetableData = useTimetable(undefined, weekNumber);
 
@@ -92,7 +96,9 @@ export const useTimetableWidgetData = () => {
       : getNextDayCourses(weeklyTimetable, today);
   }, [weeklyTimetable, now]);
 
-  setIsLoading(false);
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   return { courses, isLoading };
 };
