@@ -50,8 +50,8 @@ const GradesView: React.FC = () => {
   const navigation = useNavigation();
 
   // Chargement
-  const [periodsLoading, setPeriodsLoading] = useState(false);
-  const [gradesLoading, setGradesLoading] = useState(false);
+  const [periodsLoading, setPeriodsLoading] = useState(true);
+  const [gradesLoading, setGradesLoading] = useState(true);
   const loading = periodsLoading || gradesLoading;
 
   const [isRefreshing, setIsRefreshing] = useState(false);
