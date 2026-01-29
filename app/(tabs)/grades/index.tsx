@@ -147,7 +147,9 @@ const GradesView: React.FC = () => {
         setGradesLoading(false);
         return;
       }
+
       setSubjects(grades.subjects);
+
       if (grades.studentOverall && typeof grades.studentOverall.value === 'number') {
         setServiceAverage(grades.studentOverall.value)
       } else {
@@ -187,10 +189,14 @@ const GradesView: React.FC = () => {
   // Sort
   // Sort grades in subjects by date descending then sort subjects by latest grade descending
   const sortedSubjects = useMemo(() => {
-    const subjectsCopy = [...subjects];
-    subjectsCopy.forEach((subject) => {
-      subject.grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
-    });
+    const subjectsCopy = subjects.map((subject) => ({
+      ...subject,
+      grades: subject.grades
+        ? [...subject.grades].sort(
+          (a, b) => (b.givenAt?.getTime() ?? 0) - (a.givenAt?.getTime() ?? 0)
+        )
+        : subject.grades,
+    }));
 
     switch (sortMethod) {
       case "alphabetical":
@@ -211,14 +217,14 @@ const GradesView: React.FC = () => {
 
       default:
         subjectsCopy.sort((a, b) => {
-          const aLatestGrade = a.grades[0];
-          const bLatestGrade = b.grades[0];
+          const aLatestGrade = a.grades?.[0];
+          const bLatestGrade = b.grades?.[0];
 
           if (!aLatestGrade && !bLatestGrade) { return 0; }
           if (!aLatestGrade) { return 1; }
           if (!bLatestGrade) { return -1; }
 
-          return bLatestGrade.givenAt.getTime() - aLatestGrade.givenAt.getTime();
+          return (bLatestGrade.givenAt?.getTime() ?? 0) - (aLatestGrade.givenAt?.getTime() ?? 0);
         });
         break;
     }
@@ -227,32 +233,44 @@ const GradesView: React.FC = () => {
   }, [subjects, sortMethod]);
 
   const sortedGrades = useMemo(() => {
-    const gradesCopy = [...grades];
-    gradesCopy.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime());
+    const gradesCopy = [...grades].filter(g => g !== undefined && g.givenAt !== undefined);
+    gradesCopy.sort((a, b) => (b?.givenAt?.getTime() ?? 0) - (a?.givenAt?.getTime() ?? 0));
     return gradesCopy;
   }, [grades]);
 
   // Search
   const [searchText, setSearchText] = useState<string>("");
+
   const filteredSubjects = useMemo(() => {
+    // nothing searched
     if (searchText.trim() === "") {
       return sortedSubjects;
     }
 
-    const lowerSearchText = searchText.toLowerCase();
+    const normalizedSearch = searchText.toLowerCase().trim();
 
     return sortedSubjects.filter((subject) => {
       const subjectName = getSubjectName(subject.name).toLowerCase();
-      if (subjectName.includes(lowerSearchText)) {
+
+      if (subjectName.includes(normalizedSearch)) {
         return true;
       }
 
-      // Also search in grades descriptions
-      const matchingGrades = subject.grades.filter((grade) => {
-        return grade.description?.toLowerCase().includes(lowerSearchText);
-      });
+      // Search in description, date and score
+      const hasMatchingGrade = subject.grades?.some((grade) => {
+        // description
+        const descriptionMatch = grade.description?.toLowerCase().includes(normalizedSearch) || false;
 
-      return matchingGrades.length > 0;
+        // date
+        const dateMatch = grade.givenAt?.toLocaleDateString(i18n.language).includes(normalizedSearch) || false;
+
+        // score
+        const scoreMatch = grade.studentScore?.value.toString().includes(normalizedSearch) || false;
+
+        return descriptionMatch || dateMatch || scoreMatch;
+      }) ?? false;
+
+      return hasMatchingGrade;
     });
   }, [searchText, sortedSubjects]);
 
@@ -269,6 +287,7 @@ const GradesView: React.FC = () => {
 
   const renderItem = useCallback(({ item }: { item: any }) => {
     const subject = item as Subject;
+
     return (
       // @ts-expect-error navigation types
       <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
@@ -288,7 +307,7 @@ const GradesView: React.FC = () => {
   const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
     <View style={{ marginBottom: 16 }}>
       <Averages
-        grades={grades}
+        grades={grades.filter((g): g is NonNullable<typeof g> => g !== undefined)}
         color={colors.primary}
         realAverage={serviceAverage || undefined}
       />
@@ -351,36 +370,44 @@ const GradesView: React.FC = () => {
             estimatedItemSize={210 + 12}
             showsHorizontalScrollIndicator={false}
             recycleItems={true}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item: grade }) =>
-              <CompactGrade
-                key={grade.id + "_compactGrade_header"}
-                emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                description={grade.description}
-                score={grade.studentScore?.value || 0}
-                outOf={grade.outOf?.value || 20}
-                disabled={grade.studentScore?.disabled}
-                status={grade.studentScore?.status}
-                color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                date={grade.givenAt}
-                hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
-                onPress={() => {
-                  // @ts-expect-error navigation types
-                  navigation.navigate('(modals)/grade', {
-                    grade: grade,
-                    subjectInfo: {
-                      name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                      color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                      emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                      originalName: getSubjectById(grade.subjectId)?.name || ""
-                    },
-                    avgInfluence: getAvgInfluence(grade),
-                    avgClass: getAvgClassInfluence(grade),
-                  })
-                }}
-              />
-            }
+            keyExtractor={(item, index) => item?.id ?? `grade-${index}`}
+            renderItem={({ item: grade }) => {
+              const subject = getSubjectById(grade?.subjectId ?? '');
+              const subjectName = subject?.name;
+              const safeEmoji = subjectName ? getSubjectEmoji(subjectName) : '🤓';
+              const safeTitle = subjectName ? getSubjectName(subjectName) : '';
+              const safeColor = subjectName ? getSubjectColor(subjectName) : '#888888';
+
+              return (
+                <CompactGrade
+                  emoji={safeEmoji}
+                  title={safeTitle}
+                  description={grade?.description || ""}
+                  score={grade?.studentScore?.value || 0}
+                  outOf={grade?.outOf?.value || 20}
+                  disabled={grade?.studentScore?.disabled}
+                  status={grade?.studentScore?.status}
+                  color={safeColor}
+                  date={grade?.givenAt}
+                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  onPress={() => {
+                    if (!grade) return;
+                    // @ts-expect-error navigation types
+                    navigation.navigate('(modals)/grade', {
+                      grade: grade,
+                      subjectInfo: {
+                        name: subjectName,
+                        color: safeColor,
+                        emoji: safeEmoji,
+                        originalName: subjectName
+                      },
+                      avgInfluence: getAvgInfluence(grade),
+                      avgClass: getAvgClassInfluence(grade),
+                    })
+                  }}
+                />
+              );
+            }}
           />
         </Stack>
       </Dynamic>
