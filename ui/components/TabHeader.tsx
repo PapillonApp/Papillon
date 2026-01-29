@@ -1,19 +1,13 @@
 
-import React, { useEffect } from 'react';
-
-import { Dimensions, Platform, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { NativeHeaderHighlight } from '@/ui/components/NativeHeader';
-import Typography from '@/ui/components/Typography';
-import { Papicons } from '@getpapillon/papicons';
-import Icon from './Icon';
-import { TouchableOpacity } from 'react-native';
-import TabHeaderTitle, { TabHeaderTitleProps } from './TabHeaderTitle';
-import Search from './Search';
-import Reanimated, { FadeIn, FadeOut, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useTheme } from '@react-navigation/native';
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+import React, { useEffect } from 'react';
+import { Platform, View } from 'react-native';
+import Reanimated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { runsIOS26 } from '../utils/IsLiquidGlass';
+import { TabHeaderTitleProps } from './TabHeaderTitle';
 
 
 interface TabHeaderProps {
@@ -47,8 +41,9 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: Platform.OS === 'ios' ? 'transparent' : colors.background,
-          borderBottomWidth: 0,
+          backgroundColor: runsIOS26 ? 'transparent' : colors.background,
+          borderBottomWidth: (Platform.OS === 'ios' && !runsIOS26) ? 0.5 : 0,
+          borderBottomColor: (Platform.OS === 'ios' && !runsIOS26) ? colors.border : undefined,
           position: 'absolute',
           top: 0,
           left: 0,
@@ -60,7 +55,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         }]}
         pointerEvents={'none'}
       >
-        {Platform.OS === 'ios' && (
+        {runsIOS26 && (
           <ProgressiveBlurView
             blurType="systemMaterial"
             blurAmount={20}
