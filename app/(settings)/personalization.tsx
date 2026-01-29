@@ -1,25 +1,26 @@
-import { Alert, Platform, ScrollView } from "react-native";
-import Stack from "@/ui/components/Stack";
-import { EarthIcon } from "lucide-react-native";
-import React, { useEffect } from "react";
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
-import Typography from "@/ui/components/Typography";
-import Icon from "@/ui/components/Icon";
-import { Papicons, PapillonApp } from "@getpapillon/papicons";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Papicons } from "@getpapillon/papicons";
+import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import AppColorsSelector from "@/components/AppColorsSelector";
-import { AppColors } from "@/utils/colors";
+import { router } from "expo-router";
+import { EarthIcon, Home } from "lucide-react-native";
+import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform, ScrollView } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import adjust from "@/utils/adjustColor";
+import { FadeIn, FadeOut } from "react-native-reanimated";
+
+import AppColorsSelector from "@/components/AppColorsSelector";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
-import { useTranslation } from "react-i18next";
-import { router } from "expo-router";
-import { useHeaderHeight } from "@react-navigation/elements";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { FadeIn, FadeOut } from "react-native-reanimated";
+import Icon from "@/ui/components/Icon";
+import Item, { Trailing } from "@/ui/components/Item";
+import List from "@/ui/components/List";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import adjust from "@/utils/adjustColor";
+import { AppColors } from "@/utils/colors";
 
 
 const PersonalizationSettings = () => {
@@ -202,6 +203,7 @@ const PersonalizationSettings = () => {
           </Item>
         </List>
         <List>
+          {/* Onglets */}
           <Item
             onPress={() => {
               router.push("/(settings)/tabs");
@@ -220,6 +222,28 @@ const PersonalizationSettings = () => {
               </Icon>
             </Trailing>
           </Item>
+
+          {/* Page d'accueil */}
+          <Item
+            onPress={() => {
+              router.push("/(settings)/home");
+            }}
+          >
+            <Icon size={30}>
+              <Home width={25} height={25} stroke="#818181" />
+            </Icon>
+            <Typography variant={"title"}>{t("Settings_Home_Title")}</Typography>
+            <Typography variant={"caption"}
+              color={"secondary"}
+            >{t("Settings_Home_Description")}</Typography>
+            <Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" color="#818181" />
+              </Icon>
+            </Trailing>
+          </Item>
+
+          {/* Langue */}
           <Item
             onPress={() => {
               router.push("/(settings)/language");

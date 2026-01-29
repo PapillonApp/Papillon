@@ -15,6 +15,7 @@ interface TaskItemProps {
   item: Homework;
   index: number;
   fromCache?: boolean;
+  showCompletedButton?: boolean;
   setAsDone: (item: Homework, done: boolean) => void;
 }
 
@@ -22,6 +23,7 @@ const TaskItem = memo(
   ({
     item,
     fromCache = false,
+    showCompletedButton = true,
     setAsDone
   }: TaskItemProps) => {
     const navigation = useNavigation();
@@ -43,6 +45,7 @@ const TaskItem = memo(
           date={new Date(item.dueDate)}
           completed={item.isDone}
           hasAttachments={item.attachments.length > 0}
+          showCompletedButton={showCompletedButton}
           magic={magic}
           onToggle={() => setAsDone(item, !item.isDone)}
           onPress={() =>

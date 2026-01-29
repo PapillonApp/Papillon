@@ -28,6 +28,7 @@ interface TaskProps {
   date: Date;
   completed: boolean;
   hasAttachments: boolean;
+  showCompletedButton?: boolean;
   magic?: string;
   onToggle: () => void;
   onPress: () => void;
@@ -42,6 +43,7 @@ const Task: React.FC<TaskProps> = ({
   date,
   completed,
   hasAttachments,
+  showCompletedButton = true,
   magic,
   onToggle,
   onPress
@@ -112,7 +114,7 @@ const Task: React.FC<TaskProps> = ({
 
           {/* Content */}
           <Stack animated layout={Animation(LinearTransition, "list")}>
-            <Typography numberOfLines={3} variant='title' weight='medium'>
+            <Typography numberOfLines={showCompletedButton ? 3 : 4} variant='title' weight='medium'>
               {formatHTML(description)}
             </Typography>
           </Stack>
@@ -142,35 +144,37 @@ const Task: React.FC<TaskProps> = ({
               )}
             </Stack>
             <Stack animated layout={Animation(LinearTransition, "list")} inline hAlign='end' vAlign='center'>
-              <AnimatedPressable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
-                <Stack
-                  animated
-                  layout={Animation(LinearTransition, "list")}
-                  card
-                  backgroundColor={completed ? tintedColor : undefined}>
+              {showCompletedButton &&
+                <AnimatedPressable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
                   <Stack
                     animated
                     layout={Animation(LinearTransition, "list")}
-                    padding={[completed ? 12 : 8, 8]}
-                    direction='horizontal'
-                    gap={6}
-                    radius={100}
-                    hAlign='center'
-                    style={{ overflow: "hidden" }}
-                  >
-                    <Icon size={24} opacity={completed ? 1 : 0.5} fill={completed ? "#FFF" : undefined}>
-                      <Papicons name='check' />
-                    </Icon>
-                    {completed &&
-                      <Dynamic animated>
-                        <Typography color='#FFF'>
-                          Terminé
-                        </Typography>
-                      </Dynamic>
-                    }
+                    card
+                    backgroundColor={completed ? tintedColor : undefined}>
+                    <Stack
+                      animated
+                      layout={Animation(LinearTransition, "list")}
+                      padding={[completed ? 12 : 8, 8]}
+                      direction='horizontal'
+                      gap={6}
+                      radius={100}
+                      hAlign='center'
+                      style={{ overflow: "hidden" }}
+                    >
+                      <Icon size={24} opacity={completed ? 1 : 0.5} fill={completed ? "#FFF" : undefined}>
+                        <Papicons name='check' />
+                      </Icon>
+                      {completed &&
+                        <Dynamic animated>
+                          <Typography color='#FFF'>
+                            Terminé
+                          </Typography>
+                        </Dynamic>
+                      }
+                    </Stack>
                   </Stack>
-                </Stack>
-              </AnimatedPressable>
+                </AnimatedPressable>
+              }
             </Stack>
           </Stack>
         </Stack>

@@ -136,11 +136,14 @@
   "Home_Planned_Number": "Tu as {{number}} cours restants aujourd'hui",
 
   "Home_Widget_NextCourses": "Prochains cours",
-  "Home_Widget_NewGrades": "Nouvelles notes",
-  "Home_Widget_NewHomeworks": "Tâches à faire",
+  "Home_Widget_NewGrades": "Dernières notes",
+  "Home_Widget_NewTasks": "Tâches à venir",
 
   "Home_Widget_NoCourses": "Aucun cours à venir",
   "Home_Widget_NoCourses_Description": "Il n'y a pas de cours prévus pour aujourd'hui.",
+
+  "Home_Widget_NoTasks": "Aucune tâche pour demain",
+  "Home_Widget_NoTasks_Description": "Tu n'as pas de tâches prévues pour demain.",
 
   "Home_Cards_Button_Title": "Cartes",
   "Home_Cards_Button_Description_None": "Aucune carte",
@@ -338,10 +341,13 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
+  "Settings_Home_Title": "Page d'accueil",
+  "Settings_Home_Description": "Personnaliser la page d'accueil",
   "Settings_Language_Title": "Langue",
   "Settings_Language_Description": "Changer la langue",
   "Settings_Tabs_Title": "Onglets",
   "Settings_Tabs_Description": "Masquer des onglets du menu",
+  "Settings_Home_MaxCourses": "Nombre maximal de cours affichés",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
