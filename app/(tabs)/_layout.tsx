@@ -4,13 +4,14 @@ import {
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
-import { withLayoutContext } from "expo-router";
+import { useRouter, withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
 
 import { useSettingsStore } from "@/stores/settings";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { useAccountStore } from "@/stores/account";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -93,6 +94,16 @@ export default function TabLayout() {
 
   const settingsStore = useSettingsStore(state => state.personalization);
   const disabledTabs = settingsStore?.disabledTabs || [];
+
+  // Check account and move to onboarding if none exist
+  const accounts = useAccountStore(state => state.accounts);
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (accounts.length === 0) {
+      router.replace("/(onboarding)/welcome");
+    }
+  }, [accounts.length]);
 
   return (
     <Tabs
