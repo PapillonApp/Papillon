@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useRef, cloneElement, isValidElement } from "react";
+import React, { ReactNode, useState, useRef } from "react";
 import {
   Modal,
   Platform,
@@ -9,6 +9,7 @@ import {
   Text,
   LayoutRectangle,
   Dimensions,
+  ColorValue,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
@@ -23,7 +24,7 @@ interface MenuAction {
   subtitle?: string;
   state?: "on" | "off" | "mixed";
   image?: string;
-  imageColor?: string;
+  imageColor?: number | ColorValue;
   destructive?: boolean;
   disabled?: boolean;
   subactions?: MenuAction[];
@@ -38,7 +39,7 @@ interface MenuAction {
 interface ActionMenuProps {
   actions: MenuAction[];
   children: ReactNode;
-  onPressAction: (event: { nativeEvent: { event: string } }) => void;
+  onPressAction?: (event: { nativeEvent: { event: string } }) => void;
   title?: string;
 }
 
@@ -105,6 +106,7 @@ export default function ActionMenu({
   onPressAction,
   title,
 }: ActionMenuProps) {
+  const handleActionPress = onPressAction ?? (() => {});
   const { colors, dark } = useTheme();
   const textColor = colors.text;
   const subtitleColor = dark ? `${colors.text}80` : `${colors.text}80`;
@@ -120,7 +122,7 @@ export default function ActionMenu({
   if (Platform.OS === "ios" && NativeMenuView) {
     return (
       <NativeMenuView
-        onPressAction={onPressAction}
+        onPressAction={handleActionPress}
         actions={actions}
         title={title}
       >
@@ -144,12 +146,12 @@ export default function ActionMenu({
     setSubmenuStack([]);
   }
 
-  function handlePress(action: MenuAction) {
+  function handlePress(action: MenuAction, fallbackId: string) {
     if (action.subactions && action.subactions.length > 0) {
       setSubmenuStack((prev) => [...prev, action]);
       return;
     }
-    onPressAction({ nativeEvent: { event: action.id ?? "" } });
+    handleActionPress({ nativeEvent: { event: action.id ?? fallbackId } });
     close();
   }
 
@@ -184,18 +186,18 @@ export default function ActionMenu({
   const currentSubmenu = submenuStack[submenuStack.length - 1];
   const currentActions = currentSubmenu?.subactions ?? actions;
 
-  const trigger = isValidElement(children)
-    ? cloneElement(children as React.ReactElement<any>, {
-        onPress: () => {
-          (children as any).props?.onPress?.();
-          open();
-        },
-      })
-    : children;
-
   return (
-    <View ref={triggerRef} collapsable={false}>
-      {trigger}
+    <View
+      ref={triggerRef}
+      collapsable={false}
+      onTouchEnd={(e) => {
+        if (!visible) {
+          e.stopPropagation();
+          open();
+        }
+      }}
+    >
+      {children}
       <Modal visible={visible} transparent onRequestClose={close}>
         <Pressable style={styles.backdrop} onPress={close} />
         <View style={styles.container} pointerEvents="box-none">
@@ -216,14 +218,14 @@ export default function ActionMenu({
                 </Text>
               </TouchableOpacity>
             )}
-            {currentActions.map((action) => (
+            {currentActions.map((action, index) => (
               <MenuItem
-                key={action.id}
+                key={action.id ?? `action-${submenuStack.length}-${index}`}
                 action={action}
                 textColor={textColor}
                 subtitleColor={subtitleColor}
                 primaryColor={primaryColor}
-                onPress={() => handlePress(action)}
+                onPress={() => handlePress(action, `action-${submenuStack.length}-${index}`)}
               />
             ))}
           </View>
