@@ -14,9 +14,15 @@ import {
 import { useTheme } from "@react-navigation/native";
 
 let NativeMenuView: any = null;
-try {
-  NativeMenuView = require("@react-native-menu/menu").MenuView;
-} catch {}
+if (Platform.OS === "ios") {
+  try {
+    const mod = require("@react-native-menu/menu");
+    NativeMenuView = mod?.MenuView ?? null;
+  } catch (err: unknown) {
+    console.warn("ActionMenu: impossible de charger @react-native-menu/menu MenuView:", err);
+    NativeMenuView = null;
+  }
+}
 
 interface MenuAction {
   id?: string;
