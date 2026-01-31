@@ -158,24 +158,20 @@ export default function ActionMenu({
     if (!position) {
       return { alignSelf: "center" as const };
     }
-    const window = Dimensions.get("window");
-    const margin = 16;
-    const menuWidth = 320;
-    const estimatedMenuHeight = 260;
-    const left = Math.max(margin, Math.min(position.x, window.width - margin - menuWidth));
 
-    const belowTop = position.y + position.height + 8;
-    const spaceBelow = window.height - margin - belowTop;
-    const canShowBelow = spaceBelow >= estimatedMenuHeight;
-    const top = canShowBelow
-      ? belowTop
-      : Math.max(margin, position.y - estimatedMenuHeight - 8);
+    const { width, height } = Dimensions.get("window");
+    const MARGIN = 16;
 
-    return {
-      position: "absolute" as const,
-      top,
-      left,
-    };
+    //A remplacer
+    const MENU_WIDTH = 320;
+    const MENU_HEIGHT = 260;
+
+    const left = Math.min(Math.max(position.x, MARGIN), width - MARGIN - MENU_WIDTH);
+    const below = position.y + position.height + 8;
+    const fitsBelow = below + MENU_HEIGHT <= height - MARGIN;
+    const top = fitsBelow ? below : Math.max(MARGIN, position.y - MENU_HEIGHT - 8);
+
+    return { position: "absolute" as const, top, left };
   }
 
   const currentSubmenu = submenuStack[submenuStack.length - 1];
