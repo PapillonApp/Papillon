@@ -107,6 +107,7 @@
     "skolengojs": "^1.1.10",
     "turboself-api": "^2.1.9",
     "typescript-eslint": "^8.49.0",
+    "webuntis": "^2.2.1",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
