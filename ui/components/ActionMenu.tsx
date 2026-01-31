@@ -1,5 +1,6 @@
 import React, { ReactNode, useState, useRef } from "react";
 import type { ComponentType } from "react";
+import type { MenuAction as NativeMenuAction, NativeActionEvent } from "@react-native-menu/menu";
 import {
   Modal,
   Platform,
@@ -10,7 +11,6 @@ import {
   Text,
   LayoutRectangle,
   Dimensions,
-  ColorValue,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
@@ -25,28 +25,12 @@ if (Platform.OS === "ios") {
   }
 }
 
-interface MenuAction {
-  id?: string;
-  title: string;
-  subtitle?: string;
-  state?: "on" | "off" | "mixed";
-  image?: string;
-  imageColor?: number | ColorValue;
-  destructive?: boolean;
-  disabled?: boolean;
-  subactions?: MenuAction[];
-  displayInline?: boolean;
-  attributes?: {
-    destructive?: boolean;
-    disabled?: boolean;
-    state?: "on" | "off" | "mixed";
-  };
-}
+type MenuAction = NativeMenuAction;
 
 interface ActionMenuProps {
   actions: MenuAction[];
   children: ReactNode;
-  onPressAction?: (event: { nativeEvent: { event: string } }) => void;
+  onPressAction?: ({ nativeEvent }: NativeActionEvent) => void;
   title?: string;
 }
 
@@ -63,11 +47,11 @@ function MenuItem({
   primaryColor: string;
   onPress: () => void;
 }) {
-  const state = action.state ?? action.attributes?.state;
+  const state = action.state;
   const isOn = state === "on";
   const hasSubactions = action.subactions && action.subactions.length > 0;
-  const destructive = action.destructive ?? action.attributes?.destructive ?? false;
-  const disabled = action.disabled ?? action.attributes?.disabled ?? false;
+  const destructive = action.attributes?.destructive ?? false;
+  const disabled = action.attributes?.disabled ?? false;
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
