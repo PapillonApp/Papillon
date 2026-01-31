@@ -22,6 +22,7 @@ module.exports = {
     ios: {
       appStoreUrl:
         "https://apps.apple.com/us/app/papillon-lappli-scolaire/id6477761165",
+      appleTeamId: "7RXNP6V83P",
       bundleIdentifier: "xyz.getpapillon.ios",
       associatedDomains: ["applinks:getpapillon.xyz"],
       icon: "./assets/app.icon",
@@ -38,6 +39,9 @@ module.exports = {
       supportsTablet: true,
       config: {
         usesNonExemptEncryption: false,
+      },
+      entitlements: {
+        "com.apple.security.application-groups": ["group.xyz.getpapillon.ios"],
       },
     },
     android: {

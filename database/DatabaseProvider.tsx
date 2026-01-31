@@ -3,7 +3,6 @@ import React, { createContext, useContext } from 'react';
 
 import { error, info } from "@/utils/logger/logger";
 
-import { database } from './index';
 import { Absence, Attendance, Delay, Observation, Punishment } from "./models/Attendance";
 import { Balance } from "./models/Balance";
 import CanteenHistoryItem from "./models/CanteenHistory";
@@ -16,16 +15,38 @@ import News from "./models/News";
 import Subject from "./models/Subject";
 import Course from "./models/Timetable";
 import { batchOperations, safeWrite } from "./utils/safeTransaction";
-const _db: Database = database;
 
-export const getDatabaseInstance = (): Database => _db;
-const DatabaseContext = createContext(database);
+let instance: Database | null = null;
+let _db: Database | null = null;
 
-export const DatabaseProvider = ({ children }: { children: React.ReactNode }) => (
-  <DatabaseContext.Provider value={database}>{children}</DatabaseContext.Provider>
-);
+export const loadDatabase = async () => {
+  const db = await import("@/database/index");
+  instance = db.database;
+  _db = db.database;
+}
 
-export const useDatabase = () => useContext(DatabaseContext);
+export const getDatabaseInstance = (): Database => {
+  if (!_db) throw new Error("🍉 Database not ready yet.");
+  return (_db);
+};
+
+const DatabaseContext = createContext<Database | null>(null);
+
+export const DatabaseProvider = ({ children }: { children: React.ReactNode }) => {
+
+  if (!_db) return null;
+  return (
+    <DatabaseContext.Provider value={instance}>
+      {children}
+    </DatabaseContext.Provider>
+  );
+};
+
+export const useDatabase = (): Database => {
+  const db = useContext(DatabaseContext);
+  if (!_db) throw new Error("🍉 Database not ready yet.");
+  return db!;
+};
 
 export async function ClearDatabaseForAccount(accountId: string) {
   const db = getDatabaseInstance();

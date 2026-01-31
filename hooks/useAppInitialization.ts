@@ -4,8 +4,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import Countly from 'countly-sdk-react-native-bridge';
 import CountlyConfig from 'countly-sdk-react-native-bridge/CountlyConfig';
-
-import { initializeDatabaseOnStartup } from '@/database/utils/initialization';
 import { initializeAccountManager } from '@/services/shared';
 import { useSettingsStore } from '@/stores/settings';
 import i18n from '@/utils/i18n';
@@ -13,6 +11,8 @@ import { checkConsent } from '@/utils/logger/consent';
 import { log, warn } from '@/utils/logger/logger';
 import ModelManager from '@/utils/magic/ModelManager';
 import { FONT_CONFIG } from '@/constants/LayoutScreenOptions';
+import { migrateDatabase } from "@/database/utils/migration";
+import { loadDatabase } from "@/database/DatabaseProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -59,9 +59,12 @@ export function useAppInitialization() {
   useEffect(() => {
     async function initDatabase() {
       try {
-        await initializeDatabaseOnStartup();
+        await migrateDatabase();
+        await loadDatabase();
+        const initialization = await import("@/database/utils/initialization");
+        await initialization.initializeDatabaseOnStartup();
       } catch (err) {
-        warn(`Database initialization failed: ${err}`);
+        warn(`🍉 Database initialization failed: ${err}`);
       } finally {
         setIsDatabaseReady(true);
       }
