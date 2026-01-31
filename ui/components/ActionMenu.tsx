@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   LayoutRectangle,
+  Dimensions,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
@@ -17,7 +18,7 @@ try {
 } catch {}
 
 interface MenuAction {
-  id: string;
+  id?: string;
   title: string;
   subtitle?: string;
   state?: "on" | "off" | "mixed";
@@ -27,6 +28,11 @@ interface MenuAction {
   disabled?: boolean;
   subactions?: MenuAction[];
   displayInline?: boolean;
+  attributes?: {
+    destructive?: boolean;
+    disabled?: boolean;
+    state?: "on" | "off" | "mixed";
+  };
 }
 
 interface ActionMenuProps {
@@ -49,18 +55,21 @@ function MenuItem({
   primaryColor: string;
   onPress: () => void;
 }) {
-  const isOn = action.state === "on";
+  const state = action.state ?? action.attributes?.state;
+  const isOn = state === "on";
   const hasSubactions = action.subactions && action.subactions.length > 0;
+  const destructive = action.destructive ?? action.attributes?.destructive ?? false;
+  const disabled = action.disabled ?? action.attributes?.disabled ?? false;
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={action.disabled}>
+    <TouchableOpacity onPress={onPress} disabled={disabled}>
       <View style={[styles.item, isOn && styles.itemSelected]}>
         <View style={styles.itemContent}>
           <Text
             style={[
               styles.itemTitle,
-              { color: action.destructive ? "#b71c1c" : textColor },
-              action.disabled && styles.disabled,
+              { color: destructive ? "#b71c1c" : textColor },
+              disabled && styles.disabled,
             ]}
             numberOfLines={1}
           >
@@ -71,7 +80,7 @@ function MenuItem({
               style={[
                 styles.itemSubtitle,
                 { color: subtitleColor },
-                action.disabled && styles.disabled,
+                disabled && styles.disabled,
               ]}
               numberOfLines={2}
             >
@@ -102,9 +111,9 @@ export default function ActionMenu({
   const primaryColor = colors.primary;
   const cardColor = colors.card;
 
-  const triggerRef = useRef<View>(null);
+  const triggerRef = useRef<View | null>(null);
   const [visible, setVisible] = useState(false);
-  const [submenu, setSubmenu] = useState<MenuAction | null>(null);
+  const [submenuStack, setSubmenuStack] = useState<MenuAction[]>([]);
   const [position, setPosition] = useState<LayoutRectangle | null>(null);
 
   // iOS
@@ -132,30 +141,48 @@ export default function ActionMenu({
 
   function close() {
     setVisible(false);
-    setSubmenu(null);
+    setSubmenuStack([]);
   }
 
   function handlePress(action: MenuAction) {
     if (action.subactions && action.subactions.length > 0) {
-      setSubmenu(action);
-    } else {
-      onPressAction({ nativeEvent: { event: action.id } });
-      close();
+      setSubmenuStack((prev) => [...prev, action]);
+      return;
     }
+    onPressAction({ nativeEvent: { event: action.id ?? "" } });
+    close();
+  }
+
+  function handleBack() {
+    setSubmenuStack((prev) => prev.slice(0, -1));
   }
 
   function getMenuPosition() {
     if (!position) {
       return { alignSelf: "center" as const };
     }
+    const window = Dimensions.get("window");
+    const margin = 16;
+    const menuWidth = 320;
+    const estimatedMenuHeight = 260;
+    const left = Math.max(margin, Math.min(position.x, window.width - margin - menuWidth));
+
+    const belowTop = position.y + position.height + 8;
+    const spaceBelow = window.height - margin - belowTop;
+    const canShowBelow = spaceBelow >= estimatedMenuHeight;
+    const top = canShowBelow
+      ? belowTop
+      : Math.max(margin, position.y - estimatedMenuHeight - 8);
+
     return {
       position: "absolute" as const,
-      top: position.y + position.height + 8,
-      left: Math.min(position.x, 100),
+      top,
+      left,
     };
   }
 
-  const currentActions = submenu?.subactions ?? actions;
+  const currentSubmenu = submenuStack[submenuStack.length - 1];
+  const currentActions = currentSubmenu?.subactions ?? actions;
 
   const trigger = isValidElement(children)
     ? cloneElement(children as React.ReactElement<any>, {
@@ -167,7 +194,7 @@ export default function ActionMenu({
     : children;
 
   return (
-    <View ref={triggerRef}>
+    <View ref={triggerRef} collapsable={false}>
       {trigger}
       <Modal visible={visible} transparent onRequestClose={close}>
         <Pressable style={styles.backdrop} onPress={close} />
@@ -179,13 +206,13 @@ export default function ActionMenu({
               { backgroundColor: cardColor },
             ]}
           >
-            {submenu && (
+            {currentSubmenu && (
               <TouchableOpacity
-                onPress={() => setSubmenu(null)}
+                onPress={handleBack}
                 style={styles.header}
               >
                 <Text style={[styles.back, { color: textColor }]}>
-                  ‹ {submenu.title}
+                  ‹ {currentSubmenu.title}
                 </Text>
               </TouchableOpacity>
             )}
