@@ -14,7 +14,19 @@ import { useUserProfileData } from '../hooks/useUserProfileData';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
-  const { firstName, initials, profilePicture } = useUserProfileData();
+  const { firstName, lastName, level, establishment, initials, profilePicture } = useUserProfileData();
+
+  const accountsList = [
+    {
+      firstName,
+      lastName,
+      level,
+      establishment,
+      initials,
+      profilePicture,
+      current: true,
+    },
+  ]
 
   return (
     <Stack inline flex>
@@ -31,8 +43,27 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         <MenuView
           actions={[
             {
-              id: 'profile',
-              title: 'Profile',
+              id: 'workspaces',
+              title: '',
+              displayInline: true,
+              subactions: accountsList.map((account) => ({
+                id: account.id,
+                title: account.firstName + ' ' + account.lastName,
+                subtitle: account.establishment,
+                state: account.current ? 'on' : 'off',
+              })),
+            },
+            {
+              id: 'edit',
+              title: 'Edit profile',
+              image: 'person.crop.circle',
+              imageColor: 'white',
+            },
+            {
+              id: 'add',
+              title: 'Add account',
+              image: 'plus',
+              imageColor: 'white',
             },
           ]}
         >
