@@ -9,6 +9,7 @@ import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
 import it from "@/locales/it.json";
 import jp from "@/locales/jp.json";
+import ko from "@/locales/ko.json";
 import pt from "@/locales/pt.json";
 import ru from "@/locales/ru.json";
 import tr from "@/locales/tr.json";
@@ -24,6 +25,7 @@ export const resources = {
   pt: { translation: pt, emoji: "🇵🇹", label: "Português" },
   jp: { translation: jp, emoji: "🇯🇵", label: "日本語" },
   ru: { translation: ru, emoji: "🇷🇺", label: "Русский" },
+  ko: { translation: ko, emoji: "🇰🇷", label: "한국어" },
 };
 
 const languageDetector = {
