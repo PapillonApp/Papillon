@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import Stack from "@/ui/components/Stack";
 
 let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
 if (Platform.OS === "ios") {
@@ -56,7 +57,7 @@ function MenuItem({
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
-      <View style={[styles.item, isOn && styles.itemSelected]}>
+      <Stack direction="horizontal" vAlign="center" style={[styles.item, isOn && styles.itemSelected]}>
         <View style={styles.itemContent}>
           <Text
             style={[
@@ -87,7 +88,7 @@ function MenuItem({
         {isOn && !hasSubactions && (
           <Text style={[styles.check, { color: primaryColor }]}>✓</Text>
         )}
-      </View>
+      </Stack>
     </TouchableOpacity>
   );
 }
@@ -265,8 +266,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   item: {
-    flexDirection: "row",
-    alignItems: "center",
     minHeight: 48,
     paddingVertical: 12,
     paddingHorizontal: 14,
