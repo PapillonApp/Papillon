@@ -208,9 +208,10 @@ export default function ActionMenu({
                   { borderBottomColor: Platform.OS === "ios" && !runsIOS26 ? borderColor : undefined },
                 ]}
               >
-                <Text style={[styles.back, { color: textColor }]}>
-                  ‹ {currentSubmenu.title}
-                </Text>
+                <Stack direction="horizontal" vAlign="center" gap={8}>
+                  <Papicons name="ChevronLeft" color={textColor} size={20} style={styles.headerIcon} />
+                  <Text style={[styles.back, { color: textColor }]}>{currentSubmenu.title}</Text>
+                </Stack>
               </TouchableOpacity>
             )}
             {currentActions.map((action, index) => (
@@ -265,6 +266,7 @@ const styles = StyleSheet.create({
   back: {
     fontSize: 16,
     fontWeight: "600",
+    lineHeight: 20,
   },
   item: {
     minHeight: 48,
@@ -287,15 +289,16 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   arrow: {
-    fontSize: 22,
-    fontWeight: "400",
+    alignSelf: "center",
     opacity: 0.7,
     marginLeft: 4,
   },
   check: {
-    fontSize: 18,
-    fontWeight: "600",
+    alignSelf: "center",
     marginLeft: 6,
+  },
+  headerIcon: {
+    alignSelf: "center"
   },
   disabled: {
     opacity: 0.4,
