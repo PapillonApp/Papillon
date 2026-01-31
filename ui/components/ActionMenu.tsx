@@ -47,11 +47,10 @@ function MenuItem({
   primaryColor: string;
   onPress: () => void;
 }) {
-  const state = action.state;
-  const isOn = state === "on";
-  const hasSubactions = action.subactions && action.subactions.length > 0;
-  const destructive = action.attributes?.destructive ?? false;
-  const disabled = action.attributes?.disabled ?? false;
+  const isOn = action.state === "on";
+  const hasSubactions = Boolean(action.subactions?.length);
+  const destructive = Boolean((action as unknown as { destructive?: boolean }).destructive ?? action.attributes?.destructive);
+  const disabled = Boolean((action as unknown as { disabled?: boolean }).disabled ?? action.attributes?.disabled);
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
