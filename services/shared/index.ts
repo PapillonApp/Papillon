@@ -647,6 +647,12 @@ export class AccountManager {
       return new module.Lannion(service.id);
     }
 
+    if (service.serviceId === Services.WEBUNTIS) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/webuntis/index");
+      return new module.WebUntisService(service.id);
+    }
+
     error(
       "We're not able to find a plugin for service: " +
         service.serviceId +
