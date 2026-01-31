@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import Stack from "@/ui/components/Stack";
+import { Papicons } from "@getpapillon/papicons";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
@@ -84,10 +85,10 @@ function MenuItem({
           )}
         </View>
         {hasSubactions && (
-          <Text style={[styles.arrow, { color: textColor }]}>›</Text>
+          <Papicons name="ChevronRight" color={textColor} size={20} style={styles.arrow} />
         )}
         {isOn && !hasSubactions && (
-          <Text style={[styles.check, { color: primaryColor }]}>✓</Text>
+          <Papicons name="Check" color={primaryColor} size={18} style={styles.check} />
         )}
       </Stack>
     </TouchableOpacity>
