@@ -105,8 +105,7 @@ export default function ActionMenu({
 }: ActionMenuProps) {
   const handleActionPress = onPressAction ?? (() => {});
   const { colors } = useTheme();
-  const textColor = colors.text;
-  const subtitleColor = `${textColor}80`;
+  const subtitleColor = `${colors.text}80`;
   const primaryColor = colors.primary;
   const cardColor = colors.card;
   const destructiveColor = (colors as any).danger;
@@ -212,8 +211,8 @@ export default function ActionMenu({
                 ]}
               >
                 <Stack direction="horizontal" vAlign="center" gap={8}>
-                  <Papicons name="ChevronLeft" color={textColor} size={20} style={styles.headerIcon} />
-                  <Text style={[styles.back, { color: textColor }]}>{currentSubmenu.title}</Text>
+                  <Papicons name="ChevronLeft" color={colors.text} size={20} style={styles.headerIcon} />
+                  <Text style={[styles.back, { color: colors.text }]}>{currentSubmenu.title}</Text>
                 </Stack>
               </TouchableOpacity>
             )}
@@ -221,7 +220,7 @@ export default function ActionMenu({
               <MenuItem
                 key={action.id ?? `action-${submenuStack.length}-${index}`}
                 action={action}
-                textColor={textColor}
+                textColor={colors.text}
                 subtitleColor={subtitleColor}
                 primaryColor={primaryColor}
                 destructiveColor={destructiveColor}
