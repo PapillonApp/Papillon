@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { View, FlatList, RefreshControl, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
+import { IconNames } from "@getpapillon/papicons";
 import Course from "@/ui/components/Course";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
 import { Colors, getSubjectColor } from "@/utils/subjects/colors";
@@ -20,13 +21,17 @@ interface CalendarDayProps {
   tabBarHeight: number;
 }
 
+
+
 export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefresh, colors, headerHeight, insets, tabBarHeight }: CalendarDayProps) => {
   const navigation = useNavigation<any>();
 
-  // Cache to preserve event object identity by id
+
+
+
+
   const eventCache = useRef<{ [id: string]: any }>({});
 
-  // Shallow compare function
   function shallowEqual(objA: any, objB: any) {
     if (objA === objB) { return true; }
     if (!objA || !objB) { return false; }
@@ -130,6 +135,34 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             );
           }
 
+          const statusText = item.customStatus?.toLowerCase() || "";
+          const isEdited = item.status === CourseStatus.EDITED || statusText.includes("modifié");
+          const isMoved = statusText.includes("déplacé");
+          const isExceptional = statusText.includes("exceptionnel");
+
+          let statusColor = undefined;
+          let statusIcon: IconNames | undefined = undefined;
+
+          if (isEdited) {
+            statusColor = colors.primary;
+            statusIcon = "Pen";
+          }
+          if (isMoved) {
+            statusColor = colors.primary;
+            statusIcon = "Archive";
+          }
+          if (isExceptional) {
+            statusColor = colors.primary;
+            statusIcon = "Sparkles";
+          }
+
+          const courseStatus = {
+            label: item.customStatus || getStatusText(item.status),
+            canceled: item.status === CourseStatus.CANCELED,
+            color: statusColor,
+            icon: statusIcon,
+          };
+
           return (
             <Course
               id={item.id}
@@ -137,7 +170,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
               teacher={item.teacher}
               room={item.room}
               color={getSubjectColor(item.subject) || Colors[0]}
-              status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
+              status={courseStatus}
               variant="primary"
               start={Math.floor(item.from.getTime() / 1000)}
               end={Math.floor(item.to.getTime() / 1000)}
