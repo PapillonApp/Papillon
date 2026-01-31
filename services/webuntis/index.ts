@@ -1,6 +1,7 @@
 import { WebUntis } from "webuntis";
 
 import { Auth,Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 
 import { Attendance } from "../shared/attendance";
 import { Balance } from "../shared/balance";
@@ -12,6 +13,8 @@ import { Kid } from "../shared/kid";
 import { News } from "../shared/news";
 import { Course, CourseDay,CourseResource } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
+import { refreshWebUntisAccount } from "./refresh";
+import { fetchWebUntisWeekTimetable } from "./timetable";
 
 export class WebUntisService implements SchoolServicePlugin {
   displayName = "WebUntis";
@@ -19,9 +22,17 @@ export class WebUntisService implements SchoolServicePlugin {
   capabilities: Capabilities[] = [Capabilities.REFRESH];
   session: WebUntis | undefined = undefined;
   authData: Auth = {};
+  
+  constructor(public accountId: string) {}
 
-  async refreshAccount(credentials: Auth): Promise<WebUntis> {
-    
+  async refreshAccount(credentials: Auth): Promise<WebUntisService> {
+    const refresh = (await refreshWebUntisAccount(this.accountId, credentials));
+    this.authData = refresh.auth;
+    this.session = refresh.session;
+
+    this.capabilities.push(Capabilities.TIMETABLE)
+		
+    return this;
   }
 
   getKids?: (() => Kid[]) | undefined;
@@ -38,7 +49,18 @@ export class WebUntisService implements SchoolServicePlugin {
   getChatMessages?: ((chat: Chat) => Promise<Message[]>) | undefined;
   getRecipientsAvailableForNewChat?: (() => Promise<Recipient[]>) | undefined;
   getCourseResources?: ((course: Course) => Promise<CourseResource[]>) | undefined;
-  getWeeklyTimetable?: ((weekNumber: number, date: Date) => Promise<CourseDay[]>) | undefined;
+
+  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
+    await this.session?.validateSession();
+  
+    if (this.session) {
+      return fetchWebUntisWeekTimetable(this.session, this.accountId, weekNumber, date);
+    }
+
+    error("Session is not valid", "WebUntis.getWeeklyTimetable");
+
+    return [];
+  }
   sendMessageInChat?: ((chat: Chat, content: string) => Promise<void>) | undefined;
   setNewsAsAcknowledged?: ((news: News) => Promise<News>) | undefined;
   setHomeworkCompletion?: ((homework: Homework, state?: boolean) => Promise<Homework>) | undefined;
