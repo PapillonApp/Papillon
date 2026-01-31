@@ -7,6 +7,7 @@ import de from "@/locales/de.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
+import it from "@/locales/it.json";
 import pt from "@/locales/pt.json";
 import tr from "@/locales/tr.json";
 
@@ -15,6 +16,7 @@ export const resources = {
   en: { translation: en, emoji: "🇬🇧", label: "English" },
   de: { translation: de, emoji: "🇩🇪", label: "Deutsch" },
   es: { translation: es, emoji: "🇪🇸", label: "Español" },
+  it: { translation: it, emoji: "🇮🇹", label: "Italiano" },
   tr: { translation: tr, emoji: "🇹🇷", label: "Türkçe" },
   br: { translation: br, emoji: "🏁", label: "Brezhoneg" },
   pt: { translation: pt, emoji: "🇵🇹", label: "Português" },
