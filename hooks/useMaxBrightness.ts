@@ -6,42 +6,60 @@ import { warn } from "@/utils/logger/logger";
 export function useMaxBrightness() {
 
   const previousBrightness = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const enableBrightness = async () => {
       try {
+        const current = await getBrightnessAsync();
+
+        if (!isMounted) return;
+
         if (previousBrightness.current === null) {
-          previousBrightness.current = await getBrightnessAsync();
+          previousBrightness.current = current
         }
         await setBrightnessAsync(1);
       } catch (error) {
-        warn("Failed to set brightness:");
+        warn("Failed to set brightness");
       }
     };
 
     const restoreBrightness = async () => {
       try {
+        if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
         if (previousBrightness.current !== null) {
           await setBrightnessAsync(previousBrightness.current);
         }
       } catch (error) {
-        warn("Failed to restore brightness:");
+        warn("Failed to restore brightness");
       }
     };
 
-    enableBrightness();
+    timeoutRef.current = setTimeout(() => {
+      if (isMounted) {
+        enableBrightness();
+      }
+    }, 100);
 
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "inactive" || nextAppState === "background" ) {
         restoreBrightness();
       } else if (nextAppState === "active") {
-        enableBrightness();
+        timeoutRef.current = setTimeout(() => {
+          if (isMounted) enableBrightness();
+        }, 100);
       }
     });
 
     return () => {
-      subscription.remove();
+      isMounted = false;
       restoreBrightness();
+      subscription.remove();
     };
   }, []);
 }
