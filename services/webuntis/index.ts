@@ -10,6 +10,7 @@ import { CourseDay } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
 import { getCurrentWebUntisPeriod } from "./attendance";
 import { fetchWebUntisHomeworks } from "./homework";
+import { fetchWebUntisNews } from "./news";
 import { refreshWebUntisAccount } from "./refresh";
 import { fetchWebUntisWeekTimetable } from "./timetable";
 
@@ -72,7 +73,7 @@ export class WebUntisService implements SchoolServicePlugin {
     await this.session?.validateSession();
   
     if (this.session) {
-      return [];
+      return fetchWebUntisNews(this.session, this.accountId)
     }
 
     error("Session is not valid", "WebUntis.getNews");
