@@ -63,6 +63,7 @@
   "INPUT_PASSWORD": "Mot de passe",
   "INPUT_PASSWORD_CODE": "Code d'accès",
   "INPUT_ETABID": "Identifiant de ton établissement",
+  "INPUT_BASE_URL": "Lien de ton établissement",
   "LOGIN_BTN": "Se connecter",
   "CONFIRM_BTN": "Confirmer",
   "CANCEL_BTN": "Annuler",
