@@ -8,7 +8,7 @@ import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
 import it from "@/locales/it.json";
-import jp from "@/locales/jp.json";
+import ja from "@/locales/ja.json";
 import ko from "@/locales/ko.json";
 import pt from "@/locales/pt.json";
 import ru from "@/locales/ru.json";
@@ -23,7 +23,7 @@ export const resources = {
   tr: { translation: tr, emoji: "🇹🇷", label: "Türkçe" },
   br: { translation: br, emoji: "🏁", label: "Brezhoneg" },
   pt: { translation: pt, emoji: "🇵🇹", label: "Português" },
-  jp: { translation: jp, emoji: "🇯🇵", label: "日本語" },
+  ja: { translation: ja, emoji: "🇯🇵", label: "日本語" },
   ru: { translation: ru, emoji: "🇷🇺", label: "Русский" },
   ko: { translation: ko, emoji: "🇰🇷", label: "한국어" },
 };
