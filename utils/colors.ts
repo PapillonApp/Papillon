@@ -2,7 +2,7 @@ import { t } from "i18next";
 
 export enum Colors {
   PINK,
-  YELLOW,
+  ORANGE,
   GREEN,
   PURPLE,
   BLUE,
@@ -17,10 +17,10 @@ export const AppColors = [
     colorEnum: Colors.PINK,
   },
   {
-    mainColor: "#E8B048",
-    backgroundColor: "#FCF3E4",
-    nameKey: "Jaune",
-    colorEnum: Colors.YELLOW,
+    mainColor: "#f18b15",
+    backgroundColor: "#c1b09d",
+    nameKey: "Orange",
+    colorEnum: Colors.ORANGE,
   },
   {
     mainColor: "#26B290",
