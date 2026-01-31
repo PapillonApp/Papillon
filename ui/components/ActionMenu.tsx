@@ -47,10 +47,12 @@ function MenuItem({
   primaryColor: string;
   onPress: () => void;
 }) {
+  // Reduced flags: compute isOn from action.state (attributes does not expose state in the types).
   const isOn = action.state === "on";
   const hasSubactions = Boolean(action.subactions?.length);
-  const destructive = Boolean((action as unknown as { destructive?: boolean }).destructive ?? action.attributes?.destructive);
-  const disabled = Boolean((action as unknown as { disabled?: boolean }).disabled ?? action.attributes?.disabled);
+  const legacy = action as unknown as { destructive?: boolean; disabled?: boolean };
+  const destructive = Boolean(action.attributes?.destructive ?? legacy.destructive);
+  const disabled = Boolean(action.attributes?.disabled ?? legacy.disabled);
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
