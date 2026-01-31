@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import Stack from "@/ui/components/Stack";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
 if (Platform.OS === "ios") {
@@ -105,6 +106,7 @@ export default function ActionMenu({
   const subtitleColor = dark ? `${colors.text}80` : `${colors.text}80`;
   const primaryColor = colors.primary;
   const cardColor = colors.card;
+  const borderColor = colors.border;
 
   const triggerRef = useRef<View | null>(null);
   const [visible, setVisible] = useState(false);
@@ -204,7 +206,10 @@ export default function ActionMenu({
             {currentSubmenu && (
               <TouchableOpacity
                 onPress={handleBack}
-                style={styles.header}
+                style={[
+                  styles.header,
+                  { borderBottomColor: Platform.OS === "ios" && !runsIOS26 ? borderColor : undefined },
+                ]}
               >
                 <Text style={[styles.back, { color: textColor }]}>
                   ‹ {currentSubmenu.title}
@@ -258,7 +263,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(128,128,128,0.2)",
     marginBottom: 4,
   },
   back: {
