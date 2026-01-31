@@ -10,6 +10,7 @@ import fr from "@/locales/fr.json";
 import it from "@/locales/it.json";
 import jp from "@/locales/jp.json";
 import pt from "@/locales/pt.json";
+import ru from "@/locales/ru.json";
 import tr from "@/locales/tr.json";
 
 export const resources = {
@@ -22,6 +23,7 @@ export const resources = {
   br: { translation: br, emoji: "🏁", label: "Brezhoneg" },
   pt: { translation: pt, emoji: "🇵🇹", label: "Português" },
   jp: { translation: jp, emoji: "🇯🇵", label: "日本語" },
+  ru: { translation: ru, emoji: "🇷🇺", label: "Русский" },
 };
 
 const languageDetector = {
