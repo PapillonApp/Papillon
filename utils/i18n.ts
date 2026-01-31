@@ -8,6 +8,7 @@ import en from "@/locales/en.json";
 import es from "@/locales/es.json";
 import fr from "@/locales/fr.json";
 import it from "@/locales/it.json";
+import jp from "@/locales/jp.json";
 import pt from "@/locales/pt.json";
 import tr from "@/locales/tr.json";
 
@@ -20,6 +21,7 @@ export const resources = {
   tr: { translation: tr, emoji: "🇹🇷", label: "Türkçe" },
   br: { translation: br, emoji: "🏁", label: "Brezhoneg" },
   pt: { translation: pt, emoji: "🇵🇹", label: "Português" },
+  jp: { translation: jp, emoji: "🇯🇵", label: "日本語" },
 };
 
 const languageDetector = {
