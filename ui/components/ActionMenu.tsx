@@ -1,4 +1,5 @@
 import React, { ReactNode, useState, useRef } from "react";
+import type { ComponentType } from "react";
 import {
   Modal,
   Platform,
@@ -13,7 +14,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
-let NativeMenuView: any = null;
+let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
 if (Platform.OS === "ios") {
   try {
     const mod = require("@react-native-menu/menu");
