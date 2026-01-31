@@ -101,9 +101,9 @@ export default function ActionMenu({
   title,
 }: ActionMenuProps) {
   const handleActionPress = onPressAction ?? (() => {});
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const textColor = colors.text;
-  const subtitleColor = dark ? `${colors.text}80` : `${colors.text}80`;
+  const subtitleColor = `${textColor}80`;
   const primaryColor = colors.primary;
   const cardColor = colors.card;
   const borderColor = colors.border;
