@@ -1,6 +1,6 @@
 import { WebAPITimetable, WebUntis } from "webuntis";
 
-import { Course, CourseDay, CourseResource, CourseStatus, CourseType } from "@/services/shared/timetable";
+import { Course, CourseDay, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
 
 export async function fetchWebUntisWeekTimetable(
@@ -69,56 +69,4 @@ const mapCourses = (
   }
 
   return courseList;
-};
-
-export async function fetchPronoteCourseResources(
-  session: SessionHandle,
-  course: Course
-): Promise<CourseResource[]> {
-  if (!session) {
-    error("Session is undefined", "fetchPronoteCourseResources");
-  }
-
-  const timetableTab = session.user.resources[0].tabs.get(
-    TabLocation.Timetable
-  );
-  if (!timetableTab) {
-    error("Timetable tab not found in session", "fetchPronoteCourseResources");
-  }
-
-  if (!course.resourceId) {
-    error("Course resource ID is undefined", "fetchPronoteCourseResources");
-  }
-
-  const resources = (await resource(session, course.resourceId)).contents;
-
-  return resources.map(r => ({
-    title: r.title,
-    description: r.description,
-    category: r.category,
-    attachments: r.files.map(a => ({
-      type: a.kind,
-      name: a.name,
-      url: a.url,
-      createdByAccount: session.user.resources[0].id
-    }))
-  }))
-}
-
-const mapCourseStatus = (course: WebAPITimetable): CourseStatus | undefined => {
-  // eslint-disable-next-line default-case
-  switch (course.status) {
-  case "Cours annulé":
-  case "Prof. absent":
-  case "Classe absente":
-  case "Prof./pers. absent":
-  case "Sortie pédagogique":
-    return CourseStatus.CANCELED;
-  }
-
-  if (course.test) {
-    return CourseStatus.EVALUATED;
-  }
-
-  return undefined
 };
