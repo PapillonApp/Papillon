@@ -1,12 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef,useState } from 'react';
+
 import { getChatsFromCache } from '@/database/useChat';
 import { AccountManager, getManager, subscribeManagerUpdate } from '@/services/shared';
 import { Attendance } from '@/services/shared/attendance';
 import { Chat } from '@/services/shared/chat';
 import { Period } from '@/services/shared/grade';
-import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { useAccountStore } from '@/stores/account';
 import { Services } from '@/stores/account/types';
+import { getCurrentPeriod } from '@/utils/grades/helper/period';
+import { warn } from '@/utils/logger/logger';
 
 export const useHomeHeaderData = () => {
   const accounts = useAccountStore((state) => state.accounts);
@@ -32,11 +34,11 @@ export const useHomeHeaderData = () => {
   const [chats, setChats] = useState<Chat[]>([]);
 
   const absencesCount = useMemo(() => {
-    if (!attendances) return 0;
+    if (!attendances) {return 0;}
     let count = 0;
     attendances.forEach(att => {
-      if(att && "absences" in att) {
-        if (att.absences) count += att.absences.length;
+      if (att && "absences" in att && att.absences) {
+        count += att.absences.length;
       }
     });
     return count;
@@ -53,9 +55,16 @@ export const useHomeHeaderData = () => {
     const updateAttendance = async (manager: AccountManager) => {
       const periods = await manager.getAttendancePeriods();
       const currentPeriod = getCurrentPeriod(periods);
-      const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
 
       attendancesPeriodsRef.current = periods;
+
+      if (!currentPeriod) {
+        warn("No current attendance period found, skipping fetch");
+        setAttendances([]);
+        return;
+      }
+
+      const fetchedAttendances = await manager.getAttendanceForPeriod(currentPeriod.name);
       setAttendances(fetchedAttendances);
     };
 
@@ -66,8 +75,10 @@ export const useHomeHeaderData = () => {
 
     const unsubscribe = subscribeManagerUpdate((_) => {
       const manager = getManager();
-      updateAttendance(manager);
-      updateDiscussions(manager);
+      if (manager) {
+        updateAttendance(manager);
+        updateDiscussions(manager);
+      }
     });
 
     return () => unsubscribe();
