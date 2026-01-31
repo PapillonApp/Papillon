@@ -214,7 +214,6 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
             <ActionMenu
               actions={[
                 {
-                  id: "methods",
                   title: t('Grades_Avg_Methods'),
                   subactions: algorithms.map((algo) => ({
                     id: "setAlg:" + algo.key,
