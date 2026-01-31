@@ -34,6 +34,13 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
+        name="accounts"
+        options={{
+          headerTitle: t("Settings_Accounts_Title"),
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
         name="personalization"
         options={{
           headerTitle: t("Settings_Personalization_Title"),
