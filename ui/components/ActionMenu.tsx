@@ -42,12 +42,14 @@ function MenuItem({
   textColor,
   subtitleColor,
   primaryColor,
+  destructiveColor,
   onPress,
 }: {
   action: MenuAction;
   textColor: string;
   subtitleColor: string;
   primaryColor: string;
+  destructiveColor: string;
   onPress: () => void;
 }) {
   // Reduced flags: compute isOn from action.state (attributes does not expose state in the types).
@@ -64,7 +66,7 @@ function MenuItem({
           <Text
             style={[
               styles.itemTitle,
-              { color: destructive ? "#b71c1c" : textColor },
+              { color: destructive ? destructiveColor : textColor },
               disabled && styles.disabled,
             ]}
             numberOfLines={1}
@@ -107,6 +109,7 @@ export default function ActionMenu({
   const subtitleColor = `${textColor}80`;
   const primaryColor = colors.primary;
   const cardColor = colors.card;
+  const destructiveColor = (colors as any).danger;
   const borderColor = colors.border;
 
   const triggerRef = useRef<View | null>(null);
@@ -221,6 +224,7 @@ export default function ActionMenu({
                 textColor={textColor}
                 subtitleColor={subtitleColor}
                 primaryColor={primaryColor}
+                destructiveColor={destructiveColor}
                 onPress={() => handlePress(action, `action-${submenuStack.length}-${index}`)}
               />
             ))}
