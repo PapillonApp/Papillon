@@ -64,7 +64,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       type: "main",
       image: require("@/assets/images/service_webuntis.png"),
       onPress: () => {
-        redirect({ pathname: './webuntis/method', options: { service: Services.WEBUNTIS } });
+        redirect({ pathname: './webuntis/credentials', options: { service: Services.WEBUNTIS } });
       },
       variant: 'service' as const,
       color: 'light' as const,
