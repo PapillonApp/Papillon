@@ -1,23 +1,7 @@
-import { Client } from "@blockshub/blocksdirecte";
-import { User } from "appscho";
-import { Multi } from "esup-multi.js";
-import { Identification } from "ezly";
-import { SessionHandle } from "pawnote";
-import { Client } from "pawrd";
-import { Skolengo } from "skolengojs";
-import { Client } from "turboself-api";
+import { WebUntis } from "webuntis";
 
 import { Auth,Services } from "@/stores/account/types";
 
-import { Alise } from "../alise";
-import { Appscho } from "../appscho";
-import { ARD } from "../ard";
-import { EcoleDirecte } from "../ecoledirecte";
-import { Izly } from "../izly";
-import { Lannion } from "../lannion";
-import { LannionClient } from "../lannion/module";
-import { Multi } from "../multi";
-import { Pronote } from "../pronote";
 import { Attendance } from "../shared/attendance";
 import { Balance } from "../shared/balance";
 import { Booking,BookingDay, CanteenHistoryItem, CanteenKind, CanteenMenu, QRCode } from "../shared/canteen";
@@ -28,16 +12,18 @@ import { Kid } from "../shared/kid";
 import { News } from "../shared/news";
 import { Course, CourseDay,CourseResource } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
-import { Skolengo } from "../skolengo";
-import { TurboSelf } from "../turboself";
 
-export class WebUntis implements SchoolServicePlugin {
-  displayName: string;
-  service: Services;
-  capabilities: Capabilities[];
-  authData: Auth;
-  session: Client | Identification | Multi | SessionHandle | Skolengo | Client | Client | User | LannionClient | undefined;
-  refreshAccount: (credentials: Auth) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion>;
+export class WebUntisService implements SchoolServicePlugin {
+  displayName = "WebUntis";
+  service = Services.WEBUNTIS;
+  capabilities: Capabilities[] = [Capabilities.REFRESH];
+  session: WebUntis | undefined = undefined;
+  authData: Auth = {};
+
+  async refreshAccount(credentials: Auth): Promise<WebUntis> {
+    
+  }
+
   getKids?: (() => Kid[]) | undefined;
   getCanteenKind?: (() => CanteenKind) | undefined;
   getHomeworks?: ((weekNumber: number) => Promise<Homework[]>) | undefined;
