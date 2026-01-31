@@ -60,7 +60,7 @@ export const useHomeHeaderData = () => {
 
       if (!currentPeriod) {
         warn("No current attendance period found, skipping fetch");
-        setAttendances([]);
+        setAttendances([]); 
         return;
       }
 
