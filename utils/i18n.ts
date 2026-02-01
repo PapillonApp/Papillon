@@ -23,6 +23,7 @@ import id from "@/locales/id.json";
 import it from "@/locales/it.json";
 import ja from "@/locales/ja.json";
 import ko from "@/locales/ko.json";
+import ms from "@/locales/ms.json";
 import nl from "@/locales/nl.json";
 import no from "@/locales/no.json";
 import pl from "@/locales/pl.json";
@@ -74,6 +75,7 @@ export const resources = {
   th: { translation: th, emoji: "🇹🇭", label: "ไทย" },
   fa: { translation: fa, emoji: "🇮🇷", label: "فارسی" },
   ur: { translation: ur, emoji: "🇵🇰", label: "اردو" },
+  ms: { translation: ms, emoji: "🇲🇾", label: "Bahasa Malaysia" },
 };
 
 const languageDetector = {
