@@ -32,7 +32,7 @@ module.exports = {
             CFBundleURLSchemes: ["papillon", "izly", "skoapp-prod"],
           },
         ],
-        CFBundleLocalizations: ["fr", "en", "br", "pt", "de", "es", "tr"],
+        CFBundleLocalizations: ["fr", "en", "br", "pt", "de", "es", "tr", "ja", "ru", "ko", "af", "ar", "el", "hi", "nl", "pl", "ro", "sq", "uk", "vi"],
         CADisableMinimumFrameDurationOnPhone: true,
       },
       supportsTablet: true,
