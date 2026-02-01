@@ -115,11 +115,11 @@ module.exports = {
             extraPods: [
               { name: "SDWebImage", modular_headers: true },
               { name: "SDWebImageSVGCoder", modular_headers: true },
-
             ],
           },
         },
       ],
+      "@bacons/apple-targets",
     ],
     experiments: {
       typedRoutes: true,

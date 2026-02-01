@@ -19,6 +19,7 @@
   "dependencies": {
     "@aramir/react-native-barcode": "^1.0.2",
     "@babel/plugin-proposal-decorators": "^7.28.0",
+    "@bacons/apple-targets": "^3.0.7",
     "@blockshub/blocksdirecte": "^0.0.8-alpha",
     "@bottom-tabs/react-navigation": "^0.11.2",
     "@callstack/liquid-glass": "^0.4.3",

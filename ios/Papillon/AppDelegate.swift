@@ -1,4 +1,5 @@
 import Expo
+import WidgetKit
 import React
 import ReactAppDependencyProvider
 
@@ -49,6 +50,12 @@ public class AppDelegate: ExpoAppDelegate {
   ) -> Bool {
     let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
+  }
+  
+  // Widget Refresh
+  public override func applicationDidEnterBackground(_ application: UIApplication) {
+    print("Refresh widget")
+    WidgetCenter.shared.reloadAllTimelines()
   }
 }
 
