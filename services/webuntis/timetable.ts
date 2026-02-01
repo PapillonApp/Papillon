@@ -1,7 +1,9 @@
 import { WebAPITimetable, WebUntis } from "webuntis";
 
-import { Course, CourseDay, CourseType } from "@/services/shared/timetable";
+import { Course, CourseDay, CourseStatus, CourseType } from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
+
+const EXAM = "EXAM";
 
 export async function fetchWebUntisWeekTimetable(
   session: WebUntis,
@@ -55,7 +57,7 @@ const mapCourses = (
     const from = new Date(year, month, day, startHour, startMin);
     const to = new Date(year, month, day, endHour, endMin);
 
-    courseList.push({
+    const course: Course = {
       id: c.id.toString(),
       type: CourseType.LESSON,
       subject: c.subjects[0]?.element.name || "Unknown",
@@ -64,8 +66,18 @@ const mapCourses = (
       createdByAccount: accountId,
       from: from,
       to: to,
-    });
+    };
+
+    if (isCourseExam(c.cellState)) {
+      course.status = CourseStatus.EVALUATED;
+    }
+
+    courseList.push(course);
   }
 
   return courseList;
 };
+
+const isCourseExam = (cellState: string): boolean => {
+  return cellState === EXAM;
+}
