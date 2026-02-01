@@ -33,6 +33,7 @@ import ru from "@/locales/ru.json";
 import sk from "@/locales/sk.json";
 import sq from "@/locales/sq.json";
 import sv from "@/locales/sv.json";
+import sw from "@/locales/sw.json";
 import th from "@/locales/th.json";
 import tr from "@/locales/tr.json";
 import uk from "@/locales/uk.json";
@@ -76,6 +77,7 @@ export const resources = {
   fa: { translation: fa, emoji: "🇮🇷", label: "فارسی" },
   ur: { translation: ur, emoji: "🇵🇰", label: "اردو" },
   ms: { translation: ms, emoji: "🇲🇾", label: "Bahasa Malaysia" },
+  sw: { translation: sw, emoji: "🇹🇿", label: "Swahili" },
 };
 
 const languageDetector = {
