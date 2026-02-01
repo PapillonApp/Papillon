@@ -41,7 +41,7 @@ export class WebUntisService implements SchoolServicePlugin {
     await this.session?.validateSession();
   
     if (this.session) {
-      return fetchWebUntisWeekTimetable(this.session, this.accountId, weekNumber, date);
+      return fetchWebUntisWeekTimetable(this.session, this.accountId, date);
     }
 
     error("Session is not valid", "WebUntis.getWeeklyTimetable");

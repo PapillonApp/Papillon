@@ -6,7 +6,6 @@ import { error } from "@/utils/logger/logger";
 export async function fetchWebUntisWeekTimetable(
   session: WebUntis,
   accountId: string,
-  weekNumberRaw: number,
   date: Date
 ): Promise<CourseDay[]> {
   if (!session) {
