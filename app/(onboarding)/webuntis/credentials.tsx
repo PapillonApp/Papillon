@@ -37,7 +37,6 @@ export default function WebUntisLoginWithCredentials() {
   const alert = useAlert();
   const { t } = useTranslation();
 
-  const [school, setSchool] = useState<string>("");
   const [baseURL, setBaseURL] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -71,7 +70,7 @@ export default function WebUntisLoginWithCredentials() {
   }, [keyboardListeners]);
 
   const handleLogin = async () => {
-    if (!school.trim() || !username.trim() || !password.trim() || !baseURL.trim()) {
+    if (!baseURL.trim() || !username.trim() || !password.trim()) {
       alert.showAlert({
         title: t("ERROR_AUTHENTICATION"),
         description: t("ERROR_MISSING_FIELDS"),
@@ -85,7 +84,10 @@ export default function WebUntisLoginWithCredentials() {
     setIsLoggingIn(true);
     Keyboard.dismiss();
 
-    const client = new WebUntis(school, username, password, baseURL);
+    const school = baseURL.trim().split('.')[0];
+    const identity = "PapillonApp";
+
+    const client = new WebUntis(school, username, password, baseURL, identity);
     const accountId = uuid();
     const store = useAccountStore.getState();
 
@@ -189,20 +191,6 @@ export default function WebUntisLoginWithCredentials() {
 
       <Stack padding={20} gap={10}>
         <OnboardingInput
-          icon={"Bold"}
-          placeholder={t("INPUT_ETABID")}
-          text={school}
-          setText={setSchool}
-          isPassword={false}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-            editable: !isLoggingIn,
-          }}
-        />
-        <OnboardingInput
           icon={"Link"}
           placeholder={t("INPUT_BASE_URL")}
           text={baseURL}
@@ -246,7 +234,8 @@ export default function WebUntisLoginWithCredentials() {
             textContentType: "password",
             onSubmitEditing: () => {
               Keyboard.dismiss();
-              if (!isLoggingIn && school.trim() && username.trim() && password.trim() && baseURL.trim()) {
+
+              if (!isLoggingIn && baseURL.trim() && username.trim() && password.trim()) {
                 handleLogin();
               }
             },
