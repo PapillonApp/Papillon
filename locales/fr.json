@@ -53,6 +53,7 @@
   "ONBOARDING_LOADING_LOGIN": "Connexion en cours...",
   "ERROR_AUTHENTICATION": "Une erreur s'est produite",
   "ERROR_MISSING_FIELDS": "Veuillez remplir tous les champs",
+  "ERROR_WEBUNTIS_LOGIN": "La connexion à ton compte Web Untis a échoué",
 
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
