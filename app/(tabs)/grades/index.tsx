@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
 import { GradeScore, Period, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
@@ -57,7 +58,21 @@ const GradesView: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Sortings
-  const [sortMethod, setSortMethod] = useState<string>("date");
+  const settings = useSettingsStore(state => state.personalization);
+  const mutateSettings = useSettingsStore(state => state.mutateProperty);
+
+  const [sortMethod, setSortMethod] = useState<string>(settings.gradesSortMethod || "date");
+
+  useEffect(() => {
+    if (settings.gradesSortMethod) {
+      setSortMethod(settings.gradesSortMethod);
+    }
+  }, [settings.gradesSortMethod]);
+
+  const updateSortMethod = (method: string) => {
+    setSortMethod(method);
+    mutateSettings('personalization', { gradesSortMethod: method });
+  };
   const sortings = [
     {
       label: t("Grades_Sorting_Alphabetical"),
@@ -103,7 +118,14 @@ const GradesView: React.FC = () => {
     setPeriodsLoading(true);
 
     const result = await managerToUse.getGradesPeriods();
-    const currentPeriodFound = getCurrentPeriod(result);
+    let currentPeriodFound = getCurrentPeriod(result);
+
+    if (settings.gradesPeriodId) {
+      const savedPeriod = result.find(p => p.id === settings.gradesPeriodId);
+      if (savedPeriod) {
+        currentPeriodFound = savedPeriod;
+      }
+    }
 
     // sort by time, then put Semestre and Trimestre on top
     const sortedResult = [...result].sort((a, b) => {
@@ -419,7 +441,11 @@ const GradesView: React.FC = () => {
 
               if (actionId.startsWith("period:")) {
                 const selectedPeriodId = actionId.replace("period:", "");
-                setCurrentPeriod(periods.find(period => period.id === selectedPeriodId));
+                const newPeriod = periods.find(period => period.id === selectedPeriodId);
+                setCurrentPeriod(newPeriod);
+                if (newPeriod?.id) {
+                  mutateSettings('personalization', { gradesPeriodId: newPeriod.id });
+                }
               }
             }}
             actions={
@@ -459,7 +485,7 @@ const GradesView: React.FC = () => {
               const actionId = nativeEvent.event;
               if (actionId.startsWith("sort:")) {
                 const selectedSorting = actionId.replace("sort:", "");
-                setSortMethod(selectedSorting);
+                updateSortMethod(selectedSorting);
               }
             }}
             actions={
