@@ -16,8 +16,19 @@ import { Balance } from './models/Balance';
 import CanteenHistoryItem from './models/CanteenHistory';
 import Kid from './models/Kid';
 import { mySchema } from './schema';
+import { Platform } from "react-native";
+import RNFetchBlob from "rn-fetch-blob";
+
+export const getDatabasePath = (): string | undefined => {
+  if (Platform.OS === "ios") {
+    // @ts-expect-error - This method exist.
+    return `${RNFetchBlob.fs.syncPathAppGroup("group.xyz.getpapillon.ios")}/default.db`;
+  }
+  return undefined;
+};
 
 const adapter = new SQLiteAdapter({
+  dbName: getDatabasePath(),
   schema: mySchema,
 });
 
@@ -26,7 +37,7 @@ export const database = new Database({
   modelClasses: [
     Event,
     Ical,
-    Subject, 
+    Subject,
     Homework,
     News,
     Period,
