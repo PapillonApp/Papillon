@@ -18,6 +18,7 @@ import fi from "@/locales/fi.json";
 import fr from "@/locales/fr.json";
 import he from "@/locales/he.json";
 import hi from "@/locales/hi.json";
+import hr from "@/locales/hr.json";
 import hu from "@/locales/hu.json";
 import id from "@/locales/id.json";
 import it from "@/locales/it.json";
@@ -78,6 +79,7 @@ export const resources = {
   ur: { translation: ur, emoji: "🇵🇰", label: "اردو" },
   ms: { translation: ms, emoji: "🇲🇾", label: "Bahasa Malaysia" },
   sw: { translation: sw, emoji: "🇹🇿", label: "Swahili" },
+  hr: { translation: hr, emoji: "🇭🇷", label: "Hrvatski" },
 };
 
 const languageDetector = {
