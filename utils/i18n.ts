@@ -13,6 +13,7 @@ import de from "@/locales/de.json";
 import el from "@/locales/el.json";
 import en from "@/locales/en.json";
 import es from "@/locales/es.json";
+import fa from "@/locales/fa.json";
 import fi from "@/locales/fi.json";
 import fr from "@/locales/fr.json";
 import he from "@/locales/he.json";
@@ -34,6 +35,7 @@ import sv from "@/locales/sv.json";
 import th from "@/locales/th.json";
 import tr from "@/locales/tr.json";
 import uk from "@/locales/uk.json";
+import ur from "@/locales/ur.json";
 import vi from "@/locales/vi.json";
 
 export const resources = {
@@ -70,6 +72,8 @@ export const resources = {
   sk: { translation: sk, emoji: "🇸🇰", label: "Slovenčina" },
   sv: { translation: sv, emoji: "🇸🇪", label: "Svenska" },
   th: { translation: th, emoji: "🇹🇭", label: "ไทย" },
+  fa: { translation: fa, emoji: "🇮🇷", label: "فارسی" },
+  ur: { translation: ur, emoji: "🇵🇰", label: "اردو" },
 };
 
 const languageDetector = {
