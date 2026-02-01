@@ -10,6 +10,7 @@ import { Pressable } from 'react-native';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 import { useUserProfileData } from '../hooks/useUserProfileData';
 
@@ -39,7 +40,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         gap={10}
       >
         <Pressable onPress={() => router.push('/(modals)/profile')}>
-          <LiquidGlassView
+          <UserProfileItemContainer
             glassType="clear"
             isInteractive={true}
             glassTintColor="transparent"
@@ -54,19 +55,10 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               initials={initials}
               imageUrl={profilePicture}
             />
-          </LiquidGlassView>
+          </UserProfileItemContainer>
         </Pressable>
 
-        <LiquidGlassView
-          glassType="clear"
-          isInteractive={true}
-          glassTintColor="transparent"
-          glassOpacity={0}
-          style={{
-            borderRadius: 300,
-            zIndex: 999999,
-          }}
-        >
+        <UserProfileItemContainer>
           <MenuView
             actions={[
               {
@@ -108,11 +100,38 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               }
             </Stack>
           </MenuView>
-        </LiquidGlassView>
+        </UserProfileItemContainer>
       </Stack>
     </Stack>
   );
 };
+
+const UserProfileItemContainer = ({ children }: { children: React.ReactNode }) => {
+  if (runsIOS26) {
+    return (
+      <LiquidGlassView
+        glassType="clear"
+        isInteractive={true}
+        glassTintColor="transparent"
+        glassOpacity={0}
+        style={{
+          borderRadius: 300,
+          zIndex: 999999,
+        }}
+      >
+        {children}
+      </LiquidGlassView>
+    );
+  }
+
+
+  return (
+    <Stack backgroundColor="#FFFFFF40" radius={300}>
+      {children}
+    </Stack>
+  )
+
+}
 
 const styles = StyleSheet.create({
   container: {
