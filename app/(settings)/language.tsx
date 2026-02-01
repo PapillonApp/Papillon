@@ -2,7 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView } from "react-native";
+import { Alert, ScrollView } from "react-native";
 
 import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
@@ -24,8 +24,14 @@ const LanguagePersonalization = () => {
     emoji: resources[key].emoji
   }));
 
+  const rtlLanguages = ["ar", "he", "fa", "ur"];
+
   const setLanguage = (lang: string) => {
     requestAnimationFrame(() => {
+      if (rtlLanguages.includes(lang)) {
+        Alert.alert("Inverted layout is not supported yet", "The selected language may not be displayed correctly.");
+      }
+
       setTimeout(() => {
         i18n.changeLanguage(lang);
         mutateProperty("personalization", { ...settingStore, language: lang });
