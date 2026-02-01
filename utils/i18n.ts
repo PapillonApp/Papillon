@@ -36,7 +36,7 @@ export const resources = {
   ja: { translation: ja, emoji: "🇯🇵", label: "日本語" },
   ru: { translation: ru, emoji: "🇷🇺", label: "Русский" },
   ko: { translation: ko, emoji: "🇰🇷", label: "한국어" },
-  af: { translation: af, emoji: "🇦🇫", label: "Afgan" },
+  af: { translation: af, emoji: "🇿🇦", label: "Afrikaans" },
   ar: { translation: ar, emoji: "🇦🇪", label: "العربية" },
   el: { translation: el, emoji: "🇬🇷", label: "Ελληνικά" },
   hi: { translation: hi, emoji: "🇮🇳", label: "हिन्दी" },
