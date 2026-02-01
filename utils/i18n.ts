@@ -62,8 +62,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: "fr",
-    lng: Localization.getLocales()[0].languageTag.split("-")[0],
+    fallbackLng: ["en", "fr"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["languageDetector"],
