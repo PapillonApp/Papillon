@@ -41,8 +41,6 @@ struct TaskWidgetProvider: TimelineProvider {
           
           let dueDate = Date(timeIntervalSince1970: TimeInterval(task.dueDate / 1000));
           
-          print(dueDate)
-          
           if (Calendar.current.isDateInToday(dueDate) || dueDate > .now) {
             let subject = Database.getSubjectCustomisation(subjectId: task.subject);
             
@@ -66,8 +64,6 @@ struct TaskWidgetProvider: TimelineProvider {
           }
         }
       }
-      
-      print(todo_tasks)
       
       entries.append(TaskWidgetEntry(
         date: .now,
