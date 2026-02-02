@@ -16,6 +16,7 @@ import { Papicons } from "@getpapillon/papicons"
 import { MenuView } from "@react-native-menu/menu"
 
 import * as ImagePicker from 'expo-image-picker';
+import ActionMenu from "@/ui/components/ActionMenu";
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -235,7 +236,7 @@ const WallpaperModal = () => {
             </Icon>
           </NativeHeaderPressable>
         )}
-        <MenuView
+        <ActionMenu
           actions={[
             {
               id: "background:clear",
@@ -291,7 +292,7 @@ const WallpaperModal = () => {
               <Papicons name="Gears" />
             </Icon>
           </NativeHeaderPressable>
-        </MenuView>
+        </ActionMenu>
       </NativeHeaderSide>
     </>
   )
