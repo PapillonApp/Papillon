@@ -59,6 +59,12 @@ function MenuItem({
   const destructive = Boolean(action.attributes?.destructive ?? legacy.destructive);
   const disabled = Boolean(action.attributes?.disabled ?? legacy.disabled);
 
+  const colorText = action.imageColor
+    ? action.imageColor
+    : destructive
+      ? destructiveColor
+      : textColor;
+
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
       <Stack direction="horizontal" vAlign="center" style={[styles.item, isOn && styles.itemSelected]}>
@@ -66,7 +72,7 @@ function MenuItem({
           <Text
             style={[
               styles.itemTitle,
-              { color: destructive ? destructiveColor : textColor },
+              { color: colorText },
               disabled && styles.disabled,
             ]}
             numberOfLines={1}
