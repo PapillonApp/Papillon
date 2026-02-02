@@ -1,4 +1,3 @@
-import { useAccountStore } from "@/stores/account"
 import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
