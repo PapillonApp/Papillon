@@ -13,7 +13,6 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import Icon from "@/ui/components/Icon"
 import { router } from "expo-router";
 import { Papicons } from "@getpapillon/papicons"
-import { MenuView } from "@react-native-menu/menu"
 
 import * as ImagePicker from 'expo-image-picker';
 import ActionMenu from "@/ui/components/ActionMenu";
