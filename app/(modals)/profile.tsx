@@ -1,5 +1,4 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker"
@@ -23,6 +22,7 @@ import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
@@ -89,7 +89,7 @@ export default function CustomProfileScreen() {
             imageUrl={profilePictureUrl || undefined}
           />
 
-          <MenuView
+          <ActionMenu
             actions={[
               {
                 id: 'photo_library',
@@ -140,7 +140,7 @@ export default function CustomProfileScreen() {
               icon={<Papicons name="Camera" />}
               title={t("Button_Change_ProfilePicture")}
             />
-          </MenuView>
+          </ActionMenu>
         </View>
 
         <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
