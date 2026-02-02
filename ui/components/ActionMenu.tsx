@@ -103,7 +103,7 @@ export default function ActionMenu({
   onPressAction,
   title,
 }: ActionMenuProps) {
-  const handleActionPress = onPressAction ?? (() => {});
+  const handleActionPress = onPressAction ?? (() => { });
   const { colors } = useTheme();
   const subtitleColor = `${colors.text}80`;
   const primaryColor = colors.primary;
@@ -112,9 +112,11 @@ export default function ActionMenu({
   const borderColor = colors.border;
 
   const triggerRef = useRef<View | null>(null);
+  const menuRef = useRef<View | null>(null);
   const [visible, setVisible] = useState(false);
   const [submenuStack, setSubmenuStack] = useState<MenuAction[]>([]);
   const [position, setPosition] = useState<LayoutRectangle | null>(null);
+  const [menuSize, setMenuSize] = useState<{ width: number; height: number } | null>(null);
 
   // iOS
   if (Platform.OS === "ios" && NativeMenuView) {
@@ -158,21 +160,24 @@ export default function ActionMenu({
   }
 
   function getMenuPosition() {
-    if (!position) {
+    if (!position || !menuSize) {
       return { alignSelf: "center" as const };
     }
 
-    const { width, height } = Dimensions.get("window");
+    const screen = Dimensions.get("window");
     const MARGIN = 16;
+    const SPACING = 8;
 
-    //A remplacer
-    const MENU_WIDTH = 320;
-    const MENU_HEIGHT = 260;
+    const left = Math.min(
+      Math.max(position.x, MARGIN),
+      screen.width - MARGIN - menuSize.width
+    );
 
-    const left = Math.min(Math.max(position.x, MARGIN), width - MARGIN - MENU_WIDTH);
-    const below = position.y + position.height + 8;
-    const fitsBelow = below + MENU_HEIGHT <= height - MARGIN;
-    const top = fitsBelow ? below : Math.max(MARGIN, position.y - MENU_HEIGHT - 8);
+    const topIfBelow = position.y + position.height + SPACING;
+    const hasSpaceBelow = topIfBelow + menuSize.height <= screen.height - MARGIN;
+    const top = hasSpaceBelow
+      ? topIfBelow
+      : Math.max(MARGIN, position.y - menuSize.height - SPACING);
 
     return { position: "absolute" as const, top, left };
   }
@@ -196,10 +201,15 @@ export default function ActionMenu({
         <Pressable style={styles.backdrop} onPress={close} />
         <View style={styles.container} pointerEvents="box-none">
           <View
+            ref={menuRef}
+            onLayout={(e: { nativeEvent: { layout: { width: number; height: number } } }) => {
+              const { width, height } = e.nativeEvent.layout;
+              setMenuSize({ width, height });
+            }}
             style={[
               styles.menu,
               getMenuPosition(),
-              { backgroundColor: cardColor },
+              { backgroundColor: cardColor, width: Math.min(Dimensions.get("window").width * 0.85, 320) },
             ]}
           >
             {currentSubmenu && (
@@ -250,8 +260,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   menu: {
-    minWidth: 260,
-    maxWidth: 320,
     borderRadius: 14,
     padding: 6,
     shadowColor: "#000",
