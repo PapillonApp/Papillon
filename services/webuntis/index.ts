@@ -5,12 +5,10 @@ import { error } from "@/utils/logger/logger";
 
 import { Period } from "../shared/grade";
 import { Homework } from "../shared/homework";
-import { News } from "../shared/news";
 import { CourseDay } from "../shared/timetable";
 import { Capabilities, SchoolServicePlugin } from "../shared/types";
 import { getCurrentWebUntisPeriod } from "./attendance";
 import { fetchWebUntisHomeworks } from "./homework";
-import { fetchWebUntisNews } from "./news";
 import { refreshWebUntisAccount } from "./refresh";
 import { fetchWebUntisWeekTimetable } from "./timetable";
 
@@ -30,7 +28,6 @@ export class WebUntisService implements SchoolServicePlugin {
 
     this.capabilities.push(Capabilities.TIMETABLE);
     this.capabilities.push(Capabilities.HOMEWORK);
-    this.capabilities.push(Capabilities.NEWS);
 
     return this;
   }
@@ -64,16 +61,5 @@ export class WebUntisService implements SchoolServicePlugin {
 
   async getAttendancePeriods(): Promise<Period[]> {
     return [getCurrentWebUntisPeriod()];
-  }
-
-  // News
-
-  async getNews(): Promise<News[]> {
-    if (this.session?.isAuthenticated()) {
-      return fetchWebUntisNews(this.session, this.accountId);
-    }
-
-    error("Session is not valid", "WebUntis.getNews");
-    return [];
   }
 }
