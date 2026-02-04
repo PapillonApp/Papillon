@@ -14,7 +14,7 @@ import Reanimated, {
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { WebUntis } from "webuntis";
+import { Credentials, WebUntisClient } from "webuntis-client";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
@@ -37,7 +37,7 @@ export default function WebUntisLoginWithCredentials() {
   const alert = useAlert();
   const { t } = useTranslation();
 
-  const [baseURL, setBaseURL] = useState<string>("");
+  const [url, setUrl] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -70,7 +70,7 @@ export default function WebUntisLoginWithCredentials() {
   }, [keyboardListeners]);
 
   const handleLogin = async () => {
-    if (!baseURL.trim() || !username.trim() || !password.trim()) {
+    if (!url.trim() || !username.trim() || !password.trim()) {
       alert.showAlert({
         title: t("ERROR_AUTHENTICATION"),
         description: t("ERROR_MISSING_FIELDS"),
@@ -84,35 +84,44 @@ export default function WebUntisLoginWithCredentials() {
     setIsLoggingIn(true);
     Keyboard.dismiss();
 
-    const school = baseURL.trim().split('.')[0];
+    const school = url.trim().split('.')[0];
     const identity = "PapillonApp";
 
-    const client = new WebUntis(school, username, password, baseURL, identity);
+    const credentials = new Credentials(identity, school, username, password);
+    const client = new WebUntisClient(credentials);
+
     const accountId = uuid();
     const store = useAccountStore.getState();
 
     try {
       await client.login();
 
-      if (!client.sessionInformation) {
+      const session = client.getSession()!;
+
+      if (!session) {
         throw new Error("No session information returned from WebUntis");
       }
 
+      await client.getAppData();
+
+      const displayName = client.getUser().person.displayName;
+      const schoolName = client.getTenant().displayName;
+
       const account: Account = {
         id: accountId,
-        firstName: username,
+        firstName: displayName,
         lastName: "",
-        schoolName: school,
+        schoolName: schoolName,
         services: [
           {
             id: accountId,
             auth: {
-              accessToken: client.sessionInformation.sessionId,
+              accessToken: session.sessionId,
               refreshToken: password,
               additionals: {
                 school: school,
                 username: username,
-                baseURL: baseURL,
+                url: url,
                 password: password,
               }
             },
@@ -193,8 +202,8 @@ export default function WebUntisLoginWithCredentials() {
         <OnboardingInput
           icon={"Link"}
           placeholder={t("INPUT_BASE_URL")}
-          text={baseURL}
-          setText={setBaseURL}
+          text={url}
+          setText={setUrl}
           isPassword={false}
           keyboardType={"url"}
           inputProps={{
@@ -235,7 +244,7 @@ export default function WebUntisLoginWithCredentials() {
             onSubmitEditing: () => {
               Keyboard.dismiss();
 
-              if (!isLoggingIn && baseURL.trim() && username.trim() && password.trim()) {
+              if (!isLoggingIn && url.trim() && username.trim() && password.trim()) {
                 handleLogin();
               }
             },
