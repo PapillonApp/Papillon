@@ -104,8 +104,8 @@ export default function WebUntisLoginWithCredentials() {
 
       await client.getAppData();
 
-      const displayName = client.getUser().person.displayName;
-      const schoolName = client.getTenant().displayName;
+      const displayName = client.getStudentDisplayName();
+      const schoolName = client.getTenantDisplayName();
 
       const account: Account = {
         id: accountId,
