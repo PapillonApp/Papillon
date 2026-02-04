@@ -94,9 +94,7 @@ export default function WebUntisLoginWithCredentials() {
     const store = useAccountStore.getState();
 
     try {
-      await client.login();
-
-      const session = client.getSession()!;
+      const session = await client.login();
 
       if (!session) {
         throw new Error("No session information returned from WebUntis");
