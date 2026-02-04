@@ -1,39 +1,36 @@
-import { WebUntis } from "webuntis";
+import { Credentials, WebUntisClient } from "webuntis-client";
 
 import { useAccountStore } from "@/stores/account";
 import { Auth } from "@/stores/account/types";
 
 /**
  * Refreshes the WebUntis account credentials using the provided authentication data.
- * @param credentials
+ * @param accountId
+ * @param authCredentials
  * @returns {Promise<Auth>} A promise that resolves to the updated authentication data.
  */
 export async function refreshWebUntisAccount(
   accountId: string,
-  credentials: Auth
-): Promise<{ auth: Auth, session: WebUntis }> {
+  authCredentials: Auth
+): Promise<{ auth: Auth, session: WebUntisClient }> {
 
-  const school = String(credentials.additionals?.["school"] || "");
-  const username = String(credentials.additionals?.["username"] || "");
-  const password = String(credentials.additionals?.["password"] || credentials.refreshToken || "");
-  const baseURL = String(credentials.additionals?.["baseURL"] || "");
+  const school = String(authCredentials.additionals?.["school"] || "");
+  const username = String(authCredentials.additionals?.["username"] || "");
+  const password = String(authCredentials.additionals?.["password"] || authCredentials.refreshToken || "");
+  const url = String(authCredentials.additionals?.["url"] || "");
 
-  const client = new WebUntis(
-    school,
-    username,
-    password,
-    baseURL
-  );
+  const credentials = new Credentials("PapillonApp", school, username, password);
+  const client = new WebUntisClient(credentials);
 
-  await client.login();
+  const session = await client.login();
 
   const auth: Auth = {
-    accessToken: client.sessionInformation?.sessionId || "",
+    accessToken: session.sessionId || "",
     refreshToken: password,
     additionals: {
       school: school,
       username: username,
-      baseURL: baseURL,
+      url: url,
       password: password,
     },
   }
