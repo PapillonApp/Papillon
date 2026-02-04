@@ -12,9 +12,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getManager, subscribeManagerUpdate } from '@/services/shared';
 import { GradeScore, Period, Subject } from "@/services/shared/grade";
+import { useSettingsStore } from "@/stores/settings";
 import ChipButton from '@/ui/components/ChipButton';
 import { CompactGrade } from '@/ui/components/CompactGrade';
 import { Dynamic } from '@/ui/components/Dynamic';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import Icon from '@/ui/components/Icon';
 import Item, { Trailing } from '@/ui/components/Item';
 import List from '@/ui/components/List';
@@ -57,7 +59,21 @@ const GradesView: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Sortings
-  const [sortMethod, setSortMethod] = useState<string>("date");
+  const settings = useSettingsStore(state => state.personalization);
+  const mutateSettings = useSettingsStore(state => state.mutateProperty);
+
+  const [sortMethod, setSortMethod] = useState<string>(settings.gradesSortMethod || "date");
+
+  useEffect(() => {
+    if (settings.gradesSortMethod) {
+      setSortMethod(settings.gradesSortMethod);
+    }
+  }, [settings.gradesSortMethod]);
+
+  const updateSortMethod = (method: string) => {
+    setSortMethod(method);
+    mutateSettings('personalization', { gradesSortMethod: method });
+  };
   const sortings = [
     {
       label: t("Grades_Sorting_Alphabetical"),
@@ -103,7 +119,14 @@ const GradesView: React.FC = () => {
     setPeriodsLoading(true);
 
     const result = await managerToUse.getGradesPeriods();
-    const currentPeriodFound = getCurrentPeriod(result);
+    let currentPeriodFound = getCurrentPeriod(result);
+
+    if (settings.gradesPeriodId) {
+      const savedPeriod = result.find(p => p.id === settings.gradesPeriodId);
+      if (savedPeriod) {
+        currentPeriodFound = savedPeriod;
+      }
+    }
 
     // sort by time, then put Semestre and Trimestre on top
     const sortedResult = [...result].sort((a, b) => {
@@ -177,7 +200,7 @@ const GradesView: React.FC = () => {
   }, [currentPeriod]);
 
   const grades = useMemo(() => {
-    return subjects.flatMap((subject) => subject.grades);
+    return subjects.flatMap((subject) => subject.grades || []);
   }, [subjects]);
 
   const getSubjectById = useCallback((id: string) => {
@@ -211,8 +234,8 @@ const GradesView: React.FC = () => {
 
       default:
         subjectsCopy.sort((a, b) => {
-          const aLatestGrade = a.grades[0];
-          const bLatestGrade = b.grades[0];
+          const aLatestGrade = a.grades?.[0];
+          const bLatestGrade = b.grades?.[0];
 
           if (!aLatestGrade && !bLatestGrade) { return 0; }
           if (!aLatestGrade) { return 1; }
@@ -248,11 +271,11 @@ const GradesView: React.FC = () => {
       }
 
       // Also search in grades descriptions
-      const matchingGrades = subject.grades.filter((grade) => {
+      const matchingGrades = subject.grades?.filter((grade) => {
         return grade.description?.toLowerCase().includes(lowerSearchText);
       });
 
-      return matchingGrades.length > 0;
+      return (matchingGrades?.length || 0) > 0;
     });
   }, [searchText, sortedSubjects]);
 
@@ -270,8 +293,10 @@ const GradesView: React.FC = () => {
   const renderItem = useCallback(({ item }: { item: any }) => {
     const subject = item as Subject;
     return (
-      // @ts-expect-error navigation types
-      <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
+      <ErrorBoundary>
+        {/* @ts-expect-error navigation types */}
+        <MemoizedSubjectItem subject={subject} grades={grades} getAvgInfluence={getAvgInfluence} getAvgClassInfluence={getAvgClassInfluence} />
+      </ErrorBoundary>
     )
   }, [grades]);
 
@@ -287,11 +312,13 @@ const GradesView: React.FC = () => {
   // header
   const ListHeader = useMemo(() => ((sortedGrades.length > 0 && searchText.length === 0) ? (
     <View style={{ marginBottom: 16 }}>
-      <Averages
-        grades={grades}
-        color={colors.primary}
-        realAverage={serviceAverage || undefined}
-      />
+      <ErrorBoundary>
+        <Averages
+          grades={grades}
+          color={colors.primary}
+          realAverage={serviceAverage || undefined}
+        />
+      </ErrorBoundary>
 
       {serviceRank && (
         <List style={{ marginTop: 8 }}>
@@ -353,39 +380,43 @@ const GradesView: React.FC = () => {
             recycleItems={true}
             keyExtractor={(item) => item.id}
             renderItem={({ item: grade }) =>
-              <CompactGrade
-                key={grade.id + "_compactGrade_header"}
-                emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
-                title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
-                description={grade.description}
-                score={grade.studentScore?.value || 0}
-                outOf={grade.outOf?.value || 20}
-                disabled={grade.studentScore?.disabled}
-                status={grade.studentScore?.status}
-                color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
-                date={grade.givenAt}
-                hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
-                onPress={() => {
-                  // @ts-expect-error navigation types
-                  navigation.navigate('(modals)/grade', {
-                    grade: grade,
-                    subjectInfo: {
-                      name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
-                      color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
-                      emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
-                      originalName: getSubjectById(grade.subjectId)?.name || ""
-                    },
-                    avgInfluence: getAvgInfluence(grade),
-                    avgClass: getAvgClassInfluence(grade),
-                  })
-                }}
-              />
+              <ErrorBoundary fallback={<View style={{ width: 140, height: 140 }} />}>
+                <CompactGrade
+                  key={grade.id + "_compactGrade_header"}
+                  emoji={getSubjectEmoji(getSubjectById(grade.subjectId)?.name || "")}
+                  title={getSubjectName(getSubjectById(grade.subjectId)?.name || "")}
+                  description={grade.description}
+                  score={grade.studentScore?.value || 0}
+                  outOf={grade.outOf?.value || 20}
+                  disabled={grade.studentScore?.disabled}
+                  status={grade.studentScore?.status}
+                  color={getSubjectColor(getSubjectById(grade.subjectId)?.name || "")}
+                  date={grade.givenAt}
+                  hasMaxScore={grade?.studentScore?.value === grade?.maxScore?.value && !grade?.studentScore?.disabled}
+                  onPress={() => {
+                    // @ts-expect-error navigation types
+                    navigation.navigate('(modals)/grade', {
+                      grade: grade,
+                      subjectInfo: {
+                        name: getSubjectName(getSubjectById(grade.subjectId)?.name || ""),
+                        color: getSubjectColor(getSubjectById(grade.subjectId)?.name || ""),
+                        emoji: getSubjectEmoji(getSubjectById(grade.subjectId)?.name || ""),
+                        originalName: getSubjectById(grade.subjectId)?.name || ""
+                      },
+                      avgInfluence: getAvgInfluence(grade),
+                      avgClass: getAvgClassInfluence(grade),
+                    })
+                  }}
+                />
+              </ErrorBoundary>
             }
           />
         </Stack>
       </Dynamic>
 
-      <FeaturesMap features={features} />
+      <ErrorBoundary>
+        <FeaturesMap features={features} />
+      </ErrorBoundary>
 
       <Dynamic animated>
         <Stack direction='horizontal' gap={8} vAlign='start' hAlign='center' style={{ opacity: 0.4 }} padding={[0, 0]}>
@@ -419,7 +450,11 @@ const GradesView: React.FC = () => {
 
               if (actionId.startsWith("period:")) {
                 const selectedPeriodId = actionId.replace("period:", "");
-                setCurrentPeriod(periods.find(period => period.id === selectedPeriodId));
+                const newPeriod = periods.find(period => period.id === selectedPeriodId);
+                setCurrentPeriod(newPeriod);
+                if (newPeriod?.id) {
+                  mutateSettings('personalization', { gradesPeriodId: newPeriod.id });
+                }
               }
             }}
             actions={
@@ -459,7 +494,7 @@ const GradesView: React.FC = () => {
               const actionId = nativeEvent.event;
               if (actionId.startsWith("sort:")) {
                 const selectedSorting = actionId.replace("sort:", "");
-                setSortMethod(selectedSorting);
+                updateSortMethod(selectedSorting);
               }
             }}
             actions={
