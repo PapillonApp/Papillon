@@ -1,4 +1,4 @@
-import { WebUntis } from "webuntis";
+import { WebUntisClient } from "webuntis-client";
 
 import { Auth, Services } from "@/stores/account/types";
 import { error } from "@/utils/logger/logger";
@@ -18,9 +18,9 @@ export class WebUntisService implements SchoolServicePlugin {
   displayName = "WebUntis";
   service = Services.WEBUNTIS;
   capabilities: Capabilities[] = [Capabilities.REFRESH];
-  session: WebUntis | undefined = undefined;
+  session: WebUntisClient | undefined = undefined;
   authData: Auth = {};
-  
+
   constructor(public accountId: string) {}
 
   async refreshAccount(credentials: Auth): Promise<WebUntisService> {
@@ -31,16 +31,17 @@ export class WebUntisService implements SchoolServicePlugin {
     this.capabilities.push(Capabilities.TIMETABLE);
     this.capabilities.push(Capabilities.HOMEWORK);
     this.capabilities.push(Capabilities.NEWS);
-		
+
     return this;
   }
 
   // Timetable
 
-  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
-    await this.session?.validateSession();
-  
-    if (this.session) {
+  async getWeeklyTimetable(
+    weekNumber: number,
+    date: Date
+  ): Promise<CourseDay[]> {
+    if (this.session?.isAuthenticated()) {
       return fetchWebUntisWeekTimetable(this.session, this.accountId, date);
     }
 
@@ -51,9 +52,7 @@ export class WebUntisService implements SchoolServicePlugin {
   // Homeworks
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
-    await this.session?.validateSession();
-  
-    if (this.session) {
+    if (this.session?.isAuthenticated()) {
       return fetchWebUntisHomeworks(this.session, this.accountId, weekNumber);
     }
 
@@ -66,14 +65,12 @@ export class WebUntisService implements SchoolServicePlugin {
   async getAttendancePeriods(): Promise<Period[]> {
     return [getCurrentWebUntisPeriod()];
   }
-  
+
   // News
 
   async getNews(): Promise<News[]> {
-    await this.session?.validateSession();
-  
-    if (this.session) {
-      return fetchWebUntisNews(this.session, this.accountId)
+    if (this.session?.isAuthenticated()) {
+      return fetchWebUntisNews(this.session, this.accountId);
     }
 
     error("Session is not valid", "WebUntis.getNews");
