@@ -49,11 +49,14 @@ function MenuItem({
   const destructive = Boolean(action.attributes?.destructive ?? legacy.destructive);
   const disabled = Boolean(action.attributes?.disabled ?? legacy.disabled);
 
-  const colorText = action.imageColor
-    ? action.imageColor
-    : destructive
-      ? destructiveColor
-      : textColor;
+  let colorText: string;
+  if (action.imageColor !== undefined && action.imageColor !== null) {
+    colorText = String(action.imageColor);
+  } else if (destructive) {
+    colorText = destructiveColor;
+  } else {
+    colorText = textColor;
+  }
 
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
