@@ -16,6 +16,7 @@ import { useTheme } from "@react-navigation/native";
 import Stack from "@/ui/components/Stack";
 import { Papicons } from "@getpapillon/papicons";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { warn } from "@/utils/logger/logger";
 
 let NativeMenuView: ComponentType<Record<string, unknown>> | null = null;
 if (Platform.OS === "ios") {
@@ -23,7 +24,7 @@ if (Platform.OS === "ios") {
     const mod = require("@react-native-menu/menu");
     NativeMenuView = mod?.MenuView ?? null;
   } catch (err: unknown) {
-    console.warn("ActionMenu: impossible de charger @react-native-menu/menu MenuView:", err);
+    warn(`ActionMenu: impossible de charger @react-native-menu/menu MenuView: ${String(err)}`);
   }
 }
 
