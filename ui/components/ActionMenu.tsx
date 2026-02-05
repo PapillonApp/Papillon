@@ -1,4 +1,4 @@
-import React, { ReactNode, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { ComponentType } from "react";
 import type { MenuAction as NativeMenuAction, MenuComponentProps as NativeMenuComponentProps } from "@react-native-menu/menu";
 import {
@@ -25,15 +25,6 @@ if (Platform.OS === "ios") {
   } catch (err: unknown) {
     console.warn("ActionMenu: impossible de charger @react-native-menu/menu MenuView:", err);
   }
-}
-
-type MenuAction = NativeMenuAction;
-
-interface ActionMenuProps {
-  actions: MenuAction[];
-  children: ReactNode;
-  onPressAction?: ({ nativeEvent }: NativeActionEvent) => void;
-  title?: string;
 }
 
 function MenuItem({
@@ -107,7 +98,7 @@ export default function ActionMenu({
   children,
   onPressAction,
   title,
-}: ActionMenuProps) {
+}: NativeMenuComponentProps) {
   const handleActionPress = onPressAction ?? (() => { });
   const { colors } = useTheme();
   const subtitleColor = `${colors.text}80`;
