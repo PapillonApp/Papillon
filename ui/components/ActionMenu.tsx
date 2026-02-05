@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Stack from "@/ui/components/Stack";
 import { Papicons } from "@getpapillon/papicons";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
@@ -105,6 +106,7 @@ export default function ActionMenu({
 }: NativeMenuComponentProps) {
   const handleActionPress = onPressAction ?? (() => { });
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const subtitleColor = `${colors.text}80`;
   const primaryColor = colors.primary;
   const cardColor = colors.card;
@@ -168,16 +170,21 @@ export default function ActionMenu({
     const MARGIN = 16;
     const SPACING = 8;
 
+    const safeLeft = insets.left + MARGIN;
+    const safeRight = screen.width - insets.right - MARGIN;
+    const safeTop = insets.top + MARGIN;
+    const safeBottom = screen.height - insets.bottom - MARGIN;
+
     const left = Math.min(
-      Math.max(position.x, MARGIN),
-      screen.width - MARGIN - menuSize.width
+      Math.max(position.x, safeLeft),
+      safeRight - menuSize.width
     );
 
     const topIfBelow = position.y + position.height + SPACING;
-    const hasSpaceBelow = topIfBelow + menuSize.height <= screen.height - MARGIN;
+    const hasSpaceBelow = topIfBelow + menuSize.height <= safeBottom;
     const top = hasSpaceBelow
       ? topIfBelow
-      : Math.max(MARGIN, position.y - menuSize.height - SPACING);
+      : Math.max(safeTop, position.y - menuSize.height - SPACING);
 
     return { position: "absolute" as const, top, left };
   }
