@@ -24,7 +24,6 @@ if (Platform.OS === "ios") {
     NativeMenuView = mod?.MenuView ?? null;
   } catch (err: unknown) {
     console.warn("ActionMenu: impossible de charger @react-native-menu/menu MenuView:", err);
-    NativeMenuView = null;
   }
 }
 
