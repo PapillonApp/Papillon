@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useRef } from "react";
 import type { ComponentType } from "react";
-import type { MenuAction as NativeMenuAction, NativeActionEvent } from "@react-native-menu/menu";
+import type { MenuAction as NativeMenuAction, MenuComponentProps as NativeMenuComponentProps } from "@react-native-menu/menu";
 import {
   Modal,
   Platform,
@@ -44,7 +44,7 @@ function MenuItem({
   destructiveColor,
   onPress,
 }: {
-  action: MenuAction;
+  action: NativeMenuAction;
   textColor: string;
   subtitleColor: string;
   primaryColor: string;
@@ -119,7 +119,7 @@ export default function ActionMenu({
   const triggerRef = useRef<View | null>(null);
   const menuRef = useRef<View | null>(null);
   const [visible, setVisible] = useState(false);
-  const [submenuStack, setSubmenuStack] = useState<MenuAction[]>([]);
+  const [submenuStack, setSubmenuStack] = useState<NativeMenuAction[]>([]);
   const [position, setPosition] = useState<LayoutRectangle | null>(null);
   const [menuSize, setMenuSize] = useState<{ width: number; height: number } | null>(null);
 
@@ -151,7 +151,7 @@ export default function ActionMenu({
     setSubmenuStack([]);
   }
 
-  function handlePress(action: MenuAction, fallbackId: string) {
+  function handlePress(action: NativeMenuAction, fallbackId: string) {
     if (action.subactions && action.subactions.length > 0) {
       setSubmenuStack((prev) => [...prev, action]);
       return;
