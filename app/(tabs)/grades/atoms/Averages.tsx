@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuView } from "@react-native-menu/menu";
+import ActionMenu from "@/ui/components/ActionMenu";
 import { useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { t } from "i18next";
@@ -211,7 +211,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
               </Dynamic>
             </Stack>
 
-            <MenuView
+            <ActionMenu
               actions={[
                 {
                   title: t('Grades_Avg_Methods'),
@@ -263,7 +263,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
                   </Icon>
                 </Stack>
               </TouchableOpacity>
-            </MenuView>
+            </ActionMenu>
 
             <Dynamic animated key={"dateSource:" + (isRealAverage ? "real" : "estimated")}>
               <Typography color="secondary" style={{ marginTop: 1 }}>

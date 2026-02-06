@@ -1,6 +1,6 @@
 import { Papicons } from '@getpapillon/papicons';
 import { LegendList } from '@legendapp/list';
-import { MenuView } from '@react-native-menu/menu';
+import ActionMenu from '@/ui/components/ActionMenu';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { t } from 'i18next';
@@ -444,7 +444,7 @@ const GradesView: React.FC = () => {
         onHeightChanged={setHeaderHeight}
         /* Nom de la période */
         title={
-          <MenuView
+          <ActionMenu
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
 
@@ -485,7 +485,7 @@ const GradesView: React.FC = () => {
               loading={loading}
               chevron={periods.length > 1}
             />
-          </MenuView>
+          </ActionMenu>
         }
         /* Filtres */
         trailing={
@@ -570,3 +570,4 @@ const GradesView: React.FC = () => {
 };
 
 export default GradesView;
+

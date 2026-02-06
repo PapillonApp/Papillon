@@ -1,4 +1,3 @@
-import { useAccountStore } from "@/stores/account"
 import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
@@ -13,9 +12,9 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import Icon from "@/ui/components/Icon"
 import { router } from "expo-router";
 import { Papicons } from "@getpapillon/papicons"
-import { MenuView } from "@react-native-menu/menu"
 
 import * as ImagePicker from 'expo-image-picker';
+import ActionMenu from "@/ui/components/ActionMenu";
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -235,7 +234,7 @@ const WallpaperModal = () => {
             </Icon>
           </NativeHeaderPressable>
         )}
-        <MenuView
+        <ActionMenu
           actions={[
             {
               id: "background:clear",
@@ -291,7 +290,7 @@ const WallpaperModal = () => {
               <Papicons name="Gears" />
             </Icon>
           </NativeHeaderPressable>
-        </MenuView>
+        </ActionMenu>
       </NativeHeaderSide>
     </>
   )

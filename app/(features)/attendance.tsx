@@ -6,7 +6,6 @@ import { Platform, ScrollView, View } from "react-native";
 import { Papicons } from "@getpapillon/papicons"
 import { useTheme } from "@react-navigation/native";
 import { Dynamic } from "@/ui/components/Dynamic";
-import { MenuView } from "@react-native-menu/menu";
 import { Period } from "@/services/shared/grade";
 import { getPeriodName, getPeriodNumber, isPeriodWithNumber } from "@/utils/services/periods";
 import { useMemo, useState } from "react";
@@ -21,6 +20,7 @@ import { error } from "@/utils/logger/logger";
 import { getManager } from "@/services/shared";
 import { t } from "i18next";
 import i18n from "@/utils/i18n";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function AttendanceView() {
   try {
@@ -270,7 +270,7 @@ export default function AttendanceView() {
             </NativeHeaderSide>
 
             <NativeHeaderTitle style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }} key={"att:" + period?.name}>
-              <MenuView
+              <ActionMenu
                 key={String(period?.id ?? "")}
                 onPressAction={async ({ nativeEvent }) => {
                   const actionId = nativeEvent.event;
@@ -328,7 +328,7 @@ export default function AttendanceView() {
                     <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
                   </Dynamic>
                 </Dynamic>
-              </MenuView>
+              </ActionMenu>
             </NativeHeaderTitle >
           </>
         )}

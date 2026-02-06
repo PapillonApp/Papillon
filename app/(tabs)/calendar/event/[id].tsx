@@ -1,4 +1,3 @@
-import { MenuView } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { t } from 'i18next';
@@ -10,6 +9,7 @@ import UnderConstructionNotice from "@/components/UnderConstructionNotice";
 import { useDatabase } from '@/database/DatabaseProvider';
 import { useEventById } from '@/database/useEventsById';
 import { NativeHeaderPressable, NativeHeaderSide } from '@/ui/components/NativeHeader';
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function TabOneScreen() {
   const { id, title } = useLocalSearchParams();
@@ -39,7 +39,7 @@ export default function TabOneScreen() {
   return (
     <>
       <NativeHeaderSide side='Right'>
-        <MenuView
+        <ActionMenu
           actions={[
             {
               id: 'delete',
@@ -92,7 +92,7 @@ export default function TabOneScreen() {
           <NativeHeaderPressable>
             <MoreVertical color={colors.text} />
           </NativeHeaderPressable>
-        </MenuView>
+        </ActionMenu>
       </NativeHeaderSide>
 
       <ScrollView
