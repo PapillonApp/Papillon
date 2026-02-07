@@ -5,7 +5,18 @@ import { parseADEDescription } from "../local/parsers/ade-parser";
 
 function parseAppschoDate(dateStr: string): Date {
   if (!dateStr) return new Date(NaN);
-  return new Date(dateStr.replace(" ", "T").replace(" +0000", "Z"));
+  
+  const formatted = dateStr
+    .trim()
+    .replace(" ", "T")
+    .replace(/\s?\+(\d{2})(\d{2})/, "+$1:$2")
+  const d = new Date(formatted);
+  
+  if (isNaN(d.getTime())) {
+    return new Date(dateStr.replace(" ", "T").split(" ")[0]);
+  }
+  
+  return d;
 }
 
 export async function fetchAppschoTimetable(
@@ -16,46 +27,65 @@ export async function fetchAppschoTimetable(
   _forceRefresh?: boolean
 ): Promise<CourseDay[]> {
   const { start, end } = getDateRangeOfWeek(weekNumber);
+
   try {
-    const planning = await getPlanning(instanceId, session.token);
-    if(!planning || planning.length === 0) {
-      Error('Une erreur est survenue lors de la récupération de l\'emploi du temps. Veuillez réessayer ultérieurement.');
-    }
+    const rawData = await getPlanning(instanceId, session.token);
+
+    const planning: Lesson[] = Array.isArray(rawData) ? rawData : (rawData as any)?.response || [];
+
+    if (planning.length === 0) return [];
+
     const weekEvents = planning.filter((lesson: Lesson) => {
-      const lessonDate = parseAppschoDate(lesson.dtstart);
-      return lessonDate >= start && lessonDate <= end;
+      const rawStart = lesson.dtstart || (lesson as any).DTSTART;
+      const lessonDate = parseAppschoDate(rawStart);
+
+      if (isNaN(lessonDate.getTime())) return false;
+
+      const isAfterStart = lessonDate >= start;
+      const isBeforeEnd = lessonDate <= end;
+
+      return isAfterStart && isBeforeEnd;
     });
+
     const eventsByDate = new Map<string, Lesson[]>();
     weekEvents.forEach((lesson: Lesson) => {
-      const lessonDate = parseAppschoDate(lesson.dtstart);
+      const lessonDate = parseAppschoDate(lesson.dtstart || (lesson as any).DTSTART);
       const dateKey = lessonDate.toISOString().split('T')[0];
       const existing = eventsByDate.get(dateKey) || [];
       existing.push(lesson);
       eventsByDate.set(dateKey, existing);
     });
+
     const result: CourseDay[] = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateKey = d.toISOString().split('T')[0];
+    const currentIterDate = new Date(start);
+
+    for (let i = 0; i < 7; i++) {
+      const dateKey = currentIterDate.toISOString().split('T')[0];
       const dayEvents = eventsByDate.get(dateKey) || [];
+      
       result.push({
-        date: new Date(d),
+        date: new Date(currentIterDate),
         courses: mapAppschoCourses(dayEvents, accountId)
       });
+      
+      currentIterDate.setDate(currentIterDate.getDate() + 1);
     }
+
     return result;
   } catch (error) {
+    console.error(`[Appscho-Error] ${error}`);
     throw new Error(`Failed to fetch AppScho timetable: ${error}`);
   }
 }
 
-
-
 function mapAppschoCourses(lessons: Lesson[], accountId: string): Course[] {
   return lessons
     .map((lesson) => {
+      const raw = lesson as any;
       const parsed = parseADEDescription(lesson.description || '');
+      
       const group = parsed?.groups?.join(', ') || parsed?.group || undefined;
-      const teacher = parsed?.teacher || undefined;
+      const teacher = parsed?.teacher || raw.teachers?.join(", ") || undefined;
       const courseType = parsed?.type;
 
       let subjectName = lesson.summary || "Cours";
@@ -63,14 +93,19 @@ function mapAppschoCourses(lessons: Lesson[], accountId: string): Course[] {
         subjectName = `${subjectName} (${courseType})`;
       }
 
+      const from = parseAppschoDate(lesson.dtstart || raw.DTSTART);
+      const to = parseAppschoDate(lesson.dtend || raw.DTEND);
+
       return {
         subject: subjectName,
-        id: lesson.uid || `${lesson.dtstart}-${lesson.summary}`,
+        id: lesson.uid || `${from.getTime()}-${subjectName}`,
         type: CourseType.LESSON,
-        from: parseAppschoDate(lesson.dtstart),
-        to: parseAppschoDate(lesson.dtend),
+        from,
+        to,
         additionalInfo: lesson.description,
-        room: lesson.locations && lesson.locations.length > 0 ? lesson.locations.join(", ") : lesson.location,
+        room: (lesson.locations && lesson.locations.length > 0) 
+          ? lesson.locations.join(", ") 
+          : lesson.location,
         teacher,
         group,
         backgroundColor: "#1E3035",

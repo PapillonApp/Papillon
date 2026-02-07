@@ -8,7 +8,7 @@ export async function refreshAppSchoAccount(
 ): Promise<{ auth: Auth; session: User }> {
   const additionals = credentials.additionals || {};
   const instanceId = additionals["instanceId"];
-  const refreshToken = additionals["refreshToken"];
+  const currentRefreshToken = additionals["refreshToken"];
   const username = additionals["username"];
   const password = additionals["password"];
 
@@ -17,26 +17,27 @@ export async function refreshAppSchoAccount(
   }
 
   let session: User;
-  const authData: Auth = { additionals: { instanceId } };
 
   try {
-    if (refreshToken) {
-      session = await refreshOAuthTokenWithUser(String(instanceId), String(refreshToken));
-      authData.additionals!.refreshToken = refreshToken;
+    if (currentRefreshToken) {
+      session = await refreshOAuthTokenWithUser(String(instanceId), String(currentRefreshToken));
     } else if (username && password) {
       session = await loginWithCredentials(String(instanceId), String(username), String(password));
-      authData.additionals!.username = username;
-      authData.additionals!.password = password;
     } else {
-      throw new Error("No refresh method available - missing both refresh token and credentials");
+      throw new Error("No refresh method available");
     }
+
+    const newAuthData: Auth = {
+      additionals: {
+        ...additionals,
+        refreshToken: session.refreshToken || currentRefreshToken,
+      },
+    };
+
+    useAccountStore.getState().updateServiceAuthData(accountId, newAuthData);
+
+    return { auth: newAuthData, session };
   } catch (error) {
-    throw new Error(
-      `Failed to refresh AppScho session: ${error}`
-    );
+    throw new Error(`Failed to refresh AppScho session: ${error}`);
   }
-
-  useAccountStore.getState().updateServiceAuthData(accountId, authData);
-
-  return { auth: authData, session };
 }
