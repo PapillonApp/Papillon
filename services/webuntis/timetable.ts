@@ -51,7 +51,8 @@ const mapCourses = (accountId: string, days: TimetableDay[]): Course[] => {
       const teacher = c.teacher!.longName;
 
       const course: Course = {
-        id: subject + room + teacher,
+        id:
+          subject + room + teacher + c.from.toISOString() + c.to.toISOString(),
         type: CourseType.LESSON,
         subject: subject,
         room: room,
@@ -66,6 +67,8 @@ const mapCourses = (accountId: string, days: TimetableDay[]): Course[] => {
       } else if (c.status === "CHANGED") {
         course.status = CourseStatus.EDITED;
       }
+
+      courseList.push(course);
     }
   }
 
