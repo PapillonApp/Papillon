@@ -39,7 +39,11 @@ export class WebUntisService implements SchoolServicePlugin {
     date: Date
   ): Promise<CourseDay[]> {
     if (this.session?.isAuthenticated()) {
-      return fetchWebUntisWeekTimetable(this.session, this.accountId, date);
+      return fetchWebUntisWeekTimetable(
+        this.session,
+        this.accountId,
+        weekNumber
+      );
     }
 
     error("Session is not valid", "WebUntis.getWeeklyTimetable");

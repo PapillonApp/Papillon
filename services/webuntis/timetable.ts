@@ -1,20 +1,26 @@
-import { WebAPITimetable, WebUntis } from "webuntis";
+import { WebUntisClient } from "webuntis-client";
+import { TimetableDay } from "webuntis-client/dist/types/timetable/day";
 
-import { Course, CourseDay, CourseStatus, CourseType } from "@/services/shared/timetable";
+import { getDateRangeOfWeek } from "@/database/useHomework";
+import {
+  Course,
+  CourseDay,
+  CourseStatus,
+  CourseType,
+} from "@/services/shared/timetable";
 import { error } from "@/utils/logger/logger";
 
-const EXAM = "EXAM";
-
 export async function fetchWebUntisWeekTimetable(
-  session: WebUntis,
+  session: WebUntisClient,
   accountId: string,
-  date: Date
+  weekNumber: number
 ): Promise<CourseDay[]> {
   if (!session) {
     error("Session is undefined", "fetchWebUntisTimetable");
   }
 
-  const timetable = await session.getOwnTimetableForWeek(date);
+  const { start, end } = getDateRangeOfWeek(weekNumber);
+  const timetable = await session.getOwnTimetable(start, end);
 
   const mappedCourses = mapCourses(accountId, timetable);
   const dayMap: Record<string, Course[]> = {};
@@ -31,53 +37,37 @@ export async function fetchWebUntisWeekTimetable(
 
   return Object.entries(dayMap).map(([day, courses]) => ({
     date: new Date(day),
-    courses
+    courses,
   }));
 }
 
-const mapCourses = (
-  accountId: string,
-  courses: WebAPITimetable[]
-): Course[] => {
+const mapCourses = (accountId: string, days: TimetableDay[]): Course[] => {
   const courseList: Course[] = [];
 
-  for (const c of courses) {
-    const dateStr = c.date.toString();
+  for (const day of days) {
+    for (const c of day.gridEntries) {
+      const subject = c.subject!.longName;
+      const room = c.room!.longName;
+      const teacher = c.teacher!.longName;
 
-    const year = parseInt(dateStr.substring(0, 4));
-    const month = parseInt(dateStr.substring(4, 6)) - 1;
-    const day = parseInt(dateStr.substring(6, 8));
-  
-    const startHour = Math.floor(c.startTime / 100);
-    const startMin = c.startTime % 100;
-    
-    const endHour = Math.floor(c.endTime / 100);
-    const endMin = c.endTime % 100;
+      const course: Course = {
+        id: subject + room + teacher,
+        type: CourseType.LESSON,
+        subject: subject,
+        room: room,
+        teacher: teacher,
+        createdByAccount: accountId,
+        from: c.from,
+        to: c.to,
+      };
 
-    const from = new Date(year, month, day, startHour, startMin);
-    const to = new Date(year, month, day, endHour, endMin);
-
-    const course: Course = {
-      id: c.id.toString(),
-      type: CourseType.LESSON,
-      subject: c.subjects[0]?.element.name || "Unknown",
-      room: c.rooms.map(r => r.element.name).join(", "),
-      teacher: c.teachers.map(t => t.element.name).join(", "),
-      createdByAccount: accountId,
-      from: from,
-      to: to,
-    };
-
-    if (isCourseExam(c.cellState)) {
-      course.status = CourseStatus.EVALUATED;
+      if (c.type === "EXAM") {
+        course.status = CourseStatus.EVALUATED;
+      } else if (c.status === "CHANGED") {
+        course.status = CourseStatus.EDITED;
+      }
     }
-
-    courseList.push(course);
   }
 
   return courseList;
 };
-
-const isCourseExam = (cellState: string): boolean => {
-  return cellState === EXAM;
-}
