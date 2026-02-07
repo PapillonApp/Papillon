@@ -52,6 +52,7 @@
     "expo-battery": "~10.0.8",
     "expo-blur": "~15.0.8",
     "expo-build-properties": "~1.0.10",
+    "expo-brightness": "~14.0.8",
     "expo-camera": "~17.0.10",
     "expo-crypto": "~15.0.8",
     "expo-dev-client": "~6.0.20",
