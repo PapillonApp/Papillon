@@ -1,21 +1,55 @@
+import { LegendList } from "@legendapp/list";
+import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React from 'react';
-import { FlatList } from "react-native";
+import { LinearTransition } from "react-native-reanimated";
 
 import { CourseStatus } from "@/services/shared/timetable";
+import { useSettingsStore } from "@/stores/settings";
+import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import Course from "@/ui/components/Course";
+import { Dynamic } from "@/ui/components/Dynamic";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { Animation } from "@/ui/utils/Animation";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
+
 import { getStatusText } from '../../calendar/components/CalendarDay';
+import { useTimetableWidgetData } from "../hooks/useTimetableWidgetData";
 
 const HomeTimeTableWidget = React.memo(() => {
+  const { colors } = useTheme();
   const navigation = useNavigation();
-  const { courses } = useTimetableWidgetData();
+  const { courses, isLoading } = useTimetableWidgetData();
+
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const maxCoursesOnHome = settingsStore?.maxCoursesOnHome || 3;
+
+
+  if (isLoading) {
+    return (
+      <Dynamic
+        animated
+        layout={Animation(LinearTransition, "list")}
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+
+          minHeight: 150,
+          width: '100%'
+        }}
+      >
+        <ActivityIndicator
+          size={30}
+          strokeWidth={3}
+          color={colors.primary}
+        />
+      </Dynamic>
+    );
+  }
 
   if (courses.length === 0) {
     return (
@@ -38,13 +72,17 @@ const HomeTimeTableWidget = React.memo(() => {
   }
 
   return (
-    <FlatList
+    <LegendList
       scrollEnabled={false}
-      data={courses.slice(0, 3)}
+
+      data={courses.slice(0, maxCoursesOnHome)}
+      keyExtractor={(item) => item.id}
+
       style={{ width: '100%', paddingHorizontal: 10 }}
+      contentContainerStyle={{ minHeight: 150 }}
+
       renderItem={({ item }) => (
         <Course
-          key={item.id}
           id={item.id}
           name={getSubjectName(item.subject)}
           teacher={item.teacher}
@@ -74,4 +112,3 @@ const HomeTimeTableWidget = React.memo(() => {
 });
 
 export default HomeTimeTableWidget;
-

@@ -36,6 +36,8 @@ export interface Personalization {
   language?: string | null;
   wallpaper?: Wallpaper;
   disabledTabs?: string[];
+  disabledWidgets?: string[];
+  maxCoursesOnHome?: number;
   gradesSortMethod?: string;
   gradesPeriodId?: string;
 }

@@ -1,16 +1,18 @@
-import React from 'react';
-import Stack from '@/ui/components/Stack';
-import Icon from '@/ui/components/Icon';
-import { t } from 'i18next';
-import Typography from '@/ui/components/Typography';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
+import { t } from 'i18next';
+import React from 'react';
+
+import AnimatedPressable from '@/ui/components/AnimatedPressable';
+import Icon from '@/ui/components/Icon';
+import Stack from '@/ui/components/Stack';
+import Typography from '@/ui/components/Typography';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
   title: string;
   redirect?: string;
+  enabled?: boolean;
   onPress?: () => void;
   buttonLabel?: string;
   render?: () => React.ReactNode;
