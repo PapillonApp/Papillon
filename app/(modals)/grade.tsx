@@ -34,14 +34,16 @@ interface GradeBadgeProps {
   label: string;
   color: string;
   theme: any;
+  is_outlined?: boolean;
 }
 
-const GradeBadge = ({ icon, label, color, theme }: GradeBadgeProps) => {
-  const backgroundColor = adjust(color, theme.dark ? 0.3 : -0.3);
-  const textColor = colorCheck("#FFFFFF", [backgroundColor]) ? "#FFFFFF" : "#000000";
+const GradeBadge = ({ icon, label, color, theme, is_outlined = false }: GradeBadgeProps) => {
+  const backgroundColor = is_outlined ? "transparent" : adjust(color, theme.dark ? 0.3 : -0.3);
+  const textColor = is_outlined ? color : (colorCheck("#FFFFFF", [backgroundColor]) ? "#FFFFFF" : "#000000");
+  const borderStyle = is_outlined ? { borderWidth: 1, borderColor: color } : undefined;
 
   return (
-    <Stack direction="horizontal" gap={8} backgroundColor={backgroundColor} vAlign='center' hAlign='center' padding={[12, 6]} radius={32}>
+    <Stack direction="horizontal" gap={8} backgroundColor={backgroundColor} vAlign="center" hAlign="center" padding={[12, 6]} radius={32} style={borderStyle}>
       <Papicons size={20} name={icon} color={textColor} />
       <Typography color={textColor} variant='body2'>
         {label}
@@ -185,23 +187,26 @@ export default function GradesModal() {
                 label={t("Modal_Grades_BestGrade")}
                 color={subjectInfo.color}
                 theme={theme}
+                is_outlined={false}
               />
             }
             {grade.optional &&
               <GradeBadge
-                icon="star"
+                icon="info"
                 label={t("Modal_Grades_OptionalGrade")}
                 color={subjectInfo.color}
                 theme={theme}
+                is_outlined={true}
               />
             }
 
             {grade.bonus &&
               <GradeBadge
-                icon="star"
+                icon="info"
                 label={t("Modal_Grades_BonusGrade")}
                 color={subjectInfo.color}
                 theme={theme}
+                is_outlined={true}
               />
             }
             <Stack
