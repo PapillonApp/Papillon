@@ -134,15 +134,16 @@ export default function EDLoginWithCredentials() {
         setSession(client);
         setChallengeModalVisible(true);
         setToken(e.token);
+      } else {
+        alert.showAlert({
+          title: "Erreur d'authentification",
+          description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
+          icon: "TriangleAlert",
+          color: "#D60046",
+          technical: String(e),
+          withoutNavbar: true,
+        });
       }
-      alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
-        icon: "TriangleAlert",
-        color: "#D60046",
-        technical: String(e),
-        withoutNavbar: true,
-      });
     }
   }
 

@@ -228,19 +228,13 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
                   displayInline: true
                 },
                 {
-                  title: "",
-                  subactions: [
-                    {
-                      id: 'open:more',
-                      title: t('Grades_Avg_KnowMore'),
-                      subtitle: t('Grades_Avg_KnowMore_Description'),
-                      image: Platform.select({
-                        ios: "info.circle"
-                      }),
-                      imageColor: theme.colors.text
-                    }
-                  ],
-                  displayInline: true
+                  id: 'open:more',
+                  title: t('Grades_Avg_KnowMore'),
+                  subtitle: t('Grades_Avg_KnowMore_Description'),
+                  image: Platform.select({
+                    ios: "info.circle"
+                  }),
+                  imageColor: theme.colors.text
                 }
               ]}
               onPressAction={({ nativeEvent }) => {

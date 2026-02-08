@@ -38,4 +38,6 @@ export interface Personalization {
   disabledTabs?: string[];
   disabledWidgets?: string[];
   maxCoursesOnHome?: number;
+  gradesSortMethod?: string;
+  gradesPeriodId?: string;
 }
