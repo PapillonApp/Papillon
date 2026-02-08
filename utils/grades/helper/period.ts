@@ -1,7 +1,7 @@
 import { Period } from "@/services/shared/grade";
 import { error, warn } from "@/utils/logger/logger";
 
-export function getCurrentPeriod(periods: Period[]): Period {
+export function getCurrentPeriod(periods: Period[]): Period | null {
   const now = new Date().getTime();
   const excludedNames = ["Bac blanc", "Brevet blanc", "Hors période", "Année", "Contrôle en cours de formation", "EPREUVES PONCTUELLES 1ERE SERIE", "EPREUVES PONCTUELLES 2EME SERIE", "MI-SEMESTRE 1", "MI-SEMESTRE 2"];
   periods = periods
@@ -20,4 +20,5 @@ export function getCurrentPeriod(periods: Period[]): Period {
   }
 
   error("Unable to find the current period and unable to fallback...");
+  return null;
 }

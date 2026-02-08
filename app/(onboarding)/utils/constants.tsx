@@ -59,6 +59,17 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
+      name: "webuntis",
+      title: "Web Untis",
+      type: "main",
+      image: require("@/assets/images/service_webuntis.png"),
+      onPress: () => {
+        redirect({ pathname: './webuntis/credentials', options: { service: Services.WEBUNTIS } });
+      },
+      variant: 'service' as const,
+      color: 'light' as const,
+    },
+    {
       name: "separator",
       title: "separator",
       type: "separator",
