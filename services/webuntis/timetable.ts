@@ -46,6 +46,10 @@ const mapCourses = (accountId: string, days: TimetableDay[]): Course[] => {
 
   for (const day of days) {
     for (const c of day.gridEntries) {
+      if (!c.subject || !c.room || !c.teacher) {
+        continue;
+      }
+
       const subject = c.subject!.longName;
       const room = c.room!.longName;
       const teacher = c.teacher!.longName;
