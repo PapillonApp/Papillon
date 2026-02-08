@@ -1,18 +1,20 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { Image, Linking, ScrollView, StyleSheet, View } from "react-native";
+
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import React, { useEffect, useMemo, useState } from "react";
-import { View, StyleSheet, ScrollView, Image, Linking } from "react-native";
 import i18n from "@/utils/i18n";
 const t = i18n.t.bind(i18n);
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
-import { useRouter } from "expo-router";
-import { checkConsent, setConsent } from "@/utils/logger/consent";
 import { LinearGradient } from "expo-linear-gradient";
-import Icon from "@/ui/components/Icon";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Button from "@/ui/components/Button";
+import Icon from "@/ui/components/Icon";
+import { checkConsent, setConsent } from "@/utils/logger/consent";
 
 export default function ConsentScreen() {
   const insets = useSafeAreaInsets();
@@ -34,11 +36,13 @@ export default function ConsentScreen() {
         } else if (consent.required) {
           setCurrentConsent("required");
         } else {
-          setCurrentConsent("none");
+          setCurrentConsent(null);
         }
       }
     });
   }, []);
+
+  console.log("currentConsent", currentConsent)
 
   const consents = [
     {
@@ -201,10 +205,10 @@ export default function ConsentScreen() {
       >
         <Button
           disabled={currentConsent === null}
-          onPress={() => { if (currentConsent) saveConsentState(currentConsent) }}
+          onPress={() => { if (currentConsent) { saveConsentState(currentConsent) } }}
           inline
           style={{
-            backgroundColor: currentConsent === "none" ? colors.text + "99" : accent,
+            backgroundColor: currentConsent === null ? colors.text + "50" : accent,
           }}
           icon={
             <Papicons name={currentConsent === "none" ? "cross" : "check"} color="#FFFFFF" />

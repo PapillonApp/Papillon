@@ -3,6 +3,9 @@ name: Build a beta
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,6 +38,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Create and Push Tag
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          DATE=$(date +'%Y%m%d-%H%M')
+          TAG="v$VERSION-$DATE"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git tag $TAG
+          git push origin $TAG
 
       - name: Install deps
         run: npm install --legacy-peer-deps || true

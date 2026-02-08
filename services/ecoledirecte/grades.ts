@@ -1,6 +1,7 @@
 
 import { Client } from "@blockshub/blocksdirecte";
 
+import { getSubjectAverage } from "@/utils/grades/algorithms/subject";
 import { warn } from "@/utils/logger/logger";
 
 import { Grade, GradeScore, Period, PeriodGrades, Subject } from "../shared/grade";
@@ -57,15 +58,17 @@ export async function fetchEDGrades(session: Client, accountId: string, period: 
     }))
     
     for (const subject of periodReport.ensembleMatieres.disciplines) {
+      const parsedAverage = parseGradeValue(subject.moyenne)
+      const grades = allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
       subjects[subject.codeMatiere] = {
         id: subject.codeMatiere,
         name: subject.discipline,
-        studentAverage: parseGradeValue(subject.moyenne),
+        studentAverage: parsedAverage.status === "Inconnu" ? { value: getSubjectAverage(grades) } : parsedAverage,
         classAverage: parseGradeValue(subject.moyenneClasse),
         maximum: parseGradeValue(subject.moyenneMax),
         minimum: parseGradeValue(subject.moyenneMin),
         outOf: { value: 20 },
-        grades: allMappedGrades.filter(grade => grade.subjectId === subject.codeMatiere)
+        grades
       }
     }
 
