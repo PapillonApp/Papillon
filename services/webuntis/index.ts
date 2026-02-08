@@ -1,7 +1,6 @@
 import { WebUntisClient } from "webuntis-client";
 
 import { Auth, Services } from "@/stores/account/types";
-import { error } from "@/utils/logger/logger";
 
 import { Homework } from "../shared/homework";
 import { CourseDay } from "../shared/timetable";
@@ -46,11 +45,6 @@ export class WebUntisService implements SchoolServicePlugin {
   // Homeworks
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
-    if (this.session?.isAuthenticated()) {
-      return fetchWebUntisHomeworks(this.session, this.accountId, weekNumber);
-    }
-
-    error("Session is not valid", "WebUntis.getHomeworks");
-    return [];
+    return fetchWebUntisHomeworks(this.session!, this.accountId, weekNumber);
   }
 }
