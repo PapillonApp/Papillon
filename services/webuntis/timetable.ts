@@ -50,8 +50,8 @@ const mapCourses = (accountId: string, days: TimetableDay[]): Course[] => {
         continue;
       }
 
-      const subject = c.subject!.longName;
-      const room = c.room!.longName;
+      const subject = c.subject!.displayName;
+      const room = c.room!.displayName;
       const teacher = c.teacher!.longName;
 
       const course: Course = {
