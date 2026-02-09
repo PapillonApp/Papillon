@@ -28,7 +28,8 @@ import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 
 const ANIMATION_DURATION = 170;
-export const PlatformPressable = Platform.OS === 'android' ? Pressable : AnimatedPressable;
+export const PlatformPressable =
+  Platform.OS === "android" ? Pressable : AnimatedPressable;
 
 export default function WebUntisLoginWithCredentials() {
   const insets = useSafeAreaInsets();
@@ -46,22 +47,31 @@ export default function WebUntisLoginWithCredentials() {
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
 
-  const keyboardListeners = useMemo(() => ({
-    show: () => {
-      "worklet";
-      opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
-      scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
-    },
-    hide: () => {
-      "worklet";
-      opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
-      scale.value = withTiming(1, { duration: ANIMATION_DURATION });
-    },
-  }), [opacity]);
+  const keyboardListeners = useMemo(
+    () => ({
+      show: () => {
+        "worklet";
+        opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+        scale.value = withTiming(0.8, { duration: ANIMATION_DURATION });
+      },
+      hide: () => {
+        "worklet";
+        opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+        scale.value = withTiming(1, { duration: ANIMATION_DURATION });
+      },
+    }),
+    [opacity]
+  );
 
   useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardWillShow", keyboardListeners.show);
-    const hideSub = Keyboard.addListener("keyboardWillHide", keyboardListeners.hide);
+    const showSub = Keyboard.addListener(
+      "keyboardWillShow",
+      keyboardListeners.show
+    );
+    const hideSub = Keyboard.addListener(
+      "keyboardWillHide",
+      keyboardListeners.hide
+    );
 
     return () => {
       showSub.remove();
@@ -84,7 +94,7 @@ export default function WebUntisLoginWithCredentials() {
     setIsLoggingIn(true);
     Keyboard.dismiss();
 
-    const school = url.trim().split('.')[0];
+    const school = url.trim().split(".")[0];
     const identity = "PapillonApp";
 
     const credentials = new Credentials(identity, school, username, password);
@@ -121,11 +131,11 @@ export default function WebUntisLoginWithCredentials() {
                 username: username,
                 url: url,
                 password: password,
-              }
+              },
             },
             serviceId: Services.WEBUNTIS,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           },
         ],
         createdAt: new Date().toISOString(),
@@ -141,7 +151,6 @@ export default function WebUntisLoginWithCredentials() {
           params: { accountId },
         });
       });
-      
     } catch (e) {
       setIsLoggingIn(false);
 
@@ -157,7 +166,10 @@ export default function WebUntisLoginWithCredentials() {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
+    <KeyboardAvoidingView
+      style={{ flex: 1, marginBottom: insets.bottom }}
+      behavior="padding"
+    >
       <View
         style={{
           alignItems: "center",
@@ -186,7 +198,10 @@ export default function WebUntisLoginWithCredentials() {
             <Typography variant="h5" style={{ color: "#FFF", fontSize: 18 }}>
               {t("STEP")} 2
             </Typography>
-            <Typography variant="h5" style={{ color: "#FFFFFF90", fontSize: 18 }}>
+            <Typography
+              variant="h5"
+              style={{ color: "#FFFFFF90", fontSize: 18 }}
+            >
               {t("STEP_OUTOF")} 3
             </Typography>
           </Stack>
@@ -242,7 +257,12 @@ export default function WebUntisLoginWithCredentials() {
             onSubmitEditing: () => {
               Keyboard.dismiss();
 
-              if (!isLoggingIn && url.trim() && username.trim() && password.trim()) {
+              if (
+                !isLoggingIn &&
+                url.trim() &&
+                username.trim() &&
+                password.trim()
+              ) {
                 handleLogin();
               }
             },
@@ -253,7 +273,9 @@ export default function WebUntisLoginWithCredentials() {
         <Button
           title={isLoggingIn ? t("ONBOARDING_LOADING_LOGIN") : t("LOGIN_BTN")}
           style={{
-            backgroundColor: (theme.dark ? theme.colors.border : "#000000") + (isLoggingIn ? "50" : "FF"),
+            backgroundColor:
+              (theme.dark ? theme.colors.border : "#000000") +
+              (isLoggingIn ? "50" : "FF"),
           }}
           size="large"
           onPress={handleLogin}

@@ -31,7 +31,10 @@ export class WebUntis implements SchoolServicePlugin {
     return this;
   }
 
-  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+  async getWeeklyTimetable(
+    weekNumber: number,
+    date: Date
+  ): Promise<CourseDay[]> {
     if (this.session) {
       return fetchWebUntisWeekTimetable(
         this.session,
