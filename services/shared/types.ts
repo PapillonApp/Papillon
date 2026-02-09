@@ -6,6 +6,7 @@ import { SessionHandle } from "pawnote";
 import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
+import { WebUntisClient } from "webuntis-client";
 
 import { Appscho } from "@/services/appscho";
 import { Lannion } from "@/services/lannion";
@@ -59,7 +60,7 @@ export interface SchoolServicePlugin {
     | TurboselfClient
     | User
     | LannionClient
-    | WebUntis
+    | WebUntisClient
     | undefined;
 
   refreshAccount: (
