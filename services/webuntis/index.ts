@@ -29,8 +29,6 @@ export class WebUntisService implements SchoolServicePlugin {
     return this;
   }
 
-  // Timetable
-
   async getWeeklyTimetable(
     weekNumber: number,
     date: Date
@@ -41,8 +39,6 @@ export class WebUntisService implements SchoolServicePlugin {
       weekNumber
     );
   }
-
-  // Homeworks
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
     return fetchWebUntisHomeworks(this.session!, this.accountId, weekNumber);
