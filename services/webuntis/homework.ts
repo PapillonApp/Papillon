@@ -1,5 +1,4 @@
 import { WebUntisClient } from "webuntis-client";
-import { UtilsDate } from "webuntis-client/dist/utils/date";
 
 import { getDateRangeOfWeek } from "@/database/useHomework";
 import { Homework } from "@/services/shared/homework";
@@ -13,24 +12,14 @@ export async function fetchWebUntisHomeworks(
 
   if (session) {
     const { start, end } = getDateRangeOfWeek(weekNumberRaw);
-    const response = await session.getHomeworksLessons(start, end);
-
-    const homeworks = response.homeworks || [];
-    const lessons = response.lessons || [];
+    const homeworks = await session.getHomeworks(start, end);
 
     for (const homework of homeworks) {
-      const lesson = lessons.find(l => l.id === homework.lessonId);
-
-      const date = UtilsDate.fromUntisDate(
-        homework.dueDate.toString(),
-        "YYYYMMDD"
-      );
-
       result.push({
-        id: homework.id.toString(),
-        subject: lesson?.subject || "Unknown",
+        id: homework.id,
+        subject: homework.subject,
         content: homework.text,
-        dueDate: date,
+        dueDate: homework.dueDate,
         isDone: homework.completed,
         attachments: [],
         evaluation: false,
