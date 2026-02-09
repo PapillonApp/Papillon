@@ -9,7 +9,7 @@ import { fetchWebUntisHomeworks } from "./homework";
 import { refreshWebUntisAccount } from "./refresh";
 import { fetchWebUntisWeekTimetable } from "./timetable";
 
-export class WebUntisService implements SchoolServicePlugin {
+export class WebUntis implements SchoolServicePlugin {
   displayName = "WebUntis";
   service = Services.WEBUNTIS;
   capabilities: Capabilities[] = [Capabilities.REFRESH];
@@ -18,8 +18,9 @@ export class WebUntisService implements SchoolServicePlugin {
 
   constructor(public accountId: string) {}
 
-  async refreshAccount(credentials: Auth): Promise<WebUntisService> {
+  async refreshAccount(credentials: Auth): Promise<WebUntis> {
     const refresh = await refreshWebUntisAccount(this.accountId, credentials);
+
     this.authData = refresh.auth;
     this.session = refresh.session;
 

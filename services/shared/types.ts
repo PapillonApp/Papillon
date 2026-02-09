@@ -35,7 +35,7 @@ import { Izly } from "../izly";
 import { Multi } from "../multi";
 import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
-import { WebUntisService } from "../webuntis";
+import { WebUntis } from "../webuntis";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -65,7 +65,19 @@ export interface SchoolServicePlugin {
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion | WebUntisService>;
+  ) => Promise<
+    | Pronote
+    | Skolengo
+    | EcoleDirecte
+    | Multi
+    | TurboSelf
+    | ARD
+    | Izly
+    | Alise
+    | Appscho
+    | Lannion
+    | WebUntis
+  >;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;
