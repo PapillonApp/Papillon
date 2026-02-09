@@ -36,7 +36,7 @@ export class WebUntis implements SchoolServicePlugin {
     date: Date
   ): Promise<CourseDay[]> {
     if (this.session) {
-      return fetchWebUntisWeekTimetable(
+      return await fetchWebUntisWeekTimetable(
         this.session,
         this.accountId,
         weekNumber
@@ -49,7 +49,11 @@ export class WebUntis implements SchoolServicePlugin {
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
     if (this.session) {
-      return fetchWebUntisHomeworks(this.session, this.accountId, weekNumber);
+      return await fetchWebUntisHomeworks(
+        this.session,
+        this.accountId,
+        weekNumber
+      );
     }
 
     error("Session is not valid", "WebUntis.getHomeworks");
