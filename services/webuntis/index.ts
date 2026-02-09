@@ -1,6 +1,7 @@
 import { WebUntisClient } from "webuntis-client";
 
 import { Auth, Services } from "@/stores/account/types";
+import { error } from "@/utils/logger/logger";
 
 import { Homework } from "../shared/homework";
 import { CourseDay } from "../shared/timetable";
@@ -30,18 +31,25 @@ export class WebUntis implements SchoolServicePlugin {
     return this;
   }
 
-  async getWeeklyTimetable(
-    weekNumber: number,
-    date: Date
-  ): Promise<CourseDay[]> {
-    return fetchWebUntisWeekTimetable(
-      this.session!,
-      this.accountId,
-      weekNumber
-    );
+  async getWeeklyTimetable(weekNumber: number): Promise<CourseDay[]> {
+    if (this.session) {
+      return fetchWebUntisWeekTimetable(
+        this.session,
+        this.accountId,
+        weekNumber
+      );
+    }
+
+    error("Session is not valid", "WebUntis.getWeeklyTimetable");
+    return [];
   }
 
   async getHomeworks(weekNumber: number): Promise<Homework[]> {
-    return fetchWebUntisHomeworks(this.session!, this.accountId, weekNumber);
+    if (this.session) {
+      return fetchWebUntisHomeworks(this.session, this.accountId, weekNumber);
+    }
+
+    error("Session is not valid", "WebUntis.getHomeworks");
+    return [];
   }
 }

@@ -8,17 +8,12 @@ import {
   CourseStatus,
   CourseType,
 } from "@/services/shared/timetable";
-import { error } from "@/utils/logger/logger";
 
 export async function fetchWebUntisWeekTimetable(
   session: WebUntisClient,
   accountId: string,
   weekNumber: number
 ): Promise<CourseDay[]> {
-  if (!session) {
-    error("Session is undefined", "fetchWebUntisTimetable");
-  }
-
   const { start, end } = getDateRangeOfWeek(weekNumber);
   const timetable = await session.getOwnTimetable(start, end);
 
