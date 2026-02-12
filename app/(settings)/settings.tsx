@@ -171,12 +171,12 @@ export default function SettingsIndex() {
         }
       },
       {
-        icon: <Papicons name={"Card"} />,
-        title: t("Settings_Cards_Banner_Title"),
-        description: t('Settings_Cantineen_Subtitle_Card'),
+        icon: <Papicons name={"User"} />,
+        title: t("Settings_Accounts_Title"),
+        description: t('Settings_Accounts_Description'),
         color: "#0059DD",
         onPress: () => {
-          router.navigate("/(settings)/cards")
+          router.navigate("/(settings)/accounts")
         }
       },
       {
