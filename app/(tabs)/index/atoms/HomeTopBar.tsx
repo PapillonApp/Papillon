@@ -1,11 +1,13 @@
+import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import Stack from '@/ui/components/Stack';
-import UserProfile from './UserProfile';
-import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
+
 import HomeTopBarButton from '../components/HomeTopBarButton';
-import { useRouter } from 'expo-router';
+import UserProfile from './UserProfile';
 
 const HomeTopBar = ({ height = 56 }: { height?: number }) => {
   const insets = useSafeAreaInsets();
