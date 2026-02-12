@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { LucideIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -251,15 +252,30 @@ const Course = React.memo((props: CourseProps) => {
         styles.container,
         compact && styles.compactContainer,
         {
-          backgroundColor: adjust(color ?? "#FFFFFF", dark ? -0.85 : 0.85),
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor: adjust(color, dark ? 0.7 : -0.7) + "30",
         },
         status?.canceled && { backgroundColor: colors.card },
         skeleton && { backgroundColor: colors.text + "05" },
         containerStyle && StyleSheet.flatten(containerStyle),
       ]}
     >
+      {color && !status?.canceled && (
+        <LinearGradient
+          colors={[adjust(color, dark ? -0.7 : 0.85), adjust(color, dark ? -0.8 : 0.6)]}
+          locations={[0, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 25,
+            opacity: 0.55,
+          }}
+        />
+      )}
+
       <Stack direction="horizontal" gap={10}>
         {/* Barre colorée */}
         <View style={{ width: 6, height: "100%", backgroundColor: textColor, borderRadius: 300 }} />
