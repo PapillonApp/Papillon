@@ -253,7 +253,7 @@ const Course = React.memo((props: CourseProps) => {
         compact && styles.compactContainer,
         {
           borderWidth: 1,
-          borderColor: adjust(color, dark ? 0.7 : -0.7) + "30",
+          borderColor: adjust(color, dark ? 0.7 : -0.7) + "36",
         },
         status?.canceled && { backgroundColor: colors.card },
         skeleton && { backgroundColor: colors.text + "05" },
