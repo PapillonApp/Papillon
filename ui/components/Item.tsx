@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useCallback, useMemo, useRef } from "react";
-import { Pressable, PressableProps, View } from "react-native";
+import { Pressable, PressableProps, View, ViewProps } from "react-native";
 import Reanimated, { Easing, LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
@@ -12,23 +12,25 @@ const LAYOUT_ANIMATION = Animation(LinearTransition, "list");
 export const LEADING_TYPE = Symbol("Leading");
 export const TRAILING_TYPE = Symbol("Trailing");
 
-// Pre-computed style objects to avoid recreation
-const LEADING_STYLE = Object.freeze({ layout: LAYOUT_ANIMATION });
-const TRAILING_STYLE = Object.freeze({ layout: LAYOUT_ANIMATION });
 
-function Leading({ children, ...rest }: PressableProps) {
+
+interface WrapperProps extends ViewProps {
+  children?: React.ReactNode;
+}
+
+function Leading({ children, ...rest }: WrapperProps) {
   return (
-    <View {...rest} layout={LAYOUT_ANIMATION}>
+    <Reanimated.View {...rest} layout={LAYOUT_ANIMATION}>
       {children}
-    </View>
+    </Reanimated.View>
   );
 }
 
-function Trailing({ children, ...rest }: PressableProps) {
+function Trailing({ children, ...rest }: WrapperProps) {
   return (
-    <View {...rest} layout={LAYOUT_ANIMATION}>
+    <Reanimated.View {...rest} layout={LAYOUT_ANIMATION}>
       {children}
-    </View>
+    </Reanimated.View>
   );
 }
 
@@ -82,7 +84,105 @@ function areEqual(prev: ListProps, next: ListProps) {
   return prev.children === next.children;
 }
 
-const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function ItemComponent(
+// Helper hook for children sorting
+const useSortedChildren = (children: React.ReactNode) => {
+  return useMemo(() => {
+    if (!children) { return null; }
+
+    let leading: React.ReactNode[] | null = null;
+    let trailing: React.ReactNode[] | null = null;
+    let others: React.ReactNode[] | null = null;
+
+    React.Children.forEach(children, (child) => {
+      if (React.isValidElement(child)) {
+        // cast to any to access custom static property safely
+        const childType = (child.type as { __ITEM_TYPE__?: symbol }).__ITEM_TYPE__;
+        if (childType === LEADING_TYPE) {
+          if (!leading) { leading = []; }
+          leading.push(child);
+        } else if (childType === TRAILING_TYPE) {
+          if (!trailing) { trailing = []; }
+          trailing.push(child);
+        } else {
+          if (!others) { others = []; }
+          others.push(child);
+        }
+      } else if (child !== null && child !== undefined) {
+        if (!others) { others = []; }
+        others.push(child);
+      }
+    });
+
+    return { leading, trailing, others };
+  }, [children]);
+};
+
+// Helper for border color
+const useBorderColor = (colors: any) => {
+  return useMemo(() => {
+    const colorKey = colors.text;
+    let cached = borderColorCache.get(colorKey);
+    if (!cached) {
+      cached = `${colorKey}25`;
+      borderColorCache.set(colorKey, cached);
+    }
+    return cached;
+  }, [colors.text]);
+};
+
+// Static Item Component (No Animations/Interactions overhead)
+const StaticItemComponent = React.memo(({
+  children,
+  contentContainerStyle,
+  style,
+  isLast = false,
+  disablePadding = false,
+  ...rest
+}: ListProps) => {
+  const { colors } = useTheme();
+  const sortedChildren = useSortedChildren(children);
+  const borderColor = useBorderColor(colors);
+
+  const borderStyle = useMemo(() =>
+    isLast ? null : {
+      borderBottomWidth: 0.5,
+      borderBottomColor: borderColor,
+    }
+    , [isLast, borderColor]);
+
+  const containerStyle = useMemo(() => {
+    const baseStyle = [DEFAULT_CONTAINER_STYLE];
+    if (disablePadding) {
+      baseStyle.push({ paddingVertical: 0, paddingHorizontal: 0 } as any);
+    }
+    if (style && typeof style !== 'function') {
+      baseStyle.push(style as any);
+    }
+    return baseStyle;
+  }, [style, disablePadding]);
+
+  const contentStyle = useMemo(() =>
+    contentContainerStyle ? [DEFAULT_CONTENT_STYLE, contentContainerStyle] : DEFAULT_CONTENT_STYLE
+    , [contentContainerStyle]);
+
+  if (!sortedChildren) {
+    return <View style={[containerStyle, borderStyle, style]} {...rest} />;
+  }
+
+  return (
+    <View style={[containerStyle, borderStyle]} {...rest}>
+      {sortedChildren.leading}
+      {sortedChildren.others && (
+        <View style={contentStyle as any}>
+          {sortedChildren.others}
+        </View>
+      )}
+      {sortedChildren.trailing}
+    </View>
+  );
+});
+
+const InteractiveItemComponent = React.forwardRef<typeof Pressable, ListProps>(function InteractiveItemComponent(
   {
     children,
     contentContainerStyle,
@@ -134,8 +234,6 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
 
   const setAnimatingFalse = () => { isAnimatingRef.current = false; };
   const handlePressOut = useCallback((event: any) => {
-    // if (!isAnimatingRef.current) { return; }
-
     animationValue.value = withSpring(0, {
       mass: 1,
       damping: 15,
@@ -148,48 +246,9 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
     onPressOut?.(event);
   }, [animationValue, onPressOut]);
 
-  // Extremely optimized children sorting with minimal allocations
-  const sortedChildren = useMemo(() => {
-    if (!children) { return null; }
+  const sortedChildren = useSortedChildren(children);
+  const borderColor = useBorderColor(colors);
 
-    let leading: React.ReactNode[] | null = null;
-    let trailing: React.ReactNode[] | null = null;
-    let others: React.ReactNode[] | null = null;
-
-    React.Children.forEach(children, (child) => {
-      if (React.isValidElement(child)) {
-        const childType = (child.type as any)?.__ITEM_TYPE__;
-        if (childType === LEADING_TYPE) {
-          if (!leading) { leading = []; }
-          leading.push(child);
-        } else if (childType === TRAILING_TYPE) {
-          if (!trailing) { trailing = []; }
-          trailing.push(child);
-        } else {
-          if (!others) { others = []; }
-          others.push(child);
-        }
-      } else if (child != null) {
-        if (!others) { others = []; }
-        others.push(child);
-      }
-    });
-
-    return { leading, trailing, others };
-  }, [children]);
-
-  // Pre-compute border color with caching to avoid string concatenation
-  const borderColor = useMemo(() => {
-    const colorKey = colors.text;
-    let cached = borderColorCache.get(colorKey);
-    if (!cached) {
-      cached = `${colorKey}25`;
-      borderColorCache.set(colorKey, cached);
-    }
-    return cached;
-  }, [colors.text]);
-
-  // Optimized style calculations with minimal object creation
   const borderStyle = useMemo(() =>
     isLast ? null : {
       borderBottomWidth: 0.5,
@@ -268,10 +327,20 @@ const ItemComponent = React.forwardRef<typeof Pressable, ListProps>(function Ite
   }
 });
 
+// Chooser Component
+const Item = React.forwardRef<typeof Pressable, ListProps>((props, ref) => {
+  // If interactive or animated, use the heavyweight component
+  if (props.onPress || props.onLongPress || props.onPressIn || props.onPressOut || props.animate) {
+    return <InteractiveItemComponent {...props} ref={ref} />;
+  }
+  // Otherwise use the lightweight static component
+  return <StaticItemComponent {...props} />;
+});
+
 // Ultra-optimized Item component with aggressive memoization
-const Item = React.memo(ItemComponent, areEqual);
-Item.displayName = "Item";
+const MemoizedItem = React.memo(Item, areEqual);
+(MemoizedItem as any).displayName = "Item";
 
 // Pre-export memoized components to avoid recreation
-export default Item;
+export default MemoizedItem;
 export { MemoizedLeading as Leading, MemoizedTrailing as Trailing };

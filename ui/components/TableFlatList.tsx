@@ -68,30 +68,32 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
   const headerHeight = ignoreHeaderHeight ? 0 : useHeaderHeight();
 
   // render section title and items in same level array
-  const data = sections.reduce((acc, section) => {
-    if (!section) return acc;
-    if (section.title) {
-      acc.push({ type: 'title', title: section.title, icon: section.icon, papicon: section.papicon, hideTitle: section.hideTitle });
-    }
-    section.items.forEach((item, idx) => {
-      const first = idx === 0;
-      const last = idx === section.items.length - 1;
-      acc.push({
-        ...item,
-        type: 'item',
-        ui: {
-          ...(item.ui || {}),
-          first,
-          last,
-        },
+  const data = React.useMemo(() => {
+    return sections.reduce((acc, section) => {
+      if (!section) return acc;
+      if (section.title) {
+        acc.push({ type: 'title', title: section.title, icon: section.icon, papicon: section.papicon, hideTitle: section.hideTitle });
+      }
+      section.items.forEach((item, idx) => {
+        const first = idx === 0;
+        const last = idx === section.items.length - 1;
+        acc.push({
+          ...item,
+          type: 'item',
+          ui: {
+            ...(item.ui || {}),
+            first,
+            last,
+          },
+        });
       });
-    });
-    return acc;
-  }, [] as Array<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>);
+      return acc;
+    }, [] as Array<SectionItem & { type: 'title' | 'item'; ui?: { first?: boolean; last?: boolean } }>);
+  }, [sections]);
 
   const ListComponent = engine === 'LegendList' ? LegendList : engine === 'FlashList' ? FlashList : FlatList;
 
-  const renderItemComponent = ({ item, index }: any) => (
+  const renderItemComponent = React.useCallback(({ item, index }: any) => (
     item.type === 'item' ? (
       <Reanimated.View
         key={index}
@@ -185,7 +187,7 @@ const TableFlatList: React.FC<TableFlatListProps> = ({
         </Typography>
       </Stack>
     ) : null
-  );
+  ), [colors.card, colors.border, colors.background]);
 
   return (
     <ListComponent

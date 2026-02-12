@@ -22,7 +22,7 @@ export default function Layout() {
       <StatusBar barStyle="light-content" animated />
       <Stack screenOptions={newScreenOptions}>
         <Stack.Screen
-          name="index"
+          name="settings"
           options={{
             headerTitle: t("Tab_Settings"),
           }}
@@ -68,6 +68,14 @@ export default function Layout() {
             headerTitle: t("Settings_About_Title"),
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: Platform.OS === "ios",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="contributors"
+          options={{
+            headerTitle: t("Settings_Contributors_Title"),
+            headerBackButtonDisplayMode: "minimal",
             headerLargeTitle: false,
           }}
         />

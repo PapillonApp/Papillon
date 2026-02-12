@@ -1,7 +1,8 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { Github, Languages } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, ScrollView } from "react-native";
 
@@ -14,7 +15,6 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
-import { Contributor, getContributors } from "@/utils/github/contributors";
 
 export const Team = [
   {
@@ -33,7 +33,7 @@ export const Team = [
   },
   {
     title: "Raphaël Schröder",
-    description: "Trésorier Adjoint",
+    description: "Développeur back",
     login: "raphckrman",
     leading: <Avatar size={40} shape="square" initials={getInitials("Raphaël Schröder")} imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/")
@@ -41,20 +41,20 @@ export const Team = [
   {
     title: "Tom Hélière",
     login: "tom-things",
-    description: "Secrétaire",
+    description: "Designer UI/UX",
     leading: <Avatar size={40} shape="square" initials={getInitials("Tom Hélière")} imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
   },
   {
     title: "Rémy Godet",
-    description: "Secrétaire Adjoint",
+    description: "Développeur",
     login: "godetremy",
     leading: <Avatar size={40} shape="square" initials={getInitials("Rémy Godet")} imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
   },
   {
     title: "Mael Duret",
-    description: "Membre",
+    description: "Développeur",
     login: "ryzenixx",
     leading: <Avatar size={40} shape="square" initials={getInitials("Mael Duret")} imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4" />,
     onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/")
@@ -62,21 +62,14 @@ export const Team = [
 ]
 
 export default function SettingsAbout() {
+  const router = useRouter();
   const theme = useTheme()
 
   const { t } = useTranslation();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  const [contributors, setContributors] = useState<Contributor[]>([])
-  const fetchContributors = async () => {
-    const fethedContributors = (await getContributors()).filter(contrib => !Team.map(item => item.login).includes(contrib.login))
-    setContributors(fethedContributors)
-  }
 
-  useEffect(() => {
-    fetchContributors()
-  }, [])
 
   const CommunityLinks = [
     {
@@ -86,16 +79,10 @@ export default function SettingsAbout() {
       onPress: () => Linking.openURL('https://ko-fi.com/thepapillonapp/leaderboard'),
     },
     {
-      title: t("Settings_About_Discord"),
-      description: t("Settings_About_Discord_Description"),
-      leading: <Papicons name="TextBubble" />,
-      onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
-    },
-    {
-      title: t("Settings_About_Issue"),
-      description: t("Settings_About_Issue_Description"),
-      leading: <Papicons name="Info" />,
-      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+      title: t("Settings_Contributors_Title"),
+      description: t("Settings_Contributors_Description"),
+      leading: <Papicons name="User" />,
+      onPress: () => router.push("/(settings)/contributors"),
     },
   ];
 
@@ -111,6 +98,18 @@ export default function SettingsAbout() {
       description: t("Settings_About_Github_Description"),
       leading: <Github />,
       onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
+    },
+    {
+      title: t("Settings_About_Discord"),
+      description: t("Settings_About_Discord_Description"),
+      leading: <Papicons name="TextBubble" />,
+      onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
+    },
+    {
+      title: t("Settings_About_Issue"),
+      description: t("Settings_About_Issue_Description"),
+      leading: <Papicons name="Info" />,
+      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
     },
   ];
 
@@ -177,7 +176,7 @@ export default function SettingsAbout() {
               {item.title}
             </Typography>
 
-            <Typography variant="caption" color="secondary">
+            <Typography variant="body1" color="secondary">
               {item.description}
             </Typography>
 
@@ -248,41 +247,9 @@ export default function SettingsAbout() {
         ))}
       </List>
 
-      <List>
-        {contributors.map(item => (
-          <Item key={item.login} onPress={() => Linking.openURL(item.html_url)}>
-            <Leading>
-              <Avatar size={40} shape="square" initials={getInitials(item.login)} imageUrl={item.avatar_url} />
-            </Leading>
 
-            <Typography>{item.login}</Typography>
-            <Typography color="secondary">{item.contributions} {item.contributions > 1 ? "contributions" : "contribution"}</Typography>
-          </Item>
-        ))}
-      </List>
 
-      <List>
-        {Infos.map((item, index) => (
-          <Item
-            key={index}
-            onPress={item.onPress}
-          >
-            <Leading>
-              <Icon>
-                {item.leading}
-              </Icon>
-            </Leading>
 
-            <Typography variant="title">
-              {item.title}
-            </Typography>
-
-            <Typography variant="caption" color="secondary">
-              {item.description}
-            </Typography>
-          </Item>
-        ))}
-      </List>
 
     </ScrollView>
   );

@@ -367,6 +367,9 @@
   "Settings_About_Issue": "Signaler un bug",
   "Settings_About_Issue_Description": "Reporter un bug rencontré",
   "Settings_About_Dependency_Version": "Version des dépendances",
+  "Settings_Contributors_Title": "Contributeurs",
+  "Settings_Contributors_Description": "Les personnes qui ont contribué au projet",
+  "Settings_Contributors_Contributions": "contributions",
 
   "Alert_No_Technical": "Aucune information technique disponible.",
   "Alert_Auth_Error": "Erreur d'authentification",
