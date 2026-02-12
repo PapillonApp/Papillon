@@ -12,6 +12,8 @@
   "Button_Change_ProfilePicture_FromLibrary": "From photo library",
   "Button_Change_ProfilePicture_FromService": "Retrieve from your ENT",
   "Button_Change_ProfilePicture_Remove": "Remove picture",
+  "Label_FirstName": "First name",
+  "Label_LastName": "Last name",
   "Tab_Page": "Page",
   "Tab_Settings": "Settings",
   "Tab_News": "News",

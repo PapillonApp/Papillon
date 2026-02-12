@@ -12,6 +12,8 @@
   "Button_Change_ProfilePicture_FromLibrary": "Desde la galería",
   "Button_Change_ProfilePicture_FromService": "Recuperar desde tu ENT",
   "Button_Change_ProfilePicture_Remove": "Eliminar la foto",
+  "Label_FirstName": "Nombre",
+  "Label_LastName": "Apellido",
   "Tab_Page": "Página",
   "Tab_Settings": "Configuración",
   "Tab_News": "Noticias",

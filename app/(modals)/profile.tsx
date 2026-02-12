@@ -3,7 +3,6 @@ import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker"
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -19,13 +18,13 @@ import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { useAccountStore } from "@/stores/account";
 import Avatar from "@/ui/components/Avatar";
 import Button from "@/ui/components/Button";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import { useNavigation } from "expo-router";
 
 export default function CustomProfileScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const store = useAccountStore.getState();
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
@@ -44,13 +43,22 @@ export default function CustomProfileScreen() {
     }
   }, [account]);
 
+  // Automatic save
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      updateAccountName();
+    });
+
+    return unsubscribe;
+  }, [navigation, firstName, lastName]);
+
   const insets = useSafeAreaInsets()
 
   const updateProfilePictureFromLibrary = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: "images",
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
       base64: true
     });
@@ -64,9 +72,18 @@ export default function CustomProfileScreen() {
   const updateProfilePictureFromService = async () => {
     Alert.alert(
       t("Feature_Soon"),
-      "Cette fonctionnalité n'est pas encore disponible, mais elle le sera dans une prochaine mise à jour.",
+      t("Feature_Soon_Notification"),
       [{ text: "OK" }]
     );
+  }
+
+  const updateAccountName = () => {
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+
+    if (!trimmedFirstName || !trimmedLastName) return;
+
+    useAccountStore.getState().setAccountName(lastUsedAccount, trimmedFirstName, trimmedLastName);
   }
 
   const { colors } = useTheme();
@@ -75,16 +92,17 @@ export default function CustomProfileScreen() {
   return (
     <KeyboardAvoidingView
       behavior={"position"}
-      keyboardVerticalOffset={-insets.top * 3.2}
+      keyboardVerticalOffset={insets.bottom}
       style={{ flex: 1 }}
     >
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15 }}>
           <Avatar
-            size={117}
+            size={150}
             initials={getInitials(`${firstName} ${lastName}`)}
             imageUrl={profilePictureUrl || undefined}
           />
@@ -145,17 +163,18 @@ export default function CustomProfileScreen() {
 
         <View style={{ paddingHorizontal: 20, paddingTop: 30, gap: 15 }}>
           <View style={{ gap: 10 }}>
-            <Typography color="secondary">Prénom</Typography>
+            <Typography color="secondary">{t("Label_FirstName")}</Typography>
             <OnboardingInput
-              placeholder={"Prénom"}
+              placeholder={t("Label_FirstName")}
               text={firstName}
               setText={setFirstName}
               icon={"Font"}
               inputProps={{}}
             />
-            <Typography color="secondary">Nom</Typography>
+
+            <Typography color="secondary">{t("Label_LastName")}</Typography>
             <OnboardingInput
-              placeholder={"Nom"}
+              placeholder={t("Label_LastName")}
               text={lastName}
               setText={setLastName}
               icon={"Bold"}
@@ -163,20 +182,8 @@ export default function CustomProfileScreen() {
             />
           </View>
         </View>
-        <NativeHeaderSide side="Left" key={`${firstName}-${lastName}`}>
-          <NativeHeaderPressable
-            onPressIn={() => {
-              useAccountStore.getState().setAccountName(lastUsedAccount, firstName, lastName);
-              router.back();
-            }}
-          >
-            <Icon papicon size={26}>
-              <Papicons name="ArrowLeft" />
-            </Icon>
-          </NativeHeaderPressable>
 
-        </NativeHeaderSide>
       </ScrollView>
-    </ KeyboardAvoidingView >
+    </KeyboardAvoidingView >
   );
 }

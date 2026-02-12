@@ -28,7 +28,7 @@ const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputPr
         style={{
           flex: 1,
           padding: 20,
-          paddingVertical: Platform.OS === "ios" ? 20 : 10,
+          paddingVertical: Platform.OS === "ios" ? 20 : 5,
           backgroundColor: colors.text + (dark ? "15" : "08"),
           borderRadius: 300,
           borderWidth: 1,
