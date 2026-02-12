@@ -3,7 +3,7 @@ import { error, warn } from "@/utils/logger/logger";
 
 export function getCurrentPeriod(periods: Period[]): Period {
   const now = new Date().getTime();
-  const excludedNames = ["Bac blanc", "Brevet blanc", "Hors période", "Année", "Contrôle en cours de formation"];
+  const excludedNames = ["Bac blanc", "Brevet blanc", "Hors période", "Année", "Contrôle en cours de formation", "EPREUVES PONCTUELLES 1ERE SERIE", "EPREUVES PONCTUELLES 2EME SERIE", "MI-SEMESTRE 1", "MI-SEMESTRE 2"];
   periods = periods
     .filter(period => !excludedNames.includes(period.name))
     .sort((a, b) => a.start.getTime() - b.start.getTime());

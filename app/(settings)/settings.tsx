@@ -1,12 +1,12 @@
 import { Papicons } from '@getpapillon/papicons';
-import { HeaderBackButton } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import { HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
-import { Alert, Image, Platform, View } from "react-native";
+import { Alert, Image, Platform, Pressable, View } from "react-native";
 
 import { ClearDatabaseForAccount } from "@/database/DatabaseProvider";
 import { useAccountStore } from "@/stores/account";
@@ -14,13 +14,10 @@ import { useSettingsStore } from "@/stores/settings";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
-import Item, { Leading } from "@/ui/components/Item";
-import List from "@/ui/components/List";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
@@ -174,12 +171,12 @@ export default function SettingsIndex() {
         }
       },
       {
-        icon: <Papicons name={"User"} />,
-        title: t("Settings_Accounts_Title"),
-        description: t('Settings_Accounts_Description'),
+        icon: <Papicons name={"Card"} />,
+        title: t("Settings_Cards_Banner_Title"),
+        description: t('Settings_Cantineen_Subtitle_Card'),
         color: "#0059DD",
         onPress: () => {
-          router.navigate("/(settings)/accounts")
+          router.navigate("/(settings)/cards")
         }
       },
       {
@@ -214,8 +211,12 @@ export default function SettingsIndex() {
                     gap={8}
                     padding={[14, 14]}
                     radius={22}
-                    backgroundColor={button.disabled ? theme.colors.border : adjust(button.color, theme.dark ? -0.85 : 0.85)}
+                    style={{ borderColor: adjust(button.color, theme.dark ? 0.3 : -0.3) + "45" }}
                   >
+                    <LinearGradient
+                      colors={[adjust(button.color, theme.dark ? 0.3 : 0.8), button.color]}
+                      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: 22, opacity: 0.16 }}
+                    />
                     <Icon papicon size={32} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}
                     </Icon>
@@ -241,27 +242,30 @@ export default function SettingsIndex() {
           <View
             style={{ marginBottom: 16, gap: 4 }}
           >
-            <List>
-              <Item
-                onPress={() => router.navigate("/(settings)/services")}
-              >
-                <Leading>
-                  <Avatar
-                    size={48}
-                    initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
-                    imageUrl={account && account.customisation && account.customisation.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
-                  />
-                </Leading>
-                <Typography variant="title">
-                  {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
+            <Stack
+              flex
+              direction="vertical"
+              hAlign='center'
+              vAlign='center'
+              gap={6}
+              padding={[16, 0]}
+              style={{ paddingBottom: 32 }}
+            >
+              <Avatar
+                size={72}
+                initials={getInitials(`${account?.firstName} ${account?.lastName}`)}
+                imageUrl={account && account.customisation && account.customisation.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
+                style={{ marginBottom: 8 }}
+              />
+              <Typography variant="h3" align="center">
+                {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
+              </Typography>
+              {establishment &&
+                <Typography variant="body1" align="center" color="secondary">
+                  {level} {(level && establishment) && " — "} {establishment}
                 </Typography>
-                {establishment &&
-                  <Typography variant="caption" color="secondary">
-                    {level} {(level && establishment) && " — "} {establishment}
-                  </Typography>
-                }
-              </Item>
-            </List>
+              }
+            </Stack>
             <RenderBigButtons
             />
           </View>
@@ -287,15 +291,12 @@ export default function SettingsIndex() {
       />
       {
         Platform.OS === 'ios' && (
-          <NativeHeaderSide side="Left">
-            <HeaderBackButton
-              tintColor={runsIOS26 ? colors.text : colors.primary}
-              onPress={() => router.back()}
-
-              style={{
-                marginLeft: runsIOS26 ? 3 : -32,
-              }}
-            />
+          <NativeHeaderSide side="Right">
+            <Pressable onPress={() => router.back()} hitSlop={32}>
+              <Icon>
+                <Papicons name="Cross" />
+              </Icon>
+            </Pressable>
           </NativeHeaderSide>
         )
       }
