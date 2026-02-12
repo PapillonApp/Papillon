@@ -1,5 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
-import { MenuAction, MenuView } from '@react-native-menu/menu';
+import { MenuAction } from '@react-native-menu/menu';
 import { useTheme } from "@react-navigation/native";
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React from "react";
@@ -11,6 +11,7 @@ import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import ActionMenu from "./ActionMenu";
 
 const ChipButton: React.FC<React.PropsWithChildren<{
   onPress?: () => void;
@@ -43,7 +44,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
         ]}
       >
         <Pressable onPress={onPress}>
-          <MenuView onPressAction={onPressAction} actions={actions}>
+          <ActionMenu onPressAction={onPressAction} actions={actions}>
             <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 0 : [12, 6]} radius={200} inline vAlign="center">
               {icon &&
                 <Dynamic animated>
@@ -69,7 +70,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
                 </Dynamic>
               }
             </Stack>
-          </MenuView>
+          </ActionMenu>
         </Pressable>
       </LiquidGlassView>
     );
@@ -93,7 +94,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
       onPress={onPress}
       activeOpacity={0.5}
     >
-      <MenuView onPressAction={onPressAction} actions={actions}>
+      <ActionMenu onPressAction={onPressAction} actions={actions}>
         <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 0 : [12, 6]} radius={200} inline vAlign="center">
           {icon &&
             <Dynamic animated>
@@ -119,7 +120,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
             </Dynamic>
           }
         </Stack>
-      </MenuView>
+      </ActionMenu>
     </TouchableOpacity>
   );
 
