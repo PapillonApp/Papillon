@@ -1,5 +1,5 @@
 import { Period } from "@/services/shared/grade";
-import { error, warn } from "@/utils/logger/logger";
+import { warn } from "@/utils/logger/logger";
 
 export function getCurrentPeriod(periods: Period[]): Period {
   const now = new Date().getTime();
@@ -19,5 +19,5 @@ export function getCurrentPeriod(periods: Period[]): Period {
     return periods[0];
   }
 
-  error("Unable to find the current period and unable to fallback...");
+  // error("Unable to find the current period and unable to fallback...");
 }

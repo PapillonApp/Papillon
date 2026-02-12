@@ -56,7 +56,7 @@ export class Lannion implements SchoolServicePlugin {
             }
           }
 
-          console.log(semestre);
+          // console.log(semestre);
 
           const startYear = semestre.annee_scolaire.split("/")[0];
           const endYear = semestre.annee_scolaire.split("/")[1];

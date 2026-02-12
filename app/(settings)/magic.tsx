@@ -63,7 +63,7 @@ export default function SettingsMagic() {
   const showDetailedStatus = () => {
     if (!modelStatus) { return; }
 
-    log("Statut détaillé du modèle:" + JSON.stringify({
+    /* log("Statut détaillé du modèle:" + JSON.stringify({
       hasModel: modelStatus.hasModel,
       modelType: modelStatus.modelType,
       hasInitialized: modelStatus.hasInitialized,
@@ -74,7 +74,7 @@ export default function SettingsMagic() {
       wordIndexSize: modelStatus.wordIndexSize,
       oovIndex: modelStatus.oovIndex,
       tokenizerInfo: modelStatus.tokenizerInfo
-    }));
+    })); */
   };
 
   const checkForUpdates = async () => {

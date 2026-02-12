@@ -101,7 +101,7 @@ export function convertICalEventToSharedCourse(
     context.schoolName
   );
 
-  console.log(summary)
+  // console.log(summary)
 
   return {
     id: event.uid,

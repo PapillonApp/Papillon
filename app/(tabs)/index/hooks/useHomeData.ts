@@ -10,7 +10,7 @@ import { Services } from '@/stores/account/types';
 import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
-import { log, warn } from '@/utils/logger/logger';
+import { warn } from '@/utils/logger/logger';
 
 export const useHomeData = () => {
   const alert = useAlert();
@@ -54,7 +54,7 @@ export const useHomeData = () => {
   const initialize = useCallback(async () => {
     try {
       await initializeAccountManager();
-      log("Refreshed Manager received");
+      // log("Refreshed Manager received");
 
       await Promise.all([fetchEDT(), fetchGrades()]);
 

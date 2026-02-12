@@ -78,7 +78,7 @@ export class AccountManager {
   }
 
   async refreshAllAccounts(): Promise<boolean> {
-    log("We're refreshing all services for the account " + this.account.id);
+    // log("We're refreshing all services for the account " + this.account.id);
 
     this.handleHasInternet();
 
@@ -86,7 +86,7 @@ export class AccountManager {
 
     for (const service of this.account.services) {
       try {
-        log("Trying to refresh " + service.id);
+        // log("Trying to refresh " + service.id);
         const plugin = this.getServicePluginForAccount(service);
 
         if (plugin?.capabilities.includes(Capabilities.REFRESH)) {

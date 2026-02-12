@@ -1,21 +1,20 @@
-import { useAccountStore } from "@/stores/account"
+import { Papicons } from "@getpapillon/papicons"
+import { MenuView } from "@react-native-menu/menu"
+import { useTheme } from "@react-navigation/native"
+import { Directory, File, Paths } from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react"
+import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
+
+import ActivityIndicator from "@/components/ActivityIndicator"
 import { useSettingsStore } from "@/stores/settings"
 import { Wallpaper } from "@/stores/settings/types"
 import AnimatedPressable from "@/ui/components/AnimatedPressable"
+import Icon from "@/ui/components/Icon"
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
 import Stack from "@/ui/components/Stack"
 import Typography from "@/ui/components/Typography"
-import { useTheme } from "@react-navigation/native"
-import React, { useEffect, useState } from "react"
-import { FlatList, Image, Platform, RefreshControl, View } from "react-native"
-import { File, Directory, Paths } from 'expo-file-system';
-import ActivityIndicator from "@/components/ActivityIndicator"
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader"
-import Icon from "@/ui/components/Icon"
-import { router } from "expo-router";
-import { Papicons } from "@getpapillon/papicons"
-import { MenuView } from "@react-native-menu/menu"
-
-import * as ImagePicker from 'expo-image-picker';
 
 const COLLECTIONS_SOURCE = "https://raw.githubusercontent.com/PapillonApp/datasets/refs/heads/main/wallpapers/index.json";
 
@@ -120,7 +119,7 @@ const WallpaperModal = () => {
         aspect: [4, 3],
         quality: 1,
       }).then((result) => {
-        if (result.canceled) return;
+        if (result.canceled) { return; }
 
         const asset = result.assets[0];
         const sourceFile = new File(asset.uri);
@@ -145,7 +144,7 @@ const WallpaperModal = () => {
         })
       })
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 

@@ -3,6 +3,7 @@ import { useTheme } from '@react-navigation/native';
 import { ProgressiveBlurView } from '@sbaiahmed1/react-native-blur';
 import React, { useEffect } from 'react';
 import { Platform, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Reanimated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -56,21 +57,27 @@ const TabHeader: React.FC<TabHeaderProps> = ({
         pointerEvents={'none'}
       >
         {runsIOS26 && (
-          <ProgressiveBlurView
-            blurType="systemMaterial"
-            blurAmount={20}
-            direction="blurredTopClearBottom"
-            startOffset={0}
-            reducedTransparencyFallbackColor="#00000000"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: height - 20,
-              zIndex: 99,
-            }}
-          />
+          <>
+            <ProgressiveBlurView
+              blurType="systemMaterial"
+              blurAmount={8}
+              direction="blurredTopClearBottom"
+              startOffset={0}
+              reducedTransparencyFallbackColor="#00000000"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: height,
+                zIndex: 99,
+              }}
+            />
+            <LinearGradient
+              colors={[colors.background, colors.background + "00"]}
+              style={{ width: "100%", height: "101%", position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+            />
+          </>
         )}
       </Reanimated.View>
 

@@ -1,6 +1,6 @@
 import { fetch } from 'expo-fetcher';
 
-import { log, warn } from '@/utils/logger/logger';
+import { warn } from '@/utils/logger/logger';
 
 import { LannionSession } from './types';
 
@@ -53,7 +53,7 @@ export class LannionClient {
 
     if (loginResponse.status >= 300 && loginResponse.status < 400) {
       redirectUrl = loginResponse.headers.get('location');
-      log(`[LannionClient] Redirect URL found: ${redirectUrl}`);
+      // log(`[LannionClient] Redirect URL found: ${redirectUrl}`);
     } else {
       const body = await loginResponse.text();
       if (body.includes('name="username"') || body.includes('type="password"')) {
@@ -78,17 +78,17 @@ export class LannionClient {
       if (match) {
         this.phpSessionId = match[1];
       } else {
-        log('[LannionClient] PHPSESSID not found in Set-Cookie header');
+        // log('[LannionClient] PHPSESSID not found in Set-Cookie header');
       }
     } else {
-      log('[LannionClient] No Set-Cookie header in auth response');
+      // log('[LannionClient] No Set-Cookie header in auth response');
     }
     
     if (!this.phpSessionId) {
       warn('[LannionClient] Warning: Session ID is null after authentication flow');
       throw new Error('Failed to extract session ID');
     }
-    log('[LannionClient] Authentication successful');
+    // log('[LannionClient] Authentication successful');
   }
 
   private extractExecutionToken(html: string): string {

@@ -53,7 +53,7 @@ const Wallpaper = ({ height = 400, dim = true }) => {
       </MaskedView>
     );
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return null;
   }
 };

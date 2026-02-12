@@ -42,8 +42,6 @@ export default function ConsentScreen() {
     });
   }, []);
 
-  console.log("currentConsent", currentConsent)
-
   const consents = [
     {
       key: "advanced",
