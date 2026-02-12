@@ -10,11 +10,9 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
 import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
+import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
-import { useSettingsStore } from "@/stores/settings";
-import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeHeader";
-import { Trash2 } from "lucide-react-native";
 
 export default function SubjectPersonalization() {
   const { colors } = useTheme();
@@ -122,7 +120,7 @@ export default function SubjectPersonalization() {
       <NativeHeaderSide side="Right">
         <NativeHeaderPressable onPress={() => resetAllSubjects()}>
           <Icon>
-            <Trash2 />
+            <Papicons name="Trash" />
           </Icon>
         </NativeHeaderPressable>
       </NativeHeaderSide>

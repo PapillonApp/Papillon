@@ -1,15 +1,15 @@
-import React, { useMemo, useEffect } from 'react';
-import { useColorScheme, StatusBar } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '@react-navigation/native';
 import * as SystemUI from 'expo-system-ui';
+import React, { useEffect, useMemo } from 'react';
+import { useColorScheme } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from "@/database/DatabaseProvider";
-import { AlertProvider } from '@/ui/components/AlertProvider';
 import { useSettingsStore } from '@/stores/settings';
+import { AlertProvider } from '@/ui/components/AlertProvider';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { AppColors } from "@/utils/colors";
 import { DarkTheme, DefaultTheme } from '@/utils/theme/Theme';
-import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -42,11 +42,6 @@ export function AppProviders({ children }: AppProvidersProps) {
     return colorScheme === 'dark' ? '#000000' : '#F5F5F5';
   }, [colorScheme]);
 
-  // Memoize status bar style to prevent string recreation
-  const statusBarStyle = useMemo(() => {
-    return colorScheme === 'dark' ? 'light-content' : 'dark-content';
-  }, [colorScheme]);
-
   // Combined effect for system UI updates to reduce effect overhead
   useEffect(() => {
     if (runsIOS26) {
@@ -55,8 +50,7 @@ export function AppProviders({ children }: AppProvidersProps) {
     else {
       SystemUI.setBackgroundColorAsync("#000000");
     }
-    StatusBar.setBarStyle(statusBarStyle);
-  }, [backgroundColor, statusBarStyle]);
+  }, [backgroundColor]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "black" }}>
