@@ -1,24 +1,18 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import { t } from 'i18next';
 import { Papicons } from '@getpapillon/papicons';
+import { useRouter } from 'expo-router';
+import { t } from 'i18next';
+import React from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
+
 import { useUserProfileData } from '../hooks/useUserProfileData';
-import { useRouter } from 'expo-router';
 
 const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
   const router = useRouter();
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  const { firstName, initials, profilePicture } = useUserProfileData();
-=======
-=======
->>>>>>> Stashed changes
   const upData = useUserProfileData();
-
-  const theme = useTheme();
 
   if (!upData) {
     return null;
@@ -36,7 +30,6 @@ const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevro
       current: true,
     },
   ]
->>>>>>> Stashed changes
 
   return (
     <Stack
