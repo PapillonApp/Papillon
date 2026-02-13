@@ -11,8 +11,11 @@ import { useRouter } from 'expo-router';
 const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
   const router = useRouter();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   const { firstName, initials, profilePicture } = useUserProfileData();
 =======
+=======
+>>>>>>> Stashed changes
   const upData = useUserProfileData();
 
   const theme = useTheme();
