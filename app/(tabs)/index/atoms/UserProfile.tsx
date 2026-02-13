@@ -10,7 +10,30 @@ import { useRouter } from 'expo-router';
 
 const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
   const router = useRouter();
+<<<<<<< Updated upstream
   const { firstName, initials, profilePicture } = useUserProfileData();
+=======
+  const upData = useUserProfileData();
+
+  const theme = useTheme();
+
+  if (!upData) {
+    return null;
+  }
+  const { firstName, lastName, level, establishment, initials, profilePicture } = upData;
+
+  const accountsList = [
+    {
+      firstName,
+      lastName,
+      level,
+      establishment,
+      initials,
+      profilePicture,
+      current: true,
+    },
+  ]
+>>>>>>> Stashed changes
 
   return (
     <Stack

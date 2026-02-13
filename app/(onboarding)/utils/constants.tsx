@@ -10,10 +10,11 @@ import { Services } from '@/stores/account/types';
 export interface SupportedService {
   name: string;
   title: string;
-  type: string;
+  type: string[];
+  hasLimitedSupport?: boolean;
   image?: NodeRequire;
   onPress: () => void;
-  variant: string;
+  variant?: string;
   color?: string;
   icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -28,7 +29,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "pronote",
       title: "PRONOTE",
-      type: "main",
+      type: ["school", "univ"],
       image: require("@/assets/images/service_pronote.png"),
       onPress: () => {
         redirect({ pathname: './school/method', options: { service: Services.PRONOTE } });
@@ -39,7 +40,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "ed",
       title: "ÉcoleDirecte",
-      type: "main",
+      type: ["school"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
         redirect({ pathname: './ecoledirecte/credentials', options: { service: Services.ECOLEDIRECTE } });
@@ -50,7 +51,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "skolengo",
       title: "Skolengo",
-      type: "main",
+      type: ["school"],
       image: require("@/assets/images/service_skolengo.png"),
       onPress: () => {
         redirect({ pathname: './school/method', options: { service: Services.SKOLENGO } });
@@ -59,36 +60,53 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
-      name: "separator",
-      title: "separator",
-      type: "separator",
-      image: require("@/assets/images/service_skolengo.png"),
-      onPress: () => { /* empty */ },
-      variant: 'service' as const,
-      color: 'light' as const,
+      name: "iut-lannion",
+      title: "IUT de Lannion",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lannion.png"),
+      type: ["univ"],
+      onPress: () => {
+        redirect({ pathname: './lannion/credentials' });
+      },
     },
     {
-      name: "university",
-      title: t("ONBOARDING_UNIVERSITY"),
-      type: "other",
-      icon: <Papicons name={"Star"} />,
+      name: "univ-lorraine",
+      title: "Université de Lorraine",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_lorraine.png"),
+      type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './university/method' });
+        redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
       },
-      variant: 'primary' as const,
-      style: { backgroundColor: theme.dark ? colors.border : "black" },
     },
     {
-      name: "university",
-      title: t("ONBOARDING_RESTAURANTS"),
-      type: "other",
-      icon: <Papicons name={"Cutlery"} />,
+      name: "univ-nimes",
+      title: "Université de Nîmes",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_nimes.png"),
+      type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './restaurants/method' });
+        redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
       },
-      variant: 'primary' as const,
-      color: 'light' as const
-    }
+    },
+    {
+      name: "univ-uphf",
+      title: "Université Polytechnique Hauts-de-France",
+      hasLimitedSupport: false,
+      image: require("@/assets/images/univ_uphf.png"),
+      type: ["univ"],
+      onPress: () => {
+        redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+      },
+    },
+    {
+      name: "appscho",
+      title: "Autres universités",
+      image: require("@/assets/images/icon.png"),
+      hasLimitedSupport: false,
+      type: ["univ"],
+      onPress: () => { redirect({ pathname: './appscho/list' }) }
+    },
   ]
 }
 
