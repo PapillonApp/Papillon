@@ -29,6 +29,29 @@ interface GradesModalProps {
   avgClass: number;
 }
 
+interface GradeBadgeProps {
+  icon: string;
+  label: string;
+  color: string;
+  theme: any;
+  is_outlined?: boolean;
+}
+
+const GradeBadge = ({ icon, label, color, theme, is_outlined = false }: GradeBadgeProps) => {
+  const backgroundColor = is_outlined ? "transparent" : adjust(color, theme.dark ? 0.3 : -0.3);
+  const textColor = is_outlined ? color : (colorCheck("#FFFFFF", [backgroundColor]) ? "#FFFFFF" : "#000000");
+  const borderStyle = is_outlined ? { borderWidth: 1, borderColor: color } : undefined;
+
+  return (
+    <Stack direction="horizontal" gap={8} backgroundColor={backgroundColor} vAlign="center" hAlign="center" padding={[12, 6]} radius={32} style={borderStyle}>
+      <Papicons size={20} name={icon} color={textColor} />
+      <Typography color={textColor} variant='body2'>
+        {label}
+      </Typography>
+    </Stack>
+  );
+};
+
 export default function GradesModal() {
   const { params } = useRoute();
   const theme = useTheme();
@@ -159,14 +182,33 @@ export default function GradesModal() {
             />
 
             {grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore?.disabled &&
-              <Stack direction="horizontal" gap={8} backgroundColor={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} vAlign='center' hAlign='center' padding={[12, 6]} radius={32} key={"bestgrade:" + theme.dark ? "dark" : "light"}>
-                <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                <Typography color={colorCheck("#FFFFFF", [adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
-                  {t("Modal_Grades_BestGrade")}
-                </Typography>
-              </Stack>
+              <GradeBadge
+                icon="crown"
+                label={t("Modal_Grades_BestGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+                is_outlined={false}
+              />
+            }
+            {grade.optional &&
+              <GradeBadge
+                icon="info"
+                label={t("Modal_Grades_OptionalGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+                is_outlined={true}
+              />
             }
 
+            {grade.bonus &&
+              <GradeBadge
+                icon="info"
+                label={t("Modal_Grades_BonusGrade")}
+                color={subjectInfo.color}
+                theme={theme}
+                is_outlined={true}
+              />
+            }
             <Stack
               card
               direction="horizontal"
