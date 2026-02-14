@@ -1,7 +1,7 @@
 
 import { Client, DoubleAuthQuestions, DoubleAuthResult, Require2FA } from "@blockshub/blocksdirecte";
 import { useTheme } from "@react-navigation/native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -51,6 +52,8 @@ export default function EDLoginWithCredentials() {
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
@@ -90,28 +93,36 @@ export default function EDLoginWithCredentials() {
       if (tokens) {
         client.auth.setAccount(0);
         const authentication = client.auth.getAccount();
+        const service = {
+          id: device,
+          auth: {
+            additionals: {
+              "username": username,
+              "token": authentication.accessToken,
+              "cn": keys?.cn ?? "",
+              "cv": keys?.cv ?? "",
+              "deviceUUID": device
+            }
+          },
+          serviceId: Services.ECOLEDIRECTE,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+
+        if (action === "addService") {
+          store.addServiceToAccount(store.lastUsedAccount, service)
+          await initializeAccountManager()
+          router.back();
+          router.back();
+          return router.back();
+        }
+
         const account: Account = {
           id: device,
           firstName: authentication.prenom,
           lastName: authentication.nom,
           schoolName: authentication.nomEtablissement,
-          services: [
-            {
-              id: device,
-              auth: {
-                additionals: {
-                  "username": username,
-                  "token": authentication.accessToken,
-                  "cn": keys?.cn ?? "",
-                  "cv": keys?.cv ?? "",
-                  "deviceUUID": device
-                }
-              },
-              serviceId: Services.ECOLEDIRECTE,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            },
-          ],
+          services: [service],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

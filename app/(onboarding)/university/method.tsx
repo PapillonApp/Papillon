@@ -1,5 +1,5 @@
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, UnknownInputParams } from 'expo-router';
+import { RelativePathString, router, UnknownInputParams, useLocalSearchParams } from 'expo-router';
 import { Papicons } from '@getpapillon/papicons';
 
 import Typography from '@/ui/components/Typography';
@@ -18,8 +18,11 @@ export default function WelcomeScreen() {
 
   const { t } = useTranslation()
 
+  const params = useLocalSearchParams();
+  const action = params.action;
+
   const services = GetSupportedUniversities((path: { pathname: string, options?: UnknownInputParams }) => {
-    router.push({ pathname: path.pathname as unknown as RelativePathString, params: path.options ?? {} as unknown as UnknownInputParams });
+    router.push({ pathname: path.pathname as unknown as RelativePathString, params: { ...path.options, action } as unknown as UnknownInputParams });
   });
 
   return (

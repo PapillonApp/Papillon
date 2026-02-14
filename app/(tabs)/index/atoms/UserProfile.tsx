@@ -7,6 +7,8 @@ import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
 
+import { initializeAccountManager } from '@/services/shared';
+import { useAccountStore } from '@/stores/account';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
@@ -16,21 +18,10 @@ import { useUserProfileData } from '../hooks/useUserProfileData';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
-  const { firstName, lastName, level, establishment, initials, profilePicture } = useUserProfileData();
-
+  const { firstName, lastName, initials, profilePicture } = useUserProfileData();
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
-
-  const accountsList = [
-    {
-      firstName,
-      lastName,
-      level,
-      establishment,
-      initials,
-      profilePicture,
-      current: true,
-    },
-  ]
 
   return (
     <Stack inline flex>
@@ -60,16 +51,21 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
 
         <UserProfileItemContainer>
           <MenuView
+            onPressAction={async ({ nativeEvent }) => {
+              const store = useAccountStore.getState();
+              store.setLastUsedAccount(nativeEvent.event);
+              await initializeAccountManager();
+            }}
             actions={[
               {
                 id: 'workspaces',
                 title: '',
                 displayInline: true,
-                subactions: accountsList.map((account) => ({
+                subactions: accounts.map((account) => ({
                   id: account.id,
                   title: account.firstName + ' ' + account.lastName,
-                  subtitle: account.establishment,
-                  state: account.current ? 'on' : 'off',
+                  subtitle: account.schoolName,
+                  state: account.id === lastUsedAccount ? 'on' : 'off',
                 })),
               },
               {

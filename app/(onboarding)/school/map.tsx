@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import { RelativePathString, router, useFocusEffect, useGlobalSearchParams } from "expo-router";
+import { RelativePathString, router, useFocusEffect, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
 import { geolocation } from "pawnote";
 import React, { useCallback, useMemo, useState } from "react";
@@ -91,6 +91,7 @@ async function fetchSchools(service: Services, alert: ReturnType<typeof useAlert
       }
 
       list.push({
+        ...useLocalSearchParams(),
         name: school.name,
         distance: distance / 1000,
         url: "",
@@ -159,12 +160,12 @@ export default function SelectSchoolOnMap() {
           if (Number(local.service) === Services.SKOLENGO) {
             return router.push({
               pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
-              params: { ref: JSON.stringify(school.ref) },
+              params: { ref: JSON.stringify(school.ref), ...useLocalSearchParams() },
             });
           }
           return router.push({
             pathname: "../" + Services[Number(local.service)].toLowerCase() + "/webview" as unknown as RelativePathString,
-            params: { url: school.url },
+            params: { url: school.url, ...useLocalSearchParams() },
           });
         },
       };

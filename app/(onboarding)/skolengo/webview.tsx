@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { AuthFlow, ChallengeMethod, School } from "skolengojs";
 
 import OnboardingWebview from "@/components/onboarding/OnboardingWebview";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Account, Services } from "@/stores/account/types";
 import { log } from "@/utils/logger/logger";
@@ -16,6 +17,8 @@ export default function WebViewScreen() {
   const { ref } = useLocalSearchParams();
   const parsedRef = typeof ref === "string" ? JSON.parse(ref) : {};
   const school = new School(parsedRef.id, parsedRef.name, parsedRef.emsCode, parsedRef.OIDCWellKnown, parsedRef.location, parsedRef.homepage);
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   useEffect(() => {
     const handleDeepLink = (event: { url: string }) => {
@@ -63,6 +66,30 @@ export default function WebViewScreen() {
       const auth = await flowRef.current.finalizeLogin(code[1], state[1])
       const store = useAccountStore.getState();
       const id = uuid()
+      const service = {
+        id: id,
+        auth: {
+          accessToken: auth.refreshToken,
+          refreshToken: auth.refreshToken,
+          additionals: {
+            refreshUrl: auth.refreshURL,
+            wellKnown: flowRef.current.endpoints.wellKnown,
+            tokenEndpoint: flowRef.current.endpoints.tokenEndpoint,
+            emsCode: flowRef.current.school.emsCode
+          }
+        },
+        serviceId: Services.SKOLENGO,
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString()
+      }
+
+      if (action === "addService") {
+        store.addServiceToAccount(store.lastUsedAccount, service)
+        await initializeAccountManager()
+        router.back();
+        router.back();
+        return router.back();
+      }
 
       const account: Account = {
         id,
@@ -70,24 +97,7 @@ export default function WebViewScreen() {
         lastName: auth?.lastName ?? "",
         schoolName: auth?.school.name,
         className: auth?.className,
-        services: [
-          {
-            id: id,
-            auth: {
-              accessToken: auth.refreshToken,
-              refreshToken: auth.refreshToken,
-              additionals: {
-                refreshUrl: auth.refreshURL,
-                wellKnown: flowRef.current.endpoints.wellKnown,
-                tokenEndpoint: flowRef.current.endpoints.tokenEndpoint,
-                emsCode: flowRef.current.school.emsCode
-              }
-            },
-            serviceId: Services.SKOLENGO,
-            createdAt: (new Date()).toISOString(),
-            updatedAt: (new Date()).toISOString()
-          }
-        ],
+        services: [service],
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString()
       }

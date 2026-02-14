@@ -41,22 +41,21 @@ export const useTaskFilters = (
   }, []);
 
   const sections = useMemo<HomeworkSection[]>(() => {
-    const mergedData = homeworksFromCache.map(cached => {
-      const fresh = cached.id && homework[cached.id];
-      return fresh || cached;
+    const mergedMap = new Map<string, Homework>();
+
+    homeworksFromCache.forEach(cached => {
+      if (cached.id) {
+        mergedMap.set(cached.id, cached);
+      }
     });
 
-    const uniqueIds = new Set<string>();
-    let data = mergedData.filter(hw => {
-      if (hw.id) {
-        if (!uniqueIds.has(hw.id)) {
-          uniqueIds.add(hw.id);
-          return true;
-        }
-        return false;
+    Object.values(homework).forEach(fresh => {
+      if (fresh.id) {
+        mergedMap.set(fresh.id, fresh);
       }
-      return true;
     });
+
+    let data = Array.from(mergedMap.values());
 
     if (showUndoneOnly) {
       data = data.filter(h => !h.isDone);

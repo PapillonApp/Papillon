@@ -12,8 +12,7 @@ export const useHomeworkData = (selectedWeek: number, alert: any) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [homework, setHomework] = useState<Record<string, Homework>>({});
 
-  const store = useAccountStore.getState();
-  const account = store.accounts.find(acc => acc.id === store.lastUsedAccount);
+  const account = useAccountStore(state => state.accounts.find(account => account.id === state.lastUsedAccount));
   type Service = { id: string };
   const services = useMemo(() => account?.services?.map((s: Service) => s.id) ?? [], [account]);
   const manager = getManager();

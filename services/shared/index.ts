@@ -102,7 +102,7 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        error("Failed to refresh service " + service.id + ": " + String(e));
       }
     }
 
@@ -147,8 +147,8 @@ export class AccountManager {
       {
         multiple: true,
         fallback: async () => getHomeworksFromCache(weekNumber),
-        saveToCache: async (data: Homework[]) => {
-          await addHomeworkToDatabase(data);
+        saveToCache: async (data: Homework[], updatedServiceIds) => {
+          await addHomeworkToDatabase(data, updatedServiceIds);
         },
       }
     );
@@ -326,8 +326,8 @@ export class AccountManager {
       {
         multiple: true,
         fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
-        saveToCache: async (data: CourseDay[]) => {
-          addCourseDayToDatabase(data);
+        saveToCache: async (data: CourseDay[], updatedServiceIds) => {
+          addCourseDayToDatabase(data, updatedServiceIds);
         },
       }
     );
@@ -492,6 +492,12 @@ export class AccountManager {
     );
   }
 
+  getAvailableClientsWithIds(capability: Capabilities): { id: string; client: SchoolServicePlugin }[] {
+    return Object.entries(this.clients)
+      .filter(([_, client]) => client.capabilities.includes(capability))
+      .map(([id, client]) => ({ id, client }));
+  }
+
   private async handleHasInternet<T>(
     options?: FetchOptions<T | T[]>
   ): Promise<T | T[] | void> {
@@ -543,14 +549,14 @@ export class AccountManager {
         }
         const result = await callback(client);
         if (options.saveToCache) {
-          await options.saveToCache(result);
+          await options.saveToCache(result, [options.clientId]);
         }
         return result;
       }
 
-      const availableClients = this.getAvailableClients(capability);
+      const availableClientsWithIds = this.getAvailableClientsWithIds(capability);
 
-      if (availableClients.length === 0) {
+      if (availableClientsWithIds.length === 0) {
         log(
           `No clients available for capability ${capability}, falling back to cache`
         );
@@ -562,12 +568,13 @@ export class AccountManager {
 
       if (options?.multiple) {
         const results = await Promise.all(
-          availableClients.map(client => callback(client) as Promise<T[]>)
+          availableClientsWithIds.map(({ client }) => callback(client) as Promise<T[]>)
         );
         const combinedResult = results.flat();
 
         if (options?.saveToCache) {
-          await options.saveToCache(combinedResult);
+          const serviceIds = availableClientsWithIds.map(c => c.id);
+          await options.saveToCache(combinedResult, serviceIds);
         }
 
         return combinedResult;

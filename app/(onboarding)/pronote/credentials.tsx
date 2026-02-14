@@ -33,6 +33,8 @@ export default function PronoteLoginWithCredentials() {
 
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("");
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -97,34 +99,43 @@ export default function PronoteLoginWithCredentials() {
       const lastName = splittedUsername.slice(0, splittedUsername.length - 1).join(" ")
       const schoolName = session.user.resources[0].establishmentName
       const className = session.user.resources[0].className
+      const service = {
+        id: device,
+        auth: {
+          accessToken: authentication.token,
+          refreshToken: authentication.token,
+          additionals: {
+            instanceURL: authentication.url,
+            kind: authentication.kind,
+            username: authentication.username,
+            deviceUUID: device
+          }
+        },
+        serviceId: Services.PRONOTE,
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString()
+      }
       if (!local.serviceId) {
+        const store = useAccountStore.getState()
+        if (action === "addService") {
+          store.addServiceToAccount(store.lastUsedAccount, service)
+          await initializeAccountManager()
+          router.back();
+          router.back();
+          return router.back();
+        }
+
         const account = {
           id: device,
           firstName,
           lastName,
           schoolName,
           className,
-          services: [{
-            id: device,
-            auth: {
-              accessToken: authentication.token,
-              refreshToken: authentication.token,
-              additionals: {
-                instanceURL: authentication.url,
-                kind: authentication.kind,
-                username: authentication.username,
-                deviceUUID: device
-              }
-            },
-            serviceId: Services.PRONOTE,
-            createdAt: (new Date()).toISOString(),
-            updatedAt: (new Date()).toISOString()
-          }],
+          services: [service],
           createdAt: (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString()
         }
 
-        const store = useAccountStore.getState()
         store.addAccount(account)
         store.setLastUsedAccount(device)
 

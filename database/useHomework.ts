@@ -62,7 +62,10 @@ export async function getHomeworksFromCache(
   }
 }
 
-export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
+export async function addHomeworkToDatabase(homeworks: SharedHomework[], updatedServiceIds?: string[]) {
+  if (homeworks.length === 0) {
+    return;
+  }
   const db = getDatabaseInstance();
 
   const weekNumber = getWeekNumberFromDate(homeworks[0].dueDate);
@@ -82,7 +85,9 @@ export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   }
 
   const homeworksToDelete = dbHomeworks.filter(
-    dbHomeworks => !homeworkIds.includes(dbHomeworks.homeworkId)
+    dbHomework =>
+      !homeworkIds.includes(dbHomework.homeworkId) &&
+      (!updatedServiceIds || updatedServiceIds.includes(dbHomework.createdByAccount))
   );
 
   for (const homework of homeworksToDelete) {

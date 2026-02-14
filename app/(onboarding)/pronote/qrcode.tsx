@@ -3,24 +3,25 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { useTheme } from "@react-navigation/native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Haptics from "expo-haptics";
-import { router, useGlobalSearchParams } from "expo-router";
+import { router, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
 import { AuthenticateError, createSessionHandle, loginQrCode, SecurityError } from "pawnote";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Modal, StyleSheet, TextInput, View } from "react-native";
 import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
+import { initializeAccountManager } from "@/services/shared";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
 import Icon from "@/ui/components/Icon";
 import Typography from "@/ui/components/Typography";
 import { URLToBase64 } from "@/utils/attachments/helper";
-import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import { customFetcher } from "@/utils/pronote/fetcher";
+import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
-import { useTranslation } from "react-i18next";
 
 export default function PronoteLoginWithQR() {
   const theme = useTheme();
@@ -39,6 +40,8 @@ export default function PronoteLoginWithQR() {
 
   const codeInput = React.createRef<TextInput>();
   const [QRData, setQRData] = useState<string | null>(null);
+  const params = useLocalSearchParams();
+  const action = String(params.action);
 
   async function loginQR() {
     setScanned(false);
@@ -90,6 +93,31 @@ export default function PronoteLoginWithQR() {
       if (session.user.resources[0].profilePicture?.url) {
         pp = await URLToBase64(session.user.resources[0].profilePicture?.url)
       }
+      const service = {
+        id: accountID,
+        auth: {
+          accessToken: refresh.token,
+          refreshToken: refresh.token,
+          additionals: {
+            instanceURL: refresh.url,
+            kind: refresh.kind,
+            username: refresh.username,
+            deviceUUID: accountID
+          }
+        },
+        serviceId: Services.PRONOTE,
+        createdAt: (new Date()).toISOString(),
+        updatedAt: (new Date()).toISOString()
+      }
+
+      if (action === "addService") {
+        const store = useAccountStore.getState();
+        store.addServiceToAccount(store.lastUsedAccount, service)
+        await initializeAccountManager()
+        router.back();
+        router.back();
+        return router.back();
+      }
 
       useAccountStore.getState().addAccount({
         id: accountID,
@@ -101,22 +129,7 @@ export default function PronoteLoginWithQR() {
           profilePicture: pp,
           subjects: {}
         },
-        services: [{
-          id: accountID,
-          auth: {
-            accessToken: refresh.token,
-            refreshToken: refresh.token,
-            additionals: {
-              instanceURL: refresh.url,
-              kind: refresh.kind,
-              username: refresh.username,
-              deviceUUID: accountID
-            }
-          },
-          serviceId: Services.PRONOTE,
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString()
-        }],
+        services: [service],
         createdAt: (new Date()).toISOString(),
         updatedAt: (new Date()).toISOString()
       });

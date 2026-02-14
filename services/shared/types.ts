@@ -136,5 +136,5 @@ export interface GenericInterface {
 export type FetchOptions<T> = {
   clientId?: string;
   fallback?: () => Promise<T>;
-  saveToCache?: (data: T) => Promise<void>;
+  saveToCache?: (data: T, updatedServiceIds?: string[]) => Promise<void>;
 };

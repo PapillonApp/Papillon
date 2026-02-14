@@ -23,7 +23,7 @@ export default function WelcomeScreen() {
   const loginMethods = GetLoginMethods((path: { pathname: RelativePathString }) => {
     router.push({
       pathname: path.pathname,
-      params: { service: local.service }
+      params: { service: local.service, action: local.action }
     });
   }).filter(service => service.availableFor.includes(Number(local.service)));
 

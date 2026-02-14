@@ -1,5 +1,5 @@
 import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, UnknownInputParams, useFocusEffect } from 'expo-router';
+import { RelativePathString, router, UnknownInputParams, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +19,12 @@ export default function WelcomeScreen() {
   const { colors } = theme;
   const { t } = useTranslation();
   const animation = React.useRef<LottieView>(null);
-
+  const params = useLocalSearchParams();
+  const action = String(params.action);
   const services = GetSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
     router.push({
-      pathname: path.pathname as unknown as RelativePathString,
-      params: path.options ?? {} as unknown as UnknownInputParams
+      pathname: path.pathname as RelativePathString,
+      params: { ...path.options, action } as UnknownInputParams
     });
   });
 
