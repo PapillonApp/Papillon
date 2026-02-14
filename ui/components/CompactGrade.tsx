@@ -18,7 +18,7 @@ interface CompactGradeProps {
   description: string;
   score: number;
   outOf: number;
-  date: Date;
+  date?: Date;
   disabled?: boolean;
   status?: string;
   onPress?: () => void,
