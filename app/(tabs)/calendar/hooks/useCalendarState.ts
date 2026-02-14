@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Dimensions, FlatList } from 'react-native';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Dimensions, FlatList } from "react-native";
 import { getWeekNumberFromDate } from "@/database/useHomework";
 import { warn } from "@/utils/logger/logger";
 
@@ -28,17 +28,17 @@ export function useCalendarState() {
     base.setHours(0, 0, 0, 0);
     const target = new Date(d);
     target.setHours(0, 0, 0, 0);
-    const diff = Math.round((target.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.round(
+      (target.getTime() - base.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return INITIAL_INDEX + diff;
   }, []);
 
   const handleDateChange = useCallback((newDate: Date) => {
     setDate(newDate);
     const newWeekNumber = getWeekNumberFromDate(newDate);
-    if (newWeekNumber !== weekNumber) {
-      setWeekNumber(newWeekNumber);
-    }
-  }, [weekNumber]);
+    setWeekNumber(prev => (prev !== newWeekNumber ? newWeekNumber : prev));
+  }, []);
 
   // Sync FlatList with date
   useEffect(() => {
@@ -58,7 +58,7 @@ export function useCalendarState() {
             animated: false,
           });
         } catch (e) {
-          warn(String(e))
+          warn(String(e));
         }
       }
     }
@@ -68,31 +68,41 @@ export function useCalendarState() {
     }
   }, [date, getIndexFromDate, currentIndex, weekNumber]);
 
-  const onMomentumScrollEnd = useCallback((e: any) => {
-    const newIndex = Math.round(e.nativeEvent.contentOffset.x / windowWidth);
-    if (newIndex !== currentIndex) {
-      setCurrentIndex(newIndex);
-      const newDate = getDateFromIndex(newIndex);
-      setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
-    }
-  }, [windowWidth, currentIndex, getDateFromIndex]);
+  const onMomentumScrollEnd = useCallback(
+    (e: any) => {
+      const newIndex = Math.round(e.nativeEvent.contentOffset.x / windowWidth);
+      if (newIndex !== currentIndex) {
+        setCurrentIndex(newIndex);
+        const newDate = getDateFromIndex(newIndex);
+        setDate(prev =>
+          prev.getTime() !== newDate.getTime() ? newDate : prev
+        );
+      }
+    },
+    [windowWidth, currentIndex, getDateFromIndex]
+  );
 
   const lastEmittedIndex = useRef(currentIndex);
 
-  const onScroll = useCallback((e: any) => {
-    const offsetX = e.nativeEvent.contentOffset.x;
-    const newIndex = Math.round(offsetX / windowWidth);
-    if (newIndex !== lastEmittedIndex.current) {
-      lastEmittedIndex.current = newIndex;
-      setCurrentIndex(newIndex);
-      const newDate = getDateFromIndex(newIndex);
-      setDate((prev) => prev.getTime() !== newDate.getTime() ? newDate : prev);
-      const newWeekNumber = getWeekNumberFromDate(newDate);
-      if (newWeekNumber !== weekNumber) {
-        setWeekNumber(newWeekNumber);
+  const onScroll = useCallback(
+    (e: any) => {
+      const offsetX = e.nativeEvent.contentOffset.x;
+      const newIndex = Math.round(offsetX / windowWidth);
+      if (newIndex !== lastEmittedIndex.current) {
+        lastEmittedIndex.current = newIndex;
+        setCurrentIndex(newIndex);
+        const newDate = getDateFromIndex(newIndex);
+        setDate(prev =>
+          prev.getTime() !== newDate.getTime() ? newDate : prev
+        );
+        const newWeekNumber = getWeekNumberFromDate(newDate);
+        if (newWeekNumber !== weekNumber) {
+          setWeekNumber(newWeekNumber);
+        }
       }
-    }
-  }, [windowWidth, getDateFromIndex, weekNumber]);
+    },
+    [windowWidth, getDateFromIndex, weekNumber]
+  );
 
   return {
     date,
@@ -107,6 +117,6 @@ export function useCalendarState() {
     onMomentumScrollEnd,
     onScroll,
     INITIAL_INDEX,
-    windowWidth
+    windowWidth,
   };
 }
