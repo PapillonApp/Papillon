@@ -19,6 +19,7 @@ import OnboardingBackButton from "@/components/onboarding/OnboardingBackButton";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { useMaxBrightness } from "@/hooks/useMaxBrightness";
 
 export default function QRCodePage() {
 
@@ -34,6 +35,8 @@ export default function QRCodePage() {
   const scale = useSharedValue(1);
 
   const finalTranslation = Dimensions.get("window").height / 2;
+
+  useMaxBrightness();
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
