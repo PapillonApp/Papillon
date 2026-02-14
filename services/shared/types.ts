@@ -6,6 +6,7 @@ import { SessionHandle } from "pawnote";
 import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
+import { WebUntisClient } from "webuntis-client";
 
 import { Appscho } from "@/services/appscho";
 import { Lannion } from "@/services/lannion";
@@ -34,6 +35,7 @@ import { Izly } from "../izly";
 import { Multi } from "../multi";
 import { Skolengo } from "../skolengo";
 import { TurboSelf } from "../turboself";
+import { WebUntis } from "../webuntis";
 import { Balance } from "./balance";
 import { Kid } from "./kid";
 
@@ -58,11 +60,24 @@ export interface SchoolServicePlugin {
     | TurboselfClient
     | User
     | LannionClient
+    | WebUntisClient
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion>;
+  ) => Promise<
+    | Pronote
+    | Skolengo
+    | EcoleDirecte
+    | Multi
+    | TurboSelf
+    | ARD
+    | Izly
+    | Alise
+    | Appscho
+    | Lannion
+    | WebUntis
+  >;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;

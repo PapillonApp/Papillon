@@ -102,7 +102,7 @@ export class AccountManager {
           );
         }
       } catch (e) {
-        throw new AuthenticationError(String(e), service)
+        throw new AuthenticationError(String(e), service);
       }
     }
 
@@ -316,7 +316,10 @@ export class AccountManager {
     );
   }
 
-  async getWeeklyTimetable(weekNumber: number, date: Date): Promise<CourseDay[]> {
+  async getWeeklyTimetable(
+    weekNumber: number,
+    date: Date
+  ): Promise<CourseDay[]> {
     return await this.fetchData(
       Capabilities.TIMETABLE,
       async client =>
@@ -325,7 +328,8 @@ export class AccountManager {
           : [],
       {
         multiple: true,
-        fallback: async () => getCoursesFromCache([weekNumber], date.getFullYear()),
+        fallback: async () =>
+          getCoursesFromCache([weekNumber], date.getFullYear()),
         saveToCache: async (data: CourseDay[]) => {
           addCourseDayToDatabase(data);
         },
@@ -645,6 +649,12 @@ export class AccountManager {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const module = require("@/services/lannion/index");
       return new module.Lannion(service.id);
+    }
+
+    if (service.serviceId === Services.WEBUNTIS) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const module = require("@/services/webuntis/index");
+      return new module.WebUntis(service.id);
     }
 
     error(
