@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Image, StatusBar, StyleSheet } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
-import { useIsFocused } from '@react-navigation/native';
-import { useSettingsStore } from '@/stores/settings';
 import { File, Paths } from 'expo-file-system';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
+import { useSettingsStore } from '@/stores/settings';
 
 const Wallpaper = ({ height = 400, dim = true }) => {
   try {
-    const visible = useIsFocused();
     const settingsStore = useSettingsStore(state => state.personalization);
     const currentWallpaper = settingsStore.wallpaper;
 
@@ -50,10 +49,6 @@ const Wallpaper = ({ height = 400, dim = true }) => {
             locations={[0, 1]}
             style={[styles.dimGradient, { height: height / 2 }]}
           />
-        }
-
-        {dim && visible &&
-          <StatusBar translucent animated barStyle={'light-content'} />
         }
       </MaskedView>
     );

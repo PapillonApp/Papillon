@@ -1,11 +1,16 @@
 import { Papicons } from "@getpapillon/papicons";
 import { MenuView } from "@react-native-menu/menu";
 import { useTheme } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import { LineGraph } from "react-native-graph";
+import { LayoutAnimationConfig } from "react-native-reanimated";
+import Reanimated from "react-native-reanimated";
 
 import { Grade } from "@/services/shared/grade";
 import AnimatedNumber from "@/ui/components/AnimatedNumber";
@@ -13,16 +18,13 @@ import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
+import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
 import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
-import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
-import { LayoutAnimationConfig } from "react-native-reanimated";
-import Reanimated from "react-native-reanimated";
+
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
-import * as Haptics from "expo-haptics";
-import * as WebBrowser from "expo-web-browser";
 
 
 const algorithms = [
@@ -130,7 +132,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
     }, [shownAverage, realAverage]);
 
     const backgroundColor = useMemo(() => {
-      return adjust(accent, theme.dark ? -0.89 : 0.93);
+      return adjust(accent, theme.dark ? -0.89 : 0.8);
     }, [accent, theme.dark]);
 
     if (!grades || grades.length === 0) {
@@ -155,25 +157,35 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
         <LayoutAnimationConfig skipEntering={true} skipExiting={true}>
           <Stack
             card
-            backgroundColor={backgroundColor}
             hAlign="center"
             vAlign="center"
             gap={0}
           >
+            <LinearGradient
+              colors={[backgroundColor + "90", backgroundColor + "00"]}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: 20,
+              }}
+            />
+
             <View
               style={{
                 width: "100%",
                 height: 100,
-                overflow: "hidden",
-                borderRadius: 18,
+                overflow: "hidden"
               }}
             >
               <View
                 style={{
                   width: "105%",
-                  height: 120,
+                  height: 115,
                   marginLeft: -30,
-                  marginTop: -10,
+                  marginTop: -15,
                 }}
               >
 
@@ -190,6 +202,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
                     lineThickness={5}
                     panGestureDelay={0}
                     enableIndicator={true}
+                    enableFadeInMask={true}
                     indicatorPulsating={true}
                     style={{
                       width: "100%",
