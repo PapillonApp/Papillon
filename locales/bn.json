@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-কোড এবং কার্ড",
   "Modal_Grades_Title": "নম্বরের বিবরণ",
   "Modal_Grades_BestGrade": "গ্রুপের সর্বোচ্চ নম্বর",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "বিবরণ",
   "Grades_NormalizedGrade_Title": "২০-এর মধ্যে নম্বর",
   "Grades_NormalizedGrade_Description": "২০-এর স্কেলে পরিবর্তিত নম্বরের মান",
