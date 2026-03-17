@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR 코드 및 카드",
   "Modal_Grades_Title": "성적 상세 정보",
   "Modal_Grades_BestGrade": "그룹 내 최고점",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "상세 정보",
   "Grades_NormalizedGrade_Title": "20점 만점 환산",
   "Grades_NormalizedGrade_Description": "성적을 20점 만점 기준으로 변환한 값",
