@@ -279,6 +279,9 @@
   "Modal_Grades_Title": "Détail de la note",
   "Modal_Grades_BestGrade": "Meilleure note du groupe",
 
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
+
   "Grades_Details_Title": "Détails",
   "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
   "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
@@ -325,6 +328,8 @@
   "Settings_Personalization_Description": "Thèmes, couleurs...",
   "Settings_Cards_Title": "Cartes",
   "Settings_Cards_Description": "Cantine, accès...",
+  "Settings_Accounts_Title": "Comptes liés",
+  "Settings_Accounts_Description": "Comptes, cantine...",
   "Settings_Accessibility_Title": "Accessibilité",
   "Settings_Accessibility_Description": "Affichage, son...",
   "Settings_MagicPlus_Title": "Magic+",

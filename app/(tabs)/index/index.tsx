@@ -22,6 +22,7 @@ import HomeTimeTableWidget from './widgets/timetable';
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const bottomTabBarHeight = useBottomTabBarHeight();
+  const focused = useIsFocused();
 
   // Account
   const accounts = useAccountStore((state) => state.accounts);

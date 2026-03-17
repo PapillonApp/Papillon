@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Platform } from "react-native";
+import { Platform, StatusBar } from "react-native";
 
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
@@ -18,30 +18,39 @@ export default function Layout() {
   }), []);
 
   return (
-    <Stack screenOptions={newScreenOptions}>
-      <Stack.Screen
-        name="settings"
-        options={{
-          headerTitle: t("Tab_Settings"),
-        }}
-      />
+    <>
+      <StatusBar barStyle="light-content" animated />
+      <Stack screenOptions={newScreenOptions}>
+        <Stack.Screen
+          name="index"
+          options={{
+            headerTitle: t("Tab_Settings"),
+          }}
+        />
 
-      <Stack.Screen
-        name="services"
-        options={{
-          headerTitle: t("Settings_Services_Title"),
-          headerShown: true,
-        }}
-      />
-      <Stack.Screen
-        name="personalization"
-        options={{
-          headerTitle: t("Settings_Personalization_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: true,
-          headerLargeTitle: false,
-        }}
-      />
+        <Stack.Screen
+          name="services"
+          options={{
+            headerTitle: t("Settings_Services_Title"),
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="accounts"
+          options={{
+            headerTitle: t("Settings_Accounts_Title"),
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="personalization"
+          options={{
+            headerTitle: t("Settings_Personalization_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: true,
+            headerLargeTitle: false,
+          }}
+        />
 
       <Stack.Screen
         name="cards"
