@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-kod och kort",
   "Modal_Grades_Title": "Betygsdetaljer",
   "Modal_Grades_BestGrade": "Bästa betyg i gruppen",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detaljer",
   "Grades_NormalizedGrade_Title": "Betyg omräknat till 20",
   "Grades_NormalizedGrade_Description": "Betygets värde konverterat till en skala på 20",
