@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Cod QR și carduri",
   "Modal_Grades_Title": "Detaliul notei",
   "Modal_Grades_BestGrade": "Cea mai bună notă din grup",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detalii",
   "Grades_NormalizedGrade_Title": "Notă raportată la 20",
   "Grades_NormalizedGrade_Description": "Valoarea notei convertită pe o scară de 20",
