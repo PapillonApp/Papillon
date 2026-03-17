@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "קוד QR וכרטיסים",
   "Modal_Grades_Title": "פרטי הציון",
   "Modal_Grades_BestGrade": "הציון הכי גבוה בקבוצה",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "פרטים",
   "Grades_NormalizedGrade_Title": "ציון מנורמל ל-20",
   "Grades_NormalizedGrade_Description": "ערך הציון מומר לסולם של 20",
