@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-kód és kártyák",
   "Modal_Grades_Title": "Jegy részletei",
   "Modal_Grades_BestGrade": "Csoport legjobb jegye",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Részletek",
   "Grades_NormalizedGrade_Title": "Átszámított jegy (20-as skála)",
   "Grades_NormalizedGrade_Description": "A jegy értéke 20-as skálára átszámítva",
