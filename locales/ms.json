@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Kod QR dan kad",
   "Modal_Grades_Title": "Butiran gred",
   "Modal_Grades_BestGrade": "Gred terbaik dalam kumpulan",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Butiran",
   "Grades_NormalizedGrade_Title": "Gred ditukar kepada 20",
   "Grades_NormalizedGrade_Description": "Nilai gred ditukarkan kepada skala 20",
