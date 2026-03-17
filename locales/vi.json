@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Mã QR và thẻ",
   "Modal_Grades_Title": "Chi tiết điểm số",
   "Modal_Grades_BestGrade": "Điểm cao nhất nhóm",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Chi tiết",
   "Grades_NormalizedGrade_Title": "Quy đổi thang điểm 20",
   "Grades_NormalizedGrade_Description": "Giá trị điểm số được chuyển đổi sang thang điểm 20",
