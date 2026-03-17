@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-Code και κάρτες",
   "Modal_Grades_Title": "Λεπτομέρειες βαθμού",
   "Modal_Grades_BestGrade": "Καλύτερος βαθμός ομάδας",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Λεπτομέρειες",
   "Grades_NormalizedGrade_Title": "Αναγωγή βαθμού στο 20",
   "Grades_NormalizedGrade_Description": "Τιμή βαθμού μετατραπημένη σε κλίμακα 20",
