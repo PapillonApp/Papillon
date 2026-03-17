@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Codice QR e tessere",
   "Modal_Grades_Title": "Dettagli del voto",
   "Modal_Grades_BestGrade": "Miglior voto del gruppo",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Dettagli",
   "Grades_NormalizedGrade_Title": "Voto riportato su 20",
   "Grades_NormalizedGrade_Description": "Valore del voto convertito in scala ventesimale",
