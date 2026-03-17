@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-kode og kort",
   "Modal_Grades_Title": "Detaljer for karakter",
   "Modal_Grades_BestGrade": "Bedste karakter i gruppen",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detaljer",
   "Grades_NormalizedGrade_Title": "Karakter omregnet til 20",
   "Grades_NormalizedGrade_Description": "Værdien af karakteren omregnet til en skala på 20",
