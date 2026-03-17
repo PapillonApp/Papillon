@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-code en kaarten",
   "Modal_Grades_Title": "Cijferdetails",
   "Modal_Grades_BestGrade": "Hoogste cijfer in de groep",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Details",
   "Grades_NormalizedGrade_Title": "Cijfer op schaal van 20",
   "Grades_NormalizedGrade_Description": "Cijferwaarde omgerekend naar een schaal van 20",
