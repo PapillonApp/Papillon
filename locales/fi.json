@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-koodi ja kortit",
   "Modal_Grades_Title": "Arvosanan tiedot",
   "Modal_Grades_BestGrade": "Ryhmän paras arvosana",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Tiedot",
   "Grades_NormalizedGrade_Title": "Arvosana asteikolla 20",
   "Grades_NormalizedGrade_Description": "Arvosanan arvo muutettuna 20-asteikolle",
