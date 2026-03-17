@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Kod QR i karty",
   "Modal_Grades_Title": "Szczegóły oceny",
   "Modal_Grades_BestGrade": "Najlepsza ocena w grupie",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Szczegóły",
   "Grades_NormalizedGrade_Title": "Ocena w skali 20",
   "Grades_NormalizedGrade_Description": "Wartość oceny przeliczona na skalę 20",
