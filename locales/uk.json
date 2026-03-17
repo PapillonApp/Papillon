@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-код та картки",
   "Modal_Grades_Title": "Деталі оцінки",
   "Modal_Grades_BestGrade": "Найкраща оцінка в групі",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Деталі",
   "Grades_NormalizedGrade_Title": "Оцінка за 20-бальною шкалою",
   "Grades_NormalizedGrade_Description": "Значення оцінки, приведене до шкали 20",
