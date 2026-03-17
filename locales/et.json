@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-kood ja kaardid",
   "Modal_Grades_Title": "Hinde üksikasjad",
   "Modal_Grades_BestGrade": "Grupi parim hinne",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Üksikasjad",
   "Grades_NormalizedGrade_Title": "Hinne 20-palli skaalal",
   "Grades_NormalizedGrade_Description": "Hinde väärtus teisendatuna 20-palli skaalale",
