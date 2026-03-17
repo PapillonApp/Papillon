@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-Code und Karten",
   "Modal_Grades_Title": "Notendetails",
   "Modal_Grades_BestGrade": "Beste Note der Gruppe",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Details",
   "Grades_NormalizedGrade_Title": "Auf 20 normalisierte Note",
   "Grades_NormalizedGrade_Description": "Notenwert umgerechnet auf eine Skala von 20",
