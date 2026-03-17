@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR-kode en kaarte",
   "Modal_Grades_Title": "Puntbesonderhede",
   "Modal_Grades_BestGrade": "Beste punt in die groep",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Besonderhede",
   "Grades_NormalizedGrade_Title": "Punt herlei na 20",
   "Grades_NormalizedGrade_Description": "Waarde van die punt omgeskakel na 'n skaal van 20",
