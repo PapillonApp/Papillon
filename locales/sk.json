@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR kód a karty",
   "Modal_Grades_Title": "Detail známky",
   "Modal_Grades_BestGrade": "Najlepšia známka v skupine",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detaily",
   "Grades_NormalizedGrade_Title": "Známka v prepočte na 20",
   "Grades_NormalizedGrade_Description": "Hodnota známky prevedená na stupnicu 20",
