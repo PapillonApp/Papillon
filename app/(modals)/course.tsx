@@ -1,24 +1,18 @@
-import TableFlatList from "@/ui/components/TableFlatList";
-import { useRoute, useTheme } from "@react-navigation/native";
-import React from "react";
-import { View } from "react-native";
-
-import { formatDistanceToNow, formatDistanceStrict, formatDistanceToNowStrict } from 'date-fns'
-import * as DateLocale from 'date-fns/locale';
-
-import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
-
-import i18n, { t } from "i18next";
-import Reanimated from 'react-native-reanimated';
 import * as Papicons from '@getpapillon/papicons';
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import Icon from "@/ui/components/Icon";
+import { useRoute, useTheme } from "@react-navigation/native";
+import { formatDistanceStrict, formatDistanceToNow } from 'date-fns'
+import * as DateLocale from 'date-fns/locale';
+import i18n, { t } from "i18next";
+import React from "react";
 import LinearGradient from "react-native-linear-gradient";
-import Course from "@/ui/components/Course";
-import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
-import { getSubjectName } from '@/utils/subjects/name';
+
 import ModalOverhead from "@/components/ModalOverhead";
+import { Course as SharedCourse } from "@/services/shared/timetable";
+import TableFlatList from "@/ui/components/TableFlatList";
+import Typography from "@/ui/components/Typography";
+import { getSubjectName } from '@/utils/subjects/name';
+
+import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
 
 interface SubjectInfo {
   name: string;
@@ -109,7 +103,7 @@ export default function CourseModal() {
               {
                 papicon: <Papicons.MapPin />,
                 title: t("Modal_Course_Room"),
-                description: item.room
+                description: item.room || t("No_Course_Room")
               },
               {
                 papicon: <Papicons.Clock />,
