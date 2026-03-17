@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QRコードとカード",
   "Modal_Grades_Title": "成績の詳細",
   "Modal_Grades_BestGrade": "グループ最高点",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "詳細",
   "Grades_NormalizedGrade_Title": "20点満点換算",
   "Grades_NormalizedGrade_Description": "成績を20点満点に換算した値",
