@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR कोड और कार्ड",
   "Modal_Grades_Title": "अंक का विवरण",
   "Modal_Grades_BestGrade": "समूह का सबसे अच्छा अंक",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "विवरण",
   "Grades_NormalizedGrade_Title": "20 पर अंक",
   "Grades_NormalizedGrade_Description": "20 के पैमाने पर परिवर्तित अंक का मूल्य",
