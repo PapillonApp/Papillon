@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Kodi QR dhe kartat",
   "Modal_Grades_Title": "Detajet e notës",
   "Modal_Grades_BestGrade": "Nota më e mirë e grupit",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detajet",
   "Grades_NormalizedGrade_Title": "Nota në shkallën 20",
   "Grades_NormalizedGrade_Description": "Vlera e notës e konvertuar në një shkallë prej 20",
