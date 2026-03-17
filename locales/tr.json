@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR kodu ve kartlar",
   "Modal_Grades_Title": "Not detayı",
   "Modal_Grades_BestGrade": "Grubun en iyi notu",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detaylar",
   "Grades_NormalizedGrade_Title": "20 üzerinden normalleştirilmiş not",
   "Grades_NormalizedGrade_Description": "20'lik bir ölçeğe dönüştürülmüş not değeri",
