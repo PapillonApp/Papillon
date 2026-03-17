@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "رمز QR والبطاقات",
   "Modal_Grades_Title": "تفاصيل الدرجة",
   "Modal_Grades_BestGrade": "أفضل درجة في المجموعة",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "التفاصيل",
   "Grades_NormalizedGrade_Title": "الدرجة على 20",
   "Grades_NormalizedGrade_Description": "قيمة الدرجة محولة إلى سلم 20",
