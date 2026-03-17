@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "Kode QR dan kartu",
   "Modal_Grades_Title": "Detail nilai",
   "Modal_Grades_BestGrade": "Nilai terbaik di grup",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Detail",
   "Grades_NormalizedGrade_Title": "Nilai dalam skala 20",
   "Grades_NormalizedGrade_Description": "Nilai yang dikonversi ke skala 20",
