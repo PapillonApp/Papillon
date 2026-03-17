@@ -230,6 +230,8 @@
   "Profile_Cards_Title": "QR код и карти",
   "Modal_Grades_Title": "Детайли на оценката",
   "Modal_Grades_BestGrade": "Най-висока оценка в групата",
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
   "Grades_Details_Title": "Детайли",
   "Grades_NormalizedGrade_Title": "Оценка по скала 20",
   "Grades_NormalizedGrade_Description": "Стойност на оценката, приравнена към скала от 20",
