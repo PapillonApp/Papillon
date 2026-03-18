@@ -10,6 +10,8 @@ import { Client as TurboselfClient } from "turboself-api";
 import { Appscho } from "@/services/appscho";
 import { Lannion } from "@/services/lannion";
 import { LannionClient } from "@/services/lannion/module";
+import { Scodoc } from "@/services/scodoc";
+import { ScodocClient } from "@/services/scodoc/module";
 import { Pronote } from "@/services/pronote";
 import { Attendance } from "@/services/shared/attendance";
 import {
@@ -58,11 +60,12 @@ export interface SchoolServicePlugin {
     | TurboselfClient
     | User
     | LannionClient
+    | ScodocClient
     | undefined;
 
   refreshAccount: (
     credentials: Auth
-  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion>;
+  ) => Promise<Pronote | Skolengo | EcoleDirecte | Multi | TurboSelf | ARD | Izly | Alise | Appscho | Lannion | Scodoc>;
   getKids?: () => Kid[];
   getCanteenKind?: () => CanteenKind;
   getHomeworks?: (weekNumber: number) => Promise<Homework[]>;

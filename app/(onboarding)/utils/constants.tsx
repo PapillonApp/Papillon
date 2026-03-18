@@ -146,6 +146,15 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       },
     },
     {
+      name: "scodoc",
+      title: "ScoDoc",
+      hasLimitedSupport: false,
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: './scodoc/credentials' });
+      },
+    },
+    {
       name: "appscho",
       title: "Autres universités",
       hasLimitedSupport: false,

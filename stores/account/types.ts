@@ -98,5 +98,6 @@ export enum Services {
   MULTI,
   ALISE,
   APPSCHO,
-  LANNION
+  LANNION,
+  SCODOC
 }
