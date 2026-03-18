@@ -6,7 +6,7 @@ import { error } from '@/utils/logger/logger';
 
 import { fetchScodocAttendance } from './attendance';
 import { fetchScodocGrades } from './grades';
-import { authenticateWithCredentials, ScodocAPI, ScodocClient } from './module';
+import { authenticateWithCAS, authenticateWithCredentials, ScodocAPI, ScodocClient, UPPA_CAS_URL } from './module';
 import { ScodocFormsemestre } from './module/types';
 
 export class Scodoc implements SchoolServicePlugin {
@@ -32,12 +32,19 @@ export class Scodoc implements SchoolServicePlugin {
       const username = credentials.additionals?.username as string;
       const password = credentials.additionals?.password as string;
       const baseUrl = credentials.additionals?.baseUrl as string;
+      const authMode = (credentials.additionals?.authMode as string) || 'basic';
+      const casUrl = (credentials.additionals?.casUrl as string) || UPPA_CAS_URL;
 
       if (!username || !password || !baseUrl) {
         throw new Error('Missing credentials (username, password, baseUrl) for ScoDoc refresh');
       }
 
-      const client = await authenticateWithCredentials(baseUrl, username, password);
+      let client: ScodocClient;
+      if (authMode === 'cas') {
+        client = await authenticateWithCAS(baseUrl, casUrl, username, password);
+      } else {
+        client = await authenticateWithCredentials(baseUrl, username, password);
+      }
       this.session = client;
       this.authData = credentials;
 

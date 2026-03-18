@@ -146,8 +146,17 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       },
     },
     {
+      name: "uppa",
+      title: "UPPA (Université de Pau)",
+      hasLimitedSupport: false,
+      type: "main",
+      onPress: () => {
+        redirect({ pathname: './scodoc/uppa' });
+      },
+    },
+    {
       name: "scodoc",
-      title: "ScoDoc",
+      title: "ScoDoc (autre établissement)",
       hasLimitedSupport: false,
       type: "main",
       onPress: () => {

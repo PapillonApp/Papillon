@@ -3,6 +3,10 @@ export interface ScodocSession {
   baseUrl: string;
   etudid?: number;
   deptAcronym?: string;
+  /** Flask session cookie used for CAS-authenticated instances (alternative to Bearer token) */
+  sessionCookie?: string;
+  /** CAS TGT URL for refreshing the session without re-entering credentials */
+  casTgtUrl?: string;
   createdAt: Date;
 }
 
