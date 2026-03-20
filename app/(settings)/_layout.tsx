@@ -59,7 +59,7 @@ export default function Layout() {
             headerTitle: t("Settings_Cards_Title"),
             headerLargeTitle: false,
             headerBackButtonDisplayMode: "minimal",
-            gestureEnabled: true
+            gestureEnabled: true,
           }}
         />
         <Stack.Screen
@@ -106,8 +106,8 @@ export default function Layout() {
             headerShown: false,
             presentation: "modal",
             contentStyle: {
-              borderRadius: Platform.OS === 'ios' ? 30 : 0,
-            }
+              borderRadius: Platform.OS === "ios" ? 30 : 0,
+            },
           }}
         />
         <Stack.Screen
@@ -117,6 +117,12 @@ export default function Layout() {
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: false,
             headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="transport"
+          options={{
+            headerTitle: t("Settings_Transport_Title"),
           }}
         />
       </Stack>
