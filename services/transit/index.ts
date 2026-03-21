@@ -17,26 +17,30 @@ class Transit {
     fromLon: number,
     toLat: number,
     toLon: number,
-    options: { mode?: string; considerDowntimes?: boolean; locale?: string }
+    options: {
+      mode?: string;
+      considerDowntimes?: boolean;
+      locale?: string;
+      leaveTime?: number;
+      arrivalTime?: number;
+    }
   ): Promise<{ results: PlanResult[] }> {
     const params = {
-      fromLat,
-      fromLon,
-      toLat,
-      toLon,
       mode: options.mode ?? "transit",
       considerDowntimes: options.considerDowntimes ?? true,
       locale: options.locale ?? "fr",
     };
     return await this.fetcher.get(
       BGTFS_PLAN(
-        params.fromLat,
-        params.fromLon,
-        params.toLat,
-        params.toLon,
+        fromLat,
+        fromLon,
+        toLat,
+        toLon,
         params.mode,
         params.considerDowntimes,
-        params.locale
+        params.locale,
+        options.leaveTime,
+        options.arrivalTime
       )
     );
   }
