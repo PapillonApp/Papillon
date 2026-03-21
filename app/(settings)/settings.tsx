@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { t } from "i18next";
-import { HeartIcon, InfoIcon } from "lucide-react-native";
+import { BusIcon, HeartIcon, InfoIcon } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
 import { Alert, Image, Platform, Pressable, View } from "react-native";
 
@@ -67,7 +67,7 @@ export default function SettingsIndex() {
 
   const MoreSettingsList = [
     {
-      title: t('Settings_More'),
+      title: t("Settings_Preferences"),
       content: [
         /*{
           title: t('Settings_Accessibility_Title'),
@@ -78,51 +78,73 @@ export default function SettingsIndex() {
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
         },*/
         {
-          title: t('Settings_Donate_Title'),
-          description: t('Settings_Donate_Description'),
+          title: t("Settings_Transport_Title"),
+          description: t("Settings_Transport_Description"),
+          papicon: <Papicons name={"Bus"} />,
+          icon: <BusIcon />,
+          color: "#000",
+          onPress: () => router.navigate("/(settings)/transport"),
+        },
+      ],
+    },
+    {
+      title: t("Settings_More"),
+      content: [
+        /*{
+          title: t('Settings_Accessibility_Title'),
+          description: t('Settings_Accessibility_Description'),
+          papicon: <Papicons name={"Accessibility"} />,
+          icon: <AccessibilityIcon />,
+          color: "#0038A8",
+          onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+        },*/
+        {
+          title: t("Settings_Donate_Title"),
+          description: t("Settings_Donate_Description"),
           papicon: <Papicons name={"Heart"} />,
           icon: <HeartIcon />,
           color: "#EFA400",
-          onPress: () => WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate")
+          onPress: () =>
+            WebBrowser.openBrowserAsync("https://go.papillon.bzh/donate"),
         },
         {
-          title: t('Settings_About_Title'),
-          description: `${t('Settings_About_Description')} ${packagejson.version}`,
+          title: t("Settings_About_Title"),
+          description: `${t("Settings_About_Description")} ${packagejson.version}`,
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
-          onPress: () => router.navigate("/(settings)/about")
-        }
-      ]
+          onPress: () => router.navigate("/(settings)/about"),
+        },
+      ],
     },
     {
-      title: t('Settings_About'),
+      title: t("Settings_About"),
       content: [
         {
-          title: t('Settings_Telemetry_Title'),
-          description: t('Settings_Telemetry_Description'),
+          title: t("Settings_Telemetry_Title"),
+          description: t("Settings_Telemetry_Description"),
           icon: <InfoIcon />,
           papicon: <Papicons name={"Check"} />,
           color: "#797979",
-          onPress: () => router.navigate("../consent")
+          onPress: () => router.navigate("../consent"),
         },
         {
-          title: t('Settings_Logout_Title'),
-          description: t('Settings_Logout_Description'),
+          title: t("Settings_Logout_Title"),
+          description: t("Settings_Logout_Description"),
           papicon: <Papicons name={"Logout"} />,
           color: "#a80000",
           onPress: () => {
             Alert.alert(
-              t('Settings_Logout_Title'),
-              t('Settings_Logout_Description'),
+              t("Settings_Logout_Title"),
+              t("Settings_Logout_Description"),
               [
                 {
-                  text: t('CANCEL_BTN'),
-                  style: 'cancel',
+                  text: t("CANCEL_BTN"),
+                  style: "cancel",
                 },
                 {
-                  text: t('Settings_Logout_Title'),
-                  style: 'destructive',
+                  text: t("Settings_Logout_Title"),
+                  style: "destructive",
                   onPress: () => {
                     logout();
                   },
@@ -130,65 +152,73 @@ export default function SettingsIndex() {
               ],
               { cancelable: true }
             );
-          }
+          },
+        },
+      ],
+    },
+    ...(settingsStore.showDevMode
+      ? [
+        {
+          title: t("Settings_Dev"),
+          content: [
+            ...(settingsStore.showDevMode
+              ? [
+                {
+                  title: "Mode développeur",
+                  description: "Options avancées pour les développeurs.",
+                  papicon: <Papicons name={"Code"} />,
+                  icon: <InfoIcon />,
+                  color: "#FF6B35",
+                  onPress: () => router.navigate("/devmode"),
+                },
+              ]
+              : []),
+          ],
         },
       ]
-    },
-    ...(settingsStore.showDevMode ? [{
-      title: t('Settings_Dev'),
-      content: [
-        ...(settingsStore.showDevMode ? [{
-          title: "Mode développeur",
-          description: "Options avancées pour les développeurs.",
-          papicon: <Papicons name={"Code"} />,
-          icon: <InfoIcon />,
-          color: "#FF6B35",
-          onPress: () => router.navigate("/devmode")
-        }] : []),
-      ]
-    }] : []),
-  ]
+      : []),
+  ];
 
   const BigButtons: Array<{
     disabled?: boolean; icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void;
   }> = [
-      {
-        icon: <Papicons name={"Palette"} />,
-        title: t('Settings_Personalization_Title_Card'),
-        description: t('Settings_Personalization_Subtitle_Card'),
-        color: "#17C300",
-        onPress: () => {
-          router.navigate("/(settings)/personalization")
-        }
-      },
-      {
-        icon: <Papicons name={"Calendar"} />,
-        title: t('Settings_Personalization_Subject_Title_Card'),
-        description: t('Settings_Personalization_Subject_Description'),
-        color: "#8500dd",
-        onPress: () => {
-          router.navigate("/(settings)/subject_personalization")
-        }
-      },
-      {
-        icon: <Papicons name={"Card"} />,
-        title: t("Settings_Cards_Banner_Title"),
-        description: t('Settings_Cantineen_Subtitle_Card'),
-        color: "#0059DD",
-        onPress: () => {
-          router.navigate("/(settings)/cards")
-        }
-      },
-      {
-        icon: <Papicons name={"Sparkles"} />,
-        title: "Magic+",
-        description: t('Settings_MagicPlus_Description_Card'),
-        color: "#DD007D",
-        onPress: () => {
-          router.navigate("/(settings)/magic")
-        }
+    {
+      icon: <Papicons name={"Palette"} />,
+      title: t('Settings_Personalization_Title_Card'),
+      description: t('Settings_Personalization_Subtitle_Card'),
+      color: "#17C300",
+      onPress: () => {
+        router.navigate("/(settings)/personalization")
       }
-    ]
+    },
+    {
+      icon: <Papicons name={"Calendar"} />,
+      title: t('Settings_Personalization_Subject_Title_Card'),
+      description: t('Settings_Personalization_Subject_Description'),
+      color: "#8500dd",
+      onPress: () => {
+        router.navigate("/(settings)/subject_personalization")
+      }
+    },
+    {
+      icon: <Papicons name={"Card"} />,
+      title: t("Settings_Cards_Banner_Title"),
+      description: t('Settings_Cantineen_Subtitle_Card'),
+      color: "#0059DD",
+      onPress: () => {
+        router.navigate("/(settings)/cards")
+      }
+    },
+    {
+      icon: <Papicons name={"Sparkles"} />,
+      title: "Magic+",
+      description: t('Settings_MagicPlus_Description_Card'),
+      color: "#DD007D",
+      onPress: () => {
+        router.navigate("/(settings)/magic")
+      }
+    }
+  ]
 
   const RenderBigButtons = useCallback(() => {
     return (
