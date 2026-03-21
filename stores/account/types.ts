@@ -30,14 +30,8 @@ export interface AccountsStorage {
   setAccountProfilePicture: (accountId: string, profilePicture: string) => void;
   setTransportEnabled: (transportEnabled: boolean) => void;
   setTransportService: (id: string) => void;
-  setTransportHomeAddress: (address: {
-    title: string;
-    address: string;
-  }) => void;
-  setTransportSchoolAddress: (address: {
-    title: string;
-    address: string;
-  }) => void;
+  setTransportHomeAddress: (address: TransportAddress) => void;
+  setTransportSchoolAddress: (address: TransportAddress) => void;
 }
 
 /**
@@ -69,20 +63,18 @@ export interface CustomisationStorage {
   subjects: Record<string, { color: string; emoji: string; name: string }>;
 }
 
+export interface TransportAddress {
+  firstTitle: string;
+  secondTitle: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+}
+
 export interface TransportStorage {
   enabled: boolean;
-  homeAddress?: {
-    /** Text showed up in the app */
-    title: string;
-    /** Address transmited to the transport app*/
-    address: string;
-  };
-  schoolAddress?: {
-    /** Text showed up in the app */
-    title: string;
-    /** Address transmited to the transport app*/
-    address: string;
-  };
+  homeAddress?: TransportAddress;
+  schoolAddress?: TransportAddress;
   defaultApp: string;
 }
 

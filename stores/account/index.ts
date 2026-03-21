@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { createMMKVStorage } from '../global'
-import { AccountsStorage, Auth } from "./types";
+import { AccountsStorage, Auth, TransportAddress } from "./types";
 
 export const useAccountStore = create<AccountsStorage>()(
   persist(
@@ -195,21 +195,17 @@ export const useAccountStore = create<AccountsStorage>()(
               return {
                 ...account,
                 transport: {
+                  ...account.transport,
                   enabled: transportEnabled,
                   homeAddress: account.transport?.homeAddress ?? {
-                    title: "current_location",
+                    firstTitle: "current_location",
+                    secondTitle: "",
                     address: "current_location",
+                    longitude: -1,
+                    latitude: -1,
                   },
-                  schoolAddress:
-                        account.transport?.schoolAddress ??
-                        (account.schoolName
-                          ? {
-                            title: account.schoolName,
-                            address: account.schoolName,
-                          }
-                          : undefined),
                   defaultApp: account.transport?.defaultApp ?? "transit",
-                }
+                },
               };
             }
             return account;
@@ -231,7 +227,7 @@ export const useAccountStore = create<AccountsStorage>()(
             return account;
           }),
         }),
-      setTransportHomeAddress: (address: { title: string; address: string }) =>
+      setTransportHomeAddress: (address: TransportAddress) =>
         set({
           accounts: get().accounts.map(account => {
             if (account.id === get().lastUsedAccount) {
@@ -248,7 +244,7 @@ export const useAccountStore = create<AccountsStorage>()(
             return account;
           }),
         }),
-      setTransportSchoolAddress: (address: { title: string; address: string }) =>
+      setTransportSchoolAddress: (address: TransportAddress) =>
         set({
           accounts: get().accounts.map(account => {
             if (account.id === get().lastUsedAccount) {
