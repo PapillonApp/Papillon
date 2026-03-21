@@ -1,6 +1,11 @@
+import { PlaceDetails } from "@/services/transit/models/PlaceDetails";
 import { Suggestions } from "@/services/transit/models/Suggestions";
 
-import { BGTFS_PLAN, TRIP_SUGGESTION } from "./fetcher/endpoints";
+import {
+  BGTFS_PLAN,
+  TRIP_LOCATION_DETAILS,
+  TRIP_SUGGESTION,
+} from "./fetcher/endpoints";
 import {Fetcher} from "./fetcher/Fetcher";
 import {PlanResult} from "./models/PlanResult";
 
@@ -39,11 +44,21 @@ class Transit {
   public async suggestions(
     latitude: number,
     longitude: number,
-    query: string,
+    query: string
   ): Promise<{ suggestions: Suggestions }> {
     return await this.fetcher.get(TRIP_SUGGESTION(latitude, longitude, query), {
       headers: {
-        Referer: 'https://transitapp.com/trip',
+        Referer: "https://transitapp.com/trip",
+      },
+    });
+  }
+
+  public async locationDetails(
+    id: string
+  ): Promise<{ placeDetails: PlaceDetails }> {
+    return await this.fetcher.get(TRIP_LOCATION_DETAILS(id), {
+      headers: {
+        Referer: "https://transitapp.com/trip",
       },
     });
   }

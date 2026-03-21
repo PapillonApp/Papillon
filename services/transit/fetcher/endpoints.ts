@@ -14,3 +14,6 @@ export const BGTFS_PLAN = (
 
 export const TRIP_SUGGESTION = (lat: number, lng: number, query: string) =>
   `${API_BASE_URL}/suggestions?lat=${lat}&lng=${lng}&search-term=${query}`;
+
+export const TRIP_LOCATION_DETAILS = (id: string) =>
+  `${API_BASE_URL}/location-details?id=${id}`;
