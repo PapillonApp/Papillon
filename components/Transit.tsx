@@ -1,7 +1,7 @@
 import { ArrowRightBox, Cross } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 import * as Location from "expo-location";
-import { useRouter } from "expo-router";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,7 +13,6 @@ import { AvailableTransportServices } from "@/constants/AvailableTransportServic
 import * as TransitService from "@/services/transit";
 import { TransportAddress } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
-import * as Linking from "expo-linking";
 
 const TransitLogo = (props: PathProps) => (
   <Svg width={12} height={12} fill="none" viewBox="0 0 14 14">
@@ -123,6 +122,10 @@ export const Transit = ({
     const date = new Date(timestamp * 1000);
     const now = new Date().getTime();
     const toNow = (date.getTime() - now);
+
+    if (toNow < 0) {
+      return t("Transport_Open_In");
+    }
 
     const minutes = Math.floor(toNow / 60);
     const hours = Math.floor(toNow / (60 * 60));
