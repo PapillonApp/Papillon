@@ -115,7 +115,7 @@ export default function TransportView() {
           </Typography>
         </Item>
       </List>
-      <Typography variant={"caption"} color={"secondary"}>
+      <Typography variant={"caption"} color={"secondary"} style={{marginTop: -15, marginBottom: 5}}>
         {t("Settings_Transport_Address_Description")}
       </Typography>
       <Typography color={"secondary"}>
@@ -134,8 +134,8 @@ export default function TransportView() {
               <Image
                 source={service.icon}
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   borderRadius: 16,
                 }}
               />

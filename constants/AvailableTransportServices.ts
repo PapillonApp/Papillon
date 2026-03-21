@@ -1,4 +1,3 @@
-import { platform } from "node:os";
 import { Platform } from "react-native";
 
 export const AvailableTransportServices = [

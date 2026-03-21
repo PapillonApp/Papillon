@@ -144,11 +144,7 @@ export const Transit = ({
   }> => {
     if (from.firstTitle === "current_location") {
       if (!status?.granted) {
-        throw new Error(
-          Location.PermissionStatus.DENIED
-            ? "Transport_Error_Location_Denied"
-            : "Transport_Error_Location_Undetermined"
-        );
+        throw new Error("Transport_Error_Location");
       }
       const location = await Location.getCurrentPositionAsync();
 
@@ -272,7 +268,7 @@ export const Transit = ({
             <Typography variant={"caption"} color={"secondary"}>
               {routeFound
                 ? `${formatStartTime(routeStartTime)}`
-                : "Transport_Open_In"}
+                : t("Transport_Open_In")}
             </Typography>
             {service === "transit" && <TransitLogo fill={theme.colors.text} />}
             <Typography variant={"caption"} color={"secondary"}>

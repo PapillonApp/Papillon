@@ -35,6 +35,7 @@ interface AddressItemProps {
   secondLine: string;
   convertFunction: () => Promise<TransportAddress>;
   save: (addess: TransportAddress) => void;
+  lineLimit?: number;
 }
 
 const AddressItem = ({
@@ -43,6 +44,7 @@ const AddressItem = ({
   secondLine,
   convertFunction,
   save,
+  lineLimit = 1,
 }: AddressItemProps) => {
   const theme = useTheme();
 
@@ -68,7 +70,7 @@ const AddressItem = ({
       <Typography variant={"title"} numberOfLines={1}>
         {firstLine}
       </Typography>
-      <Typography color={"secondary"} variant={"body2"} numberOfLines={1}>
+      <Typography color={"secondary"} variant={"body2"} numberOfLines={lineLimit}>
         {secondLine}
       </Typography>
     </Item>
@@ -211,6 +213,7 @@ export const AddressModal = ({
                   )}
                   convertFunction={currentLocationToTransportAddress}
                   save={onConfirm}
+                  lineLimit={2}
                 />
               </List>
             )}
