@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { PathProps } from "react-native-svg/src/elements/Path";
 
@@ -13,6 +13,7 @@ import { AvailableTransportServices } from "@/constants/AvailableTransportServic
 import * as TransitService from "@/services/transit";
 import { TransportAddress } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
+import * as Linking from "expo-linking";
 
 const TransitLogo = (props: PathProps) => (
   <Svg width={12} height={12} fill="none" viewBox="0 0 14 14">
@@ -59,7 +60,6 @@ export const Transit = ({
 }: TransitProps): React.ReactNode | null => {
   const transit: TransitService.default = new TransitService.default();
   const theme = useTheme();
-  const router = useRouter();
   const { t } = useTranslation();
   const [status] = Location.useForegroundPermissions();
 
@@ -159,6 +159,43 @@ export const Transit = ({
     };
   };
 
+  const openInDefaultApp = () => {
+    const app:
+      | {
+          id: string;
+          name: string;
+          icon: any;
+          generateDeeplink: (
+            from: TransportAddress,
+            to: TransportAddress,
+            isDeparture: boolean,
+            targetTime: number
+          ) => string;
+        }
+      | undefined = AvailableTransportServices.find(el => el.id === service);
+
+    if (app === undefined) {
+      Alert.alert(
+        t("Transport_Error_Unknown_Service_Title"),
+        t("Transport_Error_Unknown_Service_Description")
+      );
+      return;
+    }
+
+    const from = isDeparture ? homeAddress : schoolAddress;
+    const to = isDeparture ? schoolAddress : homeAddress;
+    const url = app.generateDeeplink(from!, to!, isDeparture, targetTime);
+
+    if (!Linking.canOpenURL(url)) {
+      Alert.alert(
+        t("Transport_Error_Cant_Open_Deeplink_Title"),
+        t("Transport_Error_Cant_Open_Deeplink_Description")
+      );
+      return;
+    }
+    Linking.openURL(url);
+  }
+
   useEffect(() => {
     if (status !== null) {
       getTransportResult();
@@ -181,9 +218,7 @@ export const Transit = ({
         gap: 12,
         alignItems: "center",
       }}
-      onPress={() => {
-        router.push("/(settings)/about");
-      }}
+      onPress={openInDefaultApp}
     >
       <View
         style={{
@@ -272,7 +307,8 @@ export const Transit = ({
             </Typography>
             {service === "transit" && <TransitLogo fill={theme.colors.text} />}
             <Typography variant={"caption"} color={"secondary"}>
-              {AvailableTransportServices.find((el) => el.id === service)?.name ?? t("Transport_Maps_App")}
+              {AvailableTransportServices.find(el => el.id === service)?.name ??
+                t("Transport_Maps_App")}
             </Typography>
           </View>
         </View>

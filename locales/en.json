@@ -404,5 +404,9 @@
   "Settings_Transport_Current_Position_Description": "Use your current location when you're in your calendar.",
   "Settings_Transport_Place": "Addresses and places",
   "Settings_Transport_Stops": "Stops and stations",
-  "Cancel": "Cancel"
+  "Cancel": "Cancel",
+  "Transport_Error_Unknown_Service_Title": "Oops, that service no longer exists!",
+  "Transport_Error_Unknown_Service_Description": "The service you're trying to open is no longer available in Papillon. Try changing the service in the settings.",
+  "Transport_Error_Cant_Open_Deeplink_Title": "Unable to open the service",
+  "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again."
 }

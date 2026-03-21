@@ -404,6 +404,10 @@
   "Settings_Transport_Current_Position_Description": "Utilise ta position actuelle lorsque tu es dans ton calendrier.",
   "Settings_Transport_Place": "Addresses et lieux",
   "Settings_Transport_Stops": "Arrêt et gare",
+  "Cancel": "Annuler",
+  "Transport_Error_Unknown_Service_Title": "Oups, ton service n'existe plus !",
+  "Transport_Error_Unknown_Service_Description": "Le service que tu tentes d'ouvrir n'est plus disponible dans Papillon, tente de changer de service dans les réglages.",
+  "Transport_Error_Cant_Open_Deeplink_Title": "Impossible d'ouvrir le service",
   "Settings_Tabs_Title": "Onglets",
   "Settings_Tabs_Description": "Masquer des onglets du menu",
   "Settings_Personalization_Subject_Title_Card": "Matières",
@@ -412,5 +416,5 @@
   "Profile_Cards_Loading_History_Description": "Cela peut prendre un moment...",
   "Settings_Accounts_Title": "Comptes liés",
   "Settings_Accounts_Description": "Comptes, cantine...",
-  "Cancel": "Annuler"
+  "Transport_Error_Cant_Open_Deeplink_Description": "Assure-toi que l'application est bien installée sur ton appareil puis réessaye."
 }
