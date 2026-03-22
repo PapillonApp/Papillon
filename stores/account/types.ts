@@ -32,6 +32,7 @@ export interface AccountsStorage {
   setTransportService: (id: string) => void;
   setTransportHomeAddress: (address: TransportAddress) => void;
   setTransportSchoolAddress: (address: TransportAddress) => void;
+  initializeTransport: (address: string | undefined) => void;
 }
 
 /**

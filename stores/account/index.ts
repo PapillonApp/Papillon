@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { log } from "@/utils/logger/logger";
+import { initializeTransport } from "@/utils/transport";
+
 import { createMMKVStorage } from '../global'
 import { AccountsStorage, Auth, TransportAddress } from "./types";
 
@@ -261,6 +264,21 @@ export const useAccountStore = create<AccountsStorage>()(
             return account;
           }),
         }),
+      initializeTransport: async (address: string | undefined) => {
+        const config = await initializeTransport(address);
+        log(`Initialized transport at ${JSON.stringify(config.schoolAddress) ?? 'undefined'}`);
+        set({
+          accounts: get().accounts.map(account => {
+            if (account.id === get().lastUsedAccount) {
+              return {
+                ...account,
+                transport: config,
+              };
+            }
+            return account;
+          }),
+        })
+      },
     }),
     {
       name: "account-storage",

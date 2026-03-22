@@ -22,7 +22,7 @@ export default function TabOneScreen() {
 
   const accounts = useAccountStore(state => state.accounts);
   const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
-  const { transport } = accounts.find(a => a.id === lastUsedAccount)!;
+  const account = accounts.find(a => a.id === lastUsedAccount)!;
 
   const {
     date,
@@ -64,7 +64,7 @@ export default function TabOneScreen() {
         headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
-        transportInfo={transport}
+        transportInfo={account.transport ?? undefined}
       />
     );
   }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
