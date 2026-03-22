@@ -66,9 +66,9 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 title: '',
                 displayInline: true,
                 subactions: accountsList.map((account) => ({
-                  id: account.id,
+                  id: `${account.firstName}${account.lastName}`,
                   title: account.firstName + ' ' + account.lastName,
-                  subtitle: account.establishment,
+                  subtitle: `${account.establishment}`,
                   state: account.current ? 'on' : 'off',
                 })),
               },
