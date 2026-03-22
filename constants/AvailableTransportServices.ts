@@ -13,7 +13,7 @@ export const AvailableTransportServices = [
       isDeparture: boolean,
       targetTime: number
     ): string => {
-      return `transit://directions?from=${from.address}&to=${to.address}&${isDeparture ? `arrive_by=${targetTime}` : `leave_at=${targetTime}`}`;
+      return `transit://directions?from=${from.firstTitle === "current_location" ? "" : `${from.address}`}&to=${to.address}&${isDeparture ? `arrive_by=${targetTime}` : `leave_at=${targetTime}`}`;
     },
   },
   Platform.OS === "ios" && {
@@ -27,7 +27,7 @@ export const AvailableTransportServices = [
       targetTime: number
     ): string => {
       // Apple Maps don't support time in URL... :(
-      return `maps://?saddr=${from.latitude},${from.longitude}&daddr=${to.latitude},${to.longitude}`;
+      return `maps://?${from.firstTitle === "current_location" ? '' : `saddr=${from.latitude},${from.longitude}&`}daddr=${to.latitude},${to.longitude}`;
     },
   },
   {
@@ -41,7 +41,7 @@ export const AvailableTransportServices = [
       targetTime: number
     ): string => {
       // Google too, what the f*ck ??
-      return `https://www.google.com/maps/dir/?api=1&origin=${from.latitude},${from.longitude}&destination=${to.latitude},${to.longitude}`;
+      return `https://www.google.com/maps/dir/?api=1&${from.firstTitle === "current_location" ? "" : `origin=${from.latitude},${from.longitude}&`}destination=${to.latitude},${to.longitude}`;
     },
   },
 ].filter(Boolean) as Array<{
