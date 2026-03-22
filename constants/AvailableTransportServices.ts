@@ -7,6 +7,7 @@ export const AvailableTransportServices = [
     id: "transit",
     name: "Transit",
     icon: require(`@/assets/images/transport/transit.png`),
+    baseUrlScheme: "transit://",
     generateDeeplink: (
       from: TransportAddress,
       to: TransportAddress,
@@ -20,6 +21,7 @@ export const AvailableTransportServices = [
     id: "apple_maps",
     name: "Apple Maps",
     icon: require(`@/assets/images/transport/apple_maps.png`),
+    baseUrlScheme: "maps://",
     generateDeeplink: (
       from: TransportAddress,
       to: TransportAddress,
@@ -27,13 +29,14 @@ export const AvailableTransportServices = [
       targetTime: number
     ): string => {
       // Apple Maps don't support time in URL... :(
-      return `maps://?${from.firstTitle === "current_location" ? '' : `saddr=${from.latitude},${from.longitude}&`}daddr=${to.latitude},${to.longitude}`;
+      return `maps://?${from.firstTitle === "current_location" ? "" : `saddr=${from.latitude},${from.longitude}&`}daddr=${to.latitude},${to.longitude}`;
     },
   },
   {
     id: "google_maps",
     name: "Google Maps",
     icon: require(`@/assets/images/transport/google_maps.png`),
+    baseUrlScheme: "https://www.google.com/maps/dir/",
     generateDeeplink: (
       from: TransportAddress,
       to: TransportAddress,
@@ -48,6 +51,7 @@ export const AvailableTransportServices = [
   id: string;
   name: string;
   icon: any;
+  baseUrlScheme: string;
   generateDeeplink: (
     from: TransportAddress,
     to: TransportAddress,

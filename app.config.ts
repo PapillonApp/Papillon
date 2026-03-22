@@ -74,7 +74,7 @@ module.exports = {
           "et",
         ],
         CADisableMinimumFrameDurationOnPhone: true,
-        LSApplicationQueriesSchemes: ["transit"],
+        LSApplicationQueriesSchemes: ["transit", "maps"],
       },
       supportsTablet: true,
       config: {
