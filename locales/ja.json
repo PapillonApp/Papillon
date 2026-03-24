@@ -247,7 +247,7 @@
   "Grades_Tab_Rank_Description": "グループ内の順位",
   "News_Search_Placeholder": "ニュースを検索",
   "News_Empty_Title": "ニュースなし",
-  "News_Empty_Description": "学校からのニュースはありません。",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "ニュースが見つかりません",
   "News_Search_NoResults_Description": "検索条件に一致するニュースはありません。",
   "News_Theme_Papillon_Title": "Papillon",
