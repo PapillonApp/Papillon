@@ -1,0 +1,27 @@
+import React from 'react';
+
+import { Stack } from '@/utils/native/AnimatedNavigator';
+import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { useLocalSearchParams } from 'expo-router';
+
+export default function OnboardingLayout() {
+  const newScreenOptions = React.useMemo(() => ({
+    ...screenOptions,
+    headerShown: true,
+    headerBackVisible: true,
+    headerTransparent: true,
+    headerBackButtonDisplayMode: "minimal",
+    headerLargeTitle: false,
+  }), []);
+  
+  const param = useLocalSearchParams();
+
+  return (
+    <Stack>
+      <Stack.Screen
+        name="credentials"
+        options={{ ...newScreenOptions, headerTitle: "Connexion universitaire", params: param }}
+      />
+    </Stack>
+  );
+}

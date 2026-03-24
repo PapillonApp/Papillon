@@ -176,7 +176,7 @@ export default function LannionCredentials() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <LoginView
-          color="#000091"
+          color="#910063"
           serviceName="IUT de Lannion"
           serviceIcon={require('@/assets/images/univ_lannion.png')}
           loading={isLoggingIn}

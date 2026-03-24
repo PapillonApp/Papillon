@@ -81,7 +81,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       image: require("@/assets/images/univ_lorraine.png"),
       type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
       },
     },
     {
@@ -91,7 +91,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       image: require("@/assets/images/univ_nimes.png"),
       type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
       },
     },
     {
@@ -101,7 +101,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       image: require("@/assets/images/univ_uphf.png"),
       type: ["univ"],
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
     {
@@ -145,7 +145,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       image: require("@/assets/images/univ_lorraine.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#000000", university: "ULorraine", url: "https://mobile-back.univ-lorraine.fr" } });
       },
     },
     {
@@ -155,7 +155,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       image: require("@/assets/images/univ_nimes.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#FF341B", university: "UNîmes", url: "https://mobile-back.unimes.fr" } });
       },
     },
     {
@@ -165,7 +165,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
       image: require("@/assets/images/univ_uphf.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: './multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
+        redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
     {

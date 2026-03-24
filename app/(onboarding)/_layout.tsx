@@ -46,6 +46,10 @@ export default function OnboardingLayout() {
           name="services/lannion"
           options={{ headerShown: false, title: "", presentation: "modal" }}
         />
+        <Stack.Screen
+          name="services/multi"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
+        />
       </Stack>
     </View>
   );

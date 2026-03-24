@@ -51,11 +51,14 @@ export default function ServiceSelection() {
   }, [type]);
 
 
-  const hasServiceRoute = services.find(service => service.name === selectedService)?.route;
+  const hasServiceRoute = services.find(service => service.name === selectedService)?.route || services.find(service => service.name === selectedService)?.onPress;
 
   const loginToService = (serviceName: string) => {
     const serviceRoute = services.find(service => service.name === serviceName)?.route;
-    if(!serviceRoute) {return;}
+    if(!serviceRoute) {
+      services.find(service => service.name === serviceName)?.onPress();
+      return;
+    }
     const newRoute = './services/' + serviceRoute;
     router.push(newRoute);
   };
@@ -82,7 +85,7 @@ export default function ServiceSelection() {
           />
           <Divider height={8} ghost />
           <Typography variant="h3" align="center">Papillon n'est pas encore disponible pour vous.</Typography>
-          <Typography align="center" variant="body1" color="textSecondary">Les comptes parents et professeur ne sont pas compatibles avec Papillon pour le moment.</Typography>
+          <Typography align="center" variant="body1" color="textSecondary">Les comptes parents et professeurs ne sont pas compatibles avec Papillon pour le moment.</Typography>
           <Divider height={16} ghost />
           <Button
             label="Retour"

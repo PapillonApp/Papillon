@@ -9,7 +9,7 @@ const PapillonTextInput = ({ height = 54, color, ...props }) => {
   return (
     <View
       style={{
-        backgroundColor: colors.card,
+        backgroundColor: colors.background,
         borderColor: focused ? color ?? colors.primary : colors.text + "20",
         borderWidth: 1,
         borderRadius: 16,

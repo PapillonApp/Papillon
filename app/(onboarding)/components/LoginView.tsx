@@ -87,7 +87,7 @@ export default function LoginView({
       <View
         style={{
           borderColor: colors.text + "20",
-          backgroundColor: colors.card,
+          backgroundColor: !serviceIcon ? (color ?? colors.primary) : colors.card,
           borderWidth: 1,
           width: 72,
           height: 72,
@@ -100,16 +100,26 @@ export default function LoginView({
           },
           shadowOpacity: 0.05,
           shadowRadius: 2,
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Image
-          source={serviceIcon}
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 16,
-          }}
-        />
+        {serviceIcon && (
+          <Image
+            source={serviceIcon}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 16,
+            }}
+          />
+        )}
+
+        {!serviceIcon && (
+          <Typography variant="h1" color="white">
+            {serviceName[0]}
+          </Typography>
+        )}
       </View>
 
       <Typography variant="body" align="center" color="textSecondary">
