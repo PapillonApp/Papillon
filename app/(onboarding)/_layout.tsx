@@ -36,7 +36,7 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="services/ed"
-          options={{ headerShown: false, title: "" }}
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
           name="services/skolengo"

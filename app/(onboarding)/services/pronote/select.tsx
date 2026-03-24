@@ -31,8 +31,8 @@ const PronoteSearchHeader = memo(({
   loading: boolean
 }) => (
   <Stack padding={[4, 0]}>
-    <Typography variant="h2">Quel est votre établissement ?</Typography>
-    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l'emplacement de votre établissement.</Typography>
+    <Typography variant="h2">Quel est ton établissement ?</Typography>
+    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l'emplacement de ton établissement.</Typography>
     <Divider height={6} ghost />
     <Search placeholder="Rechercher un établissement" style={{ width: "100%" }} value={search} setValue={setSearch} onTextChange={setSearch} />
 

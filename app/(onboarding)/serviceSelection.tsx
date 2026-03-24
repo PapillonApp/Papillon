@@ -50,9 +50,13 @@ export default function ServiceSelection() {
     }
   }, [type]);
 
+
+  const hasServiceRoute = services.find(service => service.name === selectedService)?.route;
+
   const loginToService = (serviceName: string) => {
-    const newRoute = './services/' + serviceName;
-    console.log("Navigating to: ", newRoute);
+    const serviceRoute = services.find(service => service.name === serviceName)?.route;
+    if(!serviceRoute) {return;}
+    const newRoute = './services/' + serviceRoute;
     router.push(newRoute);
   };
 
@@ -142,7 +146,7 @@ export default function ServiceSelection() {
         <Button
           label="Continuer"
           onPress={() => { loginToService(selectedService) }}
-          disabled={!selectedService}
+          disabled={!selectedService || !hasServiceRoute}
         />
       </View>
     </View>

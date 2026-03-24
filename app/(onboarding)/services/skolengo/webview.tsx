@@ -13,6 +13,7 @@ import uuid from "@/utils/uuid/uuid";
 import OnboardingWebView from "../../components/OnboardingWebView";
 
 export default function WebViewScreen() {
+  const navigation = useNavigation();
   const [loginURL, setLoginURL] = useState<string | undefined>(undefined);
   const [flow, setFlow] = useState<AuthFlow>();
   const { ref } = useLocalSearchParams();
@@ -97,14 +98,19 @@ export default function WebViewScreen() {
       store.addAccount(account)
       store.setLastUsedAccount(id)
 
-      router.push({
-        pathname: "../end/color",
-        params: {
-          accountId: id
-        }
-      });
-
-      return false;
+      const parent = navigation.getParent();
+              if (parent) {
+                parent.goBack();
+                
+                const parentsParent = parent.getParent();
+                if (parentsParent) {
+                  parentsParent.goBack();
+                }
+              }
+      
+              router.back();
+              router.dismissAll();
+              return router.push("/");
     }
     return true;
   };

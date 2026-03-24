@@ -5,13 +5,13 @@ import { ViewStyle } from "react-native";
 import Ripple from "./RippleEffect";
 import Typography from "./Typography";
 
-export default function Button({ label, onPress, disabled = false, variant = "primary", fullWidth = false, leading, trailing, gap = 10, height = 50 }: { label: string; onPress: () => void; disabled?: boolean; variant?: "primary" | "secondary" | "outlined" | "ghost" | "text"; fullWidth?: boolean; leading?: React.ReactNode; trailing?: React.ReactNode, gap?: number, height?: number }) {
+export default function Button({ label, onPress, disabled = false, variant = "primary", fullWidth = false, leading, trailing, gap = 10, height = 50, color }: { label: string; onPress: () => void; disabled?: boolean; variant?: "primary" | "secondary" | "outlined" | "ghost" | "text"; fullWidth?: boolean; leading?: React.ReactNode; trailing?: React.ReactNode, gap?: number, height?: number, color?: string }) {
   const theme = useTheme();
   const { colors } = theme;
 
   const ButtonVariants = {
     primary: {
-      backgroundColor: disabled ? colors.text + "22" : colors.primary,
+      backgroundColor: disabled ? colors.text + "22" : (color ?? colors.primary),
     },
     secondary: {
       backgroundColor: colors.text + "18",
@@ -19,10 +19,10 @@ export default function Button({ label, onPress, disabled = false, variant = "pr
     outlined: {
       backgroundColor: "transparent",
       borderWidth: 1,
-      borderColor: disabled ? colors.text + "44" : colors.primary,
+      borderColor: disabled ? colors.text + "44" : color ?? colors.primary,
     },
     ghost: {
-      backgroundColor: disabled ? colors.text + "22" : colors.primary + "22",
+      backgroundColor: disabled ? colors.text + "22" : color ?? colors.primary + "22",
     },
     text: {
       backgroundColor: "transparent",

@@ -6,7 +6,7 @@ import { screenOptions } from "@/utils/theme/ScreenOptions";
 export default function OnboardingLayout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
-    headerShown: false,
+    headerShown: true,
     headerBackVisible: true,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
@@ -17,7 +17,7 @@ export default function OnboardingLayout() {
     <Stack>
       <Stack.Screen
         name="credentials"
-        options={{ ...newScreenOptions }}
+        options={{ ...newScreenOptions, headerTitle: "Connexion via ÉcoleDirecte" }}
       />
     </Stack>
   );

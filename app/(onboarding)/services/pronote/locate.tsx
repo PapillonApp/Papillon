@@ -35,7 +35,7 @@ const PronoteSearchHeader = memo(({
 }) => (
   <Stack padding={[4, 0]}>
     <Typography variant="h2">Dans quelle ville se trouve ton établissement ?</Typography>
-    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de votre établissement.</Typography>
+    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de ton établissement.</Typography>
     <Divider height={6} ghost />
     <Search placeholder="Rechercher une ville" style={{ width: "100%" }} value={city} setValue={setCity} onTextChange={setCity} autoFocus={city.trim().length === 0} />
     

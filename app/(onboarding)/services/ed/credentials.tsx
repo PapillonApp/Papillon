@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
@@ -31,6 +32,8 @@ import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
+import { ScrollView } from "react-native-gesture-handler";
+import LoginView from "../../components/LoginView";
 
 const ANIMATION_DURATION = 170;
 export const PlatformPressable = Platform.OS === 'android' ? Pressable : AnimatedPressable;
@@ -135,14 +138,7 @@ export default function EDLoginWithCredentials() {
         setChallengeModalVisible(true);
         setToken(e.token);
       } else {
-        alert.showAlert({
-          title: "Erreur d'authentification",
-          description: "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.",
-          icon: "TriangleAlert",
-          color: "#D60046",
-          technical: String(e),
-          withoutNavbar: true,
-        });
+        Alert.alert("Erreur d'authentification", "Une erreur est survenue lors de la connexion, elle a donc été abandonnée."); // Fallback for the AlertProvider
       }
     }
   }
@@ -213,93 +209,21 @@ export default function EDLoginWithCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "flex-end",
-          borderBottomLeftRadius: 42,
-          borderBottomRightRadius: 42,
-          padding: 20,
-          paddingTop: insets.top + 20,
-          paddingBottom: 34,
-          flex: 1,
-          backgroundColor: "#E50052",
-        }}
-      >
-        <Reanimated.View
-          style={{
-            flex: 1,
-            marginBottom: 16,
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: opacity,
-            transform: [{ scale: scale }],
-          }}
-        />
-        <Stack vAlign="start" hAlign="start" width="100%" gap={12}>
-          <Stack direction="horizontal">
-            <Typography variant="h5" style={{ color: "#FFF", fontSize: 18 }}>
-              {t("STEP")} 2
-            </Typography>
-            <Typography variant="h5" style={{ color: "#FFFFFF90", fontSize: 18 }}>
-              {t("STEP_OUTOF")} 3
-            </Typography>
-          </Stack>
-          <Typography variant="h1" style={{ color: "#FFF", fontSize: 32 }}>
-            {t("ONBOARDING_LOGIN_CREDENTIALS")} Ecole Directe
-          </Typography>
-        </Stack>
-      </View>
-
-      <Stack padding={20} gap={10}>
-        <OnboardingInput
-          icon={"User"}
-          placeholder={t("INPUT_USERNAME")}
-          text={username}
-          setText={setUsername}
-          isPassword={false}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-            textContentType: "username",
-            editable: !isLoggingIn,
-          }}
-        />
-        <OnboardingInput
-          icon={"Lock"}
-          placeholder={t("INPUT_PASSWORD")}
-          text={password}
-          setText={setPassword}
-          isPassword={true}
-          keyboardType={"default"}
-          inputProps={{
-            autoCapitalize: "none",
-            autoCorrect: false,
-            spellCheck: false,
-            textContentType: "password",
-            onSubmitEditing: () => {
-              Keyboard.dismiss();
-              if (!isLoggingIn && username.trim() && password.trim()) { loginED(); }
-            },
-            returnKeyType: "done",
-            editable: !isLoggingIn,
-          }}
-        />
-        <Button
-          title={isLoggingIn ? t("ONBOARDING_LOADING_LOGIN") : t("LOGIN_BTN")}
-          style={{
-            backgroundColor: (theme.dark ? theme.colors.border : "#000000") + (isLoggingIn ? "50" : "FF"),
-          }}
-          size="large"
-          onPress={loginED}
-          disabled={isLoggingIn}
-          loading={isLoggingIn}
-        />
-      </Stack>
-
-      <OnboardingBackButton />
+      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+              <LoginView
+                color="#1788bc"
+                serviceName="ÉcoleDirecte"
+                serviceIcon={require('@/assets/images/service_ed.png')}
+                loading={isLoggingIn}
+                onSubmit={(values) => {
+                  if (!isLoggingIn && values.username && values.password) {
+                    setUsername(values.username);
+                    setPassword(values.password);
+                    loginED();
+                  }
+                }}
+              />
+            </ScrollView>
 
       <Modal
         visible={challengeModalVisible}

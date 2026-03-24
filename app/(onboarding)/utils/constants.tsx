@@ -9,6 +9,7 @@ import { StyleProp, ViewStyle } from 'react-native';
 import { Services } from '@/stores/account/types';
 export interface SupportedService {
   name: string;
+  route: string;
   title: string;
   type: string[];
   hasLimitedSupport?: boolean;
@@ -28,6 +29,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
   return [
     {
       name: "pronote",
+      route: "pronote",
       title: "PRONOTE",
       type: ["school", "univ"],
       image: require("@/assets/images/service_pronote.png"),
@@ -39,6 +41,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "ed",
+      route: "ed",
       title: "ÉcoleDirecte",
       type: ["school"],
       image: require("@/assets/images/service_ed.png"),
@@ -50,6 +53,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "skolengo",
+      route: "skolengo",
       title: "Skolengo",
       type: ["school"],
       image: require("@/assets/images/service_skolengo.png"),
@@ -61,6 +65,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "lannion",
+      route: "lannion",
       title: "IUT de Lannion",
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),

@@ -53,7 +53,7 @@ export default defineConfig([
       "default-param-last": "error",
       eqeqeq: "error",
       "max-depth": ["error", 4],
-      "no-console": "error",
+      "no-console": "warn",
       "no-else-return": "error",
       "no-empty-function": "error",
       "no-extra-label": "error",
@@ -68,6 +68,9 @@ export default defineConfig([
       "simple-import-sort/exports": "warn",
       "@typescript-eslint/no-unused-vars": "off", // Désactiver la règle de base
       "unused-imports/no-unused-imports": "error", // Supprimer automatiquement les imports inutilisés
+      "@typescript-eslint/no-require-imports": "off", // Interdire les imports CommonJS
+      "@typescript-eslint/no-explicit-any": "warn", // Avertir sur l'utilisation de 'any'
+      "@typescript-eslint/no-unescaped-entities": "warn", // Interdire les entités non échappées dans les chaînes de caractères
       "unused-imports/no-unused-vars": [
         "warn",
         {

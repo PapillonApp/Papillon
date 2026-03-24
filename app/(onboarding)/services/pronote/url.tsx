@@ -27,7 +27,7 @@ const PronoteSearchHeader = memo(({
   return (
     <Stack padding={[4, 0]}>
       <Typography variant="h2">Indiquez l'URL de l'établissement</Typography>
-      <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de votre établissement.</Typography>
+      <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de ton établissement.</Typography>
       <Divider height={6} ghost />
       <Search icon="link" placeholder="URL de l'établissement" style={{ width: "100%" }} value={url} setValue={setUrl} onTextChange={setUrl} autoFocus={url.trim().length === 0} />
 
