@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, TouchableOpacity } from "react-native";
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -73,7 +74,12 @@ export default function AccountsView() {
             </Item>
           </ReanimatedSwipeable>
         ))}
-        <Item>
+        <Item
+          onPress={() => router.replace({
+            pathname: "/(onboarding)/ageSelection",
+            params: { action: "addService" }
+          })}
+        >
           <Icon opacity={0.5} style={{ marginHorizontal: 7 }}>
             <Papicons name="add" />
           </Icon>
@@ -93,7 +99,7 @@ export default function AccountsView() {
       </Stack>
 
       <List disablePadding>
-        {services.map((service, index) => (
+        {services?.map((service, index) => (
           <ReanimatedSwipeable
             containerStyle={{
               borderTopLeftRadius: index === 0 ? 20 : 0,
@@ -133,7 +139,11 @@ export default function AccountsView() {
             </Item>
           </ReanimatedSwipeable>
         ))}
-        <Item>
+        <Item
+          onPress={() => router.navigate({
+            pathname: "/(onboarding)/restaurants/method",
+          })}
+        >
           <Icon opacity={0.5} style={{ marginHorizontal: 7 }}>
             <Papicons name="add" />
           </Icon>
