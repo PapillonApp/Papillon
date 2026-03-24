@@ -18,6 +18,8 @@ interface LoginViewProps {
     name: string;
     placeholder: string;
     secureTextEntry: boolean;
+    textContentType?: "username" | "password";
+    keyboardType?: "default" | "number-pad" | "decimal-pad" | "email-address" | "phone-pad" | "url" | "numeric";
   }[];
   actions?: {
     label: string;
@@ -38,11 +40,13 @@ export default function LoginView({
       name: "username",
       placeholder: "Nom d'utilisateur",
       secureTextEntry: false,
+      textContentType: "username",
     },
     {
       name: "password",
       placeholder: "Mot de passe",
       secureTextEntry: true,
+      textContentType: "password",
     }
   ],
   actions = [
@@ -151,6 +155,8 @@ export default function LoginView({
             placeholder={field.placeholder}
             secureTextEntry={field.secureTextEntry}
             onChangeText={(value) => handleChange(field.name, value)}
+            textContentType={field.textContentType ? field.textContentType : undefined}
+            keyboardType={field.keyboardType ? field.keyboardType : 'default'}
           />
         ))}
       </Stack>

@@ -29,6 +29,10 @@ export default function OnboardingLayout() {
           name="serviceSelection"
           options={{ ...newScreenOptions, title: "Service scolaire" }}
         />
+        <Stack.Screen
+          name="restaurants"
+          options={{ headerShown: false, title: "Restaurants" }}
+        />
 
         <Stack.Screen
           name="services/pronote"
@@ -49,6 +53,10 @@ export default function OnboardingLayout() {
         <Stack.Screen
           name="services/multi"
           options={{ headerShown: false, title: "", presentation: "modal" }}
+        />
+        <Stack.Screen
+          name="services/appscho"
+          options={{ headerShown: false, title: "" }}
         />
       </Stack>
     </View>

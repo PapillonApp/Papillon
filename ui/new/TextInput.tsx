@@ -4,13 +4,12 @@ import { TextInput,View } from 'react-native';
 
 const PapillonTextInput = ({ height = 54, color, ...props }) => {
   const { colors } = useTheme();
-  const [focused, setFocused] = React.useState(false);
 
   return (
     <View
       style={{
         backgroundColor: colors.background,
-        borderColor: focused ? color ?? colors.primary : colors.text + "20",
+        borderColor: colors.text + "20",
         borderWidth: 1,
         borderRadius: 16,
         borderCurve: 'continuous',
@@ -31,8 +30,6 @@ const PapillonTextInput = ({ height = 54, color, ...props }) => {
         cursorColor={color ?? colors.primary}
         selectionColor={color ?? colors.primary}
         selectionHandleColor={color ?? colors.primary}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
         {...props}
       />
     </View>

@@ -173,7 +173,7 @@ export default function LannionCredentials() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={32}>
       <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <LoginView
           color="#910063"

@@ -59,9 +59,11 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
             maxWidth: "80%",
           }}
         >
+          {currentUrl.startsWith("https://") && (
           <Dynamic animated>
             <Papicons size={20} name="lock" color="#37BB12" />
           </Dynamic>
+          )}
           <Dynamic animated key={extractDomain(currentUrl)}>
             <Typography variant="title" numberOfLines={1}>
               {extractDomain(currentUrl)}

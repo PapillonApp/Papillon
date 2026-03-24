@@ -106,6 +106,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "appscho",
+      route: "appscho",
       title: "Autres universités",
       image: require("@/assets/images/icon.png"),
       hasLimitedSupport: false,
@@ -288,7 +289,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       image: require("@/assets/images/turboself.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../turboself/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/turboself' });
       }
     },
     {
@@ -298,7 +299,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       image: require("@/assets/images/ard.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../ard/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/ard' });
       }
     },
     {
@@ -308,7 +309,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       image: require("@/assets/images/izly.png"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../izly/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/izly' });
       }
     },
     {
@@ -318,7 +319,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       image: require("@/assets/images/alise.jpg"),
       type: "main",
       onPress: () => {
-        redirect({ pathname: '../alise/credentials' });
+        redirect({ pathname: '/(onboarding)/restaurants/alise' });
       }
     }
   ]
