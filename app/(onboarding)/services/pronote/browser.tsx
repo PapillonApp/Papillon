@@ -2,7 +2,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import { router, useNavigation } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
 import React, { createRef, RefObject, useEffect, useState } from "react";
-import { KeyboardAvoidingView } from "react-native";
+import { KeyboardAvoidingView, Modal } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WebView from "react-native-webview";
 import { WebViewMessage } from "react-native-webview/lib/WebViewTypes";
@@ -19,6 +19,7 @@ import { GetIdentityFromPronoteUsername } from "@/utils/pronote/name";
 import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
+import { Pronote2FAModal } from "./2fa";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
@@ -283,6 +284,15 @@ export default function PronoteENTLogin() {
         document.getElementsByTagName('head')[0].appendChild(meta);
         `}
       />
+
+      <Modal
+        visible={challengeModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setChallengeModalVisible(false)}
+      >
+        <Pronote2FAModal doubleAuthSession={doubleAuthSession} doubleAuthError={doubleAuthError} setChallengeModalVisible={setChallengeModalVisible} deviceId={deviceId} />
+      </Modal>
     </KeyboardAvoidingView>
   )
 }

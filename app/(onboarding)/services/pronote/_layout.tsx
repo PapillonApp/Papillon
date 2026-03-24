@@ -15,7 +15,7 @@ export default function OnboardingLayout() {
   }), []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View style={{ flex: 1 }}>
       <Stack>
         <Stack.Screen
           name="locate"
@@ -32,6 +32,10 @@ export default function OnboardingLayout() {
         <Stack.Screen
           name="browser"
           options={{ ...newScreenOptions, title: "Connexion par ENT", presentation: "modal" }}
+        />
+        <Stack.Screen
+          name="qrcode"
+          options={{ ...newScreenOptions, title: "Connexion par QR-Code" }}
         />
       </Stack>
     </View>
