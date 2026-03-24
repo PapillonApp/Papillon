@@ -247,7 +247,7 @@
   "Grades_Tab_Rank_Description": "গ্রুপে অবস্থান",
   "News_Search_Placeholder": "সংবাদ খুঁজুন",
   "News_Empty_Title": "কোনো সংবাদ নেই",
-  "News_Empty_Description": "তোমার শিক্ষা প্রতিষ্ঠানে কোনো সংবাদ পাওয়া যায়নি।",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "কোনো সংবাদ পাওয়া যায়নি",
   "News_Search_NoResults_Description": "তোমার অনুসন্ধানের সাথে মেলে এমন কোনো খবর নেই।",
   "News_Theme_Papillon_Title": "পাপিলন",
