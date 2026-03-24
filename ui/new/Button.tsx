@@ -14,7 +14,7 @@ export default function Button({ label, onPress, disabled = false, variant = "pr
       backgroundColor: disabled ? colors.text + "22" : (color ?? colors.primary),
     },
     secondary: {
-      backgroundColor: colors.text + "18",
+      backgroundColor: color ? color + '18' : colors.text + "18",
     },
     outlined: {
       backgroundColor: "transparent",
@@ -36,19 +36,19 @@ export default function Button({ label, onPress, disabled = false, variant = "pr
     },
     secondary: {
       variant: "title",
-      color: disabled ? "textSecondary" : "textPrimary"
+      color: disabled ? "textSecondary" : color ?? "textPrimary"
     },
     outlined: {
       variant: "title",
-      color: disabled ? "textSecondary" : "primary"
+      color: disabled ? "textSecondary" : color ?? "primary"
     },
     ghost: {
       variant: "title",
-      color: disabled ? "textSecondary" : "primary"
+      color: disabled ? "textSecondary" : color ?? "primary"
     },
     text: {
       variant: "title",
-      color: disabled ? "textSecondary" : "primary"
+      color: disabled ? "textSecondary" : color ?? "primary"
     }
   };
 

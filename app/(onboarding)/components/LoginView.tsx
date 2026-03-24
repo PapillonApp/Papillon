@@ -177,7 +177,7 @@ export default function LoginView({
         ))}
       </Stack>
 
-      <Typography variant="caption" align="center" color="textSecondary" style={{ marginTop: 16 }}>
+      <Typography variant="caption" align="center" color="textSecondary" style={{ marginVertical: 16, marginBottom: 32 }}>
         Papillon n’est pas affilié à {serviceName || "ce service"}. Votre mot de passe n’est pas lu ou conservé par Papillon.
       </Typography>
     </View>

@@ -21,21 +21,21 @@ const LEVELS = [
   {
     key: "middle-school",
     label: "Collègien",
-    color: "#6480F0",
+    color: "#008CFF",
     icon: MiddleSchoolIllustration,
     type: "school"
   },
   {
     key: "high-school",
     label: "Lycéen",
-    color: "#ca631e",
+    color: "#FFC800",
     icon: HighSchoolIllustration,
     type: "school"
   },
   {
     key: "sup-school",
     label: "Étudiant",
-    color: "#37baad",
+    color: "#68F000",
     icon: SupSchoolIllustration,
     type: "univ"
   },
@@ -45,14 +45,14 @@ const LEVELS = [
   {
     key: "parents",
     label: "Parent d'élève",
-    color: "#FF7878",
+    color: "#ff4d4d",
     icon: ParentsIllustration,
     type: "parents"
   },
   {
     key: "teacher",
     label: "Professeur",
-    color: "#ffeb78",
+    color: "#FF0084",
     icon: TeacherIllustration,
     type: "teacher"
   }
