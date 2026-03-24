@@ -385,5 +385,7 @@
   "Modal_Task_Attachments": "첨부 파일",
   "Today": "오늘",
   "Yesterday": "어제",
-  "Tomorrow": "내일"
+  "Tomorrow": "내일",
+  "Home_Edit_Profile": "Modifier mon profil",
+  "Home_Add_Profile": "Ajouter un profil"
 }
