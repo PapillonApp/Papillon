@@ -33,11 +33,6 @@ export default function Welcome() {
         paddingBottom: insets.bottom + 16
       }}
     >
-
-      <Typography variant="caption" align="center" weight="bold" color="red" style={{ marginHorizontal: 10, opacity: 0.8, marginBottom: 20 }}>
-        Mince ! j'ai accidentellement merge le nouvel onboarding dans main, donc vous serez coincé ici tant que je ne bosse pas :(
-      </Typography>
-
       <PapillonLogo />
 
       <Typography variant="title" align="center" weight="medium" style={{ marginHorizontal: 10, opacity: 0.8 }}>
