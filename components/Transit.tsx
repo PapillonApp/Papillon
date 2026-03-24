@@ -5,7 +5,7 @@ import * as Location from "expo-location";
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { PathProps } from "react-native-svg/src/elements/Path";
 
@@ -165,16 +165,16 @@ export const Transit = ({
   const openInDefaultApp = () => {
     const app:
       | {
-          id: string;
-          name: string;
-          icon: any;
-          generateDeeplink: (
-            from: TransportAddress,
-            to: TransportAddress,
-            isDeparture: boolean,
-            targetTime: number
-          ) => string;
-        }
+        id: string;
+        name: string;
+        icon: any;
+        generateDeeplink: (
+          from: TransportAddress,
+          to: TransportAddress,
+          isDeparture: boolean,
+          targetTime: number
+        ) => string;
+      }
       | undefined = AvailableTransportServices.find(el => el.id === service);
 
     if (app === undefined) {
@@ -276,15 +276,16 @@ export const Transit = ({
         <View
           style={{
             flex: 1,
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              gap: 2,
+              gap: 4,
               marginBottom: -5,
+              width: Dimensions.get("window").width - 120,
             }}
           >
             <ArrowRightBox color={theme.colors.text + "9F"} />
@@ -292,6 +293,7 @@ export const Transit = ({
               variant={"h5"}
               color={theme.colors.text + "9F"}
               inline={true}
+              numberOfLines={1}
             >
               {isDeparture ? schoolAddress.firstTitle : homeAddress.firstTitle}
             </Typography>
