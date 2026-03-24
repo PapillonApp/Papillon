@@ -15,6 +15,8 @@ import Typography from '@/ui/components/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 import { useUserProfileData } from '../hooks/useUserProfileData';
+import { t } from 'i18next';
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
@@ -74,19 +76,19 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 subactions: accounts.map((account) => ({
                   id: account.id,
                   title: account.firstName + ' ' + account.lastName,
-                  subtitle: account.schoolName,
+                  subtitle: formatSchoolName(account.schoolName ?? ""),
                   state: account.id === lastUsedAccount ? 'on' : 'off',
                 })),
               },
               {
                 id: 'edit',
-                title: 'Edit profile',
+                title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
                 imageColor: theme.colors.text,
               },
               {
                 id: 'add',
-                title: 'Add account',
+                title: t('Home_Add_Profile'),
                 image: 'plus',
                 imageColor: theme.colors.text,
               },

@@ -23,6 +23,7 @@ import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
 
 import packagejson from "../../package.json"
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -262,7 +263,7 @@ export default function SettingsIndex() {
               </Typography>
               {establishment &&
                 <Typography variant="body1" align="center" color="secondary">
-                  {level} {(level && establishment) && " — "} {establishment}
+                  {level} {(level && establishment) && " — "} {formatSchoolName(establishment)}
                 </Typography>
               }
             </Stack>

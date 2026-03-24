@@ -14,6 +14,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
+import { formatSchoolName } from "@/utils/format/formatSchoolName";
 
 export default function AccountsView() {
   const accounts = useAccountStore((state) => state.accounts);
@@ -70,7 +71,7 @@ export default function AccountsView() {
                 />
               </Leading>
               <Typography variant="title">{account.firstName} {account.lastName}</Typography>
-              <Typography variant="body2" color="secondary">{account.className ? account.className + " " : ""}{account.schoolName}</Typography>
+              <Typography variant="body2" color="secondary">{account.className ? account.className + " " : ""}{formatSchoolName(account.schoolName ?? "")}</Typography>
             </Item>
           </ReanimatedSwipeable>
         ))}
