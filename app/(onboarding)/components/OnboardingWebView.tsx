@@ -5,6 +5,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
 
+import { Dynamic } from "@/ui/components/Dynamic";
 import Typography from "@/ui/new/Typography";
 
 export default function OnboardingWebView({webViewRef, ...props}: React.ComponentProps<typeof WebView>) {
@@ -17,6 +18,8 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
 
   const extractDomain = (url: string) => {
     try {
+      if(url.trim().length === 0) {return "about:blank";}
+
       const { hostname } = new URL(url);
       return hostname.replace("www.", "");
     } catch (e) {
@@ -56,10 +59,14 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
             maxWidth: "80%",
           }}
         >
-          <Papicons size={20} name="lock" color="#37BB12" />
-          <Typography variant="title" numberOfLines={1}>
-            {extractDomain(currentUrl)}
-          </Typography>
+          <Dynamic animated>
+            <Papicons size={20} name="lock" color="#37BB12" />
+          </Dynamic>
+          <Dynamic animated key={extractDomain(currentUrl)}>
+            <Typography variant="title" numberOfLines={1}>
+              {extractDomain(currentUrl)}
+            </Typography>
+          </Dynamic>
         </View>
 
         {loading && (

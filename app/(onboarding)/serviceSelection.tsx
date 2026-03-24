@@ -52,6 +52,7 @@ export default function ServiceSelection() {
 
   const loginToService = (serviceName: string) => {
     const newRoute = './services/' + serviceName;
+    console.log("Navigating to: ", newRoute);
     router.push(newRoute);
   };
 

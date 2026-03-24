@@ -60,7 +60,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
       color: 'light' as const,
     },
     {
-      name: "iut-lannion",
+      name: "lannion",
       title: "IUT de Lannion",
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),
@@ -124,7 +124,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
 
   return [
     {
-      name: "iut-lannion",
+      name: "lannion",
       title: "IUT de Lannion",
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),

@@ -34,10 +34,17 @@ export default function OnboardingLayout() {
           name="services/pronote"
           options={{ headerShown: false, title: "", presentation: "modal" }}
         />
-
         <Stack.Screen
           name="services/ed"
           options={{ headerShown: false, title: "" }}
+        />
+        <Stack.Screen
+          name="services/skolengo"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
+        />
+        <Stack.Screen
+          name="services/lannion"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
       </Stack>
     </View>
