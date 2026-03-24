@@ -247,7 +247,7 @@
   "Grades_Tab_Rank_Description": "ตำแหน่งในกลุ่ม",
   "News_Search_Placeholder": "ค้นหาข่าวสาร",
   "News_Empty_Title": "ไม่มีข่าวสาร",
-  "News_Empty_Description": "ไม่พบข่าวสารในสถานศึกษาของคุณ",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "ไม่พบข่าวสาร",
   "News_Search_NoResults_Description": "ไม่พบข่าวสารที่คุณกำลังค้นหา",
   "News_Theme_Papillon_Title": "Papillon",
