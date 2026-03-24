@@ -25,11 +25,13 @@ export interface School {
 const PronoteSearchHeader = memo(({
   city,
   setCity,
-  loading
+  loading,
+  showElse
 }: {
   city: string,
   setCity: (text: string) => void,
-  loading: boolean
+  loading: boolean,
+  showElse: boolean
 }) => (
   <Stack padding={[4, 0]}>
     <Typography variant="h2">Dans quelle ville se trouve ton établissement ?</Typography>
@@ -108,7 +110,7 @@ export default function PronoteLoginMethod() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <List
-        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} />}
+        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} />}
         contentContainerStyle={{
           padding: 16,
           flexGrow: 1,
@@ -119,6 +121,27 @@ export default function PronoteLoginMethod() {
         style={{ flex: 1 }}
         animated
       >
+        {cities.length === 0 && !loading && (
+          <List.Item animated>
+            <List.Leading>
+              <Icon><Papicons name="qrcode" /></Icon>
+            </List.Leading>
+            <Typography variant='title'>Me connecter avec un QR code</Typography>
+            <Typography variant='body' color="textSecondary">
+              Utiliser un QR code généré sur Pronote
+            </Typography>
+          </List.Item>
+        )}
+
+        {cities.length === 0 && !loading && (
+          <List.Item animated onPress={() => navigation.navigate("url")}>
+            <List.Leading>
+              <Icon><Papicons name="link" /></Icon>
+            </List.Leading>
+            <Typography variant='title'>Me connecter avec une URL</Typography>
+          </List.Item>
+        )}
+
         {cities.map((city, i) => (
           <List.Item animated={true} key={city.id} id={city.id} onPress={() => {selectCity(city)}}>
             <List.Leading>

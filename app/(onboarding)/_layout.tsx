@@ -34,6 +34,11 @@ export default function OnboardingLayout() {
           name="services/pronote"
           options={{ headerShown: false, title: "", presentation: "modal" }}
         />
+
+        <Stack.Screen
+          name="services/ed"
+          options={{ headerShown: false, title: "" }}
+        />
       </Stack>
     </View>
   );

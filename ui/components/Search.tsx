@@ -18,6 +18,7 @@ interface SearchProps {
   style?: StyleProp<ViewStyle>,
   value?: string,
   setValue?: (text: string) => void,
+  icon?: string,
 };
 
 const SearchContainer = ({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) => {
@@ -60,7 +61,8 @@ const Search: React.FC<SearchProps> = ({
   color,
   style,
   value,
-  setValue
+  setValue,
+  icon,
 }) => {
   const { colors } = useTheme();
   const [localInput, setLocalInput] = useState("");
@@ -94,7 +96,7 @@ const Search: React.FC<SearchProps> = ({
         padding={[14, 0]}
       >
         <Icon size={24} opacity={input.length > 0 ? 1 : 0.5}>
-          <Papicons name="search" />
+          <Papicons name={icon ?? "search"} />
         </Icon>
 
         <TextInput

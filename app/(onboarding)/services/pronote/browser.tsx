@@ -258,7 +258,7 @@ export default function PronoteENTLogin() {
           <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20}>
             <ActivityIndicator />
             <Divider height={12} ghost />
-            <Typography align="center" variant="h4">Connexion à {school.name}</Typography>
+            <Typography align="center" variant="h4">Connexion à {school && school.name ? school.name : "votre établissement"}</Typography>
             <Typography align="center" variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
           </Stack>
         </Reanimated.View>

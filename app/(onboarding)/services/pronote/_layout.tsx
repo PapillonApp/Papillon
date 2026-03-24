@@ -26,6 +26,10 @@ export default function OnboardingLayout() {
           options={{ ...newScreenOptions, title: "Établissements" }}
         />
         <Stack.Screen
+          name="url"
+          options={{ ...newScreenOptions, title: "URL de l'établissement" }}
+        />
+        <Stack.Screen
           name="browser"
           options={{ ...newScreenOptions, title: "Connexion par ENT", presentation: "modal" }}
         />
