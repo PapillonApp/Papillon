@@ -18,21 +18,12 @@ export default function OnboardingLayout() {
     <View style={{ flex: 1, backgroundColor: "black" }}>
       <Stack>
         <Stack.Screen
-          name="welcome"
-          options={{ ...newScreenOptions, title: "" }}
+          name="locate"
+          options={{ ...newScreenOptions, title: "Recherche de l'emplacement" }}
         />
         <Stack.Screen
-          name="ageSelection"
-          options={{ ...newScreenOptions, title: "À propos de toi" }}
-        />
-        <Stack.Screen
-          name="serviceSelection"
-          options={{ ...newScreenOptions, title: "Service scolaire" }}
-        />
-
-        <Stack.Screen
-          name="services/pronote"
-          options={{ headerShown: false, title: "", presentation: "modal" }}
+          name="select"
+          options={{ ...newScreenOptions, title: "Établissements" }}
         />
       </Stack>
     </View>

@@ -43,12 +43,17 @@ export default function ServiceSelection() {
 
   const titleString = useMemo(() => {
     switch (type) {
-      case "univ":
-        return "Quel service souhaites-tu utiliser ?";
-      default:
-        return "Quelle application utilises-tu habituellement ?";
+    case "univ":
+      return "Quel service souhaites-tu utiliser ?";
+    default:
+      return "Quelle application utilises-tu habituellement ?";
     }
   }, [type]);
+
+  const loginToService = (serviceName: string) => {
+    const newRoute = './services/' + serviceName;
+    router.push(newRoute);
+  };
 
   if (!["school", "univ"].includes(type)) {
     return (
@@ -135,7 +140,7 @@ export default function ServiceSelection() {
       >
         <Button
           label="Continuer"
-          onPress={() => { }}
+          onPress={() => { loginToService(selectedService) }}
           disabled={!selectedService}
         />
       </View>
