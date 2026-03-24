@@ -1,7 +1,10 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
+import { Animation } from "../utils/Animation";
+import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 // 1. Define markers outside the main component
 // 2. Add a static property for stable identification
@@ -14,7 +17,7 @@ Leading.displayName = "List.Leading";
 const Trailing = ({ children }) => children;
 Trailing.displayName = "List.Trailing";
 
-const List = ({ children, ...rest }) => {
+const List = ({ children, animated = false, ...rest }) => {
   const theme = useTheme();
   const { colors } = theme;
 
@@ -54,8 +57,12 @@ const List = ({ children, ...rest }) => {
       });
   }, [children]);
 
+  const ListComponent = animated ? Reanimated.FlatList : FlatList;
+  const ItemComponent = animated ? Reanimated.View : View;
+
   return (
-    <FlatList
+    <ListComponent
+      itemLayoutAnimation={animated ? Animation(LinearTransition, "list") : undefined}
       data={data}
       keyExtractor={(item) => item.id}
       renderItem={({ item, index }) => {
@@ -63,7 +70,7 @@ const List = ({ children, ...rest }) => {
         const isLast = index === data.length - 1;
 
         return (
-          <View
+          <ItemComponent
             style={[styles.rowContainer, isFirst && styles.first, isLast && styles.last, {
               borderColor: colors.border,
               backgroundColor: colors.border,
@@ -78,6 +85,10 @@ const List = ({ children, ...rest }) => {
               elevation: 5,
               ...item.itemProps.containerStyle
             }]}
+            key={item.itemProps.id + "--containeritem"}
+            layout={item.itemProps.animated ? Animation(LinearTransition, "list") : undefined}
+            entering={item.itemProps.entering ?? item.itemProps.animated ? PapillonAppearIn : undefined}
+            exiting={item.itemProps.exiting ?? item.itemProps.animated ? PapillonAppearOut : undefined}
           >
             <TouchableOpacity
               activeOpacity={0.5}
@@ -95,7 +106,7 @@ const List = ({ children, ...rest }) => {
                 {item.trailing && <View style={styles.trailing}>{item.trailing}</View>}
               </View>
             </TouchableOpacity>
-          </View>
+          </ItemComponent>
         )
       }}
       {...rest}

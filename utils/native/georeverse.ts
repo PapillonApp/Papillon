@@ -113,9 +113,10 @@ export async function GeographicSearchCities(q: string, retry = 3): Promise<GeoS
     const response = await res.json();
 
     const resp = response?.features.map((feature: any) => ({
+      id: feature.properties.banId,
       city: feature.properties.city,
       context: feature.properties.context,
-      importance: feature.properties.importance,
+      importance: feature.properties.score,
       postalCode: Number(feature.properties.postcode),
       longitude: feature.geometry.coordinates[0],
       latitude: feature.geometry.coordinates[1]
@@ -135,6 +136,7 @@ export interface GeoInfo {
 }
 
 export interface GeoSearchCityInfo {
+  id: string;
   city: string;
   citycode: string;
   context: string;

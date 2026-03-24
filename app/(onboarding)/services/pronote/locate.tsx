@@ -1,6 +1,5 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
 import { KeyboardAvoidingView } from "react-native";
@@ -34,7 +33,7 @@ const PronoteSearchHeader = memo(({
 }) => (
   <Stack padding={[4, 0]}>
     <Typography variant="h2">Dans quelle ville se trouve ton établissement ?</Typography>
-    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l'emplacement de votre établissement.</Typography>
+    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de votre établissement.</Typography>
     <Divider height={6} ghost />
     <Search placeholder="Rechercher une ville" style={{ width: "100%" }} value={city} setValue={setCity} onTextChange={setCity} autoFocus={city.trim().length === 0} />
     
@@ -44,8 +43,8 @@ const PronoteSearchHeader = memo(({
           <Divider height={18} ghost />
           <ActivityIndicator />
           <Divider height={12} ghost />
-          <Typography variant="h5">Recherche des établissements...</Typography>
-          <Typography variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
+          <Typography align="center" variant="h5">Recherche des établissements...</Typography>
+          <Typography align="center" variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
         </Stack>
       </Dynamic>
     }
@@ -56,25 +55,51 @@ const PronoteSearchHeader = memo(({
 
 export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
-  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const [city, setCity] = useState<string>("");
+  const [debouncedCity, setDebouncedCity] = useState<string>("");
   const [cities, setCities] = useState<Array<School>>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if(!city || city.trim().length < 3) {
-      setCities([]);
-    } else {
-      setLoading(true);
-      GeographicSearchCities(city).then((cities) => {
-        setCities(cities.sort((a, b) => b.importance - a.importance));
-        setLoading(false);
-      });
-    }
+    const timeout = setTimeout(() => {
+      setDebouncedCity(city.trim());
+    }, 350);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [city]);
+
+  useEffect(() => {
+    if(!debouncedCity || debouncedCity.length < 3) {
+      setCities([]);
+      setLoading(false);
+    } else {
+      let canceled = false;
+
+      setLoading(true);
+      GeographicSearchCities(debouncedCity)
+        .then((cities) => {
+          if(canceled) {
+            return;
+          }
+          setCities(cities.sort((a, b) => b.importance - a.importance).splice(0, 10));
+        })
+        .finally(() => {
+          if(canceled) {
+            return;
+          }
+          setLoading(false);
+        });
+
+      return () => {
+        canceled = true;
+      };
+    }
+  }, [debouncedCity]);
 
   const selectCity = (city: School) => {
     navigation.navigate(`select`, { city: city });
@@ -83,7 +108,7 @@ export default function PronoteLoginMethod() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <List
-        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading} />}
+        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} />}
         contentContainerStyle={{
           padding: 16,
           flexGrow: 1,
@@ -92,9 +117,10 @@ export default function PronoteLoginMethod() {
           paddingBottom: insets.bottom + 20,
         }}
         style={{ flex: 1 }}
+        animated
       >
         {cities.map((city, i) => (
-          <List.Item key={i} onPress={() => {selectCity(city)}}>
+          <List.Item animated={true} key={city.id} id={city.id} onPress={() => {selectCity(city)}}>
             <List.Leading>
               <Icon><Papicons name="mappin" /></Icon>
             </List.Leading>

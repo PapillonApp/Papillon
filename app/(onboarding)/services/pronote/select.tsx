@@ -1,15 +1,13 @@
-import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRoute, useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import { geolocation } from "pawnote";
 import React, { memo, useEffect, useState } from "react";
-import { KeyboardAvoidingView } from "react-native";
+import { Image, KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
 import { Dynamic } from "@/ui/components/Dynamic";
-import Icon from "@/ui/components/Icon";
 import Search from "@/ui/components/Search";
 import Stack from "@/ui/components/Stack";
 import Divider from "@/ui/new/Divider";
@@ -44,8 +42,8 @@ const PronoteSearchHeader = memo(({
           <Divider height={18} ghost />
           <ActivityIndicator />
           <Divider height={12} ghost />
-          <Typography variant="h5">Recherche des établissements...</Typography>
-          <Typography variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
+          <Typography align="center" variant="h5">Recherche des établissements...</Typography>
+          <Typography align="center" variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
         </Stack>
       </Dynamic>
     }
@@ -78,9 +76,14 @@ export default function PronoteLoginSelectEtab() {
 
   const filteredSchools = schools.filter(school => school.name.toLowerCase().includes(search.toLowerCase()));
 
+  const selectSchool = (school: School) => {
+    navigation.navigate("browser", { url: school.url, school });
+  }
+
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <List
+        animated
         ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} />}
         contentContainerStyle={{
           padding: 16,
@@ -93,11 +96,19 @@ export default function PronoteLoginSelectEtab() {
       >
 
         {filteredSchools.map((school, i) => (
-          <List.Item key={i} onPress={() => {}}>
+          <List.Item animated={true} id={school.url} key={school.url} onPress={() => selectSchool(school)}>
             <List.Leading>
-              <Icon><Papicons name="mappin" /></Icon>
+              <Image
+                source={require("@/assets/images/service_pronote.png")}
+                style={{ width: 32, height: 32, borderRadius: 8 }}
+              />
             </List.Leading>
-            <Typography variant="action">{school.name}</Typography>
+            <Typography variant="title" numberOfLines={2}>
+              {school.name}
+            </Typography>
+            <Typography variant="body" color="textSecondary" numberOfLines={1}>
+              {school.url}
+            </Typography>
           </List.Item>
         ))}
       </List>
