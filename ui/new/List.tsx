@@ -8,7 +8,7 @@ import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 
 // 1. Define markers outside the main component
 // 2. Add a static property for stable identification
-const Item = ({ children, animated, ...rest }) => children;
+const Item: React.FC<{ id?: string, animated?: boolean, onPress?: () => void, containerStyle?: any, style?: any, entering?: any, exiting?: any }> = ({ children }) => children;
 Item.displayName = "List.Item";
 
 const Leading = ({ children }) => children;
