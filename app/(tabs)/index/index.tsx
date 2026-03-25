@@ -29,6 +29,7 @@ const HomeScreen = () => {
   const router = useRouter();
 
   React.useEffect(() => {
+    console.log(accounts)
     if (accounts.length === 0) {
       router.replace("/(onboarding)/welcome");
     }

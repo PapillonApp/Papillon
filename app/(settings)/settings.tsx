@@ -23,6 +23,7 @@ import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
 
 import packagejson from "../../package.json"
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -182,13 +183,41 @@ export default function SettingsIndex() {
   const BigButtons: Array<{
     disabled?: boolean; icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void;
   }> = [
-    {
-      icon: <Papicons name={"Palette"} />,
-      title: t('Settings_Personalization_Title_Card'),
-      description: t('Settings_Personalization_Subtitle_Card'),
-      color: "#17C300",
-      onPress: () => {
-        router.navigate("/(settings)/personalization")
+      {
+        icon: <Papicons name={"Palette"} />,
+        title: t('Settings_Personalization_Title_Card'),
+        description: t('Settings_Personalization_Subtitle_Card'),
+        color: "#17C300",
+        onPress: () => {
+          router.navigate("/(settings)/personalization")
+        }
+      },
+      {
+        icon: <Papicons name={"Calendar"} />,
+        title: t('Settings_Personalization_Subject_Title_Card'),
+        description: t('Settings_Personalization_Subject_Description'),
+        color: "#8500dd",
+        onPress: () => {
+          router.navigate("/(settings)/subject_personalization")
+        }
+      },
+      {
+        icon: <Papicons name={"User"} />,
+        title: t("Settings_Accounts_Title"),
+        description: t('Settings_Accounts_Description'),
+        color: "#0059DD",
+        onPress: () => {
+          router.navigate("/(settings)/accounts")
+        }
+      },
+      {
+        icon: <Papicons name={"Sparkles"} />,
+        title: "Magic+",
+        description: t('Settings_MagicPlus_Description_Card'),
+        color: "#DD007D",
+        onPress: () => {
+          router.navigate("/(settings)/magic")
+        }
       }
     },
     {
@@ -292,7 +321,7 @@ export default function SettingsIndex() {
               </Typography>
               {establishment &&
                 <Typography variant="body1" align="center" color="secondary">
-                  {level} {(level && establishment) && " — "} {establishment}
+                  {level} {(level && establishment) && " — "} {formatSchoolName(establishment)}
                 </Typography>
               }
             </Stack>

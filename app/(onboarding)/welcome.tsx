@@ -1,143 +1,156 @@
-import { Papicons } from "@getpapillon/papicons";
-import { useTheme } from "@react-navigation/native";
-import * as Linking from "expo-linking";
-import { router, useFocusEffect } from "expo-router";
-import LottieView from "lottie-react-native";
+import { useFocusEffect, useIsFocused, useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import * as WebBrowser from 'expo-web-browser';
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { Image,StyleSheet, View } from "react-native";
+import { Image, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import Button from "@/ui/components/Button";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import ViewContainer from "@/ui/components/ViewContainer";
+import Button from "@/ui/new/Button";
+import Divider from "@/ui/new/Divider";
+import PapillonLogo from "@/ui/new/symbols/PapillonLogo";
+import Typography from "@/ui/new/Typography";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function WelcomeScreen() {
-  const theme = useTheme();
-  const { colors } = theme;
+export default function Welcome() {
   const insets = useSafeAreaInsets();
-  const animation = React.useRef<LottieView>(null);
-  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const router = useRouter();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (animation.current) {
-        animation.current.reset();
-        animation.current.play();
-      }
-    }, []),
-  );
+  const openHelpWebPage = () => {
+    WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support", {
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET
+    });
+  }
+
+  const player = useVideoPlayer({
+      assetId: require('@/assets/video/welcome.mp4'),
+    }, player => {
+      player.loop = true;
+      player.muted = true;
+      player.volume = 0;
+      player.playbackRate =0.5;
+      player.play();
+    });
+
+    const isFocused = useIsFocused();
+
+    useFocusEffect(
+      React.useCallback(() => {
+        if (isFocused) {
+          player.play();
+        }
+      }, [isFocused])
+    );
 
   return (
-    <ViewContainer>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack
-          padding={32}
-          backgroundColor="#0060D6"
-          gap={0}
-          hAlign={"center"}
-          vAlign={"end"}
-          style={{
-            width: "100%",
-            flex: 1,
-            borderBottomLeftRadius: 42,
-            borderBottomRightRadius: 42,
-            borderCurve: "continuous",
-            paddingTop: insets.top + 20,
-            paddingBottom: 40,
-          }}
-        >
-          <Stack
-            vAlign={"center"}
-            hAlign={"center"}
-            style={{
-              flex: 1,
-              marginBottom: 16,
-            }}
-          >
-            <LottieView
-              autoPlay={false}
-              loop={false}
-              ref={animation}
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-                maxHeight: 250
-              }}
-              source={require("@/assets/lotties/onboarding.json")}
-            />
-          </Stack>
-          <Stack
-            flex
-            vAlign="start"
-            hAlign="start"
-            width="100%"
-            gap={6}
-          >
-            <Image
-              source={require("@/assets/logo.png")}
-              resizeMode="contain"
-              style={{
-                width: 136,
-                height: 36,
-                marginBottom: 2,
-              }}
-            />
-            <Typography
-              variant="h1"
-              style={{ color: "white", fontSize: 32, lineHeight: 34 }}
-            >
-              {t("ONBOARDING_MAIN_TITLE")}
-            </Typography>
-            <Typography
-              variant="h5"
-              style={{ color: "#FFFFFF", lineHeight: 22, fontSize: 18 }}
-            >
-              {t("ONBOARDING_MAIN_DESCRIPTION")}
-            </Typography>
-          </Stack>
-        </Stack>
-        <Stack
-          style={{
-            padding: 20,
-            paddingBottom: insets.bottom + 20,
-          }}
-          gap={10}
-        >
-          <Button
-            title={t("ONBOARDING_START_BTN")}
-            onPress={() => {
-              requestAnimationFrame(() => {
-                router.navigate("/(onboarding)/serviceSelection");
-              });
-            }}
-            style={{
-              backgroundColor: theme.dark ? colors.border : "black",
-            }}
-            size="large"
-            icon={
-              <Papicons name={"Butterfly"} />
-            }
-          />
-          <Button
-            title={t("ONBOARDING_HELP_BTN")}
-            onPress={() => {
-              Linking.openURL("https://support.papillon.bzh");
-            }}
-            variant="ghost"
-            color="text"
-            size="large"
-            style={{ height: 40 }}
-          />
-        </Stack>
-      </View>
-    </ViewContainer>
-  );
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "black"
+      }}
+    >
+      {isFocused &&
+      <Reanimated.View
+        entering={FadeIn.duration(600)}
+        exiting={FadeOut.duration(600)}
+
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 0,
+        }}
+      >
+      <VideoView
+        player={player}
+        style={{
+          width: '100%',
+          height: '100%'
+        }}
+        contentFit="cover"
+        nativeControls={false}
+      /></Reanimated.View>
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+      <LinearGradient
+        colors={["rgba(0, 0, 0, 1)", "rgba(0, 0, 0, 0.0)", "rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1)"]}
+        locations={[0, 0.2, 0.3, 0.7]}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+          opacity: 0.8
+        }}
+      />
+
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "flex-end",
+          alignItems: "center",
+          padding: 16,
+          gap: 10,
+          paddingBottom: insets.bottom + 16,
+          zIndex: 99,
+        }}
+      >
+        <PapillonLogo fill={"#FFFFFF"} />
+
+        <Typography color="#FFFFFF" variant="title" align="center" weight="medium" style={{ marginHorizontal: 10, opacity: 0.8 }}>
+          L'application ultime pour gérer toute ta vie scolaire sans compromis.
+        </Typography>
+
+        <Divider height={2} ghost />
+
+
+        <Button
+          label="Se connecter avec"
+          gap={4}
+          trailing={
+            <Stack direction="horizontal" gap={0}>
+              <Image
+                source={require("@/assets/images/service_pronote.png")}
+                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, zIndex: 3 }}
+              />
+              <Image
+                source={require("@/assets/images/service_ed.png")}
+                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, marginLeft: -16, zIndex: 2 }}
+              />
+              <Image
+                source={require("@/assets/images/service_skolengo.png")}
+                style={{ width: 32, height: 32, borderRadius: 32, borderWidth: 3, borderColor: colors.primary, marginLeft: -16, zIndex: 1 }}
+              />
+            </Stack>
+          }
+          onPress={() => {
+            router.push("./ageSelection")
+          }}
+          fullWidth
+        />
+        <Button
+          label="Besoin d'aide ?"
+          onPress={() => { openHelpWebPage() }}
+          fullWidth
+          variant="secondary"
+          color="#FFFFFF"
+        />
+
+        <Divider height={2} ghost />
+
+        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }}>
+          En continuant, vous acceptez les conditions d’utilisation ainsi que la politique de confidentialité.
+        </Typography>
+      </View>
+    </View>
+  );
+}
