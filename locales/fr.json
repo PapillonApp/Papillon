@@ -383,7 +383,7 @@
   "Settings_Transport_Banner_Title": "Transport",
   "Settings_Transport_Banner_Description": "Active cette option pour voir le temps de transport dans ton emploi du temps.",
   "Settings_Transport_Address_Title": "Addresses",
-  "Settings_Transport_Address_Home_Title": "Maison",
+  "Settings_Transport_Address_Home_Title": "Domicile",
   "Settings_Transport_Address_School_Title": "Établissement scolaire",
   "Settings_Transport_Address_Description": "Ces informations seront transmises à ton application de transport par défaut. Elles ne sont transmises à aucun autre tiers.",
   "Settings_Transport_Default_Application_Title": "Application par défaut",

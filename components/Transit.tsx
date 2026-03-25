@@ -1,4 +1,4 @@
-import { ArrowRightBox, Cross } from "@getpapillon/papicons";
+import { Cross, Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import * as Location from "expo-location";
@@ -6,11 +6,13 @@ import * as React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Dimensions, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { PathProps } from "react-native-svg/src/elements/Path";
 
 import { AvailableTransportServices } from "@/constants/AvailableTransportServices";
 import * as TransitService from "@/services/transit";
+import { Route } from "@/services/transit/models/Route";
 import { TransportAddress } from "@/stores/account/types";
 import Typography from "@/ui/components/Typography";
 
@@ -50,6 +52,14 @@ export interface TransitProps {
   service: string;
 }
 
+const routeIcons: { [key: string]: string } = {
+  "bus": "Bus",
+  "metro": "Metro",
+  "train": "Bus",
+  "tram": "Tramway",
+  "tramway": "Tramway",
+};
+
 export const Transit = ({
   isDeparture,
   homeAddress,
@@ -67,7 +77,10 @@ export const Transit = ({
     title: string;
     description: string;
   } | null>(null);
+  const [_transitRoutes, setTransitRoutes] = React.useState<Route[]>([]);
   const [routeStartTime, setRouteStartTime] = React.useState(0);
+  const [routeIcon, setRouteIcon] = React.useState<string | undefined>(null);
+  const [routesCount, setRoutesCount] = React.useState(0);
 
   const getTransportResult = async () => {
     if (service !== "transit") {
@@ -108,7 +121,24 @@ export const Transit = ({
 
       if (routes.results.length > 0) {
         setRouteFound(true);
-        setRouteStartTime(parseInt(routes.results[0].start_time));
+        const selectedTrip = routes.results[0];
+        const allRoutes = selectedTrip.legs.flatMap(leg =>
+          leg.leg_mode === "transit" && leg.routes.length > 0
+            ? [leg.routes[0]]
+            : []
+        );
+        setTransitRoutes([...allRoutes].splice(0, 2));
+        setRoutesCount(allRoutes.length);
+
+        const routeType = allRoutes.length > 0 ? allRoutes[0].mode_name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : null;
+
+        if (routeType && routeIcons[routeType]) {
+          setRouteIcon(routeIcons[routeType]);
+        } else {
+          setRouteIcon(null);
+        }
+
+        setRouteStartTime(Number(selectedTrip.start_time));
       }
     } catch (e: unknown) {
       setError({
@@ -167,7 +197,7 @@ export const Transit = ({
       | {
         id: string;
         name: string;
-        icon: any;
+        icon: unknown;
         generateDeeplink: (
           from: TransportAddress,
           to: TransportAddress,
@@ -285,15 +315,21 @@ export const Transit = ({
               alignItems: "center",
               gap: 4,
               marginBottom: -5,
-              width: Dimensions.get("window").width - 120,
+              width: Dimensions.get("window").width - 108,
             }}
           >
-            <ArrowRightBox color={theme.colors.text + "9F"} />
+            <Papicons name={"ArrowRightBox"} color={theme.colors.text + "9F"} />
+
+            {_transitRoutes.length > 0 && (
+              <TransitRoutes routes={_transitRoutes} routesCount={routesCount} routeIcon={routeIcon} />
+            )}
+
             <Typography
               variant={"h5"}
               color={theme.colors.text + "9F"}
               inline={true}
               numberOfLines={1}
+              style={{ flex: 1, overflow: "hidden" }}
             >
               {isDeparture ? schoolAddress.firstTitle : homeAddress.firstTitle}
             </Typography>
@@ -321,3 +357,76 @@ export const Transit = ({
     </TouchableOpacity>
   );
 };
+
+const TransitRoutes = ({ routes, routesCount, routeIcon }: { routes: Route[]; routesCount: number; routeIcon: string | null }): React.ReactNode => {
+  const theme = useTheme();
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        overflow: "hidden",
+        marginRight: 2,
+      }}
+    >
+      {routeIcon && <Papicons name={routeIcon} color={theme.colors.text + "9F"} style={{ marginRight: -1 }} />}
+
+      {routes.map((route, index) => (
+        <View key={index}
+          style={{
+            backgroundColor: '#' + route.route_color,
+            height: 22,
+            paddingHorizontal: 6,
+            borderRadius: 80,
+            borderCurve: "continuous",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: '#' + route.route_text_color,
+              fontSize: 17,
+              fontFamily: "bold",
+              alignItems: "center",
+              minWidth: 10,
+              textAlign: "center",
+            }}
+          >
+            {route.route_short_name}
+          </Text>
+        </View>
+      ))}
+
+      {routesCount > routes.length && (
+        <View
+          style={{
+            borderColor: theme.colors.text + "9F",
+            borderWidth: 1,
+            height: 22,
+            paddingHorizontal: 6,
+            borderRadius: 80,
+            borderCurve: "continuous",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: theme.colors.text + "9F",
+              fontSize: 17,
+              fontFamily: "bold",
+              alignItems: "center",
+              minWidth: 10,
+              textAlign: "center",
+            }}
+          >
+            +{routesCount - routes.length}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
