@@ -1,57 +1,145 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import { t } from 'i18next';
 import { Papicons } from '@getpapillon/papicons';
+import { MenuView } from '@react-native-menu/menu';
+import { useTheme } from '@react-navigation/native';
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
+
+import { initializeAccountManager } from '@/services/shared';
+import { useAccountStore } from '@/stores/account';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
-import { useUserProfileData } from '../hooks/useUserProfileData';
-import { useRouter } from 'expo-router';
+import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
-const UserProfile = ({ subtitle, chevron, onPress }: { subtitle?: string, chevron?: boolean, onPress?: () => void }) => {
+import { useUserProfileData } from '../hooks/useUserProfileData';
+import { t } from 'i18next';
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
+
+const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
-  const { firstName, initials, profilePicture } = useUserProfileData();
+  const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
+  const theme = useTheme();
 
   return (
-    <Stack
-      direction="horizontal"
-      hAlign="center"
-      gap={14}
-      inline
-      flex
-      style={styles.container}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          router.push("/(modals)/profile");
-        }}
+    <Stack inline flex>
+      <Stack
+        direction="horizontal"
+        hAlign="center"
+        gap={10}
       >
-        <Avatar
-          size={38}
-          initials={initials}
-          imageUrl={profilePicture}
-        />
-      </TouchableOpacity>
-      <Stack direction="vertical" vAlign="center" gap={0} inline flex>
-        <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
-          <Stack direction="horizontal" hAlign="center" gap={6}>
-            <Typography nowrap color='white' variant='navigation' weight='bold'>
-              {t('Home_Welcome_Name', { name: firstName, emoji: "👋" })}
-            </Typography>
-            {chevron &&
-              <Papicons name="chevrondown" size={20} color="white" opacity={0.7} />
-            }
-          </Stack>
-        </TouchableOpacity>
-        {subtitle &&
-          <Typography nowrap color='white' variant='body1' style={{ opacity: 0.7 }}>
-            {subtitle}
-          </Typography>
-        }
+        <Pressable onPress={() => router.push('/(modals)/profile')}>
+          <UserProfileItemContainer
+            glassType="clear"
+            isInteractive={true}
+            glassTintColor="transparent"
+            glassOpacity={0}
+            style={{
+              borderRadius: 300,
+              zIndex: 999999,
+            }}
+          >
+            <Avatar
+              size={40}
+              initials={initials}
+              imageUrl={profilePicture}
+            />
+          </UserProfileItemContainer>
+        </Pressable>
+
+        <UserProfileItemContainer>
+          <MenuView
+            onPressAction={async ({ nativeEvent }) => {
+              if(nativeEvent.event === "edit") {
+                router.push('/(modals)/profile');
+                return;
+              }
+
+              if(nativeEvent.event === "add") {
+                router.push("/(onboarding)/ageSelection?action=addService");
+                return;
+              }
+
+              const store = useAccountStore.getState();
+              store.setLastUsedAccount(nativeEvent.event);
+              await initializeAccountManager();
+            }}
+            actions={[
+              {
+                id: 'workspaces',
+                title: '',
+                displayInline: true,
+                subactions: accounts.map((account) => ({
+                  id: account.id,
+                  title: account.firstName + ' ' + account.lastName,
+                  subtitle: formatSchoolName(account.schoolName ?? ""),
+                  state: account.id === lastUsedAccount ? 'on' : 'off',
+                })),
+              },
+              {
+                id: 'edit',
+                title: t('Home_Edit_Profile'),
+                image: 'person.crop.circle',
+                imageColor: theme.colors.text,
+              },
+              {
+                id: 'add',
+                title: t('Home_Add_Profile'),
+                image: 'plus',
+                imageColor: theme.colors.text,
+              },
+            ]}
+          >
+            <Stack direction="vertical" vAlign="center" gap={0} style={{ height: 42, paddingHorizontal: 12 }}>
+              <Stack direction="horizontal" hAlign="center" gap={6}>
+                <Typography nowrap color='white' variant='navigation' weight='bold' style={{ maxWidth: Dimensions.get('window').width - 230 }}>
+                  {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
+                </Typography>
+                <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
+              </Stack>
+              {subtitle &&
+                <Typography nowrap color='white' variant='body1' style={{ opacity: 0.7 }}>
+                  {subtitle}
+                </Typography>
+              }
+            </Stack>
+          </MenuView>
+        </UserProfileItemContainer>
       </Stack>
     </Stack>
   );
 };
+
+const UserProfileItemContainer = ({ children }: { children: React.ReactNode }) => {
+  if (runsIOS26) {
+    return (
+      <LiquidGlassView
+        glassType="clear"
+        isInteractive={true}
+        glassTintColor="transparent"
+        glassOpacity={0}
+        style={{
+          borderRadius: 300,
+          zIndex: 999999,
+        }}
+      >
+        {children}
+      </LiquidGlassView>
+    );
+  }
+
+
+  return (
+    <Stack backgroundColor="#FFFFFF40" radius={300}>
+      {children}
+    </Stack>
+  )
+
+}
 
 const styles = StyleSheet.create({
   container: {

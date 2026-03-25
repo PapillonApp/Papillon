@@ -1,11 +1,12 @@
-import Stack from "@/ui/components/Stack";
-import Icon from "@/ui/components/Icon";
 import { Papicons } from "@getpapillon/papicons";
-import { KeyboardTypeOptions, Platform, TextInput, TextInputProps } from "react-native";
-import React from "react";
 import { useTheme } from "@react-navigation/native";
+import React from "react";
+import { KeyboardTypeOptions, Platform, TextInput, TextInputProps } from "react-native";
 
-const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputProps}: {
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+
+const OnboardingInput = ({ placeholder, text, setText, isPassword, icon, inputProps }: {
   placeholder: string
   text: string
   setText: (text: string) => void
@@ -28,7 +29,7 @@ const OnboardingInput = ({placeholder, text, setText, isPassword, icon, inputPro
           flex: 1,
           padding: 20,
           paddingVertical: Platform.OS === "ios" ? 20 : 10,
-          backgroundColor: colors.text + (dark ? "15":"08"),
+          backgroundColor: colors.text + (dark ? "15" : "08"),
           borderRadius: 300,
           borderWidth: 1,
           borderColor: colors.border

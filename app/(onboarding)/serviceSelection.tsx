@@ -1,24 +1,34 @@
-import { useTheme } from '@react-navigation/native';
-import { RelativePathString, router, UnknownInputParams, useFocusEffect } from 'expo-router';
-import LottieView from 'lottie-react-native';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image, View } from 'react-native';
-import Reanimated, { FadeInDown } from 'react-native-reanimated';
+import { Papicons } from "@getpapillon/papicons";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useRoute, useTheme } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import { Image, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import OnboardingScrollingFlatList from "@/components/onboarding/OnboardingScrollingFlatList";
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Icon from '@/ui/components/Icon';
-import Typography from '@/ui/components/Typography';
+import { Dynamic } from "@/ui/components/Dynamic";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import Button from "@/ui/new/Button";
+import Divider from "@/ui/new/Divider";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
+import adjust from "@/utils/adjustColor";
 
-import { GetSupportedServices, SupportedService } from './utils/constants';
+import { GetSupportedServices } from './utils/constants';
 
-
-export default function WelcomeScreen() {
+export default function ServiceSelection() {
+  const headerHeight = useHeaderHeight();
   const theme = useTheme();
   const { colors } = theme;
-  const { t } = useTranslation();
-  const animation = React.useRef<LottieView>(null);
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+
+  const { params } = useRoute();
+  const { type } = params;
+
+  const [selectedService, setSelectedService] = useState(null);
 
   const services = GetSupportedServices((path: { pathname: string, options?: UnknownInputParams }) => {
     router.push({
@@ -27,105 +37,121 @@ export default function WelcomeScreen() {
     });
   });
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (animation.current) {
-        animation.current.reset();
-        animation.current.play();
-      }
-    }, [])
-  );
+  const filteredServices = useMemo(() => {
+    return services.filter((service) => service.type.includes(type));
+  }, [services, type]);
+
+  const titleString = useMemo(() => {
+    switch (type) {
+    case "univ":
+      return "Quel service souhaites-tu utiliser ?";
+    default:
+      return "Quelle application utilises-tu habituellement ?";
+    }
+  }, [type]);
+
+
+  const hasServiceRoute = services.find(service => service.name === selectedService)?.route || services.find(service => service.name === selectedService)?.onPress;
+
+  const loginToService = (serviceName: string) => {
+    const serviceRoute = services.find(service => service.name === serviceName)?.route;
+    if(!serviceRoute) {
+      services.find(service => service.name === serviceName)?.onPress();
+      return;
+    }
+    const newRoute = './services/' + serviceRoute;
+    router.push(newRoute);
+  };
+
+  if (!["school", "univ"].includes(type)) {
+    return (
+      <ScrollView
+        contentContainerStyle={{
+          padding: 20,
+          flexGrow: 1,
+          gap: 10,
+          paddingTop: headerHeight + 32,
+          paddingBottom: insets.bottom + 20
+        }}
+      >
+        <Stack
+          vAlign="center"
+          hAlign="center"
+          gap={8}
+        >
+          <Image
+            source={require("@/assets/images/icon.png")}
+            style={{ width: 86, height: 86, borderRadius: 24 }}
+          />
+          <Divider height={8} ghost />
+          <Typography variant="h3" align="center">Papillon n'est pas encore disponible pour vous.</Typography>
+          <Typography align="center" variant="body1" color="textSecondary">Les comptes parents et professeurs ne sont pas compatibles avec Papillon pour le moment.</Typography>
+          <Divider height={16} ghost />
+          <Button
+            label="Retour"
+            variant="secondary"
+            onPress={() => {
+              router.back();
+            }}
+            fullWidth
+          />
+        </Stack>
+      </ScrollView>
+    )
+  }
 
   return (
-    <OnboardingScrollingFlatList
-      color={'#D51A67'}
-      lottie={require('@/assets/lotties/school-services.json')}
-      title={t("ONBOARDING_SELECT_SCHOOLSERVICE")}
-      step={1}
-      totalSteps={3}
-      elements={services}
-      renderItem={({ item, index }: { item: SupportedService, index: number }) => item.type === 'separator' ? (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 18,
-            marginVertical: 6,
-            opacity: 0.4,
-            marginHorizontal: 32,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              height: 2,
-              borderRadius: 4,
-              backgroundColor: colors.text,
-              opacity: 0.5
-            }}
-          />
-          <Typography variant='title' inline>ou</Typography>
-          <View
-            style={{
-              flex: 1,
-              height: 2,
-              borderRadius: 4,
-              backgroundColor: colors.text,
-              opacity: 0.5
-            }}
-          />
-        </View>
-      ) :
-        (
-          <Reanimated.View
-            entering={FadeInDown.springify().duration(400).delay(index * 80 + 150)}
-          >
-            <AnimatedPressable
-              onPress={() => {
-                requestAnimationFrame(() => {
-                  item.onPress();
-                });
-              }}
-              style={[
-                {
-                  paddingHorizontal: 18,
-                  paddingVertical: 14,
-                  borderColor: colors.border,
-                  borderWidth: 1.5,
-                  borderRadius: 80,
-                  borderCurve: "continuous",
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  display: 'flex',
-                  gap: 16,
-                },
-                item.type == "other" && !item.color && {
-                  backgroundColor: colors.text,
-                  borderColor: colors.text,
-                }
-              ]}
-            >
-              <View style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                {item.icon ?
-                  <Icon size={28} papicon fill={item.type == "other" && !item.color ? colors.background : undefined}>
-                    {item.icon}
-                  </Icon>
-                  :
-                  <Image
-                    source={item.image}
-                    style={{ width: 32, height: 32, borderRadius: 20 }}
-                    resizeMode="cover"
-                  />
-                }
-              </View>
-              <Typography style={{ flex: 1 }} nowrap variant='title' color={item.type == "other" && !item.color ? colors.background : undefined}>
-                {item.title}
-              </Typography>
-            </AnimatedPressable>
-          </Reanimated.View>
+    <View style={{ flex: 1 }}>
+      <List
+        ListHeaderComponent={() => (
+          <Stack padding={[4, 0]}>
+            <Typography variant="h2">{titleString}</Typography>
+            <Typography variant="action" color="textSecondary">Sélectionne le service que tu as l’habitude d’utiliser dans ton établissement.</Typography>
+            <Divider height={18} ghost />
+          </Stack>
         )}
-    />
+        contentContainerStyle={{
+          padding: 16,
+          flexGrow: 1,
+          gap: 10,
+          paddingTop: headerHeight + 20
+        }}
+        style={{ flex: 1 }}
+      >
+        {filteredServices.map((app) => (
+          <List.Item key={app.name} onPress={() => setSelectedService(app.name)} style={{
+            backgroundColor: selectedService === app.name ? adjust(colors.primary, theme.dark ? -0.8 : 0.9) : colors.card,
+            minHeight: 62
+          }}>
+            <List.Leading>
+              <Stack animated direction="horizontal" hAlign="center" gap={12}>
+                {selectedService === app.name && <Dynamic animated entering={PapillonZoomIn} exiting={PapillonZoomOut}><Icon fill={colors.primary}><Papicons name="check" /></Icon></Dynamic>}
+
+                <Dynamic animated>
+                  <Image source={app.image} style={{ width: 32, height: 32, borderRadius: 10 }} />
+                </Dynamic>
+              </Stack>
+            </List.Leading>
+            <Dynamic animated><Typography variant="action">{app.title}</Typography></Dynamic>
+          </List.Item>
+        ))}
+      </List>
+
+      <View
+        style={{
+          padding: 20,
+          paddingBottom: insets.bottom + 20,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+          backgroundColor: colors.background
+        }}
+      >
+        <Button
+          label="Continuer"
+          onPress={() => { loginToService(selectedService) }}
+          disabled={!selectedService || !hasServiceRoute}
+        />
+      </View>
+    </View>
   );
 }
-

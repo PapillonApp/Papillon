@@ -1,9 +1,10 @@
+import { Papicons } from '@getpapillon/papicons';
+import { useTheme } from '@react-navigation/native';
+import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
-import { Papicons } from '@getpapillon/papicons';
+
 import Typography from '@/ui/components/Typography';
-import { useTheme } from '@react-navigation/native';
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -22,7 +23,7 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
 
   return (
     <LiquidGlassView
-      glassOpacity={0.7}
+      glassOpacity={0.9}
       glassTintColor={colors.card}
       glassType='regular'
       isInteractive={true}

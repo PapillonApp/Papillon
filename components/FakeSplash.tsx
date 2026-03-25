@@ -1,11 +1,8 @@
 import { SplashScreen } from "expo-router";
-import React, { useState } from "react";
-import { Image, Platform } from "react-native";
-
+import { VideoSource } from 'expo-video';
+import React from "react";
+import { Image } from "react-native";
 import Reanimated, { Easing, withDelay, withTiming } from "react-native-reanimated";
-
-import { VideoSource, useVideoPlayer, VideoView } from 'expo-video';
-import { useEvent } from "expo";
 
 const assetId = require('@/assets/video/splash.mp4');
 
@@ -28,33 +25,10 @@ export const PapillonSplashOut = () => {
   };
 };
 
-const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
-  if (Platform.OS !== 'ios') {
+const FakeSplash = ({ isAppReady, instant }: { isAppReady: boolean, instant?: boolean }) => {
+  if (instant && isAppReady) {
     SplashScreen.hideAsync();
     return null;
-  };
-
-  const [isSplashLoaded, setSplashLoaded] = useState(false);
-
-  const player = useVideoPlayer(videoSource, player => {
-    player.loop = false;
-    player.muted = true;
-    player.showNowPlayingNotification = false;
-    player.audioMixingMode = "mixWithOthers";
-    player.play();
-  });
-
-  const { isPlaying, oldIsPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
-
-  const SplashLoaded = () => {
-    SplashScreen.hideAsync();
-    setSplashLoaded(true);
-  };
-
-  if (isAppReady && isSplashLoaded) {
-    if (!isPlaying && oldIsPlaying) {
-      return null;
-    }
   }
 
   return (
@@ -73,7 +47,6 @@ const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
         alignItems: "center",
       }}
       exiting={PapillonSplashOut}
-      onLayout={SplashLoaded}
     >
       <Image
         source={require('@/assets/images/splash.png')}
@@ -86,15 +59,6 @@ const FakeSplash = ({ isAppReady }: { isAppReady: boolean }) => {
           zIndex: -1,
         }}
         resizeMode="cover"
-      />
-
-      <VideoView
-        player={player}
-        style={{
-          width: 300,
-          height: 300,
-        }}
-        nativeControls={false}
       />
     </Reanimated.View>
   );

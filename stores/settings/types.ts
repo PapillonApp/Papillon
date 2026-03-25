@@ -35,4 +35,7 @@ export interface Personalization {
   magicModelURL?: string;
   language?: string | null;
   wallpaper?: Wallpaper;
+  disabledTabs?: string[];
+  gradesSortMethod?: string;
+  gradesPeriodId?: string;
 }

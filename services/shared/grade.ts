@@ -7,6 +7,9 @@ export interface PeriodGrades extends GenericInterface {
   subjects: Subject[];
   modules?: Subject[];
   rank?: GradeScore;
+  features?: {
+    [key: string]: any;
+  };
 }
 
 export interface Subject {

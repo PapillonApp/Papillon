@@ -3,10 +3,14 @@ import { Balance } from "@/services/shared/balance";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Button from "@/ui/components/Button";
+import ChipButton from "@/ui/components/ChipButton";
 import { Dynamic } from "@/ui/components/Dynamic";
+import { EmptyItem } from "@/ui/components/EmptyItem";
 import Icon from "@/ui/components/Icon";
 import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
+import TabHeader from "@/ui/components/TabHeader";
+import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
@@ -42,91 +46,83 @@ export default function QRCodeAndCardsPage() {
 
   const { t } = useTranslation();
 
+  const [headerHeight, setHeaderHeight] = useState(0);
+
   return (
     <>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
-        {wallets && wallets?.length > 0 ? (
-          <>
-            <View style={{ flexDirection: "column", position: "relative" }}>
-              {wallets.map((c, i) => {
-                return (
-                  <Dynamic
-                    animated
-                    key={c.createdByAccount + c.label}
-                    entering={PapillonAppearIn}
-                    exiting={PapillonAppearOut}
-                  >
-                    <Card
-                      key={c.createdByAccount + c.label}
-                      index={i}
-                      wallet={c}
-                      service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}
-                      totalCards={wallets.length}
-                    />
-                  </Dynamic>
-                );
-              })}
-            </View>
+      <TabHeader
+        modal
+        onHeightChanged={setHeaderHeight}
+        title={
+          <TabHeaderTitle
+            chevron={false}
+            leading={t("Profile_QRCards")}
+            subtitle={t("Profile_QRCards_Subtitle", { count: wallets.length })}
+          />
+        }
+        trailing={
+          <ChipButton
+            single
+            icon="cross"
+            onPress={() => {
+              router.dismiss();
+            }}
+          />
+        }
+      />
 
-            <View style={{ width: "100%", flex: 1, alignItems: "center", marginTop: 30 }}>
-              <Button
-                inline
-                title="Ajouter"
-                icon={<Plus />}
-                onPress={() => {
-                  router.dismiss();
-                  router.push({
-                    pathname: "/(onboarding)/restaurants/method",
-                    params: { action: "addService" }
-                  });
-                }}
-              />
-            </View>
-          </>
-        ) : (
-          <Stack
-            hAlign="center"
-            vAlign="center"
-            margin={16}
-            gap={16}
-          >
-            <View
-              style={{
-                alignItems: "center"
-              }}
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic" style={{ flex: 1, paddingTop: headerHeight - 16 }} contentContainerStyle={{ padding: 20, gap: 16 }}
+      >
+        {wallets.map((c, i) => {
+          return (
+            <Dynamic
+              animated
+              key={c.createdByAccount + c.label}
+              entering={PapillonAppearIn}
+              exiting={PapillonAppearOut}
             >
-              <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
-                <Papicons name={"Card"} />
-              </Icon>
-              <Typography variant="h4" color="text" align="center">
-                {t("Settings_Cards_None_Title")}
-              </Typography>
-              <Typography variant="body2" color="secondary" align="center">
-                {t("Settings_Cards_None_Description")}
-              </Typography>
-            </View>
-            <Button title="Ajouter" icon={<Papicons name={"Plus"} />} onPress={() => {
+              <Card
+                key={c.createdByAccount + c.label}
+                index={i}
+                wallet={c}
+                service={account?.services.find(service => service.id === c.createdByAccount)?.serviceId ?? Services.TURBOSELF}
+                totalCards={wallets.length}
+              />
+            </Dynamic>
+          );
+        })}
+
+        {wallets.length === 0 && (
+          <Dynamic
+            animated
+            entering={PapillonAppearIn}
+            exiting={PapillonAppearOut}
+          >
+            <EmptyItem
+              icon="Card"
+              title={t("Settings_Cards_None_Title")}
+              description={t("Settings_Cards_None_Description")}
+              margin={0}
+            />
+          </Dynamic>
+        )}
+
+        <Dynamic animated>
+          <Button
+            inline
+            title="Ajouter"
+            icon={<Plus />}
+            onPress={() => {
               router.dismiss();
               router.push({
                 pathname: "/(onboarding)/restaurants/method",
                 params: { action: "addService" }
               });
-            }} />
-          </Stack>
-        )}
-      </ScrollView>
-
-      <NativeHeaderSide side="Left">
-        <NativeHeaderPressable onPress={() => router.back()}>
-          <Icon papicon opacity={0.5}>
-            <Papicons name="Cross" />
-          </Icon>
-        </NativeHeaderPressable>
-      </NativeHeaderSide>
-
-      <NativeHeaderTitle>
-        <Typography>{t("Profile_QRCards")}</Typography>
-      </NativeHeaderTitle>
+            }}
+          />
+        </Dynamic>
+      </ScrollView >
     </>
   );
 }
@@ -161,7 +157,7 @@ export function Card({
       style={{
         width: "100%",
         minHeight: 210,
-        borderRadius: 25,
+        borderRadius: 20,
         overflow: "hidden",
         marginTop: index === 0 ? 0 : -140,
         zIndex: 100 + index,
@@ -175,12 +171,11 @@ export function Card({
         source={getServiceBackground(service)}
         style={{
           position: "absolute",
-          top: -5,
           bottom: 0,
           right: 0,
           left: 0,
-          width: "104%",
-          height: 215,
+          width: "100%",
+          height: '100%',
         }}
         resizeMode="cover"
       />
@@ -213,12 +208,13 @@ export function Card({
         <Stack
           direction="horizontal"
           style={{ justifyContent: "space-between" }}
+          hAlign="center"
         >
-          <Stack direction="horizontal" hAlign="center">
+          <Stack direction="horizontal" hAlign="center" gap={8}>
             <Image
               style={{
-                width: 40,
-                height: 40,
+                width: 32,
+                height: 32,
                 borderRadius: 10,
                 borderWidth: 1,
                 borderColor: "#0000001F",
@@ -226,14 +222,14 @@ export function Card({
               source={getServiceLogo(service)}
               resizeMode="cover"
             />
-            <Typography color={"#FFFFFF"}>{getServiceName(service)}</Typography>
+            <Typography variant="title" color={"#FFFFFF"}>{getServiceName(service)}</Typography>
           </Stack>
 
           <Stack gap={0} direction="vertical">
-            <Typography align="right" color={"#FFFFFF" + 90} style={{ width: "100%", lineHeight: 0 }}>
+            <Typography variant="caption" align="right" color={"#FFFFFF" + 90} style={{ width: "100%", lineHeight: 0 }}>
               {wallet.label}
             </Typography>
-            <Typography align="right" color={"#FFFFFF"} style={{ width: "100%", lineHeight: 0 }}>
+            <Typography variant="title" align="right" color={"#FFFFFF"} style={{ width: "100%", lineHeight: 0 }}>
               {(wallet.amount / 100).toFixed(2)} {wallet.currency}
             </Typography>
           </Stack>

@@ -125,6 +125,7 @@
   "Confirm_DeleteEvent": "Es-tu sûr de vouloir supprimer cet événement ?",
 
   "Home_Welcome_Name": "Bonjour, {{name}} {{emoji}}",
+  "Home_Display_More": "Afficher plus",
   "Home_Cards_Button_Description_Plurial": "disponibles",
   "Home_Chats_Plurial": "discussions",
   "Home_Chats_Singular": "discussion",
@@ -275,6 +276,9 @@
   "Modal_Grades_Title": "Détail de la note",
   "Modal_Grades_BestGrade": "Meilleure note du groupe",
 
+  "Modal_Grades_OptionalGrade": "Note optionnelle",
+  "Modal_Grades_BonusGrade": "Note bonus",
+
   "Grades_Details_Title": "Détails",
   "Grades_NormalizedGrade_Title": "Note ramenée sur 20",
   "Grades_NormalizedGrade_Description": "Valeur de la note convertie sur une échelle de 20",
@@ -291,7 +295,7 @@
 
   "News_Search_Placeholder": "Rechercher une actualité",
   "News_Empty_Title": "Aucune actualité",
-  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans votre établissement.",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "Aucune actualité trouvée",
   "News_Search_NoResults_Description": "Aucune actualité trouvée pour votre recherche.",
 
@@ -321,6 +325,8 @@
   "Settings_Personalization_Description": "Thèmes, couleurs...",
   "Settings_Cards_Title": "Cartes",
   "Settings_Cards_Description": "Cantine, accès...",
+  "Settings_Accounts_Title": "Comptes liés",
+  "Settings_Accounts_Description": "Comptes, cantine...",
   "Settings_Accessibility_Title": "Accessibilité",
   "Settings_Accessibility_Description": "Affichage, son...",
   "Settings_MagicPlus_Title": "Magic+",
@@ -339,6 +345,8 @@
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
   "Settings_Language_Title": "Langue",
   "Settings_Language_Description": "Changer la langue",
+  "Settings_Tabs_Title": "Onglets",
+  "Settings_Tabs_Description": "Masquer des onglets du menu",
 
   "Settings_Personalization_Title_Card": "Personnalisation",
   "Settings_Personalization_Subtitle_Card": "Thèmes, matières...",
@@ -349,13 +357,18 @@
   "Settings_Personalization_Icon_Title": "Changer l’icône",
   "Settings_Personalization_Icon_Description": "Personnalise l’icône de l’application",
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
+  "Settings_Personalization_Subject_Title_Card": "Matières",
   "Settings_Personalization_Subject_Description": "Icônes, couleurs",
   "Settings_About_Papillion_Behind": "Derrière Papillon",
   "Settings_About_Papillion_Behind_Description": "Papillon est maintenu par des étudiants 100% bénévoles",
   "Settings_About_Discord": "Serveur Discord",
   "Settings_About_Discord_Description": "Rejoindre le serveur Discord",
+  "Settings_About_Crowdin": "Projet Crowdin",
+  "Settings_About_Crowdin_Description": "Aider à traduire Papillon",
   "Settings_About_Github": "Projet GitHub",
   "Settings_About_Github_Description": "Contribuer au projet sur GitHub",
+  "Settings_About_Issue": "Signaler un bug",
+  "Settings_About_Issue_Description": "Reporter un bug rencontré",
   "Settings_About_Dependency_Version": "Version des dépendances",
 
   "Alert_No_Technical": "Aucune information technique disponible.",
@@ -376,6 +389,9 @@
   "Webview_Wait": "Un peu de patience...",
 
   "Profile_QRCards": "QR-Code et cartes",
+  "Profile_QRCards_Subtitle": "{{count}} carte(s)",
+  "Profile_Cards_Loading_History": "Chargement de l'historique des transactions",
+  "Profile_Cards_Loading_History_Description": "Cela peut prendre un moment...",
 
   "Settings_Cards_Banner_Title": "Cartes",
   "Settings_Cantineen_Subtitle_Card": "Cantine, accès",
@@ -399,7 +415,6 @@
   "Profile_Cards_No_Available_Reservation": "Il semblerait que tu ne puisses pas réserver ce jour.",
   "Profile_Cards_History": "Historique",
   "Magic_Important": "Peut-être important",
-
 
   "OnBoarding_Step": "Étape ",
   "OnBoarding_Step_Of": "sur ",
@@ -439,5 +454,8 @@
 
   "Today": "Aujourd'hui",
   "Yesterday": "Hier",
-  "Tomorrow": "Demain"
+  "Tomorrow": "Demain",
+
+  "Home_Edit_Profile": "Modifier mon profil",
+  "Home_Add_Profile": "Ajouter un profil"
 }

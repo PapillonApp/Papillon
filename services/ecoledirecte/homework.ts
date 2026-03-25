@@ -1,13 +1,10 @@
-import { Account, Document, Session, setHomeworkState, studentHomeworks } from "pawdirecte";
 
-import { warn } from "@/utils/logger/logger";
+import { Client } from "@blockshub/blocksdirecte";
 
-import { Attachment, AttachmentType } from "../shared/attachment";
 import { Homework } from "../shared/homework";
 
 export async function fetchEDHomeworks(
-  session: Session,
-  account: Account,
+  session: Client,
   accountId: string,
   weekNumber: number
 ): Promise<Homework[]> {
@@ -16,26 +13,18 @@ export async function fetchEDHomeworks(
   for (const date of weekdays) {
     const formattedDate = formatDate(date);
 
-    const { homeworks } = await studentHomeworks(
-      session,
-      account,
-      formattedDate,
-    );
+    const { matieres } = await session.homework.getHomeworksForDate(formattedDate);
 
-    for (const homework of homeworks) {
+    for (const subject of matieres) {
+      const homework = subject.aFaire
       response.push({
-        attachments: homework.attachments.map((att) => ({
-          url: `${att.name}\\${att.id}\\${att.kind}`,
-          type: AttachmentType.FILE,
-          name: att.name,
-          createdByAccount: accountId
-        })),
-        content: homework.content,
-        isDone: homework.done,
+        attachments: [],
+        content: homework?.contenu ?? "",
+        isDone: homework?.effectue ?? false,
         dueDate: date,
-        id: homework.id.toString(),
-        subject: homework.subject,
-        evaluation: homework.exam,
+        id: String(homework?.idDevoir),
+        subject: subject.matiere.length > 0 ? subject.matiere : subject.entityLibelle,
+        evaluation: false,
         custom: false,
         createdByAccount: accountId
       });
@@ -45,24 +34,22 @@ export async function fetchEDHomeworks(
   return response
 }
 
-function mapEDAttachments(data: Document[], accountId: string): Attachment[] {
-  return data.map(att => ({
-    type: AttachmentType.FILE,
-    name: att.name,
-    url: att.name,
-    createdByAccount: accountId
-  }))
-}
-
-export async function setEDHomeworkAsDone(session: Session, account: Account, homework: Homework, state?: boolean): Promise<Homework> {
-  await setHomeworkState(session, account, Number(homework.id), state ?? !homework.isDone)
+export async function setEDHomeworkAsDone(session: Client, homework: Homework, state?: boolean): Promise<Homework> {
+  const finalState = state ?? !homework.isDone
+  const homeworkId = Number(homework.id)
+  
+  if (finalState) {
+    await session.homework.markHomeworkAsDone(homeworkId)
+  } else {
+    await session.homework.markHomeworkAsUndone(homeworkId)
+  }
   return {
     ...homework,
-    isDone: state ?? !homework.isDone
+    isDone: finalState
   }
 }
 
-import { startOfISOWeek, addDays } from "date-fns";
+import { addDays,format,startOfISOWeek } from "date-fns";
 
 export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] => {
   const currentYear = year || new Date().getFullYear();
@@ -78,8 +65,6 @@ export const weekNumberToDaysList = (weekNumber: number, year?: number): Date[] 
   // Construire la liste des jours
   return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 };
-
-import { format } from "date-fns";
 
 export const formatDate = (date: Date): string => {
   return format(date, "yyyy-MM-dd");

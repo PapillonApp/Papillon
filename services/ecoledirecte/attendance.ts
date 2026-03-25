@@ -1,20 +1,20 @@
-import { Account, AttendanceItem, Session, studentAttendance } from "pawdirecte";
+import { Client, SchoolLifeAttendanceItem,SchoolLifeAttendanceItemType, SchoolLifeConductItem } from "@blockshub/blocksdirecte";
 
 import { error, warn } from "@/utils/logger/logger";
 
-import { Absence, Attendance, Punishment } from "../shared/attendance";
+import { Absence, Attendance, Delay, Punishment } from "../shared/attendance";
 import { durationToMinutes } from "../skolengo/attendance";
 
-export async function fetchEDAttendance(session: Session, account: Account, accountId: string): Promise<Attendance> {
+export async function fetchEDAttendance(session: Client, accountId: string): Promise<Attendance> {
   try {
-    const attendance = await studentAttendance(session, account);
-    const punishments = mapEcoleDirectePunishments(attendance.punishments, accountId);
-    const exemptions = mapEcoleDirectePunishments(attendance.exemptions, accountId);
-    const absences = mapEcoleDirecteAbsences(attendance.absences, accountId);
+    const attendance = await session.schoollife.getSchoolLife()
+    const punishments = mapEcoleDirectePunishments(attendance.sanctionsEncouragements, accountId);
+    const absences = mapEcoleDirecteAbsences(attendance.absencesRetards, accountId);
+    const delays = mapEcoleDirecteDelays(attendance.absencesRetards, accountId);
     return {
       absences: absences,
-      punishments: [...punishments, ...exemptions],
-      delays: [],
+      punishments,
+      delays,
       observations: [],
       createdByAccount: accountId
     }
@@ -30,35 +30,53 @@ export async function fetchEDAttendance(session: Session, account: Account, acco
   }
 }
 
-function mapEcoleDirecteAbsences(data: AttendanceItem[], accountId: string): Absence[] {
-  return data.map(item => {
-    const { start, end } = mapStringToDates(item.displayDate);
-    return {
-      id: String(item.id),
-      from: start,
-      to: end,
-      reason: item.reason,
-      justified: item.justified,
-      timeMissed: durationToMinutes(start.getTime(), end.getTime()),
-      createdByAccount: accountId
-    };
-  });
+function mapEcoleDirecteAbsences(data: SchoolLifeAttendanceItem[], accountId: string): Absence[] {
+  return data
+    .filter(item => item.typeElement === SchoolLifeAttendanceItemType.ABSENCE)
+    .map(item => {
+      const { start, end } = mapStringToDates(item.displayDate);
+      return {
+        id: String(item.id),
+        from: start,
+        to: end,
+        reason: item.motif,
+        justified: item.justifie,
+        timeMissed: durationToMinutes(start.getTime(), end.getTime()),
+        createdByAccount: accountId
+      };
+    });
 }
 
-function mapEcoleDirectePunishments(data: AttendanceItem[], accountId: string): Punishment[] {
+function mapEcoleDirecteDelays(data: SchoolLifeAttendanceItem[], accountId: string): Delay[] {
+  return data
+    .filter(item => item.typeElement === SchoolLifeAttendanceItemType.DELAY)
+    .map(item => {
+      const { start, end } = mapStringToDates(item.displayDate);
+      return {
+        id: String(item.id),
+        givenAt: new Date(item.date),
+        reason: item.motif,
+        justified: item.justifie,
+        duration: durationToMinutes(start.getTime(), end.getTime()),
+        createdByAccount: accountId
+      };
+    });
+}
+
+function mapEcoleDirectePunishments(data: SchoolLifeConductItem[], accountId: string): Punishment[] {
   return data.map(item => ({
     id: String(item.id),
-    givenAt: item.dateOfEvent,
-    givenBy: item.teacher,
+    givenAt: new Date(item.dateDeroulement),
+    givenBy: [item.auteur.prenom, item.auteur.nom].join(" "),
     exclusion: false,
     duringLesson: false,
     homework: {
-      text: item.todo,
+      text: item.aFaire,
       documents: []
     },
     reason: {
-      text: item.reason,
-      circumstances: item.reason,
+      text: item.motif,
+      circumstances: item.commentaire,
       documents: []
     },
     nature: "",
@@ -126,7 +144,7 @@ function mapStringToDates(str: string): { start: Date, end: Date } {
     return { start, end }
   }
 
-  error("Invalid Display Date", "mapStringToDuration");
+  throw error("Invalid Display Date", "mapStringToDates");
 }
 
 function mapStringToDuration(str: string): number | undefined {
@@ -169,5 +187,5 @@ function mapStringToDuration(str: string): number | undefined {
     }
   }
 
-  error("Invalid Display Date", "mapStringToDuration");
+  throw error("Invalid Display Date", "mapStringToDuration");
 }

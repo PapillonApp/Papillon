@@ -1,6 +1,7 @@
 import { Model, Q } from "@nozbe/watermelondb";
 import { useEffect, useState } from "react";
 
+import { getICalEventsForWeek } from "@/services/local/ical";
 import { Course as SharedCourse,CourseDay as SharedCourseDay } from "@/services/shared/timetable"
 import { generateId } from "@/utils/generateId";
 import { warn } from "@/utils/logger/logger";
@@ -10,7 +11,6 @@ import { mapCourseToShared } from "./mappers/course";
 import Course from "./models/Timetable";
 import { getDateRangeOfWeek } from "./useHomework";
 import { safeWrite } from "./utils/safeTransaction";
-import { getICalEventsForWeek } from "@/services/local/ical";
 
 export function useTimetable(refresh = 0, weekNumber: number | number[] = 0, date: Date = new Date()) {
   const database = useDatabase();
@@ -86,8 +86,10 @@ export async function addCourseDayToDatabase(courses: SharedCourseDay[]) {
             .query(Q.where('courseId', id))
             .fetch();
 
-          for (const oldRecord of oldExistingRecords) {
-            await oldRecord.markAsDeleted();
+          if (oldId !== id) {
+            for (const oldRecord of oldExistingRecords) {
+              await oldRecord.markAsDeleted();
+            }
           }
 
           if (existingRecords.length === 0) {
@@ -149,8 +151,8 @@ export async function getCoursesFromCache(weeks: number[], year: number): Promis
     
     for (const w of weeks) {
       const { start, end } = getDateRangeOfWeek(w, year);
-      if (start < minStart) minStart = start;
-      if (end > maxEnd) maxEnd = end;
+      if (start < minStart) {minStart = start;}
+      if (end > maxEnd) {maxEnd = end;}
     }
 
     const courses = await database

@@ -1,15 +1,16 @@
-import { useAccountStore } from "@/stores/account";
-import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import {
   createNativeBottomTabNavigator,
   NativeBottomTabNavigationEventMap,
   NativeBottomTabNavigationOptions,
 } from "@bottom-tabs/react-navigation";
 import { ParamListBase, TabNavigationState, useTheme } from "@react-navigation/native";
-import { useRouter, withLayoutContext } from "expo-router";
+import { withLayoutContext } from "expo-router";
 import React, { useMemo } from 'react';
 import { useTranslation } from "react-i18next";
 import { Platform } from 'react-native';
+
+import { useSettingsStore } from "@/stores/settings";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
 
@@ -90,6 +91,9 @@ export default function TabLayout() {
     },
   }), [translations]);
 
+  const settingsStore = useSettingsStore(state => state.personalization);
+  const disabledTabs = settingsStore?.disabledTabs || [];
+
   return (
     <Tabs
       sidebarAdaptable
@@ -104,23 +108,23 @@ export default function TabLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={screenOptions.index}
+        options={{ ...screenOptions.index }}
       />
       <Tabs.Screen
         name="calendar"
-        options={screenOptions.calendar}
+        options={{ ...screenOptions.calendar, tabBarItemHidden: disabledTabs.includes("calendar") }}
       />
       <Tabs.Screen
         name="tasks"
-        options={screenOptions.tasks}
+        options={{ ...screenOptions.tasks, tabBarItemHidden: disabledTabs.includes("tasks") }}
       />
       <Tabs.Screen
         name="grades"
-        options={screenOptions.grades}
+        options={{ ...screenOptions.grades, tabBarItemHidden: disabledTabs.includes("grades") }}
       />
       <Tabs.Screen
         name="news"
-        options={screenOptions.news}
+        options={{ ...screenOptions.news, tabBarItemHidden: disabledTabs.includes("news") }}
       />
     </Tabs>
   );

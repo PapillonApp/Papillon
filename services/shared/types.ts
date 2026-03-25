@@ -1,7 +1,7 @@
+import { Client } from "@blockshub/blocksdirecte";
 import { User } from "appscho";
 import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
-import { Session } from "pawdirecte";
 import { SessionHandle } from "pawnote";
 import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
@@ -54,7 +54,7 @@ export interface SchoolServicePlugin {
     | MultiClient
     | SessionHandle
     | SkolengoSession
-    | Session
+    | Client
     | TurboselfClient
     | User
     | LannionClient
