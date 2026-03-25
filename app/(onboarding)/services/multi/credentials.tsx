@@ -123,8 +123,8 @@ export default function MultiLoginWithCredentials() {
     } catch (error) {
       if (error instanceof Error) {
         alert.showAlert({
-          title: "Erreur d'authentification",
-          description: "Les identifiants que tu as saisis sont incorrects ou tu essaies de te connecter avec un compte parent. Ce type de compte n’est pas encore pris en charge par Papillon.",
+          title: t("Alert_Auth_Error"),
+          description: t("Alert_Auth_Bad_Creds"),
           icon: "TriangleAlert",
           color: "#D60046",
           withoutNavbar: true

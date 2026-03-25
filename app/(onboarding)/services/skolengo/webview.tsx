@@ -120,7 +120,7 @@ export default function WebViewScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <OnboardingWebView
-        source={loginURL ? { uri: loginURL } : { html: "<h1>Chargement...</h1>" }}
+        source={loginURL ? { uri: loginURL } : { html: `<h1>${t("ONBOARDING_LOADING")}</h1>` }}
         onShouldStartLoadWithRequest={(request) => {
           handleRequest(request.url)
           return true;

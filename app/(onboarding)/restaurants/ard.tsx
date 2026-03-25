@@ -138,7 +138,7 @@ export default function TurboSelfLoginWithCredentials() {
               return router.push("/");
     } catch (error) {
         setIsLoggingIn(false);
-      Alert.alert("Erreur d'authentification", "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.");
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
   };
 
@@ -151,18 +151,18 @@ export default function TurboSelfLoginWithCredentials() {
           fields={[
             {
               name: "siteId",
-              placeholder: "ID de l'établissement",
+              placeholder: t("INPUT_ETABID"),
               secureTextEntry: false
             },
             {
               name: "username",
-              placeholder: "Identifiant",
+              placeholder: t("INPUT_USERNAME"),
               secureTextEntry: false,
               textContentType: "username"
             },
             {
               name: "password",
-              placeholder: "Mot de passe",
+              placeholder: t("INPUT_PASSWORD"),
               secureTextEntry: true,
               textContentType: "password"
             }

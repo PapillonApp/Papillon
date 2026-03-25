@@ -30,7 +30,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "pronote",
       route: "pronote",
-      title: "PRONOTE",
+      title: t("ONBOARDING_SERVICE_PRONOTE"),
       type: ["school", "univ"],
       image: require("@/assets/images/service_pronote.png"),
       onPress: () => {
@@ -42,7 +42,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "ed",
       route: "ed",
-      title: "ÉcoleDirecte",
+      title: t("ONBOARDING_SERVICE_ED"),
       type: ["school"],
       image: require("@/assets/images/service_ed.png"),
       onPress: () => {
@@ -54,7 +54,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "skolengo",
       route: "skolengo",
-      title: "Skolengo",
+      title: t("ONBOARDING_SERVICE_SKOLENGO"),
       type: ["school"],
       image: require("@/assets/images/service_skolengo.png"),
       onPress: () => {
@@ -66,7 +66,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "lannion",
       route: "lannion",
-      title: "IUT de Lannion",
+      title: t("ONBOARDING_SERVICE_LANNION"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),
       type: ["univ"],
@@ -76,7 +76,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "univ-lorraine",
-      title: "Université de Lorraine",
+      title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lorraine.png"),
       type: ["univ"],
@@ -86,7 +86,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "univ-nimes",
-      title: "Université de Nîmes",
+      title: t("ONBOARDING_SERVICE_UNIV_NIMES"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_nimes.png"),
       type: ["univ"],
@@ -96,7 +96,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     },
     {
       name: "univ-uphf",
-      title: "Université Polytechnique Hauts-de-France",
+      title: t("ONBOARDING_SERVICE_UNIV_UPHF"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_uphf.png"),
       type: ["univ"],
@@ -107,7 +107,7 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
     {
       name: "appscho",
       route: "appscho",
-      title: "Autres universités",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
       image: require("@/assets/images/icon.png"),
       hasLimitedSupport: false,
       type: ["univ"],
@@ -131,7 +131,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
   return [
     {
       name: "lannion",
-      title: "IUT de Lannion",
+      title: t("ONBOARDING_SERVICE_LANNION"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lannion.png"),
       type: "main",
@@ -141,7 +141,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
     },
     {
       name: "univ-lorraine",
-      title: "Université de Lorraine",
+      title: t("ONBOARDING_SERVICE_UNIV_LORRAINE"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_lorraine.png"),
       type: "main",
@@ -151,7 +151,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
     },
     {
       name: "univ-nimes",
-      title: "Université de Nîmes",
+      title: t("ONBOARDING_SERVICE_UNIV_NIMES"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_nimes.png"),
       type: "main",
@@ -161,7 +161,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
     },
     {
       name: "univ-uphf",
-      title: "Université Polytechnique Hauts-de-France",
+      title: t("ONBOARDING_SERVICE_UNIV_UPHF"),
       hasLimitedSupport: false,
       image: require("@/assets/images/univ_uphf.png"),
       type: "main",
@@ -171,7 +171,7 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
     },
     {
       name: "appscho",
-      title: "Autres universités",
+      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
       hasLimitedSupport: false,
       type: "other",
       onPress: () => { redirect({ pathname: './appscho/list' }) }
@@ -284,7 +284,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
   return [
     {
       name: "turboself",
-      title: "TurboSelf",
+      title: t("ONBOARDING_SERVICE_TURBOSELF"),
       hasLimitedSupport: false,
       image: require("@/assets/images/turboself.png"),
       type: "main",
@@ -294,7 +294,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
     },
     {
       name: "ard",
-      title: "ARD",
+      title: t("ONBOARDING_SERVICE_ARD"),
       hasLimitedSupport: false,
       image: require("@/assets/images/ard.png"),
       type: "main",
@@ -304,7 +304,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
     },
     {
       name: "izly",
-      title: "Izly",
+      title: t("ONBOARDING_SERVICE_IZLY"),
       hasLimitedSupport: false,
       image: require("@/assets/images/izly.png"),
       type: "main",
@@ -314,7 +314,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
     },
     {
       name: "alise",
-      title: "Alise",
+      title: t("ONBOARDING_SERVICE_ALISE"),
       hasLimitedSupport: false,
       image: require("@/assets/images/alise.jpg"),
       type: "main",

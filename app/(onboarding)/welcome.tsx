@@ -13,11 +13,13 @@ import PapillonLogo from "@/ui/new/symbols/PapillonLogo";
 import Typography from "@/ui/new/Typography";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const openHelpWebPage = () => {
     WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support", {
@@ -107,14 +109,14 @@ export default function Welcome() {
         <PapillonLogo fill={"#FFFFFF"} />
 
         <Typography color="#FFFFFF" variant="title" align="center" weight="medium" style={{ marginHorizontal: 10, opacity: 0.8 }}>
-          L'application ultime pour gérer toute ta vie scolaire sans compromis.
+          {t("ONBOARDING_WELCOME_DESCRIPTION")}
         </Typography>
 
         <Divider height={2} ghost />
 
 
         <Button
-          label="Se connecter avec"
+          label={t("ONBOARDING_WELCOME_LOGIN_WITH")}
           gap={4}
           trailing={
             <Stack direction="horizontal" gap={0}>
@@ -138,7 +140,7 @@ export default function Welcome() {
           fullWidth
         />
         <Button
-          label="Besoin d'aide ?"
+          label={t("ONBOARDING_HELP_BTN")}
           onPress={() => { openHelpWebPage() }}
           fullWidth
           variant="secondary"
@@ -148,7 +150,7 @@ export default function Welcome() {
         <Divider height={2} ghost />
 
         <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }}>
-          En continuant, vous acceptez les conditions d’utilisation ainsi que la politique de confidentialité.
+          {t("ONBOARDING_WELCOME_LEGAL")}
         </Typography>
       </View>
     </View>

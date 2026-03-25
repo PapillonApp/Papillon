@@ -207,7 +207,7 @@ export default function PronoteLoginWithQR() {
               marginTop: 16,
             }}
           >
-            Connexion en cours...
+            {t("ONBOARDING_LOADING_LOGIN")}
           </Typography>
 
           <Typography
@@ -232,7 +232,7 @@ export default function PronoteLoginWithQR() {
             }}
           >
             <Button
-              title="Annuler"
+              title={t("CANCEL_BTN")}
               onPress={() => {
                 setLoadingModalVisible(false);
                 router.back();

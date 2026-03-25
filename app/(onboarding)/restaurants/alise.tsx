@@ -106,8 +106,8 @@ export default function AliseLoginWithCredentials() {
       });
     } catch (error) {
       alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur est survenue lors de la connexion à Alise, elle a donc été abandonnée.",
+        title: t("Alert_Auth_Error"),
+        description: t("ONBOARDING_ALERT_ALISE_LOGIN_ABORTED"),
         icon: "TriangleAlert",
         color: "#D60046",
         technical: String(error),
