@@ -1,21 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { Services } from '@/stores/account/types';
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
-    headerShown: false,
+    headerShown: true,
     headerBackVisible: true,
-    headerTitle: '',
-    gestureEnabled: false,
     headerTransparent: true,
-    headerTintColor: "#FFFFFF",
     headerBackButtonDisplayMode: "minimal",
-    headerBackButtonMenuEnabled: false
+    headerLargeTitle: false,
   }), []);
 
   return (
@@ -23,126 +19,44 @@ export default function OnboardingLayout() {
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions }}
+          options={{ ...newScreenOptions, title: "" }}
+        />
+        <Stack.Screen
+          name="ageSelection"
+          options={{ ...newScreenOptions, title: "À propos de toi" }}
         />
         <Stack.Screen
           name="serviceSelection"
-          options={{ ...newScreenOptions }}
+          options={{ ...newScreenOptions, title: "Service scolaire" }}
         />
         <Stack.Screen
-          name="school/method"
-          options={{ ...newScreenOptions }}
-          initialParams={{ service: Services.PRONOTE }}
+          name="restaurants"
+          options={{ headerShown: false, title: "Restaurants" }}
+        />
+
+        <Stack.Screen
+          name="services/pronote"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
-          name="school/map"
-          options={{ ...newScreenOptions }}
-          initialParams={{ service: Services.PRONOTE, method: "automatic", city: "Paris" }}
+          name="services/ed"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
-          name="school/search"
-          options={{ ...newScreenOptions }}
-          initialParams={{ service: Services.PRONOTE }}
+          name="services/skolengo"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
-          name="end/color"
-          options={{ ...newScreenOptions }}
-          initialParams={{ accountId: "" }}
+          name="services/lannion"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
-          name="restaurants/method"
-          options={{ ...newScreenOptions }}
-          initialParams={{ action: "addAccount" }}
+          name="services/multi"
+          options={{ headerShown: false, title: "", presentation: "modal" }}
         />
         <Stack.Screen
-          name="university/method"
-          options={{ ...newScreenOptions }}
-        />
-        <Stack.Screen
-          name="university/multi/credentials"
-          options={{ ...newScreenOptions }}
-        />
-        <Stack.Screen
-          name="university/lannion/credentials"
-          options={{ ...newScreenOptions }}
-        />
-        <Stack.Screen
-          name="pronote/url"
-          options={{ ...newScreenOptions }}
-        />
-        <Stack.Screen
-          name="pronote/webview"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", serviceId: undefined }}
-        />
-        <Stack.Screen
-          name="pronote/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", previousPage: "map" }}
-        />
-        <Stack.Screen
-          name="ecoledirecte/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", previousPage: "map" }}
-        />
-        <Stack.Screen
-          name="webuntis/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", previousPage: "map" }}
-        />
-        <Stack.Screen
-          name="izly/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", previousPage: "map" }}
-        />
-        <Stack.Screen
-          name="pronote/qrcode"
-          options={{ ...newScreenOptions }}
-        />
-        <Stack.Screen
-          name="pronote/2fa"
-          options={{ ...newScreenOptions }}
-          initialParams={{ error: {}, session: {}, device: "" }}
-        />
-        <Stack.Screen
-          name="turboself/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ action: "addAccount" }}
-        />
-        <Stack.Screen
-          name="turboself/hostSelector"
-          options={{ ...newScreenOptions }}
-          initialParams={{ siblings: [], username: "", password: "", action: "addAccount" }}
-        />
-        <Stack.Screen
-          name="ard/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ action: "addAccount" }}
-        />
-        <Stack.Screen
-          name="alise/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ action: "addAccount" }}
-        />
-        <Stack.Screen
-          name="skolengo/webview"
-          options={{ ...newScreenOptions }}
-          initialParams={{ ref: {} }}
-        />
-        <Stack.Screen
-          name="university/appscho/list"
-          options={{ ...newScreenOptions }}
-          initialParams={{ url: "", previousPage: "map" }}
-        />
-        <Stack.Screen
-          name="university/appscho/webview"
-          options={{ ...newScreenOptions }}
-          initialParams={{ instanceId: "" }}
-        />
-        <Stack.Screen
-          name="university/appscho/credentials"
-          options={{ ...newScreenOptions }}
-          initialParams={{ instanceId: "" }}
+          name="services/appscho"
+          options={{ headerShown: false, title: "" }}
         />
       </Stack>
     </View>

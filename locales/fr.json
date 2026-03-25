@@ -51,9 +51,6 @@
   "INPUT_PIN": "Code PIN",
   "SEARCH_UNIV_PLACEHOLDER": "Rechercher une instance...",
   "ONBOARDING_LOADING_LOGIN": "Connexion en cours...",
-  "ERROR_AUTHENTICATION": "Une erreur s'est produite",
-  "ERROR_MISSING_FIELDS": "Veuillez remplir tous les champs",
-  "ERROR_WEBUNTIS_LOGIN": "La connexion à ton compte Web Untis a échoué",
 
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
@@ -66,7 +63,6 @@
   "INPUT_PASSWORD": "Mot de passe",
   "INPUT_PASSWORD_CODE": "Code d'accès",
   "INPUT_ETABID": "Identifiant de ton établissement",
-  "INPUT_BASE_URL": "Lien de ton établissement",
   "LOGIN_BTN": "Se connecter",
   "CONFIRM_BTN": "Confirmer",
   "CANCEL_BTN": "Annuler",
@@ -299,7 +295,7 @@
 
   "News_Search_Placeholder": "Rechercher une actualité",
   "News_Empty_Title": "Aucune actualité",
-  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans votre établissement.",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "Aucune actualité trouvée",
   "News_Search_NoResults_Description": "Aucune actualité trouvée pour votre recherche.",
 
@@ -458,5 +454,13 @@
 
   "Today": "Aujourd'hui",
   "Yesterday": "Hier",
-  "Tomorrow": "Demain"
+  "Tomorrow": "Demain",
+
+  "Home_Edit_Profile": "Modifier mon profil",
+  "Home_Add_Profile": "Ajouter un profil",
+  
+  "ERROR_AUTHENTICATION": "Une erreur s'est produite",
+  "ERROR_MISSING_FIELDS": "Veuillez remplir tous les champs",
+  "ERROR_WEBUNTIS_LOGIN": "La connexion à ton compte Web Untis a échoué",
+  "INPUT_BASE_URL": "Lien de ton établissement",
 }

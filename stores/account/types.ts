@@ -1,5 +1,4 @@
 import * as Ezly from "ezly";
-import { Session } from "pawdirecte";
 import { Skolengo } from "skolengojs";
 
 /**
@@ -17,12 +16,23 @@ export interface AccountsStorage {
   updateServiceAuthData: (serviceId: string, authData: Auth) => void;
   addServiceToAccount: (accountId: string, service: ServiceAccount) => void;
   removeServiceFromAccount: (serviceId: string) => void;
-  setAccountName: (accountId: string, firstName: string, lastName: string) => void;
+  setAccountName: (
+    accountId: string,
+    firstName: string,
+    lastName: string
+  ) => void;
   setSubjectColor: (subject: string, color: string) => void;
   setSubjectEmoji: (subject: string, emoji: string) => void;
   setSubjectName: (subject: string, name: string) => void;
-  setSubjects: (subjects: Record<string, { color: string; emoji: string; name: string }>) => void;
+  setSubjects: (
+    subjects: Record<string, { color: string; emoji: string; name: string }>
+  ) => void;
   setAccountProfilePicture: (accountId: string, profilePicture: string) => void;
+  setTransportEnabled: (transportEnabled: boolean) => void;
+  setTransportService: (id: string) => void;
+  setTransportHomeAddress: (address: TransportAddress) => void;
+  setTransportSchoolAddress: (address: TransportAddress) => void;
+  initializeTransport: (address: string | undefined) => void;
 }
 
 /**
@@ -43,6 +53,7 @@ export interface Account {
   schoolName?: string;
   className?: string;
   customisation?: CustomisationStorage;
+  transport?: TransportStorage;
   services: ServiceAccount[];
   createdAt: string;
   updatedAt: string;
@@ -51,6 +62,21 @@ export interface Account {
 export interface CustomisationStorage {
   profilePicture: string;
   subjects: Record<string, { color: string; emoji: string; name: string }>;
+}
+
+export interface TransportAddress {
+  firstTitle: string;
+  secondTitle: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+}
+
+export interface TransportStorage {
+  enabled: boolean;
+  homeAddress?: TransportAddress;
+  schoolAddress?: TransportAddress;
+  defaultApp: string;
 }
 
 /**
@@ -84,7 +110,7 @@ export interface ServiceAccount {
 export interface Auth {
   accessToken?: string;
   refreshToken?: string;
-  session?: Skolengo | Session | Ezly.Identification;
+  session?: Skolengo | Ezly.Identification;
   additionals?: Record<string, string | number>;
 }
 

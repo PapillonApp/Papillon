@@ -49,12 +49,12 @@ const HomeTopBar = ({ height = 56 }: { height?: number }) => {
           zIndex: 11,
           alignItems: 'center',
           flexDirection: 'row',
-          gap: 12,
+          gap: 16,
         }}
       >
         <UserProfile />
 
-        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={8} inline>
+        <Stack direction="horizontal" hAlign="center" vAlign="end" gap={7} inline>
           <HomeTopBarButton icon="palette" onPress={() => router.push("/(modals)/wallpaper")} />
           <HomeTopBarButton icon="gears" onPress={() => router.push("/(settings)/settings")} />
         </Stack>
