@@ -71,6 +71,15 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
+          name="contributors"
+          options={{
+            headerTitle: "Contributors",
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
           name="magic"
           options={{
             headerTitle: t("Settings_MagicPlus_Title"),
