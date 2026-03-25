@@ -23,7 +23,7 @@ export default function AboutAverages() {
         </Typography>
 
         <Typography variant="body1" color="secondary">
-          Bien que cela semble trivial, calculer une moyenne générale est un processus complexe, encore plus lorsque nous ne savons rien de votre établissement ainsi que de son processus de calcul.
+          Bien que cela semble trivial, calculer une moyenne générale est un processus complexe, encore plus lorsque nous ne savons rien de ton établissement ainsi que de son processus de calcul.
         </Typography>
 
         <Typography variant="h4" style={{ marginTop: 20 }}>

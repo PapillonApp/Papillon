@@ -297,7 +297,7 @@
 
   "News_Search_Placeholder": "Rechercher une actualité",
   "News_Empty_Title": "Aucune actualité",
-  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans votre établissement.",
+  "News_Empty_Description": "Il n'y a pas d'actualités trouvées dans ton établissement.",
   "News_Search_NoResults": "Aucune actualité trouvée",
   "News_Search_NoResults_Description": "Aucune actualité trouvée pour votre recherche.",
 
@@ -456,5 +456,8 @@
 
   "Today": "Aujourd'hui",
   "Yesterday": "Hier",
-  "Tomorrow": "Demain"
+  "Tomorrow": "Demain",
+
+  "Home_Edit_Profile": "Modifier mon profil",
+  "Home_Add_Profile": "Ajouter un profil"
 }

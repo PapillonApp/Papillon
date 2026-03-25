@@ -23,10 +23,13 @@ const HomeScreen = () => {
   const focused = useIsFocused();
 
   // Account
+  const store = useAccountStore();
   const accounts = useAccountStore((state) => state.accounts);
+  const account = accounts.find(a => a.id === store.lastUsedAccount)!;
   const router = useRouter();
 
   React.useEffect(() => {
+    console.log(accounts)
     if (accounts.length === 0) {
       router.replace("/(onboarding)/welcome");
     }
@@ -36,6 +39,9 @@ const HomeScreen = () => {
           router.push("../consent");
         }
       });
+      if (account.transport === undefined) {
+        store.initializeTransport(account.schoolName);
+      }
     }
   }, [accounts.length]);
 
