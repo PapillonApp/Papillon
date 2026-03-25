@@ -7,30 +7,23 @@ import React from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
 
+import { initializeAccountManager } from '@/services/shared';
+import { useAccountStore } from '@/stores/account';
 import Avatar from '@/ui/components/Avatar';
 import Stack from '@/ui/components/Stack';
 import Typography from '@/ui/components/Typography';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 
 import { useUserProfileData } from '../hooks/useUserProfileData';
+import { t } from 'i18next';
+import { formatSchoolName } from '@/utils/format/formatSchoolName';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
-  const { firstName, lastName, level, establishment, initials, profilePicture } = useUserProfileData();
-
+  const { firstName, lastName, initials, profilePicture, level, establishment } = useUserProfileData() ?? {};
+  const accounts = useAccountStore((state) => state.accounts);
+  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
-
-  const accountsList = [
-    {
-      firstName,
-      lastName,
-      level,
-      establishment,
-      initials,
-      profilePicture,
-      current: true,
-    },
-  ]
 
   return (
     <Stack inline flex>
@@ -60,27 +53,42 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
 
         <UserProfileItemContainer>
           <MenuView
+            onPressAction={async ({ nativeEvent }) => {
+              if(nativeEvent.event === "edit") {
+                router.push('/(modals)/profile');
+                return;
+              }
+
+              if(nativeEvent.event === "add") {
+                router.push("/(onboarding)/ageSelection?action=addService");
+                return;
+              }
+
+              const store = useAccountStore.getState();
+              store.setLastUsedAccount(nativeEvent.event);
+              await initializeAccountManager();
+            }}
             actions={[
               {
                 id: 'workspaces',
                 title: '',
                 displayInline: true,
-                subactions: accountsList.map((account) => ({
+                subactions: accounts.map((account) => ({
                   id: account.id,
                   title: account.firstName + ' ' + account.lastName,
-                  subtitle: account.establishment,
-                  state: account.current ? 'on' : 'off',
+                  subtitle: formatSchoolName(account.schoolName ?? ""),
+                  state: account.id === lastUsedAccount ? 'on' : 'off',
                 })),
               },
               {
                 id: 'edit',
-                title: 'Edit profile',
+                title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
                 imageColor: theme.colors.text,
               },
               {
                 id: 'add',
-                title: 'Add account',
+                title: t('Home_Add_Profile'),
                 image: 'plus',
                 imageColor: theme.colors.text,
               },
@@ -89,7 +97,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
             <Stack direction="vertical" vAlign="center" gap={0} style={{ height: 42, paddingHorizontal: 12 }}>
               <Stack direction="horizontal" hAlign="center" gap={6}>
                 <Typography nowrap color='white' variant='navigation' weight='bold' style={{ maxWidth: Dimensions.get('window').width - 230 }}>
-                  {firstName} {lastName}
+                  {firstName && lastName ? `${firstName} ${lastName}` : "Mon compte"}
                 </Typography>
                 <Papicons name="chevrondown" size={20} color="white" opacity={0.5} style={{ marginRight: 0 }} />
               </Stack>

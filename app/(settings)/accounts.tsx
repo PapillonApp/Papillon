@@ -1,5 +1,6 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
+import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, TouchableOpacity } from "react-native";
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -13,6 +14,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import { getInitials } from "@/utils/chats/initials";
 import { getServiceLogo, getServiceName } from "@/utils/services/helper";
+import { formatSchoolName } from "@/utils/format/formatSchoolName";
 
 export default function AccountsView() {
   const accounts = useAccountStore((state) => state.accounts);
@@ -69,11 +71,16 @@ export default function AccountsView() {
                 />
               </Leading>
               <Typography variant="title">{account.firstName} {account.lastName}</Typography>
-              <Typography variant="body2" color="secondary">{account.className ? account.className + " " : ""}{account.schoolName}</Typography>
+              <Typography variant="body2" color="secondary">{account.className ? account.className + " " : ""}{formatSchoolName(account.schoolName ?? "")}</Typography>
             </Item>
           </ReanimatedSwipeable>
         ))}
-        <Item>
+        <Item
+          onPress={() => router.replace({
+            pathname: "/(onboarding)/ageSelection",
+            params: { action: "addService" }
+          })}
+        >
           <Icon opacity={0.5} style={{ marginHorizontal: 7 }}>
             <Papicons name="add" />
           </Icon>
@@ -93,7 +100,7 @@ export default function AccountsView() {
       </Stack>
 
       <List disablePadding>
-        {services.map((service, index) => (
+        {services?.map((service, index) => (
           <ReanimatedSwipeable
             containerStyle={{
               borderTopLeftRadius: index === 0 ? 20 : 0,
@@ -133,7 +140,11 @@ export default function AccountsView() {
             </Item>
           </ReanimatedSwipeable>
         ))}
-        <Item>
+        <Item
+          onPress={() => router.navigate({
+            pathname: "/(onboarding)/restaurants/method",
+          })}
+        >
           <Icon opacity={0.5} style={{ marginHorizontal: 7 }}>
             <Papicons name="add" />
           </Icon>

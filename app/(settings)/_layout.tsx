@@ -52,82 +52,80 @@ export default function Layout() {
           }}
         />
 
-      <Stack.Screen
-        name="cards"
-        options={{
-          headerShown: true,
-          headerTitle: t("Settings_Cards_Title"),
-          headerLargeTitle: false,
-          headerBackButtonDisplayMode: "minimal",
-          gestureEnabled: true
-        }}
-      />
-      <Stack.Screen
-        name="about"
-        options={{
-          headerTitle: t("Settings_About_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: Platform.OS === "ios",
-          headerLargeTitle: false,
-        }}
-      />
-      <Stack.Screen
-        name="magic"
-        options={{
-          headerTitle: t("Settings_MagicPlus_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
-          headerLargeTitle: false,
-        }}
-      />
-      <Stack.Screen
-        name="subject_personalization"
-        options={{
-          headerTitle: t("Settings_SubjectPersonalization_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
-          headerLargeTitle: false,
-        }}
-      />
-      <Stack.Screen
-        name="tabs"
-        options={{
-          headerTitle: t("Settings_Tabs_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
-          headerLargeTitle: false,
-        }}
-      />
-      <Stack.Screen
-        name="edit_subject"
-        options={{
-          headerTitle: t("Settings_SubjectEdit_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerShown: false,
-          presentation: "modal",
-          contentStyle: {
-            borderRadius: Platform.OS === 'ios' ? 30 : 0,
-          }
-        }}
-      />
-      <Stack.Screen
-        name="home"
-        options={{
-          headerTitle: t("Settings_Home_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
-          headerLargeTitle: false,
-        }}
-      />
-      <Stack.Screen
-        name="language"
-        options={{
-          headerTitle: t("Settings_Language_Title"),
-          headerBackButtonDisplayMode: "minimal",
-          headerTransparent: false,
-          headerLargeTitle: false,
-        }}
-      />
-    </Stack>
+        <Stack.Screen
+          name="cards"
+          options={{
+            headerShown: true,
+            headerTitle: t("Settings_Cards_Title"),
+            headerLargeTitle: false,
+            headerBackButtonDisplayMode: "minimal",
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="about"
+          options={{
+            headerTitle: t("Settings_About_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: Platform.OS === "ios",
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="magic"
+          options={{
+            headerTitle: t("Settings_MagicPlus_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="subject_personalization"
+          options={{
+            headerTitle: t("Settings_SubjectPersonalization_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="tabs"
+          options={{
+            headerTitle: t("Settings_Tabs_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="edit_subject"
+          options={{
+            headerTitle: t("Settings_SubjectEdit_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerShown: false,
+            presentation: "modal",
+            contentStyle: {
+              borderRadius: Platform.OS === "ios" ? 30 : 0,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="language"
+          options={{
+            headerTitle: t("Settings_Language_Title"),
+            headerBackButtonDisplayMode: "minimal",
+            headerTransparent: false,
+            headerLargeTitle: false,
+          }}
+        />
+        <Stack.Screen
+          name="transport"
+          options={{
+            headerTitle: t("Settings_Transport_Title"),
+          }}
+        />
+      </Stack>
+    </>
   );
 }
