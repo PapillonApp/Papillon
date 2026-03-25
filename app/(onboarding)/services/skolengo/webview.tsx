@@ -1,5 +1,5 @@
 import * as Linking from "expo-linking";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
