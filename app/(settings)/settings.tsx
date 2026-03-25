@@ -183,41 +183,13 @@ export default function SettingsIndex() {
   const BigButtons: Array<{
     disabled?: boolean; icon: React.ReactNode, title: string, description: string, color: string, onPress?: () => void;
   }> = [
-      {
-        icon: <Papicons name={"Palette"} />,
-        title: t('Settings_Personalization_Title_Card'),
-        description: t('Settings_Personalization_Subtitle_Card'),
-        color: "#17C300",
-        onPress: () => {
-          router.navigate("/(settings)/personalization")
-        }
-      },
-      {
-        icon: <Papicons name={"Calendar"} />,
-        title: t('Settings_Personalization_Subject_Title_Card'),
-        description: t('Settings_Personalization_Subject_Description'),
-        color: "#8500dd",
-        onPress: () => {
-          router.navigate("/(settings)/subject_personalization")
-        }
-      },
-      {
-        icon: <Papicons name={"User"} />,
-        title: t("Settings_Accounts_Title"),
-        description: t('Settings_Accounts_Description'),
-        color: "#0059DD",
-        onPress: () => {
-          router.navigate("/(settings)/accounts")
-        }
-      },
-      {
-        icon: <Papicons name={"Sparkles"} />,
-        title: "Magic+",
-        description: t('Settings_MagicPlus_Description_Card'),
-        color: "#DD007D",
-        onPress: () => {
-          router.navigate("/(settings)/magic")
-        }
+    {
+      icon: <Papicons name={"Palette"} />,
+      title: t('Settings_Personalization_Title_Card'),
+      description: t('Settings_Personalization_Subtitle_Card'),
+      color: "#17C300",
+      onPress: () => {
+        router.navigate("/(settings)/personalization")
       }
     },
     {
@@ -230,12 +202,12 @@ export default function SettingsIndex() {
       }
     },
     {
-      icon: <Papicons name={"Card"} />,
-      title: t("Settings_Cards_Banner_Title"),
-      description: t('Settings_Cantineen_Subtitle_Card'),
+      icon: <Papicons name={"User"} />,
+      title: t("Settings_Accounts_Title"),
+      description: t('Settings_Accounts_Description'),
       color: "#0059DD",
       onPress: () => {
-        router.navigate("/(settings)/cards")
+        router.navigate("/(settings)/accounts")
       }
     },
     {
