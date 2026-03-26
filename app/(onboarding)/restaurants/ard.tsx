@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { t } from "i18next";
 import LottieView from "lottie-react-native";
-import { Authenticator } from "pawrd";
+// import { Authenticator } from "pawrd";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import Reanimated, {
@@ -69,6 +69,7 @@ export default function TurboSelfLoginWithCredentials() {
 
   const loginARD = async () => {
     try {
+      throw new Error("ARD service is currently unavailable");
       setIsLoggingIn(true);
       const authenticator = new Authenticator();
       // ARD require 2 connections, WHY ?
