@@ -1,4 +1,4 @@
-import PackageJSON from "./package.json";
+import PackageJSON from "./package.json" with { type: 'json' };
 
 const androidPreVersion = PackageJSON.version.replaceAll(".", "")
 const androidVersionCode = androidPreVersion.length == 3 ? parseInt(androidPreVersion + "00") : androidPreVersion.length == 4 ? parseInt(androidPreVersion + "0") : parseInt(androidPreVersion)
