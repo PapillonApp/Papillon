@@ -115,7 +115,7 @@
   "ONBOARDING_SERVICE_PRONOTE": "PRONOTE",
   "ONBOARDING_SERVICE_ED": "ÉcoleDirecte",
   "ONBOARDING_SERVICE_SKOLENGO": "Skolengo",
-  "ONBOARDING_SERVICE_LANNION": "IUT de Lannion",
+  "ONBOARDING_SERVICE_LANNION": "Lannion's IUT",
   "ONBOARDING_SERVICE_UNIV_LORRAINE": "University of Lorraine",
   "ONBOARDING_SERVICE_UNIV_NIMES": "University of Nîmes",
   "ONBOARDING_SERVICE_UNIV_UPHF": "Polytechnic University Hauts-de-France",
@@ -388,8 +388,8 @@
   "Settings_About_Crowdin_Description": "Help translate Papillon",
   "Settings_About_Github": "Github Project",
   "Settings_About_Github_Description": "Contribute to the project on GitHub",
-  "Settings_About_Contributors": "Contributeurs",
-  "Settings_About_Contributors_Description": "Voir les contributeurs GitHub",
+  "Settings_About_Contributors": "Contributors",
+  "Settings_About_Contributors_Description": "See contributors on GitHub",
   "Settings_About_Issue": "Report a bug",
   "Settings_About_Issue_Description": "Report a bug encountered",
   "Settings_About_Dependency_Version": "Dependency Version",
@@ -462,6 +462,6 @@
   "Today": "Today",
   "Yesterday": "Yesterday",
   "Tomorrow": "Tomorrow",
-  "Home_Edit_Profile": "Modifier mon profil",
-  "Home_Add_Profile": "Ajouter un profil"
+  "Home_Edit_Profile": "Edit my profile",
+  "Home_Add_Profile": "Add a profile"
 }
