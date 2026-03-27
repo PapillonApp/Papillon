@@ -104,15 +104,6 @@ export function GetSupportedServices(redirect: (path: { pathname: string, option
         redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
-    {
-      name: "appscho",
-      route: "appscho",
-      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
-      image: require("@/assets/images/icon.png"),
-      hasLimitedSupport: false,
-      type: ["univ"],
-      onPress: () => { redirect({ pathname: './appscho/list' }) }
-    },
   ]
 }
 
@@ -169,14 +160,6 @@ export function GetSupportedUniversities(redirect: (path: { pathname: string, op
         redirect({ pathname: './services/multi/credentials', options: { color: "#008DB0", university: "UPHF", url: "https://appmob.uphf.fr/backend" } });
       },
     },
-    {
-      name: "appscho",
-      title: t("ONBOARDING_OTHER_UNIVERSITIES"),
-      hasLimitedSupport: false,
-      type: "other",
-      onPress: () => { redirect({ pathname: './appscho/list' }) }
-    },
-
     /*{
       name: "limited-functions",
       title: t("Feature_Limited"),
