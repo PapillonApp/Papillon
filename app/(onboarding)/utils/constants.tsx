@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { Services } from '@/stores/account/types';
+import { t } from 'i18next';
 export interface SupportedService {
   name: string;
-  route: string;
+  route?: string;
   title: string;
   type: string[];
   hasLimitedSupport?: boolean;
@@ -274,7 +275,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       onPress: () => {
         redirect({ pathname: '/(onboarding)/restaurants/turboself' });
       }
-    },
+    },/*
     {
       name: "ard",
       title: t("ONBOARDING_SERVICE_ARD"),
@@ -284,7 +285,7 @@ export function GetSupportedRestaurants(redirect: (path: { pathname: string }) =
       onPress: () => {
         redirect({ pathname: '/(onboarding)/restaurants/ard' });
       }
-    },
+    },*/
     {
       name: "izly",
       title: t("ONBOARDING_SERVICE_IZLY"),
