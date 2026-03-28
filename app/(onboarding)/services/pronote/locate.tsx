@@ -2,6 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -26,18 +27,20 @@ const PronoteSearchHeader = memo(({
   city,
   setCity,
   loading,
-  showElse
+  showElse,
+  t
 }: {
   city: string,
   setCity: (text: string) => void,
   loading: boolean,
-  showElse: boolean
+  showElse: boolean,
+  t: (key: string, options?: any) => string
 }) => (
   <Stack padding={[4, 0]}>
-    <Typography variant="h2">Dans quelle ville se trouve ton établissement ?</Typography>
-    <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de ton établissement.</Typography>
+    <Typography variant="h2">{t("ONBOARDING_SEARCH_TITLE")}</Typography>
+    <Typography variant="action" color="textSecondary">{t("ONBOARDING_PRONOTE_LOCATION_HELP")}</Typography>
     <Divider height={6} ghost />
-    <Search placeholder="Rechercher une ville" style={{ width: "100%" }} value={city} setValue={setCity} onTextChange={setCity} autoFocus={city.trim().length === 0} />
+    <Search placeholder={t("ONBOARDING_METHOD_SEARCH")} style={{ width: "100%" }} value={city} setValue={setCity} onTextChange={setCity} autoFocus={city.trim().length === 0} />
     
     {loading &&
       <Dynamic animated>
@@ -45,8 +48,8 @@ const PronoteSearchHeader = memo(({
           <Divider height={18} ghost />
           <ActivityIndicator />
           <Divider height={12} ghost />
-          <Typography align="center" variant="h5">Recherche des établissements...</Typography>
-          <Typography align="center" variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
+          <Typography align="center" variant="h5">{t("ONBOARDING_SCHOOLS_SEARCHING")}</Typography>
+          <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
         </Stack>
       </Dynamic>
     }
@@ -59,6 +62,7 @@ export default function PronoteLoginMethod() {
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const [city, setCity] = useState<string>("");
   const [debouncedCity, setDebouncedCity] = useState<string>("");
@@ -110,7 +114,7 @@ export default function PronoteLoginMethod() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <List
-        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} />}
+        ListHeaderComponent={<PronoteSearchHeader city={city} setCity={setCity} loading={loading && cities.length === 0} showElse={cities.length === 0 && !loading} t={t} />}
         contentContainerStyle={{
           padding: 16,
           flexGrow: 1,
@@ -126,9 +130,9 @@ export default function PronoteLoginMethod() {
             <List.Leading>
               <Icon><Papicons name="qrcode" /></Icon>
             </List.Leading>
-            <Typography variant='title'>Me connecter avec un QR code</Typography>
+            <Typography variant='title'>{t("ONBOARDING_PRONOTE_LOGIN_QRCODE")}</Typography>
             <Typography variant='body' color="textSecondary">
-              Utiliser un QR code généré sur Pronote
+              {t("ONBOARDING_PRONOTE_LOGIN_QRCODE_DESCRIPTION")}
             </Typography>
           </List.Item>
         )}
@@ -138,7 +142,7 @@ export default function PronoteLoginMethod() {
             <List.Leading>
               <Icon><Papicons name="link" /></Icon>
             </List.Leading>
-            <Typography variant='title'>Me connecter avec une URL</Typography>
+            <Typography variant='title'>{t("ONBOARDING_PRONOTE_LOGIN_URL")}</Typography>
           </List.Item>
         )}
 

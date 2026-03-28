@@ -1,7 +1,7 @@
 {
   "name": "papillon",
   "main": "expo-router/entry",
-  "version": "8.3.4",
+  "version": "8.4.0",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -40,7 +40,7 @@
     "@shopify/react-native-skia": "2.2.12",
     "@types/uuid": "^10.0.0",
     "alise-api": "^0.2.5",
-    "appscho": "^1.1.0",
+    "appscho": "file:./stubs/appscho",
     "buffer": "^6.0.3",
     "countly-sdk-react-native-bridge": "^25.4.1",
     "date-fns": "^4.1.0",
@@ -82,7 +82,6 @@
     "lucide-react-native": "^0.511.0",
     "patch-package": "^8.0.1",
     "pawnote": "^1.6.2",
-    "pawrd": "^0.6.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-i18next": "^15.7.4",

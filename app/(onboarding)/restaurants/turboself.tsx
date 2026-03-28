@@ -134,7 +134,7 @@ export default function TurboSelfLoginWithCredentials() {
       });
     } catch (error) {
       setIsLoggingIn(false);
-      Alert.alert("Identifiants incorrects", "Nous n’avons pas réussi à te connecter à ton compte TurboSelf. Vérifie ton identifiant et ton mot de passe puis essaie de nouveau.");
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_BAD_CREDENTIALS_TURBOSELF"));
     }
   }
 

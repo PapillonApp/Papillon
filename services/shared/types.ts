@@ -3,7 +3,7 @@ import { User } from "appscho";
 import { Multi as MultiClient } from "esup-multi.js";
 import { Identification } from "ezly";
 import { SessionHandle } from "pawnote";
-import { Client as ArdClient } from "pawrd";
+// import { Client as ArdClient } from "pawrd";
 import { Skolengo as SkolengoSession } from "skolengojs";
 import { Client as TurboselfClient } from "turboself-api";
 import { WebUntisClient } from "webuntis-client";
@@ -51,7 +51,7 @@ export interface SchoolServicePlugin {
   capabilities: Capabilities[];
   authData: Auth;
   session:
-    | ArdClient
+    | any
     | Identification
     | MultiClient
     | SessionHandle

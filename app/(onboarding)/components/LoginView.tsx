@@ -1,13 +1,14 @@
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { Alert, Image, View } from 'react-native';
+import { useTranslation } from "react-i18next";
 
+import ActivityIndicator from '@/ui/components/ActivityIndicator';
+import { Dynamic } from '@/ui/components/Dynamic';
 import Stack from '@/ui/components/Stack';
 import Button from '@/ui/new/Button';
 import TextInput from '@/ui/new/TextInput';
 import Typography from '@/ui/new/Typography';
-import ActivityIndicator from '@/ui/components/ActivityIndicator';
-import { Dynamic } from '@/ui/components/Dynamic';
 
 interface LoginViewProps {
   color: string;
@@ -35,39 +36,44 @@ export default function LoginView({
   serviceName,
   serviceIcon,
   loading = false,
-  fields = [
-    {
-      name: "username",
-      placeholder: "Nom d'utilisateur",
-      secureTextEntry: false,
-      textContentType: "username",
-    },
-    {
-      name: "password",
-      placeholder: "Mot de passe",
-      secureTextEntry: true,
-      textContentType: "password",
-    }
-  ],
-  actions = [
-    {
-      label: "Se connecter",
-      variant: "primary",
-      submit: true,
-    },
-    {
-      label: "Problèmes de connexion ?",
-      variant: "secondary",
-      onPress: () => {
-        Alert.alert("Aide à la connexion", "Si vous rencontrez des problèmes pour vous connecter, veuillez contacter le support de votre service ou vérifier vos identifiants.");
-      },
-    }
-  ],
+  fields,
+  actions,
   onSubmit,
 }: LoginViewProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const [fieldValues, setFieldValues] = React.useState<{ [key: string]: string }>({});
+
+  const defaultFields = fields ?? [
+    {
+      name: "username",
+      placeholder: t("INPUT_USERNAME"),
+      secureTextEntry: false,
+      textContentType: "username" as const,
+    },
+    {
+      name: "password",
+      placeholder: t("INPUT_PASSWORD"),
+      secureTextEntry: true,
+      textContentType: "password" as const,
+    }
+  ];
+
+  const defaultActions = actions ?? [
+    {
+      label: t("LOGIN_BTN"),
+      variant: "primary" as const,
+      submit: true,
+    },
+    {
+      label: t("ONBOARDING_LOGIN_HELP_ACTION"),
+      variant: "secondary" as const,
+      onPress: () => {
+        Alert.alert(t("ONBOARDING_LOGIN_HELP_TITLE"), t("ONBOARDING_LOGIN_HELP_DESCRIPTION"));
+      },
+    }
+  ];
 
   const handleChange = (name: string, value: string) => {
     setFieldValues(prev => ({ ...prev, [name]: value }));
@@ -127,13 +133,13 @@ export default function LoginView({
       </View>
 
       <Typography variant="body" align="center" color="textSecondary">
-        Connexion au service
+        {t("ONBOARDING_LOGIN_TO_SERVICE")}
       </Typography>
 
       <Stack animated direction='horizontal' hAlign='center' gap={10}>
         <Dynamic animated>
           <Typography variant="h3" align="center">
-            {serviceName || "Service inconnu"}
+            {serviceName || t("ONBOARDING_UNKNOWN_SERVICE")}
           </Typography>
         </Dynamic>
         {loading &&
@@ -148,7 +154,7 @@ export default function LoginView({
         width={"100%"}
         gap={8}
       >
-        {fields.map((field, index) => (
+        {defaultFields.map((field, index) => (
           <TextInput
             key={index}
             color={color}
@@ -165,7 +171,7 @@ export default function LoginView({
         width={"100%"}
         gap={8}
       >
-        {actions.map((action, index) => (
+        {defaultActions.map((action, index) => (
           <Button
             key={index}
             color={color}
@@ -178,7 +184,7 @@ export default function LoginView({
       </Stack>
 
       <Typography variant="caption" align="center" color="textSecondary" style={{ marginVertical: 16, marginBottom: 32 }}>
-        Papillon n’est pas affilié à {serviceName || "ce service"}. Votre mot de passe n’est pas lu ou conservé par Papillon.
+        {t("ONBOARDING_LOGIN_DISCLAIMER", { service: serviceName || t("ONBOARDING_THIS_SERVICE") })}
       </Typography>
     </View>
   );

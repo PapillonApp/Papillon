@@ -138,7 +138,7 @@ export default function EDLoginWithCredentials() {
         setChallengeModalVisible(true);
         setToken(e.token);
       } else {
-        Alert.alert("Erreur d'authentification", "Une erreur est survenue lors de la connexion, elle a donc été abandonnée."); // Fallback for the AlertProvider
+        Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
       }
     }
   }
@@ -232,7 +232,7 @@ export default function EDLoginWithCredentials() {
         onRequestClose={() => setChallengeModalVisible(false)}
       >
         <OnboardingScrollingFlatList
-          title={doubleAuthChallenge?.question ?? "Double Auth"}
+          title={doubleAuthChallenge?.question ?? t("ONBOARDING_DOUBLE_AUTH")}
           color={"#E50052"}
           step={3}
           hasReturnButton={false}

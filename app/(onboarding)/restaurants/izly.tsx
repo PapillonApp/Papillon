@@ -168,10 +168,10 @@ export default function TurboSelfLoginWithCredentials() {
       await login(username, password)
       setIsLoggingIn(false);
       setLinkSended(true);
-      Alert.alert("SMS envoyé", "Un SMS de vérification a été envoyé à ton numéro de téléphone. Merci de cliquer sur le lien présent dans ce SMS pour finaliser la connexion.");
+      Alert.alert(t("ONBOARDING_SMS_SENT_TITLE"), t("ONBOARDING_IZLY_SMS_SENT_DESCRIPTION"));
     } catch (error) {
       setIsLoggingIn(false);
-      Alert.alert("Erreur d'authentification", "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.");
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
   }
 
@@ -184,14 +184,14 @@ export default function TurboSelfLoginWithCredentials() {
           fields={[
             {
               name: "username",
-              placeholder: "E-mail ou téléphone",
+              placeholder: t("INPUT_PHONE_OR_MAIL"),
               secureTextEntry: false,
               textContentType: "username",
               keyboardType: "email-address",
             },
             {
               name: "password",
-              placeholder: "Code d'accès",
+              placeholder: t("INPUT_PASSWORD_CODE"),
               secureTextEntry: true,
               textContentType: "password",
               keyboardType: "number-pad",

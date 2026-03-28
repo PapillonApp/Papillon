@@ -47,7 +47,7 @@ export default function AppschoWebView() {
 
         store.addAccount({
           id,
-          firstName: response.firstname || "User",
+          firstName: response.firstname || t("ONBOARDING_DEFAULT_USER_FIRSTNAME"),
           lastName: response.lastname || instance.name,
           schoolName: response.program || instance.name,
           className: response.department ?? undefined,
@@ -67,8 +67,8 @@ export default function AppschoWebView() {
       } catch (error) {
         Error(`OAuth login error: ${error}`);
         alert.showAlert({
-          title: "Erreur d'authentification",
-          description: "Une erreur est survenue lors de la connexion OAuth.",
+          title: t("Alert_Auth_Error"),
+          description: t("ONBOARDING_ALERT_OAUTH_LOGIN_ABORTED"),
           icon: "TriangleAlert",
           color: "#D60046",
           technical: String(error),
@@ -88,7 +88,7 @@ export default function AppschoWebView() {
       webviewProps={{
         source: loginURL
           ? { uri: loginURL }
-          : { html: "<h1>Chargement...</h1>" },
+          : { html: `<h1>${t("ONBOARDING_LOADING")}</h1>` },
         onShouldStartLoadWithRequest: (request) => {
           handleRequest(request.url);
           return true;

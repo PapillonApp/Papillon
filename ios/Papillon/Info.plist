@@ -36,13 +36,32 @@
       <string>sq</string>
       <string>uk</string>
       <string>vi</string>
+      <string>bg</string>
+      <string>bn</string>
+      <string>cs</string>
+      <string>da</string>
+      <string>fi</string>
+      <string>he</string>
+      <string>hu</string>
+      <string>id</string>
+      <string>no</string>
+      <string>sk</string>
+      <string>sv</string>
+      <string>sw</string>
+      <string>th</string>
+      <string>it</string>
+      <string>fa</string>
+      <string>ur</string>
+      <string>ms</string>
+      <string>hr</string>
+      <string>et</string>
     </array>
     <key>CFBundleName</key>
     <string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>8.3.4</string>
+    <string>8.4.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -66,6 +85,11 @@
     <string>1</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>transit</string>
+      <string>maps</string>
+    </array>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>

@@ -1,5 +1,6 @@
 import { geolocation } from "pawnote";
 import { School as SkolengoSkool,SearchSchools } from "skolengojs";
+import { t } from "i18next";
 
 import { Services } from "@/stores/account/types";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -20,8 +21,8 @@ export async function fetchSchools(service: Services, alert: ReturnType<typeof u
 
     if (pos === null) {
       alert.showAlert({
-        title: "Impossible de récuperer la position",
-        description: "Nous n'avons pas pu récupérer ta position. Vérifie que le mode avion est désactivé et que l'application dispose des autorisations nécessaires.",
+        title: t("Alert_No_Pos"),
+        description: t("ONBOARDING_ALERT_NO_POSITION_DESCRIPTION"),
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,

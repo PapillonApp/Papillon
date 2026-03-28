@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
+  const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -21,23 +23,23 @@ export default function OnboardingLayout() {
       />
       <Stack.Screen
         name="turboself"
-        options={{ ...newScreenOptions, headerTitle: "TurboSelf" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_TURBOSELF") }}
       />
       <Stack.Screen
         name="turboselfHost"
-        options={{ ...newScreenOptions, headerTitle: "TurboSelf" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_TURBOSELF") }}
       />
       <Stack.Screen
         name="ard"
-        options={{ ...newScreenOptions, headerTitle: "ARD" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_ARD") }}
       />
       <Stack.Screen
         name="alise"
-        options={{ ...newScreenOptions, headerTitle: "Alise" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_ALISE") }}
       />
       <Stack.Screen
         name="izly"
-        options={{ ...newScreenOptions, headerTitle: "Izly" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_SERVICE_IZLY") }}
       />
     </Stack>
   );

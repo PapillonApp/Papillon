@@ -1,6 +1,7 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "expo-router";
 import React, { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,6 +16,7 @@ const PronoteSearchHeader = memo(({
 }: {
 }) => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [url, setUrl] = React.useState("");
 
   const submitURL = () => {
@@ -26,13 +28,13 @@ const PronoteSearchHeader = memo(({
 
   return (
     <Stack padding={[4, 0]}>
-      <Typography variant="h2">Indiquez l'URL de l'établissement</Typography>
-      <Typography variant="action" color="textSecondary">Pour vous connecter, nous avons besoin de l&apos;emplacement de ton établissement.</Typography>
+      <Typography variant="h2">{t("ONBOARDING_URL")}</Typography>
+      <Typography variant="action" color="textSecondary">{t("ONBOARDING_PRONOTE_LOCATION_HELP")}</Typography>
       <Divider height={6} ghost />
-      <Search icon="link" placeholder="URL de l'établissement" style={{ width: "100%" }} value={url} setValue={setUrl} onTextChange={setUrl} autoFocus={url.trim().length === 0} />
+      <Search icon="link" placeholder={t("ONBOARDING_URL_PLACEHOLDER")} style={{ width: "100%" }} value={url} setValue={setUrl} onTextChange={setUrl} autoFocus={url.trim().length === 0} />
 
       <Divider height={3} ghost />
-      <Button label="Valider" fullWidth height={44} onPress={() => submitURL()} disabled={!urlValid} />
+      <Button label={t("CONFIRM_BTN")} fullWidth height={44} onPress={() => submitURL()} disabled={!urlValid} />
 
       <Divider height={18} ghost />
     </Stack>
