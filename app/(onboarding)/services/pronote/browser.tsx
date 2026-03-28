@@ -2,6 +2,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import { router, useNavigation } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
 import React, { createRef, RefObject, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Modal } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WebView from "react-native-webview";
@@ -23,6 +24,7 @@ import { Pronote2FAModal } from "./2fa";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { params } = useRoute();
   const { url, school } = params;
@@ -259,8 +261,8 @@ export default function PronoteENTLogin() {
           <Stack vAlign="center" hAlign="center" width={"100%"} gap={3} padding={20}>
             <ActivityIndicator />
             <Divider height={12} ghost />
-            <Typography align="center" variant="h4">Connexion à {school && school.name ? school.name : "ton établissement"}</Typography>
-            <Typography align="center" variant="body" color="textSecondary">Cela peut prendre quelques secondes.</Typography>
+            <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? school.name : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
+            <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
           </Stack>
         </Reanimated.View>
       }

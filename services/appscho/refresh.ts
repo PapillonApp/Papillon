@@ -6,6 +6,7 @@ export async function refreshAppSchoAccount(
   accountId: string,
   credentials: Auth
 ): Promise<{ auth: Auth; session: User }> {
+  throw new Error("AppScho service is currently unavailable");
   const additionals = credentials.additionals || {};
   const instanceId = additionals["instanceId"];
   const refreshToken = additionals["refreshToken"];

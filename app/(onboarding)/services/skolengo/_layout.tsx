@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
+  const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -17,7 +19,7 @@ export default function OnboardingLayout() {
     <Stack>
       <Stack.Screen
         name="locate"
-        options={{ ...newScreenOptions, headerTitle: "Connexion via Skolengo" }}
+        options={{ ...newScreenOptions, headerTitle: t("ONBOARDING_HEADER_SKOLENGO_LOGIN") }}
       />
       <Stack.Screen
         name="webview"

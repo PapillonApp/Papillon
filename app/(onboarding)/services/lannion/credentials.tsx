@@ -93,8 +93,8 @@ export default function LannionCredentials() {
       const etudiant = firstReleve.relevé?.etudiant;
 
       const accountUUID = String(uuid());
-      const studentName = upperFirst(etudiant?.nom) || "Unknown";
-      const studentFirstName = upperFirst(etudiant?.prenom) || "Student";
+      const studentName = upperFirst(etudiant?.nom) || t("ONBOARDING_UNKNOWN_NAME");
+      const studentFirstName = upperFirst(etudiant?.prenom) || t("ONBOARDING_UNKNOWN_STUDENT");
 
       const account: Account = {
         id: accountUUID,
@@ -148,7 +148,7 @@ export default function LannionCredentials() {
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
-        Alert.alert("Erreur d'authentification", "Les identifiants que tu as saisis sont incorrects ou une erreur est survenue lors de la connexion.");
+        Alert.alert(t("Alert_Auth_Error"), t("Alert_Auth_Bad_Creds"));
       }
       setIsLoggingIn(false);
     }
@@ -158,14 +158,14 @@ export default function LannionCredentials() {
     return (
       <Stack padding={20} gap={8} style={{ paddingTop: insets.top + 20 }}>
         <Typography variant="h3">
-                    Lannion n'est pas encore disponible sur Android
+                    {t("ONBOARDING_LANNION_ANDROID_TITLE")}
         </Typography>
         <Typography variant="body1" color="secondary">
-                    On travaille dur pour rendre les librairies nécessaires disponibles sur Android.
+                    {t("ONBOARDING_LANNION_ANDROID_DESCRIPTION")}
         </Typography>
         <View style={{ marginTop: 24 }} />
         <Button
-          title="Retour"
+          title={t("Global_Back")}
           onPress={() => router.back()}
         />
       </Stack>

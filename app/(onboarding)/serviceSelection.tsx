@@ -4,6 +4,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Image, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -24,6 +25,7 @@ export default function ServiceSelection() {
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { params } = useRoute();
   const { type } = params;
@@ -44,11 +46,11 @@ export default function ServiceSelection() {
   const titleString = useMemo(() => {
     switch (type) {
     case "univ":
-      return "Quel service souhaites-tu utiliser ?";
+      return t("ONBOARDING_SERVICE_SELECTION_TITLE_UNIV");
     default:
-      return "Quelle application utilises-tu habituellement ?";
+      return t("ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL");
     }
-  }, [type]);
+  }, [type, t]);
 
 
   const hasServiceRoute = services.find(service => service.name === selectedService)?.route || services.find(service => service.name === selectedService)?.onPress;
@@ -84,11 +86,11 @@ export default function ServiceSelection() {
             style={{ width: 86, height: 86, borderRadius: 24 }}
           />
           <Divider height={8} ghost />
-          <Typography variant="h3" align="center">Papillon n'est pas encore disponible pour vous.</Typography>
-          <Typography align="center" variant="body1" color="textSecondary">Les comptes parents et professeurs ne sont pas compatibles avec Papillon pour le moment.</Typography>
+          <Typography variant="h3" align="center">{t("ONBOARDING_UNSUPPORTED_TITLE")}</Typography>
+          <Typography align="center" variant="body1" color="textSecondary">{t("ONBOARDING_UNSUPPORTED_DESCRIPTION")}</Typography>
           <Divider height={16} ghost />
           <Button
-            label="Retour"
+            label={t("Global_Back")}
             variant="secondary"
             onPress={() => {
               router.back();
@@ -106,7 +108,7 @@ export default function ServiceSelection() {
         ListHeaderComponent={() => (
           <Stack padding={[4, 0]}>
             <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">Sélectionne le service que tu as l’habitude d’utiliser dans ton établissement.</Typography>
+            <Typography variant="action" color="textSecondary">{t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}</Typography>
             <Divider height={18} ghost />
           </Stack>
         )}
@@ -147,7 +149,7 @@ export default function ServiceSelection() {
         }}
       >
         <Button
-          label="Continuer"
+          label={t("ONBOARDING_CONTINUE")}
           onPress={() => { loginToService(selectedService) }}
           disabled={!selectedService || !hasServiceRoute}
         />

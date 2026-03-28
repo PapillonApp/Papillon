@@ -3,6 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Stack from "@/ui/components/Stack";
@@ -20,21 +21,21 @@ import OnboardingSelector from "./components/OnboardingSelector";
 const LEVELS = [
   {
     key: "middle-school",
-    label: "Collègien",
+    labelKey: "ONBOARDING_LEVEL_MIDDLE_SCHOOL",
     color: "#008CFF",
     icon: MiddleSchoolIllustration,
     type: "school"
   },
   {
     key: "high-school",
-    label: "Lycéen",
+    labelKey: "ONBOARDING_LEVEL_HIGH_SCHOOL",
     color: "#FFC800",
     icon: HighSchoolIllustration,
     type: "school"
   },
   {
     key: "sup-school",
-    label: "Étudiant",
+    labelKey: "ONBOARDING_LEVEL_UNIVERSITY",
     color: "#68F000",
     icon: SupSchoolIllustration,
     type: "univ"
@@ -44,14 +45,14 @@ const LEVELS = [
   },
   {
     key: "parents",
-    label: "Parent d'élève",
+    labelKey: "ONBOARDING_LEVEL_PARENT",
     color: "#ff4d4d",
     icon: ParentsIllustration,
     type: "parents"
   },
   {
     key: "teacher",
-    label: "Professeur",
+    labelKey: "ONBOARDING_LEVEL_TEACHER",
     color: "#FF0084",
     icon: TeacherIllustration,
     type: "teacher"
@@ -64,6 +65,7 @@ export default function AgeSelection() {
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const [selectedLevel, setSelectedLevel] = useState(null);
 
@@ -72,12 +74,12 @@ export default function AgeSelection() {
       <FlatList
         ListHeaderComponent={() => (
           <Stack>
-            <Typography variant="h2">Qui est-tu ?</Typography>
-            <Typography variant="action" color="textSecondary">Sélectionne ton niveau scolaire</Typography>
+            <Typography variant="h2">{t("ONBOARDING_AGE_TITLE")}</Typography>
+            <Typography variant="action" color="textSecondary">{t("ONBOARDING_AGE_DESCRIPTION")}</Typography>
             <Divider height={6} ghost />
           </Stack>
         )}
-        data={LEVELS}
+        data={LEVELS.map((level) => ("labelKey" in level ? { ...level, label: t(level.labelKey) } : level))}
         renderItem={({ item }) => <OnboardingSelector item={item} selected={selectedLevel} setSelected={setSelectedLevel} />}
         contentContainerStyle={{
           padding: 20,
@@ -100,7 +102,7 @@ export default function AgeSelection() {
         }}
       >
         <Button
-          label="Continuer"
+          label={t("ONBOARDING_CONTINUE")}
           onPress={() => {
             navigation.navigate("serviceSelection", {
               type: LEVELS.find((level) => level.key === selectedLevel)?.type

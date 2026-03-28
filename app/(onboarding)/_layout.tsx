@@ -1,10 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
+import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 
 export default function OnboardingLayout() {
+  const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -23,15 +25,15 @@ export default function OnboardingLayout() {
         />
         <Stack.Screen
           name="ageSelection"
-          options={{ ...newScreenOptions, title: "À propos de toi" }}
+          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_ABOUTYOU") }}
         />
         <Stack.Screen
           name="serviceSelection"
-          options={{ ...newScreenOptions, title: "Service scolaire" }}
+          options={{ ...newScreenOptions, title: t("ONBOARDING_HEADER_SCHOOLSERVICE") }}
         />
         <Stack.Screen
           name="restaurants"
-          options={{ headerShown: false, title: "Restaurants" }}
+          options={{ headerShown: false, title: t("ONBOARDING_RESTAURANTS") }}
         />
 
         <Stack.Screen
@@ -53,10 +55,6 @@ export default function OnboardingLayout() {
         <Stack.Screen
           name="services/multi"
           options={{ headerShown: false, title: "", presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="services/appscho"
-          options={{ headerShown: false, title: "" }}
         />
       </Stack>
     </View>

@@ -1,5 +1,5 @@
 import * as Linking from "expo-linking";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
@@ -120,7 +120,7 @@ export default function WebViewScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
       <OnboardingWebView
-        source={loginURL ? { uri: loginURL } : { html: "<h1>Chargement...</h1>" }}
+        source={loginURL ? { uri: loginURL } : { html: `<h1>${t("ONBOARDING_LOADING")}</h1>` }}
         onShouldStartLoadWithRequest={(request) => {
           handleRequest(request.url)
           return true;
