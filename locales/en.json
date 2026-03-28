@@ -482,5 +482,8 @@
   "Transport_Error_Unknown_Service_Title": "Oops, that service no longer exists!",
   "Transport_Error_Unknown_Service_Description": "The service you're trying to open is no longer available in Papillon. Try changing the service in the settings.",
   "Transport_Error_Cant_Open_Deeplink_Title": "Unable to open the service",
-  "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again."
+  "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again.",
+  "Settings_Transport_Localisation_Needed": "Papillon needs your location",
+  "Settings_Transport_Localisation_Needed_Description": "To use transport features, Papillon needs access to your location to provide accurate transit information.",
+  "Settings_Transport_Localisation_Request": "Enable location"
 }
