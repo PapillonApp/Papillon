@@ -52,15 +52,9 @@ export default function SettingsIndex() {
   }, [account]);
 
   const logout = useCallback(() => {
-    const account = accountStore.accounts.find(account => account.id === accountStore.lastUsedAccount)
-    if (account) {
-      useAccountStore.getState().removeAccount(account)
-      useAccountStore.getState().setLastUsedAccount("")
-      for (const service of account.services) {
-        ClearDatabaseForAccount(service.id)
-      }
-    } else {
-      error("Unable to find the current account")
+    const accounts = useAccountStore.getState().accounts;
+    for (const account of accounts) {
+      useAccountStore.getState().removeAccount(account);
     }
     router.replace("/(onboarding)/welcome");
 

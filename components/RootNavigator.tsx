@@ -32,7 +32,7 @@ export function RootNavigator() {
 
   return (
     <Stack initialRouteName='(tabs)' screenOptions={stackScreenOptions}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
       <Stack.Screen name="(new)" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="(settings)" options={{ headerShown: false, presentation: "modal" }} />

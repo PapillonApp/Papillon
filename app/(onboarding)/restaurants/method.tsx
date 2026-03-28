@@ -4,6 +4,7 @@ import { useRoute, useTheme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Image, ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Dynamic } from "@/ui/components/Dynamic";
@@ -25,6 +26,7 @@ export default function ServiceSelection() {
   const { colors } = theme;
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { params } = useRoute();
   const { type } = params;
@@ -40,7 +42,7 @@ export default function ServiceSelection() {
 
   const filteredServices = services;
 
-  const titleString = "Quel est ton service de cantine ?";
+  const titleString = t("ONBOARDING_RESTAURANT_SELECTION_TITLE");
 
   const hasServiceRoute = services.find(service => service.name === selectedService)?.route || services.find(service => service.name === selectedService)?.onPress;
 
@@ -60,7 +62,7 @@ export default function ServiceSelection() {
         ListHeaderComponent={() => (
           <Stack padding={[4, 0]}>
             <Typography variant="h2">{titleString}</Typography>
-            <Typography variant="action" color="textSecondary">Sélectionne le service que tu as l’habitude d’utiliser dans ton établissement.</Typography>
+            <Typography variant="action" color="textSecondary">{t("ONBOARDING_SERVICE_SELECTION_DESCRIPTION")}</Typography>
             <Divider height={18} ghost />
           </Stack>
         )}
@@ -101,7 +103,7 @@ export default function ServiceSelection() {
         }}
       >
         <Button
-          label="Continuer"
+          label={t("ONBOARDING_CONTINUE")}
           onPress={() => { loginToService(selectedService) }}
           disabled={!selectedService || !hasServiceRoute}
         />

@@ -71,8 +71,8 @@ export default function AppSchoCredentials() {
   async function handleLogin(username: string, password: string) {
     if (!instance) {
       alert.showAlert({
-        title: "Erreur",
-        description: "Instance non trouvée",
+        title: t("ONBOARDING_ERROR"),
+        description: t("ONBOARDING_APPSCHO_INSTANCE_NOT_FOUND"),
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,
@@ -82,8 +82,8 @@ export default function AppSchoCredentials() {
 
     if (!username.trim() || !password.trim()) {
       alert.showAlert({
-        title: "Champs requis",
-        description: "Veuillez remplir tous les champs",
+        title: t("ONBOARDING_REQUIRED_FIELDS"),
+        description: t("ONBOARDING_FILL_ALL_FIELDS"),
         icon: "TriangleAlert",
         color: "#D60046",
         withoutNavbar: true,
@@ -134,8 +134,8 @@ export default function AppSchoCredentials() {
       });
     } catch (error) {
       alert.showAlert({
-        title: "Erreur d'authentification",
-        description: "Une erreur est survenue lors de la connexion, elle a donc �t� abandonn�e.",
+        title: t("Alert_Auth_Error"),
+        description: t("ONBOARDING_ALERT_LOGIN_ABORTED"),
         icon: "TriangleAlert",
         color: "#D60046",
         technical: String(error),

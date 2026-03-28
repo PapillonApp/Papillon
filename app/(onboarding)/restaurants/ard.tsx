@@ -3,7 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { t } from "i18next";
 import LottieView from "lottie-react-native";
-import { Authenticator } from "pawrd";
+// import { Authenticator } from "pawrd";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Keyboard, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import Reanimated, {
@@ -69,6 +69,7 @@ export default function TurboSelfLoginWithCredentials() {
 
   const loginARD = async () => {
     try {
+      throw new Error("ARD service is currently unavailable");
       setIsLoggingIn(true);
       const authenticator = new Authenticator();
       // ARD require 2 connections, WHY ?
@@ -138,7 +139,7 @@ export default function TurboSelfLoginWithCredentials() {
               return router.push("/");
     } catch (error) {
         setIsLoggingIn(false);
-      Alert.alert("Erreur d'authentification", "Une erreur est survenue lors de la connexion, elle a donc été abandonnée.");
+      Alert.alert(t("Alert_Auth_Error"), t("ONBOARDING_ALERT_LOGIN_ABORTED"));
     }
   };
 
@@ -151,18 +152,18 @@ export default function TurboSelfLoginWithCredentials() {
           fields={[
             {
               name: "siteId",
-              placeholder: "ID de l'établissement",
+              placeholder: t("INPUT_ETABID"),
               secureTextEntry: false
             },
             {
               name: "username",
-              placeholder: "Identifiant",
+              placeholder: t("INPUT_USERNAME"),
               secureTextEntry: false,
               textContentType: "username"
             },
             {
               name: "password",
-              placeholder: "Mot de passe",
+              placeholder: t("INPUT_PASSWORD"),
               secureTextEntry: true,
               textContentType: "password"
             }
