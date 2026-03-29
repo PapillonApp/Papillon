@@ -235,6 +235,9 @@
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Menu du jour",
 
+  "Home_Release_Notes_Banner": "Nouveautés de la version {{version}}",
+  "Home_Release_Notes_Banner_Description": "Découvre les dernières améliorations et corrections de bugs.",
+
   "Tab_Calendar_Empty": "Aucun événement trouvé",
   "Tab_Calendar_Empty_Description": "Ajoute un événement ou synchronise ton calendrier pour commencer.",
 
@@ -417,6 +420,8 @@
   "Settings_About_Title": "À propos",
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Se déconnecter",
+  "Settings_ReleaseNotes_Title": "Notes de version",
+  "Settings_ReleaseNotes_Description": "Quoi de neuf dans cette version ?",
 
   "Settings_Logout_Description": "Supprimer ce compte de Papillon",
   "Settings_Language_Title": "Langue",
