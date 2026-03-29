@@ -270,7 +270,7 @@ const Course = React.memo((props: CourseProps) => {
             left: 0,
             right: 0,
             bottom: 0,
-            borderRadius: 25,
+            borderRadius: compact ? 18 : 25,
             opacity: 0.55,
           }}
         />
