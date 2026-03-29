@@ -19,6 +19,7 @@ import List from '@/ui/components/List';
 import SectionHeader from "@/ui/components/SectionHeader";
 import Typography from "@/ui/components/Typography";
 import { MAGIC_URL } from "@/utils/endpoints";
+import { exportAndShareAIData, ExportProgressCallback } from "@/utils/aiExport";
 import { log } from "@/utils/logger/logger";
 import ModelManager from "@/utils/magic/ModelManager";
 import { scheduleNotificationAtDate } from "@/utils/notification/reminder/helper";
@@ -38,6 +39,8 @@ export default function Devmode() {
 
   const [showAccountStore, setShowAccountStore] = useState(false);
   const [showLogsStore, setShowLogsStore] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState<{ label: string; done: number; total: number; homeworkCount: number } | null>(null);
 
   const [visibleLogsCount, setVisibleLogsCount] = useState(20);
 
@@ -384,6 +387,54 @@ export default function Devmode() {
           <Typography variant="title">
             Réinitialiser la base de données
           </Typography>
+        </Item>
+      </List>
+
+      <SectionHeader
+        title="IA Training Export"
+        leading={
+          <Icon>
+            <Papicons name="Sparkles" size={18} />
+          </Icon>
+        }
+      />
+
+      <List>
+        <Item
+          onPress={async () => {
+            if (isExporting) return;
+            setIsExporting(true);
+            setExportProgress(null);
+            const onProgress: ExportProgressCallback = (label, done, total, homeworkCount) => {
+              setExportProgress({ label, done, total, homeworkCount });
+            };
+            try {
+              await exportAndShareAIData(onProgress);
+            } catch (err) {
+              Alert.alert("Erreur", `Export échoué : ${String(err)}`);
+            } finally {
+              setIsExporting(false);
+              setExportProgress(null);
+            }
+          }}
+        >
+          <Typography variant="title">
+            {isExporting ? "Export en cours…" : "Exporter les données"}
+          </Typography>
+          {exportProgress ? (
+            <>
+              <Typography variant="caption">
+                {exportProgress.label}
+              </Typography>
+              <Typography variant="caption">
+                {exportProgress.done}/{exportProgress.total} semaines · {exportProgress.homeworkCount} devoirs
+              </Typography>
+            </>
+          ) : (
+            <Typography variant="caption">
+              Exporte les données de devoirs pour entraîner un modèle IA localement.
+            </Typography>
+          )}
         </Item>
       </List>
 
