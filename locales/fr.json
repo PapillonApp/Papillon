@@ -63,6 +63,7 @@
   "ONBOARDING_LEVEL_PARENT": "Parent d'élève",
   "ONBOARDING_LEVEL_TEACHER": "Professeur",
   "ONBOARDING_CONTINUE": "Continuer",
+  "ONBOARDING_CANCEL": "Annuler",
   "ONBOARDING_SERVICE_SELECTION_TITLE_UNIV": "Quel service souhaites-tu utiliser ?",
   "ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL": "Quelle application utilises-tu habituellement ?",
   "ONBOARDING_SERVICE_SELECTION_DESCRIPTION": "Sélectionne le service que tu as l’habitude d’utiliser dans ton établissement.",
