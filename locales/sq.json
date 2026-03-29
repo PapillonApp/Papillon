@@ -61,6 +61,7 @@
   "ONBOARDING_LEVEL_PARENT": "Parent d'élève",
   "ONBOARDING_LEVEL_TEACHER": "Professeur",
   "ONBOARDING_CONTINUE": "Continuer",
+  "ONBOARDING_CANCEL": "Annuler",
   "ONBOARDING_SERVICE_SELECTION_TITLE_UNIV": "Quel service souhaites-tu utiliser ?",
   "ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL": "Quelle application utilises-tu habituellement ?",
   "ONBOARDING_SERVICE_SELECTION_DESCRIPTION": "Sélectionne le service que tu as l’habitude d’utiliser dans ton établissement.",
@@ -493,5 +494,8 @@
   "Transport_Error_Unknown_Service_Title": "Oups, ce service n'existe plus !",
   "Transport_Error_Unknown_Service_Description": "Le service que tu essaies d'ouvrir n'est plus disponible sur Papillon. Essaie de changer le service dans les paramètres.",
   "Transport_Error_Cant_Open_Deeplink_Title": "Impossible d'ouvrir le service",
-  "Transport_Error_Cant_Open_Deeplink_Description": "Vérifie que l'application est installée sur ton appareil, puis réessaie."
+  "Transport_Error_Cant_Open_Deeplink_Description": "Vérifie que l'application est installée sur ton appareil, puis réessaie.",
+  "Settings_Transport_Localisation_Needed": "Papillon a besoin de ta localisation.",
+  "Settings_Transport_Localisation_Needed_Description": "Pour utiliser les fonctionnalités de transport, Papillon doit accéder à ta localisation afin de fournir des estimations de temps de trajets.",
+  "Settings_Transport_Localisation_Request": "Activer la localisation"
 }
