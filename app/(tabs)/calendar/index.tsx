@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
-import { FlatList, StyleSheet,View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,40 +34,46 @@ export default function TabOneScreen() {
     onMomentumScrollEnd,
     onScroll,
     INITIAL_INDEX,
-    windowWidth
+    windowWidth,
   } = useCalendarState();
 
-  const {
-    timetable,
-    manualRefreshing,
-    handleRefresh,
-    isLoading
-  } = useTimetableData(weekNumber, date);
+  const { timetable, manualRefreshing, handleRefresh, isLoading } =
+    useTimetableData(weekNumber, date);
 
-  const renderDay = useCallback(({ index }: { index: number }) => {
-    const dayDate = getDateFromIndex(index);
-    const normalizedDate = new Date(dayDate);
-    normalizedDate.setHours(0, 0, 0, 0);
-    const dayCourses = timetable.find(d => {
-      const dDate = new Date(d.date);
-      dDate.setHours(0, 0, 0, 0);
-      return dDate.getTime() === normalizedDate.getTime();
-    })?.courses || [];
+  const renderDay = useCallback(
+    ({ index }: { index: number }) => {
+      const dayDate = getDateFromIndex(index);
+      const normalizedDate = new Date(dayDate);
+      normalizedDate.setHours(0, 0, 0, 0);
+      const dayCourses =
+        timetable.find(d => {
+          const dDate = new Date(d.date);
+          dDate.setHours(0, 0, 0, 0);
+          return dDate.getTime() === normalizedDate.getTime();
+        })?.courses || [];
 
-    return (
-      <CalendarDay
-        dayDate={dayDate}
-        courses={dayCourses}
-        isRefreshing={manualRefreshing}
-        onRefresh={handleRefresh}
-        colors={colors}
-        headerHeight={headerHeight}
-        insets={insets}
-        tabBarHeight={tabBarHeight}
-        transportInfo={account.transport ?? undefined}
-      />
-    );
-  }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
+      return (
+        <CalendarDay
+          dayDate={dayDate}
+          courses={dayCourses}
+          isRefreshing={manualRefreshing}
+          onRefresh={handleRefresh}
+          colors={colors}
+          headerHeight={headerHeight}
+          insets={insets}
+          tabBarHeight={tabBarHeight}
+        />
+      );
+    },
+    [
+      getDateFromIndex,
+      timetable,
+      manualRefreshing,
+      handleRefresh,
+      colors,
+      headerHeight,
+    ]
+  );
 
   return (
     <>
@@ -87,7 +93,11 @@ export default function TabOneScreen() {
           pagingEnabled={false}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={INITIAL_INDEX}
-          getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+          getItemLayout={(_, index) => ({
+            length: windowWidth,
+            offset: windowWidth * index,
+            index,
+          })}
           renderItem={renderDay}
           keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
@@ -117,15 +127,15 @@ const styles = StyleSheet.create({
 
 export function getStatusText(status?: CourseStatus): string {
   switch (status) {
-  case CourseStatus.ONLINE:
-    return t("Online_Course")
-  case CourseStatus.EDITED:
-    return t("Edited_Course")
-  case CourseStatus.CANCELED:
-    return t("Canceled_Course")
-  case CourseStatus.EVALUATED:
-    return t("Evaluated_Course")
-  default:
-    return ""
+    case CourseStatus.ONLINE:
+      return t("Online_Course");
+    case CourseStatus.EDITED:
+      return t("Edited_Course");
+    case CourseStatus.CANCELED:
+      return t("Canceled_Course");
+    case CourseStatus.EVALUATED:
+      return t("Evaluated_Course");
+    default:
+      return "";
   }
 }
