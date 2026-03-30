@@ -99,13 +99,20 @@ export default function ServiceSelection() {
           paddingBottom: insets.bottom + 20,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          backgroundColor: colors.background
+          backgroundColor: colors.background,
+          flexDirection: "column",
+          gap: 8
         }}
       >
         <Button
           label={t("ONBOARDING_CONTINUE")}
           onPress={() => { loginToService(selectedService) }}
           disabled={!selectedService || !hasServiceRoute}
+        />
+        <Button
+          label={t("ONBOARDING_CANCEL")}
+          onPress={() => { router.back() }}
+          variant="secondary"
         />
       </View>
     </View>
