@@ -38,4 +38,6 @@ export interface Personalization {
   disabledTabs?: string[];
   gradesSortMethod?: string;
   gradesPeriodId?: string;
+  installedVersion?: string;
+  releaseNotesSeenForVersion?: string;
 }

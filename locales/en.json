@@ -61,6 +61,7 @@
   "ONBOARDING_LEVEL_PARENT": "Parent",
   "ONBOARDING_LEVEL_TEACHER": "Teacher",
   "ONBOARDING_CONTINUE": "Continue",
+  "ONBOARDING_CANCEL": "Cancel",
   "ONBOARDING_SERVICE_SELECTION_TITLE_UNIV": "Which service do you want to use?",
   "ONBOARDING_SERVICE_SELECTION_TITLE_SCHOOL": "Which app do you usually use?",
   "ONBOARDING_SERVICE_SELECTION_DESCRIPTION": "Select the service you usually use in your school.",
@@ -209,6 +210,8 @@
   "Home_Attendance_Button_Description_Number": "{{number}} absences",
   "Home_Menu_Button_Title": "Menu",
   "Home_Menu_Button_Description": "Today's menu",
+  "Home_Release_Notes_Banner": "What's new in version {{version}}",
+  "Home_Release_Notes_Banner_Description": "Discover the latest improvements and bug fixes.",
   "Tab_Calendar_Empty": "No events found",
   "Tab_Calendar_Empty_Description": "Add an event or sync your calendar to get started.",
   "Modal_Course_Title": "My class",
@@ -361,6 +364,8 @@
   "Settings_About_Description": "Version",
   "Settings_Logout_Title": "Log out",
   "Settings_Logout_Description": "Remove this account from Papillon",
+  "Settings_ReleaseNotes_Title": "Release notes",
+  "Settings_ReleaseNotes_Description": "See what's new in the latest version",
   "Settings_Language_Title": "Language",
   "Settings_Language_Description": "Change language",
   "Settings_Personalization_Title_Card": "Personalization",
@@ -482,5 +487,8 @@
   "Transport_Error_Unknown_Service_Title": "Oops, that service no longer exists!",
   "Transport_Error_Unknown_Service_Description": "The service you're trying to open is no longer available in Papillon. Try changing the service in the settings.",
   "Transport_Error_Cant_Open_Deeplink_Title": "Unable to open the service",
-  "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again."
+  "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again.",
+  "Settings_Transport_Localisation_Needed": "Papillon needs your location",
+  "Settings_Transport_Localisation_Needed_Description": "To use transport features, Papillon needs access to your location to provide accurate transit information.",
+  "Settings_Transport_Localisation_Request": "Enable location"
 }
