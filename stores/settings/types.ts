@@ -40,4 +40,6 @@ export interface Personalization {
   maxCoursesOnHome?: number;
   gradesSortMethod?: string;
   gradesPeriodId?: string;
+  installedVersion?: string;
+  releaseNotesSeenForVersion?: string;
 }

@@ -37,6 +37,8 @@ export default function SettingsIndex() {
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
 
   const settingsStore = useSettingsStore(state => state.personalization);
+  const currentVersion = packagejson.version;
+  const releaseNotesUrl = `https://papillon.bzh/release-notes/${currentVersion}`;
 
   const account = accounts.find((a) => a.id === lastUsedAccount);
 
@@ -94,6 +96,17 @@ export default function SettingsIndex() {
           onPress: () => Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
         },*/
         {
+          title: t("Settings_ReleaseNotes_Title"),
+          description: t("Settings_ReleaseNotes_Description"),
+          papicon: <Papicons name={"PrivatePapillonApp"} />,
+          icon: <InfoIcon />,
+          color: "#1F7AFC",
+          onPress: () =>
+            WebBrowser.openBrowserAsync(releaseNotesUrl, {
+              presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+            }),
+        },
+        {
           title: t("Settings_Donate_Title"),
           description: t("Settings_Donate_Description"),
           papicon: <Papicons name={"Heart"} />,
@@ -104,7 +117,7 @@ export default function SettingsIndex() {
         },
         {
           title: t("Settings_About_Title"),
-          description: `${t("Settings_About_Description")} ${packagejson.version}`,
+          description: `${t("Settings_About_Description")} ${currentVersion}`,
           icon: <InfoIcon />,
           papicon: <Papicons name={"Info"} />,
           color: "#797979",
