@@ -114,10 +114,8 @@ export default function QRCodeAndCardsPage() {
             title="Ajouter"
             icon={<Plus />}
             onPress={() => {
-              router.dismiss();
-              router.push({
-                pathname: "/(onboarding)/restaurants/method",
-                params: { action: "addService" }
+              router.navigate({
+                pathname: "/(onboarding)/restaurants/method"
               });
             }}
           />

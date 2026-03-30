@@ -33,7 +33,9 @@ export default function Welcome() {
       player.loop = true;
       player.muted = true;
       player.volume = 0;
-      player.playbackRate =0.5;
+      player.showNowPlayingNotification = false;
+      player.playbackRate = 0.5;
+      player.audioMixingMode = "mixWithOthers";
       player.play();
     });
 
