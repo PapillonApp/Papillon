@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
@@ -21,7 +21,7 @@ export default function OnboardingLayout() {
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "" }}
+          options={{ ...newScreenOptions, title: "", headerLeft: () => null }}
         />
         <Stack.Screen
           name="ageSelection"

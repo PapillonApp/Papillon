@@ -2,7 +2,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, StatusBar, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -71,6 +71,8 @@ export default function AgeSelection() {
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} translucent />
+          
       <FlatList
         ListHeaderComponent={() => (
           <Stack>
