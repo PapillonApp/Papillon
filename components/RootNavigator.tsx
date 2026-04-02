@@ -86,6 +86,7 @@ export function RootNavigator() {
           options={{
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Task_Title"),
+            headerTransparent: true,
             headerLargeTitle: false,
             presentation: "modal",
           }}
@@ -96,6 +97,7 @@ export function RootNavigator() {
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Grades_Title"),
             headerLargeTitle: false,
+            headerTransparent: true,
             presentation: "modal",
           }}
         />
@@ -114,7 +116,7 @@ export function RootNavigator() {
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Course_Title"),
             headerLargeTitle: false,
-            headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+            headerTransparent: true,
             presentation: "modal",
             contentStyle: {
               borderRadius: Platform.OS === 'ios' ? 30 : 0,

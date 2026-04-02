@@ -18,11 +18,12 @@ import { getAttachmentIcon } from "@/utils/news/getAttachmentIcon";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
-import { Platform, View } from "react-native";
 import adjust from "@/utils/adjustColor";
 import { router } from "expo-router";
 import { MenuView } from "@react-native-menu/menu";
 import { useHomeworkActionsStore } from "@/app/(tabs)/tasks/hooks/useHomeworkData";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Task = () => {
   const { params } = useRoute();
@@ -58,6 +59,12 @@ const Task = () => {
     setIsDone(done);
   }
 
+  const insets = useSafeAreaInsets();
+  const finalHeaderHeight = Platform.select({
+    android: insets.top + 32,
+    default: 0
+  });
+
   return (
     <>
       <LinearGradient
@@ -83,7 +90,8 @@ const Task = () => {
             custom={task.custom}
             date={new Date(task.dueDate)}
             style={{
-              marginVertical: 24
+              marginVertical: 24,
+              paddingTop: finalHeaderHeight,
             }}
           />
         }

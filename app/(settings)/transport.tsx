@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   Image,
   Modal,
+  Platform,
   ScrollView,
 } from "react-native";
 
@@ -17,6 +18,8 @@ import List from "@/ui/components/List";
 import Typography from "@/ui/components/Typography";
 import { AddressModal } from "@/app/(modals)/address";
 import { TransportAddress } from "@/stores/account/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 
 export default function TransportView() {
   const accountStore = useAccountStore();
@@ -52,12 +55,14 @@ export default function TransportView() {
     [transportEnabled]
   );
 
+  const insets = useSafeAreaInsets();
+
   return (
     <ScrollView
       contentContainerStyle={{
         padding: 20,
         gap: 15,
-        paddingTop: 82,
+        paddingTop: runsIOS26 ? insets.top : 16,
       }}
     >
       <SettingsHeader
