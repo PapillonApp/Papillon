@@ -57,7 +57,7 @@ const PersonalizationSettings = () => {
             left: 0,
             right: 0,
             height: 400,
-            opacity: useMaterialYou ? 0.3 : 1,
+            opacity: useMaterialYou ? 0.4 : 1,
           }}
         />
       </Dynamic>
@@ -101,6 +101,7 @@ const PersonalizationSettings = () => {
                   <Papicons name={"Palette"} />
                 </Icon>
               </List.Leading>
+              <Typography variant="caption" color={"primary"}>{t("Global_Recommended")}</Typography>
               <Typography variant="title">{t("Settings_Personalization_MaterialYou_Title")}</Typography>
               <Typography variant="body1" color="textSecondary">
                 {t("Settings_Personalization_MaterialYou_Description")}
