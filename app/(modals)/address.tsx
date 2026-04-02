@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   View,
 } from "react-native";
@@ -165,6 +166,7 @@ export const AddressModal = ({
     <View
       style={{
         flex: 1,
+        marginTop: Platform.OS === "ios" ? 0 : insets.top,
         paddingBottom: insets.bottom,
         backgroundColor: theme.colors.background,
       }}
