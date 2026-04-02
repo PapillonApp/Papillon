@@ -25,12 +25,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
 
-  const AccountsMenuItems = accounts.map((account) => ({
+  const AccountsMenuItems = (accounts && accounts.length > 0) && accounts.map((account) => ({
     id: account.id,
     title: account.firstName + ' ' + account.lastName,
     subtitle: formatSchoolName(account.schoolName ?? ""),
     state: account.id === lastUsedAccount ? 'on' : 'off',
-  }));
+  })) || [];
 
   return (
     <Stack inline flex>
