@@ -17,7 +17,7 @@ import AnimatedNumber from "@/ui/components/AnimatedNumber";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import Typography from "@/ui/new/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import adjust from "@/utils/adjustColor";
 import PapillonSubjectAvg from "@/utils/grades/algorithms/subject";
@@ -160,18 +160,25 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
             hAlign="center"
             vAlign="center"
             gap={0}
+            style={[
+              Platform.OS === 'android' ? {
+                borderWidth: 0
+              } : {}
+            ]}
           >
-            <LinearGradient
-              colors={[backgroundColor + "90", backgroundColor + "00"]}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 20,
-              }}
-            />
+            {Platform.OS === 'ios' && (
+              <LinearGradient
+                colors={[backgroundColor + "90", backgroundColor + "00"]}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: 20,
+                }}
+              />
+            )}
 
             <View
               style={{
@@ -279,7 +286,7 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
             </MenuView>
 
             <Dynamic animated key={"dateSource:" + (isRealAverage ? "real" : "estimated")}>
-              <Typography color="secondary" style={{ marginTop: 1 }}>
+              <Typography color="textSecondary" style={{ marginTop: 1 }}>
                 {isRealAverage ? "par l'établissement" :
                   "estimée au " + (shownDate instanceof Date && !isNaN(shownDate.getTime()) ? shownDate.toLocaleDateString(undefined, {
                     day: "numeric",
