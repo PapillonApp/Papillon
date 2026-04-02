@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { LucideIcon } from "lucide-react-native";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
@@ -252,7 +252,7 @@ const Course = React.memo((props: CourseProps) => {
         styles.container,
         compact && styles.compactContainer,
         {
-          borderWidth: 1,
+          borderWidth: Platform.OS === "android" ? 0 : 1,
           borderColor: adjust(color, dark ? 0.7 : -0.7) + "36",
         },
         status?.canceled && { backgroundColor: colors.card },
@@ -260,7 +260,7 @@ const Course = React.memo((props: CourseProps) => {
         containerStyle && StyleSheet.flatten(containerStyle),
       ]}
     >
-      {color && !status?.canceled && (
+      {color && !status?.canceled && Platform.OS !== "android" && (
         <LinearGradient
           colors={[adjust(color, dark ? -0.7 : 0.85), adjust(color, dark ? -0.8 : 0.6)]}
           locations={[0, 1]}
@@ -271,7 +271,22 @@ const Course = React.memo((props: CourseProps) => {
             right: 0,
             bottom: 0,
             borderRadius: compact ? 18 : 25,
+            opacity: 0.7,
+          }}
+        />
+      )}
+
+      {color && !status?.canceled && Platform.OS == "android" && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: compact ? 18 : 25,
             opacity: 0.55,
+            backgroundColor: adjust(color, dark ? -0.7 : 0.85),
           }}
         />
       )}

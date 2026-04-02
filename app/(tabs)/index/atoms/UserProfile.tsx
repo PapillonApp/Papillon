@@ -136,7 +136,7 @@ const UserProfileItemContainer = ({ children }: { children: React.ReactNode }) =
 
 
   return (
-    <Stack backgroundColor="#FFFFFF40" radius={300}>
+    <Stack style={{ marginRight: -8 }}>
       {children}
     </Stack>
   )

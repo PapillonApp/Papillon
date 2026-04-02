@@ -127,7 +127,7 @@ const HomeHeader = () => {
           }
           >
           <Stack card style={{ marginTop: 12 }} padding={[12, 10]} gap={8} direction='horizontal'>
-            <Papicons name="sparkles" size={24} color={colors.primary} />
+            <Papicons name="sparkles" size={24} color={colors.tint} />
 
             <Stack inline flex style={{ marginRight: 32 }}>
               <Typography variant='title'>
@@ -146,7 +146,9 @@ const HomeHeader = () => {
               }}
               style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: colors.text + '11', position: "absolute", top: 10, right: 12 }}
             >
-              <Papicons name="Cross" size={16} />
+              <Icon size={16}>
+              <Papicons name="Cross" />
+              </Icon>
             </Pressable>
           </Stack>
         </AnimatedPressable>
