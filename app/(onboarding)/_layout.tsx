@@ -10,7 +10,7 @@ export default function OnboardingLayout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: true,
+    headerBackVisible: false,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
