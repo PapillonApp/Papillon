@@ -380,6 +380,8 @@
   "Settings_Personalization_Accent": "צבע דגש",
   "Settings_Personalization_Accent_Description": "הצבע שתבחר כאן יוחל על דף הבית של Papillon.",
   "Settings_Personalization_Theme": "ערכת נושא",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
   "Settings_Personalization_Icon_Title": "שינוי האייקון",
   "Settings_Personalization_Icon_Description": "התאמה אישית של אייקון האפליקציה",
   "Settings_Personalization_Subject_Title": "התאמה אישית של מקצועות",
@@ -502,5 +504,8 @@
   "Transport_Error_Cant_Open_Deeplink_Description": "Vérifie que l'application est installée sur ton appareil, puis réessaie.",
   "Settings_Transport_Localisation_Needed": "Papillon a besoin de ta localisation.",
   "Settings_Transport_Localisation_Needed_Description": "Pour utiliser les fonctionnalités de transport, Papillon doit accéder à ta localisation afin de fournir des estimations de temps de trajets.",
-  "Settings_Transport_Localisation_Request": "Activer la localisation"
+  "Settings_Transport_Localisation_Request": "Activer la localisation",
+  "Settings_Preferences": "Fonctionnalités",
+  "Settings_More": "À propos",
+  "Settings_About": "Toi et Papillon"
 }
