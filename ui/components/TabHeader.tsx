@@ -27,11 +27,12 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   shouldCollapseHeader,
   modal,
 }) => {
+  const isModal = Platform.OS === 'ios' ? modal : false;
   const theme = useTheme();
   const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
-  const usedInsets = modal ? 16 : insets.top;
+  const usedInsets = isModal ? 16 : insets.top;
 
   useEffect(() => {
     onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
@@ -51,7 +52,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           height: height,
           zIndex: 99,
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
-          elevation: 2,
+          elevation: 0,
         }]}
         pointerEvents={'none'}
       >
@@ -98,7 +99,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             flexDirection: 'row',
             gap: 16,
             paddingHorizontal: 16,
-            paddingLeft: modal ? 24 : 16,
+            paddingLeft: isModal ? 24 : 16,
             height: 40,
             alignItems: 'center',
             justifyContent: 'center',

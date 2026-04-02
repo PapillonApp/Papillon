@@ -18,7 +18,7 @@ export default function OnboardingLayout() {
   }), []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View style={{ flex: 1, backgroundColor: Platform.select({ ios: "black" }) }}>
       <Stack>
         <Stack.Screen
           name="welcome"

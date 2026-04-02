@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
 
-const styles = StyleSheet.create({
+export const AndroidBackButtonStyles = StyleSheet.create({
   container: {
     width: 42,
     height: 42,
@@ -26,7 +26,7 @@ const AndroidBackButton = () => {
       onPress={router.back}
       useForeground
     >
-      <View style={styles.container}>
+      <View style={AndroidBackButtonStyles.container}>
         <Icon size={26}>
           <Papicons name="arrowleft" />
         </Icon>
