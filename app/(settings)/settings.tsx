@@ -17,13 +17,17 @@ import Icon from "@/ui/components/Icon";
 import { NativeHeaderSide } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
-import Typography from "@/ui/components/Typography";
+import TypographyLegacy from "@/ui/components/Typography";
 import adjust from "@/utils/adjustColor";
 import { getInitials } from "@/utils/chats/initials";
 import { error } from "@/utils/logger/logger";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
+import List from '@/ui/new/List';
+import Typography from '@/ui/new/Typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -259,8 +263,8 @@ export default function SettingsIndex() {
                       {button.icon}
                     </Icon>
                     <Stack direction="vertical" hAlign="start" gap={0}>
-                      <Typography inline variant="title" weight="bold" color={button.disabled ? "#505050" : newButtonColor}>{button.title}</Typography>
-                      <Typography inline variant="body2" weight="medium" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</Typography>
+                      <TypographyLegacy inline variant="title" weight="bold" color={button.disabled ? "#505050" : newButtonColor}>{button.title}</TypographyLegacy>
+                      <TypographyLegacy inline variant="body2" weight="medium" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</TypographyLegacy>
                     </Stack>
                   </Stack>
                 </AnimatedPressable>
@@ -271,14 +275,23 @@ export default function SettingsIndex() {
       </Stack>
     );
   }, [theme.dark]);
+  
+  const insets = useSafeAreaInsets();
+
+  const headerHeight = useHeaderHeight();
+  const finalHeaderHeight = Platform.select({
+    android: headerHeight -16,
+    default: 0
+  });
 
   return (
     <>
-      <TableFlatList
+      <List
         contentInsetAdjustmentBehavior="automatic"
+        gap={12}
         ListHeaderComponent={(
           <View
-            style={{ marginBottom: 16, gap: 4 }}
+            style={{ marginVertical: 16, gap: 4 }}
           >
             <Stack
               flex
@@ -287,7 +300,7 @@ export default function SettingsIndex() {
               vAlign='center'
               gap={6}
               padding={[16, 0]}
-              style={{ paddingBottom: 32 }}
+              style={{ paddingBottom: 24 }}
             >
               <Avatar
                 size={72}
@@ -295,49 +308,44 @@ export default function SettingsIndex() {
                 imageUrl={account && account.customisation && account.customisation.profilePicture ? `data:image/png;base64,${account.customisation.profilePicture}` : undefined}
                 style={{ marginBottom: 8 }}
               />
-              <Typography variant="h3" align="center">
+              <TypographyLegacy variant="h3" align="center">
                 {firstName || lastName ? `${firstName || ''} ${lastName || ''}`.trim() : t('Settings_NoAccount')}
-              </Typography>
+              </TypographyLegacy>
               {establishment &&
-                <Typography variant="body1" align="center" color="secondary">
+                <TypographyLegacy variant="body1" align="center" color="secondary">
                   {level} {(level && establishment) && " — "} {formatSchoolName(establishment)}
-                </Typography>
+                </TypographyLegacy>
               }
             </Stack>
             <RenderBigButtons
             />
           </View>
         )}
-        sections={MoreSettingsList.map(section => ({
-          title: section.title,
-          hideTitle: true,
-          items: section.content.map(item => ({
-            title: item.title,
-            description: item.description,
-            icon: ('icon' in item ? item.icon : undefined) as React.ReactNode,
-            leading: 'avatar' in item && item.avatar ? (
-              <Image
-                source={item.avatar}
-                style={{ width: 48, height: 48, borderRadius: 500, marginRight: -4 }}
-              />
-            ) : null,
-            papicon: ('papicon' in item ? item.papicon : undefined) as React.ReactNode,
-            onPress: 'onPress' in item ? item.onPress as (() => void) | undefined : undefined,
-            tags: 'tags' in item ? item.tags as string[] | undefined : undefined,
-          })),
-        }))}
-      />
-      {
-        Platform.OS === 'ios' && (
-          <NativeHeaderSide side="Right">
-            <Pressable onPress={() => router.back()} hitSlop={32}>
-              <Icon>
-                <Papicons name="Cross" />
-              </Icon>
-            </Pressable>
-          </NativeHeaderSide>
-        )
-      }
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, paddingTop: finalHeaderHeight + 16 }}
+      >
+        {MoreSettingsList.map(section => (
+          <List.Section key={section.title}>
+            {Platform.OS === 'android' && (
+              <List.SectionTitle>
+                <List.Label>{section.title}</List.Label>
+              </List.SectionTitle>
+            )}
+            {section.content.map(item => (
+              <List.Item key={item.title} onPress={item.onPress}>
+                <List.Leading>
+                  <Icon papicon size={24} fill={theme.colors.text}>
+                    {item.papicon}
+                  </Icon>
+                </List.Leading>
+                <Typography variant="title">{item.title}</Typography>
+                <Typography variant="body1" color="textSecondary">
+                  {item.description}
+                </Typography>
+              </List.Item>
+            ))}
+          </List.Section>
+        ))}
+      </List>
     </>
   );
 };

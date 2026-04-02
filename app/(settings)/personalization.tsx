@@ -1,4 +1,4 @@
-import { Alert, Platform, ScrollView } from "react-native";
+import { Alert, Platform, ScrollView, Switch } from "react-native";
 import Stack from "@/ui/components/Stack";
 import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
@@ -14,7 +14,7 @@ import { AppColors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
-import { useSettingsStore } from "@/stores/settings";
+import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -29,6 +29,7 @@ const PersonalizationSettings = () => {
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
@@ -50,13 +51,14 @@ const PersonalizationSettings = () => {
     <>
       <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + selectedColor}>
         <LinearGradient
-          colors={[selectedColor + "50", selectedColor + "00"]}
+          colors={[theme.colors.primary, theme.colors.primary + "00"]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: 400,
+            opacity: useMaterialYou ? 0.3 : 1,
           }}
         />
       </Dynamic>
@@ -66,50 +68,75 @@ const PersonalizationSettings = () => {
         contentInsetAdjustmentBehavior="always"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
       >
-        <Stack direction="horizontal"
-          gap={10}
-          vAlign="start"
-          hAlign="center"
-          style={{
-            paddingHorizontal: 6,
-            paddingVertical: 0,
-            marginBottom: 10,
-            opacity: 0.5,
-          }}
-        >
-          <Icon>
-            <Papicons
-              name={"Palette"}
-              size={18}
-              color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)}
+        {!useMaterialYou && (
+          <>
+            <Stack direction="horizontal"
+              gap={10}
+              vAlign="start"
+              hAlign="center"
+              style={{
+                paddingHorizontal: 6,
+                paddingVertical: 0,
+                marginBottom: 10,
+                opacity: 0.5,
+              }}
+            >
+              <Icon>
+                <Papicons
+                  name={"Palette"}
+                  size={18}
+                  color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)}
+                />
+              </Icon>
+              <Typography color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)} weight={"semibold"}>
+                {t("Settings_Personalization_Accent")}
+              </Typography>
+            </Stack>
+            <AppColorsSelector
+              onChangeColor={(color: string) => {
+                setSelectedColor(color);
+                setTimeout(() => {
+                  const colorData = AppColors.find(appColor => appColor.mainColor === color);
+                  if (colorData) {
+                    mutateProperty('personalization', {
+                      colorSelected: colorData.colorEnum
+                    });
+                  }
+                }, 50);
+              }}
+              accountId={store.lastUsedAccount}
             />
-          </Icon>
-          <Typography color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)} weight={"semibold"}>
-            {t("Settings_Personalization_Accent")}
-          </Typography>
-        </Stack>
-        <AppColorsSelector
-          onChangeColor={(color: string) => {
-            setSelectedColor(color);
-            setTimeout(() => {
-              const colorData = AppColors.find(appColor => appColor.mainColor === color);
-              if (colorData) {
-                mutateProperty('personalization', {
-                  colorSelected: colorData.colorEnum
-                });
-              }
-            }, 50);
-          }}
-          accountId={store.lastUsedAccount}
-        />
-        <Typography
-          style={{ paddingTop: 10, flex: 1 }}
-          color="#7F7F7F"
-          variant="caption"
-        >
-          {t("Settings_Personalization_Accent_Description")}
-        </Typography>
+            <Typography
+              style={{ paddingTop: 10, flex: 1 }}
+              color="#7F7F7F"
+              variant="caption"
+            >
+              {t("Settings_Personalization_Accent_Description")}
+            </Typography>
+          </>
+        )}
         <List style={{ marginTop: 15 }}>
+
+          {Platform.OS === "android" ? (
+            <Item>
+              <Icon size={30}>
+                <Papicons name={"Palette"} opacity={0.7} />
+              </Icon>
+              <Typography variant={"title"}>{t("Settings_Personalization_MaterialYou_Title")}</Typography>
+              <Typography variant={"caption"} color={"secondary"}>
+                {t("Settings_Personalization_MaterialYou_Description")}
+              </Typography>
+              <Trailing>
+                <Switch
+                  value={useMaterialYou}
+                  onValueChange={(value) => {
+                    mutateProperty("personalization", { useMaterialYou: value });
+                  }}
+                  disabled={typeof Platform.Version !== "number" || Platform.Version < 31}
+                />
+              </Trailing>
+            </Item>
+          ) : null}
           <Item>
             <Icon size={30}>
               <Papicons name={"ColorTheme"}

@@ -101,7 +101,7 @@ export default function TabLayout() {
       labeled={true}
       tabLabelStyle={TAB_LABEL_STYLE}
       tabBarStyle={{
-        backgroundColor: colors.card,
+        backgroundColor: colors.background,
       }}
       rippleColor={colors.text + "22"}
       activeIndicatorColor={colors.primary + "22"}

@@ -2,12 +2,12 @@ import type {
   ParamListBase,
   StackNavigationState,
 } from "@react-navigation/native";
-import { withLayoutContext } from "expo-router";
 import {
   createNativeStackNavigator,
   type NativeStackNavigationEventMap,
   type NativeStackNavigationOptions,
-} from "react-native-screen-transitions";
+} from "@react-navigation/native-stack";
+import { withLayoutContext } from "expo-router";
 
 const { Navigator } = createNativeStackNavigator();
 
