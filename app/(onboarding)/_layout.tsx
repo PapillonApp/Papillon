@@ -21,7 +21,7 @@ export default function OnboardingLayout() {
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "", headerLeft: () => null }}
+          options={{ ...newScreenOptions, title: "", headerLeft: () => null, headerShown: false, headerBackground: null }}
         />
         <Stack.Screen
           name="ageSelection"
