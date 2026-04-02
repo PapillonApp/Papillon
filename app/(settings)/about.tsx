@@ -4,16 +4,15 @@ import { useRouter } from "expo-router";
 import { Github, Languages, Users } from "lucide-react-native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking, ScrollView } from "react-native";
+import { Alert, Linking } from "react-native";
 
 import SettingsHeader from "@/components/SettingsHeader";
-import packageJson from "@/package.json"
+import packageJson from "@/package.json";
 import { useSettingsStore } from "@/stores/settings";
 import Avatar from "@/ui/components/Avatar";
 import Icon from "@/ui/components/Icon";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import Typography from "@/ui/components/Typography";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
 
 export const Team = [
@@ -21,48 +20,90 @@ export const Team = [
     title: "Vince Linise",
     description: "Président",
     login: "ecnivtwelve",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Vince Linise")} imageUrl="https://avatars.githubusercontent.com/u/32978709?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/vincelinise/")
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Vince Linise")}
+        imageUrl="https://avatars.githubusercontent.com/u/32978709?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/vincelinise/"),
   },
   {
     title: "Lucas Lavajo",
     description: "Vice-Président",
     login: "tryon-dev",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Lucas Lavajo")} imageUrl="https://avatars.githubusercontent.com/u/68423470?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/lucas-lavajo/")
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Lucas Lavajo")}
+        imageUrl="https://avatars.githubusercontent.com/u/68423470?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/lucas-lavajo/"),
   },
   {
     title: "Raphaël Schröder",
     description: "Développeur back-end",
     login: "raphckrman",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Raphaël Schröder")} imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/")
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Raphaël Schröder")}
+        imageUrl="https://avatars.githubusercontent.com/u/41128238?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/raphckrman/"),
   },
   {
     title: "Tom Hélière",
     login: "tom-things",
     description: "Designer UI/UX",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Tom Hélière")} imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/")
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Tom Hélière")}
+        imageUrl="https://avatars.githubusercontent.com/u/135361669?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/tom-heliere/"),
   },
   {
     title: "Rémy Godet",
     description: "Développeur",
     login: "godetremy",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Rémy Godet")} imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/")
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Rémy Godet")}
+        imageUrl="https://avatars.githubusercontent.com/u/77058107?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/godetremy/"),
   },
   {
     title: "Mael Duret",
     description: "Développeur",
     login: "ryzenixx",
-    leading: <Avatar size={40} shape="square" initials={getInitials("Mael Duret")} imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4" />,
-    onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/")
-  }
-]
+    leading: (
+      <Avatar
+        size={40}
+        shape="square"
+        initials={getInitials("Mael Duret")}
+        imageUrl="https://avatars.githubusercontent.com/u/96339570?v=4"
+      />
+    ),
+    onPress: () => Linking.openURL("https://www.linkedin.com/in/mael-duret/"),
+  },
+];
 
 export default function SettingsAbout() {
-  const theme = useTheme()
+  const theme = useTheme();
   const router = useRouter();
 
   const { t } = useTranslation();
@@ -74,19 +115,21 @@ export default function SettingsAbout() {
       title: t("Settings_Donator"),
       description: t("Settings_Donator_Description"),
       leading: <Papicons name="PiggyBank" />,
-      onPress: () => Linking.openURL('https://ko-fi.com/thepapillonapp/leaderboard'),
+      onPress: () =>
+        Linking.openURL("https://ko-fi.com/thepapillonapp/leaderboard"),
     },
     {
       title: t("Settings_About_Discord"),
       description: t("Settings_About_Discord_Description"),
       leading: <Papicons name="TextBubble" />,
-      onPress: () => Linking.openURL('https://go.papillon.bzh/discord'),
+      onPress: () => Linking.openURL("https://go.papillon.bzh/discord"),
     },
     {
       title: t("Settings_About_Issue"),
       description: t("Settings_About_Issue_Description"),
       leading: <Papicons name="Info" />,
-      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon/issues'),
+      onPress: () =>
+        Linking.openURL("https://github.com/PapillonApp/Papillon/issues"),
     },
   ];
 
@@ -95,13 +138,13 @@ export default function SettingsAbout() {
       title: t("Settings_About_Crowdin"),
       description: t("Settings_About_Crowdin_Description"),
       leading: <Languages />,
-      onPress: () => Linking.openURL('https://crowdin.com/project/papillonapp'),
+      onPress: () => Linking.openURL("https://crowdin.com/project/papillonapp"),
     },
     {
       title: t("Settings_About_Github"),
       description: t("Settings_About_Github_Description"),
       leading: <Github />,
-      onPress: () => Linking.openURL('https://github.com/PapillonApp/Papillon'),
+      onPress: () => Linking.openURL("https://github.com/PapillonApp/Papillon"),
     },
     {
       title: t("Settings_About_Contributors"),
@@ -140,134 +183,108 @@ export default function SettingsAbout() {
       title: t("Settings_About_Dependency_Version"),
       description: `Expo: ${packageJson.dependencies?.expo || "N/A"} | RN: ${packageJson.dependencies?.["react-native"] || "N/A"}`,
       leading: <Papicons name="Code" />,
-    }
+    },
   ];
 
   return (
-    <ScrollView
-      contentContainerStyle={{ padding: 20, gap: 10 }}
+    <List
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 20 }}
       contentInsetAdjustmentBehavior="always"
       showsVerticalScrollIndicator={false}
     >
-      <SettingsHeader
-        color={theme.dark ? "#121e2a" : "#dfebf7"}
-        title={t('Settings_About_Papillion_Behind')}
-        description={t('Settings_About_Papillion_Behind_Description')}
-        imageSource={require("@/assets/images/about_papillon.png")}
-        disableMargin
-        height={270}
-      />
+      <List.View style={{ marginBottom: 10 }}>
+        <SettingsHeader
+          color={theme.dark ? "#121e2a" : "#dfebf7"}
+          title={t("Settings_About_Papillion_Behind")}
+          description={t("Settings_About_Papillion_Behind_Description")}
+          imageSource={require("@/assets/images/about_papillon.png")}
+          disableMargin
+          height={270}
+        />
+      </List.View>
 
-      <List>
+      <List.Section>
         {Team.map((item, index) => (
-          <Item
-            key={index}
-            onPress={item.onPress}
-          >
-            <Leading>
-              <Icon>
-                {item.leading}
-              </Icon>
-            </Leading>
+          <List.Item key={index} onPress={item.onPress}>
+            <List.Leading>
+              <Icon>{item.leading}</Icon>
+            </List.Leading>
 
-            <Typography variant="title">
-              {item.title}
-            </Typography>
+            <Typography variant="title">{item.title}</Typography>
 
-            <Typography variant="caption" color="secondary">
+            <Typography variant="caption" color="textSecondary">
               {item.description}
             </Typography>
 
-            <Trailing>
+            <List.Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
               </Icon>
-            </Trailing>
-          </Item>
+            </List.Trailing>
+          </List.Item>
         ))}
-      </List>
+      </List.Section>
 
-      <List>
+      <List.Section>
         {CommunityLinks.map((item, index) => (
-          <Item
-            key={index}
-            onPress={item.onPress}
-          >
-            <Leading>
-              <Icon>
-                {item.leading}
-              </Icon>
-            </Leading>
+          <List.Item key={index} onPress={item.onPress}>
+            <List.Leading>
+              <Icon>{item.leading}</Icon>
+            </List.Leading>
 
-            <Typography variant="title">
-              {item.title}
-            </Typography>
+            <Typography variant="title">{item.title}</Typography>
 
-            <Typography variant="caption" color="secondary">
+            <Typography variant="caption" color="textSecondary">
               {item.description}
             </Typography>
 
-            <Trailing>
+            <List.Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
               </Icon>
-            </Trailing>
-          </Item>
+            </List.Trailing>
+          </List.Item>
         ))}
-      </List>
+      </List.Section>
 
-      <List>
+      <List.Section>
         {DeveloperLinks.map((item, index) => (
-          <Item
-            key={index}
-            onPress={item.onPress}
-          >
-            <Leading>
-              <Icon>
-                {item.leading}
-              </Icon>
-            </Leading>
+          <List.Item key={index} onPress={item.onPress}>
+            <List.Leading>
+              <Icon>{item.leading}</Icon>
+            </List.Leading>
 
-            <Typography variant="title">
-              {item.title}
-            </Typography>
+            <Typography variant="title">{item.title}</Typography>
 
-            <Typography variant="caption" color="secondary">
+            <Typography variant="caption" color="textSecondary">
               {item.description}
             </Typography>
 
-            <Trailing>
+            <List.Trailing>
               <Icon>
                 <Papicons name="ChevronRight" />
               </Icon>
-            </Trailing>
-          </Item>
+            </List.Trailing>
+          </List.Item>
         ))}
-      </List>
+      </List.Section>
 
-      <List>
+      <List.Section>
         {Infos.map((item, index) => (
-          <Item
-            key={index}
-            onPress={item.onPress}
-          >
-            <Leading>
-              <Icon>
-                {item.leading}
-              </Icon>
-            </Leading>
+          <List.Item key={index} onPress={item.onPress}>
+            <List.Leading>
+              <Icon>{item.leading}</Icon>
+            </List.Leading>
 
-            <Typography variant="title">
-              {item.title}
-            </Typography>
+            <Typography variant="title">{item.title}</Typography>
 
-            <Typography variant="caption" color="secondary">
+            <Typography variant="caption" color="textSecondary">
               {item.description}
             </Typography>
-          </Item>
+          </List.Item>
         ))}
-      </List>
-
-    </ScrollView>
+      </List.Section>
+    </List>
   );
 }

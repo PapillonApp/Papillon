@@ -104,7 +104,9 @@ export default function TabLayout() {
         backgroundColor: colors.background,
       }}
       rippleColor={colors.text + "22"}
-      activeIndicatorColor={colors.primary + "22"}
+      activeIndicatorColor={colors.tint + "22"}
+      tabBarActiveTintColor={colors.tint}
+      tabBarInactiveTintColor={colors.text + "7F"}
     >
       <Tabs.Screen
         name="index"
