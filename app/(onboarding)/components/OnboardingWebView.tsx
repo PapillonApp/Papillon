@@ -46,7 +46,7 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
       <View style={{
         position: "absolute",
         left: 16,
-        top: finalHeaderHeight + 12,
+        top: finalHeaderHeight + 11,
         zIndex: 200000,
       }}>
         <AndroidBackButton />
