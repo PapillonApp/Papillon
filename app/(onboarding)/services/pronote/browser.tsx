@@ -41,6 +41,19 @@ export default function PronoteENTLogin() {
     navigation.setOptions({ headerShown: false });
   }, []);
 
+  useEffect(() => {
+    if (browserVisible) {
+      setHasLoadingBeenTooLong(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setHasLoadingBeenTooLong(true);
+    }, 15000);
+
+    return () => clearTimeout(timeout);
+  }, [browserVisible]);
+
   const webViewRef: RefObject<WebView<{}> | null> = createRef<WebView>();
 
   // Login logic
@@ -329,7 +342,9 @@ export default function PronoteENTLogin() {
             <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? school.name : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
             <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
 
-            <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
+            {hasLoadingBeenTooLong && (
+              <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
+            )}
           </Stack>
         </Reanimated.View>
       }
