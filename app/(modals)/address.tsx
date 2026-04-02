@@ -7,8 +7,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Dimensions,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
+  TouchableNativeFeedback,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,6 +25,9 @@ import Item, { Leading, Trailing } from "@/ui/components/Item";
 import List from "@/ui/components/List";
 import Search from "@/ui/components/Search";
 import Typography from "@/ui/components/Typography";
+import { useHeaderHeight } from "@react-navigation/elements";
+import AndroidBackButton, { AndroidBackButtonStyles } from "@/utils/theme/AndroidBackButton";
+import Icon from "@/ui/components/Icon";
 
 export interface AddressModalProps {
   canUseCurrentLocation: boolean;
@@ -161,25 +167,52 @@ export const AddressModal = ({
     timeout = setTimeout(() => search(), 200);
   }, [searchTerm]);
 
+  const finalHeaderHeight = Platform.select({
+    android: insets.top,
+    default: 0
+  });
+
   return (
     <View
       style={{
         flex: 1,
+        paddingTop: 0 + finalHeaderHeight,
         paddingBottom: insets.bottom,
         backgroundColor: theme.colors.background,
       }}
     >
-      <Search
-        placeholder={t("Settings_Transport_Search_Address_Placeholder")}
-        color="#E8901C"
-        onTextChange={setSearchTerm}
+      <View
         style={{
           marginTop: 14,
+          top: finalHeaderHeight,
           position: "absolute",
           zIndex: 9999,
           left: 14,
+          right: 14,
+          flexDirection: "row",
         }}
-      />
+      >
+        {Platform.OS === "android" && (
+          <TouchableNativeFeedback
+            onPress={onCancel}
+            useForeground
+          >
+            <View style={AndroidBackButtonStyles.container}>
+              <Icon size={26}>
+                <Papicons name="arrowleft" />
+              </Icon>
+            </View>
+          </TouchableNativeFeedback>
+        )}
+        <Search
+          placeholder={t("Settings_Transport_Search_Address_Placeholder")}
+          color="#E8901C"
+          onTextChange={setSearchTerm}
+          style={{
+            width: Dimensions.get("window").width - (14 * 2) - (Platform.OS === "android" ? 52 : 0),
+          }}
+        />
+      </View>
       {status === null || status?.granted ? (
         <KeyboardAvoidingView
           style={{

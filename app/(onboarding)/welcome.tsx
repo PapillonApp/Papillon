@@ -2,7 +2,7 @@ import { useFocusEffect, useIsFocused, useTheme } from "@react-navigation/native
 import { useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import React from "react";
-import { Image, View } from "react-native";
+import { Image, StatusBar, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 
@@ -25,6 +25,16 @@ export default function Welcome() {
     WebBrowser.openBrowserAsync("https://docs.papillon.bzh/support", {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET
     });
+  }
+
+  const openLegalWebPage = () => {
+    WebBrowser.openBrowserAsync("https://docs.papillon.bzh/terms", {
+      presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET
+    });
+  }
+
+  const openDevMenu = () => {
+    router.push("/devmode");
   }
 
   const player = useVideoPlayer({
@@ -56,6 +66,9 @@ export default function Welcome() {
         backgroundColor: "black"
       }}
     >
+      {isFocused &&
+      <StatusBar barStyle={"light-content"} animated translucent />
+      }
       {isFocused &&
       <Reanimated.View
         entering={FadeIn.duration(600)}
@@ -151,7 +164,7 @@ export default function Welcome() {
 
         <Divider height={2} ghost />
 
-        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }}>
+        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }} onPress={() => { openLegalWebPage() }} onLongPress={() => { openDevMenu() }}>
           {t("ONBOARDING_WELCOME_LEGAL")}
         </Typography>
       </View>

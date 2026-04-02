@@ -1,27 +1,28 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: true,
+    ...AndroidHeaderProps,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
   }), []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View style={{ flex: 1, backgroundColor: Platform.select({ ios: "black" }) }}>
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "" }}
+          options={{ ...newScreenOptions, title: "", headerLeft: () => null }}
         />
         <Stack.Screen
           name="ageSelection"

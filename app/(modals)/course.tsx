@@ -13,6 +13,8 @@ import Typography from "@/ui/components/Typography";
 import { getSubjectName } from '@/utils/subjects/name';
 
 import { getStatusText } from "../(tabs)/calendar/components/CalendarDay";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
 
 interface SubjectInfo {
   name: string;
@@ -39,6 +41,12 @@ export default function CourseModal() {
 
   const startTime = Math.floor(course.from.getTime() / 1000);
   const endTime = Math.floor(course.to.getTime() / 1000);
+
+  const insets = useSafeAreaInsets();
+  const finalHeaderHeight = Platform.select({
+    android: insets.top + 32,
+    default: 0
+  });
 
   return (
     <>
@@ -130,7 +138,8 @@ export default function CourseModal() {
             }}
             style={{
               marginBottom: 24,
-              marginTop: 24
+              marginTop: 24,
+              paddingTop: finalHeaderHeight
             }}
           />
         }
