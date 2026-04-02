@@ -380,6 +380,8 @@
   "Settings_Personalization_Accent": "Accent color",
   "Settings_Personalization_Accent_Description": "The color you choose here will apply to Papillon’s home page.",
   "Settings_Personalization_Theme": "Theme",
+  "Settings_Personalization_MaterialYou_Title": "Use Material You (Beta)",
+  "Settings_Personalization_MaterialYou_Description": "Use Android dynamic system colors.",
   "Settings_Personalization_Icon_Title": "Change icon",
   "Settings_Personalization_Icon_Description": "Customize the app icon",
   "Settings_Personalization_Subject_Title": "Customize subjects",
@@ -492,7 +494,7 @@
   "Transport_Error_Location_Description": "Make sure Papillon can see where you are.",
   "Transport_Maps_App": "your transportation app",
   "Transport_Open_In": "Open in",
-  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un arrêt...",
+  "Settings_Transport_Search_Address_Placeholder": "Search for an address, a place, a stop…",
   "Settings_Transport_Current_Position_Description": "Use your current location when you're in your calendar.",
   "Settings_Transport_Place": "Addresses and places",
   "Settings_Transport_Stops": "Stops and stations",
@@ -502,5 +504,8 @@
   "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again.",
   "Settings_Transport_Localisation_Needed": "Papillon needs your location",
   "Settings_Transport_Localisation_Needed_Description": "To use transport features, Papillon needs access to your location to provide accurate transit information.",
-  "Settings_Transport_Localisation_Request": "Enable location"
+  "Settings_Transport_Localisation_Request": "Enable location",
+  "Settings_Preferences": "Features",
+  "Settings_More": "About",
+  "Settings_About": "You and Papillon"
 }
