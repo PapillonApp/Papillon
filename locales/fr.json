@@ -126,7 +126,8 @@
   "ONBOARDING_SERVICE_ARD": "ARD",
   "ONBOARDING_SERVICE_IZLY": "Izly",
   "ONBOARDING_SERVICE_ALISE": "Alise",
-
+  "ONBOARDING_SERVICE_WEBUNTIS": "",
+  
   "WAITING": "En attente",
   "IZLY_SMS_SEND": "Tu viens de recevoir un lien pour te connecter, clique dessus et suis les étapes.",
   "STEP": "Étape",
@@ -531,6 +532,7 @@
   "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
   "Modal_Profile_Title": "Personnaliser le profil",
 
+  "Modal_Task_Title": "Détail de la tâche",
   "Modal_Task_Status": "État du devoir",
   "Modal_Task_Description": "Description du devoir",
   "Modal_Task_Attachments": "Pièces jointes",
@@ -564,7 +566,7 @@
   "Transport_Error_Location_Description": "Vérifie que Papillon a bien accès à ta localisation.",
   "Transport_Maps_App": "ton application de transport",
   "Transport_Open_In": "Ouvrir dans",
-  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un lieu, un arrêt…",
+  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un arrêt...",
   "Settings_Transport_Current_Position_Description": "Utilise ta position actuelle quand tu es dans ton calendrier.",
   "Settings_Transport_Place": "Adresses et lieux",
   "Settings_Transport_Stops": "Arrêts et stations",
@@ -574,10 +576,5 @@
   "Transport_Error_Cant_Open_Deeplink_Description": "Vérifie que l'application est installée sur ton appareil, puis réessaie.",
   "Settings_Transport_Localisation_Needed": "Papillon a besoin de ta localisation.",
   "Settings_Transport_Localisation_Needed_Description": "Pour utiliser les fonctionnalités de transport, Papillon doit accéder à ta localisation afin de fournir des estimations de temps de trajets.",
-  "Settings_Transport_Localisation_Request": "Activer la localisation",
-  
-  "ERROR_AUTHENTICATION": "Une erreur s'est produite",
-  "ERROR_MISSING_FIELDS": "Veuillez remplir tous les champs",
-  "ERROR_WEBUNTIS_LOGIN": "La connexion à ton compte Web Untis a échoué",
-  "INPUT_BASE_URL": "Lien de ton établissement"
+  "Settings_Transport_Localisation_Request": "Activer la localisation"
 }

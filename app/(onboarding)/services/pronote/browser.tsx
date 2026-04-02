@@ -3,10 +3,10 @@ import { router, useNavigation } from "expo-router";
 import { AccountKind, createSessionHandle, loginToken, SecurityError, SessionHandle } from "pawnote";
 import React, { createRef, RefObject, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Modal } from "react-native";
+import { Alert, KeyboardAvoidingView, Modal } from "react-native";
 import Reanimated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WebView from "react-native-webview";
-import { WebViewMessage } from "react-native-webview/lib/WebViewTypes";
+import { WebViewErrorEvent, WebViewMessage, WebViewNavigationEvent } from "react-native-webview/lib/WebViewTypes";
 
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
@@ -21,6 +21,7 @@ import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
 import { Pronote2FAModal } from "./2fa";
+import Button from "@/ui/new/Button";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
@@ -33,9 +34,25 @@ export default function PronoteENTLogin() {
   // UI Logic
   const [browserVisible, setBrowserVisible] = React.useState(false);
 
+  const [hasLoadingBeenTooLong, setHasLoadingBeenTooLong] = useState(false);
+  const [loadingHidden, setLoadingHidden] = useState(false);
+
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, []);
+
+  useEffect(() => {
+    if (browserVisible) {
+      setHasLoadingBeenTooLong(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setHasLoadingBeenTooLong(true);
+    }, 15000);
+
+    return () => clearTimeout(timeout);
+  }, [browserVisible]);
 
   const webViewRef: RefObject<WebView<{}> | null> = createRef<WebView>();
 
@@ -50,6 +67,7 @@ export default function PronoteENTLogin() {
   const [doubleAuthError, setDoubleAuthError] = useState<SecurityError | null>(null);
   const [doubleAuthSession, setDoubleAuthSession] = useState<SessionHandle | null>(null);
   const [deviceId, setDeviceId] = useState<string>("");
+  const [hasShownConnectionErrorAlert, setHasShownConnectionErrorAlert] = useState(false);
 
   const PRONOTE_COOKIE_EXPIRED = new Date(0).toUTCString();
   const PRONOTE_COOKIE_VALIDATION_EXPIRES = new Date(
@@ -106,11 +124,67 @@ export default function PronoteENTLogin() {
     })();
     `.trim();
 
-  const onWebviewMessage = async ({ nativeEvent }: { nativeEvent: WebViewMessage }) => {
-    if (received) { return; }
+  const INJECT_PRONOTE_CONNECTION_ERROR_WATCHER = `
+    (function () {
+      if (window.__pronoteConnImpossibleWatcherInstalled) return;
+      window.__pronoteConnImpossibleWatcherInstalled = true;
 
-    const message = JSON.parse(nativeEvent.data);
+      function hasConnectionError() {
+        const nodes = document.querySelectorAll('div');
+        for (let i = 0; i < nodes.length; i += 1) {
+          const node = nodes[i];
+          const raw = node && node.textContent ? node.textContent : "";
+          const text = raw
+            .normalize("NFD")
+            .replace(/[\\u0300-\\u036f]/g, "")
+            .toLowerCase()
+            .trim();
+
+          if (!text) continue;
+          if (text.includes("connexion impossible") || text.includes("erreur")) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function notifyIfNeeded() {
+        if (window.__pronoteConnImpossibleSent) return;
+        if (!hasConnectionError()) return;
+        window.__pronoteConnImpossibleSent = true;
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'pronote.connectionError'
+        }));
+      }
+
+      notifyIfNeeded();
+      setInterval(notifyIfNeeded, 1000);
+
+      const observer = new MutationObserver(notifyIfNeeded);
+      observer.observe(document.documentElement || document.body, { childList: true, subtree: true, characterData: true });
+    })();
+    `.trim();
+
+  const onWebviewMessage = async ({ nativeEvent }: { nativeEvent: WebViewMessage }) => {
+    let message: { type?: string; data?: any };
+    try {
+      message = JSON.parse(nativeEvent.data);
+    } catch {
+      return;
+    }
     console.log("Message received from WebView:", message);
+
+    if (message.type === "pronote.connectionError") {
+      setBrowserVisible(true);
+      if (!hasShownConnectionErrorAlert) {
+        setHasShownConnectionErrorAlert(true);
+        Alert.alert("Connexion impossible", "La connexion à Pronote est impossible. Cele vient probablement de votre établissement ou d'une erreur de configuration.");
+      }
+      return;
+    }
+
+    if (received) { return; }
 
     if (message.type === "pronote.loginState") {
       console.log("Login state message received:", message.data);
@@ -216,9 +290,7 @@ export default function PronoteENTLogin() {
     const { url } = e.nativeEvent;
     console.log("WebView finished loading URL:", url);
 
-    if(url.includes("/pronote/mobile.eleve.html")) {
-      setBrowserVisible(false);
-    } else if (url === infoMobileURL) {
+    if (url === infoMobileURL) {
       setBrowserVisible(false);
     } else {
       setBrowserVisible(true);
@@ -227,6 +299,12 @@ export default function PronoteENTLogin() {
     webViewRef.current?.injectJavaScript(
       INJECT_PRONOTE_INITIAL_LOGIN_HOOK,
     );
+
+    if (url.startsWith(baseURL)) {
+      webViewRef.current?.injectJavaScript(
+        INJECT_PRONOTE_CONNECTION_ERROR_WATCHER,
+      );
+    }
 
     if (url === infoMobileURL) {
       console.log("Injecting JSON script for InfoMobileURL");
@@ -244,7 +322,7 @@ export default function PronoteENTLogin() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
-      {!browserVisible &&
+      {!browserVisible && !loadingHidden &&
         <Reanimated.View
           style={{
             height: "100%",
@@ -263,6 +341,10 @@ export default function PronoteENTLogin() {
             <Divider height={12} ghost />
             <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? school.name : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
             <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+
+            {hasLoadingBeenTooLong && (
+              <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
+            )}
           </Stack>
         </Reanimated.View>
       }

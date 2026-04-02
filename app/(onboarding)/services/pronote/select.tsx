@@ -4,7 +4,7 @@ import { useNavigation } from "expo-router";
 import { geolocation } from "pawnote";
 import React, { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView } from "react-native";
+import { Image, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ActivityIndicator from "@/ui/components/ActivityIndicator";
@@ -85,7 +85,7 @@ export default function PronoteLoginSelectEtab() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.select({ android: 0, default: 20 })}>
       <List
         animated
         ListHeaderComponent={<PronoteSearchHeader search={search} setSearch={setSearch} loading={loading} t={t} />}

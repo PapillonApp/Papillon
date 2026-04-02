@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import {
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   View,
 } from "react-native";
@@ -26,6 +27,7 @@ import Stack from "@/ui/components/Stack";
 import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 import LoginView from "../../components/LoginView";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const ANIMATION_DURATION = 170;
 
@@ -134,9 +136,15 @@ export default function MultiLoginWithCredentials() {
     }
   }
 
+  const headerHeight = useHeaderHeight();
+    const finalHeaderHeight = Platform.select({
+      android: headerHeight,
+      default: insets.top
+    });
+
   return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+        <ScrollView contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}>
           <LoginView
             color={color ?? theme.colors.primary}
             serviceName={String(param.university)}

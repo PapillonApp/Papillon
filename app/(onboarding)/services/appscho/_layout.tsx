@@ -2,12 +2,14 @@ import React from 'react';
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { Platform } from 'react-native';
+import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: false,
-    headerBackVisible: true,
+    ...AndroidHeaderProps,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,

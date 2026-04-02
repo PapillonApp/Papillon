@@ -2,7 +2,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { useRoute, useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 
 import ModalOverhead, { ModalOverHeadScore } from '@/components/ModalOverhead';
@@ -14,6 +14,7 @@ import TableFlatList from "@/ui/components/TableFlatList";
 import Typography from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 import { colorCheck } from '@/utils/colorCheck';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SubjectInfo {
   name: string;
@@ -61,6 +62,12 @@ export default function GradesModal() {
     return null;
   }
   const { grade, subjectInfo, avgInfluence = 0, avgClass = 0 } = params as GradesModalProps;
+
+  const insets = useSafeAreaInsets();
+  const finalHeaderHeight = Platform.select({
+    android: insets.top + 32,
+    default: 0
+  });
 
   return (
     <>
@@ -164,6 +171,7 @@ export default function GradesModal() {
               justifyContent: "center",
               gap: 16,
               marginVertical: 20,
+              paddingTop: finalHeaderHeight
             }}
           >
             <ModalOverhead

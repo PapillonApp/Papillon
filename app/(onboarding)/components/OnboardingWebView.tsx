@@ -1,12 +1,14 @@
 import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
 
 import { Dynamic } from "@/ui/components/Dynamic";
 import Typography from "@/ui/new/Typography";
+import { useHeaderHeight } from "@react-navigation/elements";
+import AndroidBackButton from "@/utils/theme/AndroidBackButton";
 
 export default function OnboardingWebView({webViewRef, ...props}: React.ComponentProps<typeof WebView>) {
   const insets = useSafeAreaInsets();
@@ -27,15 +29,29 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
     }
   }
 
+      const finalHeaderHeight = Platform.select({
+        android: insets.top,
+        default: 0
+      });
+
   return (
     <View
       style={{
         width: "100%",
         height: "100%",
         flex: 1,
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
+      <View style={{
+        position: "absolute",
+        left: 16,
+        top: finalHeaderHeight + 11,
+        zIndex: 200000,
+      }}>
+        <AndroidBackButton />
+      </View>
+
       <View
         style={{
           width: "100%",
@@ -44,11 +60,12 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
           backgroundColor: colors.card,
           zIndex: 1,
           paddingVertical: 16,
-          height: 64,
+          height: 64 + finalHeaderHeight,
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "row",
           gap: 12,
+          paddingTop: finalHeaderHeight + 16,
         }}
       >
         <View

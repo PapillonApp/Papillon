@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React, { useCallback, useRef, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, Platform, StyleSheet,View } from "react-native";
 import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -101,7 +101,7 @@ export default function TabOneScreen() {
           renderItem={renderDay}
           keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
-          decelerationRate={0.98}
+          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
           disableIntervalMomentum={true}
           scrollEventThrottle={16}
           onMomentumScrollEnd={onMomentumScrollEnd}

@@ -1,7 +1,7 @@
 import { useNavigation } from "expo-router";
 import { t } from "i18next";
 import React, { useMemo, useRef } from "react";
-import { Dimensions,FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Dimensions,FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { Transit } from "@/components/Transit";
 import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
@@ -126,6 +126,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
             onRefresh={onRefresh}
             colors={[colors.primary]}
             progressBackgroundColor={colors.background}
+            progressViewOffset={Platform.OS === 'android' ? headerHeight : 0}
           />
         }
         keyExtractor={item => item.id}
