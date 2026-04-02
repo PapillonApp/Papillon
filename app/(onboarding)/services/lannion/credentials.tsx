@@ -27,6 +27,7 @@ import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 
 import LoginView from "../../components/LoginView";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const ANIMATION_DURATION = 170;
 
@@ -154,9 +155,16 @@ export default function LannionCredentials() {
     }
   }
 
+  const headerHeight = useHeaderHeight();
+    const finalHeaderHeight = Platform.select({
+      android: headerHeight,
+      default: insets.top
+    });
+
+
   if (Platform.OS === 'android') {
     return (
-      <Stack padding={20} gap={8} style={{ paddingTop: insets.top + 20 }}>
+      <Stack padding={20} gap={8} style={{ paddingTop: finalHeaderHeight + 20 }}>
         <Typography variant="h3">
                     {t("ONBOARDING_LANNION_ANDROID_TITLE")}
         </Typography>
@@ -174,7 +182,7 @@ export default function LannionCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={32}>
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <ScrollView contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}>
         <LoginView
           color="#910063"
           serviceName="IUT de Lannion"

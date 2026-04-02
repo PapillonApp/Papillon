@@ -33,6 +33,10 @@ export default function Welcome() {
     });
   }
 
+  const openDevMenu = () => {
+    router.push("/devmode");
+  }
+
   const player = useVideoPlayer({
       assetId: require('@/assets/video/welcome.mp4'),
     }, player => {
@@ -160,7 +164,7 @@ export default function Welcome() {
 
         <Divider height={2} ghost />
 
-        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }} onPress={() => { openLegalWebPage() }}>
+        <Typography color="#FFFFFF88" variant="caption" align="center" style={{ marginHorizontal: 20, opacity: 0.7 }} onPress={() => { openLegalWebPage() }} onLongPress={() => { openDevMenu() }}>
           {t("ONBOARDING_WELCOME_LEGAL")}
         </Typography>
       </View>

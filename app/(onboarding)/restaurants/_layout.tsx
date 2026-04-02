@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import { Platform } from 'react-native';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: true,
+    headerBackVisible: Platform.select({ android: false, default: true }),
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,
