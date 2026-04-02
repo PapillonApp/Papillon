@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, PlatformColor, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
-import { Stack } from '@/utils/native/AnimatedNavigator';
+import { Stack } from 'expo-router';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
