@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { Pressable } from 'react-native';
 
 import { initializeAccountManager } from '@/services/shared';
@@ -24,6 +24,13 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
   const accounts = useAccountStore((state) => state.accounts);
   const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
   const theme = useTheme();
+
+  const AccountsMenuItems = accounts.map((account) => ({
+    id: account.id,
+    title: account.firstName + ' ' + account.lastName,
+    subtitle: formatSchoolName(account.schoolName ?? ""),
+    state: account.id === lastUsedAccount ? 'on' : 'off',
+  }));
 
   return (
     <Stack inline flex>
@@ -54,12 +61,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         <UserProfileItemContainer>
           <MenuView
             onPressAction={async ({ nativeEvent }) => {
-              if(nativeEvent.event === "edit") {
+              if (nativeEvent.event === "edit") {
                 router.push('/(modals)/profile');
                 return;
               }
 
-              if(nativeEvent.event === "add") {
+              if (nativeEvent.event === "add") {
                 router.push("/(onboarding)/ageSelection?action=addService");
                 return;
               }
@@ -69,17 +76,12 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
               await initializeAccountManager();
             }}
             actions={[
-              {
+              ...Platform.OS === "ios" ? [{
                 id: 'workspaces',
                 title: '',
                 displayInline: true,
-                subactions: accounts.map((account) => ({
-                  id: account.id,
-                  title: account.firstName + ' ' + account.lastName,
-                  subtitle: formatSchoolName(account.schoolName ?? ""),
-                  state: account.id === lastUsedAccount ? 'on' : 'off',
-                })),
-              },
+                subactions: AccountsMenuItems,
+              }] : AccountsMenuItems,
               {
                 id: 'edit',
                 title: t('Home_Edit_Profile'),
