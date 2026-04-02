@@ -18,7 +18,7 @@ export default function Layout() {
 
   return (
     <>
-      <StatusBar barStyle="light-content" animated />
+      {Platform.OS === "ios" && <StatusBar barStyle="light-content" animated />}
       <Stack screenOptions={newScreenOptions}>
         <Stack.Screen
           name="settings"
