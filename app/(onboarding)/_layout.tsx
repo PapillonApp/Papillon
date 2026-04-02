@@ -1,16 +1,17 @@
 import React from 'react';
-import { StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 
 import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
+import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: false,
+    ...AndroidHeaderProps,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,

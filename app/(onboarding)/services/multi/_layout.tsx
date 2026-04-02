@@ -4,13 +4,15 @@ import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from "react-i18next";
+import { Platform } from 'react-native';
+import { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
 
 export default function OnboardingLayout() {
   const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
-    headerBackVisible: true,
+    ...AndroidHeaderProps,
     headerTransparent: true,
     headerBackButtonDisplayMode: "minimal",
     headerLargeTitle: false,

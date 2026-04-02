@@ -34,6 +34,7 @@ import Typography from "@/ui/components/Typography";
 import uuid from "@/utils/uuid/uuid";
 import { ScrollView } from "react-native-gesture-handler";
 import LoginView from "../../components/LoginView";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 const ANIMATION_DURATION = 170;
 export const PlatformPressable = Platform.OS === 'android' ? Pressable : AnimatedPressable;
@@ -207,9 +208,15 @@ export default function EDLoginWithCredentials() {
     );
   }
 
+  const headerHeight = useHeaderHeight();
+  const finalHeaderHeight = Platform.select({
+    android: headerHeight,
+    default: insets.top
+  });
+
   return (
     <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }} behavior="padding">
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <ScrollView contentContainerStyle={{ paddingTop: finalHeaderHeight, paddingBottom: insets.bottom }}>
               <LoginView
                 color="#1788bc"
                 serviceName="ÉcoleDirecte"
