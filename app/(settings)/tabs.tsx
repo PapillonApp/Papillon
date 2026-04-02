@@ -1,13 +1,12 @@
 import { Papicons } from "@getpapillon/papicons";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch } from "react-native";
+import { Switch } from "react-native";
 
 import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
-import Item, { Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import Typography from "@/ui/components/Typography";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 
 const SettingsTabs = () => {
   const { t } = useTranslation();
@@ -41,34 +40,47 @@ const SettingsTabs = () => {
       name: t("Tab_News"),
       icon: "newspaper",
       enabled: !disabledTabs.includes("news"),
-    }
-  ]
+    },
+  ];
 
   const toggleTab = (tabId: string) => {
     if (disabledTabs.includes(tabId)) {
-      mutateProperty("personalization", { ...settingsStore, disabledTabs: disabledTabs.filter(id => id !== tabId) });
+      mutateProperty("personalization", {
+        ...settingsStore,
+        disabledTabs: disabledTabs.filter(id => id !== tabId),
+      });
     } else {
-      mutateProperty("personalization", { ...settingsStore, disabledTabs: [...disabledTabs, tabId] });
+      mutateProperty("personalization", {
+        ...settingsStore,
+        disabledTabs: [...disabledTabs, tabId],
+      });
     }
-  }
+  };
 
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{ padding: 16 }}>
-      <List>
-        {tabs.map((tab) => (
-          <Item key={tab.id}>
+    <List
+      contentInsetAdjustmentBehavior="always"
+      contentContainerStyle={{ padding: 16 }}
+      style={{ flex: 1 }}
+    >
+      {tabs.map(tab => (
+        <List.Item key={tab.id}>
+          <List.Leading>
             <Icon>
               <Papicons name={tab.icon} />
             </Icon>
-            <Typography variant="title">{tab.name}</Typography>
-            <Trailing>
-              <Switch value={tab.enabled} onValueChange={() => toggleTab(tab.id)} />
-            </Trailing>
-          </Item>
-        ))}
-      </List>
-    </ScrollView>
-  )
-}
+          </List.Leading>
+          <Typography variant="title">{tab.name}</Typography>
+          <List.Trailing>
+            <Switch
+              value={tab.enabled}
+              onValueChange={() => toggleTab(tab.id)}
+            />
+          </List.Trailing>
+        </List.Item>
+      ))}
+    </List>
+  );
+};
 
-export default SettingsTabs
+export default SettingsTabs;

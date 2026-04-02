@@ -8,6 +8,7 @@ import { getDynamicColorScheme } from "react-native-dynamic-theme";
 const FALLBACK_COLORS = {
   light: {
     primary: "#29947A",
+    tint: "#29947A",
     background: "#FFFFFF",
     text: "#000000",
     card: "#FFFFFF",
@@ -15,6 +16,7 @@ const FALLBACK_COLORS = {
   },
   dark: {
     primary: "#29947A",
+    tint: "#29947A",
     background: "#000000",
     text: "#FFFFFF",
     card: "#121212",
@@ -31,13 +33,15 @@ function getThemeColors(useMaterialYou: boolean) {
     return {
       light: {
         primary: scheme.light.primary,
+        tint: scheme.light.primary,
         background: scheme.light.background,
         text: scheme.light.onBackground,
         card: scheme.light.surface,
         item: scheme.light.surfaceContainerHigh,
       },
       dark: {
-        primary: scheme.dark.primary,
+        primary: scheme.dark.primaryContainer,
+        tint: scheme.dark.primary,
         background: scheme.dark.background,
         text: scheme.dark.onBackground,
         card: scheme.dark.surfaceContainer,
@@ -57,6 +61,7 @@ export function createDefaultTheme(useMaterialYou: boolean) {
     colors: {
       ...NativeDefaultTheme.colors,
       primary: colors.light.primary,
+      tint: colors.light.tint,
       background: colors.light.background,
       overground: "#F3F6F7",
       text: colors.light.text,
@@ -74,6 +79,7 @@ export function createDarkTheme(useMaterialYou: boolean) {
     colors: {
       ...NativeDarkTheme.colors,
       primary: colors.dark.primary,
+      tint: colors.dark.tint,
       background: colors.dark.background,
       overground: "#1E1E1E",
       text: colors.dark.text,

@@ -2,13 +2,12 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView } from "react-native";
+import { Alert, Platform } from "react-native";
 
 import { useSettingsStore } from "@/stores/settings";
 import Icon from "@/ui/components/Icon";
-import Item, { Leading, Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import Typography from "@/ui/components/Typography";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 import { resources } from "@/utils/i18n";
 
 const LanguagePersonalization = () => {
@@ -18,10 +17,10 @@ const LanguagePersonalization = () => {
   const settingStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
 
-  const languages = Object.keys(resources).map((key) => ({
+  const languages = Object.keys(resources).map(key => ({
     id: key,
     name: resources[key].label,
-    emoji: resources[key].emoji
+    emoji: resources[key].emoji,
   }));
 
   const rtlLanguages = ["ar", "he", "fa", "ur"];
@@ -29,7 +28,10 @@ const LanguagePersonalization = () => {
   const setLanguage = (lang: string) => {
     requestAnimationFrame(() => {
       if (rtlLanguages.includes(lang)) {
-        Alert.alert("Inverted layout is not supported yet", "The selected language may not be displayed correctly.");
+        Alert.alert(
+          "Inverted layout is not supported yet",
+          "The selected language may not be displayed correctly."
+        );
       }
 
       setTimeout(() => {
@@ -40,52 +42,46 @@ const LanguagePersonalization = () => {
   };
 
   return (
-    <ScrollView
+    <List
       style={{ flex: 1 }}
       contentContainerStyle={{ padding: 16 }}
-
+      contentInsetAdjustmentBehavior="always"
     >
-      <List>
-        {languages.map((lang) => {
-          const isSelected = i18n.language === lang.id;
+      {languages.map(lang => {
+        const isSelected = i18n.language === lang.id;
 
-          return (
-            <Item
-              key={lang.id}
-              onPress={() => {
-                setLanguage(lang.id);
+        return (
+          <List.Item
+            key={lang.id}
+            onPress={() => {
+              setLanguage(lang.id);
+            }}
+          >
+            <List.Leading>
+              <Typography>{lang.emoji}</Typography>
+            </List.Leading>
+
+            <Typography
+              variant="title"
+              weight={isSelected ? "bold" : "medium"}
+              style={{
+                paddingVertical: Platform.OS === "android" ? 4 : 2,
               }}
             >
-              <Leading>
-                <Typography>
-                  {lang.emoji}
-                </Typography>
+              {lang.name}
+            </Typography>
 
-              </Leading>
-
-              <Typography
-                variant={"title"}
-                style={{
-                  flex: 1,
-                  fontWeight: isSelected ? "bold" : "normal"
-                }}
-              >
-                {lang.name}
-              </Typography>
-
-              {isSelected && (
-                <Trailing>
-                  <Icon size={22} papicon>
-                    <Papicons name={"Check"} color={colors.primary} />
-                  </Icon>
-                </Trailing>
-
-              )}
-            </Item>
-          );
-        })}
-      </List>
-    </ScrollView>
+            {isSelected && (
+              <List.Trailing>
+                <Icon size={22} papicon>
+                  <Papicons name={"Check"} color={colors.primary} />
+                </Icon>
+              </List.Trailing>
+            )}
+          </List.Item>
+        );
+      })}
+    </List>
   );
 };
 

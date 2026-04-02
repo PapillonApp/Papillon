@@ -24,7 +24,7 @@ import { error } from "@/utils/logger/logger";
 
 import packagejson from "../../package.json"
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
-import List from '@/ui/new/List';
+import List, { ListTouchable } from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -241,10 +241,12 @@ export default function SettingsIndex() {
               const newButtonColor = adjust(button.color, theme.dark ? 0.2 : -0.2);
 
               return (
-                <AnimatedPressable
-                  onPress={button.onPress}
-                  style={{ flex: 1, width: "50%", opacity: 0.3 }}
+                <View
+                  style={{ flex: 1, borderRadius: 22, elevation: 2, overflow: "hidden" }}
                   key={button.title}
+                >
+                <ListTouchable
+                  onPress={button.onPress}
                 >
                   <Stack
                     flex
@@ -253,12 +255,16 @@ export default function SettingsIndex() {
                     gap={8}
                     padding={[14, 14]}
                     radius={22}
-                    style={{ borderColor: adjust(button.color, theme.dark ? 0.3 : -0.3) + "45" }}
+                    style={[
+                      Platform.OS === 'ios' ? { borderColor: adjust(button.color, theme.dark ? 0.3 : -0.3) + "45" } : { backgroundColor: adjust(button.color, theme.dark ? -0.8 : 0.8), borderWidth: 0 },
+                    ]}
                   >
-                    <LinearGradient
-                      colors={[adjust(button.color, theme.dark ? 0.3 : 0.8), button.color]}
-                      style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: 22, opacity: 0.16 }}
-                    />
+                    {Platform.OS === 'ios' && (
+                      <LinearGradient
+                        colors={[adjust(button.color, theme.dark ? 0.3 : 0.8), button.color]}
+                        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: 22, opacity: 0.16 }}
+                      />
+                    )}
                     <Icon papicon size={32} fill={button.disabled ? "#505050" : newButtonColor}>
                       {button.icon}
                     </Icon>
@@ -267,7 +273,8 @@ export default function SettingsIndex() {
                       <TypographyLegacy inline variant="body2" weight="medium" color={button.disabled ? "#505050" : newButtonColor}>{button.description}</TypographyLegacy>
                     </Stack>
                   </Stack>
-                </AnimatedPressable>
+                </ListTouchable>
+                </View>
               )
             })}
           </Stack>
