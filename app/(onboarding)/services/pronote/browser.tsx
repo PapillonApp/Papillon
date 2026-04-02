@@ -21,6 +21,7 @@ import uuid from "@/utils/uuid/uuid";
 
 import OnboardingWebView from "../../components/OnboardingWebView";
 import { Pronote2FAModal } from "./2fa";
+import Button from "@/ui/new/Button";
 
 export default function PronoteENTLogin() {
   const { colors } = useTheme();
@@ -32,6 +33,9 @@ export default function PronoteENTLogin() {
 
   // UI Logic
   const [browserVisible, setBrowserVisible] = React.useState(false);
+
+  const [hasLoadingBeenTooLong, setHasLoadingBeenTooLong] = useState(false);
+  const [loadingHidden, setLoadingHidden] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
@@ -216,9 +220,7 @@ export default function PronoteENTLogin() {
     const { url } = e.nativeEvent;
     console.log("WebView finished loading URL:", url);
 
-    if(url.includes("/pronote/mobile.eleve.html")) {
-      setBrowserVisible(false);
-    } else if (url === infoMobileURL) {
+    if (url === infoMobileURL) {
       setBrowserVisible(false);
     } else {
       setBrowserVisible(true);
@@ -244,7 +246,7 @@ export default function PronoteENTLogin() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={20}>
-      {!browserVisible &&
+      {!browserVisible && !loadingHidden &&
         <Reanimated.View
           style={{
             height: "100%",
@@ -263,6 +265,8 @@ export default function PronoteENTLogin() {
             <Divider height={12} ghost />
             <Typography align="center" variant="h4">{t("ONBOARDING_LOGIN_TO")} {school && school.name ? school.name : t("ONBOARDING_YOUR_SCHOOL")}</Typography>
             <Typography align="center" variant="body" color="textSecondary">{t("ONBOARDING_SCHOOLS_SEARCHING_HINT")}</Typography>
+
+            <Button label="Masquer" variant="text" onPress={() => setLoadingHidden(true)} />
           </Stack>
         </Reanimated.View>
       }
