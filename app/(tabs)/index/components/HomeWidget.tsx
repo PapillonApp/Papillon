@@ -8,7 +8,6 @@ import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import { Papicons } from "@getpapillon/papicons";
 import { useRouter } from "expo-router";
 import { useTheme } from "@react-navigation/native";
-import { Platform } from "react-native";
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
