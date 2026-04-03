@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Kommende Kurse",
   "Home_Widget_NewGrades": "Neue Noten",
   "Home_Widget_NewHomeworks": "Zu erledigende Aufgaben",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Keine bevorstehenden Kurse",
   "Home_Widget_NoCourses_Description": "Keine Kurse für heute geplant.",
   "Home_Cards_Button_Title": "Karten",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
