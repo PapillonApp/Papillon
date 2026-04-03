@@ -7,6 +7,31 @@ import { getCurrentPeriod } from "@/utils/grades/helper/period";
 import { error } from "@/utils/logger/logger";
 import Averages from "../../grades/atoms/Averages";
 
+const PERIODS_TTL_MS = 5 * 60 * 1000;
+const GRADES_TTL_MS = 5 * 60 * 1000;
+
+const periodsCache = new Map<
+  string,
+  {
+    fetchedAt: number;
+    value?: Period;
+    inFlight?: Promise<Period | undefined>;
+  }
+>();
+
+const gradesCache = new Map<
+  string,
+  {
+    fetchedAt: number;
+    subjects: SharedSubject[];
+    serviceAverage?: number;
+    inFlight?: Promise<{
+      subjects: SharedSubject[];
+      serviceAverage?: number;
+    }>;
+  }
+>();
+
 type GradesWidgetProps = {
   accent?: string;
   header?: boolean;
@@ -47,55 +72,123 @@ const GradesWidget = ({ period, onEmptyStateChange }: GradesWidgetProps) => {
           setCurrentPeriod(period);
           return;
         }
-        if (currentPeriod || !managerToUse) {
+        if (!managerToUse) {
           return;
         }
 
-        try {
+        const accountId = managerToUse.getAccount().id;
+        const cache = periodsCache.get(accountId);
+
+        if (cache && Date.now() - cache.fetchedAt < PERIODS_TTL_MS) {
+          if (cache.value) {
+            setCurrentPeriod(cache.value);
+          }
+          return;
+        }
+
+        if (cache?.inFlight) {
+          const cachedPeriod = await cache.inFlight;
+          if (cachedPeriod) {
+            setCurrentPeriod(cachedPeriod);
+          }
+          return;
+        }
+
+        const inFlight = (async () => {
           const result = await managerToUse.getGradesPeriods();
-          setCurrentPeriod(getCurrentPeriod(result));
+          return getCurrentPeriod(result);
+        })();
+
+        periodsCache.set(accountId, {
+          fetchedAt: cache?.fetchedAt ?? 0,
+          value: cache?.value,
+          inFlight,
+        });
+
+        try {
+          const nextPeriod = await inFlight;
+          periodsCache.set(accountId, {
+            fetchedAt: Date.now(),
+            value: nextPeriod,
+          });
+          if (nextPeriod) {
+            setCurrentPeriod(nextPeriod);
+          }
         } catch (err) {
+          periodsCache.delete(accountId);
           error(`Failed to fetch periods: ${err}`);
         }
       },
-      [period, currentPeriod, manager],
+      [period, manager],
     );
 
     useEffect(() => {
       const unsubscribe = subscribeManagerUpdate((updatedManager) => {
         fetchPeriods(updatedManager);
       });
-
-      fetchPeriods();
       return () => unsubscribe();
     }, [fetchPeriods]);
 
     const fetchGradesForPeriod = useCallback(
       async (periodToFetch: Period | undefined, managerToUse = manager) => {
-        if (!periodToFetch || !managerToUse || grades.length > 0) {
+        if (!periodToFetch || !managerToUse) {
           return;
         }
 
-        try {
+        const periodKey = `${periodToFetch.createdByAccount}:${periodToFetch.name}`;
+        const cache = gradesCache.get(periodKey);
+
+        if (cache && Date.now() - cache.fetchedAt < GRADES_TTL_MS) {
+          setSubjects(cache.subjects);
+          setServiceAverage(cache.serviceAverage);
+          return;
+        }
+
+        if (cache?.inFlight) {
+          const cachedGrades = await cache.inFlight;
+          setSubjects(cachedGrades.subjects);
+          setServiceAverage(cachedGrades.serviceAverage);
+          return;
+        }
+
+        const inFlight = (async () => {
           const result = await managerToUse.getGradesForPeriod(
             periodToFetch,
             periodToFetch.createdByAccount,
           );
-          setSubjects(result.subjects);
-          setServiceAverage(result.studentOverall.value || undefined);
+          return {
+            subjects: result.subjects,
+            serviceAverage: result.studentOverall.value || undefined,
+          };
+        })();
+
+        gradesCache.set(periodKey, {
+          fetchedAt: cache?.fetchedAt ?? 0,
+          subjects: cache?.subjects ?? [],
+          serviceAverage: cache?.serviceAverage,
+          inFlight,
+        });
+
+        try {
+          const nextGrades = await inFlight;
+          gradesCache.set(periodKey, {
+            fetchedAt: Date.now(),
+            subjects: nextGrades.subjects,
+            serviceAverage: nextGrades.serviceAverage,
+          });
+          setSubjects(nextGrades.subjects);
+          setServiceAverage(nextGrades.serviceAverage);
         } catch (err) {
+          gradesCache.delete(periodKey);
           error(`Failed to fetch grades: ${err}`);
         }
       },
-      [manager, grades.length],
+      [manager],
     );
 
     useEffect(() => {
-      if (grades.length > 0) {
-        return;
-      }
       fetchGradesForPeriod(currentPeriod);
-    }, [currentPeriod, fetchGradesForPeriod, grades.length]);
+    }, [currentPeriod, fetchGradesForPeriod]);
 
     useEffect(() => {
       if (period) {

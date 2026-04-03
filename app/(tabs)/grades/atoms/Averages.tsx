@@ -172,7 +172,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
                 backgroundColor: "transparent",
                 marginTop: -8,
               } : {
-                height: 170,
+                height: 180,
               }
             ]}
           >
@@ -234,7 +234,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
               </View>
             </View>
 
-            <Stack inline flex hAlign={inline ? "start" : "center"} vAlign="center" gap={0} style={{ marginTop: inline ? 0 : -20, marginLeft: inline ? -24 : 0, marginRight: inline ? 20 : 0 }}>
+            <Stack inline flex hAlign={inline ? "start" : "center"} vAlign="center" gap={0} style={{ marginTop: inline ? 0 : -10, marginLeft: inline ? -24 : 0, marginRight: inline ? 20 : 0 }}>
               <Stack animated direction="horizontal" hAlign="end" vAlign="end" gap={2}>
                 <AnimatedNumber variant={inline ? "h2" : "h1"} color={adjustedColor}>
                   {shownAverage ? shownAverage.toFixed(2) : "0.00"}
