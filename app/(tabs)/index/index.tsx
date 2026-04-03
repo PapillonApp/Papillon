@@ -15,7 +15,7 @@ import HomeTopBar from "./atoms/HomeTopBar";
 import Wallpaper from "./atoms/Wallpaper";
 import HomeWidget, { HomeWidgetItem } from "./components/HomeWidget";
 import { useHomeData } from "./hooks/useHomeData";
-import HomeGradesWidget from "./widgets/Grades";
+import HomeNewGradesWidget from "./widgets/NewGrades";
 import HomeTasksWidget from "./widgets/Tasks";
 import HomeTimeTableWidget from "./widgets/timetable";
 
@@ -54,7 +54,7 @@ const HomeScreen = () => {
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
-  const renderGrades = React.useCallback(() => <HomeGradesWidget />, []);
+  const renderGrades = React.useCallback(() => <HomeNewGradesWidget />, []);
 
   const data: HomeWidgetItem[] = useMemo(
     () => [

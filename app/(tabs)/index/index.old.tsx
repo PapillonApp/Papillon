@@ -5,19 +5,40 @@ import { useNavigation, useRouter } from "expo-router";
 import { t } from "i18next";
 import { instance } from "pawnote";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import React, { Alert, Dimensions, FlatList, Platform, View } from "react-native";
+import React, {
+  Alert,
+  Dimensions,
+  FlatList,
+  Platform,
+  View,
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Reanimated, { FadeInUp, FadeOutUp, LinearTransition } from "react-native-reanimated";
+import Reanimated, {
+  FadeInUp,
+  FadeOutUp,
+  LinearTransition,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { removeAllDuplicates } from "@/database/DatabaseProvider";
-import { getHomeworksFromCache, getWeekNumberFromDate, updateHomeworkIsDone } from "@/database/useHomework";
+import {
+  getHomeworksFromCache,
+  getWeekNumberFromDate,
+  updateHomeworkIsDone,
+} from "@/database/useHomework";
 import { useTimetable } from "@/database/useTimetable";
 import { AuthenticationError } from "@/services/errors/AuthenticationError";
-import { getManager, initializeAccountManager, subscribeManagerUpdate } from "@/services/shared";
+import {
+  getManager,
+  initializeAccountManager,
+  subscribeManagerUpdate,
+} from "@/services/shared";
 import { Grade, Period } from "@/services/shared/grade";
 import { Homework } from "@/services/shared/homework";
-import { Course as SharedCourse, CourseStatus } from "@/services/shared/timetable";
+import {
+  Course as SharedCourse,
+  CourseStatus,
+} from "@/services/shared/timetable";
 import { useAccountStore } from "@/stores/account";
 import { useSettingsStore } from "@/stores/settings";
 import { useAlert } from "@/ui/components/AlertProvider";
@@ -27,7 +48,12 @@ import CompactTask from "@/ui/components/CompactTask";
 import Course from "@/ui/components/Course";
 import { Dynamic } from "@/ui/components/Dynamic";
 import Icon from "@/ui/components/Icon";
-import { NativeHeaderHighlight, NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
+import {
+  NativeHeaderHighlight,
+  NativeHeaderPressable,
+  NativeHeaderSide,
+  NativeHeaderTitle,
+} from "@/ui/components/NativeHeader";
 import { AvailablePatterns, Pattern } from "@/ui/components/Pattern/Pattern";
 import Stack from "@/ui/components/Stack";
 import TabFlatList from "@/ui/components/TabFlatList";
@@ -46,31 +72,36 @@ import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 
 import { getStatusText } from "../calendar";
-import GradesWidget from "./widgets/Grades";
+import GradesWidget from "./widgets/NewGrades";
 
 const IndexScreen = () => {
   const now = new Date();
-  const weekNumber = getWeekNumberFromDate(now)
+  const weekNumber = getWeekNumberFromDate(now);
   const [currentPage, setCurrentPage] = useState(0);
-  const accounts = useAccountStore((state) => state.accounts);
-  const lastUsedAccount = useAccountStore((state) => state.lastUsedAccount);
-  const account = accounts.find((a) => a.id === lastUsedAccount);
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const account = accounts.find(a => a.id === lastUsedAccount);
 
-  const services = useMemo(() =>
-    account?.services?.map((service: { id: string }) => service.id) ?? [],
+  const services = useMemo(
+    () => account?.services?.map((service: { id: string }) => service.id) ?? [],
     [account?.services]
   );
 
   const [courses, setCourses] = useState<SharedCourse[]>([]);
 
   const timetableData = useTimetable(undefined, weekNumber);
-  const weeklyTimetable = useMemo(() =>
-    timetableData.map(day => ({
-      ...day,
-      courses: day.courses.filter(course =>
-        services.includes(course.createdByAccount) || course.createdByAccount.startsWith('ical_')
-      )
-    })).filter(day => day.courses.length > 0),
+  const weeklyTimetable = useMemo(
+    () =>
+      timetableData
+        .map(day => ({
+          ...day,
+          courses: day.courses.filter(
+            course =>
+              services.includes(course.createdByAccount) ||
+              course.createdByAccount.startsWith("ical_")
+          ),
+        }))
+        .filter(day => day.courses.length > 0),
     [timetableData, services]
   );
   const [grades, setGrades] = useState<Grade[]>([]);
@@ -80,43 +111,59 @@ const IndexScreen = () => {
   const navigation = useNavigation();
   const alert = useAlert();
 
-  const settingsStore = useSettingsStore(state => state.personalization)
+  const settingsStore = useSettingsStore(state => state.personalization);
 
   const Initialize = async () => {
     try {
-      await initializeAccountManager()
-      log("Refreshed Manager received")
+      await initializeAccountManager();
+      log("Refreshed Manager received");
     } catch (error) {
-      if (String(error).includes("Unable to find")) { return; }
+      if (String(error).includes("Unable to find")) {
+        return;
+      }
       if (error instanceof AuthenticationError) {
-        const instanceURL = error?.service?.auth?.additionals?.["instanceURL"] ?? "";
+        const instanceURL =
+          error?.service?.auth?.additionals?.["instanceURL"] ?? "";
         const serviceId = error?.service?.id ?? undefined;
 
         alert.showAlert({
           title: "Connexion impossible",
-          description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
+          description:
+            "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
           icon: "TriangleAlert",
           color: "#D60046",
-          customButton: instanceURL ? {
-            label: "Me reconnecter",
-            showCancelButton: true,
-            onPress: async () => {
-              const authUrl = instanceURL;
-              const instanceInfo = await instance(authUrl as string);
+          customButton: instanceURL
+            ? {
+                label: "Me reconnecter",
+                showCancelButton: true,
+                onPress: async () => {
+                  const authUrl = instanceURL;
+                  const instanceInfo = await instance(authUrl as string);
 
-              if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
-                return setTimeout(() => {
-                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId } })
-                }, 200)
+                  if (
+                    instanceInfo &&
+                    instanceInfo.casToken &&
+                    instanceInfo.casURL
+                  ) {
+                    return setTimeout(() => {
+                      router.push({
+                        pathname: "/(onboarding)/pronote/webview",
+                        params: { url: authUrl, serviceId },
+                      });
+                    }, 200);
+                  }
+
+                  setTimeout(() => {
+                    router.push({
+                      pathname: "/(onboarding)/pronote/credentials",
+                      params: { url: authUrl, serviceId },
+                    });
+                  }, 200);
+                },
               }
-
-              setTimeout(() => {
-                router.push({ pathname: "/(onboarding)/pronote/credentials", params: { url: authUrl, serviceId } })
-              }, 200)
-            }
-          } : undefined,
-          technical: error.message
-        })
+            : undefined,
+          technical: error.message,
+        });
       }
     }
     await Promise.all([fetchEDT(), fetchGrades()]);
@@ -128,38 +175,40 @@ const IndexScreen = () => {
         icon: "CheckCircle",
         color: "#00C851",
         withoutNavbar: true,
-        delay: 1000
+        delay: 1000,
       });
     }
-
-
   };
 
   useMemo(() => {
     Initialize();
   }, []);
 
-
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
     const date = new Date();
-    const weekNumber = getWeekNumberFromDate(date)
-    await manager.getWeeklyTimetable(weekNumber)
+    const weekNumber = getWeekNumberFromDate(date);
+    await manager.getWeeklyTimetable(weekNumber);
   }, []);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [freshHomeworks, setFreshHomeworks] = useState<Record<string, Homework>>({});
+  const [freshHomeworks, setFreshHomeworks] = useState<
+    Record<string, Homework>
+  >({});
   const [homeworks, setHomeworks] = useState<Homework[]>([]);
 
   const fetchHomeworks = useCallback(async () => {
     const manager = getManager();
     const current = await manager.getHomeworks(weekNumber);
     const next = await manager.getHomeworks(weekNumber + 1);
-    const result = [...current, ...next]
+    const result = [...current, ...next];
     const newHomeworks: Record<string, Homework> = {};
     for (const hw of result) {
       const id = generateId(
-        hw.subject + hw.content + hw.createdByAccount + hw.dueDate.toDateString()
+        hw.subject +
+          hw.content +
+          hw.createdByAccount +
+          hw.dueDate.toDateString()
       );
       newHomeworks[id] = hw;
     }
@@ -170,47 +219,57 @@ const IndexScreen = () => {
   async function setHomeworkAsDone(homework: Homework) {
     const manager = getManager();
     const id = generateId(
-      homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+      homework.subject +
+        homework.content +
+        homework.createdByAccount +
+        homework.dueDate.toDateString()
     );
     await manager.setHomeworkCompletion(homework, !homework.isDone);
-    updateHomeworkIsDone(id, !homework.isDone)
+    updateHomeworkIsDone(id, !homework.isDone);
     setRefreshTrigger(prev => prev + 1);
     setFreshHomeworks(prev => ({
       ...prev,
       [id]: {
         ...prev[id],
         isDone: !homework.isDone,
-      }
+      },
     }));
   }
 
   const fetchGrades = useCallback(async () => {
     const manager = getManager();
     if (!manager) {
-      warn('Manager is null, skipping grades fetch');
+      warn("Manager is null, skipping grades fetch");
       return;
     }
-    const gradePeriods = await manager.getGradesPeriods()
-    const validPeriods: Period[] = []
-    const date = new Date().getTime()
+    const gradePeriods = await manager.getGradesPeriods();
+    const validPeriods: Period[] = [];
+    const date = new Date().getTime();
     for (const period of gradePeriods) {
       if (period.start.getTime() > date && period.end.getTime() > date) {
         validPeriods.push(period);
       }
     }
 
-    const grades: Grade[] = []
-    const currentPeriod = getCurrentPeriod(validPeriods)
+    const grades: Grade[] = [];
+    const currentPeriod = getCurrentPeriod(validPeriods);
 
-    const periodGrades = await manager.getGradesForPeriod(currentPeriod, currentPeriod.createdByAccount)
+    const periodGrades = await manager.getGradesForPeriod(
+      currentPeriod,
+      currentPeriod.createdByAccount
+    );
     periodGrades.subjects.forEach(subject => {
       subject.grades.forEach(grade => {
         grades.push(grade);
       });
     });
 
-    setGrades(grades.sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime()).splice(0, 10))
-  }, [])
+    setGrades(
+      grades
+        .sort((a, b) => b.givenAt.getTime() - a.givenAt.getTime())
+        .splice(0, 10)
+    );
+  }, []);
 
   useEffect(() => {
     const fetchHomeworksFromCache = async () => {
@@ -219,22 +278,29 @@ const IndexScreen = () => {
       const fullHomeworks = [...currentWeekHomeworks, ...nextWeekHomeworks];
 
       // get the closest due date from now
-      const sortedHomeworks = fullHomeworks.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      const sortedHomeworks = fullHomeworks.sort(
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      );
       // Filter done homeworks
-      const filteredHomeworks = sortedHomeworks.filter(hw => !hw.isDone).length > 0 ? sortedHomeworks.filter(hw => !hw.isDone) : sortedHomeworks;
+      const filteredHomeworks =
+        sortedHomeworks.filter(hw => !hw.isDone).length > 0
+          ? sortedHomeworks.filter(hw => !hw.isDone)
+          : sortedHomeworks;
       // Take the first 3 homeworks
       const splicedHomeworks = filteredHomeworks.splice(0, 3);
       setHomeworks(splicedHomeworks);
     };
     fetchHomeworksFromCache();
-  }, [refreshTrigger])
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const fetchData = async () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      let dayCourse = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+      let dayCourse =
+        weeklyTimetable.find(day => day.date.getTime() === today.getTime())
+          ?.courses ?? [];
 
       if (dayCourse.length === 0) {
         const futureDays = weeklyTimetable
@@ -251,12 +317,11 @@ const IndexScreen = () => {
     fetchData();
   }, [weeklyTimetable]);
 
-
   useEffect(() => {
-    const unsubscribe = subscribeManagerUpdate((_) => {
-      fetchEDT()
-      fetchGrades()
-      fetchHomeworks()
+    const unsubscribe = subscribeManagerUpdate(_ => {
+      fetchEDT();
+      fetchGrades();
+      fetchHomeworks();
     });
 
     return () => unsubscribe();
@@ -266,7 +331,9 @@ const IndexScreen = () => {
   const { colors } = theme;
 
   const [firstName] = useMemo(() => {
-    if (!lastUsedAccount) { return [null, null, null, null]; }
+    if (!lastUsedAccount) {
+      return [null, null, null, null];
+    }
 
     const firstName = account?.firstName;
     const lastName = account?.lastName;
@@ -286,13 +353,12 @@ const IndexScreen = () => {
 
   const [fullyScrolled, setFullyScrolled] = useState(false);
 
-
   const handleFullyScrolled = useCallback((isFullyScrolled: boolean) => {
     setFullyScrolled(isFullyScrolled);
   }, []);
 
   useEffect(() => {
-    removeAllDuplicates()
+    removeAllDuplicates();
     if (accounts.length > 0) {
       checkConsent().then(consent => {
         if (!consent.given) {
@@ -302,63 +368,76 @@ const IndexScreen = () => {
     }
   }, []);
 
-  const MagicTaskWrapper = useCallback(({ item }: { item: Homework }) => {
-    const description = item.content.replace(/<[^>]*>/g, "");
-    const dueDate = new Date(item.dueDate);
-    const inFresh = freshHomeworks[item.id]
+  const MagicTaskWrapper = useCallback(
+    ({ item }: { item: Homework }) => {
+      const description = item.content.replace(/<[^>]*>/g, "");
+      const dueDate = new Date(item.dueDate);
+      const inFresh = freshHomeworks[item.id];
 
-    return (
-      <CompactTask
-        fromCache={false}
-        setHomeworkAsDone={() => setHomeworkAsDone(inFresh)}
-        ref={item}
-        subject={getSubjectName(item.subject)}
-        color={getSubjectColor(item.subject)}
-        description={description}
-        emoji={getSubjectEmoji(item.subject)}
-        dueDate={dueDate}
-        done={item.isDone}
-      />
-
-    );
-  }, [freshHomeworks]);
+      return (
+        <CompactTask
+          fromCache={false}
+          setHomeworkAsDone={() => setHomeworkAsDone(inFresh)}
+          ref={item}
+          subject={getSubjectName(item.subject)}
+          color={getSubjectColor(item.subject)}
+          description={description}
+          emoji={getSubjectEmoji(item.subject)}
+          dueDate={dueDate}
+          done={item.isDone}
+        />
+      );
+    },
+    [freshHomeworks]
+  );
 
   const getScheduleMessage = () => {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    const todayAllCourses = weeklyTimetable.find(day => day.date.getTime() === today.getTime())?.courses ?? [];
+    const todayAllCourses =
+      weeklyTimetable.find(day => day.date.getTime() === today.getTime())
+        ?.courses ?? [];
     if (todayAllCourses.length === 0) {
-      return todayAllCourses.length > 0 ? t("Home_Planned_Finished") : t("Home_Planned_None");
+      return todayAllCourses.length > 0
+        ? t("Home_Planned_Finished")
+        : t("Home_Planned_None");
     } else if (todayAllCourses.length === 1) {
       return t("Home_Planned_One");
     }
     return t("Home_Planned_Number", { number: todayAllCourses.length });
-
   };
 
   const headerItems = [
-    (
-      <Stack
-        direction="vertical"
-        hAlign="center"
-        vAlign="center"
-        gap={2}
-        padding={20}
+    <Stack
+      direction="vertical"
+      hAlign="center"
+      vAlign="center"
+      gap={2}
+      padding={20}
+    >
+      <Typography
+        variant="h1"
+        style={{
+          marginTop: -12,
+          marginBottom: 2,
+          fontSize: 44,
+          lineHeight: 56,
+        }}
       >
-        <Typography variant="h1" style={{ marginTop: -12, marginBottom: 2, fontSize: 44, lineHeight: 56 }}>
-          👋
+        👋
+      </Typography>
+      <Dynamic animated key={"welcome:" + firstName}>
+        <Typography variant="h3" color={foreground}>
+          {firstName
+            ? t("Home_Welcome_Name", { name: firstName })
+            : t("Home_Welcome")}
         </Typography>
-        <Dynamic animated key={"welcome:" + firstName}>
-          <Typography variant="h3" color={foreground}>
-            {firstName ? t("Home_Welcome_Name", { name: firstName }) : t("Home_Welcome")}
-          </Typography>
-        </Dynamic>
-        <Typography variant="body1" color={foregroundSecondary}>
-          {getScheduleMessage()}
-        </Typography>
-      </Stack>
-    ),
+      </Dynamic>
+      <Typography variant="body1" color={foregroundSecondary}>
+        {getScheduleMessage()}
+      </Typography>
+    </Stack>,
     <GradesWidget header accent={foreground} />,
   ];
 
@@ -372,7 +451,13 @@ const IndexScreen = () => {
       <LinearGradient
         colors={[accent + "77", accent + "00"]}
         locations={[0, 0.5]}
-        style={{ position: "absolute", top: 0, left: 0, right: 0, height: "100%" }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "100%",
+        }}
       />
 
       <Pattern
@@ -396,13 +481,13 @@ const IndexScreen = () => {
               backgroundColor: colors.card,
               zIndex: 1000000,
             },
-            Platform.OS === 'android' && {
+            Platform.OS === "android" && {
               elevation: 4,
             },
-            Platform.OS === 'ios' && {
+            Platform.OS === "ios" && {
               borderBottomWidth: 0.5,
               borderBottomColor: colors.border,
-            }
+            },
           ]}
         />
       )}
@@ -456,7 +541,7 @@ const IndexScreen = () => {
             />
 
             {/* Pagination */}
-            {headerItems.length > 1 &&
+            {headerItems.length > 1 && (
               <View
                 style={{
                   flexDirection: "row",
@@ -474,14 +559,15 @@ const IndexScreen = () => {
                     style={{
                       width: currentPage === i ? 16 : 6,
                       height: currentPage === i ? 8 : 6,
-                      backgroundColor: currentPage === i ? foreground : foregroundSecondary,
+                      backgroundColor:
+                        currentPage === i ? foreground : foregroundSecondary,
                       borderRadius: 200,
-                      opacity: currentPage === i ? 1 : 0.5
+                      opacity: currentPage === i ? 1 : 0.5,
                     }}
                   />
                 ))}
               </View>
-            }
+            )}
           </>
         }
         gap={12}
@@ -492,41 +578,52 @@ const IndexScreen = () => {
             redirect: "(tabs)/calendar",
             render: () => (
               <Stack padding={12} gap={4} style={{ paddingBottom: 6 }}>
-                {courses.filter(item => item.to.getTime() > Date.now()).slice(0, 2).map(item => (
-                  <Course
-                    key={item.id}
-                    id={item.id}
-                    name={getSubjectName(item.subject)}
-                    teacher={item.teacher}
-                    room={item.room}
-                    color={getSubjectColor(item.subject)}
-                    status={{ label: item.customStatus ? item.customStatus : getStatusText(item.status), canceled: (item.status === CourseStatus.CANCELED) }}
-                    variant="primary"
-                    start={Math.floor(item.from.getTime() / 1000)}
-                    end={Math.floor(item.to.getTime() / 1000)}
-                    readonly={!!item.createdByAccount}
-                    compact={true}
-                    onPress={() => {
-                      (navigation as any).navigate('(modals)/course', {
-                        course: item,
-                        subjectInfo: {
-                          id: item.id,
-                          name: item.subject,
-                          color: getSubjectColor(item.subject),
-                          emoji: getSubjectEmoji(item.subject),
-                        }
-                      });
-                    }}
-                  />
-                ))}
+                {courses
+                  .filter(item => item.to.getTime() > Date.now())
+                  .slice(0, 2)
+                  .map(item => (
+                    <Course
+                      key={item.id}
+                      id={item.id}
+                      name={getSubjectName(item.subject)}
+                      teacher={item.teacher}
+                      room={item.room}
+                      color={getSubjectColor(item.subject)}
+                      status={{
+                        label: item.customStatus
+                          ? item.customStatus
+                          : getStatusText(item.status),
+                        canceled: item.status === CourseStatus.CANCELED,
+                      }}
+                      variant="primary"
+                      start={Math.floor(item.from.getTime() / 1000)}
+                      end={Math.floor(item.to.getTime() / 1000)}
+                      readonly={!!item.createdByAccount}
+                      compact={true}
+                      onPress={() => {
+                        (navigation as any).navigate("(modals)/course", {
+                          course: item,
+                          subjectInfo: {
+                            id: item.id,
+                            name: item.subject,
+                            color: getSubjectColor(item.subject),
+                            emoji: getSubjectEmoji(item.subject),
+                          },
+                        });
+                      }}
+                    />
+                  ))}
               </Stack>
-            )
+            ),
           },
           homeworks.length > 0 && {
             icon: <Papicons name={"Tasks"} />,
             title: t("Tab_Tasks"),
             redirect: "/(tabs)/tasks",
-            buttonLabel: homeworks.length > 3 ? `${(homeworks.length) - 3}+ autres tâches` : t("Home_See_All_Tasks"),
+            buttonLabel:
+              homeworks.length > 3
+                ? `${homeworks.length - 3}+ autres tâches`
+                : t("Home_See_All_Tasks"),
             render: () => (
               <FlatList
                 showsVerticalScrollIndicator={false}
@@ -538,18 +635,16 @@ const IndexScreen = () => {
                   width: "100%",
                   padding: 10,
                   paddingHorizontal: 10,
-                  gap: 10
+                  gap: 10,
                 }}
                 contentContainerStyle={{
-                  gap: 12
+                  gap: 12,
                 }}
                 data={homeworks.slice(0, 3)}
                 keyExtractor={(item, index) => item.id + index}
-                renderItem={({ item }) => (
-                  <MagicTaskWrapper item={item} />
-                )}
+                renderItem={({ item }) => <MagicTaskWrapper item={item} />}
               />
-            )
+            ),
           },
           grades.length > 0 && {
             icon: <Papicons name={"Grades"} />,
@@ -563,13 +658,13 @@ const IndexScreen = () => {
                   borderBottomLeftRadius: 26,
                   borderBottomRightRadius: 26,
                   overflow: "hidden",
-                  width: "100%"
+                  width: "100%",
                 }}
                 contentContainerStyle={{
                   paddingTop: 8,
                   paddingBottom: 14,
                   paddingHorizontal: 14,
-                  gap: 12
+                  gap: 12,
                 }}
                 data={grades}
                 keyExtractor={(item, index) => item.id + index}
@@ -586,21 +681,21 @@ const IndexScreen = () => {
                     date={item.givenAt}
                     variant="home"
                     onPress={() => {
-                      (navigation as any).navigate('(modals)/grade', {
+                      (navigation as any).navigate("(modals)/grade", {
                         grade: item,
                         subjectInfo: {
                           id: item.subjectId,
                           name: item.subjectName,
                           emoji: getSubjectEmoji(item.subjectName),
-                          color: getSubjectColor(item.subjectName)
+                          color: getSubjectColor(item.subjectName),
                         },
-                        allGrades: grades
+                        allGrades: grades,
                       });
                     }}
                   />
                 )}
               />
-            )
+            ),
           },
           // {
           //   icon: <Papicons name={"Butterfly"} />,
@@ -624,7 +719,7 @@ const IndexScreen = () => {
           //   dev: true
           // },
         ].filter(item => item !== false && (item.dev ? __DEV__ : true))}
-        keyExtractor={(item) => item.title}
+        keyExtractor={item => item.title}
         renderItem={({ item }) => {
           if (!item || (item.dev && !__DEV__)) {
             return null;
@@ -637,19 +732,50 @@ const IndexScreen = () => {
               layout={Animation(LinearTransition, "list")}
             >
               <Stack card radius={26}>
-                <Stack direction="horizontal" vAlign="center" hAlign="center" padding={12} gap={10} style={{ paddingBottom: item.render ? 0 : undefined, marginTop: -1, height: item.render ? 44 : 56 }}>
+                <Stack
+                  direction="horizontal"
+                  vAlign="center"
+                  hAlign="center"
+                  padding={12}
+                  gap={10}
+                  style={{
+                    paddingBottom: item.render ? 0 : undefined,
+                    marginTop: -1,
+                    height: item.render ? 44 : 56,
+                  }}
+                >
                   <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
                     {item.icon}
                   </Icon>
-                  <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+                  <Typography
+                    nowrap
+                    style={{ flex: 1, opacity: 0.6 }}
+                    variant="title"
+                    color="text"
+                  >
                     {item.title}
                   </Typography>
                   {(item.redirect || item.onPress) && (
                     <AnimatedPressable
-                      onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect)}
+                      onPress={() =>
+                        item.onPress
+                          ? item.onPress()
+                          : router.navigate(item.redirect)
+                      }
                     >
-                      <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
-                        <Typography variant="body2" color="secondary" inline style={{ marginTop: 2 }}>
+                      <Stack
+                        bordered
+                        direction="horizontal"
+                        hAlign="center"
+                        padding={[12, 6]}
+                        gap={6}
+                      >
+                        <Typography
+                          variant="body2"
+                          color="secondary"
+                          inline
+                          style={{ marginTop: 2 }}
+                        >
                           {item.buttonLabel ?? "Afficher plus"}
                         </Typography>
                         <Icon size={20} papicon opacity={0.5}>
@@ -659,12 +785,10 @@ const IndexScreen = () => {
                     </AnimatedPressable>
                   )}
                 </Stack>
-                {item.render && (
-                  <item.render />
-                )}
+                {item.render && <item.render />}
               </Stack>
             </Reanimated.View>
-          )
+          );
         }}
         paddingTop={0}
       />
@@ -672,7 +796,10 @@ const IndexScreen = () => {
       <NativeHeaderSide side="Left">
         <NativeHeaderPressable
           onPressIn={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
+            Alert.alert(
+              "Ça arrive... ✨",
+              "Cette fonctionnalité n'est pas encore disponible."
+            );
           }}
         >
           <Icon size={28}>
@@ -681,7 +808,10 @@ const IndexScreen = () => {
         </NativeHeaderPressable>
       </NativeHeaderSide>
 
-      <NativeHeaderTitle style={{ flexDirection: "row", alignItems: "center", gap: 4 }} ignoreTouch={true}>
+      <NativeHeaderTitle
+        style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+        ignoreTouch={true}
+      >
         <Typography variant="navigation" color={foreground}>
           {date.toLocaleDateString(i18n.language, { weekday: "long" })}
         </Typography>
@@ -704,6 +834,6 @@ const IndexScreen = () => {
       </NativeHeaderSide>
     </>
   );
-}
+};
 
 export default IndexScreen;
