@@ -1,17 +1,14 @@
-import { Papicons } from '@getpapillon/papicons';
-import { useRouter } from 'expo-router';
-import { t } from 'i18next';
-import React from 'react';
+import { t } from "i18next";
+import React from "react";
 
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import Icon from '@/ui/components/Icon';
-import Stack from '@/ui/components/Stack';
-import Typography from '@/ui/components/Typography';
-import AnimatedPressable from '@/ui/components/AnimatedPressable';
-import { Papicons } from '@getpapillon/papicons';
-import { useRouter } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
-import { Platform } from 'react-native';
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import Typography from "@/ui/components/Typography";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import { Papicons } from "@getpapillon/papicons";
+import { useRouter } from "expo-router";
+import { useTheme } from "@react-navigation/native";
+import { Platform } from "react-native";
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
@@ -37,21 +34,49 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
   }
 
   return (
-    <Stack card radius={25} gap={0} style={{ paddingBottom: 3, elevation: 2 }} backgroundColor={theme.colors.card}>
-      <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
+    <Stack
+      card
+      radius={25}
+      gap={0}
+      style={{ paddingBottom: 3, elevation: 2 }}
+      backgroundColor={theme.colors.card}
+    >
+      <Stack
+        direction="horizontal"
+        vAlign="center"
+        hAlign="center"
+        padding={[10, 10]}
+        gap={10}
+        style={{ marginTop: -1 }}
+      >
         <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
           {item.icon}
         </Icon>
-        <Typography nowrap style={{ flex: 1, opacity: 0.6 }} variant="title" color="text">
+        <Typography
+          nowrap
+          style={{ flex: 1, opacity: 0.6 }}
+          variant="title"
+          color="text"
+        >
           {item.title}
         </Typography>
         {(item.redirect || item.onPress) && (
           <AnimatedPressable
-            onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect as any)}
+            onPress={() =>
+              item.onPress
+                ? item.onPress()
+                : router.navigate(item.redirect as any)
+            }
           >
-            <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+            <Stack
+              bordered
+              direction="horizontal"
+              hAlign="center"
+              padding={[12, 6]}
+              gap={6}
+            >
               <Typography variant="body2" color="secondary" inline>
-                {t('Home_Display_More',)}
+                {t("Home_Display_More")}
               </Typography>
               <Icon size={20} papicon opacity={0.5}>
                 <Papicons name={"ArrowRightUp"} />
