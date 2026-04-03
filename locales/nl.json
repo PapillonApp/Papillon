@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Volgende lessen",
   "Home_Widget_NewGrades": "Nieuwe cijfers",
   "Home_Widget_NewHomeworks": "Taken te doen",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Geen lessen gepland",
   "Home_Widget_NoCourses_Description": "Er zijn geen lessen gepland voor vandaag.",
   "Home_Cards_Button_Title": "Kaarten",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
