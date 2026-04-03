@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Următoarele lecții",
   "Home_Widget_NewGrades": "Note noi",
   "Home_Widget_NewHomeworks": "Teme de făcut",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Nicio lecție următoare",
   "Home_Widget_NoCourses_Description": "Nu sunt lecții programate pentru astăzi.",
   "Home_Cards_Button_Title": "Carduri",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
