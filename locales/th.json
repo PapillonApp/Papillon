@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "คาบเรียนถัดไป",
   "Home_Widget_NewGrades": "เกรดใหม่",
   "Home_Widget_NewHomeworks": "งานที่ต้องทำ",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "ไม่มีเรียนเร็วๆ นี้",
   "Home_Widget_NoCourses_Description": "ไม่มีตารางเรียนสำหรับวันนี้",
   "Home_Cards_Button_Title": "บัตร",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
