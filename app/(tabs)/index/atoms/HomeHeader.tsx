@@ -20,6 +20,7 @@ import WrappedBanner from './WrappedBanner';
 import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
+import { ListTouchable } from '@/ui/new/List';
 
 const HomeHeader = () => {
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ const HomeHeader = () => {
       </LiquidGlassContainer>
 
       {showReleaseNotesBanner && (
-        <AnimatedPressable
+        <ListTouchable
           onPress={() =>
             WebBrowser.openBrowserAsync(releaseNotesUrl, {
               presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
@@ -138,7 +139,7 @@ const HomeHeader = () => {
               </Typography>
             </Stack>
 
-            <Pressable
+            <ListTouchable
               hitSlop={10}
               onPress={(event) => {
                 event.stopPropagation();
@@ -149,9 +150,9 @@ const HomeHeader = () => {
               <Icon size={16}>
               <Papicons name="Cross" />
               </Icon>
-            </Pressable>
+            </ListTouchable>
           </Stack>
-        </AnimatedPressable>
+        </ListTouchable>
       )}
 
       {__DEV__ && 1 === 2 && (

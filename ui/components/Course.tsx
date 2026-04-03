@@ -363,7 +363,7 @@ const Course = React.memo((props: CourseProps) => {
                   </Typography>
                 </Stack>
               )}
-              <Typography variant="h4" style={[styles.statusDuration, { color: textColor + "95" }]} skeleton={skeleton}>
+              <Typography variant="h4" style={[styles.statusDuration, { color: textColor + "95", flex: 1 }]} skeleton={skeleton}>
                 {formatDuration(duration)}
               </Typography>
             </View>
