@@ -1,6 +1,7 @@
 import { useTheme } from "@react-navigation/native";
+import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { FlatList, Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
 import { Animation } from "../utils/Animation";
@@ -36,6 +37,47 @@ const isType = (child, component, name) => {
   return child?.type && (child.type === component || child.type.displayName === name);
 };
 
+const getComponentTypeName = (type: any) => {
+  return type?.displayName || type?.name || type?.type?.displayName || type?.type?.name || "";
+};
+
+const shouldApplyDefaultLeadingOpacity = (node: React.ReactNode) => {
+  if (!React.isValidElement(node)) {
+    return false;
+  }
+  const typeName = getComponentTypeName(node.type);
+  if (typeName === "Icon") {
+    return true;
+  }
+  return typeof typeName === "string" && typeName.toLowerCase().includes("papicon");
+};
+
+const withDefaultLeadingOpacity = (node: React.ReactNode): React.ReactNode => {
+  if (Platform.OS !== "ios" || node == null) {
+    return node;
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child) => withDefaultLeadingOpacity(child));
+  }
+
+  if (!React.isValidElement(node)) {
+    return node;
+  }
+
+  if (node.type === React.Fragment) {
+    return React.cloneElement(node, {
+      children: React.Children.map(node.props.children, (child) => withDefaultLeadingOpacity(child)),
+    });
+  }
+
+  if (node.props?.opacity !== undefined || !shouldApplyDefaultLeadingOpacity(node)) {
+    return node;
+  }
+
+  return React.cloneElement(node, { opacity: 0.6 });
+};
+
 const splitItemChildren = (children: React.ReactNode) => {
   let leading = null;
   let trailing = null;
@@ -48,7 +90,7 @@ const splitItemChildren = (children: React.ReactNode) => {
 
     const type = child.type;
     if (type === Leading || type?.displayName === "List.Leading") {
-      leading = child.props.children;
+      leading = withDefaultLeadingOpacity(child.props.children);
     } else if (type === Trailing || type?.displayName === "List.Trailing") {
       trailing = child.props.children;
     } else {
@@ -225,6 +267,8 @@ const RawRuntimeRenderer: React.FC<{
     </View>
   );
 };
+
+const MemoizedRawRuntimeRenderer = React.memo(RawRuntimeRenderer);
 
 const List = ({ children, animated = false, gap = 12, ...rest }) => {
   const theme = useTheme();
@@ -417,7 +461,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     });
   }, [children, gap]);
 
-  const ListComponent = animated ? Reanimated.FlatList : FlatList;
+  const ListComponent = animated ? Reanimated.FlatList : FlashList;
 
   const keyExtractor = useCallback((item) => item.id, []);
 
@@ -440,7 +484,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     }
 
     if (item.kind === "raw") {
-      return <RawRuntimeRenderer item={item} animated={animated} colors={colors} />;
+      return <MemoizedRawRuntimeRenderer item={item} animated={animated} colors={colors} />;
     }
 
     return renderListRow({
@@ -461,6 +505,13 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     [rest.contentContainerStyle],
   );
   const listStyle = useMemo(() => [rest.style, styles.list], [rest.style]);
+  const removeClippedSubviews = rest.removeClippedSubviews ?? Platform.OS === "android";
+  const initialNumToRender = rest.initialNumToRender ?? 10;
+  const maxToRenderPerBatch = rest.maxToRenderPerBatch ?? 10;
+  const updateCellsBatchingPeriod = rest.updateCellsBatchingPeriod ?? 16;
+  const windowSize = rest.windowSize ?? 10;
+  const estimatedItemSize = rest.estimatedItemSize ?? 74;
+  const nonAnimatedListPerfProps = animated ? null : { estimatedItemSize };
 
   return (
     <ListComponent
@@ -469,6 +520,12 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       {...rest}
+      removeClippedSubviews={removeClippedSubviews}
+      initialNumToRender={initialNumToRender}
+      maxToRenderPerBatch={maxToRenderPerBatch}
+      updateCellsBatchingPeriod={updateCellsBatchingPeriod}
+      windowSize={windowSize}
+      {...nonAnimatedListPerfProps}
       contentContainerStyle={contentContainerStyle}
       style={listStyle}
     />
@@ -491,7 +548,7 @@ export const ListTouchable = React.memo(({ ...props }) => {
       return;
     }
     props.onPress?.(event);
-  }, [props]);
+  }, [props.onPress]);
 
   if (!hasOnPress) {
     return (
