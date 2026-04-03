@@ -2,11 +2,12 @@ import { useTheme } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
-import Reanimated, { LinearTransition } from 'react-native-reanimated';
+import Reanimated, { createAnimatedComponent, LinearTransition } from 'react-native-reanimated';
 
 import { Animation } from "../utils/Animation";
 import { PapillonAppearIn, PapillonAppearOut } from "../utils/Transition";
 import Typography from "./Typography";
+import { LegendList } from "@legendapp/list";
 
 type MarkerProps = {
   children?: React.ReactNode;
@@ -461,7 +462,7 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
     });
   }, [children, gap]);
 
-  const ListComponent = animated ? Reanimated.FlatList : FlashList;
+  const ListComponent = Reanimated.FlatList;
 
   const keyExtractor = useCallback((item) => item.id, []);
 
