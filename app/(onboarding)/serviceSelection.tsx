@@ -122,7 +122,7 @@ export default function ServiceSelection() {
       >
         {filteredServices.map((app) => (
           <List.Item key={app.name} onPress={() => setSelectedService(app.name)} style={{
-            backgroundColor: selectedService === app.name ? adjust(colors.primary, theme.dark ? -0.8 : 0.9) : colors.card,
+            backgroundColor: selectedService === app.name ? adjust(colors.tint, theme.dark ? -0.8 : 0.9) : colors.item,
             minHeight: 62
           }}>
             <List.Leading>

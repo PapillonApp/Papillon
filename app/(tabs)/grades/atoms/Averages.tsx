@@ -162,7 +162,9 @@ const Averages = ({ grades, realAverage, color, scale = 20 }: { grades: Grade[],
             gap={0}
             style={[
               Platform.OS === 'android' ? {
-                borderWidth: 0
+                borderWidth: 0,
+                backgroundColor: theme.colors.item,
+                elevation: 0
               } : {}
             ]}
           >
