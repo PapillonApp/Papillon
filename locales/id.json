@@ -1,6 +1,7 @@
 {
   "Global_Back": "Kembali",
   "Global_DatePrefix": "pada",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Beranda",
   "Tab_Calendar": "Jadwal",
   "Tab_Tasks": "Tugas",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Warna aksen",
   "Settings_Personalization_Accent_Description": "Warna yang kamu pilih di sini akan diterapkan pada halaman beranda Papillon.",
   "Settings_Personalization_Theme": "Tema",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Ganti ikon",
   "Settings_Personalization_Icon_Description": "Personalisasi ikon aplikasi",
   "Settings_Personalization_Subject_Title": "Personalisasi mapel",
