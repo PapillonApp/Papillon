@@ -8,6 +8,7 @@ import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@react-navigation/native';
 import { Platform } from 'react-native';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
@@ -24,7 +25,7 @@ interface HomeWidgetProps {
   item: HomeWidgetItem;
 }
 
-const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
+const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
   const router = useRouter();
   const theme = useTheme();
 
@@ -65,6 +66,12 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
       {item.render && item.render()}
     </Stack>
   );
-});
+};
+
+const HomeWidget: React.FC<HomeWidgetProps> = React.memo((props) => (
+  <ErrorBoundary fallback={null}>
+    <HomeWidgetContent {...props} />
+  </ErrorBoundary>
+));
 
 export default HomeWidget;
