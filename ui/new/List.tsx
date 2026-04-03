@@ -346,13 +346,15 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
 };
 
 export const ListTouchable = React.memo(({ onPress, ...props }) => {
+  const theme = useTheme();
+
   if (!onPress) {
     return <View {...props}>{props.children}</View>;
   }
 
   if (Platform.OS === "android") {
     return (
-      <TouchableNativeFeedback useForeground onPress={onPress} {...props}>
+      <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(theme.colors.text + "22", true)} useForeground onPress={onPress} {...props}>
         {props.children}
       </TouchableNativeFeedback>
     );

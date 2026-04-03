@@ -12,7 +12,7 @@ const FALLBACK_COLORS = {
     background: "#FFFFFF",
     text: "#000000",
     card: "#FFFFFF",
-    item: "#FFFFFF",
+    item: Platform.OS === "android" ? "#f1f1f1" : "#FFFFFF",
   },
   dark: {
     primary: "#29947A",
