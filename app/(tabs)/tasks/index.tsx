@@ -56,7 +56,7 @@ const TasksView: React.FC = () => {
           onClose={() => setShowWeekPicker(false)}
         />
       )}
-      <View style={[styles.container, Platform.OS === "android" && { backgroundColor: theme.colors.item }]}>
+      <View style={[styles.container, (Platform.OS === "android" && !theme.dark) && { backgroundColor: theme.colors.item }]}>
         <TasksHeader
           defaultWeek={defaultWeek}
           selectedWeek={selectedWeek}
