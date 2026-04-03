@@ -1,6 +1,7 @@
 {
   "Global_Back": "Takaisin",
   "Global_DatePrefix": " ",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Koti",
   "Tab_Calendar": "Oppitunnit",
   "Tab_Tasks": "Tehtävät",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Tehosteväri",
   "Settings_Personalization_Accent_Description": "Tässä valitsemasi väri näkyy Papillonin etusivulla.",
   "Settings_Personalization_Theme": "Teema",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Vaihda kuvake",
   "Settings_Personalization_Icon_Description": "Muokkaa sovelluksen kuvaketta",
   "Settings_Personalization_Subject_Title": "Muokkaa aineita",
