@@ -12,13 +12,13 @@ import i18n from '@/utils/i18n';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Papicons } from '@getpapillon/papicons';
 import Icon from './Icon';
-import AnimatedPressable from './AnimatedPressable';
 import { Dynamic } from './Dynamic';
 import { Animation } from '../utils/Animation';
 import { LinearTransition } from 'react-native-reanimated';
 import { PapillonAppearIn, PapillonAppearOut } from '../utils/Transition';
 import { t } from 'i18next';
 import { Platform } from 'react-native';
+import { ListTouchable } from '../new/List';
 
 interface TaskProps {
   subject: string;
@@ -72,8 +72,8 @@ const Task: React.FC<TaskProps> = ({
   const tintedColor = adjust(color, theme.dark ? 0.3 : -0.3);
 
   return (
-    <AnimatedPressable onPress={onPress}>
-      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: theme.colors.item, elevation: 0, overflow: "hidden" }}>
+    <ListTouchable onPress={onPress}>
+      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: theme.colors.card, elevation: 0, overflow: "hidden" }}>
         <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
           {Platform.OS !== "android" && (
             <LinearGradient
@@ -150,8 +150,8 @@ const Task: React.FC<TaskProps> = ({
                 </Dynamic>
               )}
             </Stack>
-            <Stack animated layout={Animation(LinearTransition, "list")} inline hAlign='end' vAlign='center'>
-              <AnimatedPressable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
+            <Stack animated layout={Animation(LinearTransition, "list")} radius={300} inline hAlign='end' vAlign='center' style={{ overflow: Platform.OS === "android" ? "hidden" : undefined }}>
+              <ListTouchable scaleTo={0.8} animated layout={Animation(LinearTransition, "list")} onPress={onToggle}>
                 <Stack
                   animated
                   layout={Animation(LinearTransition, "list")}
@@ -179,12 +179,12 @@ const Task: React.FC<TaskProps> = ({
                     }
                   </Stack>
                 </Stack>
-              </AnimatedPressable>
+              </ListTouchable>
             </Stack>
           </Stack>
         </Stack>
       </Stack>
-    </AnimatedPressable >
+    </ListTouchable >
   );
 };
 

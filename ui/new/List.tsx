@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { FlatList, Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
@@ -345,27 +345,67 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
   );
 };
 
-export const ListTouchable = React.memo(({ onPress, ...props }) => {
+export const ListTouchable = React.memo(({ ...props }) => {
+  const parentBlockPress = useContext(ListTouchableContext);
+  const blockOwnPressRef = useRef(false);
   const theme = useTheme();
+  const hasOnPress = typeof props.onPress === "function";
 
-  if (!onPress) {
-    return <View {...props}>{props.children}</View>;
+  const blockOwnPress = useCallback(() => {
+    blockOwnPressRef.current = true;
+  }, []);
+
+  const handlePress = useCallback((event) => {
+    if (blockOwnPressRef.current) {
+      blockOwnPressRef.current = false;
+      return;
+    }
+    props.onPress?.(event);
+  }, [props]);
+
+  if (!hasOnPress) {
+    return (
+      <ListTouchableContext.Provider value={parentBlockPress}>
+        <View {...props}>{props.children}</View>
+      </ListTouchableContext.Provider>
+    );
   }
 
   if (Platform.OS === "android") {
     return (
-      <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple(theme.colors.text + "22", true)} useForeground onPress={onPress} {...props}>
-        {props.children}
-      </TouchableNativeFeedback>
+      <ListTouchableContext.Provider value={blockOwnPress}>
+        <TouchableNativeFeedback
+          background={TouchableNativeFeedback.Ripple(theme.colors.text + "22", true)}
+          useForeground
+          {...props}
+          onPress={(event) => {
+            parentBlockPress?.();
+            handlePress(event);
+          }}
+        >
+          {props.children}
+        </TouchableNativeFeedback>
+      </ListTouchableContext.Provider>
     );
   }
 
   return (
-    <TouchableOpacity activeOpacity={0.5} onPress={onPress} {...props}>
-      {props.children}
-    </TouchableOpacity>
+    <ListTouchableContext.Provider value={blockOwnPress}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        {...props}
+        onPress={(event) => {
+          parentBlockPress?.();
+          handlePress(event);
+        }}
+      >
+        {props.children}
+      </TouchableOpacity>
+    </ListTouchableContext.Provider>
   );
 });
+
+const ListTouchableContext = React.createContext(null);
 
 List.Item = Item;
 List.Leading = Leading;
@@ -381,7 +421,7 @@ const styles = StyleSheet.create({
   leading: { marginRight: 16 },
   body: { flex: 1 },
   trailing: { marginLeft: 16 },
-  sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 6, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 12 },
+  sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 6, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 6 },
   first: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
