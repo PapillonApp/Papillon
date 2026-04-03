@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Επόμενα μαθήματα",
   "Home_Widget_NewGrades": "Νέοι βαθμοί",
   "Home_Widget_NewHomeworks": "Εργασίες για υλοποίηση",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Κανένα επόμενο μάθημα",
   "Home_Widget_NoCourses_Description": "Δεν υπάρχουν μαθήματα προγραμματισμένα για σήμερα.",
   "Home_Cards_Button_Title": "Κάρτες",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
