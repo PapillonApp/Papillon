@@ -1,6 +1,7 @@
 {
   "Global_Back": "Terug",
   "Global_DatePrefix": "op",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Home",
   "Tab_Calendar": "Lessen",
   "Tab_Tasks": "Taken",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Accentkleur",
   "Settings_Personalization_Accent_Description": "De kleur die je hier kiest wordt toegepast op de startpagina van Papillon.",
   "Settings_Personalization_Theme": "Thema",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Icoon wijzigen",
   "Settings_Personalization_Icon_Description": "Pas het app-icoon aan",
   "Settings_Personalization_Subject_Title": "Vakken aanpassen",
