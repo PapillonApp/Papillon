@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Kentel o tont",
   "Home_Widget_NewGrades": "Notennoù nevez",
   "Home_Widget_NewHomeworks": "Labour noz d'ober",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Kentel ebet o tont",
   "Home_Widget_NoCourses_Description": "N'ez eus kentel raktreset ebet hiziv.",
   "Home_Cards_Button_Title": "Kartennoù",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
