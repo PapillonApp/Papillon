@@ -17,6 +17,7 @@ export interface HomeWidgetItem {
   buttonLabel?: string;
   render?: () => React.ReactNode;
   dev?: boolean;
+  hidden?: boolean;
 }
 
 interface HomeWidgetProps {
@@ -32,7 +33,13 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
   }
 
   return (
-    <Stack card radius={25} gap={0} style={{ paddingBottom: 3, elevation: 2 }} backgroundColor={theme.colors.card}>
+    <Stack
+      card
+      radius={25}
+      gap={0}
+      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex' }}
+      backgroundColor={theme.colors.card}
+    >
       <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
         <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
           {item.icon}
