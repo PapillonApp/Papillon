@@ -1,6 +1,7 @@
 {
   "Global_Back": "Vissza",
   "Global_DatePrefix": "ekkor:",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Kezdőlap",
   "Tab_Calendar": "Órarend",
   "Tab_Tasks": "Feladatok",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Kiemelő szín",
   "Settings_Personalization_Accent_Description": "Az itt választott szín a Papillon kezdőoldalán fog megjelenni.",
   "Settings_Personalization_Theme": "Téma",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Ikon módosítása",
   "Settings_Personalization_Icon_Description": "Az alkalmazás ikonjának egyedivé tétele",
   "Settings_Personalization_Subject_Title": "Tantárgyak testreszabása",
