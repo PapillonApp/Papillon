@@ -101,10 +101,12 @@ export default function TabLayout() {
       labeled={true}
       tabLabelStyle={TAB_LABEL_STYLE}
       tabBarStyle={{
-        backgroundColor: colors.card,
+        backgroundColor: colors.background,
       }}
       rippleColor={colors.text + "22"}
-      activeIndicatorColor={colors.primary + "22"}
+      activeIndicatorColor={colors.tint + "22"}
+      tabBarActiveTintColor={colors.tint}
+      tabBarInactiveTintColor={colors.text + "7F"}
     >
       <Tabs.Screen
         name="index"

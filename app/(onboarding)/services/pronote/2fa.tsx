@@ -92,7 +92,7 @@ export function Pronote2FAModal({ doubleAuthSession, doubleAuthError, setChallen
       return alert.showAlert({
         title: t("Alert_Auth_Error"),
         description: t("ONBOARDING_ALERT_BAD_CREDENTIALS_PRONOTE"),
-        icon: "TriangleAlert",
+        icon: "AlertTriangle",
         color: "#D60046",
         technical: String(error),
         withoutNavbar: true

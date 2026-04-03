@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { Platform, PressableProps } from "react-native";
 import Reanimated, {
   LinearTransition,
@@ -9,6 +9,7 @@ import Reanimated, {
 import * as ExpoHaptics from "expo-haptics";
 import { Animation } from "../utils/Animation";
 import { Pressable, TapGestureHandler } from "react-native-gesture-handler";
+import { ListTouchableBlockPressContext } from "../new/ListTouchableContext";
 
 const ReanimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -35,6 +36,7 @@ function AnimatedPressable({
   onPress,
   ...props
 }: AnimatedPressableProps) {
+  const blockParentListTouchablePress = useContext(ListTouchableBlockPressContext);
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -52,6 +54,7 @@ function AnimatedPressable({
 
   const handlePressIn = useCallback(
     (e: any) => {
+      blockParentListTouchablePress?.block();
       if (hapticFeedback) {
         ExpoHaptics.impactAsync(hapticFeedback);
       }
@@ -59,16 +62,17 @@ function AnimatedPressable({
       opacity.value = withSpring(opacityTo, SPRING_IN_CONFIG);
       pressInRef.current?.(e);
     },
-    [hapticFeedback, scaleTo, opacityTo, scale, opacity]
+    [blockParentListTouchablePress, hapticFeedback, scaleTo, opacityTo, scale, opacity]
   );
 
   const handlePressOut = useCallback(
     (e: any) => {
+      blockParentListTouchablePress?.unblock();
       scale.value = withSpring(1, SPRING_OUT_CONFIG);
       opacity.value = withSpring(1, SPRING_OUT_CONFIG);
       pressOutRef.current?.(e);
     },
-    [scale, opacity]
+    [blockParentListTouchablePress, scale, opacity]
   );
 
   const handleOnActivated = useCallback((e) => {

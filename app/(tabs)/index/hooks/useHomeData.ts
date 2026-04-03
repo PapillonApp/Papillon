@@ -76,9 +76,10 @@ export const useHomeData = () => {
         const serviceId = error?.service?.id ?? undefined;
 
         alert.showAlert({
-          title: "Connexion impossible",
+          title: "Vous avez été déconnecté",
+          message: instanceURL ? `En savoir plus et se reconnecter` : "En savoir plus",
           description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
-          icon: "TriangleAlert",
+          icon: "UserCross",
           color: "#D60046",
           customButton: instanceURL ? {
             label: "Me reconnecter",
@@ -87,14 +88,14 @@ export const useHomeData = () => {
               const authUrl = instanceURL;
               const instanceInfo = await instance(authUrl as string);
 
-              if (instanceInfo && instanceInfo.casToken && instanceInfo.casURL) {
+              if (instanceInfo && instanceInfo.name) {
                 return setTimeout(() => {
-                  router.push({ pathname: "/(onboarding)/pronote/webview", params: { url: authUrl, serviceId } })
+                  router.push({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: instanceInfo.name } })
                 }, 200)
               }
 
               setTimeout(() => {
-                router.push({ pathname: "/(onboarding)/pronote/credentials", params: { url: authUrl, serviceId } })
+                router.push({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: "N/A" } })
               }, 200)
             }
           } : undefined,

@@ -1,13 +1,12 @@
 import React from 'react';
 import { Platform, StatusBar, View } from 'react-native';
-import { useTranslation } from "react-i18next";
+import { Stack } from "expo-router";
 
-import { Stack } from '@/utils/native/AnimatedNavigator';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import AndroidHeaderBackground, { AndroidHeaderProps } from '@/components/AndroidHeaderBackground';
+import { t } from 'i18next';
 
 export default function OnboardingLayout() {
-  const { t } = useTranslation();
   const newScreenOptions = React.useMemo(() => ({
     ...screenOptions,
     headerShown: true,
@@ -18,11 +17,11 @@ export default function OnboardingLayout() {
   }), []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: Platform.select({ ios: "black" }) }}>
+    <View style={{ flex: 1, backgroundColor: Platform.OS === "ios" ? "black" : undefined }}>
       <Stack>
         <Stack.Screen
           name="welcome"
-          options={{ ...newScreenOptions, title: "", headerLeft: () => null }}
+          options={{ ...newScreenOptions, title: "", headerLeft: () => null, headerShown: false, headerBackground: null }}
         />
         <Stack.Screen
           name="ageSelection"

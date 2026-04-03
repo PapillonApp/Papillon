@@ -19,12 +19,12 @@ import { Dynamic } from '@/ui/components/Dynamic';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 import Icon from '@/ui/components/Icon';
 import Item, { Trailing } from '@/ui/components/Item';
-import List from '@/ui/components/List';
+import LegacyList from '@/ui/components/List';
 import Search from '@/ui/components/Search';
 import Stack from '@/ui/components/Stack';
 import TabHeader from '@/ui/components/TabHeader';
 import TabHeaderTitle from '@/ui/components/TabHeaderTitle';
-import Typography from '@/ui/components/Typography';
+import LegacyTypography from '@/ui/components/Typography';
 import { useKeyboardHeight } from '@/ui/hooks/useKeyboardHeight';
 import { PapillonAppearIn, PapillonAppearOut } from '@/ui/utils/Transition';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
@@ -38,6 +38,8 @@ import Averages from './atoms/Averages';
 import FeaturesMap from './atoms/FeaturesMap';
 import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
+import List from '@/ui/new/List';
+import Typography from '@/ui/new/Typography';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -321,18 +323,18 @@ const GradesView: React.FC = () => {
       </ErrorBoundary>
 
       {serviceRank && (
-        <List style={{ marginTop: 8 }}>
+        <LegacyList style={{ marginTop: 8 }}>
           <Item>
             <Icon opacity={0.5}>
               <Papicons name='crown' />
             </Icon>
 
-            <Typography variant='title'>
+            <LegacyTypography variant='title'>
               {t('Grades_Tab_Rank')}
-            </Typography>
-            <Typography variant='body1' color='secondary'>
+            </LegacyTypography>
+            <LegacyTypography variant='body1' color='secondary'>
               {t('Grades_Tab_Rank_Description')}
-            </Typography>
+            </LegacyTypography>
 
             <Trailing>
               <Stack
@@ -341,16 +343,16 @@ const GradesView: React.FC = () => {
                 vAlign='end'
                 hAlign='end'
               >
-                <Typography variant='h3' inline color='text'>
+                <LegacyTypography variant='h3' inline color='text'>
                   {serviceRank.value}
-                </Typography>
-                <Typography variant='body1' inline color='secondary'>
+                </LegacyTypography>
+                <LegacyTypography variant='body1' inline color='secondary'>
                   /{serviceRank.outOf}
-                </Typography>
+                </LegacyTypography>
               </Stack>
             </Trailing>
           </Item>
-        </List>
+        </LegacyList>
       )}
 
       <View style={{ height: 16 }} />
@@ -365,9 +367,9 @@ const GradesView: React.FC = () => {
             <Icon size={20}>
               <Papicons name='star' />
             </Icon>
-            <Typography variant='h6' color='text'>
+            <LegacyTypography variant='h6' color='text'>
               {t('Grades_Tab_Latest')}
-            </Typography>
+            </LegacyTypography>
           </Stack>
 
           <LegendList
@@ -423,9 +425,9 @@ const GradesView: React.FC = () => {
           <Icon size={20}>
             <Papicons name='grades' />
           </Icon>
-          <Typography variant='h6' color='text'>
+          <LegacyTypography variant='h6' color='text'>
             {t('Grades_Tab_Subjects')}
-          </Typography>
+          </LegacyTypography>
         </Stack>
       </Dynamic>
     </View>
@@ -520,11 +522,9 @@ const GradesView: React.FC = () => {
       />
 
 
-      <Reanimated.FlatList
-        data={filteredSubjects}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: bottomTabBarHeight }}
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+      <List
+      animated
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: headerHeight + 12, paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16 }}
 
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ top: headerHeight - insets.top }}
@@ -555,16 +555,26 @@ const GradesView: React.FC = () => {
               <Icon papicon opacity={0.5} size={32} style={{ marginBottom: 3 }}>
                 <Papicons name={"Grades"} />
               </Icon>
-              <Typography variant="h4" color="text" align="center">
+              <LegacyTypography variant="h4" color="text" align="center">
                 {t('Grades_Empty_Title')}
-              </Typography>
-              <Typography variant="body2" color="secondary" align="center">
+              </LegacyTypography>
+              <LegacyTypography variant="body2" color="secondary" align="center">
                 {t('Grades_Empty_Description')}
-              </Typography>
+              </LegacyTypography>
             </Stack>
           </Dynamic>
         }
-      />
+      >
+        {filteredSubjects.map((subject) => (
+          <SubjectItem
+            key={subject.id}
+            subject={subject}
+            grades={grades}
+            getAvgInfluence={getAvgInfluence}
+            getAvgClassInfluence={getAvgClassInfluence}
+          />
+        ))}
+      </List>
     </View>
   )
 };

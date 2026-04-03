@@ -127,7 +127,7 @@ export default function MultiLoginWithCredentials() {
         alert.showAlert({
           title: t("Alert_Auth_Error"),
           description: t("Alert_Auth_Bad_Creds"),
-          icon: "TriangleAlert",
+          icon: "AlertTriangle",
           color: "#D60046",
           withoutNavbar: true
         });

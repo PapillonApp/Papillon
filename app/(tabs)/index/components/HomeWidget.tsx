@@ -6,6 +6,8 @@ import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
+import { useTheme } from '@react-navigation/native';
+import { Platform } from 'react-native';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
@@ -15,6 +17,7 @@ export interface HomeWidgetItem {
   buttonLabel?: string;
   render?: () => React.ReactNode;
   dev?: boolean;
+  hidden?: boolean;
 }
 
 interface HomeWidgetProps {
@@ -23,13 +26,20 @@ interface HomeWidgetProps {
 
 const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
   const router = useRouter();
+  const theme = useTheme();
 
   if (!item || (item.dev && !__DEV__)) {
     return null;
   }
 
   return (
-    <Stack card radius={25} gap={0} style={{ paddingBottom: 3 }}>
+    <Stack
+      card
+      radius={25}
+      gap={0}
+      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex' }}
+      backgroundColor={theme.colors.card}
+    >
       <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
         <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
           {item.icon}
