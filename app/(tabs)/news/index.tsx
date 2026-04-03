@@ -96,6 +96,7 @@ const NewsView = () => {
 
       <LayoutAnimationConfig skipEntering>
         <List
+          animated
           contentContainerStyle={{
             paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
             paddingHorizontal: 16,
