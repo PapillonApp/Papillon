@@ -19,7 +19,7 @@ import { useTheme } from '@react-navigation/native'
 import { router, useRouter } from 'expo-router'
 import { t } from 'i18next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs'
 import { RefreshControl } from 'react-native-gesture-handler'
 import Reanimated, { LayoutAnimationConfig, useAnimatedStyle } from 'react-native-reanimated'
@@ -97,7 +97,7 @@ const NewsView = () => {
       <LayoutAnimationConfig skipEntering>
         <List
           contentContainerStyle={{
-            paddingBottom: insets.bottom + bottomTabBarHeight,
+            paddingBottom: Platform.OS === "android" ? 16 : bottomTabBarHeight + 16,
             paddingHorizontal: 16,
             gap: 9,
           }}

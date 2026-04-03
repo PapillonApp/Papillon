@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Platform, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from "react-native";
 import Reanimated, { LinearTransition } from 'react-native-reanimated';
 
@@ -26,7 +26,120 @@ type ListViewProps = MarkerProps & {
   style?: any;
 };
 
-const Item: React.FC<ListItemProps> = ({ children }) => children;
+type ListRuntimeItemContext = {
+  renderItem: (props: ListItemProps) => React.ReactNode;
+} | null;
+
+const ListRuntimeItemContext = React.createContext<ListRuntimeItemContext>(null);
+
+const isType = (child, component, name) => {
+  return child?.type && (child.type === component || child.type.displayName === name);
+};
+
+const splitItemChildren = (children: React.ReactNode) => {
+  let leading = null;
+  let trailing = null;
+  const main = [];
+
+  React.Children.forEach(children, (child) => {
+    if (!child) {
+      return;
+    }
+
+    const type = child.type;
+    if (type === Leading || type?.displayName === "List.Leading") {
+      leading = child.props.children;
+    } else if (type === Trailing || type?.displayName === "List.Trailing") {
+      trailing = child.props.children;
+    } else {
+      main.push(child);
+    }
+  });
+
+  return { leading, trailing, main };
+};
+
+const renderListRow = ({
+  itemProps,
+  leading,
+  trailing,
+  main,
+  isFirst,
+  isLast,
+  gapBefore = 0,
+  listAnimated,
+  colors,
+}) => {
+  const ItemComponent = listAnimated ? Reanimated.View : View;
+  const entering = itemProps.entering ?? (itemProps.animated ? PapillonAppearIn : undefined);
+  const exiting = itemProps.exiting ?? (itemProps.animated ? PapillonAppearOut : undefined);
+
+  return (
+    <ItemComponent
+      style={[
+        styles.rowContainer,
+        isFirst && styles.first,
+        isLast && styles.last,
+        { marginTop: gapBefore },
+        Platform.OS === "android"
+          ? { marginBottom: !isLast ? 4 : 0 }
+          : {
+              borderColor: colors.border,
+              backgroundColor: colors.border,
+              borderLeftWidth: 1,
+              borderRightWidth: 1,
+              borderBottomWidth: 1,
+              borderTopWidth: isFirst ? 1 : 0,
+              shadowColor: "#000000",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.1,
+              shadowRadius: 2,
+              elevation: 1,
+              overflow: "visible",
+              ...itemProps.containerStyle,
+            },
+      ]}
+      layout={itemProps.animated ? Animation(LinearTransition, "list") : undefined}
+      entering={entering}
+      exiting={exiting}
+    >
+      <ListTouchable {...(itemProps.onPress ? { onPress: itemProps.onPress } : {})}>
+        <View
+          style={[
+            styles.row,
+            isFirst && styles.first,
+            isLast && styles.last,
+            {
+              backgroundColor: colors.item,
+              overflow: "hidden",
+              ...itemProps.style,
+            },
+            Platform.OS === "android"
+              ? {
+                  borderTopLeftRadius: isFirst ? 20 : 8,
+                  borderTopRightRadius: isFirst ? 20 : 8,
+                  borderBottomLeftRadius: isLast ? 20 : 8,
+                  borderBottomRightRadius: isLast ? 20 : 8,
+                }
+              : null,
+          ]}
+        >
+          {leading && <View style={styles.leading}>{leading}</View>}
+          <View style={styles.body}>{main}</View>
+          {trailing && <View style={styles.trailing}>{trailing}</View>}
+        </View>
+      </ListTouchable>
+    </ItemComponent>
+  );
+};
+
+const Item: React.FC<ListItemProps> = (props) => {
+  const runtimeContext = useContext(ListRuntimeItemContext);
+  if (runtimeContext) {
+    return runtimeContext.renderItem(props);
+  }
+  return props.children;
+};
 Item.displayName = "List.Item";
 
 const Leading: React.FC<MarkerProps> = ({ children }) => children;
@@ -47,34 +160,79 @@ Label.displayName = "List.Label";
 const ViewItem: React.FC<ListViewProps> = ({ children }) => children;
 ViewItem.displayName = "List.View";
 
+const RawRuntimeItem: React.FC<{
+  index: number;
+  total: number;
+  itemProps: ListItemProps;
+  animated: boolean;
+  colors: any;
+}> = ({ index, total, itemProps, animated, colors }) => {
+  const parsed = splitItemChildren(itemProps.children);
+  return renderListRow({
+    itemProps,
+    leading: parsed.leading,
+    trailing: parsed.trailing,
+    main: parsed.main,
+    isFirst: index === 0,
+    isLast: total > 0 ? index === total - 1 : false,
+    listAnimated: animated,
+    colors,
+  });
+};
+
+const RawRuntimeRenderer: React.FC<{
+  item: any;
+  animated: boolean;
+  colors: any;
+}> = ({ item, animated, colors }) => {
+  const indexCursorRef = useRef(0);
+  const countRef = useRef(0);
+  const [count, setCount] = useState(0);
+
+  indexCursorRef.current = 0;
+
+  const runtimeValue = useMemo(() => ({
+    renderItem: (itemProps: ListItemProps) => {
+      const index = indexCursorRef.current;
+      indexCursorRef.current += 1;
+      return (
+        <RawRuntimeItem
+          key={itemProps.id ?? `raw-item-${index}`}
+          index={index}
+          total={count}
+          itemProps={itemProps}
+          animated={animated}
+          colors={colors}
+        />
+      );
+    },
+  }), [animated, colors, count]);
+
+  useEffect(() => {
+    if (countRef.current !== indexCursorRef.current) {
+      countRef.current = indexCursorRef.current;
+      if (count !== countRef.current) {
+        setCount(countRef.current);
+      }
+    }
+  });
+
+  return (
+    <View style={{ marginTop: item.gapBefore }}>
+      <ListRuntimeItemContext.Provider value={runtimeValue}>
+        {item.rawItem}
+      </ListRuntimeItemContext.Provider>
+    </View>
+  );
+};
+
 const List = ({ children, animated = false, gap = 12, ...rest }) => {
   const theme = useTheme();
   const { colors } = theme;
 
   const data = useMemo(() => {
-    const isType = (child, component, name) => {
-      return child?.type && (child.type === component || child.type.displayName === name);
-    };
-
     const parseItem = (item, index) => {
-      let leading = null;
-      let trailing = null;
-      const main = [];
-
-      React.Children.forEach(item.props.children, (child) => {
-        if (!child) {
-          return;
-        }
-
-        const type = child.type;
-        if (type === Leading || type?.displayName === "List.Leading") {
-          leading = child.props.children;
-        } else if (type === Trailing || type?.displayName === "List.Trailing") {
-          trailing = child.props.children;
-        } else {
-          main.push(child);
-        }
-      });
+      const { leading, trailing, main } = splitItemChildren(item.props.children);
 
       return {
         kind: "item",
@@ -83,6 +241,14 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
         trailing,
         main,
         itemProps: item.props,
+      };
+    };
+
+    const parseRawItem = (rawItem, index) => {
+      return {
+        kind: "raw",
+        id: rawItem?.props?.id || rawItem?.key?.toString?.() || `raw-${index}`,
+        rawItem,
       };
     };
 
@@ -175,14 +341,17 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
           if (isType(sectionChild, Item, "List.Item")) {
             sectionEntries.push(parseItem(sectionChild, `${index}-${sectionItemCursor}`));
             sectionItemCursor += 1;
+            return;
           }
+
+          sectionEntries.push(parseRawItem(sectionChild, `${index}-raw-${sectionChildIndex}`));
         });
 
-        const sectionItems = sectionEntries.filter((entry) => entry.kind === "item");
+        const sectionItems = sectionEntries.filter((entry) => entry.kind === "item" || entry.kind === "raw");
         const sectionItemsWithFlags = withSectionFlags(sectionItems, sectionId);
         let sectionItemIndex = 0;
         const normalizedSectionEntries = sectionEntries.map((entry) => {
-          if (entry.kind !== "item") {
+          if (entry.kind !== "item" && entry.kind !== "raw") {
             return entry;
           }
           const normalized = sectionItemsWithFlags[sectionItemIndex];
@@ -205,7 +374,16 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
           implicitSectionId = `section-implicit-${index}`;
         }
         implicitItems.push(parseItem(child, `${index}-${implicitItems.length}`));
+        return;
       }
+
+      flushImplicit();
+      output.push({
+        ...parseRawItem(child, `${index}`),
+        sectionId: `section-raw-${index}`,
+        isFirstInSection: true,
+        isLastInSection: true,
+      });
     });
 
     flushImplicit();
@@ -240,7 +418,6 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
   }, [children, gap]);
 
   const ListComponent = animated ? Reanimated.FlatList : FlatList;
-  const ItemComponent = animated ? Reanimated.View : View;
 
   const keyExtractor = useCallback((item) => item.id, []);
 
@@ -262,69 +439,22 @@ const List = ({ children, animated = false, gap = 12, ...rest }) => {
       return <View style={item.viewProps.style}>{item.main}</View>;
     }
 
-    const isFirst = item.isFirstInSection;
-    const isLast = item.isLastInSection;
-    const entering = item.itemProps.entering ?? (item.itemProps.animated ? PapillonAppearIn : undefined);
-    const exiting = item.itemProps.exiting ?? (item.itemProps.animated ? PapillonAppearOut : undefined);
+    if (item.kind === "raw") {
+      return <RawRuntimeRenderer item={item} animated={animated} colors={colors} />;
+    }
 
-    return (
-      <ItemComponent
-        style={[
-          styles.rowContainer,
-          isFirst && styles.first,
-          isLast && styles.last,
-          { marginTop: item.gapBefore },
-          Platform.OS === "android"
-            ? { marginBottom: item.kind === "item" && !isLast ? 4 : 0 }
-            : {
-                borderColor: colors.border,
-                backgroundColor: colors.border,
-                borderLeftWidth: 1,
-                borderRightWidth: 1,
-                borderBottomWidth: 1,
-                borderTopWidth: isFirst ? 1 : 0,
-                shadowColor: "#000000",
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.1,
-                shadowRadius: 2,
-                elevation: 1,
-                overflow: Platform.OS === "android" ? "hidden" : "visible",
-                ...item.itemProps.containerStyle,
-              },
-        ]}
-        layout={item.itemProps.animated ? Animation(LinearTransition, "list") : undefined}
-        entering={entering}
-        exiting={exiting}
-      >
-        <ListTouchable {...(item.itemProps.onPress ? { onPress: item.itemProps.onPress } : {})}>
-          <View
-            style={[
-              styles.row,
-              isFirst && styles.first,
-              isLast && styles.last,
-              {
-                backgroundColor: colors.item,
-                overflow: "hidden",
-                ...item.itemProps.style,
-              },
-              Platform.OS === "android"
-                ? {
-                    borderTopLeftRadius: isFirst ? 20 : 8,
-                    borderTopRightRadius: isFirst ? 20 : 8,
-                    borderBottomLeftRadius: isLast ? 20 : 8,
-                    borderBottomRightRadius: isLast ? 20 : 8,
-                  }
-                : null,
-            ]}
-          >
-            {item.leading && <View style={styles.leading}>{item.leading}</View>}
-            <View style={styles.body}>{item.main}</View>
-            {item.trailing && <View style={styles.trailing}>{item.trailing}</View>}
-          </View>
-        </ListTouchable>
-      </ItemComponent>
-    );
-  }, [ItemComponent, colors.border, colors.item]);
+    return renderListRow({
+      itemProps: item.itemProps,
+      leading: item.leading,
+      trailing: item.trailing,
+      main: item.main,
+      isFirst: item.isFirstInSection,
+      isLast: item.isLastInSection,
+      gapBefore: item.gapBefore,
+      listAnimated: animated,
+      colors,
+    });
+  }, [animated, colors]);
 
   const contentContainerStyle = useMemo(
     () => [rest.contentContainerStyle, styles.listContentContainer],
