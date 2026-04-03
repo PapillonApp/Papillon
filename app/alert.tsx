@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as LucideIcons from "lucide-react-native";
-import { type ComponentType, useEffect, useState } from "react";
+import { type ComponentType, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import React, { Platform, Pressable, Text, View } from "react-native";
 import Reanimated, { Easing, LinearTransition } from "react-native-reanimated";
@@ -10,6 +10,8 @@ import { Alert, useAlert } from "@/ui/components/AlertProvider";
 import Button from "@/ui/components/Button";
 import Typography from "@/ui/components/Typography";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
+import { Papicons } from "@getpapillon/papicons";
+import Icon from "@/ui/components/Icon";
 
 export default function AlertModal() {
   const { t } = useTranslation();
@@ -19,10 +21,12 @@ export default function AlertModal() {
   const callbackId = searchParams.callbackId as string | undefined;
   const router = useRouter();
   const { getCallback, cleanupCallback } = useAlert();
-  const IconComponent =
-    params.icon && typeof params.icon === "string"
-      ? (LucideIcons[params.icon as keyof typeof LucideIcons] as ComponentType<any>)
-      : undefined;
+  const IconComponent = useMemo(() => {
+    if (!params.icon) {
+      return null;
+    }
+    return <Papicons name={params.icon} />;
+  }, [params.icon]);
 
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
 
@@ -58,7 +62,9 @@ export default function AlertModal() {
       >
         {/* icon */}
         {IconComponent ? (
-          <IconComponent size={64} color={params.color ? params.color : colors.text} />
+          <Icon size={96} fill={params.color ?? colors.primary}>
+            {IconComponent}
+          </Icon>
         ) : null}
       </View>
 
