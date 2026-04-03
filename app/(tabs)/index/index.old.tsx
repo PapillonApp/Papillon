@@ -95,7 +95,7 @@ const IndexScreen = () => {
         alert.showAlert({
           title: "Connexion impossible",
           description: "Il semblerait que ta session a expiré. Tu pourras renouveler ta session dans les paramètres en liant à nouveau ton compte.",
-          icon: "TriangleAlert",
+          icon: "AlertTriangle",
           color: "#D60046",
           customButton: instanceURL ? {
             label: "Me reconnecter",

@@ -134,7 +134,7 @@ export default function QRCodeAndCardsPage() {
       alert.showAlert({
         title: "Erreur lors de la réservation",
         description: "Une erreur est survenue lors de la réservation de ton repas, il n'a donc pas été réservé.",
-        icon: "TriangleAlert",
+        icon: "AlertTriangle",
         color: "#D60046",
         technical: String(error),
         withoutNavbar: false

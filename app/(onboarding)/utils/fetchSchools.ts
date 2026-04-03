@@ -23,7 +23,7 @@ export async function fetchSchools(service: Services, alert: ReturnType<typeof u
       alert.showAlert({
         title: t("Alert_No_Pos"),
         description: t("ONBOARDING_ALERT_NO_POSITION_DESCRIPTION"),
-        icon: "TriangleAlert",
+        icon: "AlertTriangle",
         color: "#D60046",
         withoutNavbar: true,
       });
