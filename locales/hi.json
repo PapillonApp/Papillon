@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "अगली कक्षाएं",
   "Home_Widget_NewGrades": "नए अंक",
   "Home_Widget_NewHomeworks": "करने के लिए कार्य",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "कोई आगामी कक्षा नहीं",
   "Home_Widget_NoCourses_Description": "आज के लिए कोई कक्षा निर्धारित नहीं है।",
   "Home_Cards_Button_Title": "कार्ड",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
