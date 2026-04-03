@@ -207,7 +207,7 @@ export default function GradesModal() {
               <List.Trailing>
                 <ContainedNumber
                   color={subjectInfo.color}
-                  denominator={"/" + grade.outOf?.value}
+                  denominator={"/20"}
                 >
                   {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
                 </ContainedNumber>
