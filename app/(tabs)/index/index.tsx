@@ -54,7 +54,7 @@ const HomeScreen = () => {
 
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
   const renderTasks = React.useCallback(() => <HomeTasksWidget />, []);
-  const renderGrades = React.useCallback(() => <HomeNewGradesWidget />, []);
+  const renderNewGrades = React.useCallback(() => <HomeNewGradesWidget />, []);
 
   const data: HomeWidgetItem[] = useMemo(
     () => [
@@ -70,7 +70,7 @@ const HomeScreen = () => {
         title: t("Home_Widget_NewGrades"),
         redirect: "(tabs)/grades",
         enabled: !disabledWidgets.includes("grades"),
-        render: renderGrades,
+        render: renderNewGrades,
       },
       {
         icon: <Papicons name={"Tasks"} />,
@@ -80,7 +80,7 @@ const HomeScreen = () => {
         render: renderTasks,
       },
     ],
-    [renderTimeTable, renderTasks, renderGrades, disabledWidgets]
+    [renderTimeTable, renderTasks, renderNewGrades, disabledWidgets]
   );
 
   return (
