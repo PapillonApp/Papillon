@@ -117,6 +117,7 @@ function EmojiPicker({
       }}
     >
       <TabHeader
+        modal={Platform.OS === "ios"}
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -447,13 +448,14 @@ export default function EditSubject() {
         </ScrollView>
       </Stack>
       <Modal
+        presentationStyle={"formSheet"}
         animationType={"slide"}
         visible={showEmojiPicker}
         onRequestClose={() => setShowEmojiPicker(false)}
       >
         <EmojiPicker
           onCancel={() => setShowEmojiPicker(false)}
-          onSelect={(emoji) => {
+          onSelect={emoji => {
             setSelectedEmoji(emoji);
             setShowEmojiPicker(false);
           }}
