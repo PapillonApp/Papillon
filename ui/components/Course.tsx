@@ -14,6 +14,7 @@ import AnimatedPressable from "./AnimatedPressable";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import { ListTouchable } from "../new/List";
 
 type Variant = "primary" | "separator";
 
@@ -171,7 +172,15 @@ const Course = React.memo((props: CourseProps) => {
     const message = t(messageKeys[timeKey][taps]);
 
     return (
-      <AnimatedPressable
+      <View
+        style={{
+          flex: 1,
+          overflow: Platform.OS === "android" ? "hidden" : "visible",
+          borderRadius: compact ? 18 : 25,
+          backgroundColor: colors.item,
+        }}
+      >
+      <ListTouchable
         onPress={() => increaseTaps()}
         style={{
           flex: 1,
@@ -185,7 +194,7 @@ const Course = React.memo((props: CourseProps) => {
           vAlign="start"
           gap={8}
           hAlign="center"
-          style={{ flex: 1, backgroundColor: colors.card }}
+          style={{ flex: 1, backgroundColor: colors.item }}
         >
           <Icon papicon size={24} opacity={skeleton ? 0.1 : 0.6}>
             {hStart < 11 ? <Papicons name="Sunrise" /> : hStart < 14 ? <Papicons name="Cutlery" /> : <Papicons name="Sun" />}
@@ -197,7 +206,8 @@ const Course = React.memo((props: CourseProps) => {
             {formatDuration(duration)}
           </Typography>
         </Stack>
-      </AnimatedPressable>
+      </ListTouchable>
+      </View>
     )
   }, [colors.card, colors.text, duration, hStart, skeleton]);
 
@@ -285,8 +295,8 @@ const Course = React.memo((props: CourseProps) => {
             right: 0,
             bottom: 0,
             borderRadius: compact ? 18 : 25,
-            opacity: 0.55,
-            backgroundColor: adjust(color, dark ? -0.7 : 0.85),
+            opacity: 1,
+            backgroundColor: adjust(color, dark ? -0.7 : 0.75),
           }}
         />
       )}
@@ -365,16 +375,21 @@ const Course = React.memo((props: CourseProps) => {
 
   /** Cours principale */
   const renderCourseCard = useCallback(() => (
-    <View style={{ flex: 1 }}>
-      <AnimatedPressable onPress={onPress} style={{ flex: 1 }}>
+    <View style={{
+      flex: 1,
+      overflow: Platform.OS === "android" ? "hidden" : "visible",
+      borderRadius: compact ? 18 : 25,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      backgroundColor: colors.card,
+      elevation: 1,
+    }}>
+      <ListTouchable onPress={onPress} style={{ flex: 1, overflow: "hidden" }}>
         <View
           style={{
             flex: 1,
-            borderRadius: compact ? 18 : 25,
-            shadowColor: colors.border,
-            shadowOpacity: 0.3,
-            shadowRadius: 5,
-            elevation: 5,
+            borderRadius: compact ? 18 : 25
           }}
         >
           <View
@@ -389,7 +404,7 @@ const Course = React.memo((props: CourseProps) => {
             {renderContent()}
           </View>
         </View>
-      </AnimatedPressable>
+      </ListTouchable>
     </View>
   ), [color, compact, dark, onPress, renderContent, renderStatus, skeleton, status, colors.border]);
 

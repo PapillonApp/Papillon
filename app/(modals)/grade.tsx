@@ -11,10 +11,12 @@ import ContainedNumber from "@/ui/components/ContainedNumber";
 import Icon from "@/ui/components/Icon";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
-import Typography from "@/ui/components/Typography";
+import TypographyLegacy from "@/ui/components/Typography";
 import adjust from '@/utils/adjustColor';
 import { colorCheck } from '@/utils/colorCheck';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import List from '@/ui/new/List';
+import Typography from '@/ui/new/Typography';
 
 interface SubjectInfo {
   name: string;
@@ -46,9 +48,9 @@ const GradeBadge = ({ icon, label, color, theme, is_outlined = false }: GradeBad
   return (
     <Stack direction="horizontal" gap={8} backgroundColor={backgroundColor} vAlign="center" hAlign="center" padding={[12, 6]} radius={32} style={borderStyle}>
       <Papicons size={20} name={icon} color={textColor} />
-      <Typography color={textColor} variant='body2'>
+      <TypographyLegacy color={textColor} variant='body2'>
         {label}
-      </Typography>
+      </TypographyLegacy>
     </Stack>
   );
 };
@@ -85,85 +87,7 @@ export default function GradesModal() {
         }}
       />
 
-      <TableFlatList
-        engine='FlashList'
-        sections={[
-          {
-            title: t("Grades_Details_Title"),
-            icon: <Papicons name={"Menu"} />,
-            items: [
-              ...(grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? [{
-                icon: <Papicons name={"Star"} />,
-                title: t("Grades_NormalizedGrade_Title"),
-                description: t("Grades_NormalizedGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator="/20"
-                  >
-                    {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
-                  </ContainedNumber>
-                )
-              }] : []),
-              {
-                icon: <Papicons name={"Plus"} />,
-                title: t("Grades_HighestGrade_Title"),
-                description: t("Grades_HighestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.maxScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Minus"} />,
-                title: t("Grades_LowestGrade_Title"),
-                description: t("Grades_LowestGrade_Description"),
-                trailing: (
-                  <ContainedNumber
-                    color="#757575"
-                    denominator={"/" + grade.outOf?.value}
-                  >
-                    {grade.minScore?.value.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          },
-          {
-            title: t("Grades_Influence_Title"),
-            icon: <Papicons name={"Pie"} />,
-            items: [
-              {
-                icon: <Papicons name={"Grades"} />,
-                title: t("Grades_Avg_All_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgInfluence === 0 ? "#757575" : avgInfluence >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgInfluence >= 0 ? `+${avgInfluence.toFixed(2)}` : avgInfluence.toFixed(2)}
-                  </ContainedNumber>
-                )
-              },
-              {
-                icon: <Papicons name={"Apple"} />,
-                title: t("Grades_Avg_Group_Title"),
-                trailing: (
-                  <ContainedNumber
-                    color={avgClass === 0 ? "#757575" : avgClass >= 0 ? "#42C500" : "#C50000"}
-                    denominator="pts"
-                  >
-                    {avgClass >= 0 ? `+${avgClass.toFixed(2)}` : avgClass.toFixed(2)}
-                  </ContainedNumber>
-                )
-              }
-            ]
-          }
-        ]}
+      <List
         ListHeaderComponent={
           <View
             style={{
@@ -233,10 +157,10 @@ export default function GradesModal() {
                 <Icon papicon opacity={0.5}>
                   <Papicons name={"Coefficient"} />
                 </Icon>
-                <Typography color="secondary">
+                <TypographyLegacy color="secondary">
                   {t("Grades_Coefficient")}
-                </Typography>
-                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
+                </TypographyLegacy>
+                <ContainedNumber color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}>
                   x{(grade.coefficient ?? 1).toFixed(2)}
                 </ContainedNumber>
               </Stack>
@@ -249,10 +173,10 @@ export default function GradesModal() {
                 <Icon papicon opacity={0.5}>
                   <Papicons name={"Apple"} />
                 </Icon>
-                <Typography color="secondary">
+                <TypographyLegacy color="secondary">
                   {t("Grades_Avg_Group_Short")}
-                </Typography>
-                <ContainedNumber color={adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
+                </TypographyLegacy>
+                <ContainedNumber color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)} denominator={"/" + grade.outOf?.value}>
                   {grade.averageScore?.value.toFixed(2)}
                 </ContainedNumber>
               </Stack>
@@ -260,7 +184,126 @@ export default function GradesModal() {
           </View>
         }
         style={{ backgroundColor: "transparent" }}
-      />
+        contentContainerStyle={{ padding: 16 }}
+      >
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>{t("Grades_Details_Title")}</List.Label>
+          </List.SectionTitle>
+
+          {grade.studentScore && grade.outOf && grade.outOf.value !== 20 ? (
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Star"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="title">
+                {t("Grades_NormalizedGrade_Title")}
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                {t("Grades_NormalizedGrade_Description")}
+              </Typography>
+              <List.Trailing>
+                <ContainedNumber
+                  color={subjectInfo.color}
+                  denominator={"/" + grade.outOf?.value}
+                >
+                  {((grade.studentScore.value / grade.outOf.value) * 20).toFixed(2)}
+                </ContainedNumber>
+              </List.Trailing>
+            </List.Item>
+          ) : null}
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Plus"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              {t("Grades_HighestGrade_Title")}
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              {t("Grades_HighestGrade_Description")}
+            </Typography>
+            <List.Trailing>
+              <ContainedNumber
+                color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
+                denominator={"/" + grade.outOf?.value}
+              >
+                {grade.maxScore?.value.toFixed(2)}
+              </ContainedNumber>
+            </List.Trailing>
+          </List.Item>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Minus"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              {t("Grades_LowestGrade_Title")}
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              {t("Grades_LowestGrade_Description")}
+            </Typography>
+            <List.Trailing>
+              <ContainedNumber
+                color={Platform.OS === 'android' ? theme.colors.tint : adjust(subjectInfo.color, theme.dark ? 0.3 : -0.3)}
+                denominator={"/" + grade.outOf?.value}
+              >
+                {grade.minScore?.value.toFixed(2)}
+              </ContainedNumber>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>{t("Grades_Influence_Title")}</List.Label>
+          </List.SectionTitle>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Grades"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              {t("Grades_Avg_All_Title")}
+            </Typography>
+            <List.Trailing>
+              <ContainedNumber
+                color={avgInfluence === 0 ? "#757575" : avgInfluence >= 0 ? "#2e8900" : "#990000"}
+                denominator="pts"
+              >
+                {avgInfluence >= 0 ? `+${avgInfluence.toFixed(2)}` : avgInfluence.toFixed(2)}
+              </ContainedNumber>
+            </List.Trailing>
+          </List.Item>
+
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"Apple"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">
+              {t("Grades_Avg_Group_Title")}
+            </Typography>
+            <List.Trailing>
+              <ContainedNumber
+                color={avgClass === 0 ? "#757575" : avgClass >= 0 ? "#2e8900" : "#990000"}
+                denominator="pts"
+              >
+                {avgClass >= 0 ? `+${avgClass.toFixed(2)}` : avgClass.toFixed(2)}
+              </ContainedNumber>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+      </List>
     </>
   )
 }
