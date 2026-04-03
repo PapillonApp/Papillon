@@ -195,7 +195,7 @@
   "Home_Widget_NextCourses": "Upcoming classes",
   "Home_Widget_NewGrades": "New grades",
   "Home_Widget_NewHomeworks": "To do",
-  "Home_Widget_Grades_Average": "Moyenne",
+  "Home_Widget_Grades_Average": "Average",
   "Home_Widget_NoCourses": "No upcoming classes",
   "Home_Widget_NoCourses_Description": "There are no classes scheduled for today.",
   "Home_Cards_Button_Title": "Cards",
@@ -465,7 +465,7 @@
   "Task_Done": "Done",
   "Modal_Wallpaper_Title": "Customize wallpaper",
   "Modal_Profile_Title": "Customize profile",
-  "Modal_Task_Title": "Détail de la tâche",
+  "Modal_Task_Title": "Task details",
   "Modal_Task_Status": "Assignment status",
   "Modal_Task_Description": "Assignment description",
   "Modal_Task_Attachments": "Attachments",
@@ -510,5 +510,5 @@
   "Settings_Preferences": "Features",
   "Settings_More": "About",
   "Settings_About": "You and Papillon",
-  "Settings_Dev": "Développement"
+  "Settings_Dev": "Development"
 }
