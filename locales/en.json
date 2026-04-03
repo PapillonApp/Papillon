@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Upcoming classes",
   "Home_Widget_NewGrades": "New grades",
   "Home_Widget_NewHomeworks": "To do",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "No upcoming classes",
   "Home_Widget_NoCourses_Description": "There are no classes scheduled for today.",
   "Home_Cards_Button_Title": "Cards",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Enable location",
   "Settings_Preferences": "Features",
   "Settings_More": "About",
-  "Settings_About": "You and Papillon"
+  "Settings_About": "You and Papillon",
+  "Settings_Dev": "Développement"
 }
