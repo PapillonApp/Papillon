@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "次の授業",
   "Home_Widget_NewGrades": "新しい成績",
   "Home_Widget_NewHomeworks": "やるべき課題",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "今後の授業はありません",
   "Home_Widget_NoCourses_Description": "今日の予定はありません。",
   "Home_Cards_Button_Title": "カード",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
