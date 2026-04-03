@@ -1,6 +1,7 @@
 {
   "Global_Back": "Tilbake",
   "Global_DatePrefix": "den",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Hjem",
   "Tab_Calendar": "Timeplan",
   "Tab_Tasks": "Oppgaver",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Uthevingsfarge",
   "Settings_Personalization_Accent_Description": "Fargen du velger her vil bli brukt på Papillons startside.",
   "Settings_Personalization_Theme": "Tema",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Bytt ikon",
   "Settings_Personalization_Icon_Description": "Tilpass appens ikon",
   "Settings_Personalization_Subject_Title": "Tilpass fag",
