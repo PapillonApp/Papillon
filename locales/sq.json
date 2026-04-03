@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Mësimet e ardhshme",
   "Home_Widget_NewGrades": "Nota të reja",
   "Home_Widget_NewHomeworks": "Detyra për t'u bërë",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Asnjë mësim i afërt",
   "Home_Widget_NoCourses_Description": "Nuk ka mësime të planifikuara për sot.",
   "Home_Cards_Button_Title": "Kartat",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
