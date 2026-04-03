@@ -1,6 +1,7 @@
 {
   "Global_Back": "Distro",
   "Global_DatePrefix": "ar",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Degemer",
   "Tab_Calendar": "Kentelioù",
   "Tab_Tasks": "Labour noz",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "Kreñvadur ul liv",
   "Settings_Personalization_Accent_Description": "Al liv dibabet ganeoc'h amañ a vo arveret war bajenn degemer Papillon.",
   "Settings_Personalization_Theme": "Tem",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Cheñch an ikon",
   "Settings_Personalization_Icon_Description": "Personelañ ikon ar meziant",
   "Settings_Personalization_Subject_Title": "Personelañ an danvezioù",
