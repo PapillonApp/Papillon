@@ -51,26 +51,28 @@ export default function CourseModal() {
 
   return (
     <>
-      <LinearGradient
-        colors={[subjectInfo.color, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 500,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.6
-        }}
-      />
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[subjectInfo.color, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 500,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.6
+          }}
+        />
+      )}
 
       <List
         ListHeaderComponent={
           <ModalOverhead
             subject={getSubjectName(item.subject)}
             title={item.customStatus || getStatusText(item.status)}
-            color={subjectInfo.color}
+            color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
             emoji={subjectInfo.emoji}
             subjectVariant="h3"
             date={new Date(startTime * 1000)}

@@ -11,10 +11,18 @@ import { useSettingsStore } from '@/stores/settings';
 import { useAlert } from '@/ui/components/AlertProvider';
 import { getCurrentPeriod } from '@/utils/grades/helper/period';
 import { log, warn } from '@/utils/logger/logger';
+import { useAccountStore } from '@/stores/account';
+
+const HOME_SYNC_TTL_MS = 5 * 60 * 1000;
+const homeSyncState = new Map<
+  string,
+  { lastSyncedAt: number; inFlight: Promise<void> | null }
+>();
 
 export const useHomeData = () => {
   const alert = useAlert();
   const settingsstore = useSettingsStore(state => state.personalization);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
 
   const fetchEDT = useCallback(async () => {
     const manager = getManager();
@@ -52,11 +60,33 @@ export const useHomeData = () => {
   }, []);
 
   const initialize = useCallback(async () => {
+    if (!lastUsedAccount) {
+      return;
+    }
+
+    const state =
+      homeSyncState.get(lastUsedAccount) ?? {
+        lastSyncedAt: 0,
+        inFlight: null,
+      };
+    homeSyncState.set(lastUsedAccount, state);
+
+    if (state.inFlight) {
+      await state.inFlight;
+      return;
+    }
+
+    if (Date.now() - state.lastSyncedAt < HOME_SYNC_TTL_MS) {
+      return;
+    }
+
+    state.inFlight = (async () => {
     try {
-      await initializeAccountManager();
+      await initializeAccountManager(lastUsedAccount);
       log("Refreshed Manager received");
 
       await Promise.all([fetchEDT(), fetchGrades()]);
+      state.lastSyncedAt = Date.now();
 
       if (settingsstore.showAlertAtLogin) {
         alert.showAlert({
@@ -106,7 +136,14 @@ export const useHomeData = () => {
         })
       }
     }
-  }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin]);
+    })();
+
+    try {
+      await state.inFlight;
+    } finally {
+      state.inFlight = null;
+    }
+  }, [alert, fetchEDT, fetchGrades, settingsstore.showAlertAtLogin, lastUsedAccount]);
 
   useEffect(() => {
     initialize();

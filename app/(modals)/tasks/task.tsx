@@ -69,12 +69,13 @@ const Task = () => {
 
   return (
     <>
-      <LinearGradient
-        colors={[subjectInfo.color, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[subjectInfo.color, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
           right: 0,
           height: 300,
           width: "100%",
@@ -82,6 +83,7 @@ const Task = () => {
           opacity: 0.4
         }}
       />
+      )}
 
       <List
         ListHeaderComponent={
@@ -179,7 +181,7 @@ const Task = () => {
             <List.Leading>
               <AnimatedPressable onPress={() => setAsDone(!isDone)}>
                 <Stack
-                  backgroundColor={isDone ? subjectInfo.color : theme.colors.card}
+                  backgroundColor={isDone ? (Platform.OS === 'ios' ? subjectInfo.color : theme.colors.primary) : theme.colors.card}
                   card
                   radius={100}
                   width={28}

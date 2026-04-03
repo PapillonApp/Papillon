@@ -73,19 +73,21 @@ export default function GradesModal() {
 
   return (
     <>
-      <LinearGradient
-        colors={[subjectInfo.color, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4
-        }}
-      />
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[subjectInfo.color, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 300,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.4
+          }}
+        />
+      )}
 
       <List
         ListHeaderComponent={
@@ -99,14 +101,14 @@ export default function GradesModal() {
             }}
           >
             <ModalOverhead
-              color={subjectInfo.color}
+              color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
               emoji={subjectInfo.emoji}
               subject={subjectInfo.name}
               title={grade.description}
               date={new Date(grade.givenAt)}
               overhead={
                 <ModalOverHeadScore
-                  color={subjectInfo.color}
+                  color={Platform.OS === 'ios' ? subjectInfo.color : colors.primary}
                   score={grade.studentScore?.disabled ? String(grade.studentScore?.status) : String(grade.studentScore?.value.toFixed(2))}
                   outOf={grade.outOf?.value}
                 />
@@ -184,7 +186,8 @@ export default function GradesModal() {
           </View>
         }
         style={{ backgroundColor: "transparent" }}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ padding: 16,
+              paddingBottom: 16 + insets.bottom }}
       >
         <List.Section>
           <List.SectionTitle>

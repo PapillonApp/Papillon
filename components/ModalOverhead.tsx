@@ -6,7 +6,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { t } from "i18next";
 import React from "react";
-import { Text, View, ViewStyle } from "react-native";
+import { Platform, Text, View, ViewStyle } from "react-native";
 
 const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subjectVariant = "title", custom = false, title, date, dateFormat }: { style?: ViewStyle, overhead?: React.ReactNode, overtitle?: string, color: string, emoji: string, subject: string, subjectVariant?: Variant, title?: string, custom?: boolean, date?: Date, dateFormat?: Intl.DateTimeFormatOptions }) => {
   const theme = useTheme();
@@ -21,19 +21,19 @@ const ModalOverhead = ({ style, overhead, overtitle, color, emoji, subject, subj
     >
       <View
         style={{
-          backgroundColor: color + "22",
+          backgroundColor: Platform.OS === 'ios' ? color + "22" : "transparent",
           width: 48,
           height: 48,
           borderRadius: 120,
           alignItems: "center",
           justifyContent: "center",
           borderColor: color + "22",
-          borderWidth: 1,
+          borderWidth: Platform.OS === 'ios' ? 1 : 0,
         }}
       >
         <Text
           style={{
-            fontSize: 28
+            fontSize: Platform.OS === 'ios' ? 28 : 36,
           }}
         >
           {emoji}
