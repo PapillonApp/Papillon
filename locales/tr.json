@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Sıradaki ders",
   "Home_Widget_NewGrades": "Yeni Notlar",
   "Home_Widget_NewHomeworks": "Yapılacak Dersler",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Yaklaşan ders yok",
   "Home_Widget_NoCourses_Description": "Bugün için planlanmış ders yok.",
   "Home_Cards_Button_Title": "Kartlar",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
