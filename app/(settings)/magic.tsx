@@ -158,7 +158,7 @@ export default function SettingsMagic() {
                 <Papicons name="sparkles" size={20} color={colors.primary} />
               </Icon>
             </List.Leading>
-            <Typography>Statut du modèle</Typography>
+            <Typography variant="title">Statut du modèle</Typography>
             <List.Trailing>
               <Typography color="textSecondary">
                 {modelStatus?.hasModel ? "Chargé" : "Non chargé"}
@@ -172,7 +172,7 @@ export default function SettingsMagic() {
                 <Papicons name="butterfly" size={20} color={colors.primary} />
               </Icon>
             </List.Leading>
-            <Typography>Modèle actuel</Typography>
+            <Typography variant="title">Modèle actuel</Typography>
             <List.Trailing>
               <Typography color="textPrimary" weight="semibold">
                 {currentPtr
@@ -196,7 +196,7 @@ export default function SettingsMagic() {
                 />
               </Icon>
             </List.Leading>
-            <Typography>Vérifier les mises à jour</Typography>
+            <Typography variant="action">Vérifier les mises à jour</Typography>
             <List.Trailing>
               <Icon>
                 <Papicons
@@ -211,10 +211,10 @@ export default function SettingsMagic() {
           <List.Item onPress={resetModel}>
             <List.Leading>
               <Icon>
-                <Papicons name="archive" size={20} color="#FF4444" />
+                <Papicons name="archive" color="#FF4444" />
               </Icon>
             </List.Leading>
-            <Typography>Réinitialiser le modèle</Typography>
+            <Typography variant="action">Réinitialiser le modèle</Typography>
             <List.Trailing>
               <Icon>
                 <Papicons

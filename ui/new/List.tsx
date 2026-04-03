@@ -547,7 +547,7 @@ List.View = ViewItem;
 
 const styles = StyleSheet.create({
   rowContainer: {},
-  row: { flexDirection: "row", alignItems: "center", paddingVertical: 14, paddingHorizontal: 16 },
+  row: { flexDirection: "row", alignItems: "center", paddingVertical: Platform.OS === "android" ? 14 : 12, paddingHorizontal: 16 },
   leading: { marginRight: 16 },
   body: { flex: 1 },
   trailing: { marginLeft: 16 },
