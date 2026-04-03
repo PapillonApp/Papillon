@@ -280,6 +280,7 @@ export default function PronoteENTLogin() {
           setChallengeModalVisible(true)
         } else {
           console.error("Error during login:", error);
+          Alert.alert("Erreur", "Une erreur est survenue lors de la connexion à Pronote. Veuillez réessayer.");
           throw error;
         }
       }

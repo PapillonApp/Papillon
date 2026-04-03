@@ -1,41 +1,39 @@
-import { Papicons } from "@getpapillon/papicons";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useTheme } from "@react-navigation/native";
-import { router } from "expo-router";
-import { EarthIcon, Home } from "lucide-react-native";
 import React, { useEffect } from "react";
+import { Platform, Switch } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Platform, ScrollView } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import { FadeIn, FadeOut } from "react-native-reanimated";
+import LinearGradient from "react-native-linear-gradient";
+import { Home } from "lucide-react-native";
+import { Papicons } from "@getpapillon/papicons";
 
 import AppColorsSelector from "@/components/AppColorsSelector";
 import { useAccountStore } from "@/stores/account";
-import { useSettingsStore } from "@/stores/settings";
-import AnimatedPressable from "@/ui/components/AnimatedPressable";
-import { Dynamic } from "@/ui/components/Dynamic";
-import Icon from "@/ui/components/Icon";
-import Item, { Trailing } from "@/ui/components/Item";
-import List from "@/ui/components/List";
-import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
-import adjust from "@/utils/adjustColor";
+import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
 import { AppColors } from "@/utils/colors";
+import { Dynamic } from "@/ui/components/Dynamic";
+import AnimatedPressable from "@/ui/components/AnimatedPressable";
+import Icon from "@/ui/components/Icon";
+import Stack from "@/ui/components/Stack";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
 
 
 const PersonalizationSettings = () => {
   const theme = useTheme();
-  const { t } = useTranslation()
+  const { t } = useTranslation();
+  const height = useHeaderHeight();
 
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
   const [selectedTheme, setSelectedTheme] = React.useState<"light" | "dark" | "auto">("auto");
-
-  const height = useHeaderHeight()
 
   useEffect(() => {
     if (settingsStore.theme) {
@@ -49,221 +47,153 @@ const PersonalizationSettings = () => {
 
   return (
     <>
-      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + selectedColor}>
+      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + theme.colors.primary}>
         <LinearGradient
-          colors={[selectedColor + "50", selectedColor + "00"]}
+          colors={[theme.colors.primary, theme.colors.primary + "00"]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: 400,
+            opacity: useMaterialYou ? 0.4 : 1,
           }}
         />
       </Dynamic>
 
-      <ScrollView
+      <List
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
       >
-        <Stack direction="horizontal"
-          gap={10}
-          vAlign="start"
-          hAlign="center"
-          style={{
-            paddingHorizontal: 6,
-            paddingVertical: 0,
-            marginBottom: 10,
-            opacity: 0.5,
-          }}
-        >
-          <Icon>
-            <Papicons
-              name={"Palette"}
-              size={18}
-              color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)}
-            />
-          </Icon>
-          <Typography color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)} weight={"semibold"}>
-            {t("Settings_Personalization_Accent")}
-          </Typography>
-        </Stack>
-        <AppColorsSelector
-          onChangeColor={(color: string) => {
-            setSelectedColor(color);
-            setTimeout(() => {
-              const colorData = AppColors.find(appColor => appColor.mainColor === color);
-              if (colorData) {
-                mutateProperty('personalization', {
-                  colorSelected: colorData.colorEnum
-                });
-              }
-            }, 50);
-          }}
-          accountId={store.lastUsedAccount}
-        />
-        <Typography
-          style={{ paddingTop: 10, flex: 1 }}
-          color="#7F7F7F"
-          variant="caption"
-        >
-          {t("Settings_Personalization_Accent_Description")}
-        </Typography>
-        <List style={{ marginTop: 15 }}>
-          <Item>
-            <Icon size={30}>
-              <Papicons name={"ColorTheme"}
-                opacity={0.7}
+        {!useMaterialYou &&
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>Choix de la couleur</List.Label>
+            </List.SectionTitle>
+            <List.View>
+              <AppColorsSelector
+                onChangeColor={(color: string) => {
+                  setSelectedColor(color);
+                  setTimeout(() => {
+                    const colorData = AppColors.find(appColor => appColor.mainColor === color);
+                    if (colorData) {
+                      mutateProperty('personalization', { colorSelected: colorData.colorEnum });
+                    }
+                  }, 50);
+                }}
+                accountId={store.lastUsedAccount}
               />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Theme")}</Typography>
-            <Trailing>
-              <Stack bordered={true}
-                direction={"horizontal"}
-                height={40}
-                hAlign={"center"}
-                vAlign={"center"}
-              >
-                <AnimatedPressable onPress={() => setSelectedTheme("light")}
-                  style={{ overflow: "hidden", height: "100%" }}
-                >
-                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Papicons name={"Sun"}
-                      opacity={selectedTheme === "light" ? 1 : 0.7}
-                      color={selectedTheme === "light" ? "#FFF" : theme.colors.text}
-                    />
-                  </Stack>
-                </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("dark")}
-                  style={{ overflow: "hidden", height: "100%" }}
-                >
-                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Papicons name={"Moon"}
-                      opacity={selectedTheme === "dark" ? 1 : 0.7}
-                      color={selectedTheme === "dark" ? "#FFF" : theme.colors.text}
-                    />
-                  </Stack>
-                </AnimatedPressable>
-                <AnimatedPressable onPress={() => setSelectedTheme("auto")}
-                  style={{ overflow: "hidden", height: "100%" }}
-                >
-                  <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
-                    hAlign={"center"}
-                    vAlign={"center"}
-                    backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}
-                    radius={20}
-                  >
-                    <Typography color={selectedTheme === "auto" ? "#FFF" : theme.colors.text + "7F"}>Auto</Typography>
-                  </Stack>
-                </AnimatedPressable>
+            </List.View>
+          </List.Section>
+        }
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options du thème</List.Label>
+          </List.SectionTitle>
+
+          {Platform.OS === "android" && Platform.Version >= 31 && (
+            <List.Item>
+              <List.Leading>
+                <Icon><Papicons name={"Palette"} /></Icon>
+              </List.Leading>
+              <Typography variant="caption" color={"primary"}>{t("Global_Recommended")}</Typography>
+              <Typography variant="title">{t("Settings_Personalization_MaterialYou_Title")}</Typography>
+              <Typography variant="body1" color="textSecondary">
+                {t("Settings_Personalization_MaterialYou_Description")}
+              </Typography>
+              <List.Trailing>
+                <Switch
+                  value={useMaterialYou}
+                  onValueChange={(value) => mutateProperty("personalization", { useMaterialYou: value })}
+                  disabled={typeof Platform.Version !== "number" || Platform.Version < 31}
+                />
+              </List.Trailing>
+            </List.Item>
+          )}
+
+          <List.Item>
+            <List.Leading>
+              <Icon><Papicons name={"ColorTheme"} /></Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Personalization_Theme")}</Typography>
+            <List.Trailing>
+              <Stack bordered={true} direction={"horizontal"} height={40} hAlign={"center"} vAlign={"center"}>
+                {(["light", "dark", "auto"] as const).map((mode) => (
+                  <AnimatedPressable key={mode} onPress={() => setSelectedTheme(mode)} style={{ overflow: "hidden", height: "100%" }}>
+                    <Stack
+                      style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
+                      hAlign={"center"} vAlign={"center"}
+                      backgroundColor={selectedTheme === mode ? theme.colors.primary : "transparent"}
+                      radius={20}
+                    >
+                      {mode === "light" && <Papicons name={"Sun"} opacity={selectedTheme === "light" ? 1 : 0.7} color={selectedTheme === "light" ? "#FFF" : theme.colors.text} />}
+                      {mode === "dark" && <Papicons name={"Moon"} opacity={selectedTheme === "dark" ? 1 : 0.7} color={selectedTheme === "dark" ? "#FFF" : theme.colors.text} />}
+                      {mode === "auto" && <Typography color={selectedTheme === "auto" ? "#FFF" : theme.colors.text + "7F"}>Auto</Typography>}
+                    </Stack>
+                  </AnimatedPressable>
+                ))}
               </Stack>
-            </Trailing>
-          </Item>
-          {/*
-          <Item onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-          }}
-          >
-            <Icon size={30}>
-              <Papicons name={"PapillonApp"}
-                opacity={0.7}
-              />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Icon_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Personalization_Icon_Description")}</Typography>
-          </Item>
-          */}
-          <Item
-            onPress={() => {
-              router.push("/(settings)/subject_personalization");
-            }}
-          >
-            <Icon size={30}>
-              <Papicons name={"PenAlt"}
-                opacity={0.7}
-              />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Subject_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Personalization_Subject_Description")}</Typography>
-          </Item>
-        </List>
-        <List>
-          {/* Onglets */}
-          <Item
-            onPress={() => {
-              router.push("/(settings)/tabs");
-            }}
-          >
-            <Icon size={30}>
-              <Papicons name={"PapillonApp"} color="#818181" />
-            </Icon>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options des matières</List.Label>
+          </List.SectionTitle>
+          <List.Item onPress={() => router.push("/(settings)/subject_personalization")}>
+            <List.Leading>
+              <Icon><Papicons name={"PenAlt"} /></Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Personalization_Subject_Title")}</Typography>
+            <Typography variant="body1" color="textSecondary">{t("Settings_Personalization_Subject_Description")}</Typography>
+            <List.Trailing>
+              <Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options de l'application</List.Label>
+          </List.SectionTitle>
+
+          <List.Item onPress={() => router.push("/(settings)/tabs")}>
+            <List.Leading>
+              <Icon><Papicons name={"PapillonApp"} /></Icon>
+            </List.Leading>
             <Typography variant={"title"}>{t("Settings_Tabs_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Tabs_Description")}</Typography>
-            <Trailing>
-              <Icon>
-                <Papicons name="ChevronRight" color="#818181" />
-              </Icon>
-            </Trailing>
-          </Item>
+            <Typography variant={"body1"} color={"textSecondary"}>{t("Settings_Tabs_Description")}</Typography>
+            <List.Trailing>
+              <Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon>
+            </List.Trailing>
+          </List.Item>
 
-          {/* Page d'accueil */}
-          <Item
-            onPress={() => {
-              router.push("/(settings)/home");
-            }}
-          >
-            <Icon size={30}>
-              <Home width={25} height={25} stroke="#818181" />
-            </Icon>
+          <List.Item onPress={() => router.push("/(settings)/home")}>
+            <List.Leading>
+              <Icon><Home width={25} height={25} stroke="#818181" /></Icon>
+            </List.Leading>
             <Typography variant={"title"}>{t("Settings_Home_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Home_Description")}</Typography>
-            <Trailing>
-              <Icon>
-                <Papicons name="ChevronRight" color="#818181" />
-              </Icon>
-            </Trailing>
-          </Item>
+            <Typography variant={"body1"} color={"textSecondary"}>{t("Settings_Home_Description")}</Typography>
+            <List.Trailing>
+              <Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon>
+            </List.Trailing>
+          </List.Item>
 
-          {/* Langue */}
-          <Item
-            onPress={() => {
-              router.push("/(settings)/language");
-            }}
-          >
-            <Icon size={30}>
-              <EarthIcon width={25} height={25} stroke="#818181" />
-            </Icon>
+          <List.Item onPress={() => router.push("/(settings)/language")}>
+            <List.Leading>
+              <Icon><Papicons name={"MapPin"} /></Icon>
+            </List.Leading>
             <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Language_Description")}</Typography>
-            <Trailing>
-              <Icon>
-                <Papicons name="ChevronRight" color="#818181" />
-              </Icon>
-            </Trailing>
-          </Item>
-        </List>
-      </ScrollView>
+            <Typography variant={"body1"} color={"textSecondary"}>{t("Settings_Language_Description")}</Typography>
+            <List.Trailing>
+              <Icon><Papicons name="ChevronRight" opacity={0.7} /></Icon>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+      </List>
     </>
   );
 };

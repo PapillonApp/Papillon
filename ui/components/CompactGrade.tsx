@@ -2,7 +2,7 @@ import { Papicons } from "@getpapillon/papicons";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { t } from "i18next";
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 
 import SkeletonView from "@/ui/components/SkeletonView";
 import adjust from "@/utils/adjustColor";
@@ -59,26 +59,28 @@ export const CompactGrade = ({
         borderRadius: 24,
         borderCurve: "continuous",
         borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
-        backgroundColor: colors.card,
-        borderWidth: 1,
+        backgroundColor: Platform.OS !== 'android' ? colors.card : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
+        borderWidth: Platform.OS !== 'android' ? 1 : 0,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
-        shadowRadius: 3,
+        shadowRadius: 3
       }}
     >
-      <LinearGradient
-        colors={[color + "10", color + "00"]}
-        locations={[0, 1]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 24,
-        }}
-      />
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[color + "10", color + "00"]}
+          locations={[0, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 24,
+          }}
+        />
+      )}
 
       <View
         style={{

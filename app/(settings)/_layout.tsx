@@ -5,6 +5,7 @@ import { Platform, StatusBar } from "react-native";
 import { runsIOS26 } from "@/ui/utils/IsLiquidGlass";
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { t } from "i18next";
+import AndroidHeaderBackground from "@/components/AndroidHeaderBackground";
 
 export default function Layout() {
 
@@ -24,6 +25,8 @@ export default function Layout() {
           name="settings"
           options={{
             headerTitle: t("Tab_Settings"),
+            headerBackground: AndroidHeaderBackground,
+            headerTransparent: true
           }}
         />
 

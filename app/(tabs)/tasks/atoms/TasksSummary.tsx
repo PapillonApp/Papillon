@@ -27,7 +27,7 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
       exiting={PapillonAppearOut}
       layout={LinearTransition}
     >
-      <Stack padding={16} gap={16} backgroundColor={adjust("#AB2276", theme.dark ? -0.8 : 0.9)} card radius={20} hAlign="center" direction='horizontal' style={{ marginBottom: 16 }}>
+      <Stack padding={16} gap={16} backgroundColor={adjust(theme.colors.primary, theme.dark ? 0.2 : -0.2) + "22"} card radius={20} hAlign="center" direction='horizontal' style={{ marginBottom: 16 }} noShadow>
         <CircularProgress
           backgroundColor={colors.text + "22"}
           percentageComplete={
@@ -36,9 +36,9 @@ const TasksSummary: React.FC<TasksSummaryProps> = ({ sections }) => {
           }
           radius={15}
           strokeWidth={5}
-          fill={"#AB2276"}
+          fill={theme.colors.primary}
         />
-        <Typography variant="title" color='#AB2276'>
+        <Typography variant="title" color={theme.colors.primary}>
           {(() => {
 
             const total = sections.reduce((acc, section) => acc + section.data.length, 0);

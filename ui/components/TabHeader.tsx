@@ -17,6 +17,7 @@ interface TabHeaderProps {
   bottom?: React.ReactElement,
   shouldCollapseHeader?: boolean,
   modal?: boolean,
+  backgroundColor?: string,
 };
 
 const TabHeader: React.FC<TabHeaderProps> = ({
@@ -26,6 +27,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   bottom,
   shouldCollapseHeader,
   modal,
+  backgroundColor,
 }) => {
   const isModal = Platform.OS === 'ios' ? modal : false;
   const theme = useTheme();
@@ -42,7 +44,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: runsIOS26 ? 'transparent' : colors.background,
+          backgroundColor: runsIOS26 ? 'transparent' : backgroundColor || colors.background,
           borderBottomWidth: (Platform.OS === 'ios' && !runsIOS26) ? 0.5 : 0,
           borderBottomColor: (Platform.OS === 'ios' && !runsIOS26) ? colors.border : undefined,
           position: 'absolute',
