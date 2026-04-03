@@ -195,6 +195,7 @@
   "Home_Widget_NextCourses": "Prossime lezioni",
   "Home_Widget_NewGrades": "Nuovi voti",
   "Home_Widget_NewHomeworks": "Compiti da fare",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Nessuna lezione in programma",
   "Home_Widget_NoCourses_Description": "Non ci sono lezioni previste per oggi.",
   "Home_Cards_Button_Title": "Tessere",
@@ -508,5 +509,6 @@
   "Settings_Transport_Localisation_Request": "Activer la localisation",
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
-  "Settings_About": "Toi et Papillon"
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
