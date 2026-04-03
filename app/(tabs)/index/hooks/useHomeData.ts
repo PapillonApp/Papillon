@@ -90,12 +90,15 @@ export const useHomeData = () => {
 
               if (instanceInfo && instanceInfo.name) {
                 return setTimeout(() => {
-                  router.push({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: instanceInfo.name } })
-                }, 200)
+                  router.navigate("/(onboarding)/ageSelection");
+                  setTimeout(() => {
+                  router.navigate({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: instanceInfo.name } })
+                }, 400)
+                }, 100)
               }
 
               setTimeout(() => {
-                router.push({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: "N/A" } })
+                router.navigate({ pathname: "/(onboarding)/services/pronote/browser", params: { url: authUrl, school: "N/A" } })
               }, 200)
             }
           } : undefined,
