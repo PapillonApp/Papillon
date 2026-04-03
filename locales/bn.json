@@ -1,6 +1,7 @@
 {
   "Global_Back": "ফিরে যান",
   "Global_DatePrefix": "তারিখে",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "হোম",
   "Tab_Calendar": "ক্লাস",
   "Tab_Tasks": "কাজ",
@@ -380,8 +381,8 @@
   "Settings_Personalization_Accent": "অ্যাকসেন্ট রঙ",
   "Settings_Personalization_Accent_Description": "এখানে বেছে নেওয়া রঙটি পাপিলন হোম পেজে দেখা যাবে।",
   "Settings_Personalization_Theme": "থিম",
-  "Settings_Personalization_MaterialYou_Title": "Utiliser Material You (Bêta)",
-  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs dynamiques du système Android.",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "আইকন পরিবর্তন করুন",
   "Settings_Personalization_Icon_Description": "অ্যাপের আইকন কাস্টমাইজ করুন",
   "Settings_Personalization_Subject_Title": "বিষয়গুলো কাস্টমাইজ করুন",
