@@ -8,6 +8,8 @@ export function getCurrentPeriod(periods: Period[]): Period {
     "Brevet blanc",
     "Hors période",
     "Année",
+    "ANNÉE",
+    "ANNEE",
     "Contrôle en cours de formation",
     "EPREUVES PONCTUELLES 1ERE SERIE",
     "EPREUVES PONCTUELLES 2EME SERIE",
@@ -15,6 +17,7 @@ export function getCurrentPeriod(periods: Period[]): Period {
     "MI-SEMESTRE 2",
     "Évaluation spécifique de DNL",
   ];
+
   periods = periods
     .filter(period => !excludedNames.includes(period.name))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -33,4 +36,5 @@ export function getCurrentPeriod(periods: Period[]): Period {
   }
 
   error("Unable to find the current period and unable to fallback...");
+  return periods[0];
 }
