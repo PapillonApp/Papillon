@@ -169,7 +169,10 @@ export function RootNavigator() {
           name="(features)/soon"
           options={{
             headerShown: false,
-            presentation: "formSheet",
+            presentation: Platform.select({
+              ios: "formSheet",
+              default: "modal"
+            }),
             sheetGrabberVisible: true,
             sheetAllowedDetents: "fitToContents"
           }}
