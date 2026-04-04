@@ -496,5 +496,7 @@
   "Transport_Error_Cant_Open_Deeplink_Description": "Make sure the app is installed on your device, then try again.",
   "Settings_Transport_Localisation_Needed": "Papillon needs your location",
   "Settings_Transport_Localisation_Needed_Description": "To use transport features, Papillon needs access to your location to provide accurate transit information.",
-  "Settings_Transport_Localisation_Request": "Enable location"
+  "Settings_Transport_Localisation_Request": "Enable location",
+  "Settings_Personalization_Emoji_Picker_SetEmoji": "Select",
+  "Settings_Personalization_Emoji_Picker_Title": "Emoji picker"
 }
