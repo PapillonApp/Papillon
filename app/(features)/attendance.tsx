@@ -23,6 +23,8 @@ import { t } from "i18next";
 import i18n from "@/utils/i18n";
 import ActionMenu from "@/ui/components/ActionMenu";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
+import TabHeader from "@/ui/components/TabHeader";
+import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 
 export default function AttendanceView() {
   try {
@@ -70,12 +72,68 @@ export default function AttendanceView() {
     const dangerBg = "#C5000030";
     const dangerBorder = "#0000000D";
 
+    const [headerHeight, setHeaderHeight] = useState(0);
+
     return (
       <>
+        <TabHeader
+          showAndroidBackButton
+          modal={Platform.OS !== "android"}
+          onHeightChanged={setHeaderHeight}
+          title={
+            <ActionMenu
+                key={String(period?.id ?? "")}
+                onPressAction={async ({ nativeEvent }) => {
+                  const actionId = nativeEvent.event;
+
+                  if (actionId.startsWith("period:")) {
+                    const selectedPeriodId = actionId.replace("period:", "");
+                    const selectedPeriod: Period | undefined = periods.find(item => item.id === selectedPeriodId)
+
+                    if (!selectedPeriod) {
+                      error("Invalid Period")
+                    }
+
+                    const manager = getManager()
+                    const attendancesFetched = await manager.getAttendanceForPeriod(selectedPeriod.name)
+
+                    setAttendances(attendancesFetched)
+                    setPeriod(selectedPeriod)
+                  }
+                }}
+                actions={
+                  periods.map((item) => ({
+                    id: "period:" + item.id,
+                    title: (getPeriodName(item.name || "") + " " + (isPeriodWithNumber(item.name || "") ? getPeriodNumber(item.name || "0") : "")).trim(),
+                    subtitle: `${new Date(item.start).toLocaleDateString(i18n.language, {
+                      month: "short",
+                      year: "numeric",
+                    })} - ${new Date(item.end).toLocaleDateString(i18n.language, {
+                      month: "short",
+                      year: "numeric",
+                    })}`,
+                    state: String(period?.id ?? "") === String(item.id ?? "") ? "on" : "off",
+                    image: Platform.select({
+                      ios: (getPeriodNumber(item.name || "0")) + ".calendar"
+                    }),
+                    imageColor: colors.text,
+                  }))}
+            >
+              <TabHeaderTitle
+                chevron={true}
+                leading={getPeriodName(period?.name ?? "")}
+                number={getPeriodNumber(period?.name ?? "")}
+              />
+            </ActionMenu>
+          }
+        />
+
         {period && (
           <>
             <ScrollView
-              contentInsetAdjustmentBehavior="automatic"
+              contentContainerStyle={{
+                paddingTop: headerHeight,
+              }}
             >
               <View
                 style={{
@@ -262,80 +320,6 @@ export default function AttendanceView() {
                 )}
               </View>
             </ScrollView>
-
-            <NativeHeaderSide side="Left" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
-              {Platform.OS === "android" ?
-                <AndroidBackButton />
-              :
-                <NativeHeaderPressable onPress={() => { router.back() }}>
-                  <Icon papicon opacity={0.5}>
-                    <Papicons name={"Cross"} />
-                  </Icon>
-                </NativeHeaderPressable>
-              }
-            </NativeHeaderSide>
-
-            <NativeHeaderTitle style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }} key={"att:" + period?.name}>
-              <ActionMenu
-                key={String(period?.id ?? "")}
-                onPressAction={async ({ nativeEvent }) => {
-                  const actionId = nativeEvent.event;
-
-                  if (actionId.startsWith("period:")) {
-                    const selectedPeriodId = actionId.replace("period:", "");
-                    const selectedPeriod: Period | undefined = periods.find(item => item.id === selectedPeriodId)
-
-                    if (!selectedPeriod) {
-                      error("Invalid Period")
-                    }
-
-                    const manager = getManager()
-                    const attendancesFetched = await manager.getAttendanceForPeriod(selectedPeriod.name)
-
-                    setAttendances(attendancesFetched)
-                    setPeriod(selectedPeriod)
-                  }
-                }}
-                actions={
-                  periods.map((item) => ({
-                    id: "period:" + item.id,
-                    title: (getPeriodName(item.name || "") + " " + (isPeriodWithNumber(item.name || "") ? getPeriodNumber(item.name || "0") : "")).trim(),
-                    subtitle: `${new Date(item.start).toLocaleDateString(i18n.language, {
-                      month: "short",
-                      year: "numeric",
-                    })} - ${new Date(item.end).toLocaleDateString(i18n.language, {
-                      month: "short",
-                      year: "numeric",
-                    })}`,
-                    state: String(period?.id ?? "") === String(item.id ?? "") ? "on" : "off",
-                    image: Platform.select({
-                      ios: (getPeriodNumber(item.name || "0")) + ".calendar"
-                    }),
-                    imageColor: colors.text,
-                  }))}>
-                <Dynamic
-                  animated={true}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
-                    width: 200,
-                    height: 60,
-                  }}
-                >
-                  <Dynamic animated>
-                    <Typography inline variant="navigation">{getPeriodName(period?.name ?? "")}</Typography>
-                  </Dynamic>
-                  <Dynamic animated>
-                    <NativeHeaderHighlight v>{getPeriodNumber(period?.name ?? "")}</NativeHeaderHighlight>
-                  </Dynamic>
-                  <Dynamic animated>
-                    <Papicons name={"ChevronDown"} strokeWidth={2.5} color={colors.text} opacity={0.6} />
-                  </Dynamic>
-                </Dynamic>
-              </ActionMenu>
-            </NativeHeaderTitle >
           </>
         )}
       </>

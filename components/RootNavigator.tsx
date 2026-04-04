@@ -216,12 +216,11 @@ export function RootNavigator() {
         <Stack.Screen
           name="(features)/attendance"
           options={{
-            headerShown: true,
+            headerShown: false,
             headerTitle: t("Tab_Attendance"),
             headerTransparent: runsIOS26,
             headerLargeTitle: true,
-            presentation: "modal",
-            headerBackground: AndroidHeaderBackground
+            presentation: "modal"
           }}
         />
       </Stack>
