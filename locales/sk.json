@@ -1,6 +1,7 @@
 {
   "Global_Back": "Späť",
   "Global_DatePrefix": "dňa",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Domov",
   "Tab_Calendar": "Rozvrh",
   "Tab_Tasks": "Úlohy",
@@ -381,6 +382,8 @@
   "Settings_Personalization_Accent": "Farba zvýraznenia",
   "Settings_Personalization_Accent_Description": "Farba, ktorú tu vyberieš, sa použije na domovskej stránke Papillonu.",
   "Settings_Personalization_Theme": "Motív",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Zmeniť ikonu",
   "Settings_Personalization_Icon_Description": "Uprav si ikonu aplikácie",
   "Settings_Personalization_Subject_Title": "Personalizovať predmety",
@@ -493,7 +496,7 @@
   "Transport_Error_Location_Description": "Vérifie que Papillon a bien accès à ta localisation.",
   "Transport_Maps_App": "ton application de transport",
   "Transport_Open_In": "Ouvrir dans",
-  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un lieu, un arrêt…",
+  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un arrêt...",
   "Settings_Transport_Current_Position_Description": "Utilise ta position actuelle quand tu es dans ton calendrier.",
   "Settings_Transport_Place": "Adresses et lieux",
   "Settings_Transport_Stops": "Arrêts et stations",
@@ -507,5 +510,7 @@
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
   "Settings_About": "Toi et Papillon",
-  "Settings_Dev": "Développement"
+  "Settings_Dev": "Développement",
+  "Settings_Personalization_Emoji_Picker_Title": "Sélectionne un emoji",
+  "Settings_Personalization_Emoji_Picker_SetEmoji": "Sélectionner"
 }
