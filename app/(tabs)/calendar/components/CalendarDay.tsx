@@ -107,6 +107,8 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
     return result;
   }, [dayEvents]);
 
+  const isEmpty = enrichedEvents.length === 0;
+
   return (
     <View style={{ width: Dimensions.get("window").width, flex: 1 }}>
       <FlatList
@@ -119,6 +121,7 @@ export const CalendarDay = React.memo(({ dayDate, courses, isRefreshing, onRefre
           gap: 4,
           paddingTop: headerHeight + 6,
           paddingBottom: tabBarHeight + 6,
+          ...(isEmpty ? { alignItems: "center" } : {}),
         }}
         refreshControl={
           <RefreshControl
