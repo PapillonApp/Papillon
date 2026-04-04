@@ -16,6 +16,9 @@ import Wallpaper from './atoms/Wallpaper';
 import HomeWidget, { HomeWidgetItem } from './components/HomeWidget';
 import { useHomeData } from './hooks/useHomeData';
 import HomeTimeTableWidget from './widgets/timetable';
+import GradesWidget from './widgets/Grades';
+import { useAlert } from '@/ui/components/AlertProvider';
+import Button from '@/ui/new/Button';
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets();
@@ -47,7 +50,13 @@ const HomeScreen = () => {
 
   useHomeData();
 
+  const [gradesWidgetHidden, setGradesWidgetHidden] = React.useState(true);
+
   const renderTimeTable = React.useCallback(() => <HomeTimeTableWidget />, []);
+  const renderGrades = React.useCallback(
+    () => <GradesWidget onEmptyStateChange={setGradesWidgetHidden} />,
+    []
+  );
 
   const data: HomeWidgetItem[] = React.useMemo(() => [
     {
@@ -56,7 +65,16 @@ const HomeScreen = () => {
       redirect: "(tabs)/calendar",
       render: renderTimeTable
     },
-  ], [renderTimeTable]);
+    {
+      icon: <Papicons name={"Grades"} />,
+      title: t("Home_Widget_Grades_Average"),
+      redirect: "(tabs)/grades",
+      hidden: gradesWidgetHidden,
+      render: renderGrades
+    }
+  ], [renderTimeTable, renderGrades, gradesWidgetHidden]);
+
+  const alert = useAlert();
 
   return (
     <>
@@ -71,7 +89,9 @@ const HomeScreen = () => {
         contentContainerStyle={{
           paddingBottom: insets.bottom + bottomTabBarHeight,
           paddingHorizontal: 16,
-          flexGrow: 1
+          flexGrow: 1,
+          gap: 12,
+          marginTop: 6
         }}
         data={data}
       />

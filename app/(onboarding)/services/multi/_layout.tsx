@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Stack } from '@/utils/native/AnimatedNavigator';
+import { Stack } from 'expo-router';
 import { screenOptions } from "@/utils/theme/ScreenOptions";
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from "react-i18next";

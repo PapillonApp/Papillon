@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { Text } from "react-native";
+import { Platform, Text } from "react-native";
 
 const WEIGHTS = ["light", "regular", "medium", "semibold", "bold"];
 
@@ -32,7 +32,7 @@ const VARIANTS: Record<string, Record<string, string | number>> = {
   },
   "title": {
     fontFamily: WEIGHTS[4],
-    fontSize: 17,
+    fontSize: Platform.OS === "android" ? 18 : 17,
     lineHeight: "130%"
   },
   "action": {
@@ -41,7 +41,7 @@ const VARIANTS: Record<string, Record<string, string | number>> = {
     lineHeight: "140%"
   },
   "body1": {
-    fontFamily: WEIGHTS[2],
+    fontFamily: Platform.OS === "android" ? WEIGHTS[3] : WEIGHTS[2],
     fontSize: 15,
     lineHeight: "140%"
   },
@@ -81,7 +81,7 @@ export default function Typography({ variant = "body1", color = "textPrimary", a
   const COLORS: Record<string, string> = {
     "textPrimary": colors.text,
     "textSecondary": colors.text + "88",
-    "primary": colors.primary,
+    "primary": colors.tint,
   }
 
   const variantStyle = fixLineHeight(variant in VARIANTS ? VARIANTS[variant] : VARIANTS["body1"]);

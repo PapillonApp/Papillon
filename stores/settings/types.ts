@@ -28,6 +28,7 @@ export interface Wallpaper {
 export interface Personalization {
   colorSelected?: Colors;
   theme?: "light" | "dark" | "auto";
+  useMaterialYou?: boolean;
   magicEnabled?: boolean;
   hideNameOnHomeScreen?: boolean;
   showAlertAtLogin?: boolean;

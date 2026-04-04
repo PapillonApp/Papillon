@@ -16,6 +16,7 @@ import {
 import getCorners from '@/ui/utils/Corners';
 import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { screenOptions } from '@/utils/theme/ScreenOptions';
+import AndroidHeaderBackground from './AndroidHeaderBackground';
 
 export function RootNavigator() {
   const theme = useTheme();
@@ -86,8 +87,10 @@ export function RootNavigator() {
           options={{
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Task_Title"),
+            headerTransparent: true,
             headerLargeTitle: false,
             presentation: "modal",
+            headerBackground: AndroidHeaderBackground
           }}
         />
         <Stack.Screen
@@ -96,7 +99,9 @@ export function RootNavigator() {
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Grades_Title"),
             headerLargeTitle: false,
+            headerTransparent: true,
             presentation: "modal",
+            headerBackground: AndroidHeaderBackground
           }}
         />
         <Stack.Screen
@@ -114,8 +119,9 @@ export function RootNavigator() {
             headerShown: Platform.OS !== 'ios',
             headerTitle: t("Modal_Course_Title"),
             headerLargeTitle: false,
-            headerTransparent: Platform.OS === 'ios' ? runsIOS26 : false,
+            headerTransparent: true,
             presentation: "modal",
+            headerBackground: AndroidHeaderBackground,
             contentStyle: {
               borderRadius: Platform.OS === 'ios' ? 30 : 0,
               overflow: Platform.OS === 'ios' ? "hidden" : "visible",

@@ -2,10 +2,11 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { LiquidGlassView } from '@sbaiahmed1/react-native-blur';
 import { Papicons } from '@getpapillon/papicons';
-import Typography from '@/ui/components/Typography';
+import Typography from '@/ui/new/Typography';
 import { useTheme } from '@react-navigation/native';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import Stack from '@/ui/components/Stack';
+import { TouchableNativeFeedback } from 'react-native';
 
 export interface HomeHeaderButtonItem {
   title: string;
@@ -23,37 +24,49 @@ const HomeHeaderButton: React.FC<HomeHeaderButtonProps> = ({ item }) => {
   const { colors } = useTheme();
 
   return (
-    <AnimatedPressable
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
+    <TouchableNativeFeedback
+      useForeground
       style={styles.headerBtn}
       onPress={item.onPress}
     >
-      <Stack
-        direction='horizontal'
-        card
-        inline flex
-        padding={[10, 10]}
-        hAlign='center'
-        vAlign='center'
-        gap={10}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          paddingHorizontal: 10,
+          paddingVertical: 13,
+          borderRadius: 24,
+          backgroundColor: colors.card,
+          elevation: 4,
+          overflow: 'hidden',
+        }}
       >
         <View
           style={{
-            backgroundColor: item.color + 30,
             borderRadius: 50,
-            padding: 7
+            padding: 0,
+            paddingLeft: 4,
           }}
         >
-          <Papicons name={item.icon} color={item.color} size={25} />
+          <Papicons name={item.icon} color={item.color} size={32} />
         </View>
         <View style={{
           flex: 1,
           overflow: 'hidden'
         }}>
           <Typography nowrap inline variant="title">{item.title}</Typography>
-          <Typography nowrap inline variant="body2" color='secondary'>{item.description}</Typography>
+          <Typography nowrap inline variant="body1" color='textSecondary'>{item.description}</Typography>
         </View>
-      </Stack>
-    </AnimatedPressable>
+      </View>
+    </TouchableNativeFeedback>
+    </View>
   );
 };
 

@@ -34,7 +34,8 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
   sortMethod,
   shouldCollapseHeader,
 }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { colors } = theme;
 
   const sortingOptions = useMemo(
     () => [
@@ -50,6 +51,7 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   return (
     <TabHeader
+      backgroundColor={(Platform.OS === "android" && !theme.dark) ? colors.item : 'transparent'}
       onHeightChanged={setHeaderHeight}
       title={
         <TabHeaderTitle

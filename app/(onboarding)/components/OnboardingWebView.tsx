@@ -10,7 +10,7 @@ import Typography from "@/ui/new/Typography";
 import { useHeaderHeight } from "@react-navigation/elements";
 import AndroidBackButton from "@/utils/theme/AndroidBackButton";
 
-export default function OnboardingWebView({webViewRef, ...props}: React.ComponentProps<typeof WebView>) {
+export default function OnboardingWebView({ webViewRef, ...props }: React.ComponentProps<typeof WebView>) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
@@ -20,7 +20,7 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
 
   const extractDomain = (url: string) => {
     try {
-      if(url.trim().length === 0) {return "about:blank";}
+      if (url.trim().length === 0) { return "about:blank"; }
 
       const { hostname } = new URL(url);
       return hostname.replace("www.", "");
@@ -29,10 +29,10 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
     }
   }
 
-      const finalHeaderHeight = Platform.select({
-        android: insets.top,
-        default: 0
-      });
+  const finalHeaderHeight = Platform.select({
+    android: insets.top,
+    default: 0
+  });
 
   return (
     <View
@@ -43,14 +43,14 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
         flexDirection: "column",
       }}
     >
-      <View style={{
+      {Platform.OS === 'android' && (<View style={{
         position: "absolute",
         left: 16,
         top: finalHeaderHeight + 11,
         zIndex: 200000,
       }}>
         <AndroidBackButton />
-      </View>
+      </View>)}
 
       <View
         style={{
@@ -77,9 +77,9 @@ export default function OnboardingWebView({webViewRef, ...props}: React.Componen
           }}
         >
           {currentUrl.startsWith("https://") && (
-          <Dynamic animated>
-            <Papicons size={20} name="lock" color="#37BB12" />
-          </Dynamic>
+            <Dynamic animated>
+              <Papicons size={20} name="lock" color="#37BB12" />
+            </Dynamic>
           )}
           <Dynamic animated key={extractDomain(currentUrl)}>
             <Typography variant="title" numberOfLines={1}>

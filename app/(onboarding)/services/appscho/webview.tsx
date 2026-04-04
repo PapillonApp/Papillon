@@ -69,7 +69,7 @@ export default function AppschoWebView() {
         alert.showAlert({
           title: t("Alert_Auth_Error"),
           description: t("ONBOARDING_ALERT_OAUTH_LOGIN_ABORTED"),
-          icon: "TriangleAlert",
+          icon: "AlertTriangle",
           color: "#D60046",
           technical: String(error),
           withoutNavbar: true,

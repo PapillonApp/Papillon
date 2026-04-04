@@ -1,10 +1,8 @@
-import { Alert, Platform, ScrollView } from "react-native";
+import { Alert, Platform, ScrollView, Switch } from "react-native";
 import Stack from "@/ui/components/Stack";
 import { EarthIcon } from "lucide-react-native";
 import React, { useEffect } from "react";
-import List from "@/ui/components/List";
-import Item, { Trailing } from "@/ui/components/Item";
-import Typography from "@/ui/components/Typography";
+import Typography from "@/ui/new/Typography";
 import Icon from "@/ui/components/Icon";
 import { Papicons, PapillonApp } from "@getpapillon/papicons";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
@@ -14,12 +12,13 @@ import { AppColors } from "@/utils/colors";
 import LinearGradient from "react-native-linear-gradient";
 import adjust from "@/utils/adjustColor";
 import { useAccountStore } from "@/stores/account";
-import { useSettingsStore } from "@/stores/settings";
+import { DEFAULT_MATERIAL_YOU_ENABLED, useSettingsStore } from "@/stores/settings";
 import { useTranslation } from "react-i18next";
 import { router } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { FadeIn, FadeOut } from "react-native-reanimated";
+import List from "@/ui/new/List";
 
 
 const PersonalizationSettings = () => {
@@ -29,6 +28,7 @@ const PersonalizationSettings = () => {
   const store = useAccountStore.getState();
   const settingsStore = useSettingsStore(state => state.personalization);
   const mutateProperty = useSettingsStore(state => state.mutateProperty);
+  const useMaterialYou = settingsStore.useMaterialYou ?? DEFAULT_MATERIAL_YOU_ENABLED;
 
   const defaultColorData = AppColors.find(color => color.colorEnum === settingsStore.colorSelected) || AppColors[0];
   const [selectedColor, setSelectedColor] = React.useState<string>(defaultColorData.mainColor);
@@ -48,76 +48,83 @@ const PersonalizationSettings = () => {
 
   return (
     <>
-      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + selectedColor}>
+      <Dynamic animated entering={FadeIn} exiting={FadeOut} key={'color-grad-stgs:' + theme.colors.primary}>
         <LinearGradient
-          colors={[selectedColor + "50", selectedColor + "00"]}
+          colors={[theme.colors.primary, theme.colors.primary + "00"]}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: 400,
+            opacity: useMaterialYou ? 0.4 : 1,
           }}
         />
       </Dynamic>
-
-      <ScrollView
+      <List
         contentContainerStyle={{ padding: 16 }}
         contentInsetAdjustmentBehavior="always"
         style={{ flex: 1, paddingTop: Platform.OS === "android" ? height : 0 }}
       >
-        <Stack direction="horizontal"
-          gap={10}
-          vAlign="start"
-          hAlign="center"
-          style={{
-            paddingHorizontal: 6,
-            paddingVertical: 0,
-            marginBottom: 10,
-            opacity: 0.5,
-          }}
-        >
-          <Icon>
-            <Papicons
-              name={"Palette"}
-              size={18}
-              color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)}
-            />
-          </Icon>
-          <Typography color={adjust(selectedColor, theme.dark ? 0.8 : -0.6)} weight={"semibold"}>
-            {t("Settings_Personalization_Accent")}
-          </Typography>
-        </Stack>
-        <AppColorsSelector
-          onChangeColor={(color: string) => {
-            setSelectedColor(color);
-            setTimeout(() => {
-              const colorData = AppColors.find(appColor => appColor.mainColor === color);
-              if (colorData) {
-                mutateProperty('personalization', {
-                  colorSelected: colorData.colorEnum
-                });
-              }
-            }, 50);
-          }}
-          accountId={store.lastUsedAccount}
-        />
-        <Typography
-          style={{ paddingTop: 10, flex: 1 }}
-          color="#7F7F7F"
-          variant="caption"
-        >
-          {t("Settings_Personalization_Accent_Description")}
-        </Typography>
-        <List style={{ marginTop: 15 }}>
-          <Item>
-            <Icon size={30}>
-              <Papicons name={"ColorTheme"}
-                opacity={0.7}
+        {!useMaterialYou &&
+          <List.Section>
+            <List.SectionTitle>
+              <List.Label>Choix de la couleur</List.Label>
+            </List.SectionTitle>
+            <List.View>
+              <AppColorsSelector
+                onChangeColor={(color: string) => {
+                  setSelectedColor(color);
+                  setTimeout(() => {
+                    const colorData = AppColors.find(appColor => appColor.mainColor === color);
+                    if (colorData) {
+                      mutateProperty('personalization', {
+                        colorSelected: colorData.colorEnum
+                      });
+                    }
+                  }, 50);
+                }}
+                accountId={store.lastUsedAccount}
               />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Theme")}</Typography>
-            <Trailing>
+            </List.View>
+          </List.Section>
+        }
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options du thème</List.Label>
+          </List.SectionTitle>
+          {Platform.OS === "android" && Platform.Version >= 31 && (
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={"Palette"} />
+                </Icon>
+              </List.Leading>
+              <Typography variant="caption" color={"primary"}>{t("Global_Recommended")}</Typography>
+              <Typography variant="title">{t("Settings_Personalization_MaterialYou_Title")}</Typography>
+              <Typography variant="body1" color="textSecondary">
+                {t("Settings_Personalization_MaterialYou_Description")}
+              </Typography>
+              <List.Trailing>
+                <Switch
+                  value={useMaterialYou}
+                  onValueChange={(value) => {
+                    mutateProperty("personalization", { useMaterialYou: value });
+                  }}
+                  disabled={typeof Platform.Version !== "number" || Platform.Version < 31}
+                />
+              </List.Trailing>
+            </List.Item>
+          )}
+          <List.Item>
+            <List.Leading>
+              <Icon>
+                <Papicons name={"ColorTheme"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Personalization_Theme")}</Typography>
+            <List.Trailing>
               <Stack bordered={true}
                 direction={"horizontal"}
                 height={40}
@@ -130,7 +137,7 @@ const PersonalizationSettings = () => {
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
-                    backgroundColor={selectedTheme === "light" ? selectedColor : "transparent"}
+                    backgroundColor={selectedTheme === "light" ? theme.colors.primary : "transparent"}
                     radius={20}
                   >
                     <Papicons name={"Sun"}
@@ -145,7 +152,7 @@ const PersonalizationSettings = () => {
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
-                    backgroundColor={selectedTheme === "dark" ? selectedColor : "transparent"}
+                    backgroundColor={selectedTheme === "dark" ? theme.colors.primary : "transparent"}
                     radius={20}
                   >
                     <Papicons name={"Moon"}
@@ -160,88 +167,91 @@ const PersonalizationSettings = () => {
                   <Stack style={{ overflow: "hidden", paddingHorizontal: 15, height: "100%" }}
                     hAlign={"center"}
                     vAlign={"center"}
-                    backgroundColor={selectedTheme === "auto" ? selectedColor : "transparent"}
+                    backgroundColor={selectedTheme === "auto" ? theme.colors.primary : "transparent"}
                     radius={20}
                   >
                     <Typography color={selectedTheme === "auto" ? "#FFF" : theme.colors.text + "7F"}>Auto</Typography>
                   </Stack>
                 </AnimatedPressable>
               </Stack>
-            </Trailing>
-          </Item>
-          {/*
-          <Item onPress={() => {
-            Alert.alert("Ça arrive... ✨", "Cette fonctionnalité n'est pas encore disponible.")
-          }}
-          >
-            <Icon size={30}>
-              <Papicons name={"PapillonApp"}
-                opacity={0.7}
-              />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Icon_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Personalization_Icon_Description")}</Typography>
-          </Item>
-          */}
-          <Item
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options des matières</List.Label>
+          </List.SectionTitle>
+          <List.Item
             onPress={() => {
               router.push("/(settings)/subject_personalization");
             }}
           >
-            <Icon size={30}>
-              <Papicons name={"PenAlt"}
-                opacity={0.7}
-              />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Personalization_Subject_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Personalization_Subject_Description")}</Typography>
-          </Item>
-        </List>
-        <List>
-          <Item
+            <List.Leading>
+              <Icon>
+                <Papicons name={"PenAlt"} />
+              </Icon>
+            </List.Leading>
+            <Typography variant="title">{t("Settings_Personalization_Subject_Title")}</Typography>
+            <Typography variant="body1" color="textSecondary">
+              {t("Settings_Personalization_Subject_Description")}
+            </Typography>
+            <List.Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" opacity={0.7} />
+              </Icon>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>Options de l'application</List.Label>
+          </List.SectionTitle>
+          <List.Item
             onPress={() => {
               router.push("/(settings)/tabs");
             }}
           >
-            <Icon size={30}>
-              <Papicons name={"PapillonApp"} color="#818181" />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Tabs_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Tabs_Description")}</Typography>
-            <Trailing>
+            <List.Leading>
               <Icon>
-                <Papicons name="ChevronRight" color="#818181" />
+                <Papicons name={"PapillonApp"} />
               </Icon>
-            </Trailing>
-          </Item>
-          <Item
+            </List.Leading>
+            <Typography variant={"title"}>{t("Settings_Tabs_Title")}</Typography>
+            <Typography variant={"body1"}
+              color={"textSecondary"}
+            >{t("Settings_Tabs_Description")}</Typography>
+            <List.Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" opacity={0.7} />
+              </Icon>
+            </List.Trailing>
+          </List.Item>
+          <List.Item
             onPress={() => {
               router.push("/(settings)/language");
             }}
           >
-            <Icon size={30}>
-              <EarthIcon width={25} height={25} stroke="#818181" />
-            </Icon>
-            <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
-            <Typography variant={"caption"}
-              color={"secondary"}
-            >{t("Settings_Language_Description")}</Typography>
-            <Trailing>
+            <List.Leading>
               <Icon>
-                <Papicons name="ChevronRight" color="#818181" />
+                <Papicons name={"MapPin"} />
               </Icon>
-            </Trailing>
-          </Item>
-        </List>
-      </ScrollView>
+            </List.Leading>
+            <Typography variant={"title"}>{t("Settings_Language_Title")}</Typography>
+            <Typography variant={"body1"}
+              color={"textSecondary"}
+            >{t("Settings_Language_Description")}</Typography>
+            <List.Trailing>
+              <Icon>
+                <Papicons name="ChevronRight" opacity={0.7} />
+              </Icon>
+            </List.Trailing>
+          </List.Item>
+        </List.Section>
+      </List>
     </>
-  );
+  )
 };
 
 export default PersonalizationSettings;

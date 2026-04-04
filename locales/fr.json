@@ -1,6 +1,7 @@
 {
   "Global_Back": "Retour",
   "Global_DatePrefix": "le",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Accueil",
   "Tab_Calendar": "Cours",
   "Tab_Tasks": "Tâches",
@@ -194,6 +195,7 @@
   "Home_Widget_NextCourses": "Prochains cours",
   "Home_Widget_NewGrades": "Nouvelles notes",
   "Home_Widget_NewHomeworks": "Tâches à faire",
+  "Home_Widget_Grades_Average": "Moyenne",
   "Home_Widget_NoCourses": "Aucun cours à venir",
   "Home_Widget_NoCourses_Description": "Il n'y a pas de cours prévus pour aujourd'hui.",
   "Home_Cards_Button_Title": "Cartes",
@@ -374,6 +376,8 @@
   "Settings_Personalization_Accent": "Couleur d'accentuation",
   "Settings_Personalization_Accent_Description": "La couleur que tu choisis ici s'appliquera sur la page d'accueil de Papillon.",
   "Settings_Personalization_Theme": "Thème",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Changer l’icône",
   "Settings_Personalization_Icon_Description": "Personnalise l’icône de l’application",
   "Settings_Personalization_Subject_Title": "Personnaliser les matières",
@@ -449,6 +453,7 @@
   "Task_Done": "Terminé",
   "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
   "Modal_Profile_Title": "Personnaliser le profil",
+  "Modal_Task_Title": "Détail de la tâche",
   "Modal_Task_Status": "État du devoir",
   "Modal_Task_Description": "Description du devoir",
   "Modal_Task_Attachments": "Pièces jointes",
@@ -479,7 +484,7 @@
   "Transport_Error_Location_Description": "Vérifie que Papillon a bien accès à ta localisation.",
   "Transport_Maps_App": "ton application de transport",
   "Transport_Open_In": "Ouvrir dans",
-  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un lieu, un arrêt…",
+  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un arrêt...",
   "Settings_Transport_Current_Position_Description": "Utilise ta position actuelle quand tu es dans ton calendrier.",
   "Settings_Transport_Place": "Adresses et lieux",
   "Settings_Transport_Stops": "Arrêts et stations",
@@ -504,4 +509,8 @@
   "Home_Edit_Profile": "Modifier mon profil",
   "Home_Add_Profile": "Ajouter un profil",
   "Settings_Personalization_Emoji_Picker_Title": "Sélecteur d'emoji"
+  "Settings_Preferences": "Fonctionnalités",
+  "Settings_More": "À propos",
+  "Settings_About": "Toi et Papillon",
+  "Settings_Dev": "Développement"
 }
