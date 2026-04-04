@@ -63,6 +63,7 @@ export const CalendarHeader = React.memo(({ date, onDateChange, onHeaderHeightCh
               {
                 id: 'manage_icals',
                 title: t("Tab_Calendar_Icals"),
+                papicon: "calendar",
                 subtitle: t("Tab_Calendar_Icals_Description"),
                 imageColor: colors.text,
                 image: Platform.select({

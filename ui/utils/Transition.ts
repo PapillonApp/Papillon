@@ -141,3 +141,30 @@ export const PapillonSpringOut = () => {
     },
   };
 };
+
+export const PapillonAndroidMenuIn = () => {
+  "worklet";
+  return {
+    initialValues: {
+      opacity: 0,
+      transform: [{ scaleX: 0.8 }, { scaleY: 0.5 }],
+    },
+    animations: {
+      opacity: withSpring(1, {
+        duration: 100,
+      }),
+      transform: [
+        {
+          scaleX: withSpring(1, {
+            duration: 200,
+          })
+        },
+        {
+          scaleY: withSpring(1, {
+            duration: 250,
+          })
+        }
+      ],
+    },
+  };
+};
