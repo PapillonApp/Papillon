@@ -4,6 +4,7 @@ import {
 } from "@react-navigation/native";
 import { Platform } from "react-native";
 import { getDynamicColorScheme } from "react-native-dynamic-theme";
+import adjust from "../adjustColor";
 
 const FALLBACK_COLORS = {
   light: {
@@ -61,7 +62,7 @@ export function createDefaultTheme(useMaterialYou: boolean, primaryColor: string
     colors: {
       ...NativeDefaultTheme.colors,
       primary: useMaterialYou ? colors.light.primary : (primaryColor || colors.light.primary),
-      tint: colors.light.tint,
+      tint: useMaterialYou ? colors.light.tint : (primaryColor || colors.light.tint),
       background: colors.light.background,
       overground: "#F3F6F7",
       text: colors.light.text,
@@ -79,7 +80,7 @@ export function createDarkTheme(useMaterialYou: boolean, primaryColor: string) {
     colors: {
       ...NativeDarkTheme.colors,
       primary: useMaterialYou ? colors.dark.primary : (primaryColor || colors.dark.primary),
-      tint: colors.dark.tint,
+      tint: useMaterialYou ? colors.dark.tint : (primaryColor || colors.dark.tint),
       background: colors.dark.background,
       overground: "#1E1E1E",
       text: colors.dark.text,
