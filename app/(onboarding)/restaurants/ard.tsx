@@ -67,13 +67,13 @@ export default function TurboSelfLoginWithCredentials() {
     };
   }, [keyboardListeners]);
 
-  const loginARD = async () => {
+  const loginARD = async (submittedSiteId = siteId, submittedUsername = username, submittedPassword = password) => {
     try {
       throw new Error("ARD service is currently unavailable");
       setIsLoggingIn(true);
       const authenticator = new Authenticator();
       // ARD require 2 connections, WHY ?
-      const authentification = await authenticator.fromCredentials(siteId, username, password);
+      const authentification = await authenticator.fromCredentials(submittedSiteId, submittedUsername, submittedPassword);
       const accountId = uuid();
       const store = useAccountStore.getState();
 
@@ -84,9 +84,9 @@ export default function TurboSelfLoginWithCredentials() {
         id: accountId,
         auth: {
           additionals: {
-            schoolId: siteId,
-            password,
-            username,
+            schoolId: submittedSiteId,
+            password: submittedPassword,
+            username: submittedUsername,
             mealPrice: String(mealPrice)
           },
         },
@@ -145,7 +145,10 @@ export default function TurboSelfLoginWithCredentials() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={32}>
-      <ScrollView contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+      >
         <LoginView
           color="#00b7cf"
           serviceName="ARD"
@@ -171,11 +174,11 @@ export default function TurboSelfLoginWithCredentials() {
           serviceIcon={require('@/assets/images/ard.png')}
           loading={isLoggingIn}
           onSubmit={(values) => {
-            if (!isLoggingIn && values.username && values.password) {
+            if (!isLoggingIn && values.siteId && values.username && values.password) {
               setPassword(values.password);
               setUsername(values.username);
               setSiteId(values.siteId);
-              loginARD();
+              loginARD(values.siteId, values.username, values.password);
             }
           }}
         />
