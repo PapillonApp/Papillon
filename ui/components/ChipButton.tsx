@@ -11,6 +11,7 @@ import { Dynamic } from "./Dynamic";
 import Icon from "./Icon";
 import Stack from "./Stack";
 import Typography from "./Typography";
+import ActionMenu from "./ActionMenu";
 
 const ChipButton: React.FC<React.PropsWithChildren<{
   onPress?: () => void;
@@ -43,7 +44,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
         ]}
       >
         <Pressable onPress={onPress}>
-          <MenuView onPressAction={onPressAction} actions={actions}>
+          <ActionMenu onPressAction={onPressAction} actions={actions}>
             <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 0 : [12, 6]} radius={200} inline vAlign="center">
               {icon &&
                 <Dynamic animated>
@@ -69,7 +70,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
                 </Dynamic>
               }
             </Stack>
-          </MenuView>
+          </ActionMenu>
         </Pressable>
       </LiquidGlassView>
     );
@@ -100,7 +101,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
       }}
       onPress={onPress}
     >
-      <MenuView onPressAction={onPressAction} actions={actions}>
+      <ActionMenu onPressAction={onPressAction} actions={actions}>
         <Stack animated direction="horizontal" hAlign="center" gap={8} padding={single ? 0 : [12, 6]} radius={200} inline vAlign="center">
           {icon &&
             <Dynamic animated>
@@ -126,7 +127,7 @@ const ChipButton: React.FC<React.PropsWithChildren<{
             </Dynamic>
           }
         </Stack>
-      </MenuView>
+      </ActionMenu>
     </FallBackTouchable>
   );
 

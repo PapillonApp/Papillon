@@ -21,6 +21,7 @@ import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
 import List from "@/ui/components/List";
 import Item from "@/ui/components/Item";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 export default function NewsPage() {
   const search = useLocalSearchParams();
@@ -180,7 +181,7 @@ export default function NewsPage() {
       </ScrollView>
 
       <NativeHeaderSide side="Right">
-        <MenuView
+        <ActionMenu
           actions={
             themes.map(theme => ({
               id: theme.value,
@@ -201,7 +202,7 @@ export default function NewsPage() {
               <Papicons.Palette />
             </Icon>
           </NativeHeaderPressable>
-        </MenuView>
+        </ActionMenu>
       </NativeHeaderSide>
     </>
   )
