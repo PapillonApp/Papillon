@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Numéro de version (x.x.x)"
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Merge & Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version invalide '${{ inputs.version }}'. Format attendu : x.x.x (ex: 7.2.0)"
+            exit 1
+          fi
+
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "papillon-release[bot]"
+          git config user.email "papillon-release[bot]@users.noreply.github.com"
+
+      - name: Merge dev into main
+        run: |
+          git checkout main
+          git merge origin/dev --no-edit
+          git push origin main
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          tag_name: v${{ inputs.version }}
+          name: v${{ inputs.version }}
+          target_commitish: main
+          make_latest: true
+          body: |
+            <a href="https://github.com/PapillonApp/Papillon"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/8bffdf1a-6e18-4545-874d-94c3978fb1c3"><source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/cc4a4903-fbf6-45ab-bb91-467351c89803"><img alt="Papillon" src="https://github.com/user-attachments/assets/cc4a4903-fbf6-45ab-bb91-467351c89803"></picture></a>
+
+            **Notes de mise à jour :** https://papillon.bzh/release-notes/${{ inputs.version }}

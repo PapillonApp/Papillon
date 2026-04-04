@@ -17,6 +17,7 @@ import { runsIOS26 } from '@/ui/utils/IsLiquidGlass';
 import { useUserProfileData } from '../hooks/useUserProfileData';
 import { t } from 'i18next';
 import { formatSchoolName } from '@/utils/format/formatSchoolName';
+import ActionMenu from '@/ui/components/ActionMenu';
 
 const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () => void }) => {
   const router = useRouter();
@@ -59,7 +60,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
         </Pressable>
 
         <UserProfileItemContainer>
-          <MenuView
+          <ActionMenu
             onPressAction={async ({ nativeEvent }) => {
               if (nativeEvent.event === "edit") {
                 router.push('/(modals)/profile');
@@ -86,12 +87,14 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 id: 'edit',
                 title: t('Home_Edit_Profile'),
                 image: 'person.crop.circle',
+                papicon: 'user',
                 imageColor: theme.colors.text,
               },
               {
                 id: 'add',
                 title: t('Home_Add_Profile'),
                 image: 'plus',
+                papicon: 'add',
                 imageColor: theme.colors.text,
               },
             ]}
@@ -109,7 +112,7 @@ const UserProfile = ({ subtitle, onPress }: { subtitle?: string, onPress?: () =>
                 </Typography>
               }
             </Stack>
-          </MenuView>
+          </ActionMenu>
         </UserProfileItemContainer>
       </Stack>
     </Stack>

@@ -25,6 +25,7 @@ import PapillonGradesAveragesOverTime from "@/utils/grades/algorithms/time";
 import PapillonWeightedAvg from "@/utils/grades/algorithms/weighted";
 
 import { calculateAmplifiedGraphPoints, GraphPoint } from "../utils/graph";
+import ActionMenu from "@/ui/components/ActionMenu";
 
 
 const algorithms = [
@@ -164,7 +165,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
             style={[
               Platform.OS === 'android' ? {
                 borderWidth: 0,
-                backgroundColor: theme.colors.item,
+                backgroundColor: theme.colors.card,
                 elevation: 0
               } : {},
               inline ? {
@@ -246,7 +247,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
                 </Dynamic>
               </Stack>
 
-              <MenuView
+              <ActionMenu
                 actions={[
                   {
                     title: t('Grades_Avg_Methods'),
@@ -264,6 +265,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
                   },
                   {
                     id: 'open:more',
+                    papicon: "info",
                     title: t('Grades_Avg_KnowMore'),
                     subtitle: t('Grades_Avg_KnowMore_Description'),
                     image: Platform.select({
@@ -298,7 +300,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
                     </Icon>
                   </Stack>
                 </TouchableOpacity>
-              </MenuView>
+              </ActionMenu>
 
               <Dynamic animated key={"dateSource:" + (isRealAverage ? "real" : "estimated")}>
                 <Typography variant={inline ? "body2" : "body1"} color="textSecondary" style={{ marginTop: inline ? 0 : 1, flex: 1 }} numberOfLines={1} ellipsizeMode="tail" align={inline ? "left" : "center"}>

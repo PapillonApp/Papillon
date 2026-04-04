@@ -14,6 +14,7 @@ import Icon from "@/ui/components/Icon";
 import List from "@/ui/new/List";
 import Typography from "@/ui/new/Typography";
 import { getInitials } from "@/utils/chats/initials";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const Team = [
   {
@@ -186,10 +187,12 @@ export default function SettingsAbout() {
     },
   ];
 
+  const insets = useSafeAreaInsets();
+
   return (
     <List
       style={{ flex: 1 }}
-      contentContainerStyle={{ padding: 20 }}
+      contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 20 }}
       contentInsetAdjustmentBehavior="always"
       showsVerticalScrollIndicator={false}
     >

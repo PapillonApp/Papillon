@@ -40,6 +40,7 @@ import { SubjectItem } from './atoms/Subject';
 import { useGradeInfluence } from './hooks/useGradeInfluence';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import ActionMenu from '@/ui/components/ActionMenu';
 
 const MemoizedSubjectItem = React.memo(SubjectItem);
 
@@ -80,6 +81,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Alphabetical"),
       value: "alphabetical",
+      papicon: "letter",
       icon: {
         ios: "character",
         android: "ic_alphabetical",
@@ -89,6 +91,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Date"),
       value: "date",
+      papicon: "calendar",
       icon: {
         ios: "calendar",
         android: "ic_date",
@@ -98,6 +101,7 @@ const GradesView: React.FC = () => {
     {
       label: t("Grades_Sorting_Averages"),
       value: "averages",
+      papicon: "grades",
       icon: {
         ios: "chart.xyaxis.line",
         android: "ic_averages",
@@ -446,7 +450,7 @@ const GradesView: React.FC = () => {
         onHeightChanged={setHeaderHeight}
         /* Nom de la période */
         title={
-          <MenuView
+          <ActionMenu
             onPressAction={({ nativeEvent }) => {
               const actionId = nativeEvent.event;
 
@@ -487,7 +491,7 @@ const GradesView: React.FC = () => {
               loading={loading}
               chevron={periods.length > 1}
             />
-          </MenuView>
+          </ActionMenu>
         }
         /* Filtres */
         trailing={
@@ -504,6 +508,7 @@ const GradesView: React.FC = () => {
                 id: "sort:" + s.value,
                 title: s.label,
                 state: sortMethod === s.value ? "on" : "off",
+                papicon: s.icon.papicon,
                 image: Platform.select({
                   ios: s.icon.ios,
                   android: s.icon.android,

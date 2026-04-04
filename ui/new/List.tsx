@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
   leading: { marginRight: 16 },
   body: { flex: 1 },
   trailing: { marginLeft: 16 },
-  sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 6, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 6 },
+  sectionTitleContainer: { paddingHorizontal: Platform.OS === "android" ? 16 : 4, paddingVertical: 6, paddingBottom: Platform.OS === "android" ? 6 : 4, flexDirection: "row", alignItems: "center", gap: Platform.OS === "android" ? 10 : 8, marginRight: 6 },
   first: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
