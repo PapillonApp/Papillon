@@ -168,13 +168,14 @@ export function RootNavigator() {
         <Stack.Screen
           name="(features)/soon"
           options={{
-            headerShown: false,
+            headerShown: Platform.OS !== 'ios',
             presentation: Platform.select({
               ios: "formSheet",
               default: "modal"
             }),
             sheetGrabberVisible: true,
-            sheetAllowedDetents: "fitToContents"
+            sheetAllowedDetents: "fitToContents",
+            headerTitle: t("Modal_Soon")
           }}
         />
 
