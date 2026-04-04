@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '@react-navigation/native';
 import { Platform } from 'react-native';
 import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
+import { ListTouchable } from '@/ui/new/List';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
@@ -49,18 +50,20 @@ const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
           {item.title}
         </Typography>
         {(item.redirect || item.onPress) && (
-          <AnimatedPressable
-            onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect as any)}
-          >
-            <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6} backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}>
-              <Typography variant="body2" color="secondary" inline>
-                {t('Home_Display_More',)}
-              </Typography>
-              <Icon size={20} papicon opacity={0.5}>
-                <Papicons name={"ArrowRightUp"} />
-              </Icon>
-            </Stack>
-          </AnimatedPressable>
+          <Stack bordered={Platform.OS === 'ios'} backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.colors.text + "11"} radius={20} style={{overflow: Platform.OS === 'android' ? 'hidden' : 'visible'}}>
+            <ListTouchable 
+              onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect as any)}
+            >
+              <Stack direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+                <Typography variant="body2" color="secondary" inline>
+                  {t('Home_Display_More',)}
+                </Typography>
+                <Icon size={20} papicon opacity={0.5}>
+                  <Papicons name={"ArrowRightUp"} />
+                </Icon>
+              </Stack>
+            </ListTouchable>
+          </Stack>
         )}
       </Stack>
       {item.render && item.render()}

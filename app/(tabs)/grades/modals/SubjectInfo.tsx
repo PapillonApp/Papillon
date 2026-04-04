@@ -2,18 +2,21 @@ import ModalOverhead, { ModalOverHeadScore } from "@/components/ModalOverhead";
 import Subject from "@/database/models/Subject";
 import Stack from "@/ui/components/Stack";
 import TableFlatList from "@/ui/components/TableFlatList";
-import Typography from "@/ui/components/Typography";
+import TypographyLegacy from "@/ui/components/Typography";
 import { getSubjectColor } from "@/utils/subjects/colors";
 import { getSubjectEmoji } from "@/utils/subjects/emoji";
 import { getSubjectName } from "@/utils/subjects/name";
 import { Papicons } from "@getpapillon/papicons";
 import { useRoute, useTheme } from "@react-navigation/native";
 import React from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { colorCheck } from '@/utils/colorCheck';
 import adjust from "@/utils/adjustColor";
 import i18n from "@/utils/i18n";
+import List from "@/ui/new/List";
+import Typography from "@/ui/new/Typography";
+import Icon from "@/ui/components/Icon";
 
 const SubjectInfo = () => {
   const { params } = useRoute();
@@ -56,21 +59,23 @@ const SubjectInfo = () => {
 
   return (
     <>
-      <LinearGradient
-        colors={[subjectColor, colors.background]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 300,
-          width: "100%",
-          zIndex: -9,
-          opacity: 0.4
-        }}
-      />
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[subjectColor, colors.background]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 300,
+            width: "100%",
+            zIndex: -9,
+            opacity: 0.4
+          }}
+        />
+      )}
 
-      <TableFlatList
+      <List
         contentInsetAdjustmentBehavior="automatic"
         engine='FlashList'
 
@@ -78,12 +83,12 @@ const SubjectInfo = () => {
           <View style={{ marginBottom: 24, alignItems: 'center' }}>
             <ModalOverhead
               subject={subjectName}
-              color={subjectColor}
+              color={Platform.OS === 'ios' ? subjectColor : colors.primary}
               emoji={subjectEmoji}
               overtitle={i18n.t("Grades_SubjectInfo_NbGrades", { number: subject.grades.length })}
               overhead={
                 <ModalOverHeadScore
-                  color={subjectColor}
+                  color={Platform.OS === 'ios' ? subjectColor : colors.primary}
                   score={subject.studentAverage.disabled ? String(subject.studentAverage.status) : String(subject.studentAverage.value.toFixed(2))}
                   outOf={outOf}
                 />
@@ -104,36 +109,54 @@ const SubjectInfo = () => {
                 vAlign="center"
               >
                 <Papicons size={20} name="crown" color={colorCheck("#FFFFFF", [adjust(subjectColor, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} />
-                <Typography color={colorCheck("#FFFFFF", [adjust(subjectColor, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
+                <TypographyLegacy color={colorCheck("#FFFFFF", [adjust(subjectColor, theme.dark ? 0.3 : -0.3)]) ? "#FFFFFF" : "#000000"} variant='body2'>
                   {i18n.t("SubjectInfo_MaxAverage_Description")}
-                </Typography>
+                </TypographyLegacy>
               </Stack>
             )}
           </View>
         }
 
-        sections={[
-          {
-            title: i18n.t("SubjectInfo_Stats_Header"),
-            icon: <Papicons name="grades" />,
-            items: averagesData.map((average) => ({
-              icon: <Papicons name={average.icon} />,
-              title: average.title,
-              description: average.subtitle,
-              trailing: (
+        contentContainerStyle={{
+          padding: 16,
+        }}
+      >
+        <List.Section>
+          <List.SectionTitle>
+            <List.Label>
+              {i18n.t("SubjectInfo_Stats_Header")}
+            </List.Label>
+          </List.SectionTitle>
+
+          {averagesData.map((average, index) => (
+            <List.Item>
+              <List.Leading>
+                <Icon>
+                  <Papicons name={average.icon} />
+                </Icon>
+              </List.Leading>
+
+              <Typography variant="title">
+                {average.title}
+              </Typography>
+              <Typography variant="body1" color="textSecondary">
+                {average.subtitle}
+              </Typography>
+
+              <List.Trailing>
                 <Stack gap={2} direction="horizontal" vAlign="center" hAlign="end">
-                  <Typography variant="header" weight="semibold" inline>
+                  <TypographyLegacy variant="header" weight="semibold" inline>
                     {average.disabled ? average.status : average.value}
-                  </Typography>
-                  <Typography variant="body2" inline color="secondary">
+                  </TypographyLegacy>
+                  <TypographyLegacy variant="body2" inline color="secondary">
                     /{outOf}
-                  </Typography>
+                  </TypographyLegacy>
                 </Stack>
-              )
-            }))
-          }
-        ]}
-      />
+              </List.Trailing>
+            </List.Item>
+          ))}
+        </List.Section>
+      </List>
     </>
   );
 };

@@ -53,7 +53,6 @@ const TasksHeader: React.FC<TasksHeaderProps> = ({
 
   return (
     <TabHeader
-      backgroundColor={(Platform.OS === "android" && !theme.dark) ? colors.item : 'transparent'}
       onHeightChanged={setHeaderHeight}
       title={
         <TabHeaderTitle
