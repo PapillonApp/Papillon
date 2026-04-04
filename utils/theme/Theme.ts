@@ -4,7 +4,6 @@ import {
 } from "@react-navigation/native";
 import { Platform } from "react-native";
 import { getDynamicColorScheme } from "react-native-dynamic-theme";
-import adjust from "../adjustColor";
 
 const FALLBACK_COLORS = {
   light: {
