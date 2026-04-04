@@ -10,8 +10,6 @@ import {
   View,
   Platform,
   Modal,
-  TouchableOpacity,
-  FlatList,
 } from "react-native";
 import OnboardingInput from "@/components/onboarding/OnboardingInput";
 import { Colors } from "@/utils/subjects/colors";
@@ -29,6 +27,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 import { LinearGradient } from "expo-linear-gradient";
 import { PapillonZoomIn, PapillonZoomOut } from "@/ui/utils/Transition";
 import { ListTouchable } from "@/ui/new/List";
+import { LegendList, LegendListRef } from "@legendapp/list";
+import { FlashList } from "@shopify/flash-list";
 
 const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (emoji: string) => void, isSelected: boolean}) => {
   const theme = useTheme();
@@ -36,7 +36,9 @@ const EmojiItem = memo(({ item, onPress, isSelected }: {item: string, onPress: (
     <ListTouchable
       onPress={() => onPress(item)}
       style={{
-        marginHorizontal: "auto"
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
     <View
@@ -81,7 +83,7 @@ function EmojiPicker({
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  const flatListRef = useRef<FlatList | null>(null);
+  const flatListRef = useRef<LegendListRef | null>(null);
   const scale = useSharedValue(1);
 
   const emojis = useMemo(() => {
@@ -118,6 +120,19 @@ function EmojiPicker({
     alignItems: "center",
     justifyContent: "center",
   };
+
+  const [selectedTab, setSelectedTab] = useState(emojis[0].title);
+
+  const selectTab = (tab) => {
+    setSelectedTab(tab);
+    const section = emojis.find(s => s.title === tab);
+    if (section) {
+      const index = emojis
+        .slice(0, emojis.indexOf(section))
+        .reduce((acc, curr) => acc + curr.data.length, 0);
+      flatListRef.current?.scrollToOffset({ offset: index * 56, animated: false });
+    }
+  }
 
   return (
     <View
@@ -168,42 +183,48 @@ function EmojiPicker({
         }}
       >
         {emojis.map((value, index) => (
-          <TouchableOpacity
+          <ListTouchable
+            key={index}
+            onPress={() => selectTab(value.title)}
+            >
+          <View
             style={[
               {
                 padding: 5,
-                height: 40,
+                height: 50,
                 width: 40,
                 alignItems: "center",
                 justifyContent: "center",
-              }
+                borderBottomWidth: 3,
+                borderColor: "transparent",
+              },
+              selectedTab === value.title && {
+                borderBottomColor: theme.colors.primary,
+
+              },
             ]}
             key={index}
             onPress={() => {
-              const indexToScroll = flatEmojis.indexOf(
-                String.fromCodePoint(value.data[0])
-              );
-
-              flatListRef.current?.scrollToOffset({
-                offset: 60 * Math.floor(indexToScroll / 6),
-                animated: true,
-              });
+              selectTab(value.title);
             }}
           >
             <Papicons
               name={value.title}
               size={24}
-              color={theme.colors.text + "70"}
+              color={selectedTab === value.title ? theme.colors.primary : theme.colors.text + "7F"}
             />
-          </TouchableOpacity>
+          </View>
+          </ListTouchable>
         ))}
       </View>
-      <FlatList
+      <FlashList
         ref={flatListRef}
         data={flatEmojis}
         numColumns={6}
-        removeClippedSubviews={true}
-        keyExtractor={(item, index) => index.toString()}
+        drawDistance={900}
+        recycleItems
+        estimatedItemSize={66}
+        keyExtractor={(item, index) => item + index}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 5,
