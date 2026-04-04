@@ -534,6 +534,10 @@
   "Task_Done": "Terminé",
 
   "Modal_Wallpaper_Title": "Personnaliser le fond d'écran",
+  "Modal_Wallpaper_Clear": "Supprimer le fond d'écran",
+  "Modal_Wallpaper_Downloads": "Téléchargements",
+  "Modal_Wallpaper_Downloads_Size": "Taille des téléchargements",
+  "Modal_Wallpaper_ClearDownloads": "Vider les téléchargements",
   "Modal_Profile_Title": "Personnaliser le profil",
 
   "Modal_Task_Title": "Détail de la tâche",

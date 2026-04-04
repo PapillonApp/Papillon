@@ -111,7 +111,8 @@ export default function ActionMenu({
   children,
   onPressAction,
   title,
-}: NativeMenuComponentProps) {
+  placement = "auto",
+}: NativeMenuComponentProps & { placement?: "auto" | "below" }) {
   const handleActionPress = onPressAction ?? (() => { });
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -182,8 +183,8 @@ export default function ActionMenu({
         setModalVisible(true);
         return;
       }
-      trigger.measureInWindow((x, y, width, height) => {
-        setPosition({ x, y, width, height });
+      trigger.measure((x, y, width, height, pageX, pageY) => {
+        setPosition({ x: pageX ?? x, y: pageY ?? y, width, height });
         setModalVisible(true);
       });
     }, 0);
@@ -239,8 +240,13 @@ export default function ActionMenu({
       safeRight - menuSize.width
     );
 
-    const topIfBelow = position.y + position.height + SPACING;
-    const hasSpaceBelow = topIfBelow + menuSize.height <= safeBottom;
+    const topIfBelow = placement === "below"
+      ? Math.min(
+        Math.max(position.y, safeTop),
+        Math.max(safeTop, safeBottom - menuSize.height)
+      )
+      : position.y + position.height + SPACING;
+    const hasSpaceBelow = placement === "below" || topIfBelow + menuSize.height <= safeBottom;
     const top = hasSpaceBelow
       ? topIfBelow
       : Math.max(safeTop, position.y - menuSize.height - SPACING);
