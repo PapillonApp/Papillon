@@ -71,7 +71,7 @@ const Task: React.FC<TaskProps> = ({
 
   return (
     <ListTouchable onPress={onPress}>
-      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: theme.dark ? theme.colors.background : theme.colors.card, elevation: 0, overflow: "hidden" }}>
+      <Stack animated layout={Animation(LinearTransition, "list")} card radius={20} style={{ borderColor: theme.colors.text + "32", borderWidth: Platform.OS === "android" ? 0 : 1, backgroundColor: (Platform.OS === 'android' && !theme.dark) ? "#FFF" : theme.colors.item, elevation: 2, overflow: "hidden" }}>
         <Stack animated layout={Animation(LinearTransition, "list")} padding={[16, 14]} gap={12} radius={20} style={{ overflow: "hidden" }}>
           {Platform.OS !== "android" && (
             <LinearGradient

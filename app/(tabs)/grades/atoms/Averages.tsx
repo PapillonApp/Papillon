@@ -165,7 +165,7 @@ const Averages = ({ grades, realAverage, color, scale = 20, inline = false }: { 
             style={[
               Platform.OS === 'android' ? {
                 borderWidth: 0,
-                backgroundColor: theme.colors.item,
+                backgroundColor: theme.colors.card,
                 elevation: 0
               } : {},
               inline ? {

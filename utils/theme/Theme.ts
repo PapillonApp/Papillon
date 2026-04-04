@@ -29,15 +29,15 @@ const isMaterialYouAvailable =
 
 function getThemeColors(useMaterialYou: boolean) {
   if (useMaterialYou && isMaterialYouAvailable) {
-    const scheme = getDynamicColorScheme();
+    const scheme = getDynamicColorScheme('#29947A');
     return {
       light: {
         primary: scheme.light.primary,
         tint: scheme.light.primary,
-        background: scheme.light.background,
+        background: scheme.light.surfaceContainer,
         text: scheme.light.onBackground,
-        card: scheme.light.surface,
-        item: scheme.light.surfaceContainerHigh,
+        card: scheme.light.surfaceDim,
+        item: scheme.light.surfaceContainerLowest,
       },
       dark: {
         primary: scheme.dark.primaryContainer,
@@ -53,14 +53,14 @@ function getThemeColors(useMaterialYou: boolean) {
   return FALLBACK_COLORS;
 }
 
-export function createDefaultTheme(useMaterialYou: boolean) {
+export function createDefaultTheme(useMaterialYou: boolean, primaryColor: string) {
   const colors = getThemeColors(useMaterialYou);
 
   return {
     ...NativeDefaultTheme,
     colors: {
       ...NativeDefaultTheme.colors,
-      primary: colors.light.primary,
+      primary: useMaterialYou ? colors.light.primary : (primaryColor || colors.light.primary),
       tint: colors.light.tint,
       background: colors.light.background,
       overground: "#F3F6F7",
@@ -71,14 +71,14 @@ export function createDefaultTheme(useMaterialYou: boolean) {
   };
 }
 
-export function createDarkTheme(useMaterialYou: boolean) {
+export function createDarkTheme(useMaterialYou: boolean, primaryColor: string) {
   const colors = getThemeColors(useMaterialYou);
 
   return {
     ...NativeDarkTheme,
     colors: {
       ...NativeDarkTheme.colors,
-      primary: colors.dark.primary,
+      primary: useMaterialYou ? colors.dark.primary : (primaryColor || colors.dark.primary),
       tint: colors.dark.tint,
       background: colors.dark.background,
       overground: "#1E1E1E",

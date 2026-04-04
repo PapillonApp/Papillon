@@ -22,6 +22,7 @@ import { getManager } from "@/services/shared";
 import { t } from "i18next";
 import i18n from "@/utils/i18n";
 import ActionMenu from "@/ui/components/ActionMenu";
+import AndroidBackButton from "@/utils/theme/AndroidBackButton";
 
 export default function AttendanceView() {
   try {
@@ -263,11 +264,15 @@ export default function AttendanceView() {
             </ScrollView>
 
             <NativeHeaderSide side="Left" style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }}>
-              <NativeHeaderPressable onPress={() => { router.back() }}>
-                <Icon papicon opacity={0.5}>
-                  <Papicons name={"Cross"} />
-                </Icon>
-              </NativeHeaderPressable>
+              {Platform.OS === "android" ?
+                <AndroidBackButton />
+              :
+                <NativeHeaderPressable onPress={() => { router.back() }}>
+                  <Icon papicon opacity={0.5}>
+                    <Papicons name={"Cross"} />
+                  </Icon>
+                </NativeHeaderPressable>
+              }
             </NativeHeaderSide>
 
             <NativeHeaderTitle style={{ paddingTop: Platform.OS === "android" ? 10 : 0 }} key={"att:" + period?.name}>

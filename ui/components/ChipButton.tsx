@@ -83,10 +83,9 @@ const ChipButton: React.FC<React.PropsWithChildren<{
           borderRadius: 300,
           zIndex: 999999,
           backgroundColor: colors.card,
-          borderWidth: 1,
+          borderWidth: Platform.OS === "android" ? 0 : 1,
           borderColor: colors.border,
-          elevation: 1,
-        overflow: 'hidden',
+          overflow: 'hidden',
         },
         single && {
           width: 46,

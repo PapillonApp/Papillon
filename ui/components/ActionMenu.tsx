@@ -317,13 +317,13 @@ export default function ActionMenu({
               style={[
                 styles.menu,
                 getMenuPosition(),
-                { backgroundColor: theme.colors.card, width: Math.min(Dimensions.get("window").width * 0.75, 320), transformOrigin: side === "left" ? "top left" : "top right" },
+                { backgroundColor: theme.colors.item, width: Math.min(Dimensions.get("window").width * 0.75, 320), transformOrigin: side === "left" ? "top left" : "top right" },
               ]}
             >
               <Reanimated.View
                 style={[
                   styles.menuContent,
-                  { backgroundColor: theme.colors.card },
+                  { backgroundColor: theme.colors.item },
                   menuContentAnimatedStyle,
                 ]}
               >
@@ -332,7 +332,7 @@ export default function ActionMenu({
                     style={[
                       styles.menuContentInner,
                       {
-                        backgroundColor: theme.colors.card,
+                        backgroundColor: theme.colors.item,
                       }
                     ]}
                     key={"menu:" + (currentSubmenu?.title ?? "root")}

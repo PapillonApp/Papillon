@@ -383,7 +383,7 @@ const Course = React.memo((props: CourseProps) => {
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       backgroundColor: colors.card,
-      elevation: 1,
+      elevation: 0,
     }}>
       <ListTouchable onPress={onPress} style={{ flex: 1, overflow: "hidden" }}>
         <View
