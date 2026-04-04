@@ -30,10 +30,14 @@ import * as DateLocale from 'date-fns/locale';
 
 const formatEventTime = (durationData: number, detailed: boolean) => {
   if(detailed) {
-    return durationData >= 60 ? `${Math.floor(durationData / 60)} h ${lz(durationData % 60)} min` : `${durationData} min`
+    return durationData >= 60
+      ? t("Attendance_Duration_HoursMinutes_Detailed", { hours: Math.floor(durationData / 60), minutes: lz(durationData % 60) })
+      : t("Attendance_Duration_Minutes", { value: durationData })
   }
 
-  return durationData >= 60 ? `${Math.floor(durationData / 60)}h${lz(durationData % 60)}` : `${durationData} min`
+  return durationData >= 60
+    ? t("Attendance_Duration_HoursMinutes_Compact", { hours: Math.floor(durationData / 60), minutes: lz(durationData % 60) })
+    : t("Attendance_Duration_Minutes", { value: durationData })
 }
 
 export default function AttendanceView() {
@@ -104,7 +108,7 @@ export default function AttendanceView() {
                     const selectedPeriod: Period | undefined = periods.find(item => item.id === selectedPeriodId)
 
                     if (!selectedPeriod) {
-                      error("Invalid Period")
+                      error(t("Attendance_InvalidPeriod"))
                     }
 
                     const manager = getManager()
@@ -157,10 +161,10 @@ export default function AttendanceView() {
               </List.Leading>
 
               <Typography variant="title">
-                Aucun évenement
+                {t("Attendance_NoEvent_Title")}
               </Typography>
               <Typography color="textSecondary">
-                Aucune absence ni retard n'a été enregistré pour cette période.
+                {t("Attendance_NoEvent_Description")}
               </Typography>
             </List.Item>
           ) : (
@@ -178,10 +182,10 @@ export default function AttendanceView() {
                   </List.Leading>
 
                   <Typography variant="title" color={dangerColor}>
-                    {formatEventTime(missedTimeUnjustified, true)} injustifiées
+                    {t("Attendance_Hours_Unjustified_Value", { duration: formatEventTime(missedTimeUnjustified, true) })}
                   </Typography>
                   <Typography color="textSecondary" color={dangerColor}>
-                    Pense à justifier tes absences et retards auprès de ta vie scolaire ou de ton établissement.
+                    {t("Attendance_Unjustified_Description")}
                   </Typography>
                 </List.Item>
               ) : (
@@ -197,10 +201,10 @@ export default function AttendanceView() {
                   </List.Leading>
 
                   <Typography variant="title" color={successColor}>
-                    Aucune heure injustifiée
+                    {t("Attendance_NoUnjustified_Title")}
                   </Typography>
                   <Typography color="textSecondary" color={successColor}>
-                    Félicitations ! Papillon n'a pas trouvé d'heures injustifiées pour cette période.
+                    {t("Attendance_NoUnjustified_Description")}
                   </Typography>
                 </List.Item>
               )}
@@ -325,7 +329,6 @@ const AttendanceTimer = ({ evt }: { evt: any }) => {
 
   const durationData = evt.timeMissed || evt.duration || 0;
 
-  // if more than 1 hour missed, show in hours, otherwise show in minutes
   const durationText = formatEventTime(durationData);
 
   return (
