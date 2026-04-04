@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, ViewProps } from "react-native";
 import { Papicons } from "@getpapillon/papicons";
 import Typography from "@/ui/new/Typography";
 
@@ -15,11 +15,11 @@ export enum SkillChipLevel {
   NotGraded,
 }
 
-export interface SkillChipProps {
+export interface SkillChipProps extends ViewProps {
   level: SkillChipLevel;
 }
 
-export function SkillChip({ level }: SkillChipProps) {
+export function SkillChip(props: SkillChipProps) {
 
   const skillInfo: Array<{
     color: string;
@@ -55,44 +55,48 @@ export function SkillChip({ level }: SkillChipProps) {
 
   return (
     <View
-      style={{
-        width: 21,
-        height: 21,
-        backgroundColor: "#FFF",
-        shadowColor: "#00000038",
-        shadowOffset: { width: -1, height: 0 },
-        shadowRadius: 2,
-        elevation: 2,
-        borderRadius: 20,
-        padding: 2.5,
-      }}
+      {...props}
+      style={[
+        {
+          width: 21,
+          height: 21,
+          backgroundColor: "#FFF",
+          shadowColor: "#00000038",
+          shadowOffset: { width: -1, height: 0 },
+          shadowRadius: 2,
+          elevation: 2,
+          borderRadius: 20,
+          padding: 2.5,
+        },
+        props.style,
+      ]}
     >
       <View
         style={{
           flex: 1,
-          backgroundColor: skillInfo[level].color,
+          backgroundColor: skillInfo[props.level].color,
           borderRadius: 20,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        {skillInfo[level].icon && (
+        {skillInfo[props.level].icon && (
           <Papicons
-            name={skillInfo[level].icon}
-            color={skillInfo[level].foregroundColor}
+            name={skillInfo[props.level].icon}
+            color={skillInfo[props.level].foregroundColor}
             size={12}
           />
         )}
-        {skillInfo[level].text && (
+        {skillInfo[props.level].text && (
           <Typography
             style={{
-              fontSize: skillInfo[level].fontSize ?? 17,
-              lineHeight: (skillInfo[level].fontSize ?? 17),
-              marginTop: -(skillInfo[level].translateX ?? 0),
+              fontSize: skillInfo[props.level].fontSize ?? 17,
+              lineHeight: skillInfo[props.level].fontSize ?? 17,
+              marginTop: -(skillInfo[props.level].translateX ?? 0),
             }}
-            color={skillInfo[level].foregroundColor ?? "#FFF"}
+            color={skillInfo[props.level].foregroundColor ?? "#FFF"}
           >
-            {skillInfo[level].text}
+            {skillInfo[props.level].text}
           </Typography>
         )}
       </View>

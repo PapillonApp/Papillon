@@ -7,8 +7,6 @@ import { Text, TouchableOpacity } from 'react-native';
 
 import { Grade } from '@/database/models/Grades';
 import Subject from '@/database/models/Subject';
-import Item, { Trailing } from '@/ui/components/Item';
-import LegacyList from '@/ui/components/List';
 import Stack from '@/ui/components/Stack';
 import LegacyTypography from '@/ui/components/Typography';
 import adjust from '@/utils/adjustColor';
@@ -17,6 +15,7 @@ import { getSubjectEmoji } from '@/utils/subjects/emoji';
 import { getSubjectName } from '@/utils/subjects/name';
 import List from '@/ui/new/List';
 import Typography from '@/ui/new/Typography';
+import { SkillChip } from "@/ui/components/SkillChip";
 
 const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAvgInfluence, getAvgClassInfluence }: { grade: Grade, subjectName: string, subjectColor: string, onPress: (grade: Grade) => void, getAvgInfluence: (grade: Grade) => number, getAvgClassInfluence: (grade: Grade) => number }) => {
   const dateString = useMemo(() => {
@@ -30,40 +29,101 @@ const GradeItem = React.memo(({ grade, subjectName, subjectColor, onPress, getAv
 
   const theme = useTheme();
 
-  const hasMaxScore = grade.studentScore?.value === grade.maxScore?.value && !grade.studentScore.disabled;
+  const hasMaxScore = (grade.studentScore?.value ?? 0) === (grade.maxScore?.value ?? 1) && !grade.studentScore.disabled;
   const trailingBackground = hasMaxScore ? adjust(subjectColor, theme.dark ? -0.2 : 0) : subjectColor + "15";
   const trailingForeground = hasMaxScore ? "#FFFFFF" : subjectColor;
 
   return (
     <List.Item onPress={handlePress}>
-      <Typography variant='title'>
-        {grade.description ? grade.description : t('Grade_NoDescription', { subject: subjectName })}
+      <Typography variant="title">
+        {grade.description
+          ? grade.description
+          : t("Grade_NoDescription", { subject: subjectName })}
       </Typography>
-      <Typography variant='body1' color='textSecondary'>
+      <Typography variant="body1" color="textSecondary">
         {dateString}
       </Typography>
 
       <List.Trailing>
-        <Stack pointerEvents='none' noShadow direction='horizontal' gap={2} card hAlign='end' vAlign='end' padding={[9, 3]} radius={32} backgroundColor={trailingBackground} >
-          {grade.studentScore.disabled ? (
+        <Stack
+          pointerEvents="none"
+          noShadow
+          direction="horizontal"
+          gap={2}
+          card
+          hAlign="end"
+          vAlign="end"
+          padding={[9, 3]}
+          radius={32}
+          backgroundColor={trailingBackground}
+        >
+          {grade.studentScore === undefined ? (
             <>
-              <LegacyTypography color={trailingForeground} variant='navigation'>
+              {grade.skills.length > 0 ? (
+                <Stack direction={"horizontal"} hAlign={"center"}>
+                  <Stack direction={"horizontal"}>
+                    {grade.skills.slice(0, 4).map((item, index) => (
+                      <SkillChip
+                        key={index}
+                        level={item.score}
+                        style={{
+                          marginLeft: index > 0 ? -13 : -5,
+                          marginRight: grade.skills.length <= 4 &&
+                            index == Math.min(grade.skills.length - 1, 3) ? -5 : 0,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                  {grade.skills.length > 4 && (
+                    <LegacyTypography
+                      color={trailingForeground + "99"}
+                      variant="body2"
+                    >
+                      {`+${grade.skills.length - 4}`}
+                    </LegacyTypography>
+                  )}
+                </Stack>
+              ) : (
+                <LegacyTypography
+                  color={trailingForeground}
+                  variant="navigation"
+                >
+                  {t("Grade_Unavailable")}
+                </LegacyTypography>
+              )}
+            </>
+          ) : grade.studentScore.disabled ? (
+            <>
+              <LegacyTypography color={trailingForeground} variant="navigation">
                 {grade.studentScore.status}
               </LegacyTypography>
             </>
           ) : (
-            <>
-              <LegacyTypography color={trailingForeground} variant='navigation'>
-                {grade.studentScore.value.toFixed(2)}
-              </LegacyTypography>
-            </>
+            grade(
+              <>
+                <LegacyTypography
+                  color={trailingForeground}
+                  variant="navigation"
+                >
+                  {grade.studentScore.value.toFixed(2)}
+                </LegacyTypography>
+                <LegacyTypography
+                  color={trailingForeground + "99"}
+                  variant="body2"
+                >
+                  /{grade.outOf.value}
+                </LegacyTypography>
+              </>
+            )
           )}
-          <LegacyTypography color={trailingForeground + "99"} variant='body2'>
-            /{grade.outOf.value}
-          </LegacyTypography>
 
           {hasMaxScore && (
-            <Papicons style={{ marginBottom: 3.5, marginLeft: 2 }} name="crown" color={trailingForeground} size={18} />
+            <Papicons
+              style={{ marginBottom: 3.5, marginLeft: 2 }}
+              name="crown"
+              color={trailingForeground}
+              size={18}
+            />
           )}
         </Stack>
       </List.Trailing>
@@ -112,51 +172,96 @@ export const SubjectItem: React.FC<{ subject: Subject, grades: Grade[], getAvgIn
   return (
     <List.Section>
       <List.View>
-        <TouchableOpacity style={{ width: '100%', paddingVertical: 8 }} activeOpacity={0.5} onPress={handlePressSubject}>
-          <Stack direction='horizontal' hAlign='center' gap={10} padding={[4, 0]}>
-            <Stack width={28} height={28} card hAlign='center' vAlign='center' radius={32} backgroundColor={subjectAdjustedColor + "22"}>
-              <Text style={{ fontSize: 15 }}>
-                {subjectEmoji}
-              </Text>
+        <TouchableOpacity
+          style={{ width: "100%", paddingVertical: 8 }}
+          activeOpacity={0.5}
+          onPress={handlePressSubject}
+        >
+          <Stack
+            direction="horizontal"
+            hAlign="center"
+            gap={10}
+            padding={[4, 0]}
+          >
+            <Stack
+              width={28}
+              height={28}
+              card
+              hAlign="center"
+              vAlign="center"
+              radius={32}
+              backgroundColor={subjectAdjustedColor + "22"}
+            >
+              <Text style={{ fontSize: 15 }}>{subjectEmoji}</Text>
             </Stack>
 
             <Stack flex inline>
-              <Typography numberOfLines={1} variant='title' weight='bold' color={subjectAdjustedColor}>
+              <Typography
+                numberOfLines={1}
+                variant="title"
+                weight="bold"
+                color={subjectAdjustedColor}
+              >
                 {subjectName}
               </Typography>
             </Stack>
 
-            <Stack inline direction='horizontal' gap={1} hAlign='end' vAlign='end'>
-              {subject.studentAverage.disabled ? (
-                <LegacyTypography variant='h5' inline style={{ marginTop: 0 }}>
-                  {subject.studentAverage.status}
-                </LegacyTypography>
-              ) : (
+            {subject.studentAverage && (
+              <Stack
+                inline
+                direction="horizontal"
+                gap={1}
+                hAlign="end"
+                vAlign="end"
+              >
+                {subject.studentAverage.disabled ? (
+                  <LegacyTypography
+                    variant="h5"
+                    inline
+                    style={{ marginTop: 0 }}
+                  >
+                    {subject.studentAverage.status}
+                  </LegacyTypography>
+                ) : (
+                  <LegacyTypography
+                    variant="h5"
+                    inline
+                    style={{ marginTop: 0, fontSize: 19 }}
+                    color={
+                      (subject.studentAverage?.value ?? 0) ===
+                      (subject.maximum?.value ?? 1)
+                        ? subjectAdjustedColor
+                        : undefined
+                    }
+                  >
+                    {subject.studentAverage.value.toFixed(2)}
+                  </LegacyTypography>
+                )}
                 <LegacyTypography
-                  variant='h5'
                   inline
-                  style={{ marginTop: 0, fontSize: 19 }}
-                  color={
-                    subject.studentAverage.value === subject.maximum.value
-                      ? subjectAdjustedColor
-                      : undefined
-                  }
+                  variant="body2"
+                  color={theme.colors.text + "99"}
+                  style={{ marginBottom: 4 }}
                 >
-                  {subject.studentAverage.value.toFixed(2)}
+                  /{subject.outOf.value}
                 </LegacyTypography>
-              )}
-              <LegacyTypography inline variant='body2' color={theme.colors.text + "99"} style={{ marginBottom: 4 }}>
-                /{subject.outOf.value}
-              </LegacyTypography>
-              {subject.studentAverage.value === subject.maximum.value && !subject.studentAverage.disabled && (
-                <Papicons style={{ alignSelf: 'center', marginLeft: 4 }} name="crown" color={subjectAdjustedColor} size={20} />
-              )}
-            </Stack>
+                {(subject.studentAverage?.value ?? 0) ===
+                  (subject.maximum?.value ?? 1) &&
+                  !subject.studentAverage.disabled && (
+                    <Papicons
+                      style={{ alignSelf: "center", marginLeft: 4 }}
+                      name="crown"
+                      color={subjectAdjustedColor}
+                      size={20}
+                    />
+                  )}
+              </Stack>
+            )}
           </Stack>
         </TouchableOpacity>
       </List.View>
 
-      {subject.grades.map((grade) => (
+      {subject.grades.map(grade => (
         <GradeItem
           key={grade.id}
           grade={grade}
