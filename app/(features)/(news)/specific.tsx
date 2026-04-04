@@ -3,7 +3,7 @@ import { News } from "@/services/shared/news";
 import { useAccountStore } from "@/stores/account";
 import { Services } from "@/stores/account/types";
 import Stack from "@/ui/components/Stack";
-import Typography from "@/ui/components/Typography";
+import TypographyLegacy from "@/ui/components/Typography";
 import { useLocalSearchParams, useNavigation } from "expo-router"
 import { useEffect, useState } from "react";
 import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
@@ -19,9 +19,11 @@ import { NativeHeaderPressable, NativeHeaderSide } from "@/ui/components/NativeH
 import { MenuView } from "@react-native-menu/menu";
 import Icon from "@/ui/components/Icon";
 import { t } from "i18next";
-import List from "@/ui/components/List";
+import ListLegacy from "@/ui/components/List";
 import Item from "@/ui/components/Item";
 import ActionMenu from "@/ui/components/ActionMenu";
+import Typography from "@/ui/new/Typography";
+import List from "@/ui/new/List";
 
 export default function NewsPage() {
   const search = useLocalSearchParams();
@@ -142,7 +144,7 @@ export default function NewsPage() {
       >
         {news.attachments.length > 0 && (
           <View style={{ padding: 16, width: "100%" }}>
-            <List>
+            <ListLegacy>
               {news.attachments.map((attachment, i) => (
                 <Item key={i}
                   onPress={() => {
@@ -162,13 +164,21 @@ export default function NewsPage() {
                       <Papicons.Paper />
                     )}
                   </Icon>
-                  <Typography nowrap variant="title">{attachment.name}</Typography>
-                  <Typography nowrap variant="caption">{attachment.url}</Typography>
+                  <TypographyLegacy nowrap variant="title">{attachment.name}</TypographyLegacy>
+                  <TypographyLegacy nowrap variant="caption">{attachment.url}</TypographyLegacy>
                 </Item>
               ))}
-            </List>
+            </ListLegacy>
           </View>
         )}
+
+        <List>
+          <List.Item>
+            <Typography>
+              Cette news contient un sondage
+            </Typography>
+          </List.Item>
+        </List>
 
         <HTMLView
           value={news.content}

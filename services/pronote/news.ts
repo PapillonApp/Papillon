@@ -31,6 +31,7 @@ export async function fetchPronoteNews(session: SessionHandle, accountId: string
       category: item.category.name,
       ref: item,
       createdByAccount: accountId,
+      question: item.question
     });
   }
   return result;
