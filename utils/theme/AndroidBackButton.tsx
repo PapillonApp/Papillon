@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { StyleSheet, TouchableNativeFeedback, View } from "react-native";
+import { Platform, StyleSheet, TouchableNativeFeedback, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Papicons } from "@getpapillon/papicons";
 import Icon from "@/ui/components/Icon";
@@ -19,6 +19,7 @@ export const AndroidBackButtonStyles = StyleSheet.create({
 });
 
 const AndroidBackButton = () => {
+  if(Platform.OS !== "android") return null;
   const router = useRouter();
 
   return (

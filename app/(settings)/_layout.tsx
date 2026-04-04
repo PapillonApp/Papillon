@@ -15,6 +15,7 @@ export default function Layout() {
     headerLargeTitle: false,
     headerTransparent: runsIOS26,
     headerShadowVisible: false,
+    headerBackground: AndroidHeaderBackground
   }), []);
 
   return (
@@ -51,6 +52,7 @@ export default function Layout() {
             headerBackButtonDisplayMode: "minimal",
             headerTransparent: true,
             headerLargeTitle: false,
+            headerBackground: null
           }}
         />
 
