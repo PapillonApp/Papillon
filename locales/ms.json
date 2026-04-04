@@ -1,6 +1,7 @@
 {
   "Global_Back": "Kembali",
   "Global_DatePrefix": "pada",
+  "Global_Recommended": "Recommandé",
   "Tab_Home": "Utama",
   "Tab_Calendar": "Kursus",
   "Tab_Tasks": "Tugasan",
@@ -381,6 +382,8 @@
   "Settings_Personalization_Accent": "Warna penyerlah",
   "Settings_Personalization_Accent_Description": "Warna yang kamu pilih di sini akan digunakan pada halaman utama Papillon.",
   "Settings_Personalization_Theme": "Tema",
+  "Settings_Personalization_MaterialYou_Title": "Utiliser les couleurs Android",
+  "Settings_Personalization_MaterialYou_Description": "Utiliser les couleurs Material You basées sur ton thème système",
   "Settings_Personalization_Icon_Title": "Tukar ikon",
   "Settings_Personalization_Icon_Description": "Suaikan ikon aplikasi",
   "Settings_Personalization_Subject_Title": "Suaikan mata pelajaran",
@@ -493,7 +496,7 @@
   "Transport_Error_Location_Description": "Vérifie que Papillon a bien accès à ta localisation.",
   "Transport_Maps_App": "ton application de transport",
   "Transport_Open_In": "Ouvrir dans",
-  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un lieu, un arrêt…",
+  "Settings_Transport_Search_Address_Placeholder": "Rechercher une adresse, un arrêt...",
   "Settings_Transport_Current_Position_Description": "Utilise ta position actuelle quand tu es dans ton calendrier.",
   "Settings_Transport_Place": "Adresses et lieux",
   "Settings_Transport_Stops": "Arrêts et stations",
@@ -507,5 +510,7 @@
   "Settings_Preferences": "Fonctionnalités",
   "Settings_More": "À propos",
   "Settings_About": "Toi et Papillon",
-  "Settings_Dev": "Développement"
+  "Settings_Dev": "Développement",
+  "Settings_Personalization_Emoji_Picker_Title": "Sélectionne un emoji",
+  "Settings_Personalization_Emoji_Picker_SetEmoji": "Sélectionner"
 }
