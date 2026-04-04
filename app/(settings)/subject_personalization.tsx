@@ -132,7 +132,7 @@ export default function SubjectPersonalization() {
                   size={32}
                   style={{ marginBottom: 3 }}
                 >
-                  <Papicons name={"Card"} />
+                  <Papicons name={"Alert"} />
                 </Icon>
                 <Typography variant="h4" color="textPrimary" align="center">
                   {t("Settings_Subjects_None_Title")}
