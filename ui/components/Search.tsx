@@ -30,7 +30,7 @@ const SearchContainer = ({ children, style }: { children: React.ReactNode, style
         style={[{
           width: Dimensions.get("window").width - 32,
           borderRadius: 300,
-          backgroundColor: colors.text + "16",
+          backgroundColor: Platform.OS === 'ios' ? colors.text + "16" : colors.item,
         }, style]}
       >
         {children}
