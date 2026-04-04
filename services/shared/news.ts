@@ -25,5 +25,6 @@ export interface News extends GenericInterface {
   content: string;
   author: string;
   category: string;
+  question?: boolean;
   ref?: NewsInformation | SkolengoNews | ActualitiesResponse;
 }
