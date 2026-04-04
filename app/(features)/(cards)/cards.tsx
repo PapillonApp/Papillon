@@ -6,20 +6,18 @@ import Button from "@/ui/components/Button";
 import ChipButton from "@/ui/components/ChipButton";
 import { Dynamic } from "@/ui/components/Dynamic";
 import { EmptyItem } from "@/ui/components/EmptyItem";
-import Icon from "@/ui/components/Icon";
-import { NativeHeaderPressable, NativeHeaderSide, NativeHeaderTitle } from "@/ui/components/NativeHeader";
 import Stack from "@/ui/components/Stack";
 import TabHeader from "@/ui/components/TabHeader";
 import TabHeaderTitle from "@/ui/components/TabHeaderTitle";
 import Typography from "@/ui/components/Typography";
 import { PapillonAppearIn, PapillonAppearOut } from "@/ui/utils/Transition";
 import { getServiceBackground, getServiceLogo, getServiceName } from "@/utils/services/helper";
-import { Papicons, Plus } from "@getpapillon/papicons";
+import { Plus } from "@getpapillon/papicons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, View } from "react-native";
+import { Image, Platform, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function QRCodeAndCardsPage() {
@@ -51,7 +49,7 @@ export default function QRCodeAndCardsPage() {
   return (
     <>
       <TabHeader
-        modal
+        modal={Platform.OS === "ios"}
         onHeightChanged={setHeaderHeight}
         title={
           <TabHeaderTitle
@@ -114,11 +112,12 @@ export default function QRCodeAndCardsPage() {
             title="Ajouter"
             icon={<Plus />}
             onPress={() => {
-              router.dismiss();
-              router.push({
-                pathname: "/(onboarding)/restaurants/method",
-                params: { action: "addService" }
+              router.navigate({
+                pathname: "/(onboarding)/restaurants/method"
               });
+            }}
+            style={{
+              marginHorizontal: "auto"
             }}
           />
         </Dynamic>

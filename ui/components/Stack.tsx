@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { FlexAlignType, StyleProp, StyleSheet, ViewProps, ViewStyle } from "react-native";
+import { FlexAlignType, Platform, StyleProp, StyleSheet, ViewProps, ViewStyle } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
 
 import { Animation } from "../utils/Animation";
@@ -154,12 +154,11 @@ const Stack: React.FC<StackProps> = ({
         dynamicStyle.shadowOffset = { width: 0, height: 0 };
         dynamicStyle.shadowOpacity = flat ? 0 : 0.16;
         dynamicStyle.shadowRadius = 1.5;
-        dynamicStyle.elevation = 1;
       }
       dynamicStyle.overflow = "visible"; // Ensure shadows are visible
       dynamicStyle.borderColor = colors.text + "25";
-      dynamicStyle.borderWidth = (bordered !== undefined && bordered === false) ? 0 : (flat ? 1 : 0.5);
-      dynamicStyle.backgroundColor = backgroundColor || colors.card; // Default to theme background
+      dynamicStyle.borderWidth = Platform.OS === 'android' ? 0 : (bordered !== undefined && bordered === false) ? 0 : (flat ? 1 : 0.5);
+      dynamicStyle.backgroundColor = backgroundColor || colors.item; // Default to theme background
     }
 
     if (bordered) {

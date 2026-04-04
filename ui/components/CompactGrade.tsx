@@ -1,14 +1,16 @@
-import { Pressable, Text, View } from "react-native";
-import Typography from "./Typography";
-import { useTheme } from "@react-navigation/native";
-import { t } from "i18next";
-import AnimatedPressable from "./AnimatedPressable";
-import SkeletonView from "@/ui/components/SkeletonView";
-import i18n from "@/utils/i18n";
-import adjust from "@/utils/adjustColor";
-import { LinearGradient } from "expo-linear-gradient";
-import Stack from "./Stack";
 import { Papicons } from "@getpapillon/papicons";
+import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { t } from "i18next";
+import { Platform, Text, View } from "react-native";
+
+import SkeletonView from "@/ui/components/SkeletonView";
+import adjust from "@/utils/adjustColor";
+import i18n from "@/utils/i18n";
+
+import AnimatedPressable from "./AnimatedPressable";
+import Stack from "./Stack";
+import Typography from "./Typography";
 
 interface CompactGradeProps {
   emoji: string;
@@ -56,27 +58,29 @@ export const CompactGrade = ({
         height: 140,
         borderRadius: 24,
         borderCurve: "continuous",
-        borderColor: colors.border,
-        backgroundColor: colors.card,
-        borderWidth: 1,
+        borderColor: adjust(color, theme.dark ? 0.7 : -0.7) + "28",
+        backgroundColor: Platform.OS !== 'android' ? colors.card : adjust(color, theme.dark ? 0.5 : -0.5) + "18",
+        borderWidth: Platform.OS !== 'android' ? 1 : 0,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
-        shadowRadius: 3,
+        shadowRadius: 3
       }}
     >
-      <LinearGradient
-        colors={[color + "16", color + "00"]}
-        locations={[0, 0.5]}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 24,
-        }}
-      />
+      {Platform.OS !== 'android' && (
+        <LinearGradient
+          colors={[color + "10", color + "00"]}
+          locations={[0, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 24,
+          }}
+        />
+      )}
 
       <View
         style={{

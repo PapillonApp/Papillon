@@ -1,14 +1,17 @@
-import React, { useRef, useCallback, useState } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { t } from "i18next";
+import React, { useCallback, useRef, useState } from "react";
+import { FlatList, Platform, StyleSheet,View } from "react-native";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { CourseStatus } from "@/services/shared/timetable";
+import { useAccountStore } from "@/stores/account";
+
+import { CalendarDay } from "./components/CalendarDay";
+import { CalendarHeader } from "./components/CalendarHeader";
 import { useCalendarState } from "./hooks/useCalendarState";
 import { useTimetableData } from "./hooks/useTimetableData";
-import { CalendarHeader } from "./components/CalendarHeader";
-import { CalendarDay } from "./components/CalendarDay";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
-import { CourseStatus } from "@/services/shared/timetable";
-import { t } from "i18next";
 
 export default function TabOneScreen() {
   const { colors } = useTheme();
@@ -16,6 +19,10 @@ export default function TabOneScreen() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
+
+  const accounts = useAccountStore(state => state.accounts);
+  const lastUsedAccount = useAccountStore(state => state.lastUsedAccount);
+  const account = accounts.find(a => a.id === lastUsedAccount)!;
 
   const {
     date,
@@ -57,6 +64,7 @@ export default function TabOneScreen() {
         headerHeight={headerHeight}
         insets={insets}
         tabBarHeight={tabBarHeight}
+        transportInfo={account.transport ?? undefined}
       />
     );
   }, [getDateFromIndex, timetable, manualRefreshing, handleRefresh, colors, headerHeight]);
@@ -83,7 +91,7 @@ export default function TabOneScreen() {
           renderItem={renderDay}
           keyExtractor={(_, index) => "renderDay:" + String(index)}
           onScroll={onScroll}
-          decelerationRate={0.98}
+          decelerationRate={Platform.OS === 'ios' ? 0.98 : undefined}
           disableIntervalMomentum={true}
           scrollEventThrottle={16}
           onMomentumScrollEnd={onMomentumScrollEnd}
@@ -109,15 +117,15 @@ const styles = StyleSheet.create({
 
 export function getStatusText(status?: CourseStatus): string {
   switch (status) {
-    case CourseStatus.ONLINE:
-      return t("Online_Course")
-    case CourseStatus.EDITED:
-      return t("Edited_Course")
-    case CourseStatus.CANCELED:
-      return t("Canceled_Course")
-    case CourseStatus.EVALUATED:
-      return t("Evaluated_Course")
-    default:
-      return ""
+  case CourseStatus.ONLINE:
+    return t("Online_Course")
+  case CourseStatus.EDITED:
+    return t("Edited_Course")
+  case CourseStatus.CANCELED:
+    return t("Canceled_Course")
+  case CourseStatus.EVALUATED:
+    return t("Evaluated_Course")
+  default:
+    return ""
   }
 }

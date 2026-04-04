@@ -6,6 +6,9 @@ import Typography from '@/ui/components/Typography';
 import AnimatedPressable from '@/ui/components/AnimatedPressable';
 import { Papicons } from '@getpapillon/papicons';
 import { useRouter } from 'expo-router';
+import { useTheme } from '@react-navigation/native';
+import { Platform } from 'react-native';
+import { ErrorBoundary } from '@/ui/components/ErrorBoundary';
 
 export interface HomeWidgetItem {
   icon: React.ReactNode;
@@ -15,21 +18,29 @@ export interface HomeWidgetItem {
   buttonLabel?: string;
   render?: () => React.ReactNode;
   dev?: boolean;
+  hidden?: boolean;
 }
 
 interface HomeWidgetProps {
   item: HomeWidgetItem;
 }
 
-const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
+const HomeWidgetContent: React.FC<HomeWidgetProps> = ({ item }) => {
   const router = useRouter();
+  const theme = useTheme();
 
   if (!item || (item.dev && !__DEV__)) {
     return null;
   }
 
   return (
-    <Stack card radius={25} gap={0} style={{ paddingBottom: 3 }}>
+    <Stack
+      card
+      radius={25}
+      gap={0}
+      style={{ elevation: 2, display: item.hidden ? 'none' : 'flex' }}
+      backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}
+    >
       <Stack direction="horizontal" vAlign="center" hAlign="center" padding={[10, 10]} gap={10} style={{ marginTop: -1 }}>
         <Icon papicon opacity={0.6} style={{ marginLeft: 4 }}>
           {item.icon}
@@ -41,7 +52,7 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
           <AnimatedPressable
             onPress={() => item.onPress ? item.onPress() : router.navigate(item.redirect as any)}
           >
-            <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6}>
+            <Stack bordered direction="horizontal" hAlign="center" padding={[12, 6]} gap={6} backgroundColor={Platform.OS === 'ios' ? theme.colors.card : theme.dark ? theme.colors.card : '#fff'}>
               <Typography variant="body2" color="secondary" inline>
                 {t('Home_Display_More',)}
               </Typography>
@@ -55,6 +66,12 @@ const HomeWidget: React.FC<HomeWidgetProps> = React.memo(({ item }) => {
       {item.render && item.render()}
     </Stack>
   );
-});
+};
+
+const HomeWidget: React.FC<HomeWidgetProps> = React.memo((props) => (
+  <ErrorBoundary fallback={null}>
+    <HomeWidgetContent {...props} />
+  </ErrorBoundary>
+));
 
 export default HomeWidget;

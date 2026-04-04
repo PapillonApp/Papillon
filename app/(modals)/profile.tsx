@@ -82,7 +82,7 @@ export default function CustomProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
         style={{ height: "100%" }}
       >
-        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 + (Platform.OS === "android" ? height : 0) }}>
+        <View style={{ paddingHorizontal: 50, alignItems: "center", gap: 15, paddingTop: 20 }}>
           <Avatar
             size={117}
             initials={getInitials(`${firstName} ${lastName}`)}

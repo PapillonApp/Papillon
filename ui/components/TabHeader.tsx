@@ -17,6 +17,7 @@ interface TabHeaderProps {
   bottom?: React.ReactElement,
   shouldCollapseHeader?: boolean,
   modal?: boolean,
+  backgroundColor?: string,
 };
 
 const TabHeader: React.FC<TabHeaderProps> = ({
@@ -26,12 +27,14 @@ const TabHeader: React.FC<TabHeaderProps> = ({
   bottom,
   shouldCollapseHeader,
   modal,
+  backgroundColor,
 }) => {
+  const isModal = Platform.OS === 'ios' ? modal : false;
   const theme = useTheme();
   const colors = theme.colors;
   const insets = useSafeAreaInsets();
   const [height, setHeight] = React.useState(0);
-  const usedInsets = modal ? 16 : insets.top;
+  const usedInsets = isModal ? 16 : insets.top;
 
   useEffect(() => {
     onHeightChanged(height + (Platform.OS === 'android' ? 6 : 0));
@@ -41,7 +44,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
     <>
       <Reanimated.View
         style={[{
-          backgroundColor: runsIOS26 ? 'transparent' : colors.background,
+          backgroundColor: runsIOS26 ? 'transparent' : backgroundColor || colors.background,
           borderBottomWidth: (Platform.OS === 'ios' && !runsIOS26) ? 0.5 : 0,
           borderBottomColor: (Platform.OS === 'ios' && !runsIOS26) ? colors.border : undefined,
           position: 'absolute',
@@ -51,7 +54,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
           height: height,
           zIndex: 99,
           overflow: Platform.OS === 'android' ? 'visible' : 'hidden',
-          elevation: 2,
+          elevation: 0,
         }]}
         pointerEvents={'none'}
       >
@@ -98,7 +101,7 @@ const TabHeader: React.FC<TabHeaderProps> = ({
             flexDirection: 'row',
             gap: 16,
             paddingHorizontal: 16,
-            paddingLeft: modal ? 24 : 16,
+            paddingLeft: isModal ? 24 : 16,
             height: 40,
             alignItems: 'center',
             justifyContent: 'center',
