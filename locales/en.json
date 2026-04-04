@@ -1,7 +1,6 @@
 {
   "Global_Back": "Back",
   "Global_DatePrefix": "on",
-  "Global_Recommended": "Recommended",
   "Tab_Home": "Home",
   "Tab_Calendar": "Timetable",
   "Tab_Tasks": "Tasks",
@@ -382,8 +381,6 @@
   "Settings_Personalization_Accent": "Accent color",
   "Settings_Personalization_Accent_Description": "The color you choose here will apply to Papillon’s home page.",
   "Settings_Personalization_Theme": "Theme",
-  "Settings_Personalization_MaterialYou_Title": "Use Material You (Beta)",
-  "Settings_Personalization_MaterialYou_Description": "Use Android dynamic system colors.",
   "Settings_Personalization_Icon_Title": "Change icon",
   "Settings_Personalization_Icon_Description": "Customize the app icon",
   "Settings_Personalization_Subject_Title": "Customize subjects",
