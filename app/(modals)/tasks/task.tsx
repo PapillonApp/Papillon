@@ -6,7 +6,9 @@ import { t } from "i18next";
 import React, { useState } from "react";
 
 import ModalOverhead from "@/components/ModalOverhead";
-import { Homework, Homework as SharedHomework } from "@/services/shared/homework";
+import Homework from "@/database/models/Homework";
+import { Homework as SharedHomework } from "@/services/shared/homework";
+import { updateHomeworkIsDone } from "@/database/useHomework";
 import { getManager } from "@/services/shared";
 import AnimatedPressable from "@/ui/components/AnimatedPressable";
 import Icon from "@/ui/components/Icon";
