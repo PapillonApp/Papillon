@@ -5,6 +5,7 @@ import { warn } from "@/utils/logger/logger";
 
 import { Grade, GradeScore, Period, PeriodGrades, Subject, } from "../shared/grade";
 import { SkillChipLevel } from "@/ui/components/SkillChip";
+import { SkillsColorsPalette } from "@/constants/SkillsColorsPalette";
 
 export async function fetchEDGradePeriods(
   session: Client,
@@ -49,6 +50,12 @@ export async function fetchEDGrades(
     }
 
     const subjects: Record<string, Subject> = {};
+    const skillColors = {
+      insufficient: overview.parametrage.couleurEval1,
+      weak: overview.parametrage.couleurEval2,
+      almostProficient: overview.parametrage.couleurEval3,
+      satisfactory: overview.parametrage.couleurEval4,
+    };
     const allMappedGrades: Grade[] = grades.map(g => {
       return {
         id: String(g.id),
@@ -70,7 +77,7 @@ export async function fetchEDGrades(
         skills: g.elementsProgramme.map(s => ({
           name: s.libelleCompetence,
           description: s.descriptif,
-          score: parseSkillLevel(parseInt(s.valeur)),
+          score: parseSkillLevel(parseInt(s.valeur), skillColors),
         })),
       };
     });
@@ -127,16 +134,16 @@ export async function fetchEDGrades(
   }
 }
 
-function parseSkillLevel(value: number): SkillChipLevel {
+function parseSkillLevel(value: number, colors: {insufficient: string, weak: string, almostProficient: string, satisfactory: string}): string | SkillChipLevel {
   switch (value) {
     case 1:
-      return SkillChipLevel.Insufficient;
+      return parseColor(colors.insufficient);
     case 2:
-      return SkillChipLevel.Weak;
+      return parseColor(colors.weak);
     case 3:
-      return SkillChipLevel.AlmostProficient;
+      return parseColor(colors.almostProficient);
     case 4:
-      return SkillChipLevel.Satisfactory;
+      return parseColor(colors.satisfactory);
     case -1:
       return SkillChipLevel.Absent;
     case -2:
@@ -165,4 +172,48 @@ function parseGradeValue(value: string): GradeScore | undefined {
     return { value: score };
   }
   return undefined;
+}
+
+function hexToRgb(hex: string): {r: number; g: number; b: number} | undefined {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : undefined;
+}
+
+function componentToHex(c: number) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+
+function parseColor(hex: string): string {
+  const color: { r: number; g: number; b: number } | undefined = hexToRgb(hex);
+
+  if (!color) return hex;
+
+  const palette: ({r: number, g: number, b: number} | undefined)[] = SkillsColorsPalette.map((c) => hexToRgb(c));
+
+  let closestColor = palette[0]!;
+  let minDistance = Number.MAX_VALUE;
+
+  for (const p of palette) {
+    if (p === undefined) continue;
+
+    const distance = Math.sqrt(
+      Math.pow(color.r - p.r, 2) +
+        Math.pow(color.g - p.g, 2) +
+        Math.pow(color.b - p.b, 2)
+    );
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestColor = p;
+    }
+  }
+
+  return `#${componentToHex(closestColor.r)}${componentToHex(closestColor.g)}${componentToHex(closestColor.b)}`;
 }

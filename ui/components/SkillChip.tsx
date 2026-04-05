@@ -16,7 +16,7 @@ export enum SkillChipLevel {
 }
 
 export interface SkillChipProps extends ViewProps {
-  level: SkillChipLevel;
+  level: SkillChipLevel | string;
 }
 
 export function SkillChip(props: SkillChipProps) {
@@ -74,30 +74,37 @@ export function SkillChip(props: SkillChipProps) {
       <View
         style={{
           flex: 1,
-          backgroundColor: skillInfo[props.level].color,
+          backgroundColor:
+            typeof props.level === "string"
+              ? props.level
+              : skillInfo[props.level].color,
           borderRadius: 20,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        {skillInfo[props.level].icon && (
-          <Papicons
-            name={skillInfo[props.level].icon}
-            color={skillInfo[props.level].foregroundColor}
-            size={12}
-          />
-        )}
-        {skillInfo[props.level].text && (
-          <Typography
-            style={{
-              fontSize: skillInfo[props.level].fontSize ?? 17,
-              lineHeight: skillInfo[props.level].fontSize ?? 17,
-              marginTop: -(skillInfo[props.level].translateX ?? 0),
-            }}
-            color={skillInfo[props.level].foregroundColor ?? "#FFF"}
-          >
-            {skillInfo[props.level].text}
-          </Typography>
+        {typeof props.level !== "string" && (
+          <>
+            {skillInfo[props.level].icon && (
+              <Papicons
+                name={skillInfo[props.level].icon!}
+                color={skillInfo[props.level].foregroundColor}
+                size={12}
+              />
+            )}
+            {skillInfo[props.level].text && (
+              <Typography
+                style={{
+                  fontSize: skillInfo[props.level].fontSize ?? 17,
+                  lineHeight: skillInfo[props.level].fontSize ?? 17,
+                  marginTop: -(skillInfo[props.level].translateX ?? 0),
+                }}
+                color={skillInfo[props.level].foregroundColor ?? "#FFF"}
+              >
+                {skillInfo[props.level].text}
+              </Typography>
+            )}
+          </>
         )}
       </View>
     </View>
