@@ -3,7 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { t } from 'i18next';
 import React from 'react';
-import { FlatList, StatusBar } from 'react-native';
+import { FlatList, Platform, StatusBar } from 'react-native';
 import { useBottomTabBarHeight } from 'react-native-bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -87,7 +87,7 @@ const HomeScreen = () => {
         ListHeaderComponent={<HomeHeader />}
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingBottom: insets.bottom + bottomTabBarHeight,
+          paddingBottom: Platform.OS === 'ios' ? bottomTabBarHeight : 16,
           paddingHorizontal: 16,
           flexGrow: 1,
           gap: 12,
