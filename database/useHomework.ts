@@ -62,6 +62,29 @@ export async function getHomeworksFromCache(
   }
 }
 
+export async function deleteHomeworkFromDatabase(homework: SharedHomework) {
+  const db = getDatabaseInstance();
+  const id = generateId(
+    homework.subject + homework.content + homework.createdByAccount + homework.dueDate.toDateString()
+  );
+
+  const existing = await db
+    .get("homework")
+    .query(Q.where("homeworkId", id))
+    .fetch();
+
+  for (const record of existing) {
+    await safeWrite(
+      db,
+      async () => {
+        await record.destroyPermanently();
+      },
+      10000,
+      "deleteHomeworkFromDatabase"
+    );
+  }
+}
+
 export async function addHomeworkToDatabase(homeworks: SharedHomework[]) {
   const db = getDatabaseInstance();
 
