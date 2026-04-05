@@ -69,6 +69,7 @@ export async function fetchEDGrades(
         createdByAccount: accountId,
         skills: g.elementsProgramme.map(s => ({
           name: s.libelleCompetence,
+          description: s.descriptif,
           score: parseSkillLevel(parseInt(s.valeur)),
         })),
       };

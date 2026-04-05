@@ -48,6 +48,7 @@ export interface Grade extends GenericInterface {
 
 export interface SkillScore {
   name: string;
+  description: string;
   score: SkillChipLevel;
 }
 
